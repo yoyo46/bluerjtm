@@ -1,9 +1,12 @@
 <?php 
-        echo $this->Form->create('Ttuj', array(
+        $title = !empty($title)?$title:false;
+        echo $this->Form->create('Search', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'ajax',
-                'action' => 'getTtujs',
-                $action_type,
+                'action' => 'search',
+                'getTtujs',
+                'action_type' => $action_type,
+                'admin' => false,
             )), 
             'role' => 'form',
             'inputDefaults' => array('div' => false),
@@ -23,7 +26,7 @@
         </div>
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('nottuj',array(
+                    echo $this->Form->input('nodoc',array(
                         'label'=> __('No. Doc'),
                         'class'=>'form-control',
                         'required' => false,
@@ -63,7 +66,7 @@
         </div>
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('City.name',array(
+                    echo $this->Form->input('to_city',array(
                         'label'=> __('Tujuan'),
                         'class'=>'form-control',
                         'required' => false,
@@ -75,7 +78,7 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('Driver.name',array(
+                    echo $this->Form->input('driver',array(
                         'label'=> __('Nama Supir'),
                         'class'=>'form-control',
                         'required' => false,
@@ -85,7 +88,7 @@
         </div>
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('Customer.name',array(
+                    echo $this->Form->input('customer',array(
                         'label'=> __('Customer'),
                         'class'=>'form-control',
                         'required' => false,
@@ -163,6 +166,7 @@
             'options' => array(
                 'data-action' => $data_action,
                 'class' => 'ajaxModal',
+                'title' => $title,
             ),
         ));
 ?>

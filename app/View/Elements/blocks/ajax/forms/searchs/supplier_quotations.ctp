@@ -3,10 +3,11 @@
             'url' => array(
                 'controller' => 'ajax',
                 'action' => 'search',
-                'products',
+                'supplier_quotations',
                 'admin' => false,
             ),
             'class' => 'ajax-form',
+            'data-wrapper-write' => '#wrapper-modal-write',
         ));
 ?>
 <div class="row">
@@ -28,7 +29,7 @@
         echo $this->element('blocks/common/searchs/box_action', array(
             '_url' => array(
                 'controller' => 'ajax', 
-                'action' => 'products', 
+                'action' => 'supplier_quotations', 
                 'admin' => false,
             ),
             'linkOptions' => array(

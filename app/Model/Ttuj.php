@@ -738,6 +738,9 @@ class Ttuj extends AppModel {
         $type = !empty($data['named']['type'])?$data['named']['type']:1;
         $company = !empty($data['named']['company'])?$data['named']['company']:false;
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $to_city = !empty($data['named']['to_city'])?$data['named']['to_city']:false;
+        $customer = !empty($data['named']['customer'])?$data['named']['customer']:false;
+        $driver = !empty($data['named']['driver'])?$data['named']['driver']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -761,6 +764,26 @@ class Ttuj extends AppModel {
         }
         if(!empty($nodoc)){
             $default_options['conditions']['Ttuj.no_ttuj LIKE'] = '%'.$nodoc.'%';
+        }
+        if(!empty($to_city)){
+            $default_options['conditions']['Ttuj.to_city_name LIKE'] = '%'.$to_city.'%';
+        }
+        if(!empty($driver)){
+            $default_options['conditions']['Ttuj.driver_name LIKE'] = '%'.$driver.'%';
+        }
+        if(!empty($customer)){
+            $customers = $this->Customer->getData('list', array(
+                'conditions' => array(
+                    'Customer.customer_name_code LIKE' => '%'.$customer.'%',
+                ),
+                'fields' => array(
+                    'Customer.id', 'Customer.id'
+                ),
+            ), true, array(
+                'status' => 'all',
+                'branch' => false,
+            ));
+            $default_options['conditions']['Ttuj.customer_id'] = $customers;
         }
         
         return $default_options;

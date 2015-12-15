@@ -1,8 +1,10 @@
 <?php 
-        echo $this->Form->create('Siup', array(
+        $title = !empty($title)?$title:false;
+        echo $this->Form->create('Search', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'ajax',
-                'action' => 'getSiups',
+                'action' => 'search',
+                'getSiups',
             )), 
             'role' => 'form',
             'inputDefaults' => array('div' => false),
@@ -44,7 +46,7 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('Driver.name',array(
+                    echo $this->Form->input('driver',array(
                         'label'=> __('Nama Supir'),
                         'class'=>'form-control',
                         'required' => false,
@@ -117,6 +119,7 @@
             'options' => array(
                 'data-action' => $data_action,
                 'class' => 'ajaxModal',
+                'title' => $title,
             ),
         ));
 ?>

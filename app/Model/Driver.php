@@ -401,5 +401,27 @@ class Driver extends AppModel {
             return true;
         }
     }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $name = !empty($data['named']['name'])?$data['named']['name']:false;
+        $alias = !empty($data['named']['alias'])?$data['named']['alias']:false;
+        $number = !empty($data['named']['number'])?$data['named']['number']:false;
+        $phone = !empty($data['named']['phone'])?$data['named']['phone']:false;
+
+        if(!empty($name)){
+            $default_options['conditions']['Driver.name LIKE'] = '%'.$name.'%';
+        }
+        if(!empty($alias)){
+            $default_options['conditions']['Driver.alias LIKE'] = '%'.$alias.'%';
+        }
+        if(!empty($number)){
+            $default_options['conditions']['Driver.identity_number LIKE'] = '%'.$number.'%';
+        }
+        if(!empty($phone)){
+            $default_options['conditions']['Driver.phone LIKE'] = '%'.$phone.'%';
+        }
+        
+        return $default_options;
+    }
 }
 ?>

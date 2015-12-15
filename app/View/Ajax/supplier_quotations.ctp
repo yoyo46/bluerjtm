@@ -15,7 +15,7 @@
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 ?>
-<div id="wrapper-write">
+<div id="wrapper-modal-write">
     <?php 
             echo $this->element('blocks/ajax/forms/searchs/supplier_quotations');
     ?>

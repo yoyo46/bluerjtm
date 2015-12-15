@@ -1,4 +1,4 @@
-<div id="wrapper-write">
+<div id="wrapper-modal-write">
     <?php 
             $modelName = false;
             $dataColumns = array(

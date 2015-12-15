@@ -20,11 +20,19 @@ class LeasingsController extends AppController {
 
         if(!empty($this->request->data)) {
             $data = $this->request->data;
+            $named = $this->MkCommon->filterEmptyField($this->params, 'named');
+            
             $refine = $this->RjLeasing->processRefine($data);
             $result = $this->MkCommon->processFilter($data);
             $params = $this->RjLeasing->generateSearchURL($refine);
             $params = array_merge($params, $result);
             $params['action'] = $index;
+            
+            if( !empty($named) ) {
+                foreach ($named as $key => $value) {
+                    $params[] = $value;
+                }
+            }
 
             $this->redirect($params);
         }
@@ -667,28 +675,25 @@ class LeasingsController extends AppController {
     }
 
     function leasings_unpaid($vendor_id = false){
-        $conditions = array(
-            'Leasing.vendor_id' => $vendor_id,
-            'Leasing.payment_status' => array( 'unpaid', 'half_paid' ),
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $options = array(
+            'conditions' => array(
+                'Leasing.vendor_id' => $vendor_id,
+                'Leasing.payment_status' => array( 'unpaid', 'half_paid' ),
+            ),
+            'contain' => false,
+            'limit' => Configure::read('__Site.config_pagination'),
         );
 
-        if(!empty($this->request->data['Lku']['date_from']) || !empty($this->request->data['Lku']['date_to'])){
-            if(!empty($this->request->data['Lku']['date_from'])){
-                $lku_condition['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') >='] = $this->MkCommon->getDate($this->request->data['Lku']['date_from']);
-            }
-            if(!empty($this->request->data['Lku']['date_to'])){
-                $lku_condition['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') <='] = $this->MkCommon->getDate($this->request->data['Lku']['date_to']);
-            }
-        }
-
-        if(!empty($this->request->data['Lku']['no_doc'])){
-            $lku_condition['Lku.no_doc LIKE '] = '%'.$this->request->data['Lku']['no_doc'].'%';
-        }
-
-        $this->paginate = $this->Leasing->getData('paginate', array(
-            'conditions' => $conditions,
-            'contain' => false,
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
         ));
+        $options =  $this->Leasing->_callRefineParams($params, $options);
+
+        $this->paginate = $this->Leasing->getData('paginate', $options);
         $values = $this->paginate('Leasing');
 
         if( !empty($values) ) {

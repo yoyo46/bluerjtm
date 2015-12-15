@@ -1,9 +1,11 @@
 <?php 
-        echo $this->Form->create('Invoice', array(
+        $title = !empty($title)?$title:false;
+        echo $this->Form->create('Search', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'ajax',
-                'action' => 'getInfoInvoicePaymentDetail',
-                $id
+                'action' => 'search',
+                'getInfoInvoicePaymentDetail',
+                'customer_id' => $id,
             )), 
             'role' => 'form',
             'inputDefaults' => array('div' => false),
@@ -13,11 +15,11 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('date_from',array(
-                        'label'=> __('Dari Tanggal'),
-                        'class'=>'form-control custom-date',
+                    echo $this->Form->input('date',array(
+                        'label'=> __('Tgl Invoice'),
+                        'class'=>'form-control date-range',
                         'required' => false,
-                        'placeholder' => __('Dari')
+                        'placeholder' => __('Tgl Invoice')
                     ));
             ?>
         </div>
@@ -25,11 +27,11 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('date_to',array(
-                        'label'=> __('Sampai Tanggal'),
-                        'class'=>'form-control custom-date',
+                    echo $this->Form->input('nodoc',array(
+                        'label'=> __('No.Invoice'),
+                        'class'=>'form-control',
                         'required' => false,
-                        'placeholder' => __('Sampai')
+                        'placeholder' => __('No.Invoice')
                     ));
             ?>
         </div>
@@ -44,6 +46,16 @@
                 'title' => 'Invoice Customer',
                 'data-action' => $data_action,
                 'title' => $title
+            ));
+            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                'controller' => 'ajax',
+                'action' => 'getInfoInvoicePaymentDetail',
+                $id,
+            ), array(
+                'escape' => false, 
+                'class'=> 'btn btn-default btn-sm ajaxModal',
+                'data-action' => $data_action,
+                'title' => $title,
             ));
     ?>
 </div>

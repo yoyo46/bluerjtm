@@ -2062,10 +2062,12 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                         ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
                         pickData();
                         daterangepicker( $('#myModal .modal-body .date-range') );
+                        $.rebuildFunction();
                     } else if( type_action == 'browse-invoice' || type_action == 'getTtujCustomerInfo' || type_action == 'getTtujCustomerInfoKsu' ) {
                         ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
                         pickData();
                         datepicker($('#myModal .modal-body .custom-date'));
+                        daterangepicker( $('#myModal .modal-body .date-range') );
                         check_all_checkbox();
                     } else if( type_action == 'browse-cash-banks' || type_action == 'browse-check-docs' ) {
                         ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );

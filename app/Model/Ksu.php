@@ -177,5 +177,26 @@ class Ksu extends AppModel {
             )
         ));
     }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+        $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
+        if(!empty($nodoc)){
+            $default_options['conditions']['Ksu.no_doc LIKE'] = '%'.$nodoc.'%';
+        }
+        
+        return $default_options;
+    }
 }
 ?>

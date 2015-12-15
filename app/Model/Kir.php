@@ -120,5 +120,32 @@ class Kir extends AppModel {
         }
         return $result;
     }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
+        $type = !empty($data['named']['type'])?$data['named']['type']:1;
+        $driver = !empty($data['named']['driver'])?$data['named']['driver']:false;
+
+        if(!empty($nopol)){
+            if( $type == 2 ) {
+                $default_options['conditions']['Truck.id'] = $nopol;
+            } else {
+                $default_options['conditions']['Truck.nopol LIKE'] = '%'.$nopol.'%';
+            }
+        }
+        if(!empty($driver)){
+            $drivers = $this->Truck->Driver->getData('list', array(
+                'conditions' => array(
+                    'Driver.name LIKE' => '%'.$driver.'%',
+                ),
+                'fields' => array(
+                    'Driver.id', 'Driver.id'
+                ),
+            ));
+           $default_options['conditions']['Truck.driver_id'] = $drivers;
+        }
+        
+        return $default_options;
+    }
 }
 ?>

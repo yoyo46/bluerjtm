@@ -1,9 +1,12 @@
 <?php 
-        echo $this->Form->create('Lku', array(
+        $title = !empty($title)?$title:false;
+        echo $this->Form->create('Search', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'ajax',
-                'action' => 'getTtujCustomerInfo',
-                $customer_id
+                'action' => 'search',
+                'getTtujCustomerInfo',
+                'customer_id' => $customer_id,
+                'admin' => false,
             )), 
             'role' => 'form',
             'inputDefaults' => array('div' => false),
@@ -13,11 +16,11 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('date_from',array(
-                        'label'=> __('Dari Tanggal'),
-                        'class'=>'form-control custom-date',
+                    echo $this->Form->input('date',array(
+                        'label'=> __('Tanggal'),
+                        'class'=>'form-control date-range',
                         'required' => false,
-                        'placeholder' => __('Dari')
+                        'placeholder' => __('Tanggal')
                     ));
             ?>
         </div>
@@ -25,19 +28,7 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('date_to',array(
-                        'label'=> __('Sampai Tanggal'),
-                        'class'=>'form-control custom-date',
-                        'required' => false,
-                        'placeholder' => __('Sampai')
-                    ));
-            ?>
-        </div>
-    </div>
-    <div class="col-sm-6">
-        <div class="form-group">
-            <?php 
-                    echo $this->Form->input('no_doc',array(
+                    echo $this->Form->input('nodoc',array(
                         'label'=> __('No LKU'),
                         'class'=>'form-control',
                         'required' => false,
@@ -55,6 +46,16 @@
                 'title' => 'lku Customer',
                 'data-action' => $data_action,
                 'title' => $title
+            ));
+            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                'controller' => 'ajax',
+                'action' => 'getTtujCustomerInfo',
+                $customer_id,
+            ), array(
+                'escape' => false, 
+                'class'=> 'btn btn-default btn-sm ajaxModal',
+                'data-action' => $data_action,
+                'title' => $title,
             ));
     ?>
 </div>
@@ -205,7 +206,7 @@
                     }
                 }else{
                     echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan'), array(
-                        'colspan' => 9,
+                        'colspan' => 10,
                         'class' => 'text-center alert alert-warning',
                     )));
                 }
@@ -219,6 +220,7 @@
                 'options' => array(
                     'data-action' => $data_action,
                     'class' => 'ajaxModal',
+                    'title' => $title,
                 ),
             ));
         }

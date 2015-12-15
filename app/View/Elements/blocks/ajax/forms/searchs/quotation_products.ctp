@@ -1,12 +1,15 @@
 <?php 
+        $action_type = !empty($action_type)?$action_type:false;
         echo $this->Form->create('Search', array(
             'url' => array(
                 'controller' => 'ajax',
                 'action' => 'search',
                 'products',
+                'action_type' => $action_type,
                 'admin' => false,
             ),
             'class' => 'ajax-form',
+            'data-wrapper-write' => '#wrapper-modal-write',
         ));
 ?>
 <div class="row">
@@ -29,6 +32,7 @@
             '_url' => array(
                 'controller' => 'ajax', 
                 'action' => 'products', 
+                $action_type,
                 'admin' => false,
             ),
             'linkOptions' => array(

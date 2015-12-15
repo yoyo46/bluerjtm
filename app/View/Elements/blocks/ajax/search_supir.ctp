@@ -1,9 +1,11 @@
 <?php
-        echo $this->Form->create('Driver', array(
+        echo $this->Form->create('Search', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'ajax',
-                'action' => 'getDrivers',
-                $id,
+                'action' => 'search',
+                'getDrivers',
+                'driver_id' => $id,
+                'admin' => false,
             )), 
             'role' => 'form',
             'inputDefaults' => array('div' => false),
@@ -35,7 +37,7 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('identity_number',array(
+                    echo $this->Form->input('number',array(
                         'label'=> __('No. Identitas'),
                         'class'=>'form-control',
                         'required' => false,

@@ -192,9 +192,20 @@ class Leasing extends AppModel {
     }
 
     public function _callRefineParams( $data = '', $default_options = false ) {
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
         $vendor_id = !empty($data['named']['vendor_id'])?$data['named']['vendor_id']:false;
 
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(Leasing.paid_date, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(Leasing.paid_date, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
         if( !empty($nodoc) ) {
             $default_options['conditions']['Leasing.no_contract LIKE'] = '%'.$nodoc.'%';
         }

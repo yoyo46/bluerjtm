@@ -255,31 +255,26 @@ class AjaxController extends AppController {
 	function getTtujCustomerInfo($customer_id = false){
 		$this->loadModel('Lku');
 
-		$lku_condition = array(
-			'Ttuj.customer_id' => $customer_id,
-			'Lku.complete_paid' => 0
-		);
-		$lku_details = array();
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
 
-		if(!empty($this->request->data['Lku']['date_from']) || !empty($this->request->data['Lku']['date_to'])){
-			if(!empty($this->request->data['Lku']['date_from'])){
-				$lku_condition['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') >='] = $this->MkCommon->getDate($this->request->data['Lku']['date_from']);
-			}
-			if(!empty($this->request->data['Lku']['date_to'])){
-				$lku_condition['DATE_FORMAT(Lku.tgl_lku, \'%Y-%m-%d\') <='] = $this->MkCommon->getDate($this->request->data['Lku']['date_to']);
-			}
-		}
-
-		if(!empty($this->request->data['Lku']['no_doc'])){
-			$lku_condition['Lku.no_doc LIKE '] = '%'.$this->request->data['Lku']['no_doc'].'%';
-		}
-
-		$lku_id = $this->Lku->getData('list', array(
-			'conditions' => $lku_condition,
+		$options = array(
+			'conditions' => array(
+				'Ttuj.customer_id' => $customer_id,
+				'Lku.complete_paid' => 0,
+			),
 			'contain' => array(
 				'Ttuj',
 			),
-		));
+		);
+		$lku_details = array();
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->Lku->_callRefineParams($params, $options);
+		$lku_id = $this->Lku->getData('list', $options);
 
 		if(!empty($lku_id)){
 			$this->loadModel('LkuDetail');
@@ -290,7 +285,8 @@ class AjaxController extends AppController {
 				),
 				'contain' => array(
 					'Lku'
-				)
+				),
+            	'limit' => Configure::read('__Site.config_pagination'),
 			));
 			
 			$lku_details = $this->paginate('LkuDetail');
@@ -359,32 +355,27 @@ class AjaxController extends AppController {
 	function getTtujCustomerInfoKsu($customer_id = false){
 		$this->loadModel('Ksu');
 
-		$ksu_condition = array(
-			'Ttuj.customer_id' => $customer_id,
-			'Ksu.complete_paid' => 0,
-			'Ksu.kekurangan_atpm' => 0
-		);
-		$ksu_details = array();
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
 
-		if(!empty($this->request->data['Ksu']['date_from']) || !empty($this->request->data['Ksu']['date_to'])){
-			if(!empty($this->request->data['Ksu']['date_from'])){
-				$ksu_condition['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') >='] = $this->MkCommon->getDate($this->request->data['Ksu']['date_from']);
-			}
-			if(!empty($this->request->data['Ksu']['date_to'])){
-				$ksu_condition['DATE_FORMAT(Ksu.tgl_ksu, \'%Y-%m-%d\') <='] = $this->MkCommon->getDate($this->request->data['Ksu']['date_to']);
-			}
-		}
-
-		if(!empty($this->request->data['Ksu']['no_doc'])){
-			$ksu_condition['Ksu.no_doc LIKE '] = '%'.$this->request->data['Ksu']['no_doc'].'%';
-		}
-
-		$ksu_id = $this->Ksu->getData('list', array(
-			'conditions' => $ksu_condition,
+		$options = array(
+			'conditions' => array(
+				'Ttuj.customer_id' => $customer_id,
+				'Ksu.complete_paid' => 0,
+				'Ksu.kekurangan_atpm' => 0,
+			),
 			'contain' => array(
 				'Ttuj',
 			),
-		));
+		);
+		$ksu_details = array();
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->Ksu->_callRefineParams($params, $options);
+		$ksu_id = $this->Ksu->getData('list', $options);
 		
 		if(!empty($ksu_id)){
 			$this->loadModel('KsuDetail');
@@ -1004,56 +995,35 @@ class AjaxController extends AppController {
 		$title = __('Supir Truk');
 		$data_action = 'browse-form';
 		$data_change = 'driverID';
-		$contain = array(
-            'Truck'
-        );
+        $options = array(
+        	'contain' => array(
+        		'Truck',
+    		),
+            'limit' => Configure::read('__Site.config_pagination'),
+    	);
 
         switch ($action_type) {
         	case 'pengganti':
-        		$conditions = $this->Driver->getListDriverPenganti($id, true);
-        		$contain[] = 'Ttuj';
+        		$options['conditions'] = $this->Driver->getListDriverPenganti($id, true);
+        		$options['conditions']['contain'][] = 'Ttuj';
         		break;
         	
         	default:
 		        if( !empty($id)) {
-		            $conditions['OR'] = array(
+		            $options['conditions']['OR'] = array(
 		                'Truck.id' => NULL,
 		                'Driver.id' => $id,
 		            );
 		        } else {
-					$conditions = array(
+					$options['conditions'] = array(
 			            'Truck.id' => NULL,
 			        );
 		        }
         		break;
         }
 
-        if(!empty($this->request->data)){
-        	$data = $this->request->data;
-
-            if(!empty($data['Driver']['name'])){
-                $name = urldecode($data['Driver']['name']);
-                $conditions['Driver.name LIKE '] = '%'.$name.'%';
-            }
-            if(!empty($data['Driver']['alias'])){
-                $alias = urldecode($data['Driver']['alias']);
-                $conditions['Driver.alias LIKE '] = '%'.$alias.'%';
-            }
-            if(!empty($data['Driver']['identity_number'])){
-                $identity_number = urldecode($data['Driver']['identity_number']);
-                $conditions['Driver.identity_number LIKE '] = '%'.$identity_number.'%';
-            }
-            if(!empty($data['Driver']['phone'])){
-                $phone = urldecode($data['Driver']['phone']);
-                $conditions['Driver.phone LIKE '] = '%'.$phone.'%';
-            }
-        }
-
-        $options = array(
-            'conditions' => $conditions,
-            'contain' => $contain,
-            'limit' => 10,
-        );
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Driver->_callRefineParams($params, $options);
 
         if( $action_type == 'mutation' ) {
 			$filterBranch = false;
@@ -1205,64 +1175,29 @@ class AjaxController extends AppController {
 
 	function getKirs () {
 		$this->loadModel('Kir');
-		$this->loadModel('Truck');
 		$title = __('Data KIR');
 		$data_action = 'browse-form';
 		$data_change = 'truckID';
-		$conditions = array(
-            'Kir.paid' => 0,
-            'Kir.rejected' => 0,
+		$options = array(
+			'conditions' => array(
+	            'Kir.paid' => 0,
+	            'Kir.rejected' => 0,
+            ),
+            'limit' => Configure::read('__Site.config_pagination'),
         );
 
-        if(!empty($this->request->data)){
-            if(!empty($this->request->data['Kir']['nopol'])){
-                $nopol = urldecode($this->request->data['Kir']['nopol']);
-                $typeTruck = !empty($this->request->data['Kir']['type'])?$this->request->data['Kir']['type']:1;
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Kir->_callRefineParams($params, $options);
 
-                if( $typeTruck == 2 ) {
-                	$conditionsNopol = array(
-	            		'Truck.id' => $nopol,
-	        		);
-                } else {
-                	$conditionsNopol = array(
-	            		'Truck.nopol LIKE' => '%'.$nopol.'%',
-	        		);
-                }
-
-                $truckSearch = $this->Kir->Truck->getData('list', array(
-                	'conditions' => $conditionsNopol,
-            		'fields' => array(
-            			'Truck.id', 'Truck.id',
-        			),
-            	));
-                $conditions['Kir.truck_id'] = $truckSearch;
-            }
-            if(!empty($this->request->data['Driver']['name'])){
-                $name = urldecode($this->request->data['Driver']['name']);
-                $drivers = $this->Truck->Driver->getData('list', array(
-                	'conditions' => array(
-                		'Driver.name LIKE' => '%'.$name.'%',
-            		),
-            		'fields' => array(
-            			'Driver.id', 'Driver.id'
-        			),
-            	));
-                $conditions['Truck.driver_id'] = $drivers;
-            }
-        }
-
-        $this->paginate = $this->Kir->getData('paginate', array(
-            'conditions' => $conditions,
-            'limit' => Configure::read('__Site.config_pagination'),
-        ));
+        $this->paginate = $this->Kir->getData('paginate', $options);
         $trucks = $this->paginate('Kir');
 
         if(!empty($trucks)){
             foreach ($trucks as $key => $truck) {
-                $truck = $this->Truck->getMerge($truck, $truck['Kir']['truck_id']);
+                $truck = $this->Kir->Truck->getMerge($truck, $truck['Kir']['truck_id']);
 
                 $driver_id = !empty($truck['Truck']['driver_id'])?$truck['Truck']['driver_id']:false;
-                $truck = $this->Truck->Driver->getMerge($truck, $driver_id);
+                $truck = $this->Kir->Truck->Driver->getMerge($truck, $driver_id);
                 $trucks[$key] = $truck;
             }
         }
@@ -1275,65 +1210,30 @@ class AjaxController extends AppController {
 
 	function getStnks () {
 		$this->loadModel('Stnk');
-		$this->loadModel('Truck');
 		$title = __('Data STNK');
 		$data_action = 'browse-form';
 		$data_change = 'truckID';
-		$conditions = array(
-            'Stnk.status' => 1,
-            'Stnk.paid' => 0,
-            'Stnk.rejected' => 0,
+        $options = array(
+			'conditions' => array(
+	            'Stnk.status' => 1,
+	            'Stnk.paid' => 0,
+	            'Stnk.rejected' => 0,
+            ),
+            'contain' => array(
+            	'Truck',
+        	),
+            'limit' => Configure::read('__Site.config_pagination'),
         );
 
-        if(!empty($this->request->data)){
-            if(!empty($this->request->data['Stnk']['nopol'])){
-                $nopol = urldecode($this->request->data['Stnk']['nopol']);
-                $typeTruck = !empty($this->request->data['Stnk']['type'])?$this->request->data['Stnk']['type']:1;
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Stnk->_callRefineParams($params, $options);
 
-                if( $typeTruck == 2 ) {
-                	$conditionsNopol = array(
-	            		'Truck.id' => $nopol,
-	        		);
-                } else {
-                	$conditionsNopol = array(
-	            		'Truck.nopol LIKE' => '%'.$nopol.'%',
-	        		);
-                }
-
-                $truckSearch = $this->Stnk->Truck->getData('list', array(
-                	'conditions' => $conditionsNopol,
-            		'fields' => array(
-            			'Truck.id', 'Truck.id',
-        			),
-            	));
-                $conditions['Stnk.truck_id'] = $truckSearch;
-            }
-            if(!empty($this->request->data['Driver']['name'])){
-                $name = urldecode($this->request->data['Driver']['name']);
-                $drivers = $this->Truck->Driver->getData('list', array(
-                	'conditions' => array(
-                		'Driver.name LIKE' => '%'.$name.'%',
-            		),
-            		'fields' => array(
-            			'Driver.id', 'Driver.id'
-        			),
-            	));
-                $conditions['Truck.driver_id'] = $drivers;
-            }
-        }
-
-        $this->paginate = $this->Stnk->getData('paginate', array(
-            'conditions' => $conditions,
-            'limit' => Configure::read('__Site.config_pagination'),
-            'contain' => array(
-            	'Truck'
-        	),
-        ));
+        $this->paginate = $this->Stnk->getData('paginate', $options);
         $trucks = $this->paginate('Stnk');
 
         if(!empty($trucks)){
             foreach ($trucks as $key => $truck) {
-                $truck = $this->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
+                $truck = $this->Stnk->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
                 $trucks[$key] = $truck;
             }
         }
@@ -1346,61 +1246,26 @@ class AjaxController extends AppController {
 
 	function getSiups () {
 		$this->loadModel('Siup');
-		$this->loadModel('Truck');
 		$title = __('Data Ijin Usaha');
 		$data_action = 'browse-form';
 		$data_change = 'truckID';
-		$conditions = array(
-            'Siup.paid' => 0,
-            'Siup.rejected' => 0,
+        $options = array(
+			'conditions' => array(
+	            'Siup.paid' => 0,
+	            'Siup.rejected' => 0,
+            ),
+            'limit' => Configure::read('__Site.config_pagination'),
         );
 
-        if(!empty($this->request->data)){
-            if(!empty($this->request->data['Siup']['nopol'])){
-                $nopol = urldecode($this->request->data['Siup']['nopol']);
-                $typeTruck = !empty($this->request->data['Siup']['type'])?$this->request->data['Siup']['type']:1;
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Siup->_callRefineParams($params, $options);
 
-                if( $typeTruck == 2 ) {
-                	$conditionsNopol = array(
-	            		'Truck.id' => $nopol,
-	        		);
-                } else {
-                	$conditionsNopol = array(
-	            		'Truck.nopol LIKE' => '%'.$nopol.'%',
-	        		);
-                }
-
-                $truckSearch = $this->Siup->Truck->getData('list', array(
-                	'conditions' => $conditionsNopol,
-            		'fields' => array(
-            			'Truck.id', 'Truck.id',
-        			),
-            	));
-                $conditions['Siup.truck_id'] = $truckSearch;
-            }
-            if(!empty($this->request->data['Driver']['name'])){
-                $name = urldecode($this->request->data['Driver']['name']);
-                $drivers = $this->Truck->Driver->getData('list', array(
-                	'conditions' => array(
-                		'Driver.name LIKE' => '%'.$name.'%',
-            		),
-            		'fields' => array(
-            			'Driver.id', 'Driver.id'
-        			),
-            	));
-                $conditions['Truck.driver_id'] = $drivers;
-            }
-        }
-
-        $this->paginate = $this->Siup->getData('paginate', array(
-            'conditions' => $conditions,
-            'limit' => Configure::read('__Site.config_pagination'),
-        ));
+        $this->paginate = $this->Siup->getData('paginate', $options);
         $trucks = $this->paginate('Siup');
 
         if(!empty($trucks)){
             foreach ($trucks as $key => $truck) {
-                $truck = $this->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
+                $truck = $this->Siup->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
                 $trucks[$key] = $truck;
             }
         }
@@ -1416,111 +1281,52 @@ class AjaxController extends AppController {
 		$title = __('Data TTUJ');
 		$data_action = 'browse-form';
 		$data_change = 'no_ttuj';
-		$conditions = array(
-            'Ttuj.is_draft' => 0,
-            'Ttuj.is_laka' => 0,
-        );
-        $orders = array(
-            'Ttuj.created' => 'DESC',
-            'Ttuj.id' => 'DESC',
-        );
         $branchFlag = false;
+        $options = array(
+			'conditions' => array(
+	            'Ttuj.is_draft' => 0,
+	            'Ttuj.is_laka' => 0,
+            ),
+            'order' => array(
+	            'Ttuj.created' => 'DESC',
+	            'Ttuj.id' => 'DESC',
+        	),
+            'limit' => Configure::read('__Site.config_pagination'),
+        );
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
 
-        if(!empty($this->request->data)){
-            if(!empty($this->request->data['Ttuj']['nottuj'])){
-                $nottuj = urldecode($this->request->data['Ttuj']['nottuj']);
-                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
-            }
-            if(!empty($this->request->data['Ttuj']['nopol'])){
-                $nopol = urldecode($this->request->data['Ttuj']['nopol']);
-                $typeTruck = !empty($this->request->data['Ttuj']['type'])?$this->request->data['Ttuj']['type']:1;
-
-                if( $typeTruck == 2 ) {
-                	$conditionsNopol = array(
-	            		'Truck.id' => $nopol,
-	        		);
-                } else {
-                	$conditionsNopol = array(
-	            		'Truck.nopol LIKE' => '%'.$nopol.'%',
-	        		);
-                }
-
-                $truckSearch = $this->Ttuj->Truck->getData('list', array(
-                	'conditions' => $conditionsNopol,
-            		'fields' => array(
-            			'Truck.id', 'Truck.id',
-        			),
-            	), true, array(
-            		'branch' => false,
-            	));
-                $conditions['Ttuj.truck_id'] = $truckSearch;
-            }
-            if(!empty($this->request->data['Driver']['name'])){
-                $name = urldecode($this->request->data['Driver']['name']);
-                $conditions['Ttuj.driver_name LIKE '] = '%'.$name.'%';
-            }
-            if(!empty($this->request->data['Customer']['name'])){
-                $name = urldecode($this->request->data['Customer']['name']);
-                $customers = $this->Ttuj->Customer->getData('list', array(
-                	'conditions' => array(
-                		'Customer.customer_name LIKE' => '%'.$name.'%',
-            		),
-            		'fields' => array(
-            			'Customer.id', 'Customer.id'
-        			),
-            	), true, array(
-                    'status' => 'all',
-            		'branch' => false,
-                ));
-                $conditions['Ttuj.customer_id'] = $customers;
-            }
-            if(!empty($this->request->data['City']['name'])){
-                $name = urldecode($this->request->data['City']['name']);
-                $conditions['Ttuj.to_city_name LIKE '] = '%'.$name.'%';
-            }
-            if(!empty($this->request->data['Ttuj']['date'])){
-                $date = urldecode($this->request->data['Ttuj']['date']);
-                $date = explode('-', $date);
-
-                if( !empty($date[0]) ) {
-                	$from_date = trim($date[0]);
-            		$from_date = $this->MkCommon->getDate($from_date);
-                	$conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $from_date;
-                }
-
-                if( !empty($date[1]) ) {
-                	$to_date = trim($date[1]);
-            		$to_date = $this->MkCommon->getDate($to_date);
-                	$conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $to_date;
-                }
-            }
-        }
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->Ttuj->_callRefineParams($params, $options);
 
         switch ($action_type) {
             case 'bongkaran':
-                $conditions['Ttuj.is_arrive'] = 1;
-                $conditions['Ttuj.is_bongkaran <>'] = 1;
-        		$conditions = $this->Ttuj->_callConditionBranch( $conditions );
+                $options['conditions']['Ttuj.is_arrive'] = 1;
+                $options['conditions']['Ttuj.is_bongkaran <>'] = 1;
+        		$options['conditions'] = $this->Ttuj->_callConditionBranch( $options['conditions'] );
                 break;
 
             case 'balik':
-                $conditions['Ttuj.is_arrive'] = 1;
-                $conditions['Ttuj.is_bongkaran'] = 1;
-                $conditions['Ttuj.is_balik <>'] = 1;
-        		$conditions = $this->Ttuj->_callConditionBranch( $conditions );
+                $options['conditions']['Ttuj.is_arrive'] = 1;
+                $options['conditions']['Ttuj.is_bongkaran'] = 1;
+                $options['conditions']['Ttuj.is_balik <>'] = 1;
+        		$options['conditions'] = $this->Ttuj->_callConditionBranch( $options['conditions'] );
                 break;
 
             case 'pool':
-                $conditions['Ttuj.is_arrive'] = 1;
-                $conditions['Ttuj.is_bongkaran'] = 1;
-                $conditions['Ttuj.is_balik'] = 1;
-                $conditions['Ttuj.is_pool <>'] = 1;
-        		$conditions = $this->Ttuj->_callConditionTtujPool( $conditions );
+                $options['conditions']['Ttuj.is_arrive'] = 1;
+                $options['conditions']['Ttuj.is_bongkaran'] = 1;
+                $options['conditions']['Ttuj.is_balik'] = 1;
+                $options['conditions']['Ttuj.is_pool <>'] = 1;
+        		$options['conditions'] = $this->Ttuj->_callConditionTtujPool( $options['conditions'] );
                 break;
 
             case 'revenues':
-            	unset($conditions['Ttuj.is_revenue']);
-            	$conditions['OR'] = array(
+            	unset($options['conditions']['Ttuj.is_revenue']);
+            	$options['conditions']['OR'] = array(
 	                'Ttuj.is_revenue' => 0,
 	                'Ttuj.id' => $ttuj_id,
 	            );
@@ -1528,46 +1334,42 @@ class AjaxController extends AppController {
                 break;
 
             case 'lku':
-                $conditions = array_merge($conditions, $this->RjLku->getTtujConditions());
+                $options['conditions'] = array_merge($options['conditions'], $this->RjLku->getTtujConditions());
 				$data_change = 'getTtujInfo';
         		$branchFlag = true;
                 break;
 
             case 'ksu':
-                $conditions = array_merge($conditions, $this->RjLku->getTtujConditions());
+                $options['conditions'] = array_merge($options['conditions'], $this->RjLku->getTtujConditions());
 				$data_change = 'getTtujInfoKsu';
         		$branchFlag = true;
                 break;
 
             case 'laka':
-                $conditions['Ttuj.is_pool <>'] = 1;
-                $conditions['Ttuj.truck_id'] = $ttuj_id;
+                $options['conditions']['Ttuj.is_pool <>'] = 1;
+                $options['conditions']['Ttuj.truck_id'] = $ttuj_id;
 				$data_change = 'laka-ttuj-change';
-        		// $conditions = $this->MkCommon->_callConditionPlant($conditions, 'Ttuj');
+        		// $options['conditions'] = $this->MkCommon->_callConditionPlant($options['conditions'], 'Ttuj');
         		$branchFlag = true;
                 break;
 
             case 'uang_jalan_payment':
-                $conditions['Ttuj.is_laka'] = array( 0, 1 );
-                $conditions['Ttuj.paid_uang_jalan'] = 0;
+                $options['conditions']['Ttuj.is_laka'] = array( 0, 1 );
+                $options['conditions']['Ttuj.paid_uang_jalan'] = 0;
 				$data_change = 'ttujID';
-        		$orders = array(
+        		$options['order'] = array(
 	                'Ttuj.created' => 'ASC',
 	                'Ttuj.id' => 'ASC',
 	            );
                 break;
             
             default:
-                $conditions['Ttuj.is_arrive'] = 0;
-        		$conditions = $this->Ttuj->_callConditionBranch( $conditions );
+                $options['conditions']['Ttuj.is_arrive'] = 0;
+        		$options['conditions'] = $this->Ttuj->_callConditionBranch( $options['conditions'] );
                 break;
         }
 
-        $this->paginate = $this->Ttuj->getData('paginate', array(
-            'conditions' => $conditions,
-            'order' => $orders,
-            'limit' => Configure::read('__Site.config_pagination'),
-        ), true, array(
+        $this->paginate = $this->Ttuj->getData('paginate', $options, true, array(
         	'branch' => $branchFlag,
         ));
         $ttujs = $this->paginate('Ttuj');
@@ -1626,25 +1428,25 @@ class AjaxController extends AppController {
 	function getInfoInvoicePaymentDetail($id = false){
 		$this->loadModel('Invoice');
 		$invoices = array();
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
 
-		$default_conditions = array(
-			'Invoice.customer_id' => $id,
-			'Invoice.complete_paid' => 0,
+		$options = array(
+			'conditions' => array(
+				'Invoice.customer_id' => $id,
+				'Invoice.complete_paid' => 0,
+			),
 		);
 
-		if(!empty($this->request->data['Invoice']['date_from']) || !empty($this->request->data['Invoice']['date_to'])){
-			if(!empty($this->request->data['Invoice']['date_from'])){
-				$default_conditions['DATE_FORMAT(Invoice.invoice_date, \'%Y-%m-%d\') >='] = $this->request->data['Invoice']['date_from'];
-			}
-			if(!empty($this->request->data['Invoice']['date_to'])){
-				$default_conditions['DATE_FORMAT(Invoice.invoice_date, \'%Y-%m-%d\') <='] = $this->request->data['Invoice']['date_to'];
-			}
-		}
+		$params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->Invoice->_callRefineParams($params, $options);
 
 		if(!empty($id)){
-			$invoices = $this->Invoice->getdata('all', array(
-				'conditions' => $default_conditions
-			));
+			$invoices = $this->Invoice->getdata('all', $options);
 
 			if(!empty($invoices)){
 				foreach ($invoices as $key => $value) {
@@ -2558,10 +2360,11 @@ class AjaxController extends AppController {
 
 	function products ( $action_type = 'sq' ) {
         $this->loadModel('Product');
-        $options =  $this->Product->_callRefineParams($this->params, array(
+
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Product->_callRefineParams($params, array(
         	'limit' => 10,
     	));
-        $this->MkCommon->_callRefineParams($this->params);
 
         switch ($action_type) {
         	case 'po':
@@ -2600,10 +2403,10 @@ class AjaxController extends AppController {
 
 	function supplier_quotations () {
         $this->loadModel('SupplierQuotation');
-        $options =  $this->SupplierQuotation->_callRefineParams($this->params, array(
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->SupplierQuotation->_callRefineParams($params, array(
         	'limit' => 10,
     	));
-        $this->MkCommon->_callRefineParams($this->params);
 
         $this->paginate = $this->SupplierQuotation->getData('paginate', $options, array(
         	'status' => 'available',

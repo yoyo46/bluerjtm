@@ -1,11 +1,13 @@
 <?php 
+        $title = !empty($title)?$title:false;
         $vendor_id = !empty($vendor_id)?$vendor_id:false;
 
-        echo $this->Form->create('Leasing', array(
+        echo $this->Form->create('Search', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'leasings',
-                'action' => 'leasings_unpaid',
-                $vendor_id,
+                'action' => 'search',
+                'leasings_unpaid',
+                'vendor_id' => $vendor_id,
             )), 
             'role' => 'form',
             'inputDefaults' => array('div' => false),
@@ -15,11 +17,11 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('date_from',array(
-                        'label'=> __('Dari Tanggal'),
-                        'class'=>'form-control custom-date',
+                    echo $this->Form->input('date',array(
+                        'label'=> __('Tanggal'),
+                        'class'=>'form-control date-range',
                         'required' => false,
-                        'placeholder' => __('Dari')
+                        'placeholder' => __('Tanggal')
                     ));
             ?>
         </div>
@@ -27,19 +29,7 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('date_to',array(
-                        'label'=> __('Sampai Tanggal'),
-                        'class'=>'form-control custom-date',
-                        'required' => false,
-                        'placeholder' => __('Sampai')
-                    ));
-            ?>
-        </div>
-    </div>
-    <div class="col-sm-6">
-        <div class="form-group">
-            <?php 
-                    echo $this->Form->input('no_doc',array(
+                    echo $this->Form->input('nodoc',array(
                         'label'=> __('No Kontrak'),
                         'class'=>'form-control',
                         'required' => false,
@@ -55,6 +45,18 @@
                 'class'=> 'btn btn-success btn-sm ajaxModal',
                 'data-parent' => true,
                 'data-action' => $data_action,
+                'title' => $title,
+            ));
+            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                'controller' => 'leasings',
+                'action' => 'leasings_unpaid',
+                $vendor_id,
+                'admin' => false,
+            ), array(
+                'escape' => false, 
+                'class'=> 'btn btn-default btn-sm ajaxModal',
+                'data-action' => $data_action,
+                'title' => $title,
             ));
     ?>
 </div>
@@ -72,6 +74,7 @@
                         echo $this->Html->tag('th', $input_all);
                 ?>
                 <th><?php echo __('No Kontrak');?></th>
+                <th><?php echo __('Tgl Kontrak');?></th>
                 <th><?php echo __('Tgl Jth Tempo');?></th>
                 <th class="text-center"><?php echo __('Pokok');?></th>
                 <th class="text-center"><?php echo __('Bunga');?></th>
@@ -85,6 +88,7 @@
                         foreach ($values as $key => $value) {
                             $id = $this->Common->filterEmptyField($value, 'Leasing', 'id');
                             $no_contract = $this->Common->filterEmptyField($value, 'Leasing', 'no_contract');
+                            $leasing_date = $this->Common->filterEmptyField($value, 'Leasing', 'paid_date');
                             $installment = $this->Common->filterEmptyField($value, 'LeasingInstallment', 'installment');
                             $installment_rate = $this->Common->filterEmptyField($value, 'Leasing', 'installment_rate');
                             $total = $installment+$installment_rate;
@@ -95,6 +99,7 @@
                             $leasing_installment_id = $this->Common->filterEmptyField($value, 'LeasingInstallment', 'id');
                             $paid_date = $this->Common->filterEmptyField($value, 'LeasingInstallment', 'paid_date');
 
+                            $customLeasingDate = $this->Common->formatDate($leasing_date, 'd/m/Y');
                             $customPaidDate = $this->Common->formatDate($paid_date, 'd/m/Y');
                             $customInstallment = $this->Common->getFormatPrice($installment);
                             $customInstallmentRate = $this->Common->getFormatPrice($installment_rate);
@@ -120,6 +125,7 @@
                             'value' => $id,
                         ));
                         echo $this->Html->tag('td', $contentTd);
+                        echo $this->Html->tag('td', $customLeasingDate);
 
                         echo $this->Html->tag('td', $customPaidDate.$this->Form->input('LeasingPaymentDetail.expired_date.'.$id, array(
                             'type' => 'hidden',
@@ -180,7 +186,7 @@
                     }
                 }else{
                     echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan'), array(
-                        'colspan' => 6,
+                        'colspan' => 7,
                         'class' => 'text-center alert alert-warning',
                     )));
                 }
@@ -194,6 +200,7 @@
                 'options' => array(
                     'data-action' => $data_action,
                     'class' => 'ajaxModal',
+                    'title' => $title,
                 ),
             ));
         }

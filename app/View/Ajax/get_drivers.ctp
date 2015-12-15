@@ -1,4 +1,5 @@
 <?php 
+        $title = !empty($title)?$title:false;
         $dataColumns = array(
             'branch' => array(
                 'name' => __('Cabang'),
@@ -59,7 +60,7 @@
                         $branch = $this->Common->filterEmptyField($value, 'City', 'name');
                         $no_id = $this->Common->filterEmptyField($value, 'Driver', 'no_id');
                         $name = $this->Common->filterEmptyField($value, 'Driver', 'name');
-                        $alias = $this->Common->filterEmptyField($value, 'Driver', 'alias', '-');
+                        $alias = $this->Common->filterEmptyField($value, 'Driver', 'alias');
                         $identity_number = $this->Common->filterEmptyField($value, 'Driver', 'identity_number');
                         $address = $this->Common->filterEmptyField($value, 'Driver', 'address');
                         $phone = $this->Common->filterEmptyField($value, 'Driver', 'phone');
@@ -90,6 +91,7 @@
             'options' => array(
                 'data-action' => $data_action,
                 'class' => 'ajaxModal',
+                'title' => $title,
             ),
         ));
 ?>

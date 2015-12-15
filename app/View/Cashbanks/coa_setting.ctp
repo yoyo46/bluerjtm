@@ -597,14 +597,3 @@
 <?php
 	echo $this->Form->end();
 ?>
-<div id="form-authorize" class="hide">
-	<?php 
-		echo $this->Form->input('CashBankAuthMaster.employe_id.', array(
-			'label' => false,
-			'empty' => __('Pilih Karyawan'),
-			'options' => $employes,
-			'class' => 'form-control cash-bank-auth-user',
-			'div' => false
-		));
-	?>
-</div>
