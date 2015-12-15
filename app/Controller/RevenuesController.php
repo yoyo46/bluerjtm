@@ -1823,7 +1823,7 @@ class RevenuesController extends AppController {
             'Ttuj.id' => $ttuj_id,
             // 'Ttuj.is_draft' => 0,
             'Ttuj.status' => 1,
-            'Ttuj.branch_id' => $allow_branch_id,
+            // 'Ttuj.branch_id' => $allow_branch_id,
         );
 
         switch ($action_type) {

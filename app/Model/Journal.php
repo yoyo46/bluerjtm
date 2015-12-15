@@ -72,13 +72,13 @@ class Journal extends AppModel {
                     $coaType = !empty($coa['Coa']['type'])?$coa['Coa']['type']:false;
                     $saldo_awal = $balance = !empty($coa['Coa']['balance'])?$coa['Coa']['balance']:false;
 
-                    if( in_array($type, array( 'debit', 'credit' )) ) {
-                        $balance = $this->_callCalcSaldo($coaType, $type, $total, $saldo_awal);
+                    // if( in_array($type, array( 'debit', 'credit' )) ) {
+                    //     $balance = $this->_callCalcSaldo($coaType, $type, $total, $saldo_awal);
 
-                        $this->Coa->id = $coa_id;
-                        $this->Coa->set('balance', $balance);
-                        $this->Coa->save();
-                    }
+                    //     $this->Coa->id = $coa_id;
+                    //     $this->Coa->set('balance', $balance);
+                    //     $this->Coa->save();
+                    // }
 
                     $data['Journal'] = array(
                         'branch_id' => Configure::read('__Site.config_branch_id'),
@@ -125,11 +125,11 @@ class Journal extends AppModel {
                         $balance -= $credit;
                     }
 
-                    if( !empty($coa_id) ) {
-                        $this->Coa->id = $coa_id;
-                        $this->Coa->set('balance', $balance);
-                        $this->Coa->save();
-                    }
+                    // if( !empty($coa_id) ) {
+                    //     $this->Coa->id = $coa_id;
+                    //     $this->Coa->set('balance', $balance);
+                    //     $this->Coa->save();
+                    // }
 
                     $this->updateAll(
                         array(

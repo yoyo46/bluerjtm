@@ -8,11 +8,9 @@
                 'style' => 'text-align: center',
                 'display' => true,
             ),
-            'no_ttuj' => array(
+            'nottuj' => array(
                 'name' => __('No TTUJ'),
-                'field_model' => 'Ttuj.no_ttuj',
                 'style' => 'text-align: center',
-                'display' => true,
             ),
             'nopol' => array(
                 'name' => __('Nopol'),
@@ -37,6 +35,10 @@
                 'field_model' => 'Ttuj.to_city_name',
                 'style' => 'text-align: center',
                 'display' => true,
+            ),
+            'note' => array(
+                'name' => __('Keterangan Muat'),
+                'style' => 'text-align: center',
             ),
             'unit' => array(
                 'name' => __('Unit'),
@@ -68,6 +70,7 @@
 
         if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
             $tdStyle = '';
+            $tableStyle = '';
             $border = 0;
 
             if( $data_action == 'excel' ) {
@@ -75,10 +78,11 @@
                 header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
                 $border = 1;
                 $tdStyle = 'text-align: center;';
+                $tableStyle = 'width: 100%;';
             } else {
                 $this->Html->addCrumb($sub_module_title);
                 echo $this->element('blocks/trucks/search_daily_report');
-        }
+            }
 ?>
 <section class="content invoice">
     <h2 class="page-header">
@@ -101,7 +105,7 @@
             }
     ?>
     <div class="table-responsive center-table">
-        <table class="table table-bordered sorting" border="<?php echo $border; ?>">
+        <table class="table table-bordered sorting" border="<?php echo $border; ?>" style="<?php echo $tableStyle; ?>">
             <thead>
                 <tr>
                     <?php

@@ -14,6 +14,7 @@
                 $from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
                 $to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
                 $total_unit = $this->Common->filterEmptyField($value, 'Ttuj', 'total_unit', '-');
+                $note = $this->Common->filterEmptyField($value, 'Ttuj', 'note');
                 // $uang_jalan_2 = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_2', 0);
                 // $uang_jalan = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_1', 0) + $uang_jalan_2;
                 $uang_jalan = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_1', 0);
@@ -25,13 +26,11 @@
                 $grandtotal_total_uang_jalan += $total_uang_jalan;
                 $grandtotal_unit += $total_unit;
 
-                $content = $this->Common->_getDataColumn($this->Common->customDate($ttuj_date), 'Ttuj', 'ttuj_date', array(
+                $content = $this->Common->_getDataColumn($this->Common->customDate($ttuj_date, 'd M Y'), 'Ttuj', 'ttuj_date', array(
                     'style' => 'text-align: center;',
                     'class' => 'ttuj_date',
                 ));
-                $content .= $this->Common->_getDataColumn($no_ttuj, 'Ttuj', 'no_ttuj', array(
-                    'class' => 'no_ttuj',
-                ));
+                $content .= $this->Html->tag('td', $no_ttuj);
                 $content .= $this->Common->_getDataColumn($nopol, 'Ttuj', 'nopol', array(
                     'class' => 'nopol',
                 ));
@@ -44,6 +43,7 @@
                 $content .= $this->Common->_getDataColumn($to_city, 'Ttuj', 'to_city_name', array(
                     'class' => 'to_city',
                 ));
+                $content .= $this->Html->tag('td', $note);
                 $content .= $this->Common->_getDataColumn($total_unit, 'Ttuj', 'total_unit', array(
                     'class' => 'unit',
                     'style' => 'text-align: center;',
@@ -69,7 +69,7 @@
 
             $content = $this->Html->tag('td', __('Total'), array(
                 'style' => 'text-align: right;',
-                'colspan' => 6,
+                'colspan' => 7,
             ));
             $content .= $this->Html->tag('td', $grandtotal_unit, array(
                 'style' => 'text-align: center;',
