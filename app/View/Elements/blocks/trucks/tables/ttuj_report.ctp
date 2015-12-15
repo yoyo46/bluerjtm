@@ -8,7 +8,10 @@
             $grandtotal = 0;
 
             $grandtotal_uang_jalan = 0;
+            $grandtotal_uang_jalan_2 = 0;
             $grandtotal_uang_jalan_extra = 0;
+            $grandtotal_commission = 0;
+            $grandtotal_commission_extra = 0;
 
             $grandtotal_unit = 0;
 
@@ -31,11 +34,17 @@
                 $total = $uang_kuli_muat + $uang_kuli_bongkar + $asdp + $uang_kawal + $uang_keamanan;
 
                 $uang_jalan = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_1', 0);
+                $uang_jalan_2 = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_2', 0);
                 $uang_jalan_extra = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_extra', 0);
-                $total += $uang_jalan + $uang_jalan_extra;
+                $commission = $this->Common->filterEmptyField($value, 'Ttuj', 'commission', 0);
+                $commission_extra = $this->Common->filterEmptyField($value, 'Ttuj', 'commission_extra', 0);
+                $total += $uang_jalan + $uang_jalan_extra + $uang_jalan_2 + $commission + $commission_extra;
 
                 $grandtotal_uang_jalan += $uang_jalan;
                 $grandtotal_uang_jalan_extra += $uang_jalan_extra;
+                $grandtotal_uang_jalan_2 += $uang_jalan_2;
+                $grandtotal_commission += $commission;
+                $grandtotal_commission_extra += $commission_extra;
 
                 $grandtotal_uang_kuli_muat += $uang_kuli_muat;
                 $grandtotal_uang_kuli_bongkar += $uang_kuli_bongkar;
@@ -76,8 +85,23 @@
                     'style' => 'text-align: right;',
                     'data-currency' => true,
                 ));
+                $content .= $this->Common->_getDataColumn($uang_jalan_2, 'Ttuj', 'uang_jalan_2', array(
+                    'class' => 'uang_jalan_2',
+                    'style' => 'text-align: right;',
+                    'data-currency' => true,
+                ));
                 $content .= $this->Common->_getDataColumn($uang_jalan_extra, 'Ttuj', 'uang_jalan_extra', array(
                     'class' => 'uang_jalan_extra',
+                    'style' => 'text-align: right;',
+                    'data-currency' => true,
+                ));
+                $content .= $this->Common->_getDataColumn($commission, 'Ttuj', 'commission', array(
+                    'class' => 'commission',
+                    'style' => 'text-align: right;',
+                    'data-currency' => true,
+                ));
+                $content .= $this->Common->_getDataColumn($commission_extra, 'Ttuj', 'commission_extra', array(
+                    'class' => 'commission_extra',
                     'style' => 'text-align: right;',
                     'data-currency' => true,
                 ));
@@ -125,7 +149,16 @@
             $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_jalan), array(
                 'style' => 'text-align: right;',
             ));
+            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_jalan_2), array(
+                'style' => 'text-align: right;',
+            ));
             $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_jalan_extra), array(
+                'style' => 'text-align: right;',
+            ));
+            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_commission), array(
+                'style' => 'text-align: right;',
+            ));
+            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_commission_extra), array(
                 'style' => 'text-align: right;',
             ));
             $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_kuli_muat), array(

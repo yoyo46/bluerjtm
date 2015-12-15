@@ -51,13 +51,31 @@
                 'display' => true,
             ),
             'uang_jalan' => array(
-                'name' => __('Uang Jalan'),
+                'name' => __('Uang Jalan 1'),
+                'field_model' => false,
+                'style' => 'text-align: center',
+                'display' => true,
+            ),
+            'uang_jalan_2' => array(
+                'name' => __('Uang Jalan 2'),
                 'field_model' => false,
                 'style' => 'text-align: center',
                 'display' => true,
             ),
             'uang_jalan_extra' => array(
                 'name' => __('Uang Jalan Extra'),
+                'field_model' => false,
+                'style' => 'text-align: center',
+                'display' => true,
+            ),
+            'commission' => array(
+                'name' => __('Komisi'),
+                'field_model' => false,
+                'style' => 'text-align: center',
+                'display' => true,
+            ),
+            'commission_extra' => array(
+                'name' => __('Komisi Extra'),
                 'field_model' => false,
                 'style' => 'text-align: center',
                 'display' => true,
