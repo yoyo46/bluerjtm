@@ -15,7 +15,7 @@
                 header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
                 $border = 1;
                 $tdStyle = 'text-align: center;';
-            }
+            } else {
 ?>
 <div class="box box-primary">
     <div class="box-header">
@@ -85,6 +85,9 @@
         ?>
     </div>
 </div>
+<?php 
+        }
+?>
 <section class="content invoice">
     <?php 
             if( $data_action != 'excel' ) {

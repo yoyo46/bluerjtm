@@ -107,6 +107,12 @@
             echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
                 'style' => 'font-size: 14px;font-style: italic;margin-top: 10px;'
             ));
+
+            if( $data_action != 'excel' ) {
+                echo $this->Html->tag('div', $this->element('pagination'), array(
+                    'class' => 'pagination-report'
+                ));
+            }
     ?>
 </section>
 <?php

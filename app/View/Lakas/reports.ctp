@@ -240,6 +240,9 @@
             ));
             
             if( $data_action != 'excel' ) {
+                echo $this->Html->tag('div', $this->element('pagination'), array(
+                    'class' => 'pagination-report'
+                ));
     ?>
 </div>
 <?php 

@@ -22,6 +22,9 @@ class LkusController extends AppController {
             $refine = $this->RjLku->processRefine($data);
             $params = $this->RjLku->generateSearchURL($refine);
             $params = $this->MkCommon->getRefineGroupBranch($params, $data);
+            $result = $this->MkCommon->processFilter($data);
+
+            $params = array_merge($params, $result);
             $params['action'] = $index;
 
             if( !empty($parameter) ) {
@@ -2491,8 +2494,7 @@ class LkusController extends AppController {
 
             $conditions['DATE_FORMAT('.$modelName.'.tgl_'.$type.', \'%Y-%m-%d\') >='] = $dateFrom;
             $conditions['DATE_FORMAT('.$modelName.'.tgl_'.$type.', \'%Y-%m-%d\') <='] = $dateTo;
-
-            $datas = $this->$modelName->getData('all', array(
+            $options = array(
                 'conditions' => $conditions,
                 'order' => array(
                     $modelName.'.created' => 'ASC', 
@@ -2500,9 +2502,19 @@ class LkusController extends AppController {
                 'contain' => array(
                     'Ttuj',
                 ),
-            ), true, array(
-                'status' => 'all',
-            ));
+            );
+
+            if( !empty($data_action) ) {
+                $datas = $this->$modelName->getData('all', $options, true, array(
+                    'status' => 'all',
+                ));
+            } else {
+                $options['limit'] = Configure::read('__Site.config_pagination');
+                $this->paginate = $this->$modelName->getData('paginate', $options, true, array(
+                    'status' => 'all',
+                ));
+                $datas = $this->paginate($modelName);
+            }
 
             if( !empty($datas) ) {
                 foreach ($datas as $key => $value) {

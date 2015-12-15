@@ -572,12 +572,23 @@ class LakasController extends AppController {
         $conditions['DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') >='] = $dateFrom;
         $conditions['DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') <='] = $dateTo;
 
-        $lakas = $this->Laka->getData('all', array(
-            'conditions' => $conditions,
-            'order' => array(
-                'Laka.created' => 'ASC', 
-            ),
-        ));
+        if( !empty($data_action) ) {
+            $lakas = $this->Laka->getData('all', array(
+                'conditions' => $conditions,
+                'order' => array(
+                    'Laka.created' => 'ASC', 
+                ),
+            ));
+        } else {
+            $this->paginate = $this->Laka->getData('paginate', array(
+                'conditions' => $conditions,
+                'order' => array(
+                    'Laka.created' => 'ASC', 
+                ),
+                'limit' => Configure::read('__Site.config_pagination'),
+            ));
+            $lakas = $this->paginate('Laka');
+        }
 
         if( !empty($lakas) ) {
             $this->loadModel('LakaInsurance');

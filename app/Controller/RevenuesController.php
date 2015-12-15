@@ -2289,17 +2289,6 @@ class RevenuesController extends AppController {
             ),
         ));
         $conditions['TruckCustomer.customer_id'] = $customer_id;
-        $options = $this->TruckCustomer->getData('paginate', array(
-            'conditions' => $conditions,
-            'order' => array(
-                'CustomerNoType.order_sort' => 'ASC', 
-                'Truck.nopol' => 'ASC', 
-            ),
-            'contain' => array(
-                'Truck',
-                'CustomerNoType',
-            ),
-        ));
         $defaultConditionsTtuj = array(
             'OR' => array(
                 array(
@@ -2314,14 +2303,26 @@ class RevenuesController extends AppController {
                 ),
             ),
         );
+        $options = array(
+            'conditions' => $conditions,
+            'order' => array(
+                'CustomerNoType.order_sort' => 'ASC', 
+                'Truck.nopol' => 'ASC', 
+            ),
+            'contain' => array(
+                'Truck',
+                'CustomerNoType',
+            ),
+        );
 
         if( !empty($data_action) ) {
-            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+            $trucks = $this->TruckCustomer->getData('all', $options);
         } else {
             $options['limit'] = 20;
+            $options = $this->TruckCustomer->getData('paginate', $options);
+            $this->paginate = $options;
+            $trucks = $this->paginate('TruckCustomer');
         }
-        $this->paginate = $options;
-        $trucks = $this->paginate('TruckCustomer');
 
         if( !empty($trucks) ) {
             foreach ($trucks as $key => $truck) {
@@ -5464,13 +5465,12 @@ class RevenuesController extends AppController {
         );
 
         if( !empty($data_action) ) {
-            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+            $invoices = $this->Invoice->find('all', $options);
         } else {
-            $options['limit'] = $limit;
+            $options['limit'] = Configure::read('__Site.config_pagination');
+            $this->paginate = $options;
+            $invoices = $this->paginate('Invoice');
         }
-
-        $this->paginate = $options;
-        $invoices = $this->paginate('Invoice');
 
         $dataStatus['InvoiceUnpaid'] = $this->Invoice->getData('count', array(
             'conditions' => $invoiceUnpaidOption,
@@ -6238,21 +6238,25 @@ class RevenuesController extends AppController {
             'plant' => false,
         ));
 
-        $options = $this->Customer->getData('paginate', array(
+        $options =  array(
             'conditions' => $conditionsCustomer,
-        ), true, array(
-            'branch' => false,
-            'plant' => false,
-        ));
+        );
 
         if( !empty($data_action) ) {
-            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+            $customers = $this->Customer->getData('all', $options, true, array(
+                'branch' => false,
+                'plant' => false,
+            ));
         } else {
             $options['limit'] = 20;
+            $options = $this->Customer->getData('paginate', $options, true, array(
+                'branch' => false,
+                'plant' => false,
+            ));
+            $this->paginate = $options;
+            $customers = $this->paginate('Customer');
         }
 
-        $this->paginate = $options;
-        $customers = $this->paginate('Customer');
         $avgYear = $fromYear - 1;
 
         if( !empty($customers) ) {

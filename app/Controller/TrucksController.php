@@ -3171,25 +3171,27 @@ class TrucksController extends AppController {
             )
         ), false);
 
-        $options = $this->Truck->getData('paginate', array(
+        $options = array(
             'conditions' => $defaul_condition,
             'contain' => array(
                 'TruckCategory',
                 'TruckCustomer',
                 'CustomerNoType',
             ),
-        ), true, array(
-            'branch' => false,
-        ));
+        );
 
         if( !empty($data_action) ) {
-            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+            $trucks = $this->Truck->getData('all', $options, true, array(
+                'branch' => false,
+            ));
         } else {
             $options['limit'] = 20;
+            $options = $this->Truck->getData('paginate', $options, true, array(
+                'branch' => false,
+            ));
+            $this->paginate = $options;
+            $trucks = $this->paginate('Truck');
         }
-
-        $this->paginate = $options;
-        $trucks = $this->paginate('Truck');
 
         if( !empty($trucks) ) {
             foreach ($trucks as $key => $truck) {
@@ -3371,20 +3373,22 @@ class TrucksController extends AppController {
             $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Customer', $conditions, 'conditions' );
         }
         
-        $options = $this->Customer->getData('paginate', array(
+        $options = array(
             'conditions' => $conditions,
-        ), true, array(
-            'branch' => false,
-        ));
+        );
 
         if( !empty($data_action) ) {
-            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+            $customers = $this->Customer->getData('all', $options, true, array(
+                'branch' => false,
+            ));
         } else {
             $options['limit'] = 50;
+            $options = $this->Customer->getData('paginate', $options, true, array(
+                'branch' => false,
+            ));
+            $this->paginate = $options;
+            $customers = $this->paginate('Customer');
         }
-
-        $this->paginate = $options;
-        $customers = $this->paginate('Customer');
 
         $capacities = $this->Truck->getData('list', array(
             'conditions' => array(
@@ -3718,14 +3722,16 @@ class TrucksController extends AppController {
         );
 
         if( !empty($data_action) ) {
-            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+            $customers = $this->Customer->getData('all', $options, true, array(
+                'branch' => false,
+            ));
         } else {
-            $options['limit'] = 20;
+            $options['limit'] = 50;
+            $this->paginate = $this->Customer->getData('paginate', $options, true, array(
+                'branch' => false,
+            ));
+            $customers = $this->paginate('Customer');
         }
-
-        $customers = $this->Customer->getData('all', $options, true, array(
-            'branch' => false,
-        ));
 
         if( !empty($customers) ) {
             foreach ($customers as $key => $value) {
@@ -3963,19 +3969,26 @@ class TrucksController extends AppController {
             )
         ), false);
 
-        $this->paginate = $this->Truck->getData('paginate', array(
+        $options = array(
             'conditions' => $conditions,
             'contain' => array(
                 'TruckCustomer' => array(
                     'CustomerNoType'
                 )
             ),
-            'limit' => 10
-        ), true, array(
-            'branch' => false,
-        ));
+        );
 
-        $trucks = $this->paginate('Truck');
+        if( !empty($data_action) ) {
+            $trucks = $this->Truck->getData('all', $options, true, array(
+                'branch' => false,
+            ));
+        } else {
+            $options['limit'] = Configure::read('__Site.config_pagination');
+            $this->paginate = $this->Truck->getData('paginate', $options, true, array(
+                'branch' => false,
+            ));
+            $trucks = $this->paginate('Truck');
+        }
 
         if( !empty($trucks) ) {
             foreach ($trucks as $key => $value) {

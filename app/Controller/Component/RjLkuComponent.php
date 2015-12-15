@@ -23,6 +23,9 @@ class RjLkuComponent extends Component {
 				if( !empty($refine['Lku']['to_date']) ) {
 					$refine_conditions['Lku']['to'] = $this->MkCommon->getDate($refine['Lku']['to_date']);
 				}
+				if( !empty($refine['Lku']['date']) ) {
+					$refine_conditions['Lku']['date'] = urlencode($refine['Lku']['date']);
+				}
 				if( !empty($refine['Lku']['no_ttuj']) ) {
 					$refine_conditions['Lku']['no_ttuj'] = $refine['Lku']['no_ttuj'];
 				}
