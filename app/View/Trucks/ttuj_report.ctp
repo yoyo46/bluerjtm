@@ -50,6 +50,18 @@
                 'style' => 'text-align: center',
                 'display' => true,
             ),
+            'uang_jalan' => array(
+                'name' => __('Uang Jalan'),
+                'field_model' => false,
+                'style' => 'text-align: center',
+                'display' => true,
+            ),
+            'uang_jalan_extra' => array(
+                'name' => __('Uang Jalan Extra'),
+                'field_model' => false,
+                'style' => 'text-align: center',
+                'display' => true,
+            ),
             'uang_kuli_muat' => array(
                 'name' => __('Uang Kuli Muat'),
                 'field_model' => false,

@@ -6,6 +6,10 @@
             $grandtotal_uang_kawal = 0;
             $grandtotal_uang_keamanan = 0;
             $grandtotal = 0;
+
+            $grandtotal_uang_jalan = 0;
+            $grandtotal_uang_jalan_extra = 0;
+
             $grandtotal_unit = 0;
 
             foreach ($ttujs as $key => $value) {
@@ -25,6 +29,13 @@
                 $uang_kawal = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_kawal', 0);
                 $uang_keamanan = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_keamanan', 0);
                 $total = $uang_kuli_muat + $uang_kuli_bongkar + $asdp + $uang_kawal + $uang_keamanan;
+
+                $uang_jalan = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_1', 0);
+                $uang_jalan_extra = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_extra', 0);
+                $total += $uang_jalan + $uang_jalan_extra;
+
+                $grandtotal_uang_jalan += $uang_jalan;
+                $grandtotal_uang_jalan_extra += $uang_jalan_extra;
 
                 $grandtotal_uang_kuli_muat += $uang_kuli_muat;
                 $grandtotal_uang_kuli_bongkar += $uang_kuli_bongkar;
@@ -59,6 +70,16 @@
                 $content .= $this->Common->_getDataColumn($total_unit, 'Ttuj', 'total_unit', array(
                     'class' => 'unit',
                     'style' => 'text-align: center;',
+                ));
+                $content .= $this->Common->_getDataColumn($uang_jalan, 'Ttuj', 'uang_jalan', array(
+                    'class' => 'uang_jalan',
+                    'style' => 'text-align: right;',
+                    'data-currency' => true,
+                ));
+                $content .= $this->Common->_getDataColumn($uang_jalan_extra, 'Ttuj', 'uang_jalan_extra', array(
+                    'class' => 'uang_jalan_extra',
+                    'style' => 'text-align: right;',
+                    'data-currency' => true,
                 ));
                 $content .= $this->Common->_getDataColumn($uang_kuli_muat, 'Ttuj', 'uang_kuli_muat', array(
                     'class' => 'uang_kuli_muat',
@@ -100,6 +121,12 @@
             ));
             $content .= $this->Html->tag('td', $grandtotal_unit, array(
                 'style' => 'text-align: center;',
+            ));
+            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_jalan), array(
+                'style' => 'text-align: right;',
+            ));
+            $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_jalan_extra), array(
+                'style' => 'text-align: right;',
             ));
             $content .= $this->Html->tag('td', $this->Common->getCurrencyPrice($grandtotal_uang_kuli_muat), array(
                 'style' => 'text-align: right;',

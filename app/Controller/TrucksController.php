@@ -5256,18 +5256,19 @@ class TrucksController extends AppController {
             $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $options );
         }
 
-        $options = $this->Ttuj->getData('paginate', $options, true, array(
-            'branch' => false,
-        ));
-
         if( !empty($data_action) ) {
-            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+            $ttujs = $this->Ttuj->getData('all', $options, true, array(
+                'branch' => false,
+            ));
         } else {
             $options['limit'] = 20;
+            $options = $this->Ttuj->getData('paginate', $options, true, array(
+                'branch' => false,
+            ));
+            $this->paginate = $options;
+            $ttujs = $this->paginate('Ttuj');
         }
-
-        $this->paginate = $options;
-        $ttujs = $this->paginate('Ttuj');
+        
         $allow_branch = array();
 
         if( !empty($ttujs) ) {
