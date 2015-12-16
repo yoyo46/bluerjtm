@@ -4108,10 +4108,17 @@ class RevenuesController extends AppController {
 
     function doInvoice($action, $id = false, $data_local = false){
         $this->loadModel('Revenue');
-        $this->loadModel('Customer');
         $this->loadModel('Bank');
 
+        $elementRevenue = false;
         $customer_name_code = false;
+        $head_office = Configure::read('__Site.config_branch_head_office');
+
+        if( !empty($head_office) ) {
+            $elementRevenue = array(
+                'branch' => false,
+            );
+        }
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -4131,7 +4138,7 @@ class RevenuesController extends AppController {
             $data['Invoice']['invoice_date'] = $invoice_date = $this->MkCommon->getDate($data['Invoice']['invoice_date']);
             $data['Invoice']['branch_id'] = Configure::read('__Site.config_branch_id');
 
-            $customer = $this->Customer->getData('first', array(
+            $customer = $this->Ttuj->Customer->getData('first', array(
                 'conditions' => array(
                     'Customer.id' => $customer_id
                 )
@@ -4140,7 +4147,7 @@ class RevenuesController extends AppController {
             if( !empty($customer) ) {
                 $customer_name_code = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_name_code');
                 $customer_group_id = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_group_id');
-                $customer = $this->Customer->CustomerGroup->CustomerGroupPattern->getMerge($customer, $customer_group_id);
+                $customer = $this->Ttuj->Customer->CustomerGroup->CustomerGroupPattern->getMerge($customer, $customer_group_id);
 
                 $data['Invoice']['billing_id'] = $customer['Customer']['billing_id'];
                 $data['Invoice']['term_of_payment'] = $customer['Customer']['term_of_payment'];
@@ -4170,7 +4177,7 @@ class RevenuesController extends AppController {
                             'order' => array(
                                 'RevenueDetail.price_unit' => 'DESC'
                             )
-                        ));
+                        ), $elementRevenue);
                         $result = array();
 
                         if(!empty($revenue_detail)){
@@ -4256,9 +4263,9 @@ class RevenuesController extends AppController {
                         // if( !empty($customer['CustomerPattern']) ) {
                         //     $last_number = str_replace($customer['CustomerPattern']['pattern'], '', $data['Invoice']['no_invoice']);
                         //     $last_number = intval($last_number)+1;
-                        //     $this->Customer->CustomerPattern->set('last_number', $last_number);
-                        //     $this->Customer->CustomerPattern->id = $customer['CustomerPattern']['id'];
-                        //     $this->Customer->CustomerPattern->save();
+                        //     $this->Ttuj->Customer->CustomerPattern->set('last_number', $last_number);
+                        //     $this->Ttuj->Customer->CustomerPattern->id = $customer['CustomerPattern']['id'];
+                        //     $this->Ttuj->Customer->CustomerPattern->save();
                         // }
 
                         $this->params['old_data'] = $data_local;
@@ -4309,12 +4316,12 @@ class RevenuesController extends AppController {
             'group' => array(
                 'Revenue.customer_id'
             ),
-        ));
+        ), true, $elementRevenue);
         $customers = array();
 
         if( !empty($revenues) ) {
             foreach ($revenues as $key => $revenue) {
-                $revenueCustomer = $this->Customer->getData('first', array(
+                $revenueCustomer = $this->Ttuj->Customer->getData('first', array(
                     'conditions' => array(
                         'Customer.id' => $revenue['Revenue']['customer_id'],
                     ),
@@ -4359,11 +4366,9 @@ class RevenuesController extends AppController {
         ));
 
         if(!empty($invoice)){
-            $this->loadModel('Customer');
             $this->loadModel('Bank');
-            $this->loadModel('Revenue');
 
-            $invoice = $this->Customer->getMerge($invoice, $invoice['Invoice']['customer_id']);
+            $invoice = $this->Invoice->Customer->getMerge($invoice, $invoice['Invoice']['customer_id']);
             $invoice = $this->User->getMerge($invoice, $invoice['Invoice']['billing_id']);
             $invoice = $this->Bank->getMerge($invoice, $invoice['Invoice']['bank_id']);
             $revenueDetailId = Set::extract('/InvoiceDetail/revenue_detail_id', $invoice);
@@ -4373,10 +4378,10 @@ class RevenuesController extends AppController {
                 $setting = $this->Setting->find('first');
                 $billing_id = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'billing_id');
 
-                $invoice = $this->Revenue->RevenueDetail->getSumUnit($invoice, $invoice['Invoice']['id']);
+                $invoice = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getSumUnit($invoice, $invoice['Invoice']['id']);
                 $invoice = $this->User->getMerge($invoice, $billing_id);
             } else {
-                $revenue_detail = $this->Revenue->RevenueDetail->getPreviewInvoice($invoice['Invoice']['id'], $invoice['Invoice']['tarif_type'], $action_print, $data_print, $revenueDetailId);
+                $revenue_detail = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getPreviewInvoice($invoice['Invoice']['id'], $invoice['Invoice']['tarif_type'], $action_print, $data_print, $revenueDetailId);
             }
 
             $action = $invoice['Invoice']['type_invoice'];
@@ -6556,10 +6561,8 @@ class RevenuesController extends AppController {
 
     function invoice_hso_print($id, $action_print = false){
         $this->loadModel('Invoice');
-        $this->loadModel('Revenue');
         $this->loadModel('GroupMotor');
         $this->loadModel('City');
-        $this->loadModel('Customer');
 
         $module_title = __('Print Invoice HSO');
         $this->set('sub_module_title', trim($module_title));
@@ -6584,7 +6587,7 @@ class RevenuesController extends AppController {
         ));
 
         if(!empty($invoice)){
-            $invoice = $this->Customer->getMerge($invoice, $invoice['Invoice']['customer_id']);
+            $invoice = $this->Invoice->Customer->getMerge($invoice, $invoice['Invoice']['customer_id']);
 
             switch ($data_print) {
                 case 'header':
@@ -6592,12 +6595,12 @@ class RevenuesController extends AppController {
 
                     if( !empty($invoice['InvoiceDetail']) ) {
                         $revenue_id = Set::extract('/InvoiceDetail/revenue_id', $invoice['InvoiceDetail']);
-                        $invoice = $this->Revenue->getMerge($invoice, $id, $revenue_id, 'all');
+                        $invoice = $this->Invoice->InvoiceDetail->Revenue->getMerge($invoice, $id, $revenue_id, 'all');
 
                         if( !empty($invoice['Revenue']) ) {
                             foreach ($invoice['Revenue'] as $key => $revenue) {
-                                $revenue = $this->Revenue->RevenueDetail->getSumUnit($revenue, $id, 'revenue');
-                                $revenue = $this->Revenue->RevenueDetail->getSumUnit($revenue, $id, 'revenue_price');
+                                $revenue = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getSumUnit($revenue, $id, 'revenue');
+                                $revenue = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getSumUnit($revenue, $id, 'revenue_price');
                                 $invoice['Revenue'][$key] = $revenue;
                             }
                         }
@@ -6605,7 +6608,7 @@ class RevenuesController extends AppController {
                     break;
 
                 default:
-                    $revenue_detail = $this->Revenue->RevenueDetail->getPreviewInvoice($invoice['Invoice']['id'], $invoice['Invoice']['tarif_type'], $action_print, $data_print);
+                    $revenue_detail = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getPreviewInvoice($invoice['Invoice']['id'], $invoice['Invoice']['tarif_type'], $action_print, $data_print);
                     break;
             }
 

@@ -813,6 +813,7 @@ class AjaxController extends AppController {
 		$this->loadModel('Bank');
 		$this->loadModel('Customer');
 
+        $head_office = Configure::read('__Site.config_branch_head_office');
 		$conditions = array(
 			'Revenue.customer_id' => $customer_id,
 			'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
@@ -826,9 +827,17 @@ class AjaxController extends AppController {
             'status' => 'all',
         ));
 
+        $elementRevenue = false;
         $conditionsDetail = $conditions;
         $conditionsDetail['RevenueDetail.invoice_id'] = NULL;
         $conditionsDetail['RevenueDetail.tarif_angkutan_type'] = $tarif_type;
+
+        if( !empty($head_office) ) {
+        	$elementRevenue = array(
+                'branch' => false,
+            );
+        }
+
 		$revenueDetail = $this->Revenue->RevenueDetail->getData('first', array(
 			'conditions' => $conditionsDetail,
 			'order' => array(
@@ -843,14 +852,14 @@ class AjaxController extends AppController {
 			'group' => array(
 				'Revenue.customer_id'
 			),
-		));
+		), $elementRevenue);
 		$revenueId = $this->Revenue->RevenueDetail->getData('list', array(
 			'conditions' => $conditionsDetail,
 			'fields' => array(
 				'RevenueDetail.revenue_id',
 				'RevenueDetail.revenue_id',
 			),
-		));
+		), $elementRevenue);
         $conditions['Revenue.id'] = $revenueId;
         $conditions['Revenue.revenue_tarif_type'] = 'per_truck';
 		$revenue = $this->Revenue->getData('first', array(
@@ -862,7 +871,7 @@ class AjaxController extends AppController {
 			'group' => array(
 				'Revenue.customer_id'
 			),
-		));
+		), true, $elementRevenue);
         $banks = $this->Bank->getData('list', array(
             'conditions' => array(
                 'Bank.status' => 1,
@@ -937,14 +946,19 @@ class AjaxController extends AppController {
 
 	function previewInvoice($customer_id = false, $invoice_type = 'angkut', $action = false){
 		$this->loadModel('Revenue');
-		$this->loadModel('TipeMotor');
-		$this->loadModel('City');
-		$this->loadModel('TarifAngkutan');
-		$this->loadModel('Ttuj');
+
+        $head_office = Configure::read('__Site.config_branch_head_office');
+        $elementRevenue = false;
 		$conditions = array(
 			'Revenue.customer_id' => $customer_id,
 			'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
 		);
+
+        if( !empty($head_office) ) {
+            $elementRevenue = array(
+                'branch' => false,
+            );
+        }
 
 		$revenue_id = $this->Revenue->getData('list', array(
 			'conditions' => $conditions,
@@ -954,7 +968,7 @@ class AjaxController extends AppController {
 			'fields' => array(
 				'Revenue.id', 'Revenue.id',
 			),
-		));
+		), true, $elementRevenue);
 		$totalPPN = $this->Revenue->getData('first', array(
 			'conditions' => $conditions,
 			'group' => array(
@@ -963,7 +977,7 @@ class AjaxController extends AppController {
 			'fields' => array(
 				'SUM(total_without_tax * (ppn / 100)) ppn',
 			),
-		));
+		), true, $elementRevenue);
 		$totalPPh = $this->Revenue->getData('first', array(
 			'conditions' => $conditions,
 			'group' => array(
@@ -972,7 +986,7 @@ class AjaxController extends AppController {
 			'fields' => array(
 				'SUM(total_without_tax * (pph / 100)) pph',
 			),
-		));
+		), true, $elementRevenue);
 
 		if(!empty($revenue_id)){
             $revenue_detail = $this->Revenue->RevenueDetail->getPreviewInvoice($revenue_id, $invoice_type, $action);
@@ -1005,7 +1019,7 @@ class AjaxController extends AppController {
         switch ($action_type) {
         	case 'pengganti':
         		$options['conditions'] = $this->Driver->getListDriverPenganti($id, true);
-        		$options['conditions']['contain'][] = 'Ttuj';
+        		$options['contain'][] = 'Ttuj';
         		break;
         	
         	default:

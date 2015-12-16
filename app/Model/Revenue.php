@@ -157,6 +157,8 @@ class Revenue extends AppModel {
                                 ),
                             ),
                         ),
+                    ), true, array(
+                        'branch' => false,
                     ));
 
                     if( !empty($data_merge) ) {
@@ -180,6 +182,7 @@ class Revenue extends AppModel {
                         ),
                     ), true, array(
                         'status' => 'all',
+                        'branch' => false,
                     ));
 
                     if(!empty($data_merge)){
@@ -367,16 +370,35 @@ class Revenue extends AppModel {
 
     function getProsesInvoice ( $customer_id, $invoice_id, $action, $tarif_type, $data = false ) {
         $revenueId = array();
+        $head_office = Configure::read('__Site.config_branch_head_office');
+        $elementRevenue = false;
+
+        if( !empty($head_office) ) {
+            $elementRevenue = array(
+                'branch' => false,
+            );
+        }
 
         switch ($action) {
             case 'tarif':
                 if( !empty($data) ) {
                     foreach ($data as $key => $value_detail) {
                         if( !empty($value_detail['RevenueDetail']['id']) ) {
-                            $this->RevenueDetail->id = $value_detail['RevenueDetail']['id'];
+                            $revenue_id = !empty($value_detail['Revenue']['id'])?$value_detail['Revenue']['id']:false;
+                            $revenue_detail_id = !empty($value_detail['RevenueDetail']['id'])?$value_detail['RevenueDetail']['id']:false;
+                            
+                            $this->InvoiceDetail->create();
+                            $this->InvoiceDetail->set(array(
+                                'invoice_id' => $invoice_id,
+                                'revenue_id' => $revenue_id,
+                                'revenue_detail_id' => $revenue_detail_id,
+                            ));
+                            $this->InvoiceDetail->save();
+
+                            $this->RevenueDetail->id = $revenue_detail_id;
                             $this->RevenueDetail->set('invoice_id', $invoice_id);
                             $this->RevenueDetail->save();
-                            $revenueId[] = !empty($value_detail['Revenue']['id'])?$value_detail['Revenue']['id']:false;
+                            $revenueId[] = $revenue_id;
                         }
                     }
                 }
@@ -396,7 +418,7 @@ class Revenue extends AppModel {
                     'fields' => array(
                         'RevenueDetail.id', 'Revenue.id'
                     ),
-                ));
+                ), $elementRevenue);
 
                 if(!empty($revenueDetails)){
                     foreach ($revenueDetails as $revenue_detail_id => $revenue_id) {
@@ -426,7 +448,7 @@ class Revenue extends AppModel {
                         'RevenueDetail.revenue_id' => $revenue_id,
                         'RevenueDetail.invoice_id' => NULL,
                     ),
-                ));
+                ), $elementRevenue);
 
                 $this->id = $revenue_id;
 

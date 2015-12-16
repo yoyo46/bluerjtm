@@ -142,7 +142,7 @@
 				));
 			}else{
 				$colom = $this->Html->tag('td', __('Data tidak ditemukan.'), array(
-					'colspan' => $totalMerge,
+					'colspan' => 11,
 				));
 
 				echo $this->Html->tag('tr', $colom);

@@ -65,11 +65,10 @@ class RevenueDetail extends AppModel {
 
 	function getData( $find, $options = false, $elements = array(), $is_merge = true ){
         $active = isset($elements['active'])?$elements['active']:true;
+        $branch = isset($elements['branch'])?$elements['branch']:true;
 
         $default_options = array(
-            'conditions'=> array(
-                'Revenue.branch_id' => Configure::read('__Site.config_branch_id'),
-            ),
+            'conditions'=> array(),
             'order'=> array(),
             'group'=> array(),
             'contain' => array(
@@ -77,6 +76,9 @@ class RevenueDetail extends AppModel {
             ),
             'fields' => array(),
         );
+        if( !empty($branch) ) {
+            $default_options['conditions']['Revenue.branch_id'] = Configure::read('__Site.config_branch_id');
+        }
 
         if( !empty($active) ) {
             $options['conditions']['RevenueDetail.status'] = 1;
@@ -188,15 +190,16 @@ class RevenueDetail extends AppModel {
     function getPreviewInvoice ( $id = false, $invoice_type = 'angkut', $action = false, $data_action = false, $revenue_detail_id = false ) {
         $result = array();
         $options = array();
-        // $contains = array(
-            // 'Revenue' => array(
-            //     'Ttuj'
-            // ),
-            // 'GroupMotor'
-        // );
+        $head_office = Configure::read('__Site.config_branch_head_office');
+        $elementRevenue = false;
         
         if( $data_action == 'date' ) {
             $options['contain'][] = 'Invoice';
+        }
+        if( !empty($head_office) ) {
+            $elementRevenue = array(
+                'branch' => false,
+            );
         }
 
         if( !empty($revenue_detail_id) ) {
@@ -232,25 +235,22 @@ class RevenueDetail extends AppModel {
             );
         }
 
-        $revenue_detail = $this->getData('all', $options);
+        $revenue_detail = $this->getData('all', $options, $elementRevenue);
 
         if( !empty($revenue_detail) ) {
-            $this->TipeMotor = ClassRegistry::init('TipeMotor');
-            $this->Truck = ClassRegistry::init('Truck');
             $this->City = ClassRegistry::init('City');
-            $this->TarifAngkutan = ClassRegistry::init('TarifAngkutan');
-            $this->Ttuj = ClassRegistry::init('Ttuj');
 
             foreach ($revenue_detail as $key => $value) {
                 if(!empty($value['RevenueDetail'])){
                     $from_city_id = !empty($value['Revenue']['Ttuj']['from_city_id'])?$value['Revenue']['Ttuj']['from_city_id']:false;
                     $fromCity = $this->City->getMerge($value, $from_city_id);
                     $value['FromCity'] = !empty($fromCity['City'])?$fromCity['City']:false;
-                    $value = $this->TipeMotor->getMerge($value, $value['RevenueDetail']['group_motor_id']);
+                    
+                    $value = $this->Revenue->Ttuj->TtujTipeMotor->TipeMotor->getMerge($value, $value['RevenueDetail']['group_motor_id']);
                     $value = $this->City->getMerge($value, $value['RevenueDetail']['city_id']);
                     $value = $this->TarifAngkutan->getMerge($value, $value['RevenueDetail']['tarif_angkutan_id']);
 
-                    $ttuj = $this->Ttuj->getMerge($value, $value['Revenue']['ttuj_id']);
+                    $ttuj = $this->Revenue->Ttuj->getMerge($value, $value['Revenue']['ttuj_id']);
                     if( !empty($ttuj['Ttuj']) ) {
                         $value['Revenue']['Ttuj'] = $ttuj['Ttuj'];
                     } else {
@@ -258,7 +258,7 @@ class RevenueDetail extends AppModel {
                     }
 
                     if( empty($value['Revenue']['ttuj_id']) ) {
-                        $value = $this->Truck->getMerge($value, $value['Revenue']['truck_id']);
+                        $value = $this->Revenue->Ttuj->Truck->getMerge($value, $value['Revenue']['truck_id']);
                     }
 
                     if($action == 'tarif' && $data_action == 'invoice'){
@@ -281,7 +281,15 @@ class RevenueDetail extends AppModel {
 
     function getSumUnit($data, $id, $data_action = 'invoice'){
         $this->virtualFields['qty_unit'] = 'SUM(RevenueDetail.qty_unit)';
+        $head_office = Configure::read('__Site.config_branch_head_office');
         $options = array();
+        $elementRevenue = false;
+
+        if( !empty($head_office) ) {
+            $elementRevenue = array(
+                'branch' => false,
+            );
+        }
 
         switch ($data_action) {
             case 'revenue':
@@ -292,7 +300,7 @@ class RevenueDetail extends AppModel {
                     'RevenueDetail.revenue_id',
                 );
 
-                $data_merge = $this->getData('first', $options, false);
+                $data_merge = $this->getData('first', $options, $elementRevenue);
 
                 if(!empty($data_merge['RevenueDetail']['qty_unit'])){
                     $data['qty_unit'] = $data_merge['RevenueDetail']['qty_unit'];
@@ -310,7 +318,7 @@ class RevenueDetail extends AppModel {
                     ),
                 );
 
-                $data_merge = $this->getData('first', $options, false);
+                $data_merge = $this->getData('first', $options, $elementRevenue);
 
                 if(!empty($data_merge['RevenueDetail']['total_price'])){
                     $data['total_price'] = $data_merge['RevenueDetail']['total_price'];
@@ -331,7 +339,7 @@ class RevenueDetail extends AppModel {
                 );
 
                 $this->virtualFields['sum_pph'] = 'SUM(Revenue.total * (Revenue.pph/100))';
-                $data_merge = $this->getData('first', $options, false);
+                $data_merge = $this->getData('first', $options, $elementRevenue);
 
                 if(!empty($data_merge['RevenueDetail']['qty_unit'])){
                     $data['qty_unit'] = $data_merge['RevenueDetail']['qty_unit'];
