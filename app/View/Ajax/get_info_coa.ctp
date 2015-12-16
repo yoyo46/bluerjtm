@@ -87,6 +87,7 @@
             'options' => array(
                 'data-action' => $data_action,
                 'class' => 'ajaxModal',
+                'title' => $title,
             ),
         ));
 ?>
