@@ -40,7 +40,7 @@
                     <?php 
                             echo $this->Form->input('coa',array(
                                 'label'=> __('COA'),
-                                'class'=>'form-control',
+                                'class'=>'form-control chosen-select',
                                 'required' => false,
                                 'empty' => __('Pilih COA'),
                             ));

@@ -201,6 +201,8 @@ class Journal extends AppModel {
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $coa = !empty($data['named']['coa'])?$data['named']['coa']:false;
         $sort = !empty($data['named']['sort'])?$data['named']['sort']:false;
+        $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $journalcoa = !empty($data['named']['journalcoa'])?$data['named']['journalcoa']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -244,6 +246,12 @@ class Journal extends AppModel {
                     );
                     break;
             }
+        }
+        if( !empty($nodoc) ) {
+            $default_options['conditions']['Journal.document_no LIKE'] = '%'.$nodoc.'%';
+        }
+        if( !empty($journalcoa) ) {
+            $default_options['conditions']['Journal.coa_id'] = $journalcoa;
         }
         
         return $default_options;

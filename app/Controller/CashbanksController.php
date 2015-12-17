@@ -1148,57 +1148,73 @@ class CashbanksController extends AppController {
     }
 
     public function journal_report( $data_action = false ) {
+        $this->loadModel('Journal');
+
         $this->set('sub_module_title', 'Laporan Jurnal');
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
-        $conditions = array(
-            'Journal.branch_id' => $allow_branch_id,
+        $options = array(
+            'conditions' => array(
+                'Journal.branch_id' => $allow_branch_id,
+            ),
+            'contain' => false,
+            'group' => array(
+                'Journal.document_id',
+                'Journal.type',
+            ),
         );
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->User->Journal->_callRefineParams($params, $options);
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
 
-            if(!empty($refine['document_no'])){
-                $value = urldecode($refine['document_no']);
-                $this->request->data['Journal']['document_no'] = $value;
-                $conditions['Journal.document_no LIKE'] = '%'.$value.'%';
-            }
-
-            if(!empty($refine['date'])){
-                $dateStr = urldecode($refine['date']);
-                $date = explode('-', $dateStr);
-
-                if( !empty($date) ) {
-                    $date[0] = urldecode($date[0]);
-                    $date[1] = urldecode($date[1]);
-                    $dateFrom = $this->MkCommon->getDate($date[0]);
-                    $dateTo = $this->MkCommon->getDate($date[1]);
-                }
-                $this->request->data['Ttuj']['date'] = $dateStr;
-            }
-
             // Custom Otorisasi
-            $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Journal', $conditions, 'conditions' );
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Journal', $options );
         }
 
         $module_title = __('Laporan Jurnal');
+        $values = array();
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
-            $this->request->data['Journal']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
             $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
         }
 
-        $conditions['DATE_FORMAT(Journal.date, \'%Y-%m-%d\') >='] = $dateFrom;
-        $conditions['DATE_FORMAT(Journal.date, \'%Y-%m-%d\') <='] = $dateTo;
+        if( !empty($data_action) ){
+            $journals = $this->User->Journal->getData('all', $options);
+        } else {
+            $options['limit'] = Configure::read('__Site.config_pagination');
+            $this->paginate = $this->User->Journal->getData('paginate', $options);
+            $journals = $this->paginate('Journal');
+        }
 
-        $values = $this->User->Journal->getData('all', array(
-            'conditions' => $conditions,
-        ));
+        if( !empty($journals) ) {
+            foreach ($journals as $key => $value) {
+                $document_id = $this->MkCommon->filterEmptyField($value, 'Journal', 'document_id');
+                $type = $this->MkCommon->filterEmptyField($value, 'Journal', 'type');
+
+                $journal = $this->Journal->getData('all', array(
+                    'conditions' => array(
+                        'Journal.document_id' => $document_id,
+                        'Journal.type' => $type,
+                    ),
+                ));
+                $values = array_merge($values, $journal);
+            }
+        }
+
+        $coas = $this->User->Journal->Coa->_callOptGroup();
+        $this->MkCommon->_layout_file('select');
 
         $this->set('active_menu', 'journal_report');
         $this->set(compact(
-            'values', 'module_title', 'data_action'
+            'values', 'module_title', 'data_action',
+            'coas'
         ));
 
         if($data_action == 'pdf'){
@@ -1266,6 +1282,7 @@ class CashbanksController extends AppController {
             $module_title .= '<br>'.$coa_name;
         }
 
+        $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'journal_report');
         $this->set(compact(
             'coas', 'values', 'module_title',
