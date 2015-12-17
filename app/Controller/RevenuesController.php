@@ -4353,6 +4353,15 @@ class RevenuesController extends AppController {
         $module_title = __('Print Invoice');
         $this->set('sub_module_title', trim($module_title));
         $this->set('active_menu', 'invoices');
+
+        $head_office = Configure::read('__Site.config_branch_head_office');
+        $elementRevenue = array(
+            'status' => 'all',
+        );
+
+        if( !empty($head_office) ) {
+            $elementRevenue['branch'] = false;
+        }
         
         $invoice = $this->Invoice->getData('first', array(
             'conditions' => array(
@@ -4361,9 +4370,7 @@ class RevenuesController extends AppController {
             'contain' => array(
                 'InvoiceDetail',
             )
-        ), true, array(
-            'status' => 'all',
-        ));
+        ), true, $elementRevenue);
 
         if(!empty($invoice)){
             $this->loadModel('Bank');
