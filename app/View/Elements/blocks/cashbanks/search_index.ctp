@@ -38,6 +38,16 @@
                 </div>
                 <div class="form-group">
                     <?php 
+                            echo $this->Form->input('noref',array(
+                                'label'=> __('No. Referensi'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('No. Referensi')
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
                         echo $this->Form->input('type',array(
                             'label'=> __('Tipe Kas/Bank'),
                             'class'=>'form-control',
