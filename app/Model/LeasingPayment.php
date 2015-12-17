@@ -160,8 +160,9 @@ class LeasingPayment extends AppModel {
                 }
 
                 if( !empty($flagSave) ) {
+                    $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                     $result = array(
-                        'msg' => sprintf(__('Berhasil %s'), $default_msg),
+                        'msg' => sprintf(__('Berhasil %s #%s'), $default_msg, $noref),
                         'status' => 'success',
                     );
                 } else {

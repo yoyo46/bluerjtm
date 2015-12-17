@@ -4996,7 +4996,8 @@ class RevenuesController extends AppController {
                     $this->params['old_data'] = $data_local;
                     $this->params['data'] = $data;
 
-                    $this->MkCommon->setCustomFlash(sprintf(__('Berhasil %s Pembayaran Invoice'), $msg), 'success'); 
+                    $noref = str_pad($invoice_payment_id, 6, '0', STR_PAD_LEFT);
+                    $this->MkCommon->setCustomFlash(sprintf(__('Berhasil %s Pembayaran Invoice #%s'), $msg, $noref), 'success'); 
                     $this->Log->logActivity( sprintf(__('Berhasil %s Pembayaran Invoice #%s'), $msg, $invoice_payment_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $invoice_payment_id );
                     
                     $this->redirect(array(
@@ -5181,7 +5182,8 @@ class RevenuesController extends AppController {
                         ));
                     }
 
-                    $this->MkCommon->setCustomFlash(__('Berhasil menghapus invoice pembayaran'), 'success');
+                    $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                    $this->MkCommon->setCustomFlash(sprintf(__('Berhasil menghapus invoice pembayaran #%s'), $noref), 'success');
                     $this->Log->logActivity( sprintf(__('Berhasil menghapus invoice pembayaran ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
                 }else{
                     $this->MkCommon->setCustomFlash(__('Gagal menghapus invoice pembayaran'), 'error');
@@ -7132,7 +7134,8 @@ class RevenuesController extends AppController {
                     $this->params['old_data'] = $data_local;
                     $this->params['data'] = $data;
 
-                    $this->MkCommon->setCustomFlash(sprintf(__('Berhasil melakukan Pembayaran %s'), $labelName), 'success'); 
+                    $noref = str_pad($document_id, 6, '0', STR_PAD_LEFT);
+                    $this->MkCommon->setCustomFlash(sprintf(__('Berhasil melakukan Pembayaran %s #%s'), $labelName, $noref), 'success'); 
                     $this->Log->logActivity( sprintf(__('Berhasil melakukan Pembayaran %s #%s'), $labelName, $document_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $document_id );
                     
                     $this->redirect(array(
@@ -7293,8 +7296,9 @@ class RevenuesController extends AppController {
                             }
                         }
 
+                        $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                         $msg = array(
-                            'msg' => sprintf(__('Berhasil menghapus pembayaran %s.'), $labelName),
+                            'msg' => sprintf(__('Berhasil menghapus pembayaran %s #%s'), $labelName, $noref),
                             'type' => 'success'
                         );
                         $this->MkCommon->setCustomFlash( $msg['msg'], $msg['type']);  

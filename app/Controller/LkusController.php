@@ -786,8 +786,9 @@ class LkusController extends AppController {
                     $this->params['old_data'] = $data_local;
                     $this->params['data'] = $data;
 
+                    $noref = str_pad($lku_payment_id, 6, '0', STR_PAD_LEFT);
                     $this->Log->logActivity( sprintf(__('Sukses %s Pembayaran LKU ID #%s'), $msg, $lku_payment_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $lku_payment_id );
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Pembayaran LKU'), $msg), 'success');
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Pembayaran LKU #%s'), $msg, $noref), 'success');
                     $this->redirect(array(
                         'controller' => 'Lkus',
                         'action' => 'payments',
@@ -1684,8 +1685,9 @@ class LkusController extends AppController {
                     $this->params['old_data'] = $data_local;
                     $this->params['data'] = $data;
 
+                    $noref = str_pad($ksu_payment_id, 6, '0', STR_PAD_LEFT);
                     $this->Log->logActivity( sprintf(__('Sukses %s Pembayaran LKU ID #%s'), $msg, $ksu_payment_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $ksu_payment_id );
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Pembayaran LKU'), $msg), 'success');
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Pembayaran LKU #%s'), $msg, $noref), 'success');
                     $this->redirect(array(
                         'controller' => 'lkus',
                         'action' => 'ksu_payments',
@@ -1978,7 +1980,8 @@ class LkusController extends AppController {
                     $this->updateStatusLku($collect_lku_detail_id);
                 }
 
-                $this->MkCommon->setCustomFlash(__('Berhasil menghapus pembayaran LKU'), 'success');
+                $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                $this->MkCommon->setCustomFlash(sprintf(__('Berhasil menghapus pembayaran LKU #%s'), $noref), 'success');
                 $this->Log->logActivity( sprintf(__('Berhasil menghapus pembayaran LKU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal menghapus pembayaran LKU'), 'error');
@@ -2080,7 +2083,8 @@ class LkusController extends AppController {
                     $this->updateStatusKsu($collect_ksu_detail_id);
                 }
 
-                $this->MkCommon->setCustomFlash(__('Berhasil menghapus pembayaran KSU'), 'success');
+                $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                $this->MkCommon->setCustomFlash(sprintf(__('Berhasil menghapus pembayaran KSU #%s'), $noref), 'success');
                 $this->Log->logActivity( sprintf(__('Berhasil menghapus pembayaran KSU ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal menghapus pembayaran KSU'), 'error');

@@ -622,8 +622,9 @@ class LeasingsController extends AppController {
                             }
                         }
 
+                        $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                         $msg = array(
-                            'msg' => __('Berhasil membatalkan pembayaran leasing'),
+                            'msg' => sprintf(__('Berhasil membatalkan pembayaran leasing #%s'), $noref),
                             'type' => 'success'
                         );
                         $this->MkCommon->setCustomFlash( $msg['msg'], $msg['type']);  

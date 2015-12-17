@@ -385,7 +385,8 @@ class CashbanksController extends AppController {
 
                     $this->Log->logActivity( sprintf(__('Sukses %s Kas/Bank #%s'), $msg, $this->CashBank->id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $cash_bank_id );
 
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Kas/Bank'), $msg), 'success');
+                    $noref = str_pad($this->CashBank->id, 6, '0', STR_PAD_LEFT);
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Kas/Bank #%s'), $msg, $noref), 'success');
                     $this->redirect(array(
                         'controller' => 'cashbanks',
                         'action' => 'index'
@@ -604,7 +605,8 @@ class CashbanksController extends AppController {
                     }
                 }
 
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                $this->MkCommon->setCustomFlash(sprintf(__('Sukses merubah status Kas/Bank #%s.'), $noref), 'success');
                 $this->Log->logActivity( sprintf(__('Sukses merubah status Kas/Bank ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
@@ -880,7 +882,8 @@ class CashbanksController extends AppController {
                                 }
                             }
 
-                            $this->MkCommon->setCustomFlash('Berhasil melakukan Approval Kas/Bank.', 'success');
+                            $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                            $this->MkCommon->setCustomFlash(sprintf(__('Berhasil melakukan Approval Kas/Bank #%s'), $noref), 'success');
                             $this->Log->logActivity( sprintf(__('Berhasil melakukan %s Kas/Bank #%s'), $status_document, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
                         }else{
                             $this->MkCommon->setCustomFlash('Gagal melakukan Approval Kas/Bank.', 'error');
