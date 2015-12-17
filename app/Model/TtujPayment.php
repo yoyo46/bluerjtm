@@ -13,10 +13,10 @@ class TtujPayment extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'No. Dokumen harap diisi'
             ),
-            'isUnique' => array(
-                'rule' => array('isUnique'),
-                'message' => 'No. Dokumen telah terdaftar',
-            ),
+            // 'isUnique' => array(
+            //     'rule' => array('isUnique'),
+            //     'message' => 'No. Dokumen telah terdaftar',
+            // ),
         ),
         'coa_id' => array(
             'notempty' => array(
@@ -126,6 +126,35 @@ class TtujPayment extends AppModel {
         } else {
             return true;
         }
+    }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+        $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
+        $name = !empty($data['named']['name'])?$data['named']['name']:false;
+
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(TtujPayment.date_payment, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(TtujPayment.date_payment, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
+        if(!empty($nodoc)){
+            $default_options['conditions']['TtujPayment.nodoc LIKE'] = '%'.$nodoc.'%';
+        }
+        if(!empty($name)){
+            $default_options['conditions']['TtujPayment.receiver_name LIKE'] = '%'.$name.'%';
+        }
+        if(!empty($noref)){
+            $default_options['conditions']['LPAD(TtujPayment.id, 6, 0) LIKE'] = '%'.$noref.'%';
+        }
+        
+        return $default_options;
     }
 }
 ?>

@@ -1302,75 +1302,25 @@ class CashbanksController extends AppController {
 
     public function prepayment_report( $data_action = false ) {
         $this->loadModel('CashBank');
-        $conditions = array(
-            'CashBank.is_rejected' => 0,
-            'CashBank.receiving_cash_type' => 'prepayment_out',
-        );
-        $fromDate = date('01/m/Y');
-        $toDate = date('t/m/Y');
-
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            if(!empty($refine['date'])){
-                $dateStr = urldecode($refine['date']);
-                $date = explode('-', $dateStr);
-
-                if( !empty($date) ) {
-                    $date[0] = urldecode($date[0]);
-                    $date[1] = urldecode($date[1]);
-                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                    $fromDate = $date[0];
-                    $toDate = $date[1];
-                }
-            }
-
-            if( !empty($refine['receiver']) ){
-                $value = urldecode($refine['receiver']);
-                $receivers = $this->CashBank->getReceiver('Customer', $value, 'search' );
-                $receivers = array_merge($receivers, $this->CashBank->getReceiver('Vendor', $value, 'search' ));
-                $receivers = array_merge($receivers, $this->CashBank->getReceiver('Employe', $value, 'search' ));
-                $receivers = array_merge($receivers, $this->CashBank->getReceiver('Driver', $value, 'search' ));
-
-                $conditions['CashBank.receiver_id'] = $receivers;
-                $this->request->data['CashBank']['receiver'] = $value;
-            }
-
-            if( !empty($refine['total']) ){
-                $value = urldecode($refine['total']);
-                $conditions['CashBank.debit_total LIKE'] = '%'.$value.'%';
-                $this->request->data['CashBank']['total'] = $value;
-            }
-
-            if( !empty($refine['note']) ){
-                $value = urldecode($refine['note']);
-                $conditions['CashBank.description LIKE'] = '%'.$value.'%';
-                $this->request->data['CashBank']['note'] = $value;
-            }
-
-            if( !empty($refine['document_type']) ){
-                $value = urldecode($refine['document_type']);
-
-                switch ($value) {
-                    case 'outstanding':
-                        $conditions['CashBank.prepayment_status <>'] = 'full_paid';
-                        break;
-                }
-                $this->request->data['CashBank']['document_type'] = $value;
-            }
-        }
-
-        $this->request->data['CashBank']['date'] = sprintf('%s - %s', $fromDate, $toDate);
-        $conditions['DATE_FORMAT(CashBank.created, \'%Y-%m-%d\') >='] = $this->MkCommon->getDate($fromDate);
-        $conditions['DATE_FORMAT(CashBank.created, \'%Y-%m-%d\') <='] = $this->MkCommon->getDate($toDate);
-
-        $prepayments = $this->CashBank->getData('all', array(
-            'conditions' => $conditions,
+        $options = array(
+            'conditions' => array(
+                'CashBank.is_rejected' => 0,
+                'CashBank.receiving_cash_type' => 'prepayment_out',
+            ),
             'order' => array(
                 'CashBank.created' => 'DESC',
                 'CashBank.id' => 'DESC',
             ),
+        );
+        $dateFrom = date('Y-m-01');
+        $dateTo = date('Y-m-t');
+        
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
         ));
+        $options =  $this->CashBank->_callRefineParams($params, $options);
+        $prepayments = $this->CashBank->getData('all', $options);
 
         if( !empty($prepayments) ) {
             $this->loadModel('Coa');
@@ -1382,7 +1332,7 @@ class CashbanksController extends AppController {
 
         $this->set('sub_module_title', __('Laporan Prepayment'));
         $this->set('active_menu', 'prepayment_report');
-        $this->set('period_label', sprintf(__('Periode : %s s/d %s'), $fromDate, $toDate));
+        $this->set('period_label', sprintf(__('Periode : %s'), $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'long', 's/d')));
 
         $this->set(compact(
             'prepayments', 'data_action'

@@ -7,7 +7,7 @@
     </div>
     <div class="box-body">
         <?php 
-                echo $this->Form->create('InvoicePayment', array(
+                echo $this->Form->create('Search', array(
                     'url'=> $this->Html->url( array(
                         'controller' => 'revenues',
                         'action' => 'search',
@@ -21,11 +21,28 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                        echo $this->Form->input('nodoc',array(
-                            'label'=> __('No. Dokumen'),
+                            echo $this->Form->label('date', __('Tgl Bayar'));
+                    ?>
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <?php 
+                                echo $this->Form->input('date',array(
+                                    'label'=> false,
+                                    'class'=>'form-control pull-right date-range',
+                                    'required' => false,
+                                ));
+                        ?>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <?php 
+                        echo $this->Form->input('noref',array(
+                            'label'=> __('No. Referensi'),
                             'class'=>'form-control',
                             'required' => false,
-                            'placeholder' => __('No. Dokumen')
+                            'placeholder' => __('No. Referensi')
                         ));
                     ?>
                 </div>
@@ -33,30 +50,13 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                        echo $this->Form->label('date_from', 'Tgl Bayar');
+                        echo $this->Form->input('nodoc',array(
+                            'label'=> __('No. Dokumen'),
+                            'class'=>'form-control',
+                            'required' => false,
+                            'placeholder' => __('No. Dokumen')
+                        ));
                     ?>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <?php 
-                                echo $this->Form->input('date_from',array(
-                                    'label'=> false,
-                                    'class'=>'form-control custom-date',
-                                    'required' => false,
-                                    'placeholder' => __('Dari')
-                                ));
-                            ?>
-                        </div>
-                        <div class="col-sm-6">
-                            <?php 
-                                echo $this->Form->input('date_to',array(
-                                    'label'=> false,
-                                    'class'=>'form-control custom-date',
-                                    'required' => false,
-                                    'placeholder' => __('Sampai')
-                                ));
-                            ?>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

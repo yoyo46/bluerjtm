@@ -70,6 +70,12 @@
             </div>
             <div class="box-body">
                 <dl class="dl-horizontal">
+                    <?php 
+                            $id = $this->Common->filterEmptyField($siup, 'SiupPayment', 'id');
+                            $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                    ?>
+                    <dt><?php echo __('No. Referensi')?></dt>
+                    <dd><?php echo $noref;?></dd>
                     <dt><?php echo __('Tgl Dibayar')?></dt>
                     <dd><?php echo $this->Common->customDate($siup['SiupPayment']['siup_payment_date'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Tgl Dokumen Dibuat')?></dt>

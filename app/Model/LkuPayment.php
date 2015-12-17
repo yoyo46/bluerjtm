@@ -7,10 +7,10 @@ class LkuPayment extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'No Dokumen harap diisi'
             ),
-            'isUnique' => array(
-                'rule' => array('isUnique'),
-                'message' => 'No Dokumen telah terdaftar',
-            ),
+            // 'isUnique' => array(
+            //     'rule' => array('isUnique'),
+            //     'message' => 'No Dokumen telah terdaftar',
+            // ),
         ),
         'coa_id' => array(
             'notempty' => array(
@@ -144,6 +144,24 @@ class LkuPayment extends AppModel {
         ), true, array(
             'status' => 'all',
         ));
+    }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
+        $customer = !empty($data['named']['customer'])?$data['named']['customer']:false;
+
+        if(!empty($nodoc)){
+            $default_options['conditions']['LkuPayment.no_doc LIKE'] = '%'.$nodoc.'%';
+        }
+        if(!empty($noref)){
+            $default_options['conditions']['LPAD(LkuPayment.id, 6, 0) LIKE'] = '%'.$noref.'%';
+        }
+        if(!empty($customer)){
+            $default_options['conditions']['LkuPayment.customer_id'] = $customer;
+        }
+        
+        return $default_options;
     }
 }
 ?>

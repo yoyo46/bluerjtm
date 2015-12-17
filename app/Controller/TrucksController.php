@@ -1235,41 +1235,18 @@ class TrucksController extends AppController {
 
     function kir_payments(){
         $this->loadModel('KirPayment');
-        $conditions = array();
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            if(!empty($refine['nopol'])){
-                $this->loadModel('Truck');
-                $name = urldecode($refine['nopol']);
-                $this->request->data['Truck']['nopol'] = $name;
-                $typeTruck = !empty($refine['type'])?$refine['type']:1;
-                $this->request->data['Truck']['type'] = $typeTruck;
-
-                if( $typeTruck == 2 ) {
-                    $conditionsNopol = array(
-                        'Truck.id' => $name,
-                    );
-                } else {
-                    $conditionsNopol = array(
-                        'Truck.nopol LIKE' => '%'.$name.'%',
-                    );
-                }
-
-                $truckSearch = $this->Truck->getData('list', array(
-                    'conditions' => $conditionsNopol,
-                    'fields' => array(
-                        'Truck.id', 'Truck.id',
-                    ),
-                ));
-                $conditions['Kir.truck_id'] = $truckSearch;
-            }
-        }
-        $this->paginate = $this->KirPayment->getData('paginate', array(
-            'conditions' => $conditions,
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->KirPayment->_callRefineParams($params, array(
             'limit' => Configure::read('__Site.config_pagination'),
-        ), true, array(
+        ));
+        $this->paginate = $this->KirPayment->getData('paginate', $options, true, array(
             'status' => 'all',
         ));
 
@@ -1730,41 +1707,18 @@ class TrucksController extends AppController {
 
     function siup_payments(){
         $this->loadModel('SiupPayment');
-        $conditions = array();
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            if(!empty($refine['nopol'])){
-                $this->loadModel('Truck');
-                $name = urldecode($refine['nopol']);
-                $this->request->data['Truck']['nopol'] = $name;
-                $typeTruck = !empty($refine['type'])?$refine['type']:1;
-                $this->request->data['Truck']['type'] = $typeTruck;
-
-                if( $typeTruck == 2 ) {
-                    $conditionsNopol = array(
-                        'Truck.id' => $name,
-                    );
-                } else {
-                    $conditionsNopol = array(
-                        'Truck.nopol LIKE' => '%'.$name.'%',
-                    );
-                }
-
-                $truckSearch = $this->Truck->getData('list', array(
-                    'conditions' => $conditionsNopol,
-                    'fields' => array(
-                        'Truck.id', 'Truck.id',
-                    ),
-                ));
-                $conditions['Siup.truck_id'] = $truckSearch;
-            }
-        }
-        $this->paginate = $this->SiupPayment->getData('paginate', array(
-            'conditions' => $conditions,
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->SiupPayment->_callRefineParams($params, array(
             'limit' => Configure::read('__Site.config_pagination'),
-        ), true, array(
+        ));
+        $this->paginate = $this->SiupPayment->getData('paginate', $options, true, array(
             'status' => 'all',
         ));
         $siupPayments = $this->paginate('SiupPayment');
@@ -2828,45 +2782,19 @@ class TrucksController extends AppController {
 
     function stnk_payments(){
         $this->loadModel('StnkPayment');
-        $conditions = array();
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            if(!empty($refine['nopol'])){
-                $this->loadModel('Truck');
-                $name = urldecode($refine['nopol']);
-                $this->request->data['Truck']['nopol'] = $name;
-                $typeTruck = !empty($refine['type'])?$refine['type']:1;
-                $this->request->data['Truck']['type'] = $typeTruck;
-
-                if( $typeTruck == 2 ) {
-                    $conditionsNopol = array(
-                        'Truck.id' => $name,
-                    );
-                } else {
-                    $conditionsNopol = array(
-                        'Truck.nopol LIKE' => '%'.$name.'%',
-                    );
-                }
-
-                $truckSearch = $this->Truck->getData('list', array(
-                    'conditions' => $conditionsNopol,
-                    'fields' => array(
-                        'Truck.id', 'Truck.id',
-                    ),
-                ));
-                $conditions['Stnk.truck_id'] = $truckSearch;
-            }
-        }
-        $this->paginate = $this->StnkPayment->getData('paginate', array(
-            'conditions' => $conditions,
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->StnkPayment->_callRefineParams($params, array(
             'limit' => Configure::read('__Site.config_pagination'),
-            'order'=> array(
-                'StnkPayment.created' => 'DESC',
-                'StnkPayment.id' => 'DESC',
-            ),
-        ), true, array(
+        ));
+        
+        $this->paginate = $this->StnkPayment->getData('paginate', $options, true, array(
             'status' => 'all',
         ));
 

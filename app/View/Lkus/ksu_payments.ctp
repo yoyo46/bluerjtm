@@ -30,7 +30,10 @@
             <thead>
                 <tr>
                     <?php 
-                            echo $this->Html->tag('th', $this->Paginator->sort('KsuPayment.no_doc', __('No Dokumen'), array(
+                            echo $this->Html->tag('th', $this->Paginator->sort('KsuPayment.id', __('No. Referensi'), array(
+                                'escape' => false
+                            )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('KsuPayment.no_doc', __('No. Dokumen'), array(
                                 'escape' => false
                             )));
 
@@ -64,8 +67,10 @@
                     if(!empty($payments)){
                         foreach ($payments as $key => $value) {
                             $id = $value['KsuPayment']['id'];
+                            $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
             ?>
             <tr>
+                <td><?php echo $noref;?></td>
                 <td><?php echo $value['KsuPayment']['no_doc'];?></td>
                 <?php echo $this->Html->tag('td', date('d M Y', strtotime($value['KsuPayment']['tgl_bayar'])));?>
                 <td><?php echo $value['Customer']['customer_name_code'];?></td>
@@ -109,7 +114,7 @@
                     }else{
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '7'
+                            'colspan' => '8'
                         )));
                     }
             ?>

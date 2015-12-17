@@ -1195,6 +1195,7 @@ class CommonHelper extends AppHelper {
     function getMergePrepayment ( $prepayment, $class = false ) {
         $result = false;
         $content = array();
+        $id = $this->filterEmptyField($prepayment, 'CashBank', 'id');
         $nodoc = $this->filterEmptyField($prepayment, 'CashBank', 'nodoc');
         $dt = $this->customDate($this->filterEmptyField($prepayment, 'CashBank', 'tgl_cash_bank'), 'd M Y');
         $coa_name = $this->filterEmptyField($prepayment, 'Coa', 'name');
@@ -1202,7 +1203,11 @@ class CommonHelper extends AppHelper {
         $description = $this->filterEmptyField($prepayment, 'CashBank', 'description');
         $debit_total = $this->filterEmptyField($prepayment, 'CashBank', 'debit_total', 0);
         $credit_total = $this->filterEmptyField($prepayment, 'CashBank', 'credit_total', 0);
+        $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
 
+        $content[] = $this->Html->tag('td', $noref, array(
+            'style' => 'text-align:left;',
+        ));
         $content[] = $this->Html->tag('td', $nodoc, array(
             'style' => 'text-align:left;',
         ));

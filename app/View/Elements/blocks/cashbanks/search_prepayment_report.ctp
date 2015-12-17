@@ -7,7 +7,7 @@
     </div>
     <div class="box-body">
         <?php 
-                echo $this->Form->create('CashBank', array(
+                echo $this->Form->create('Search', array(
                     'url'=> $this->Html->url( array(
                         'controller' => 'cashbanks',
                         'action' => 'search',
@@ -28,9 +28,17 @@
                             ));
                     ?>
                 </div>
+                <!-- <div class="form-group">
+                    <?php 
+                            // echo $this->Form->input('noref', array(
+                            //     'label'=> __('No. Referensi'), 
+                            //     'class'=>'form-control',
+                            // ));
+                    ?>
+                </div> -->
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('receiver',array(
+                            echo $this->Form->input('name',array(
                                 'label'=> __('Diterima/Dibayar kepada'),
                                 'class'=>'form-control',
                                 'required' => false,
@@ -48,9 +56,17 @@
                 </div>
             </div>
             <div class="col-sm-6">
+                <!-- <div class="form-group">
+                    <?php 
+                            // echo $this->Form->input('nodoc', array(
+                            //     'label'=> __('No. Dokumen'), 
+                            //     'class'=>'form-control',
+                            // ));
+                    ?>
+                </div> -->
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('document_type', array(
+                            echo $this->Form->input('documenttype', array(
                                 'label'=> __('Tampilkan'), 
                                 'class'=>'form-control',
                                 'options' => array(
@@ -62,7 +78,7 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('note',array(
+                            echo $this->Form->input('description',array(
                                 'label'=> __('Keterangan'),
                                 'class'=>'form-control',
                                 'required' => false,

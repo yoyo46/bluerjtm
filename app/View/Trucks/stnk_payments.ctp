@@ -26,6 +26,9 @@
             <thead>
                 <tr>
                     <?php
+                            echo $this->Html->tag('th', $this->Paginator->sort('Stnk.id', __('No. Referensi'), array(
+                                'escape' => false
+                            )));
                             echo $this->Html->tag('th', $this->Paginator->sort('Stnk.no_pol', __('No. Pol'), array(
                                 'escape' => false
                             )));
@@ -56,11 +59,13 @@
                     if(!empty($stnkPayments)){
                         foreach ($stnkPayments as $key => $value) {
                             $id = $value['StnkPayment']['id'];
+                            $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
             ?>
             <tr>
+                <td><?php echo $noref;?></td>
                 <td><?php echo $value['Stnk']['no_pol'];?></td>
-                <td><?php echo $this->Common->customDate($value['Stnk']['tgl_bayar']);?></td>
-                <td><?php echo $this->Common->customDate($value['Stnk']['to_date']);?></td>
+                <td><?php echo $this->Common->customDate($value['Stnk']['tgl_bayar'], 'd M Y');?></td>
+                <td><?php echo $this->Common->customDate($value['Stnk']['to_date'], 'd M Y');?></td>
                 <td>
                     <?php
                             echo $this->Common->customDate($value['Stnk']['plat_to_date'], 'd M Y', '-');
@@ -112,7 +117,7 @@
                     } else {
                          echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '9'
+                            'colspan' => '10'
                         )));
                     }
             ?>

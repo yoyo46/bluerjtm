@@ -7,43 +7,76 @@
     </div>
     <div class="box-body">
         <?php 
-            echo $this->Form->create('KirPayment', array(
+            echo $this->Form->create('Search', array(
                 'url'=> $this->Html->url( array(
                     'controller' => 'trucks',
                     'action' => 'search',
-                    'kir_payments'
+                    'stnk_payments'
                 )), 
                 'role' => 'form',
                 'inputDefaults' => array('div' => false),
             ));
         ?>
-        <div class="form-group">
-            <?php 
-                    echo $this->Form->label('Truck.type', __('Truk'));
-            ?>
-            <div class="row">
-                <div class="col-sm-4">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
                     <?php 
-                            echo $this->Form->input('Truck.type',array(
-                                'label'=> false,
+                            echo $this->Form->label('date', __('Tgl Pembayaran'));
+                    ?>
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <?php 
+                                echo $this->Form->input('date',array(
+                                    'label'=> false,
+                                    'class'=>'form-control pull-right date-range',
+                                    'required' => false,
+                                ));
+                        ?>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('noref',array(
+                                'label'=> __('No. Referensi'),
                                 'class'=>'form-control',
                                 'required' => false,
-                                'empty' => false,
-                                'options' => array(
-                                    '1' => __('Nopol'),
-                                    '2' => __('ID Truk'),
-                                ),
+                                'placeholder' => __('No. Referensi')
                             ));
                     ?>
                 </div>
-                <div class="col-sm-8">
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
                     <?php 
-                            echo $this->Form->input('Truck.nopol',array(
-                                'label'=> false,
-                                'class'=>'form-control',
-                                'required' => false,
-                            ));
+                            echo $this->Form->label('type', __('Truk'));
                     ?>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <?php 
+                                    echo $this->Form->input('Truck.type',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                        'empty' => false,
+                                        'options' => array(
+                                            '1' => __('Nopol'),
+                                            '2' => __('ID Truk'),
+                                        ),
+                                    ));
+                            ?>
+                        </div>
+                        <div class="col-sm-8">
+                            <?php 
+                                    echo $this->Form->input('nopol',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                    ));
+                            ?>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -55,7 +88,7 @@
                         'type' => 'submit',
                     ));
                     echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                        'action' => 'kir_payments', 
+                        'action' => 'stnk_payments', 
                     ), array(
                         'escape' => false, 
                         'class'=> 'btn btn-default btn-sm',

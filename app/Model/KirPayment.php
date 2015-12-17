@@ -102,5 +102,51 @@ class KirPayment extends AppModel {
         }
         return $result;
     }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+        $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
+        $type = !empty($data['named']['type'])?$data['named']['type']:1;
+        $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
+
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(KirPayment.kir_payment_date, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(KirPayment.kir_payment_date, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
+        if(!empty($nopol)){
+            if( $type == 2 ) {
+                $conditionsNopol = array(
+                    'Truck.id' => $nopol,
+                );
+            } else {
+                $conditionsNopol = array(
+                    'Truck.nopol LIKE' => '%'.$nopol.'%',
+                );
+            }
+
+            $truckSearch = $this->Kir->Truck->getData('list', array(
+                'conditions' => $conditionsNopol,
+                'fields' => array(
+                    'Truck.id', 'Truck.id',
+                ),
+            ), true, array(
+                'status' => 'all',
+                'branch' => false,
+            ));
+
+            $default_options['conditions']['Kir.truck_id'] = $truckSearch;
+        }
+        if(!empty($noref)){
+            $default_options['conditions']['LPAD(KirPayment.id, 6, 0) LIKE'] = '%'.$noref.'%';
+        }
+        
+        return $default_options;
+    }
 }
 ?>

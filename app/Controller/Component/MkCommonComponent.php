@@ -499,7 +499,7 @@ class MkCommonComponent extends Component {
     *   @param string $endDate : tanggal akhir
     *   @return string
     */
-    function getCombineDate ( $startDate, $endDate, $format = 'long' ) {
+    function getCombineDate ( $startDate, $endDate, $format = 'long', $separator = '-' ) {
         $startDate = strtotime($startDate);
         $endDate = strtotime($endDate);
 
@@ -509,9 +509,9 @@ class MkCommonComponent extends Component {
                     if( $startDate == $endDate ) {
                         $customDate = date('M Y', $startDate);
                     } else if( date('Y', $startDate) == date('Y', $endDate) ) {
-                        $customDate = sprintf('%s - %s', date('M', $startDate), date('M Y', $endDate));
+                        $customDate = sprintf('%s %s %s', date('M', $startDate), $separator, date('M Y', $endDate));
                     } else {
-                        $customDate = sprintf('%s - %s', date('M Y', $startDate), date('M Y', $endDate));
+                        $customDate = sprintf('%s %s %s', date('M Y', $startDate), $separator, date('M Y', $endDate));
                     }
                     break;
                 
@@ -519,11 +519,11 @@ class MkCommonComponent extends Component {
                     if( $startDate == $endDate ) {
                         $customDate = date('d M Y', $startDate);
                     } else if( date('M Y', $startDate) == date('M Y', $endDate) ) {
-                        $customDate = sprintf('%s - %s', date('d', $startDate), date('d M Y', $endDate));
+                        $customDate = sprintf('%s %s %s', date('d', $startDate), $separator, date('d M Y', $endDate));
                     } else if( date('Y', $startDate) == date('Y', $endDate) ) {
-                        $customDate = sprintf('%s - %s', date('d M', $startDate), date('d M Y', $endDate));
+                        $customDate = sprintf('%s %s %s', date('d M', $startDate), $separator, date('d M Y', $endDate));
                     } else {
-                        $customDate = sprintf('%s - %s', date('d M Y', $startDate), date('d M Y', $endDate));
+                        $customDate = sprintf('%s %s %s', date('d M Y', $startDate), $separator, date('d M Y', $endDate));
                     }
                     break;
             }

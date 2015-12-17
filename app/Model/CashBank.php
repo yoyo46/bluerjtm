@@ -7,10 +7,10 @@ class CashBank extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'No Dokumen name harap diisi'
             ),
-            'isUnique' => array(
-                'rule' => array('isUnique'),
-                'message' => 'No Dokumen telah terdaftar',
-            ),
+            // 'isUnique' => array(
+            //     'rule' => array('isUnique'),
+            //     'message' => 'No Dokumen telah terdaftar',
+            // ),
         ),
         'receiving_cash_type' => array(
             'notempty' => array(
@@ -308,6 +308,10 @@ class CashBank extends AppModel {
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $note = !empty($data['named']['note'])?$data['named']['note']:false;
         $name = !empty($data['named']['name'])?$data['named']['name']:false;
+        $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
+        $total = !empty($data['named']['total'])?$data['named']['total']:false;
+        $description = !empty($data['named']['description'])?$data['named']['description']:false;
+        $documenttype = !empty($data['CashBank']['documenttype'])?urldecode($data['CashBank']['documenttype']):false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -336,6 +340,8 @@ class CashBank extends AppModel {
                     'Vendor.id', 'Vendor.id',
                 ),
                 'limit' => 100,
+            ), array(
+                'branch' => false,
             ));
             $employes = $this->Employe->getData('list', array(
                 'conditions' => array(
@@ -348,12 +354,25 @@ class CashBank extends AppModel {
             ));
             $customers = $this->Customer->getData('list', array(
                 'conditions' => array(
-                    'Customer.name LIKE' => '%'.$name.'%',
+                    'Customer.customer_name_code LIKE' => '%'.$name.'%',
                 ),
                 'fields' => array(
                     'Customer.id', 'Customer.id',
                 ),
                 'limit' => 100,
+            ), true, array(
+                'branch' => false,
+            ));
+            $drivers = $this->Driver->getData('list', array(
+                'conditions' => array(
+                    'Driver.driver_name LIKE' => '%'.$name.'%',
+                ),
+                'fields' => array(
+                    'Driver.id', 'Driver.id',
+                ),
+                'limit' => 100,
+            ), true, array(
+                'branch' => false,
             ));
 
             $default_options['conditions']['OR'] = array(
@@ -369,7 +388,27 @@ class CashBank extends AppModel {
                     'CashBank.receiver_type' => 'Customer',
                     'CashBank.receiver_id' => $customers,
                 ),
+                array(
+                    'CashBank.receiver_type' => 'Driver',
+                    'CashBank.receiver_id' => $drivers,
+                ),
             );
+        }
+        if(!empty($total)){
+            $default_options['conditions']['CashBank.debit_total LIKE'] = '%'.$total.'%';
+        }
+        if(!empty($documenttype)){
+            switch ($documenttype) {
+                case 'outstanding':
+                    $default_options['conditions']['CashBank.prepayment_status <>'] = 'full_paid';
+                    break;
+            }
+        }
+        if(!empty($description)){
+            $default_options['conditions']['CashBank.description LIKE'] = '%'.$description.'%';
+        }
+        if(!empty($noref)){
+            $default_options['conditions']['LPAD(CashBank.id, 6, 0) LIKE'] = '%'.$noref.'%';
         }
         
         return $default_options;
@@ -398,6 +437,8 @@ class CashBank extends AppModel {
                     'Vendor.id', 'Vendor.id',
                 ),
                 'limit' => 100,
+            ), array(
+                'branch' => false,
             ));
             $employes = $this->Employe->getData('list', array(
                 'conditions' => array(
@@ -416,6 +457,19 @@ class CashBank extends AppModel {
                     'Customer.id', 'Customer.id',
                 ),
                 'limit' => 100,
+            ), true, array(
+                'branch' => false,
+            ));
+            $drivers = $this->Driver->getData('list', array(
+                'conditions' => array(
+                    'Driver.driver_name LIKE' => '%'.$name.'%',
+                ),
+                'fields' => array(
+                    'Driver.id', 'Driver.id',
+                ),
+                'limit' => 100,
+            ), true, array(
+                'branch' => false,
             ));
 
             $options['conditions']['OR'] = array(
@@ -430,6 +484,10 @@ class CashBank extends AppModel {
                 array(
                     'CashBank.receiver_type' => 'Customer',
                     'CashBank.receiver_id' => $customers,
+                ),
+                array(
+                    'CashBank.receiver_type' => 'Driver',
+                    'CashBank.receiver_id' => $drivers,
                 ),
             );
         }

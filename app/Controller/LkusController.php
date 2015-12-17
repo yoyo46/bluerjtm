@@ -544,30 +544,15 @@ class LkusController extends AppController {
 
         $this->set('active_menu', 'lku_payments');
         $this->set('sub_module_title', __('Data Pembayaran LKU'));
-        $conditions = array();
         
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            if(!empty($refine['nodoc'])){
-                $no_doc = urldecode($refine['nodoc']);
-                $this->request->data['LkuPayment']['no_doc'] = $no_doc;
-                $conditions['LkuPayment.no_doc LIKE '] = '%'.$no_doc.'%';
-            }
-
-            if(!empty($refine['customer'])){
-                $customer = urldecode($refine['customer']);
-                $this->request->data['Lku']['customer_id'] = $customer;
-                $conditions['LkuPayment.customer_id'] = $customer;
-            }
-        }
-
-        $this->paginate = $this->LkuPayment->getData('paginate', array(
-            'conditions' => $conditions,
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->LkuPayment->_callRefineParams($params, array(
             'order' => array(
                 'LkuPayment.created' => 'DESC'
             )
-        ), true, array(
+        ));
+
+        $this->paginate = $this->LkuPayment->getData('paginate', $options, true, array(
             'status' => 'all',
         ));
         $payments = $this->paginate('LkuPayment');
@@ -1460,27 +1445,14 @@ class LkusController extends AppController {
 
         $this->set('active_menu', 'ksu_payments');
         $this->set('sub_module_title', __('Data Pembayaran KSU'));
-        $conditions = array();
         
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            if(!empty($refine['nodoc'])){
-                $no_doc = urldecode($refine['nodoc']);
-                $this->request->data['KsuPayment']['no_doc'] = $no_doc;
-                $conditions['KsuPayment.no_doc LIKE '] = '%'.$no_doc.'%';
-            }
-
-            if(!empty($refine['customer'])){
-                $customer = urldecode($refine['customer']);
-                $this->request->data['Lku']['customer_id'] = $customer;
-                $conditions['KsuPayment.customer_id'] = $customer;
-            }
-        }
-
-        $this->paginate = $this->KsuPayment->getData('paginate', array(
-            'conditions' => $conditions,
-        ), true, array(
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->KsuPayment->_callRefineParams($params, array(
+            'order' => array(
+                'KsuPayment.created' => 'DESC'
+            )
+        ));
+        $this->paginate = $this->KsuPayment->getData('paginate', $options, true, array(
             'status' => 'all',
         ));
         $payments = $this->paginate('KsuPayment');

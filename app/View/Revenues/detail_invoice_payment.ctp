@@ -8,6 +8,9 @@
 		$is_canceled = $this->Common->filterEmptyField($invoice, 'InvoicePayment', 'is_canceled');
 		$status = $this->Common->filterEmptyField($invoice, 'InvoicePayment', 'status');
 		$canceled_date = $this->Common->filterEmptyField($invoice, 'InvoicePayment', 'canceled_date');
+		
+		$id = $this->Common->filterEmptyField($invoice, 'InvoicePayment', 'id');
+        $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
 ?>
 <div class="box">
     <div class="box-header">
@@ -16,7 +19,11 @@
 	<div class="box-body table-responsive">
 	    <table class="table table-hover">
 			<tr>
-				<th><?php echo __('No. Dokumen Pembayaran');?></th>
+				<th><?php echo __('No. Referensi');?></th>
+				<td><?php echo $noref;?></td>
+			</tr>
+			<tr>
+				<th><?php echo __('No. Dokumen');?></th>
 				<td><?php echo $invoice['InvoicePayment']['nodoc'];?></td>
 			</tr>
 			<tr>

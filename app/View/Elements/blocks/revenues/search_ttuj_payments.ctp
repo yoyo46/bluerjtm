@@ -7,7 +7,7 @@
     </div>
     <div class="box-body">
         <?php 
-                echo $this->Form->create('TtujPayment', array(
+                echo $this->Form->create('Search', array(
                     'url'=> $this->Html->url( array(
                         'controller' => 'revenues',
                         'action' => 'search',
@@ -29,7 +29,7 @@
                             <i class="fa fa-calendar"></i>
                         </div>
                         <?php 
-                                echo $this->Form->input('Ttuj.date',array(
+                                echo $this->Form->input('date',array(
                                     'label'=> false,
                                     'class'=>'form-control pull-right date-range',
                                     'required' => false,
@@ -37,9 +37,31 @@
                         ?>
                     </div>
                 </div>
+                <div class="form-group">
+                    <?php 
+                        echo $this->Form->input('noref',array(
+                            'label'=> __('No. Referensi'),
+                            'class'=>'form-control',
+                            'required' => false,
+                            'placeholder' => __('No. Referensi')
+                        ));
+                    ?>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                        echo $this->Form->input('nodoc',array(
+                            'label'=> __('No. Dokumen'),
+                            'class'=>'form-control',
+                            'required' => false,
+                            'placeholder' => __('No. Dokumen')
+                        ));
+                    ?>
+                </div>
                 <?php 
                         if( $action_type == 'biaya_ttuj' ) {
-                            echo $this->Html->tag('div', $this->Form->input('Ttuj.receiver_name',array(
+                            echo $this->Html->tag('div', $this->Form->input('name',array(
                                 'label'=> __('Dibayar Kepada'),
                                 'class'=>'form-control',
                                 'required' => false,
@@ -49,28 +71,6 @@
                             ));
                         }
                 ?>
-                <!-- <div class="form-group">
-                    <?php 
-                        echo $this->Form->input('Ttuj.no_ttuj',array(
-                            'label'=> __('No. TTUJ'),
-                            'class'=>'form-control',
-                            'required' => false,
-                            'placeholder' => __('No. TTUJ')
-                        ));
-                    ?>
-                </div> -->
-            </div>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php 
-                        echo $this->Form->input('InvoicePayment.nodoc',array(
-                            'label'=> __('No. Dokumen'),
-                            'class'=>'form-control',
-                            'required' => false,
-                            'placeholder' => __('No. Dokumen')
-                        ));
-                    ?>
-                </div>
             </div>
         </div>
         <div class="row">

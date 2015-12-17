@@ -7,10 +7,10 @@ class LeasingPayment extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'No Dokumen harap diisi'
             ),
-            'isUnique' => array(
-                'rule' => array('isUnique'),
-                'message' => 'No Dokumen telah terdaftar',
-            ),
+            // 'isUnique' => array(
+            //     'rule' => array('isUnique'),
+            //     'message' => 'No Dokumen telah terdaftar',
+            // ),
         ),
         'coa_id' => array(
             'notempty' => array(
@@ -199,14 +199,29 @@ class LeasingPayment extends AppModel {
     }
 
     public function _callRefineParams( $data = '', $default_options = false ) {
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
         $vendor_id = !empty($data['named']['vendor_id'])?$data['named']['vendor_id']:false;
+        $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
 
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(LeasingPayment.payment_date, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(LeasingPayment.payment_date, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
         if( !empty($nodoc) ) {
             $default_options['conditions']['LeasingPayment.no_doc LIKE'] = '%'.$nodoc.'%';
         }
         if( !empty($vendor_id) ) {
             $default_options['conditions']['LeasingPayment.vendor_id'] = $vendor_id;
+        }
+        if(!empty($noref)){
+            $default_options['conditions']['LPAD(LeasingPayment.id, 6, 0) LIKE'] = '%'.$noref.'%';
         }
         
         return $default_options;

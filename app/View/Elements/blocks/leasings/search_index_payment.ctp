@@ -7,7 +7,7 @@
     </div>
     <div class="box-body">
         <?php 
-                echo $this->Form->create('LeasingPayment', array(
+                echo $this->Form->create('Search', array(
                     'url'=> $this->Html->url( array(
                         'controller' => 'leasings',
                         'action' => 'search',
@@ -38,22 +38,11 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('Search.nodoc',array(
-                                'label'=> __('No. Kontrak'),
+                            echo $this->Form->input('noref',array(
+                                'label'=> __('No. Referensi'),
                                 'class'=>'form-control',
                                 'required' => false,
-                            ));
-                    ?>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->input('Search.vendor_id',array(
-                                'label'=> __('Vendor'),
-                                'class'=>'form-control',
-                                'empty' => __('Pilih Vendor'),
-                                'required' => false,
+                                'placeholder' => __('No. Referensi')
                             ));
                     ?>
                 </div>
@@ -70,6 +59,27 @@
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',
+                            ));
+                    ?>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('nodoc',array(
+                                'label'=> __('No. Kontrak'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('vendor_id',array(
+                                'label'=> __('Vendor'),
+                                'class'=>'form-control',
+                                'empty' => __('Pilih Vendor'),
+                                'required' => false,
                             ));
                     ?>
                 </div>

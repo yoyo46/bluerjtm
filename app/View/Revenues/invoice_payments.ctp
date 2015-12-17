@@ -21,6 +21,9 @@
         <table class="table table-hover">
             <tr>
                 <?php
+                        echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.id', __('No. Referensi'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', __('Customer'));
                         echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.nodoc', __('No. Dokumen'), array(
                             'escape' => false
@@ -47,13 +50,15 @@
                     if(!empty($invoices)){
                         foreach ($invoices as $key => $value) {
                             $id = $value['InvoicePayment']['id'];
+                            $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
             ?>
             <tr>
+                <td><?php echo $noref;?></td>
                 <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:false;?></td>
                 <td><?php echo $value['InvoicePayment']['nodoc'];?></td>
                 <!-- <td><?php // echo !empty($value['Coa']['name'])?$value['Coa']['name']:false;?></td> -->
                 <td align="right"><?php echo $this->Number->currency($value['InvoicePayment']['grand_total_payment'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
-                <td class="text-center"><?php echo $this->Common->customDate($value['InvoicePayment']['date_payment']);?></td>
+                <td class="text-center"><?php echo $this->Common->customDate($value['InvoicePayment']['date_payment'], 'd M Y');?></td>
                 <td>
                     <?php 
                             echo $this->Revenue->_callStatusInvoicePayment($value);

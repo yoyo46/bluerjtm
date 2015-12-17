@@ -26,6 +26,9 @@
             <thead>
                 <tr>
                     <?php
+                            echo $this->Html->tag('th', $this->Paginator->sort('Siup.id', __('No. Referensi'), array(
+                                'escape' => false
+                            )));
                             echo $this->Html->tag('th', $this->Paginator->sort('Siup.no_pol', __('No. Pol'), array(
                                 'escape' => false
                             )));
@@ -53,11 +56,13 @@
                     if(!empty($siupPayments)){
                         foreach ($siupPayments as $key => $value) {
                             $id = $value['SiupPayment']['id'];
+                            $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
             ?>
             <tr>
+                <td><?php echo $noref;?></td>
                 <td><?php echo $value['Siup']['no_pol'];?></td>
-                <td><?php echo $this->Common->customDate($value['Siup']['tgl_siup']);?></td>
-                <td><?php echo $this->Common->customDate($value['Siup']['to_date']);?></td>
+                <td><?php echo $this->Common->customDate($value['Siup']['tgl_siup'], 'd M Y');?></td>
+                <td><?php echo $this->Common->customDate($value['Siup']['to_date'], 'd M Y');?></td>
                 <td>
                     <?php echo $this->Number->currency($value['SiupPayment']['total_pembayaran'], 'Rp. ', array('places' => 0));?>
                 </td>
@@ -104,7 +109,7 @@
                     } else {
                          echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '7'
+                            'colspan' => '8'
                         )));
                     }
             ?>

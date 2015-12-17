@@ -372,32 +372,14 @@ class LeasingsController extends AppController {
         $this->set('active_menu', 'leasing_payments');
         $this->set('sub_module_title', __('Data Pembayaran Leasing'));
 
-        $options = array();
         $dateFrom = date('Y-m-01');
         $dateTo = date('Y-m-t');
         
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            if(!empty($refine['date'])){
-                $dateStr = urldecode($refine['date']);
-                $date = explode('-', $dateStr);
-
-                if( !empty($date) ) {
-                    $date[0] = urldecode($date[0]);
-                    $date[1] = urldecode($date[1]);
-                    $dateFrom = $this->MkCommon->getDate($date[0]);
-                    $dateTo = $this->MkCommon->getDate($date[1]);
-                }
-                $this->request->data['LeasingPayment']['date'] = $dateStr;
-            }
-        }
-
-        $options['conditions']['LeasingPayment.payment_date >='] = $dateFrom;
-        $options['conditions']['LeasingPayment.payment_date <='] = $dateTo;
-        $options =  $this->Leasing->LeasingPayment->_callRefineParams($this->params, $options);
-        $this->MkCommon->_callRefineParams($this->params);
-
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->Leasing->LeasingPayment->_callRefineParams($params);
         $this->paginate = $this->Leasing->LeasingPayment->getData('paginate', $options, array(
             'status' => 'all',
         ));

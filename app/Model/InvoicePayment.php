@@ -133,5 +133,30 @@ class InvoicePayment extends AppModel {
 
         return $data;
     }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+        $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
+
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
+        if(!empty($nodoc)){
+            $default_options['conditions']['InvoicePayment.nodoc LIKE'] = '%'.$nodoc.'%';
+        }
+        if(!empty($noref)){
+            $default_options['conditions']['LPAD(InvoicePayment.id, 6, 0) LIKE'] = '%'.$noref.'%';
+        }
+        
+        return $default_options;
+    }
 }
 ?>

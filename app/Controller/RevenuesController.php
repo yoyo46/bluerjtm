@@ -4767,30 +4767,14 @@ class RevenuesController extends AppController {
         $this->set('active_menu', 'invoice_payments');
         $this->set('sub_module_title', __('Pembayaran Invoice'));
 
-        $conditions = array();
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            if(!empty($refine['from'])){
-                $from = urldecode(rawurldecode($refine['from']));
-                $this->request->data['InvoicePayment']['date_from'] = $from;
-                $conditions['DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m-%d\') >= '] = $this->MkCommon->getDate($from);
-            }
-            if(!empty($refine['to'])){
-                $to = urldecode(rawurldecode($refine['to']));
-                $this->request->data['InvoicePayment']['date_to'] = $to;
-                $conditions['DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m-%d\') <= '] = $this->MkCommon->getDate($to);
-            }
-            if(!empty($refine['nodoc'])){
-                $to = urldecode(rawurldecode(rawurldecode($refine['nodoc'])));
-                $this->request->data['InvoicePayment']['nodoc'] = $to;
-                $conditions['InvoicePayment.nodoc LIKE'] = '%'.$to.'%';
-            }
-        }
-
-        $this->paginate = $this->InvoicePayment->getData('paginate', array(
-            'conditions' => $conditions,
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->InvoicePayment->_callRefineParams($params, array(
             'contain' => array(
                 'Coa'
             ),
@@ -4798,7 +4782,8 @@ class RevenuesController extends AppController {
                 'InvoicePayment.created' => 'DESC',
                 'InvoicePayment.id' => 'DESC',
             ),
-        ), true, array(
+        ));
+        $this->paginate = $this->InvoicePayment->getData('paginate', $options, true, array(
             'status' => 'all',
         ));
         $invoices = $this->paginate('InvoicePayment');
@@ -6855,8 +6840,14 @@ class RevenuesController extends AppController {
 
     function ttuj_payments( $action_type = 'uang_jalan_commission' ){
         $this->loadModel('TtujPayment');
-        $conditions = array(
-            'TtujPayment.type' => $action_type,
+        $options = array(
+            'conditions' => array(
+                'TtujPayment.type' => $action_type,
+            ),
+            'order' => array(
+                'TtujPayment.created' => 'DESC',
+                'TtujPayment.id' => 'DESC',
+            ),
         );
 
         switch ($action_type) {
@@ -6870,52 +6861,17 @@ class RevenuesController extends AppController {
                 $this->set('sub_module_title', __('Pembayaran Uang Jalan/Komisi'));
                 break;
         }
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            if(!empty($refine['nodoc'])){
-                $to = urldecode(rawurldecode(rawurldecode($refine['nodoc'])));
-                $this->request->data['InvoicePayment']['nodoc'] = $to;
-                $conditions['TtujPayment.nodoc LIKE'] = '%'.$to.'%';
-            }
-            
-            if(!empty($refine['no_ttuj'])){
-                $no_ttuj = urldecode($refine['no_ttuj']);
-                $this->request->data['Ttuj']['no_ttuj'] = $no_ttuj;
-                $conditions['Ttuj.no_ttuj LIKE'] = '%'.$no_ttuj.'%';
-            }
-
-            if(!empty($refine['date'])){
-                $dateStr = urldecode($refine['date']);
-                $date = explode('-', $dateStr);
-
-                if( !empty($date) ) {
-                    $date[0] = urldecode($date[0]);
-                    $date[1] = urldecode($date[1]);
-                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                    $dateFrom = $this->MkCommon->getDate($date[0]);
-                    $dateTo = $this->MkCommon->getDate($date[1]);
-                    $conditions['DATE_FORMAT(TtujPayment.date_payment, \'%Y-%m-%d\') >='] = $dateFrom;
-                    $conditions['DATE_FORMAT(TtujPayment.date_payment, \'%Y-%m-%d\') <='] = $dateTo;
-                }
-                $this->request->data['Ttuj']['date'] = $dateStr;
-            }
-            
-            if(!empty($refine['receiver_name'])){
-                $receiver_name = urldecode($refine['receiver_name']);
-                $this->request->data['Ttuj']['receiver_name'] = $receiver_name;
-                $conditions['TtujPayment.receiver_name LIKE'] = '%'.$receiver_name.'%';
-            }
-        }
-
-        $this->paginate = $this->TtujPayment->getData('paginate', array(
-            'conditions' => $conditions,
-            'order' => array(
-                'TtujPayment.created' => 'DESC',
-                'TtujPayment.id' => 'DESC',
-            ),
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
         ));
+        $options =  $this->TtujPayment->_callRefineParams($params, $options);
+
+        $this->paginate = $this->TtujPayment->getData('paginate', $options);
         $invoices = $this->paginate('TtujPayment');
 
         $this->set(compact(

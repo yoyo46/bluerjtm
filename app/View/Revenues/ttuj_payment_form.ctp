@@ -47,6 +47,24 @@
         <h3 class="box-title"><?php echo __('Informasi Pembayaran'); ?></h3>
     </div>
     <div class="box-body">
+    	<?php 
+    			if( !empty($invoice) ) {
+					$id = $this->Common->filterEmptyField($invoice, 'TtujPayment', 'id');
+                    $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+
+					echo $this->Form->input('id',array(
+						'type' => 'text',
+						'label'=> __('No. Referensi'), 
+						'class'=>'form-control',
+						'required' => false,
+						'disabled' => true,
+						'div' => array(
+							'class' => 'form-group',
+						),
+						'value' => $noref,
+					));
+    			}
+    	?>
         <div class="form-group">
         	<?php 
 					echo $this->Form->input('nodoc',array(

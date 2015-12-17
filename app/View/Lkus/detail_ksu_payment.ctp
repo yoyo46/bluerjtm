@@ -6,6 +6,8 @@
 		$this->Html->addCrumb($sub_module_title);
 		
 		$coa_name = $this->Common->filterEmptyField($KsuPayment, 'Coa', 'coa_name', '-');
+		$id = $this->Common->filterEmptyField($KsuPayment, 'KsuPayment', 'id');
+        $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
 ?>
 <div class="box">
     <div class="box-header">
@@ -14,7 +16,11 @@
 	<div class="box-body table-responsive">
 	    <table class="table table-hover">
 			<tr>
-				<th><?php echo __('No. Dokumen Pembayaran');?></th>
+				<th><?php echo __('No. Referensi');?></th>
+				<td><?php echo $noref;?></td>
+			</tr>
+			<tr>
+				<th><?php echo __('No. Dokumen');?></th>
 				<td><?php echo $KsuPayment['KsuPayment']['no_doc'];?></td>
 			</tr>
 			<tr>

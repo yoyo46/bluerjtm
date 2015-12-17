@@ -7,10 +7,9 @@
     </div>
     <div class="box-body">
         <?php 
-                $model = (isset($model) && !empty($model)) ? $model : 'LkuPayment';
                 $action = (isset($action) && !empty($action)) ? $action : 'payments';
                 
-                echo $this->Form->create($model, array(
+                echo $this->Form->create('Search', array(
                     'url'=> $this->Html->url( array(
                         'controller' => 'lkus',
                         'action' => 'search',
@@ -24,12 +23,23 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('no_doc',array(
-                                'label'=> __('No Dokumen'),
+                            echo $this->Form->input('noref',array(
+                                'label'=> __('No. Referensi'),
                                 'class'=>'form-control',
                                 'required' => false,
-                                'placeholder' => __('No Dokumen')
+                                'placeholder' => __('No. Referensi')
                             ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php
+                           echo $this->Form->input('customer',array(
+                                'label'=> __('Customer'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Customer'),
+                                'options' => $customers
+                            )); 
                     ?>
                 </div>
                 <div class="form-group action">
@@ -51,14 +61,13 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <?php
-                           echo $this->Form->input('Lku.customer_id',array(
-                                'label'=> __('Customer'),
+                    <?php 
+                            echo $this->Form->input('nodoc',array(
+                                'label'=> __('No. Dokumen'),
                                 'class'=>'form-control',
                                 'required' => false,
-                                'empty' => __('Pilih Customer'),
-                                'options' => $customers
-                            )); 
+                                'placeholder' => __('No. Dokumen')
+                            ));
                     ?>
                 </div>
             </div>

@@ -1,8 +1,14 @@
 <?php 
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $dataColumns = array(
+            'noref' => array(
+                'name' => __('No. Ref'),
+                'field_model' => 'Cashbank.id',
+                'rowspan' => 2,
+                'display' => true,
+            ),
             'nodoc' => array(
-                'name' => __('No Doc'),
+                'name' => __('No. Doc'),
                 'field_model' => 'Cashbank.nodoc',
                 'rowspan' => 2,
                 'display' => true,

@@ -7,10 +7,10 @@ class Invoice extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Kode Invoice harap diisi'
             ),
-            'isUnique' => array(
-                'rule' => array('isUnique'),
-                'message' => 'Kode Invoice telah terdaftar',
-            ),
+            // 'isUnique' => array(
+            //     'rule' => array('isUnique'),
+            //     'message' => 'Kode Invoice telah terdaftar',
+            // ),
         ),
         'invoice_date' => array(
             'notempty' => array(

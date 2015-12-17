@@ -32,6 +32,9 @@
         <table class="table table-hover">
             <tr>
                 <?php
+                        echo $this->Html->tag('th', $this->Paginator->sort('TtujPayment.id', __('No. Referensi'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', $this->Paginator->sort('TtujPayment.nodoc', __('No. Dokumen'), array(
                             'escape' => false
                         )));
@@ -65,9 +68,11 @@
                     if(!empty($invoices)){
                         foreach ($invoices as $key => $value) {
                             $id = $value['TtujPayment']['id'];
+                            $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
             ?>
             <tr>
                 <?php 
+                        echo $this->Html->tag('td', $noref);
                         echo $this->Html->tag('td', $value['TtujPayment']['nodoc']);
 
                         if( $action_type == 'biaya_ttuj' ) {
@@ -78,7 +83,7 @@
                             'class' => 'text-right'
                         ));
 
-                        echo $this->Html->tag('td', $this->Common->customDate($value['TtujPayment']['date_payment']), array(
+                        echo $this->Html->tag('td', $this->Common->customDate($value['TtujPayment']['date_payment'], 'd M Y'), array(
                             'class' => 'text-center'
                         ));
 
@@ -135,7 +140,7 @@
                     } else {
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '7'
+                            'colspan' => '8'
                         )));
                     }
             ?>

@@ -3,8 +3,13 @@
         echo $this->element('blocks/leasings/search_index_payment');
 
         $dataColumns = array(
+            'noref' => array(
+                'name' => __('No. Referensi'),
+                'field_model' => 'LeasingPayment.id',
+                'display' => true,
+            ),
             'no_doc' => array(
-                'name' => __('No Dokumen'),
+                'name' => __('No. Dokumen'),
                 'field_model' => 'LeasingPayment.no_doc',
                 'display' => true,
             ),
@@ -88,9 +93,11 @@
                             $customCreated = $this->Time->niceShort($created);
                             $customDate = $this->Common->customDate($payment_date, 'd/m/Y');
                             $customGrandtotal = $this->Common->getFormatPrice($grandtotal);
+                            $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
             ?>
             <tr>
                 <?php 
+                        echo $this->Html->tag('td', $noref);
                         echo $this->Html->tag('td', $no_doc);
                         echo $this->Html->tag('td', $customDate, array(
                             'class' => 'text-center',
@@ -144,7 +151,7 @@
                     }else{
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '8'
+                            'colspan' => '9'
                         )));
                     }
             ?>
