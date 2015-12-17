@@ -4814,6 +4814,14 @@ class RevenuesController extends AppController {
     function doInvoicePayment($id = false, $data_local = false){
         $this->loadModel('Customer');
         $this->loadModel('Coa');
+        
+        $head_office = Configure::read('__Site.config_branch_head_office');
+
+        if( !empty($head_office) ) {
+            $elementRevenue = array(
+                'branch' => false,
+            );
+        }
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -4871,7 +4879,7 @@ class RevenuesController extends AppController {
                             'conditions' => array(
                                 'Invoice.id' => $_invoice_id
                             ),
-                        ));
+                        ), true, $elementRevenue);
                         
                         if(!empty($invoice_data)){
                             if($total_paid > $invoice_data['Invoice']['total']){
@@ -5020,7 +5028,7 @@ class RevenuesController extends AppController {
                     'Invoice.customer_id' => $this->request->data['InvoicePayment']['customer_id'],
                     'Invoice.complete_paid' => 0
                 ),
-            ));
+            ), true, $elementRevenue);
 
             if( !empty($bank_id) ) {
                 $this->request->data['InvoicePayment']['bank_id'] = $bank_id;
@@ -5057,7 +5065,7 @@ class RevenuesController extends AppController {
             'fields' => array(
                 'Invoice.id', 'Customer.id'
             )
-        ));
+        ), true, $elementRevenue);
         $list_customer = $this->Customer->getData('list', array(
             'conditions' => array(
                 'Customer.id' => $customers,

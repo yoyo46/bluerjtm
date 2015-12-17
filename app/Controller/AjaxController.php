@@ -1445,6 +1445,13 @@ class AjaxController extends AppController {
         
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');
+        $head_office = Configure::read('__Site.config_branch_head_office');
+
+        if( !empty($head_office) ) {
+            $elementRevenue = array(
+                'branch' => false,
+            );
+        }
 
 		$options = array(
 			'conditions' => array(
@@ -1460,7 +1467,7 @@ class AjaxController extends AppController {
         $options =  $this->Invoice->_callRefineParams($params, $options);
 
 		if(!empty($id)){
-			$invoices = $this->Invoice->getdata('all', $options);
+			$invoices = $this->Invoice->getdata('all', $options, true, $elementRevenue);
 
 			if(!empty($invoices)){
 				foreach ($invoices as $key => $value) {
@@ -1474,7 +1481,7 @@ class AjaxController extends AppController {
 						)
 					));
 
-					 $invoices[$key]['invoice_has_paid'] = $invoice_has_paid[0]['invoice_has_paid'];
+				 	$invoices[$key]['invoice_has_paid'] = $invoice_has_paid[0]['invoice_has_paid'];
 				}
 			}
 		}
