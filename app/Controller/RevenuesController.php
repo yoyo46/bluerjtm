@@ -3783,7 +3783,7 @@ class RevenuesController extends AppController {
                 $this->Ttuj->id = $locale['Revenue']['ttuj_id'];
                 $this->Ttuj->save();
 
-                $titleJournal = sprintf(__('Revenue untuk customer %s'), $customer_name);
+                $titleJournal = sprintf(__('Pembatalan Revenue untuk customer %s'), $customer_name);
                 $this->User->Journal->setJournal($total, array(
                     'credit' => 'revenue_coa_debit_id',
                     'debit' => 'revenue_coa_credit_id',
@@ -3792,7 +3792,7 @@ class RevenuesController extends AppController {
                     'document_id' => $id,
                     'title' => $titleJournal,
                     'document_no' => $no_doc,
-                    'type' => 'revenue',
+                    'type' => 'revenue_void',
                 ));
 
                 $this->MkCommon->setCustomFlash(__('Revenue berhasil dibatalkan.'), 'success');
@@ -4816,6 +4816,7 @@ class RevenuesController extends AppController {
         $this->loadModel('Coa');
         
         $head_office = Configure::read('__Site.config_branch_head_office');
+        $elementRevenue = false;
 
         if( !empty($head_office) ) {
             $elementRevenue = array(

@@ -2007,4 +2007,44 @@ class CommonHelper extends AppHelper {
 
         return $result;
     }
+
+    // function _callDocumentJournal ( $id = false, $type = false ) {
+    //     if( in_array($type, array( 'asdp', 'asdp_void', 'commission', 'commission_void' )) ) {
+    //         $urlDefault = array(
+    //             'controller' => 'revenues',
+    //             'action' => 'info_truk',
+    //             $id,
+    //             'admin' => false,
+    //         );
+    //     } else if( in_array($type, array( 'biaya_ttuj_payment', 'biaya_ttuj_payment_void' )) ) {
+    //         $urlDefault = array(
+    //             'controller' => 'revenues',
+    //             'action' => 'detail_ttuj_payment',
+    //             $id,
+    //             'admin' => false,
+    //         );
+    //     } else if( in_array($type, array( 'in', 'void_in', 'out', 'void_out', 'prepayment_out', 'void_prepayment_out' )) ) {
+    //         $urlDefault = array(
+    //             'controller' => 'cashbanks',
+    //             'action' => 'detail',
+    //             $id,
+    //             'admin' => false,
+    //         );
+    //     } else if( in_array($type, array( 'invoice', 'invoice_void' )) ) {
+    //         $urlDefault = array(
+    //             'controller' => 'revenues',
+    //             'action' => 'invoice_print',
+    //             $id,
+    //             'print' => 'date',
+    //             'admin' => false,
+    //         );
+    //     } else if( in_array($type, array( 'revenue', 'revenue_void' )) ) {
+    //         $urlDefault = array(
+    //             'controller' => 'revenues',
+    //             'action' => 'edit',
+    //             $id,
+    //             'admin' => false,
+    //         );
+    //     }
+    // }
 }

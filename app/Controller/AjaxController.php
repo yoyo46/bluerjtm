@@ -1446,6 +1446,7 @@ class AjaxController extends AppController {
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');
         $head_office = Configure::read('__Site.config_branch_head_office');
+        $elementRevenue = false;
 
         if( !empty($head_office) ) {
             $elementRevenue = array(
