@@ -4202,7 +4202,7 @@ class RevenuesController extends AppController {
                                     $this->CustomerGroupPattern->addPattern($customer, $data);
 
                                     if( !empty($data['Invoice']['total']) ) {
-                                        $titleJournalInv = sprintf(__('Invoice untuk customer %s'), $customer_name_code);
+                                        $titleJournalInv = sprintf(__('Invoice customer: %s, No: %s'), $customer_name_code, $invoice_number);
                                         $total = $this->MkCommon->filterEmptyField($data, 'Invoice', 'total');
 
                                         $this->User->Journal->setJournal($total, array(
@@ -4243,7 +4243,7 @@ class RevenuesController extends AppController {
                         $document_no = !empty($data['Invoice']['no_invoice'])?$data['Invoice']['no_invoice']:false;
 
                         if( !empty($data['Invoice']['total']) ) {
-                            $titleJournalInv = sprintf(__('Invoice untuk customer %s'), $customer_name_code);
+                            $titleJournalInv = sprintf(__('Invoice customer: %s, No: %s'), $customer_name_code, $document_no);
                             $total = $this->MkCommon->filterEmptyField($data, 'Invoice', 'total');
 
                             $this->User->Journal->setJournal($total, array(
@@ -5585,7 +5585,7 @@ class RevenuesController extends AppController {
                     if($this->Invoice->save()){
                         if( !empty($invoice['Invoice']['total']) ) {
                             $document_no = !empty($invoice['Invoice']['no_invoice'])?$invoice['Invoice']['no_invoice']:false;
-                            $titleJournalInv = sprintf(__('<i>Pembatalan</i> invoice untuk customer %s'), $customer_name_code);
+                            $titleJournalInv = sprintf(__('<i>Pembatalan</i> invoice customer: %s, No: %s'), $customer_name_code, $document_no);
                             $total = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'total');
 
                             $this->User->Journal->setJournal($total, array(

@@ -152,7 +152,7 @@ class Journal extends AppModel {
             ),
             'order'=> array(
                 'Journal.date' => 'DESC',
-                'Journal.document_id' => 'ASC',
+                'Journal.document_id' => 'DESC',
                 'Journal.type' => 'ASC',
                 'Journal.id' => 'DESC',
             ),
