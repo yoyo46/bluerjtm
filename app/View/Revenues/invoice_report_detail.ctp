@@ -25,6 +25,12 @@
                 'style' => 'text-align: center',
                 'display' => true,
             ),
+            'expired_date' => array(
+                'name' => __('Tatuh Tempo'),
+                'field_model' => 'Invoice.invoice_date',
+                'style' => 'text-align: center',
+                'display' => true,
+            ),
             'total' => array(
                 'name' => __('Total'),
                 'field_model' => 'Invoice.total',

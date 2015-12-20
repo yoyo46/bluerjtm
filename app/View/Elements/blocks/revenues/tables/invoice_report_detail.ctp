@@ -10,6 +10,8 @@
                 $period_from = $this->Common->filterEmptyField($value, 'Invoice', 'period_from');
                 $period_to = $this->Common->filterEmptyField($value, 'Invoice', 'period_to');
                 $total = $this->Common->filterEmptyField($value, 'Invoice', 'total');
+                $due_invoice = $this->Common->filterEmptyField($value, 'Invoice', 'due_invoice');
+                $expired_date = date('d M Y', strtotime(sprintf("%s +%s day", $invoice_date, $due_invoice)));
 
                 $grandtotal += $total;
                 $customDate = $this->Common->customDate($invoice_date, 'd M Y');
@@ -25,6 +27,9 @@
                     'style' => 'text-align: center;',
                 ));
                 $content .= $this->Html->tag('td', $customPeriod);
+                $content .= $this->Html->tag('td', $expired_date, array(
+                    'style' => 'text-align: center;',
+                ));
                 $content .= $this->Html->tag('td', $customTotal, array(
                     'style' => 'text-align: right;',
                 ));
@@ -35,7 +40,7 @@
             $grandtotal = $this->Common->getFormatPrice($grandtotal);
             $content = $this->Html->tag('td', __('Total'), array(
                 'style' => 'text-align: right;',
-                'colspan' => 4,
+                'colspan' => 5,
             ));
             $content .= $this->Html->tag('td', $grandtotal, array(
                 'style' => 'text-align: right;',
