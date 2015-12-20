@@ -473,7 +473,7 @@ class Revenue extends AppModel {
 
         $dataCustomer = $this->Ttuj->Customer->getMerge(array(), $customer_id);
         $customer_name = !empty($dataCustomer['Customer']['customer_name_code'])?$dataCustomer['Customer']['customer_name_code']:false;
-        $titleJournal = sprintf(__('Revenue untuk customer %s'), $customer_name);
+        $titleJournal = sprintf(__('Revenue customer %s '), $customer_name);
 
         $this->Journal->deleteJournal($revenue_id, array(
             'revenue',

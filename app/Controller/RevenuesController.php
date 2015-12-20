@@ -3783,7 +3783,7 @@ class RevenuesController extends AppController {
                 $this->Ttuj->id = $locale['Revenue']['ttuj_id'];
                 $this->Ttuj->save();
 
-                $titleJournal = sprintf(__('Pembatalan Revenue untuk customer %s'), $customer_name);
+                $titleJournal = sprintf(__('Pembatalan Revenue customer %s'), $customer_name);
                 $this->User->Journal->setJournal($total, array(
                     'credit' => 'revenue_coa_debit_id',
                     'debit' => 'revenue_coa_credit_id',
@@ -5290,7 +5290,7 @@ class RevenuesController extends AppController {
                         $this->Revenue->id = $revenue_id;
                         $this->Revenue->save();
 
-                        $titleJournal = sprintf(__('Revenue untuk customer %s'), $customer_name);
+                        $titleJournal = sprintf(__('Revenue customer %s'), $customer_name);
                         $this->User->Journal->setJournal($total, array(
                             'credit' => 'revenue_coa_credit_id',
                             'debit' => 'revenue_coa_debit_id',
