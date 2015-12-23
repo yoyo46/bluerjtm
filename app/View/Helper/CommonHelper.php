@@ -2008,43 +2008,110 @@ class CommonHelper extends AppHelper {
         return $result;
     }
 
-    // function _callDocumentJournal ( $id = false, $type = false ) {
-    //     if( in_array($type, array( 'asdp', 'asdp_void', 'commission', 'commission_void' )) ) {
-    //         $urlDefault = array(
-    //             'controller' => 'revenues',
-    //             'action' => 'info_truk',
-    //             $id,
-    //             'admin' => false,
-    //         );
-    //     } else if( in_array($type, array( 'biaya_ttuj_payment', 'biaya_ttuj_payment_void' )) ) {
-    //         $urlDefault = array(
-    //             'controller' => 'revenues',
-    //             'action' => 'detail_ttuj_payment',
-    //             $id,
-    //             'admin' => false,
-    //         );
-    //     } else if( in_array($type, array( 'in', 'void_in', 'out', 'void_out', 'prepayment_out', 'void_prepayment_out' )) ) {
-    //         $urlDefault = array(
-    //             'controller' => 'cashbanks',
-    //             'action' => 'detail',
-    //             $id,
-    //             'admin' => false,
-    //         );
-    //     } else if( in_array($type, array( 'invoice', 'invoice_void' )) ) {
-    //         $urlDefault = array(
-    //             'controller' => 'revenues',
-    //             'action' => 'invoice_print',
-    //             $id,
-    //             'print' => 'date',
-    //             'admin' => false,
-    //         );
-    //     } else if( in_array($type, array( 'revenue', 'revenue_void' )) ) {
-    //         $urlDefault = array(
-    //             'controller' => 'revenues',
-    //             'action' => 'edit',
-    //             $id,
-    //             'admin' => false,
-    //         );
-    //     }
-    // }
+    function _callDocumentJournal ( $label, $id = false, $type = false ) {
+        if( in_array($type, array( 'asdp', 'asdp_void', 'commission', 'commission_void', 'uang_jalan', 'uang_kuli_muat', 'uang_kuli_bongkar', 'uang_kawal', 'uang_keamanan', 'uang_jalan_void', 'uang_kuli_muat_void', 'uang_kuli_bongkar_void', 'uang_kawal_void', 'uang_keamanan_void' )) ) {
+            $urlDefault = array(
+                'controller' => 'revenues',
+                'action' => 'info_truk',
+                'ttuj',
+                $id,
+                'admin' => false,
+            );
+        } else if( in_array($type, array( 'in', 'void_in', 'out', 'void_out', 'ppn_out', 'void_ppn_out', 'prepayment_out', 'void_prepayment_out' )) ) {
+            $urlDefault = array(
+                'controller' => 'cashbanks',
+                'action' => 'detail',
+                $id,
+                'admin' => false,
+            );
+        } else if( in_array($type, array( 'leasing_payment', 'leasing_payment_void' )) ) {
+            $urlDefault = array(
+                'controller' => 'leasings',
+                'action' => 'detail_payment',
+                $id,
+                'admin' => false,
+            );
+        } else if( in_array($type, array( 'lku_payment', 'lku_payment_void' )) ) {
+            $urlDefault = array(
+                'controller' => 'lkus',
+                'action' => 'detail_payment',
+                $id,
+                'admin' => false,
+            );
+        } else if( in_array($type, array( 'ksu_payment', 'ksu_payment_void' )) ) {
+            $urlDefault = array(
+                'controller' => 'lkus',
+                'action' => 'detail_ksu_payment',
+                $id,
+                'admin' => false,
+            );
+        } else if( in_array($type, array( 'invoice', 'invoice_void' )) ) {
+            $urlDefault = array(
+                'controller' => 'revenues',
+                'action' => 'invoice_print',
+                $id,
+                'print' => 'date',
+                'admin' => false,
+            );
+        } else if( in_array($type, array( 'invoice_payment', 'invoice_payment_void' )) ) {
+            $urlDefault = array(
+                'controller' => 'revenues',
+                'action' => 'detail_invoice_payment',
+                $id,
+                'admin' => false,
+            );
+        } else if( in_array($type, array( 'kir', 'kir_void' )) ) {
+            $urlDefault = array(
+                'controller' => 'trucks',
+                'action' => 'kir_detail',
+                $id,
+                'admin' => false,
+            );
+        } else if( in_array($type, array( 'siup', 'siup_void' )) ) {
+            $urlDefault = array(
+                'controller' => 'trucks',
+                'action' => 'siup_detail',
+                $id,
+                'admin' => false,
+            );
+        } else if( in_array($type, array( 'stnk', 'stnk_void' )) ) {
+            $urlDefault = array(
+                'controller' => 'trucks',
+                'action' => 'stnk_detail',
+                $id,
+                'admin' => false,
+            );
+        } else if( in_array($type, array( 'revenue', 'revenue_void' )) ) {
+            $urlDefault = array(
+                'controller' => 'revenues',
+                'action' => 'edit',
+                $id,
+                'admin' => false,
+            );
+        } else if( in_array($type, array( 'biaya_ttuj_payment', 'biaya_ttuj_payment_void' )) ) {
+            $urlDefault = array(
+                'controller' => 'revenues',
+                'action' => 'detail_ttuj_payment',
+                $id,
+                'biaya_ttuj',
+                'admin' => false,
+            );
+        } else if( in_array($type, array( 'uang_Jalan_commission_payment', 'uang_Jalan_commission_payment_void' )) ) {
+            $urlDefault = array(
+                'controller' => 'revenues',
+                'action' => 'detail_ttuj_payment',
+                $id,
+                'uang_jalan_commission',
+                'admin' => false,
+            );
+        }
+
+        if( !empty($urlDefault) ) {
+            return $this->Html->link($label, $urlDefault, array(
+                'target' => 'blank',
+            ));
+        } else {
+            return $label;
+        }
+    }
 }

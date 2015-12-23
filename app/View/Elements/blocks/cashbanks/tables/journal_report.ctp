@@ -18,6 +18,7 @@
                 $customDate = $this->Common->formatDate($date, 'd/m/Y');
                 $customDebit = $this->Common->getFormatPrice($debit, false);
                 $customCredit = $this->Common->getFormatPrice($credit, false);
+                $customDocumentNo = $this->Common->_callDocumentJournal( $document_no, $document_id, $type );
 
                 if( $new != $old ) {
                     if( !empty($old) ) {
@@ -41,7 +42,7 @@
 ?>
 <tr>
     <?php
-            echo $this->Html->tag('td', $document_no);
+            echo $this->Html->tag('td', $customDocumentNo);
             echo $this->Html->tag('td', $coa, array(
                 'style' => 'text-align:left;'
             ));
