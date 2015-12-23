@@ -1047,22 +1047,28 @@ class SettingsController extends AppController {
                 $value = $this->UangJalan->gerMergeBiaya( $value, $id, true );
                 $values[$key] = $value;
             }
+
+            $UangJalanTipeMotorCnt = max(Set::extract('/UangJalanTipeMotorCnt', $values));
+            $CommissionGroupMotorCnt = max(Set::extract('/CommissionGroupMotorCnt', $values));
+            $AsdpGroupMotorCnt = max(Set::extract('/AsdpGroupMotorCnt', $values));
+            $UangKawalGroupMotorCnt = max(Set::extract('/UangKawalGroupMotorCnt', $values));
+            $UangKeamananGroupMotorCnt = max(Set::extract('/UangKeamananGroupMotorCnt', $values));
+
+            $this->set('module_title', __('List Uang Jalan'));
+            $this->set(compact(
+                'values', 'groupClassifications',
+                'UangJalanTipeMotorCnt', 'CommissionGroupMotorCnt',
+                'AsdpGroupMotorCnt', 'UangKawalGroupMotorCnt',
+                'UangKeamananGroupMotorCnt'
+            ));
+            $this->layout = 'ajax';
+        } else {
+            $this->MkCommon->redirectReferer(__('Uang jalan tidak ditemukan'), 'error', array(
+                'controller' => 'settings',
+                'action' => 'uang_jalan',
+                'admin' => false,
+            ));
         }
-
-        $UangJalanTipeMotorCnt = max(Set::extract('/UangJalanTipeMotorCnt', $values));
-        $CommissionGroupMotorCnt = max(Set::extract('/CommissionGroupMotorCnt', $values));
-        $AsdpGroupMotorCnt = max(Set::extract('/AsdpGroupMotorCnt', $values));
-        $UangKawalGroupMotorCnt = max(Set::extract('/UangKawalGroupMotorCnt', $values));
-        $UangKeamananGroupMotorCnt = max(Set::extract('/UangKeamananGroupMotorCnt', $values));
-
-        $this->set('module_title', __('List Uang Jalan'));
-        $this->set(compact(
-            'values', 'groupClassifications',
-            'UangJalanTipeMotorCnt', 'CommissionGroupMotorCnt',
-            'AsdpGroupMotorCnt', 'UangKawalGroupMotorCnt',
-            'UangKeamananGroupMotorCnt'
-        ));
-        $this->layout = 'ajax';
     }
 
     public function pick_uang_jalan() {
@@ -1105,13 +1111,19 @@ class SettingsController extends AppController {
                 $value = $this->TarifAngkutan->GroupMotor->getMerge($value, $group_motor_id);
                 $values[$key] = $value;
             }
-        }
 
-        $this->set('module_title', __('List Tarif Angkutan'));
-        $this->set(compact(
-            'values'
-        ));
-        $this->layout = 'ajax';
+            $this->set('module_title', __('List Tarif Angkutan'));
+            $this->set(compact(
+                'values'
+            ));
+            $this->layout = 'ajax';
+        } else {
+            $this->MkCommon->redirectReferer(__('Tarif angkut tidak ditemukan'), 'error', array(
+                'controller' => 'settings',
+                'action' => 'tarif_angkutan',
+                'admin' => false,
+            ));
+        }
     }
 
     public function pick_tarif_angkutan() {
@@ -5584,9 +5596,6 @@ class SettingsController extends AppController {
                                         } else {
                                             $validationErrors = $this->User->Coa->validationErrors;
                                             $textError = array();
-                                        debug($parent);
-                                        debug($validationErrors);
-                                        debug($dataSave);die();
 
                                             if( !empty($validationErrors) ) {
                                                 foreach ($validationErrors as $key => $validationError) {
