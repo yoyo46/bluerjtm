@@ -1163,6 +1163,11 @@ class CashbanksController extends AppController {
                 'Journal.document_id',
                 'Journal.type',
             ),
+            'order'=> array(
+                'Journal.date' => 'DESC',
+                'Journal.document_id' => 'DESC',
+                'Journal.id' => 'DESC',
+            ),
         );
 
         $params = $this->MkCommon->_callRefineParams($this->params, array(
