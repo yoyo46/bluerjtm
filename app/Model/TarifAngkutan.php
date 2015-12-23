@@ -62,10 +62,10 @@ class TarifAngkutan extends AppModel {
             'className' => 'Customer',
             'foreignKey' => 'customer_id',
         ),
-        // 'GroupMotor' => array(
-        //     'className' => 'GroupMotor',
-        //     'foreignKey' => 'group_motor_id',
-        // ),
+        'GroupMotor' => array(
+            'className' => 'GroupMotor',
+            'foreignKey' => 'group_motor_id',
+        ),
         // 'FromCity' => array(
         //     'className' => 'City',
         //     'foreignKey' => 'from_city_id',

@@ -12,6 +12,16 @@
                             'data-toggle' => 'dropdown',
                             'class' => 'btn btn-app btn-success dropdown-toggle'
                         ));
+                        echo $this->Html->link($this->Common->icon('file-o').__(' Download Excel'), array(
+                            'controller' => 'settings',
+                            'action' => 'pick_tarif_angkutan',
+                            'admin' => false,
+                        ), array(
+                            'escape' => false,
+                            'class' => 'btn btn-app ajaxCustomModal',
+                            'title' => __('Download Tarif Angkutan'),
+                            'data-size' => 'modal-sm',
+                        ));
                 ?>
                 <ul class="dropdown-menu" role="menu">
                     <?php 

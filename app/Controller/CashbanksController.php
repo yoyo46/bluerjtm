@@ -1191,6 +1191,8 @@ class CashbanksController extends AppController {
             $options['limit'] = Configure::read('__Site.config_pagination');
             $this->paginate = $this->User->Journal->getData('paginate', $options);
             $journals = $this->paginate('Journal');
+            
+            $this->MkCommon->_layout_file('select');
         }
 
         if( !empty($journals) ) {
@@ -1209,7 +1211,6 @@ class CashbanksController extends AppController {
         }
 
         $coas = $this->User->Journal->Coa->_callOptGroup();
-        $this->MkCommon->_layout_file('select');
 
         $this->set('active_menu', 'journal_report');
         $this->set(compact(

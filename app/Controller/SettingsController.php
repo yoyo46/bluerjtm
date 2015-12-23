@@ -1070,6 +1070,55 @@ class SettingsController extends AppController {
         $this->layout = 'ajax';
     }
 
+    public function download_tarif_angkutan() {
+        $this->loadModel('TarifAngkutan');
+        $this->loadModel('City');
+
+        $data = $this->request->data;
+        $branch_id = $this->MkCommon->filterEmptyField($data, 'GroupBranch', 'group_branch');
+
+        $values = $this->TarifAngkutan->getData('all', array(
+            'conditions' => array(
+                'TarifAngkutan.branch_id' => $branch_id,
+            ),
+            'order' => array(
+                'TarifAngkutan.branch_id' => 'ASC',
+                'TarifAngkutan.id' => 'ASC',
+            ),
+        ), true, array(
+            'branch' => false,
+        ));
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'TarifAngkutan', 'id');
+                $from_city_id = $this->MkCommon->filterEmptyField($value, 'TarifAngkutan', 'from_city_id');
+                $to_city_id = $this->MkCommon->filterEmptyField($value, 'TarifAngkutan', 'to_city_id');
+                $customer_id = $this->MkCommon->filterEmptyField($value, 'TarifAngkutan', 'customer_id');
+                $group_motor_id = $this->MkCommon->filterEmptyField($value, 'TarifAngkutan', 'group_motor_id');
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'TarifAngkutan', 'branch_id');
+
+                $value = $this->City->getMerge($value, $from_city_id, 'FromCity');
+                $value = $this->City->getMerge($value, $to_city_id, 'ToCity');
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                $value = $this->TarifAngkutan->Customer->getMerge($value, $customer_id);
+                $value = $this->TarifAngkutan->GroupMotor->getMerge($value, $group_motor_id);
+                $values[$key] = $value;
+            }
+        }
+
+        $this->set('module_title', __('List Tarif Angkutan'));
+        $this->set(compact(
+            'values'
+        ));
+        $this->layout = 'ajax';
+    }
+
+    public function pick_tarif_angkutan() {
+        $this->set('module_title', __('Download Tarif Angkutan'));
+        $this->layout = 'ajax';
+    }
+
     public function uang_jalan_add() {
         $this->loadModel('UangJalan');
         $this->set('sub_module_title', 'Tambah Uang Jalan');
@@ -4852,6 +4901,7 @@ class SettingsController extends AppController {
                                 }
 
                                 if(array_filter($datavar)) {
+                                    $id = !empty($id)?$id:false;
                                     $branch = $this->GroupBranch->Branch->getData('first', array(
                                         'conditions' => array(
                                             'Branch.code' => $kode_cabang,
@@ -4921,6 +4971,7 @@ class SettingsController extends AppController {
                                     $branch_id = !empty($branch['Branch']['id'])?$branch['Branch']['id']:false;
                                     $requestData['ROW'.($x-1)] = array(
                                         'TarifAngkutan' => array(
+                                            'id' => $id,
                                             'type' => !empty($tipe_tarif)?strtolower($tipe_tarif):'',
                                             'name_tarif' => !empty($nama)?$nama:false,
                                             'from_city_name' => !empty($from_city_name)?$from_city_name:false,
