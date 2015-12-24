@@ -798,72 +798,72 @@ class CommonHelper extends AppHelper {
         return $dataTree;
     }
 
-    function getBiayaTtuj ( $ttuj, $data_type, $format_currency = true, $tampilkan_sisa = true ) {
+    function getBiayaTtuj ( $ttuj, $data_type, $format_currency = true, $tampilkan_sisa = true, $modelName = 'UangJalanKomisiPayment' ) {
         $total = 0;
         $biaya = 0;
 
         switch ($data_type) {
             case 'uang_kuli_muat':
-                $biaya = $uang_kuli_muat = !empty($ttuj['UangJalanKomisiPayment']['uang_kuli_muat'])?$ttuj['UangJalanKomisiPayment']['uang_kuli_muat']:0;
+                $biaya = $uang_kuli_muat = !empty($ttuj[$modelName]['uang_kuli_muat'])?$ttuj[$modelName]['uang_kuli_muat']:0;
                 $uang_kuli_muat_dibayar = !empty($ttuj['uang_kuli_muat_dibayar'])?$ttuj['uang_kuli_muat_dibayar']:0;
 
                 $total = $uang_kuli_muat - $uang_kuli_muat_dibayar;
                 break;
             case 'uang_kuli_bongkar':
-                $biaya = $uang_kuli_bongkar = !empty($ttuj['UangJalanKomisiPayment']['uang_kuli_bongkar'])?$ttuj['UangJalanKomisiPayment']['uang_kuli_bongkar']:0;
+                $biaya = $uang_kuli_bongkar = !empty($ttuj[$modelName]['uang_kuli_bongkar'])?$ttuj[$modelName]['uang_kuli_bongkar']:0;
                 $uang_kuli_bongkar_dibayar = !empty($ttuj['uang_kuli_bongkar_dibayar'])?$ttuj['uang_kuli_bongkar_dibayar']:0;
 
                 $total = $uang_kuli_bongkar - $uang_kuli_bongkar_dibayar;
                 break;
             case 'asdp':
-                $biaya = $asdp = !empty($ttuj['UangJalanKomisiPayment']['asdp'])?$ttuj['UangJalanKomisiPayment']['asdp']:0;
+                $biaya = $asdp = !empty($ttuj[$modelName]['asdp'])?$ttuj[$modelName]['asdp']:0;
                 $asdp_dibayar = !empty($ttuj['asdp_dibayar'])?$ttuj['asdp_dibayar']:0;
 
                 $total = $asdp - $asdp_dibayar;
                 break;
             case 'uang_kawal':
-                $biaya = $uang_kawal = !empty($ttuj['UangJalanKomisiPayment']['uang_kawal'])?$ttuj['UangJalanKomisiPayment']['uang_kawal']:0;
+                $biaya = $uang_kawal = !empty($ttuj[$modelName]['uang_kawal'])?$ttuj[$modelName]['uang_kawal']:0;
                 $uang_kawal_dibayar = !empty($ttuj['uang_kawal_dibayar'])?$ttuj['uang_kawal_dibayar']:0;
 
                 $total = $uang_kawal - $uang_kawal_dibayar;
                 break;
             case 'uang_keamanan':
-                $biaya = $uang_keamanan = !empty($ttuj['UangJalanKomisiPayment']['uang_keamanan'])?$ttuj['UangJalanKomisiPayment']['uang_keamanan']:0;
+                $biaya = $uang_keamanan = !empty($ttuj[$modelName]['uang_keamanan'])?$ttuj[$modelName]['uang_keamanan']:0;
                 $uang_keamanan_dibayar = !empty($ttuj['uang_keamanan_dibayar'])?$ttuj['uang_keamanan_dibayar']:0;
 
                 $total = $uang_keamanan - $uang_keamanan_dibayar;
                 break;
             case 'commission':
-                $biaya = $commission = !empty($ttuj['UangJalanKomisiPayment']['commission'])?$ttuj['UangJalanKomisiPayment']['commission']:0;
-                // $commission_extra = !empty($ttuj['UangJalanKomisiPayment']['commission_extra'])?$ttuj['UangJalanKomisiPayment']['commission_extra']:0;
+                $biaya = $commission = !empty($ttuj[$modelName]['commission'])?$ttuj[$modelName]['commission']:0;
+                // $commission_extra = !empty($ttuj[$modelName]['commission_extra'])?$ttuj[$modelName]['commission_extra']:0;
                 $commission_dibayar = !empty($ttuj['commission_dibayar'])?$ttuj['commission_dibayar']:0;
 
                 // $total = $commission + $commission_extra - $commission_dibayar;
                 $total = $commission - $commission_dibayar;
                 break;
             case 'uang_jalan_2':
-                $biaya = $uang_jalan_2 = !empty($ttuj['UangJalanKomisiPayment']['uang_jalan_2'])?$ttuj['UangJalanKomisiPayment']['uang_jalan_2']:0;
+                $biaya = $uang_jalan_2 = !empty($ttuj[$modelName]['uang_jalan_2'])?$ttuj[$modelName]['uang_jalan_2']:0;
                 $uang_jalan_2_dibayar = !empty($ttuj['uang_jalan_2_dibayar'])?$ttuj['uang_jalan_2_dibayar']:0;
 
                 $total = $uang_jalan_2 - $uang_jalan_2_dibayar;
                 break;
             case 'uang_jalan_extra':
-                $biaya = $uang_jalan_extra = !empty($ttuj['UangJalanKomisiPayment']['uang_jalan_extra'])?$ttuj['UangJalanKomisiPayment']['uang_jalan_extra']:0;
+                $biaya = $uang_jalan_extra = !empty($ttuj[$modelName]['uang_jalan_extra'])?$ttuj[$modelName]['uang_jalan_extra']:0;
                 $uang_jalan_extra_dibayar = !empty($ttuj['uang_jalan_extra_dibayar'])?$ttuj['uang_jalan_extra_dibayar']:0;
 
                 $total = $uang_jalan_extra - $uang_jalan_extra_dibayar;
                 break;
             case 'commission_extra':
-                $biaya = $commission_extra = !empty($ttuj['UangJalanKomisiPayment']['commission_extra'])?$ttuj['UangJalanKomisiPayment']['commission_extra']:0;
+                $biaya = $commission_extra = !empty($ttuj[$modelName]['commission_extra'])?$ttuj[$modelName]['commission_extra']:0;
                 $commission_extra_dibayar = !empty($ttuj['commission_extra_dibayar'])?$ttuj['commission_extra_dibayar']:0;
 
                 $total = $commission_extra - $commission_extra_dibayar;
                 break;
             
             default:
-                $biaya = $uang_jalan_1 = !empty($ttuj['UangJalanKomisiPayment']['uang_jalan_1'])?$ttuj['UangJalanKomisiPayment']['uang_jalan_1']:0;
-                // $uang_jalan_2 = !empty($ttuj['UangJalanKomisiPayment']['uang_jalan_2'])?$ttuj['UangJalanKomisiPayment']['uang_jalan_2']:0;
-                // $uang_jalan_extra = !empty($ttuj['UangJalanKomisiPayment']['uang_jalan_extra'])?$ttuj['UangJalanKomisiPayment']['uang_jalan_extra']:0;
+                $biaya = $uang_jalan_1 = !empty($ttuj[$modelName]['uang_jalan_1'])?$ttuj[$modelName]['uang_jalan_1']:0;
+                // $uang_jalan_2 = !empty($ttuj[$modelName]['uang_jalan_2'])?$ttuj[$modelName]['uang_jalan_2']:0;
+                // $uang_jalan_extra = !empty($ttuj[$modelName]['uang_jalan_extra'])?$ttuj[$modelName]['uang_jalan_extra']:0;
                 $uang_jalan_dibayar = !empty($ttuj['uang_jalan_dibayar'])?$ttuj['uang_jalan_dibayar']:0;
 
                 // $total = $uang_jalan_1 + $uang_jalan_2 + $uang_jalan_extra - $uang_jalan_dibayar;
@@ -883,6 +883,26 @@ class CommonHelper extends AppHelper {
         } else {
             return $total;
         }
+    }
+
+    function _callLabelBiayaTtuj ( $type ) {
+        switch ($type) {
+                case 'asdp':
+                    return __('Uang Penyebrangan');
+                    break;
+                case 'uang_jalan':
+                    return __('Uang Jalan 1');
+                    break;
+                case 'commission':
+                    return __('Komisi');
+                    break;
+                case 'commission_extra':
+                    return __('Komisi Extra');
+                    break;
+                default:
+                    return ucwords(str_replace('_', ' ', $type));
+                    break;
+            }
     }
 
     function _allowShowColumn ( $modelName, $fieldName ) {

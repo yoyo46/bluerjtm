@@ -7700,4 +7700,90 @@ class RevenuesController extends AppController {
             $this->MkCommon->redirectReferer(__('Customer tidak ditemukan'), 'error');
         }
     }
+
+    public function report_ttuj_payment( $data_action = false ) {
+        $this->loadModel('TtujPaymentDetail');
+        $this->loadModel('City');
+        $module_title = __('Laporan Rincian Pembayaran Ujalan & Komisi');
+        $values = array();
+
+        $this->set('sub_module_title', $module_title);
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+        $options =  $this->TtujPaymentDetail->TtujPayment->getData('paginate', array(
+            'conditions' => array(
+                'TtujPaymentDetail.status' => 1,
+            ),
+            'contain' => array(
+                'TtujPayment',
+                'Ttuj',
+            ),
+            'order' => array(
+                'TtujPayment.nodoc' => 'ASC',
+                'TtujPayment.id' => 'ASC',
+            ),
+            'group' => array(
+                'TtujPaymentDetail.ttuj_id',
+                'TtujPaymentDetail.type',
+            ),
+        ));
+
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+        $options =  $this->TtujPaymentDetail->TtujPayment->_callRefineParams($params, $options);
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            // Custom Otorisasi
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'TtujPayment', $options );
+        }
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+
+        if( !empty($data_action) ){
+            $values = $this->TtujPaymentDetail->find('all', $options);
+        } else {
+            $options['limit'] = Configure::read('__Site.config_pagination');
+            $this->paginate = $options;
+            $values = $this->paginate('TtujPaymentDetail');
+        }
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'TtujPayment', 'id');
+                $ttuj_id = $this->MkCommon->filterEmptyField($value, 'TtujPaymentDetail', 'ttuj_id');
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'TtujPayment', 'branch_id');
+                $type = $this->MkCommon->filterEmptyField($value, 'TtujPaymentDetail', 'type');
+
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                $value = $this->TtujPaymentDetail->TtujPayment->_callTtujPaid($value, $ttuj_id, $type);
+                
+                $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
+                $value = $this->Ttuj->Truck->Driver->getMerge($value, $driver_penganti_id, 'DriverPenganti');
+
+                $values[$key] = $value;
+            }
+        }
+
+        $cities = $this->City->getListCities();
+        $this->MkCommon->_layout_file(array(
+            'select',
+            'freeze',
+        ));
+
+        $this->set('active_menu', 'report_ttuj_payment');
+        $this->set(compact(
+            'values', 'module_title', 'data_action',
+            'cities'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        }
+    }
 }

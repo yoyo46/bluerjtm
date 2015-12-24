@@ -57,10 +57,10 @@ class TtujPayment extends AppModel {
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $branch = isset($elements['branch'])?$elements['branch']:true;
+
         $default_options = array(
-            'conditions'=> array(
-                'TtujPayment.branch_id' => Configure::read('__Site.config_branch_id'),
-            ),
+            'conditions'=> array(),
             'order'=> array(
                 'TtujPayment.id' => 'DESC'
             ),
@@ -80,6 +80,10 @@ class TtujPayment extends AppModel {
             default:
                 $default_options['conditions']['TtujPayment.status'] = 1;
                 break;
+        }
+
+        if( !empty($branch) ) {
+                $default_options['conditions']['TtujPayment.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
         if( !empty($options) && $is_merge ){
@@ -131,9 +135,26 @@ class TtujPayment extends AppModel {
     public function _callRefineParams( $data = '', $default_options = false ) {
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+
+        $dateFromTtuj = !empty($data['named']['DateFromTtuj'])?$data['named']['DateFromTtuj']:false;
+        $dateToTtuj = !empty($data['named']['DateToTtuj'])?$data['named']['DateToTtuj']:false;
+
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $nottuj = !empty($data['named']['nottuj'])?$data['named']['nottuj']:false;
         $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
         $name = !empty($data['named']['name'])?$data['named']['name']:false;
+        $note = !empty($data['named']['note'])?$data['named']['note']:false;
+        $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
+
+        $uj1 = !empty($data['named']['uj1'])?$data['named']['uj1']:false;
+        $uj2 = !empty($data['named']['uj2'])?$data['named']['uj2']:false;
+        $uje = !empty($data['named']['uje'])?$data['named']['uje']:false;
+        $com = !empty($data['named']['com'])?$data['named']['com']:false;
+        $come = !empty($data['named']['come'])?$data['named']['come']:false;
+
+        $fromcity = !empty($data['named']['fromcity'])?$data['named']['fromcity']:false;
+        $tocity = !empty($data['named']['tocity'])?$data['named']['tocity']:false;
+        $status = !empty($data['named']['status'])?$data['named']['status']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -144,8 +165,20 @@ class TtujPayment extends AppModel {
                 $default_options['conditions']['DATE_FORMAT(TtujPayment.date_payment, \'%Y-%m-%d\') <='] = $dateTo;
             }
         }
+        if( !empty($dateFromTtuj) || !empty($dateToTtuj) ) {
+            if( !empty($dateFromTtuj) ) {
+                $default_options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $dateFromTtuj;
+            }
+
+            if( !empty($dateToTtuj) ) {
+                $default_options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $dateToTtuj;
+            }
+        }
         if(!empty($nodoc)){
             $default_options['conditions']['TtujPayment.nodoc LIKE'] = '%'.$nodoc.'%';
+        }
+        if(!empty($nottuj)){
+            $default_options['conditions']['Ttuj.no_ttuj LIKE'] = '%'.$nottuj.'%';
         }
         if(!empty($name)){
             $default_options['conditions']['TtujPayment.receiver_name LIKE'] = '%'.$name.'%';
@@ -153,8 +186,119 @@ class TtujPayment extends AppModel {
         if(!empty($noref)){
             $default_options['conditions']['LPAD(TtujPayment.id, 6, 0) LIKE'] = '%'.$noref.'%';
         }
-        
+        if(!empty($note)){
+            $default_options['conditions']['Ttuj.note LIKE'] = '%'.$note.'%';
+        }
+        if(!empty($nopol)){
+            $default_options['conditions']['Ttuj.nopol LIKE'] = '%'.$nopol.'%';
+        }
+        if(!empty($nopol)){
+            $default_options['conditions']['Ttuj.nopol LIKE'] = '%'.$nopol.'%';
+        }
+        if(!empty($nopol)){
+            $default_options['conditions']['Ttuj.nopol LIKE'] = '%'.$nopol.'%';
+        }
+        if(!empty($uj1)){
+            $default_options['conditions']['TtujPaymentDetail.type'][] = $uj1;
+        }
+        if(!empty($uj2)){
+            $default_options['conditions']['TtujPaymentDetail.type'][] = $uj2;
+        }
+        if(!empty($uje)){
+            $default_options['conditions']['TtujPaymentDetail.type'][] = $uje;
+        }
+        if(!empty($com)){
+            $default_options['conditions']['TtujPaymentDetail.type'][] = $com;
+        }
+        if(!empty($come)){
+            $default_options['conditions']['TtujPaymentDetail.type'][] = $come;
+        }
+        if(!empty($fromcity)){
+            $default_options['conditions']['Ttuj.from_city_id'] = $fromcity;
+        }
+        if(!empty($tocity)){
+            $default_options['conditions']['Ttuj.to_city_id'] = $tocity;
+        }
+        if(!empty($status)){
+            switch ($status) {
+                case 'paid':
+                        $default_options['conditions']['OR'] = array(
+                            array(
+                                'TtujPaymentDetail.type' => 'uang_jalan',
+                                'Ttuj.paid_uang_jalan' => 'full',
+                            ),
+                            array(
+                                'TtujPaymentDetail.type' => 'uang_jalan_2',
+                                'Ttuj.paid_uang_jalan_2' => 'full',
+                            ),
+                            array(
+                                'TtujPaymentDetail.type' => 'uang_jalan_extra',
+                                'Ttuj.paid_uang_jalan_extra' => 'full',
+                            ),
+                            array(
+                                'TtujPaymentDetail.type' => 'commission',
+                                'Ttuj.paid_commission' => 'full',
+                            ),
+                            array(
+                                'TtujPaymentDetail.type' => 'commission_extra',
+                                'Ttuj.paid_commission_extra' => 'full',
+                            ),
+                        );
+                    break;
+                case 'unpaid':
+                        $default_options['conditions']['OR'] = array(
+                            array(
+                                'TtujPaymentDetail.type' => 'uang_jalan',
+                                'Ttuj.paid_uang_jalan' => 'none',
+                            ),
+                            array(
+                                'TtujPaymentDetail.type' => 'uang_jalan_2',
+                                'Ttuj.paid_uang_jalan_2' => 'none',
+                            ),
+                            array(
+                                'TtujPaymentDetail.type' => 'uang_jalan_extra',
+                                'Ttuj.paid_uang_jalan_extra' => 'none',
+                            ),
+                            array(
+                                'TtujPaymentDetail.type' => 'commission',
+                                'Ttuj.paid_commission' => 'none',
+                            ),
+                            array(
+                                'TtujPaymentDetail.type' => 'commission_extra',
+                                'Ttuj.paid_commission_extra' => 'none',
+                            ),
+                        );
+                    break;
+            }
+        }
+
         return $default_options;
+    }
+
+    function _callTtujPaid ( $data, $ttuj_id, $type ) {
+        $this->virtualFields['grandtotal'] = 'SUM(amount)';
+        $options =  $this->getData('paginate', array(
+            'conditions' => array(
+                'TtujPaymentDetail.ttuj_id' => $ttuj_id,
+                'TtujPaymentDetail.type' => $type,
+                'TtujPaymentDetail.status' => 1,
+            ),
+            'contain' => array(
+                'TtujPayment',
+            ),
+            'group' => array(
+                'TtujPaymentDetail.ttuj_id',
+                'TtujPaymentDetail.type',
+            ),
+        ), true, array(
+            'branch' => false,
+        ));
+
+        $value =  $this->TtujPaymentDetail->find('first', $options);
+        $paid = !empty($value['TtujPayment']['grandtotal'])?$value['TtujPayment']['grandtotal']:0;
+        $data['TtujPayment']['paid'] = $paid;
+
+        return $data;
     }
 }
 ?>

@@ -846,30 +846,44 @@ class MkCommonComponent extends Component {
     }
 
     function _layout_file ( $type ) {
-        switch ($type) {
-            case 'select':
-                $layout_js = array(
-                    'select2.full',
-                );
-                $layout_css = array(
-                    'select2.min',
-                );
-                break;
-            case 'freeze':
-                $layout_js = array(
-                    'freeze',
-                );
-                $layout_css = array(
-                    'freeze',
-                );
-                break;
-            case 'progressbar':
-                $layout_js = array(
-                    'jquery.progresstimer',
-                );
-                break;
+        $layout_js = array();
+        $layout_css = array();
+        $contents = array();
+
+        if( !is_array($type) ) {
+            $contents[] = $type;
+        } else {
+            $contents = $type;
         }
 
+        if( !empty($contents) ) {
+            foreach ($contents as $key => $type) {
+                switch ($type) {
+                    case 'select':
+                        $layout_js = array_merge($layout_js, array(
+                            'select2.full',
+                        ));
+                        $layout_css = array_merge($layout_css, array(
+                            'select2.min',
+                        ));
+                        break;
+                    case 'freeze':
+                        $layout_js = array_merge($layout_js, array(
+                            'freeze',
+                        ));
+                        $layout_css = array_merge($layout_css, array(
+                            'freeze',
+                        ));
+                        break;
+                    case 'progressbar':
+                        $layout_js = array_merge($layout_js, array(
+                            'jquery.progresstimer',
+                        ));
+                        break;
+                }
+            }
+        }
+        
         $this->controller->set(compact(
             'layout_js', 'layout_css'
         ));
@@ -1430,11 +1444,13 @@ class MkCommonComponent extends Component {
 
     function processFilter ( $data ) {
         $date = $this->filterEmptyField($data, 'Search', 'date');
+        $datettuj = $this->filterEmptyField($data, 'Search', 'datettuj');
         $params = array();
 
         $data = $this->_callUnset(array(
             'Search' => array(
                 'date',
+                'datettuj',
             ),
         ), $data);
         $dataSearch = $this->filterEmptyField($data, 'Search');
@@ -1458,13 +1474,16 @@ class MkCommonComponent extends Component {
                 }
 
                 if( !empty($value) ) {
-                    $params[$fieldName] = $value;
+                    $params[$fieldName] = rawurlencode($value);
                 }
             }
         }
 
         if( !empty($date) ) {
             $params['date'] = rawurlencode(urlencode($date));
+        }
+        if( !empty($datettuj) ) {
+            $params['datettuj'] = rawurlencode(urlencode($datettuj));
         }
         
         return $params;
@@ -1509,18 +1528,24 @@ class MkCommonComponent extends Component {
         $dateFrom = $this->filterEmptyField($options, 'dateFrom');
         $dateTo = $this->filterEmptyField($options, 'dateTo');
 
+        $dateFromTtuj = $this->filterEmptyField($options, 'dateFromTtuj');
+        $dateToTtuj = $this->filterEmptyField($options, 'dateToTtuj');
+
         $date = $this->filterEmptyField($result, 'named', 'date');
+        $datettuj = $this->filterEmptyField($result, 'named', 'datettuj');
 
         $dataString = $this->_callUnset(array(
             'date',
+            'datettuj',
         ), $result['named']);
 
         if( !empty($dataString) ) {
             foreach ($dataString as $fieldName => $value) {
-                $this->controller->request->data['Search'][$fieldName] = $value;
+                $this->controller->request->data['Search'][$fieldName] = rawurldecode(urldecode($value));
+                $result['named'][$fieldName] = rawurldecode(urldecode($value));
             }
         }
-        
+
         if( !empty($date) ) {
             $dateStr = urldecode($date);
             $date = explode('-', $dateStr);
@@ -1532,6 +1557,23 @@ class MkCommonComponent extends Component {
                 $dateTo = $this->getDate($date[1]);
                 $result['named']['DateFrom'] = $dateFrom;
                 $result['named']['DateTo'] = $dateTo;
+            }
+        }
+        if( !empty($datettuj) ) {
+            $dateStr = urldecode($datettuj);
+            $datettuj = explode('-', $dateStr);
+
+            if( !empty($datettuj) ) {
+                $datettuj[0] = urldecode($datettuj[0]);
+                $datettuj[1] = urldecode($datettuj[1]);
+                $dateFromTtuj = $this->getDate($datettuj[0]);
+                $dateToTtuj = $this->getDate($datettuj[1]);
+                $result['named']['DateFromTtuj'] = $dateFromTtuj;
+                $result['named']['DateToTtuj'] = $dateToTtuj;
+            }
+
+            if( !empty($dateFromTtuj) && !empty($dateToTtuj) ) {
+                $this->controller->request->data['Search']['datettuj'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFromTtuj)), date('d/m/Y', strtotime($dateToTtuj)));
             }
         }
         if( !empty($dateFrom) && !empty($dateTo) ) {

@@ -50,23 +50,7 @@
 	</td>
     <td class="text-center">
     	<?php
-                switch ($data_type) {
-                    case 'asdp':
-                        echo __('Uang Penyebrangan');
-                        break;
-                    case 'uang_jalan':
-                        echo __('Uang Jalan 1');
-                        break;
-                    case 'commission':
-                        echo __('Komisi');
-                        break;
-                    case 'commission_extra':
-                        echo __('Komisi Extra');
-                        break;
-                    default:
-                        echo ucwords(str_replace('_', ' ', $data_type));
-                        break;
-                }
+                echo $this->Common->_callLabelBiayaTtuj($data_type);
 		?>
 	</td>
     <td>
