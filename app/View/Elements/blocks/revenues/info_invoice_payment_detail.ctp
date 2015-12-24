@@ -82,8 +82,8 @@
     </td>
     <td>&nbsp;</td>
 </tr>
-<tr class="additional-input-invoice" id="ppn-grand-total-invoice">
-    <td align="right" colspan="5" class="relative">
+<tr id="ppn-grand-total-invoice">
+    <td align="right" colspan="5" class="relative additional-input-invoice">
         <?php 
             echo $this->Form->input('InvoicePayment.ppn', array(
                 'type' => 'text',
@@ -94,17 +94,24 @@
             )).$this->Html->tag('span', '%', array('class' => 'notation-input'));
         ?>
     </td>
-    <td align="right" id="ppn-total-invoice">
+    <td align="right">
         <?php 
                 $ppn = !empty($this->request->data['InvoicePayment']['ppn'])?$this->request->data['InvoicePayment']['ppn']:0;
                 $ppn = $this->Common->calcFloat($total, $ppn);
-                echo $this->Number->currency($ppn, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                echo $this->Form->input('InvoicePayment.ppn_total', array(
+                    'type' => 'text',
+                    'label' => false,
+                    'class' => 'input_price text-right form-control',
+                    'id' => 'ppn-total-invoice',
+                    'required' => false,
+                    'div' => false
+                ));
         ?>
     </td>
     <td>&nbsp;</td>
 </tr>
-<tr class="additional-input-invoice" id="pph-grand-total-invoice">
-    <td align="right" colspan="5" class="relative">
+<tr id="pph-grand-total-invoice">
+    <td align="right" colspan="5" class="relative additional-input-invoice">
         <?php 
                 echo $this->Form->input('InvoicePayment.pph', array(
                     'type' => 'text',
@@ -115,11 +122,19 @@
                 )).$this->Html->tag('span', '%', array('class' => 'notation-input'));
         ?>
     </td>
-    <td align="right" id="pph-total-invoice">
+    <td align="right">
         <?php 
                 $pph = !empty($this->request->data['InvoicePayment']['pph'])?$this->request->data['InvoicePayment']['pph']:0;
                 $pph = $this->Common->calcFloat($total, $pph);
-                echo $this->Number->currency($pph, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                // echo $this->Number->currency($pph, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                echo $this->Form->input('InvoicePayment.pph_total', array(
+                    'type' => 'text',
+                    'label' => false,
+                    'class' => 'input_price text-right form-control',
+                    'id' => 'pph-total-invoice',
+                    'required' => false,
+                    'div' => false
+                ));
         ?>
     </td>
     <td>&nbsp;</td>

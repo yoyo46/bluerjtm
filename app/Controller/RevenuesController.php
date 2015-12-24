@@ -6976,6 +6976,7 @@ class RevenuesController extends AppController {
                     $dataTtujType = !empty($ttujPaymentDetail['type'])?$ttujPaymentDetail['type']:false;
                     $amount = !empty($ttujPaymentDetail['amount'])?$ttujPaymentDetail['amount']:0;
                     $resultTtuj = $this->Ttuj->getTtujPayment($ttuj_id, $dataTtujType, 'UangJalanKomisiPayment');
+
                     $this->request->data['Ttuj'][] = $resultTtuj;
                     $this->request->data['TtujPayment']['amount_payment'][] = $amount;
                     $this->request->data['TtujPayment']['ttuj_id'][] = $ttuj_id;

@@ -3853,6 +3853,10 @@ table.report th {
 margin-left: 7px;
 font-size: 22px;
 }
+#invoice-payment-form .notation-input {
+  position: relative;
+  font-size: 14px;
+}
 .additional-input-revenue input,
 .additional-input-invoice input{
   margin-left: 10px;

@@ -2363,11 +2363,11 @@ var invoice_price_payment = function(){
         getTotalPick();
     });
 }
-function getTotalPick(){
+
+function _callTotalInvoice () {
     var invoice_price = $('.document-pick-info-detail .document-pick-price');
     var length = invoice_price.length;
     var total = 0;
-    var total_price = 0;
 
     for (var i = 0; i < length; i++) {
         if(typeof invoice_price[i] != 'undefined'){
@@ -2380,30 +2380,36 @@ function getTotalPick(){
             
             price = text_val;
             price = parseInt(price);
-            total = total_price += price;
+            total += price;
         }
     };
+
+    if( isNaN(total) ) {
+        total = 0;
+    }
+
+    return total;
+}
+
+function getTotalPick(){
+    var total = total_price = _callTotalInvoice();
 
     var ppn = 0;
     var pph = 0;
     var revenue_ppn = $('.invoice-ppn').val();
     var revenue_pph = $('.invoice-pph').val();
 
-    if( isNaN(total) ) {
-        total = 0;
-    }
-
     if(typeof revenue_ppn != 'undefined' && revenue_ppn != ''){
         ppn = total * (parseInt(revenue_ppn) / 100);
     }
 
-    $('#ppn-total-invoice').html(formatNumber(ppn));
+    $('#ppn-total-invoice').val(formatNumber(ppn));
 
     if(typeof revenue_pph != 'undefined' && revenue_pph != ''){
         pph = total * (parseInt(revenue_pph) / 100);
     }
     
-    $('#pph-total-invoice').html(formatNumber(pph));
+    $('#pph-total-invoice').val(formatNumber(pph));
     
     // if(pph > 0){
     //     total -= pph;
@@ -2416,6 +2422,7 @@ function getTotalPick(){
 
     $('#grand-total-payment').text('IDR '+formatNumber(total_price));
 }
+
 function getTotalLkuPayment(){
     var invoice_price = $('.lku-price-payment');
     var length = invoice_price.length;
@@ -4266,4 +4273,27 @@ $(function() {
     $.inputPrice();
     $.inputNumber();
     $.rebuildFunction();
+
+    $('#ppn-total-invoice').blur(function(){
+        var self = $(this);
+        var ppn = self.val();
+        var total = _callTotalInvoice();
+
+        ppn = $.convertNumber(ppn, 'int');
+        ppn = (ppn / total) * 100;
+        ppn = $.formatDecimal(ppn, 2);
+
+        $('.invoice-ppn').val(ppn);
+    });
+    $('#pph-total-invoice').blur(function(){
+        var self = $(this);
+        var pph = self.val();
+        var total = _callTotalInvoice();
+
+        pph = $.convertNumber(pph, 'int');
+        pph = (pph / total) * 100;
+        pph = $.formatDecimal(pph, 2);
+
+        $('.invoice-pph').val(pph);
+    });
 });
