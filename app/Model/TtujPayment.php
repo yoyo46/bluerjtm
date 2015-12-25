@@ -203,6 +203,7 @@ class TtujPayment extends AppModel {
         if(!empty($nopol)){
             $default_options['conditions']['Ttuj.nopol LIKE'] = '%'.$nopol.'%';
         }
+
         if(!empty($uj1)){
             $default_options['conditions']['TtujPaymentDetail.type'][] = $uj1;
         }
@@ -218,21 +219,32 @@ class TtujPayment extends AppModel {
         if(!empty($come)){
             $default_options['conditions']['TtujPaymentDetail.type'][] = $come;
         }
-        if(!empty($kuli_muat)){
-            $default_options['conditions']['TtujPaymentDetail.type'][] = $kuli_muat;
+        // if(!empty($kuli_muat)){
+        //     $default_options['conditions']['TtujPaymentDetail.type'][] = $kuli_muat;
+        // }
+        // if(!empty($kuli_bongkar)){
+        //     $default_options['conditions']['TtujPaymentDetail.type'][] = $kuli_bongkar;
+        // }
+        // if(!empty($asdp)){
+        //     $default_options['conditions']['TtujPaymentDetail.type'][] = $asdp;
+        // }
+        // if(!empty($uang_kawal)){
+        //     $default_options['conditions']['TtujPaymentDetail.type'][] = $uang_kawal;
+        // }
+        // if(!empty($uang_keamanan)){
+        //     $default_options['conditions']['TtujPaymentDetail.type'][] = $uang_keamanan;
+        // }
+
+        if( empty($default_options['conditions']['TtujPaymentDetail.type']) ) {
+            $default_options['conditions']['TtujPaymentDetail.type'] = array(
+                'uang_jalan',
+                'uang_jalan_2',
+                'uang_jalan_extra',
+                'commission',
+                'commission_extra',
+            );
         }
-        if(!empty($kuli_bongkar)){
-            $default_options['conditions']['TtujPaymentDetail.type'][] = $kuli_bongkar;
-        }
-        if(!empty($asdp)){
-            $default_options['conditions']['TtujPaymentDetail.type'][] = $asdp;
-        }
-        if(!empty($uang_kawal)){
-            $default_options['conditions']['TtujPaymentDetail.type'][] = $uang_kawal;
-        }
-        if(!empty($uang_keamanan)){
-            $default_options['conditions']['TtujPaymentDetail.type'][] = $uang_keamanan;
-        }
+
         if(!empty($fromcity)){
             $default_options['conditions']['Ttuj.from_city_id'] = $fromcity;
         }
