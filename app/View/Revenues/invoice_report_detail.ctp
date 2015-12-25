@@ -27,7 +27,6 @@
             ),
             'expired_date' => array(
                 'name' => __('Tatuh Tempo'),
-                'field_model' => 'Invoice.invoice_date',
                 'style' => 'text-align: center',
                 'display' => true,
             ),

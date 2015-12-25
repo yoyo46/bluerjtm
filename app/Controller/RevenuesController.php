@@ -7663,6 +7663,10 @@ class RevenuesController extends AppController {
                     'Invoice.paid' => 0,
                     'Invoice.customer_id' => $id,
                 ),
+                'order' => array(
+                    'Invoice.due_invoice' => 'ASC',
+                    'Invoice.id' => 'ASC',
+                ),
                 'limit' => Configure::read('__Site.config_pagination'),
             );
 
