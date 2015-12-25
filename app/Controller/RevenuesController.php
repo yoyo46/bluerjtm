@@ -7706,6 +7706,8 @@ class RevenuesController extends AppController {
         $this->loadModel('City');
         $module_title = __('Laporan Rincian Pembayaran Ujalan & Komisi');
         $values = array();
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
 
         $this->set('sub_module_title', $module_title);
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
@@ -7721,13 +7723,16 @@ class RevenuesController extends AppController {
                 'TtujPayment.nodoc' => 'ASC',
                 'TtujPayment.id' => 'ASC',
             ),
-            'group' => array(
-                'TtujPaymentDetail.ttuj_id',
-                'TtujPaymentDetail.type',
-            ),
+            // 'group' => array(
+            //     'TtujPaymentDetail.ttuj_id',
+            //     'TtujPaymentDetail.type',
+            // ),
         ));
 
-        $params = $this->MkCommon->_callRefineParams($this->params);
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
         $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
         $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
         $options =  $this->TtujPaymentDetail->TtujPayment->_callRefineParams($params, $options);
