@@ -7,6 +7,9 @@
 <?php
 		}
 
+		$data = $this->request->data;
+		$id = $this->Common->filterEmptyField($data, 'Laka', 'id');
+
 		$this->Html->addCrumb(__('LAKA'), array(
 			'controller' => 'lakas',
 			'action' => 'index'
@@ -30,6 +33,29 @@
 				        <h3 class="box-title"><?php echo __('Data Supir dan Armada'); ?></h3>
 				    </div>
 				    <div class="box-body">
+				    	<?php 
+				    			if( !empty($id) ) {
+        							$noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+				    	?>
+						<div class="form-group">
+							<?php
+									echo $this->Form->label('id', __('No. Referensi'));
+									echo $this->Html->tag('div', $noref);
+							?>
+						</div>
+						<?php 
+								}
+						?>
+						<div class="form-group">
+							<?php
+									echo $this->Form->input('nodoc',array(
+										'label'=> __('No. Dokumen *'), 
+										'class'=>'form-control',
+										'required' => false,
+										'placeholder' => __('No. Dokumen')
+									));
+							?>
+						</div>
 				        <div class="form-group">
 				        	<?php 
 		        					$attrBrowse = array(

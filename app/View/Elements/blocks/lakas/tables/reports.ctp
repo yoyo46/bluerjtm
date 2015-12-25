@@ -4,6 +4,8 @@
             $no = 1;
 
             foreach ($lakas as $key => $value) {
+                $id = $this->Common->filterEmptyField($value, 'Laka', 'id');
+                $nodoc = $this->Common->filterEmptyField($value, 'Laka', 'nodoc');
                 $tgl_laka = $this->Common->filterEmptyField($value, 'Laka', 'tgl_laka');
                 $nopol = $this->Common->filterEmptyField($value, 'Laka', 'nopol');
                 $change_driver_name = $this->Common->filterEmptyField($value, 'Laka', 'change_driver_name');
@@ -15,6 +17,11 @@
 
                 $capacity = $this->Common->filterEmptyField($value, 'Truck', 'capacity');
                 $category = $this->Common->filterEmptyField($value, 'TruckCategory', 'name');
+                $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+
+                if( !empty($data_action) ) {
+                    $noref = sprintf('#%s', $noref);
+                }
 
                 if( !empty($insurance) ) {
                     if( in_array(1, $insurance) ) {
@@ -49,6 +56,9 @@
 ?>
 <tr>
     <?php 
+            echo $this->Html->tag('td', $noref);
+            echo $this->Html->tag('td', $nodoc);
+
             if( !empty($withNumber) ) {
                 echo $this->Html->tag('td', $no, array(
                     'style' => 'text-align:center;',

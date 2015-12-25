@@ -20,8 +20,10 @@ class LakasController extends AppController {
             $refine = $this->RjLaka->processRefine($data);
             $params = $this->RjLaka->generateSearchURL($refine);
             $params = $this->MkCommon->getRefineGroupBranch($params, $data);
+            $result = $this->MkCommon->processFilter($data);
             $params['action'] = $index;
 
+            $params = array_merge($params, $result);
             $this->redirect($params);
         }
         $this->redirect('/');
@@ -33,70 +35,19 @@ class LakasController extends AppController {
 		$this->set('active_menu', 'lakas');
 		$this->set('sub_module_title', __('Data LAKA'));
 
-        $conditions = array();
         $dateFrom = date('Y-m-d', strtotime('-6 month'));
         $dateTo = date('Y-m-d');
-        
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
 
-            if(!empty($refine['nopol'])){
-                $this->loadModel('Truck');
-                $nopol = urldecode($refine['nopol']);
-                $typeTruck = !empty($refine['type'])?$refine['type']:1;
-
-                if( $typeTruck == 2 ) {
-                    $conditionsNopol = array(
-                        'Truck.id' => $nopol,
-                    );
-                } else {
-                    $conditionsNopol = array(
-                        'Truck.nopol LIKE' => '%'.$nopol.'%',
-                    );
-                }
-                
-                $truckSearch = $this->Truck->getData('list', array(
-                    'conditions' => $conditionsNopol,
-                    'fields' => array(
-                        'Truck.id', 'Truck.id',
-                    ),
-                ));
-                $this->request->data['Laka']['type'] = $typeTruck;
-                $this->request->data['Laka']['nopol'] = $nopol;
-                $conditions['Laka.truck_id'] = $truckSearch;
-            }
-
-            if(!empty($refine['date'])){
-                $dateStr = urldecode($refine['date']);
-                $date = explode('-', $dateStr);
-
-                if( !empty($date) ) {
-                    $date[0] = urldecode($date[0]);
-                    $date[1] = urldecode($date[1]);
-                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                    $dateFrom = $this->MkCommon->getDate($date[0]);
-                    $dateTo = $this->MkCommon->getDate($date[1]);
-                }
-            }
-
-            if(!empty($refine['no_ttuj'])){
-                $no_ttuj = urldecode($refine['no_ttuj']);
-                $this->request->data['Ttuj']['no_ttuj'] = $no_ttuj;
-                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
-            }
-        }
-
-        $conditions = array_merge($conditions, array(
-            'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') >='=> $dateFrom,
-            'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') <=' => $dateTo,
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
         ));
-
-        $this->paginate = $this->Laka->getData('paginate', array(
-            'conditions' => $conditions,
+        $options =  $this->Laka->_callRefineParams($params, array(
             'contain' => array(
-                'Ttuj'
+                'Ttuj',
             )
         ));
+        $this->paginate = $this->Laka->getData('paginate', $options);
         $Lakas = $this->paginate('Laka');
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
@@ -245,6 +196,7 @@ class LakasController extends AppController {
 
                 if($this->Laka->save($data)){
                     $laka_id = $this->Laka->id;
+                    $noref = str_pad($laka_id, 6, '0', STR_PAD_LEFT);
 
                     // if(!empty($data_local['Laka']['ttuj_id']) && $data['Laka']['ttuj_id'] != $data_local['Laka']['ttuj_id']){
                     //     $this->Ttuj->id = $data_local['Laka']['ttuj_id'];
@@ -295,7 +247,7 @@ class LakasController extends AppController {
                         $this->params['old_data'] = $data_local;
                         $this->params['data'] = $data;
 
-                        $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s LAKA'), $msg), 'success');
+                        $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s LAKA #%s'), $msg, $noref), 'success');
                         $this->Log->logActivity( sprintf(__('Berhasil %s LAKA #%s'), $msg, $laka_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $laka_id );
                         
                         $this->redirect(array(
@@ -468,6 +420,8 @@ class LakasController extends AppController {
             $this->Laka->set('status', 0);
 
             if($this->Laka->save()){
+                $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+
                 if( !empty($locale['Laka']['ttuj_id']) ){
                     $this->loadModel('Ttuj');
                     $this->Ttuj->id = $locale['Laka']['ttuj_id'];
@@ -475,8 +429,8 @@ class LakasController extends AppController {
                     $this->Ttuj->save();
                 }
 
-                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status LAKA %s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+                $this->MkCommon->setCustomFlash(sprintf(__('Sukses menghapus data LAKA #%s'), $noref), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses menghapus data LAKA %s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
                 $this->Log->logActivity( sprintf(__('Gagal merubah status LAKA %s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
@@ -491,102 +445,33 @@ class LakasController extends AppController {
     public function reports( $data_action = false ) {
         $this->loadModel('Laka');
 
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $dateFrom = date('Y-m-d', strtotime('-1 month'));
         $dateTo = date('Y-m-d');
-        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
-        $conditions = array(
-            'Laka.branch_id' => $allow_branch_id,
-        );
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->Laka->_callRefineParams($params, array(
+            'conditions' => array(
+                'Laka.branch_id' => $allow_branch_id,
+            ),
+            'order' => array(
+                'Laka.created' => 'ASC', 
+            ),
+        ));
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
-
-            if(!empty($refine['nopol'])){
-                $nopol = urldecode($refine['nopol']);
-                $typeTruck = !empty($refine['type'])?$refine['type']:1;
-
-                $this->request->data['Laka']['type'] = $typeTruck;
-                $this->request->data['Laka']['nopol'] = $nopol;
-
-                if( $typeTruck == 2 ) {
-                    $conditions ['Laka.truck_id'] = $nopol;
-                } else {
-                    $conditions ['Laka.nopol LIKE'] = '%'.$nopol.'%';
-                }
-            }
-
-            if(!empty($refine['driver_name'])){
-                $driver_name = urldecode($refine['driver_name']);
-                $this->request->data['Ttuj']['driver_name'] = $driver_name;
-                $conditions['CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END LIKE'] = '%'.$driver_name.'%';
-            }
-
-            if(!empty($refine['status'])){
-                $value = urldecode($refine['status']);
-                $tmpArry = array(
-                    0 => 'active',
-                    1 => 'completed',
-                );
-                $this->request->data['Laka']['status'] = $value;
-
-                if( in_array($value, $tmpArry) ) {
-                    $value = array_search($value, $tmpArry);
-                    $conditions['Laka.completed'] = $value;
-                }
-            }
-
-            if(!empty($refine['date'])){
-                $dateStr = urldecode($refine['date']);
-                $date = explode('-', $dateStr);
-
-                if( !empty($date) ) {
-                    $date[0] = urldecode($date[0]);
-                    $date[1] = urldecode($date[1]);
-                    $dateFrom = $this->MkCommon->getDate($date[0]);
-                    $dateTo = $this->MkCommon->getDate($date[1]);
-                }
-                $this->request->data['Laka']['tgl_laka'] = $dateStr;
-            }
-
-            if(!empty($refine['insurance'])){
-                $value = urldecode($refine['insurance']);
-
-                switch ($value) {
-                    case 'no':
-                        $conditions['Laka.completeness_insurance LIKE'] = '%i:1;s:1%';
-                        break;
-                    
-                    default:
-                        $conditions['Laka.completeness_insurance NOT LIKE'] = '%i:1;s:1%';
-                        $conditions['Laka.completeness_insurance NOT'] = NULL;
-                        break;
-                }
-
-                $this->request->data['Laka']['insurance'] = $value;
-            }
-
             // Custom Otorisasi
-            $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Laka', $conditions, 'conditions' );
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Laka', $options );
         }
 
-        $conditions['DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') >='] = $dateFrom;
-        $conditions['DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') <='] = $dateTo;
-
         if( !empty($data_action) ) {
-            $lakas = $this->Laka->getData('all', array(
-                'conditions' => $conditions,
-                'order' => array(
-                    'Laka.created' => 'ASC', 
-                ),
-            ));
+            $lakas = $this->Laka->getData('all', $options);
         } else {
-            $this->paginate = $this->Laka->getData('paginate', array(
-                'conditions' => $conditions,
-                'order' => array(
-                    'Laka.created' => 'ASC', 
-                ),
-                'limit' => Configure::read('__Site.config_pagination'),
-            ));
+            $this->paginate = $this->Laka->getData('paginate', $options);
             $lakas = $this->paginate('Laka');
         }
 

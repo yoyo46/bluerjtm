@@ -1,6 +1,14 @@
 <?php 
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $dataColumns = array(
+            'noref' => array(
+                'name' => __('No. Referensi'),
+                'field_model' => 'Laka.id',
+            ),
+            'nodoc' => array(
+                'name' => __('No. Dokumen'),
+                'field_model' => 'Laka.nodoc',
+            ),
             'tgl_laka' => array(
                 'name' => __('Tgl Laka'),
                 'field_model' => 'Laka.tgl_laka',
@@ -77,7 +85,7 @@
     </div>
     <div class="box-body">
         <?php 
-                echo $this->Form->create('Laka', array(
+                echo $this->Form->create('Search', array(
                     'url'=> $this->Html->url( array(
                         'controller' => 'lakas',
                         'action' => 'search',
@@ -105,6 +113,15 @@
                                 ));
                         ?>
                     </div>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('noref',array(
+                                'label'=> __('No. Referensi'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
                 </div>
                 <div class="form-group">
                     <?php 
@@ -137,6 +154,15 @@
                 </div>
             </div>
             <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('nodoc',array(
+                                'label'=> __('No. Dokumen'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
                 <div class="form-group">
                     <?php 
                             echo $this->Form->label('type', __('Truk'));

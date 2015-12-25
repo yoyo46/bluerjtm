@@ -7,7 +7,7 @@
     </div>
     <div class="box-body">
         <?php 
-            echo $this->Form->create('Laka', array(
+            echo $this->Form->create('Search', array(
                 'url'=> $this->Html->url( array(
                     'controller' => 'lakas',
                     'action' => 'search',
@@ -19,6 +19,24 @@
         ?>
         <div class="row">
             <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('date',array(
+                                'label'=> __('Tanggal'),
+                                'class'=>'form-control date-range',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('noref',array(
+                                'label'=> __('No. Referensi'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
                 <div class="form-group">
                     <?php 
                             echo $this->Form->label('type', __('Truk'));
@@ -49,15 +67,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->input('date',array(
-                                'label'=> __('Tanggal'),
-                                'class'=>'form-control date-range',
-                                'required' => false,
-                            ));
-                    ?>
-                </div>
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
@@ -78,7 +87,16 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('Ttuj.no_ttuj',array(
+                            echo $this->Form->input('nodoc',array(
+                                'label'=> __('No. Dokumen'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('nottuj',array(
                                 'label'=> __('No TTUJ'),
                                 'class'=>'form-control',
                                 'required' => false,

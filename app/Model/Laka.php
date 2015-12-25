@@ -2,6 +2,12 @@
 class Laka extends AppModel {
 	var $name = 'Laka';
 	var $validate = array(
+        'nodoc' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'No Dokumen name harap diisi'
+            ),
+        ),
         'nopol' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -96,6 +102,10 @@ class Laka extends AppModel {
         'Ttuj' => array(
             'className' => 'Ttuj',
             'foreignKey' => 'ttuj_id',
+        ),
+        'Truck' => array(
+            'className' => 'Truck',
+            'foreignKey' => 'truck_id',
         ),
     );
 
@@ -292,6 +302,73 @@ class Laka extends AppModel {
         }
 
         return $data;
+    }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+        $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
+        $type = !empty($data['named']['type'])?$data['named']['type']:1;
+        $nottuj = !empty($data['named']['nottuj'])?$data['named']['nottuj']:false;
+        $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
+        $status = !empty($data['named']['status'])?$data['named']['status']:false;
+        $insurance = !empty($data['named']['insurance'])?$data['named']['insurance']:false;
+
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(Laka.tgl_laka, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
+        if(!empty($nopol)){
+            if( $type == 2 ) {
+                $conditionsNopol = array(
+                    'Truck.id' => $nopol,
+                );
+            } else {
+                $conditionsNopol = array(
+                    'Truck.nopol LIKE' => '%'.$nopol.'%',
+                );
+            }
+
+            $truckSearch = $this->Truck->getData('list', array(
+                'conditions' => $conditionsNopol,
+                'fields' => array(
+                    'Truck.id', 'Truck.id',
+                ),
+            ), true, array(
+                'status' => 'all',
+                'branch' => false,
+            ));
+
+            $default_options['conditions']['Laka.truck_id'] = $truckSearch;
+        }
+        if(!empty($nottuj)){
+            $default_options['conditions']['Ttuj.no_ttuj LIKE'] = '%'.$nottuj.'%';
+        }
+        if(!empty($nodoc)){
+            $default_options['conditions']['Laka.nodoc LIKE'] = '%'.$nodoc.'%';
+        }
+        if(!empty($noref)){
+            $default_options['conditions']['LPAD(Laka.id, 6, 0) LIKE'] = '%'.$noref.'%';
+        }
+        if(!empty($status)){
+            $tmpArry = array(
+                0 => 'active',
+                1 => 'completed',
+            );
+
+            if( in_array($status, $tmpArry) ) {
+                $status = array_search($status, $tmpArry);
+                $default_options['conditions']['Laka.completed'] = $status;
+            }
+        }
+        
+        return $default_options;
     }
 }
 ?>

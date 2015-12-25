@@ -26,6 +26,12 @@
         <table class="table table-hover">
             <tr>
                 <?php 
+                        echo $this->Html->tag('th', $this->Paginator->sort('Laka.id', __('No. Ref'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Laka.nodoc', __('No. Dok'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.no_ttuj', __('No TTUJ'), array(
                             'escape' => false
                         )));
@@ -63,8 +69,14 @@
                     if(!empty($Lakas)){
                         foreach ($Lakas as $key => $value) {
                             $id = $value['Laka']['id'];
+                            $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                            $nodoc = $this->Common->filterEmptyField($value, 'Laka', 'nodoc');
             ?>
             <tr>
+                <?php 
+                        echo $this->Html->tag('td', $noref);
+                        echo $this->Html->tag('td', $nodoc);
+                ?>
                 <td>
                     <?php 
                         if(!empty($value['Ttuj']['no_ttuj'])){
@@ -130,7 +142,7 @@
                     }else{
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '9'
+                            'colspan' => '12'
                         )));
                     }
             ?>
