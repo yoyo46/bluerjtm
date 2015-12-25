@@ -6313,7 +6313,7 @@ class RevenuesController extends AppController {
                         'SUM(RevenueDetail.total_price_unit) as total',
                         'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\') as dt',
                     ),
-                ), true, array(
+                ), array(
                     'branch' => false,
                 ));
 

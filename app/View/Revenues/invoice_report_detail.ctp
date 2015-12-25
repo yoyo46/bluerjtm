@@ -26,7 +26,7 @@
                 'display' => true,
             ),
             'expired_date' => array(
-                'name' => __('Tatuh Tempo'),
+                'name' => __('Jatuh Tempo'),
                 'style' => 'text-align: center',
                 'display' => true,
             ),
