@@ -27,7 +27,7 @@
             $customSaldoAwal = $this->Common->getFormatPrice($saldo_awal);
             
             $noref = str_pad($document_id, 6, '0', STR_PAD_LEFT);
-            $customNoref = $this->Common->_callDocumentJournal( $noref, $document_id, $type );
+            $customNoref = $this->Common->_callDocumentJournal( $noref, $document_id, $type, $data_action );
 
             $totalDebit += $debit;
             $totalCredit += $credit;

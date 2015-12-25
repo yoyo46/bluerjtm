@@ -18,9 +18,8 @@
                 $customDate = $this->Common->formatDate($date, 'd/m/Y');
                 $customDebit = $this->Common->getFormatPrice($debit, false);
                 $customCredit = $this->Common->getFormatPrice($credit, false);
-                // $customDocumentNo = $this->Common->_callDocumentJournal( $document_no, $document_id, $type );
                 $noref = str_pad($document_id, 6, '0', STR_PAD_LEFT);
-                $customNoref = $this->Common->_callDocumentJournal( $noref, $document_id, $type );
+                $customNoref = $this->Common->_callDocumentJournal( $noref, $document_id, $type, $data_action );
 
                 if( $new != $old ) {
                     if( !empty($old) ) {
