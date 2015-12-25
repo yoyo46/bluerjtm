@@ -526,6 +526,12 @@ class TtujOutstanding extends AppModel {
         $uje = !empty($data['named']['uje'])?$data['named']['uje']:false;
         $com = !empty($data['named']['com'])?$data['named']['com']:false;
         $come = !empty($data['named']['come'])?$data['named']['come']:false;
+        $kuli_muat = !empty($data['named']['kuli_muat'])?$data['named']['kuli_muat']:false;
+        $kuli_bongkar = !empty($data['named']['kuli_bongkar'])?$data['named']['kuli_bongkar']:false;
+        $asdp = !empty($data['named']['asdp'])?$data['named']['asdp']:false;
+        $uang_kawal = !empty($data['named']['uang_kawal'])?$data['named']['uang_kawal']:false;
+        $uang_keamanan = !empty($data['named']['uang_keamanan'])?$data['named']['uang_keamanan']:false;
+
         $status = !empty($data['named']['status'])?$data['named']['status']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
@@ -585,6 +591,21 @@ class TtujOutstanding extends AppModel {
         }
         if(!empty($come)){
         	$typeOpt[] = 'commission_extra';
+        }
+        if(!empty($kuli_muat)){
+        	$typeOpt[] = 'uang_kuli_muat';
+        }
+        if(!empty($kuli_bongkar)){
+        	$typeOpt[] = 'uang_kuli_bongkar';
+        }
+        if(!empty($asdp)){
+        	$typeOpt[] = 'asdp';
+        }
+        if(!empty($uang_kawal)){
+        	$typeOpt[] = 'uang_kawal';
+        }
+        if(!empty($uang_keamanan)){
+        	$typeOpt[] = 'uang_keamanan';
         }
 
         if( !empty($typeOpt) ) {

@@ -151,6 +151,11 @@ class TtujPayment extends AppModel {
         $uje = !empty($data['named']['uje'])?$data['named']['uje']:false;
         $com = !empty($data['named']['com'])?$data['named']['com']:false;
         $come = !empty($data['named']['come'])?$data['named']['come']:false;
+        $kuli_muat = !empty($data['named']['kuli_muat'])?$data['named']['kuli_muat']:false;
+        $kuli_bongkar = !empty($data['named']['kuli_bongkar'])?$data['named']['kuli_bongkar']:false;
+        $asdp = !empty($data['named']['asdp'])?$data['named']['asdp']:false;
+        $uang_kawal = !empty($data['named']['uang_kawal'])?$data['named']['uang_kawal']:false;
+        $uang_keamanan = !empty($data['named']['uang_keamanan'])?$data['named']['uang_keamanan']:false;
 
         $fromcity = !empty($data['named']['fromcity'])?$data['named']['fromcity']:false;
         $tocity = !empty($data['named']['tocity'])?$data['named']['tocity']:false;
@@ -212,6 +217,21 @@ class TtujPayment extends AppModel {
         }
         if(!empty($come)){
             $default_options['conditions']['TtujPaymentDetail.type'][] = $come;
+        }
+        if(!empty($kuli_muat)){
+            $default_options['conditions']['TtujPaymentDetail.type'][] = $kuli_muat;
+        }
+        if(!empty($kuli_bongkar)){
+            $default_options['conditions']['TtujPaymentDetail.type'][] = $kuli_bongkar;
+        }
+        if(!empty($asdp)){
+            $default_options['conditions']['TtujPaymentDetail.type'][] = $asdp;
+        }
+        if(!empty($uang_kawal)){
+            $default_options['conditions']['TtujPaymentDetail.type'][] = $uang_kawal;
+        }
+        if(!empty($uang_keamanan)){
+            $default_options['conditions']['TtujPaymentDetail.type'][] = $uang_keamanan;
         }
         if(!empty($fromcity)){
             $default_options['conditions']['Ttuj.from_city_id'] = $fromcity;

@@ -438,8 +438,7 @@
                         ),
                         'revenues' => array(
                             'ttuj', 'truk_tiba', 'bongkaran',
-                            'balik', 'pool', 'report_ttuj_payment',
-                            'report_ttuj_outstanding'
+                            'balik', 'pool'
                         ),
                     );
 
@@ -449,7 +448,6 @@
                             'ttuj', 'truk_tiba', 'bongkaran',
                             'balik', 'pool', 'uang_jalan',
                             'uang_kuli_muat', 'uang_kuli_bongkar',
-                            'report_ttuj_payment', 'report_ttuj_outstanding'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $ttujMenu) ) {
@@ -536,24 +534,6 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'pool' )?'active':'',
-                            ));
-
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan rincian pembayaran ujalan & komisi', array(
-                                'controller' => 'revenues',
-                                'action' => 'report_ttuj_payment',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'report_ttuj_payment' )?'active':'',
-                            ));
-
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Saldo Biaya Uang Jalan', array(
-                                'controller' => 'revenues',
-                                'action' => 'report_ttuj_outstanding',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'report_ttuj_outstanding' )?'active':'',
                             ));
                     ?>
                 </ul>
@@ -820,7 +800,7 @@
                         $activeSetting = false;
                         $settingMenu = array(
                             'coas', 'banks', 'coa_setting',
-                            'closing',
+                            'closing'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -884,6 +864,7 @@
                         'uang_jalan_commission_payments',
                         'biaya_ttuj_payments', 'leasing_payments',
                         'journal_report', 'prepayment_report', 'ledger_report',
+                        'report_ttuj_payment', 'report_ttuj_outstanding'
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
@@ -894,7 +875,8 @@
                             'kir_payments', 'stnk_payments', 'siup_payments',
                         ),
                         'revenues' => array(
-                            'invoice_payments', 'ttuj_payments'
+                            'invoice_payments', 'ttuj_payments',
+                            'report_ttuj_payment', 'report_ttuj_outstanding'
                         ),
                         'lkus' => array(
                             'payments', 'ksu_payments',
@@ -1045,6 +1027,24 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'journal_report' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan rincian pembayaran ujalan & komisi', array(
+                                'controller' => 'revenues',
+                                'action' => 'report_ttuj_payment',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'report_ttuj_payment' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Saldo Biaya Uang Jalan', array(
+                                'controller' => 'revenues',
+                                'action' => 'report_ttuj_outstanding',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'report_ttuj_outstanding' )?'active':'',
                             ));
                     ?>
                 </ul>
