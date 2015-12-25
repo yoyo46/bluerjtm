@@ -25,6 +25,9 @@
             $customDebit = $this->Common->getFormatPrice($debit, false);
             $customCredit = $this->Common->getFormatPrice($credit, false);
             $customSaldoAwal = $this->Common->getFormatPrice($saldo_awal);
+            
+            $noref = str_pad($document_id, 6, '0', STR_PAD_LEFT);
+            $customNoref = $this->Common->_callDocumentJournal( $noref, $document_id, $type );
 
             $totalDebit += $debit;
             $totalCredit += $credit;
@@ -54,6 +57,7 @@
     <?php
             echo $this->Html->tag('td', $no);
             echo $this->Html->tag('td', $customDate);
+            echo $this->Html->tag('td', $customNoref);
             echo $this->Html->tag('td', $document_no);
             echo $this->Html->tag('td', $title);
             echo $this->Html->tag('td', $customDebit, array(

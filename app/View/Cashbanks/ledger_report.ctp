@@ -9,9 +9,13 @@
                 'name' => __('Date'),
                 'style' => 'text-align: center;',
             ),
+            'noref' => array(
+                'name' => __('No. Ref'),
+                'style' => 'text-align: left;',
+            ),
             'nodoc' => array(
-                'name' => __('No Dokumen'),
-                'style' => 'text-align: center;',
+                'name' => __('No. Dokumen'),
+                'style' => 'text-align: left;',
             ),
             'desc' => array(
                 'name' => __('Keterangan'),

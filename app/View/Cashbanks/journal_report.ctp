@@ -1,6 +1,10 @@
 <?php
         $element = 'blocks/cashbanks/tables/journal_report';
         $dataColumns = array(
+            'noref' => array(
+                'name' => __('No. Ref'),
+                'style' => 'text-align: left;',
+            ),
             'date' => array(
                 'name' => __('Tgl'),
                 'style' => 'text-align: center;',

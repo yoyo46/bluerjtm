@@ -1211,9 +1211,11 @@ class CashbanksController extends AppController {
                         'Journal.type' => $type,
                     ),
                 ));
+                
                 $values = array_merge($values, $journal);
             }
         }
+
 
         $coas = $this->User->Journal->Coa->_callOptGroup();
 
