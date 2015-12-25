@@ -741,6 +741,16 @@ class Ttuj extends AppModel {
         $to_city = !empty($data['named']['to_city'])?$data['named']['to_city']:false;
         $customer = !empty($data['named']['customer'])?$data['named']['customer']:false;
         $driver = !empty($data['named']['driver'])?$data['named']['driver']:false;
+        $fromcity = !empty($data['named']['fromcity'])?$data['named']['fromcity']:false;
+        $tocity = !empty($data['named']['tocity'])?$data['named']['tocity']:false;
+        $note = !empty($data['named']['note'])?$data['named']['note']:false;
+
+        $uj1 = !empty($data['named']['uj1'])?$data['named']['uj1']:false;
+        $uj2 = !empty($data['named']['uj2'])?$data['named']['uj2']:false;
+        $uje = !empty($data['named']['uje'])?$data['named']['uje']:false;
+        $com = !empty($data['named']['com'])?$data['named']['com']:false;
+        $come = !empty($data['named']['come'])?$data['named']['come']:false;
+        $status = !empty($data['named']['status'])?$data['named']['status']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -784,6 +794,72 @@ class Ttuj extends AppModel {
                 'branch' => false,
             ));
             $default_options['conditions']['Ttuj.customer_id'] = $customers;
+        }
+        if(!empty($uj1)){
+            $default_options['conditions']['OR']['Ttuj.uang_jalan_1 <>'] = 0;
+        }
+        if(!empty($uj2)){
+            $default_options['conditions']['OR']['Ttuj.uang_jalan_2 <>'] = 0;
+        }
+        if(!empty($uje)){
+            $default_options['conditions']['OR']['Ttuj.uang_jalan_extra <>'] = 0;
+        }
+        if(!empty($com)){
+            $default_options['conditions']['OR']['Ttuj.commission <>'] = 0;
+        }
+        if(!empty($come)){
+            $default_options['conditions']['OR']['Ttuj.commission_extra <>'] = 0;
+        }
+        if(!empty($fromcity)){
+            $default_options['conditions']['Ttuj.from_city_id'] = $fromcity;
+        }
+        if(!empty($tocity)){
+            $default_options['conditions']['Ttuj.to_city_id'] = $tocity;
+        }
+        if(!empty($note)){
+            $default_options['conditions']['Ttuj.note LIKE'] = '%'.$note.'%';
+        }
+        if(!empty($status)){
+            switch ($status) {
+                case 'paid':
+                        $default_options['conditions']['AND']['OR'] = array(
+                            array(
+                                'Ttuj.paid_uang_jalan' => 'full',
+                            ),
+                            array(
+                                'Ttuj.paid_uang_jalan_2' => 'full',
+                            ),
+                            array(
+                                'Ttuj.paid_uang_jalan_extra' => 'full',
+                            ),
+                            array(
+                                'Ttuj.paid_commission' => 'full',
+                            ),
+                            array(
+                                'Ttuj.paid_commission_extra' => 'full',
+                            ),
+                        );
+                    break;
+                case 'unpaid':
+                        $default_options['conditions']['AND']['OR'] = array(
+                            array(
+                                'Ttuj.paid_uang_jalan' => 'none',
+                            ),
+                            array(
+                                'Ttuj.paid_uang_jalan_2' => 'none',
+                            ),
+                            array(
+                                'Ttuj.paid_uang_jalan_extra' => 'none',
+                            ),
+                            array(
+                                'Ttuj.paid_commission' => 'none',
+                            ),
+                            array(
+                                'Ttuj.paid_commission_extra' => 'none',
+                            ),
+                        );
+                    break;
+            }
         }
         
         return $default_options;

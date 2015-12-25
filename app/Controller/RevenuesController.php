@@ -7798,4 +7798,80 @@ class RevenuesController extends AppController {
             ));
         }
     }
+
+    public function report_ttuj_outstanding( $data_action = false ) {
+        $this->loadModel('TtujOutstanding');
+        $this->loadModel('City');
+
+        $module_title = __('Laporan Saldo Biaya Uang Jalan');
+        $values = array();
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $this->set('sub_module_title', $module_title);
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+        $options =  $this->TtujOutstanding->_callRefineParams($params);
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            // Custom Otorisasi
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'TtujOutstanding', $options );
+        }
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+
+        if( !empty($data_action) ){
+            $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
+        } else {
+            $options['limit'] = Configure::read('__Site.config_pagination');
+        }
+
+        $this->paginate = $options;
+        $values = $this->paginate('TtujOutstanding');
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'TtujOutstanding', 'id');
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'TtujOutstanding', 'branch_id');
+                $customer_id = $this->MkCommon->filterEmptyField($value, 'TtujOutstanding', 'customer_id');
+                $data_type = $this->MkCommon->filterEmptyField($value, 'TtujOutstanding', 'data_type');
+
+                $value = $this->Ttuj->TtujPaymentDetail->TtujPayment->_callTtujPaid($value, $id, $data_type);
+
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
+
+                $values[$key] = $value;
+            }
+        }
+
+        $cities = $this->City->getListCities();
+
+        $this->set('active_menu', 'report_ttuj_outstanding');
+        $this->set(compact(
+            'values', 'module_title', 'data_action',
+            'cities'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $this->MkCommon->_layout_file(array(
+                'select',
+                'freeze',
+            ));
+        }
+    }
 }
