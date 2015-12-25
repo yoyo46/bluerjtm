@@ -1,5 +1,6 @@
 <?php 
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
+        $contentTr = isset($contentTr)?$contentTr:true;
         header('Content-type: application/ms-excel');
         header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
 ?>
@@ -13,7 +14,7 @@
                     echo $this->Html->tag('thead', $this->Html->tag('tr', $tableHead));
                 }
                 if( !empty($tableBody) ) {
-                    echo $this->Html->tag('tbody', $this->Html->tag('tr', $tableBody));
+                    echo $this->Html->tag('tbody', $tableBody);
                 }
         ?>
     </table>

@@ -3,7 +3,7 @@
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $dataColumns = array(
             'data' => array(
-                'name' => __('Tanggal'),
+                'name' => __('Tanggal Bayar'),
                 'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'date\',width:100',
             ),
@@ -90,6 +90,7 @@
                 'tableHead' => $fieldColumn,
                 'tableBody' => $this->element($element),
                 'sub_module_title' => $module_title,
+                'contentTr' => false,
             ));
         } else {
             $this->Html->addCrumb($sub_module_title);

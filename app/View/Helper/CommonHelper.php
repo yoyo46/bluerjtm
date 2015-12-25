@@ -2028,7 +2028,7 @@ class CommonHelper extends AppHelper {
         return $result;
     }
 
-    function _callDocumentJournal ( $label, $id = false, $type = false, $useUrl = true ) {
+    function _callDocumentJournal ( $label, $id = false, $type = false, $data_action = true ) {
         if( in_array($type, array( 'asdp', 'asdp_void', 'commission', 'commission_void', 'uang_jalan', 'uang_kuli_muat', 'uang_kuli_bongkar', 'uang_kawal', 'uang_keamanan', 'uang_jalan_void', 'uang_kuli_muat_void', 'uang_kuli_bongkar_void', 'uang_kawal_void', 'uang_keamanan_void' )) ) {
             $urlDefault = array(
                 'controller' => 'revenues',
@@ -2126,12 +2126,12 @@ class CommonHelper extends AppHelper {
             );
         }
 
-        if( !empty($urlDefault) && !empty($useUrl) ) {
+        if( !empty($urlDefault) && empty($data_action) ) {
             return $this->Html->link($label, $urlDefault, array(
                 'target' => 'blank',
             ));
         } else {
-            return $label;
+            return sprintf('#%s', $label);
         }
     }
 }

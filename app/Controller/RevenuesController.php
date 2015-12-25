@@ -7771,7 +7771,9 @@ class RevenuesController extends AppController {
                 $value = $this->TtujPaymentDetail->TtujPayment->_callTtujPaid($value, $ttuj_id, $type);
                 
                 $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
+                $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
                 $value = $this->Ttuj->Truck->Driver->getMerge($value, $driver_penganti_id, 'DriverPenganti');
+                $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
 
                 $values[$key] = $value;
             }

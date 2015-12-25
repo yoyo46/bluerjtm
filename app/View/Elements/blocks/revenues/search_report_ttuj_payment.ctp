@@ -24,7 +24,7 @@
             <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->label('date', __('Tanggal'));
+                            echo $this->Form->label('date', __('Tanggal Bayar'));
                     ?>
                     <div class="input-group">
                         <div class="input-group-addon">

@@ -13,7 +13,7 @@
                 $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
                 $ttuj_date = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date');
                 $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
-                $customer = $this->Common->filterEmptyField($value, 'Ttuj', 'customer_name');
+                $customer = $this->Common->filterEmptyField($value, 'Customer', 'code');
                 $from_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
                 $to_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
                 $note = $this->Common->filterEmptyField($value, 'Ttuj', 'note');
