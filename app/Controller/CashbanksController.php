@@ -1290,7 +1290,6 @@ class CashbanksController extends AppController {
             $module_title .= '<br>'.$coa_name;
         }
 
-        $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'journal_report');
         $this->set(compact(
             'coas', 'values', 'module_title',
@@ -1302,6 +1301,8 @@ class CashbanksController extends AppController {
             $this->layout = 'pdf';
         }else if($data_action == 'excel'){
             $this->layout = 'ajax';
+        } else {
+            $this->MkCommon->_layout_file('select');
         }
     }
 
