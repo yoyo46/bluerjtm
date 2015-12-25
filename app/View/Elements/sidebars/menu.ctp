@@ -438,7 +438,7 @@
                         ),
                         'revenues' => array(
                             'ttuj', 'truk_tiba', 'bongkaran',
-                            'balik', 'pool',
+                            'balik', 'pool', 'report_ttuj_payment',
                         ),
                     );
 
@@ -448,6 +448,7 @@
                             'ttuj', 'truk_tiba', 'bongkaran',
                             'balik', 'pool', 'uang_jalan',
                             'uang_kuli_muat', 'uang_kuli_bongkar',
+                            'report_ttuj_payment',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $ttujMenu) ) {
@@ -534,6 +535,15 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'pool' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan rincian pembayaran ujalan & komisi', array(
+                                'controller' => 'revenues',
+                                'action' => 'report_ttuj_payment',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'report_ttuj_payment' )?'active':'',
                             ));
                     ?>
                 </ul>

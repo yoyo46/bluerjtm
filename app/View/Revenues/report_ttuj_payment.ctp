@@ -84,7 +84,7 @@
         );
 
         if( !empty($data_action) ){
-            $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
+            $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table', true );
 
             echo $this->element(sprintf('blocks/common/tables/export_%s', $data_action), array(
                 'tableHead' => $fieldColumn,
@@ -112,6 +112,9 @@
                 ));
     ?>
     <div class="table-responsive">
+        <?php 
+                if(!empty($values)){
+        ?>
         <table id="tt" class="table table-bordered <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" singleSelect="true">
             <thead frozen="true">
                 <tr>
@@ -127,7 +130,7 @@
             ?>
         </table>
         <?php 
-                if(empty($values)){
+                } else {
                     echo $this->Html->tag('p', __('Data belum tersedia.'), array(
                         'class' => 'alert alert-warning text-center',
                     ));

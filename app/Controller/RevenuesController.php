@@ -7769,10 +7769,6 @@ class RevenuesController extends AppController {
         }
 
         $cities = $this->City->getListCities();
-        $this->MkCommon->_layout_file(array(
-            'select',
-            'freeze',
-        ));
 
         $this->set('active_menu', 'report_ttuj_payment');
         $this->set(compact(
@@ -7784,6 +7780,11 @@ class RevenuesController extends AppController {
             $this->layout = 'pdf';
         }else if($data_action == 'excel'){
             $this->layout = 'ajax';
+        } else {
+            $this->MkCommon->_layout_file(array(
+                'select',
+                'freeze',
+            ));
         }
     }
 }
