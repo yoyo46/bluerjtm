@@ -24,7 +24,7 @@
 
                 if( $new != $old ) {
                     if( !empty($old) ) {
-                        echo '<tr><td colspan="5"><hr></td></tr>';
+                        echo '<tr><td colspan="6"><hr></td></tr>';
                     }
 ?>
 <tr>
@@ -68,7 +68,7 @@
         } else {
             echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                 'class' => 'alert alert-warning text-center',
-                'colspan' => 5,
+                'colspan' => 6,
             )));
         }
 ?>

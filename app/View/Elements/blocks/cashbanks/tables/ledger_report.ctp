@@ -43,7 +43,7 @@
 <tr class="beginning">
     <?php
             echo $this->Html->tag('td', $this->Html->tag('i', __('Beginning Balance')), array(
-                'colspan' => 6,
+                'colspan' => 7,
             ));
             echo $this->Html->tag('td', $customSaldoAwal, array(
                 'style' => 'text-align:right;'
@@ -86,7 +86,7 @@
 <tr class="total">
     <?php
             echo $this->Html->tag('td', __('Beginning Balance:'), array(
-                'colspan' => 2,
+                'colspan' => 3,
                 'style' => 'text-align:left;font-weight:bold;'
             ));
             echo $this->Html->tag('td', $customBeginningBalance, array(
@@ -109,7 +109,7 @@
             $customFormatBalance = $this->Common->getFormatPrice($customBalance);
             
             echo $this->Html->tag('td', $this->Html->tag('strong', __('Ending Balance:')), array(
-                'colspan' => 2,
+                'colspan' => 3,
             ));
             echo $this->Html->tag('td', $customFormatBalance, array(
                 'style' => 'text-align:right;'
