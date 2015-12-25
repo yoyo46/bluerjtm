@@ -14,7 +14,7 @@
                     'url'=> $this->Html->url( array(
                         'controller' => 'revenues',
                         'action' => 'search',
-                        'report_ttuj_payment'
+                        'report_ttuj_outstanding'
                     )), 
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
@@ -24,7 +24,7 @@
             <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->label('date', __('Tanggal Bayar'));
+                            echo $this->Form->label('date', __('Tanggal TTUJ'));
                     ?>
                     <div class="input-group">
                         <div class="input-group-addon">
@@ -169,24 +169,6 @@
             <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->label('datettuj', __('Tanggal TTUJ'));
-                    ?>
-                    <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-calendar"></i>
-                        </div>
-                        <?php 
-                                echo $this->Form->input('datettuj',array(
-                                    'type' => 'text',
-                                    'label'=> false,
-                                    'class'=>'form-control pull-right date-range',
-                                    'required' => false,
-                                ));
-                        ?>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <?php 
                             echo $this->Form->input('fromcity',array(
                                 'label'=> __('Asal'),
                                 'class'=>'form-control chosen-select',
@@ -205,31 +187,22 @@
                             ));
                     ?>
                 </div>
-                <!-- <div class="form-group">
-                    <?php 
-                            // echo $this->Form->input('status',array(
-                            //     'label'=> __('Status'),
-                            //     'class'=>'form-control',
-                            //     'required' => false,
-                            //     'options' => array(
-                            //         'paid' => __('Sudah dibayar'),
-                            //         'unpaid' => __('Belum dibayar'),
-                            //     ),
-                            //     'empty' => __('Semua Status'),
-                            // ));
-                    ?>
-                </div> -->
-            </div>
-            <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('nottuj',array(
-                                'label'=> __('No TTUJ'),
+                            echo $this->Form->input('status',array(
+                                'label'=> __('Status'),
                                 'class'=>'form-control',
                                 'required' => false,
+                                'options' => array(
+                                    'paid' => __('Sudah dibayar'),
+                                    'unpaid' => __('Belum dibayar'),
+                                ),
+                                'empty' => __('Semua Status'),
                             ));
                     ?>
                 </div>
+            </div>
+            <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('tocity',array(
@@ -264,13 +237,12 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'report_ttuj_payment', 
+                                'action' => 'report_ttuj_outstanding', 
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',
                             ));
                     ?>
-                </div>
             </div>
         </div>
         <?php 

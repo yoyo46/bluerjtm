@@ -234,5 +234,21 @@ class Invoice extends AppModel {
         
         return $default_options;
     }
+
+    function getMerge($data, $id){
+        if(empty($data['Invoice'])){
+            $data_merge = $this->find('first', array(
+                'conditions' => array(
+                    'Invoice.id' => $id
+                ),
+            ));
+
+            if(!empty($data_merge)){
+                $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

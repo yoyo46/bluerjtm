@@ -88,4 +88,26 @@ class RevenueHelper extends AppHelper {
 
         return $content;
     }
+
+    function _callStatus ( $value ) {
+        $result = false;
+        $status = $this->Common->filterEmptyField($value, 'Revenue', 'transaction_status');
+
+        switch ($status) {
+            case 'unposting':
+                $result = __('Unposting');
+                break;
+            case 'posting':
+                $result = __('Posting');
+                break;
+            case 'invoiced':
+                $result = __('Invoiced');
+                break;
+            case 'half_invoiced':
+                $result = __('Posting');
+                break;
+        }
+
+        return $result;
+    }
 }

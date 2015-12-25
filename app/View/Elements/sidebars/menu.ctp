@@ -550,7 +550,7 @@
                             'ar_period_reports', 'list_kwitansi',
                             'report_customers', 'report_revenue_customers',
                             'report_monitoring_sj_revenue',
-                            'report_revenue_monthly'
+                            'report_revenue_monthly', 'report_revenue_period'
                         ),
                     );
 
@@ -561,7 +561,7 @@
                             'invoice_reports', 'revenues', 'ar_period_reports',
                             'list_kwitansi', 'report_customers',
                             'report_revenue_customers', 'report_monitoring_sj_revenue',
-                            'report_revenue_monthly'
+                            'report_revenue_monthly', 'report_revenue_period'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
@@ -664,6 +664,15 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'report_revenue_monthly' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Detail Revenue per Periode', array(
+                                'controller' => 'revenues',
+                                'action' => 'report_revenue_period',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'report_revenue_period' )?'active':'',
                             ));
                     ?>
                 </ul>

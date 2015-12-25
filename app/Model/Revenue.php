@@ -784,6 +784,8 @@ class Revenue extends AppModel {
         $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
         $nottuj = !empty($data['named']['nottuj'])?$data['named']['nottuj']:false;
         $status = !empty($data['named']['status'])?$data['named']['status']:false;
+        $fromcity = !empty($data['named']['fromcity'])?$data['named']['fromcity']:false;
+        $tocity = !empty($data['named']['tocity'])?$data['named']['tocity']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -808,7 +810,14 @@ class Revenue extends AppModel {
             $default_options['conditions']['Revenue.no_doc LIKE'] = '%'.$nodoc.'%';
         }
         if(!empty($nottuj)){
-            $default_options['conditions']['Ttuj.no_ttuj LIKE'] = '%'.$nottuj.'%';
+            $ttuj = $this->Ttuj->getData('list', array(
+                'conditions' => array(
+                    'Ttuj.no_ttuj LIKE' => '%'.$nottuj.'%',
+                ),
+            ), true, array(
+                'branch' => false,
+            ));
+            $default_options['conditions']['Revenue.ttuj_id'] = $ttuj;
         }
         if(!empty($noref)){
             $default_options['conditions']['LPAD(Revenue.id, 5, 0) LIKE'] = '%'.$noref.'%';
@@ -829,6 +838,28 @@ class Revenue extends AppModel {
             } else {
                 $default_options['conditions']['Revenue.transaction_status'] = $status;
             }
+        }
+
+        if(!empty($fromcity) || !empty($tocity)){
+            $this->RevenueDetail->bindModel(array(
+                'hasOne' => array(
+                    'Ttuj' => array(
+                        'className' => 'Ttuj',
+                        'foreignKey' => false,
+                        'conditions' => array(
+                            'Revenue.ttuj_id = Ttuj.id',
+                        ),
+                    ),
+                ),
+            ), false);
+            if(!empty($fromcity)){
+                $default_options['conditions']['Ttuj.from_city_id'] = $fromcity;
+            }
+            if(!empty($tocity)){
+                $default_options['conditions']['Ttuj.to_city_id'] = $tocity;
+            }
+            
+            $default_options['contain'][] = 'Ttuj';
         }
         
         return $default_options;

@@ -279,22 +279,17 @@ class RevenueDetail extends AppModel {
         return $result;
     }
 
-    function getSumUnit($data, $id, $data_action = 'invoice'){
+    function getSumUnit($data, $id, $data_action = 'invoice', $fieldName = 'RevenueDetail.invoice_id'){
         $this->virtualFields['qty_unit'] = 'SUM(RevenueDetail.qty_unit)';
-        $head_office = Configure::read('__Site.config_branch_head_office');
         $options = array();
-        $elementRevenue = false;
-
-        if( !empty($head_office) ) {
-            $elementRevenue = array(
-                'branch' => false,
-            );
-        }
+        $elementRevenue = array(
+            'branch' => false,
+        );
 
         switch ($data_action) {
             case 'revenue':
                 $options['conditions'] = array(
-                    'RevenueDetail.invoice_id' => $id,
+                    $fieldName => $id,
                 );
                 $options['group'] = array(
                     'RevenueDetail.revenue_id',
@@ -311,7 +306,7 @@ class RevenueDetail extends AppModel {
                 $this->virtualFields['total_price'] = 'SUM(RevenueDetail.price_unit*RevenueDetail.qty_unit)';
                 $options = array(
                     'conditions' => array(
-                        'RevenueDetail.invoice_id' => $id,
+                        $fieldName => $id,
                     ),
                     'group' => array(
                         'RevenueDetail.revenue_id',
@@ -331,10 +326,10 @@ class RevenueDetail extends AppModel {
                         'Revenue',
                     ),
                     'conditions' => array(
-                        'RevenueDetail.invoice_id' => $id,
+                        $fieldName => $id,
                     ),
                     'group' => array(
-                        'RevenueDetail.invoice_id',
+                        $fieldName,
                     ),
                 );
 
@@ -381,6 +376,84 @@ class RevenueDetail extends AppModel {
         }
 
         return $data;
+    }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+        $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
+        $type = !empty($data['named']['type'])?$data['named']['type']:1;
+        $customer = !empty($data['named']['customer'])?$data['named']['customer']:false;
+        $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
+        $nottuj = !empty($data['named']['nottuj'])?$data['named']['nottuj']:false;
+        $status = !empty($data['named']['status'])?$data['named']['status']:false;
+        $fromcity = !empty($data['named']['fromcity'])?$data['named']['fromcity']:false;
+        $tocity = !empty($data['named']['tocity'])?$data['named']['tocity']:false;
+
+        if(!empty($fromcity) || !empty($tocity) || $nopol){
+            $this->bindModel(array(
+                'hasOne' => array(
+                    'Ttuj' => array(
+                        'className' => 'Ttuj',
+                        'foreignKey' => false,
+                        'conditions' => array(
+                            'Revenue.ttuj_id = Ttuj.id',
+                        ),
+                    ),
+                ),
+            ), false);
+            
+            $default_options['contain'][] = 'Ttuj';
+        }
+
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
+        if(!empty($nopol)){
+            if( $type == 2 ) {
+                $default_options['conditions']['Ttuj.truck_id'] = $nopol;
+            } else {
+                $default_options['conditions']['Ttuj.nopol LIKE'] = '%'.$nopol.'%';
+            }
+        }
+        if(!empty($customer)){
+            $default_options['conditions']['Revenue.customer_id'] = $customer;
+        }
+        if(!empty($nodoc)){
+            $default_options['conditions']['Revenue.no_doc LIKE'] = '%'.$nodoc.'%';
+        }
+        if(!empty($nottuj)){
+            $ttuj = $this->Revenue->Ttuj->getData('list', array(
+                'conditions' => array(
+                    'Ttuj.no_ttuj LIKE' => '%'.$nottuj.'%',
+                ),
+            ), true, array(
+                'branch' => false,
+            ));
+            $default_options['conditions']['Revenue.ttuj_id'] = $ttuj;
+        }
+        if(!empty($noref)){
+            $default_options['conditions']['LPAD(Revenue.id, 5, 0) LIKE'] = '%'.$noref.'%';
+        }
+        if(!empty($status)){
+            $default_options['conditions']['Revenue.transaction_status'] = $status;
+        }
+            
+        if(!empty($fromcity)){
+            $default_options['conditions']['Ttuj.from_city_id'] = $fromcity;
+        }
+        if(!empty($tocity)){
+            $default_options['conditions']['Ttuj.to_city_id'] = $tocity;
+        }
+        
+        return $default_options;
     }
 }
 ?>
