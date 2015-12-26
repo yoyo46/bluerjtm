@@ -5272,4 +5272,118 @@ class TrucksController extends AppController {
             $this->layout = 'ajax';
         }
     }
+
+    public function leadtime_report( $data_action = false ) {
+        $this->loadModel('Ttuj');
+        $this->loadModel('City');
+
+        $module_title = __('Laporan leadtime');
+        $values = array();
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $this->set('sub_module_title', $module_title);
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+        $options =  $this->Ttuj->getData('paginate', array(
+            'conditions' => array(
+                'Ttuj.is_draft' => 0,
+            ),
+        ), true, array(
+            'branch' => false,
+        ));
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+        $options =  $this->Ttuj->_callRefineParams($params, $options);
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            // Custom Otorisasi
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $options );
+        }
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+
+        if( !empty($data_action) ){
+            $values = $this->Ttuj->find('all', $options);
+        } else {
+            $options['limit'] = Configure::read('__Site.config_pagination');
+            $this->paginate = $options;
+            $values = $this->paginate('Ttuj');
+        }
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
+                $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
+                $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
+                $uang_jalan_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
+
+                $from_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_berangkat');
+                $to_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_tiba');
+
+                $from_pool_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_balik');
+                $to_pool_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_pool');
+
+                $value = $this->Ttuj->Truck->Driver->getMerge($value, $driver_penganti_id, 'DriverPenganti');
+                $value = $this->Ttuj->UangJalan->getMerge($value, $uang_jalan_id);
+                $value = $this->Ttuj->Truck->getMerge($value, $truck_id);
+                $value = $this->Ttuj->getSumUnit( $value, $id );
+
+                if( !empty($to_time) ) {
+                    $leadTimeArrive = $this->MkCommon->dateDiff($from_time, $to_time, 'day', true);
+                    $value['ArriveLeadTime'] = $leadTimeArrive;
+                } else {
+                    $leadTimeArrive = $this->MkCommon->dateDiff($from_time, date('Y-m-d H:i:s'), 'day', true);
+                    $arrive_lead_time = $this->MkCommon->filterEmptyField($leadTimeArrive, 'total_hour');
+                    $target_arrive_lead_time = $this->MkCommon->filterEmptyField($value, 'UangJalan', 'arrive_lead_time');
+                    
+                    if( $arrive_lead_time > $target_arrive_lead_time ) {
+                        $value['ArriveLeadTime'] = $leadTimeArrive;
+                    }
+                }
+
+                // if( !empty($to_pool_time) ) {
+                    $leadTimeBack = $this->MkCommon->dateDiff($from_pool_time, $to_pool_time, 'day', true);
+                    $value['BackLeadTime'] = $leadTimeBack;
+                // } else {
+                //     $leadTimeBack = $this->MkCommon->dateDiff($from_pool_time, date('Y-m-d H:i:s'), 'day', true);
+                //     $back_lead_time = $this->MkCommon->filterEmptyField($leadTimeBack, 'total_hour');
+                //     $target_back_lead_time = $this->MkCommon->filterEmptyField($value, 'UangJalan', 'back_lead_time');
+                    
+                //     if( $back_lead_time > $target_back_lead_time ) {
+                //         $value['BackLeadTime'] = $leadTimeBack;
+                //     }
+                // }
+
+                $values[$key] = $value;
+            }
+        }
+
+        $cities = $this->City->getListCities();
+
+        $this->set('active_menu', 'leadtime_report');
+        $this->set(compact(
+            'values', 'module_title', 'data_action',
+            'cities'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $this->MkCommon->_layout_file(array(
+                'select',
+                'freeze',
+            ));
+        }
+    }
 }

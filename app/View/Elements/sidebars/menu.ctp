@@ -210,7 +210,8 @@
                             'kir', 'stnk', 'siup', 'reports',
                             'capacity_report', 'point_perday_report',
                             'point_perplant_report', 'licenses_report',
-                            'daily_report', 'mutations', 'driver_reports'
+                            'daily_report', 'mutations', 'driver_reports',
+                            'leadtime_report',
                         ),
                         'leasings' => array(
                             'index'
@@ -231,7 +232,7 @@
                             'point_perday_report', 'point_perplant_report',
                             'view_leasing', 'licenses_report', 'truck_import',
                             'daily_report', 'mutations', 'driver_reports',
-                            'ttuj_report',
+                            'ttuj_report', 'leadtime_report'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -425,6 +426,15 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'ttuj_report' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan leadtime', array(
+                                'controller' => 'trucks',
+                                'action' => 'leadtime_report',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'leadtime_report' )?'active':'',
                             ));
                     ?>
                 </ul>

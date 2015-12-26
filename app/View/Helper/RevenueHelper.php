@@ -4,7 +4,7 @@ class RevenueHelper extends AppHelper {
         'Common', 'Html'
     );
 
-    function _callStatusTTUJ ( $value, $type = 'normal' ) {
+    function _callStatusTTUJ ( $value, $type = 'normal', $tag = false ) {
         $status = $this->Common->filterEmptyField($value, 'Ttuj', 'status');
         $is_laka = $this->Common->filterEmptyField($value, 'Ttuj', 'is_laka');
         $is_pool = $this->Common->filterEmptyField($value, 'Ttuj', 'is_pool');
@@ -13,23 +13,31 @@ class RevenueHelper extends AppHelper {
         $is_arrive = $this->Common->filterEmptyField($value, 'Ttuj', 'is_arrive');
         $is_draft = $this->Common->filterEmptyField($value, 'Ttuj', 'is_draft');
         $is_lku = $this->Common->filterEmptyField($value, 'Lku', 'qty');
+        $class = 'default';
 
         switch ($type) {
             case 'sort':
                 if(!empty($is_lku)){
                     $result = __('NG');
+                    $class = 'warning';
                 } else if(empty($status)){
                     $result = __('Void');
+                    $class = 'danger';
                 } else if(!empty($is_laka)){
                     $result = __('LAKA');
+                    $class = 'danger';
                 } else if(!empty($is_pool)){
                     $result = __('Pool');
+                    $class = 'success';
                 } else if(!empty($is_balik)){
                     $result = __('BB');
+                    $class = 'info';
                 } else if(!empty($is_bongkaran)){
                     $result = __('SB');
+                    $class = 'primary';
                 } else if(!empty($is_arrive)){
                     $result = __('AB');
+                    $class = 'primary';
                 } else {
                     $result = __('BT');
                 }
@@ -38,25 +46,38 @@ class RevenueHelper extends AppHelper {
             default:
                 if(empty($status)){
                     $result = __('Void');
+                    $class = 'danger';
                 } else if(!empty($is_laka)){
                     $result = __('LAKA');
+                    $class = 'danger';
                 } else if(!empty($is_pool)){
                     $result = __('Sampai Pool');
+                    $class = 'success';
                 } else if(!empty($is_balik)){
                     $result = __('Balik');
+                    $class = 'info';
                 } else if(!empty($is_bongkaran)){
                     $result = __('Bongkaran');
+                    $class = 'primary';
                 } else if(!empty($is_arrive)){
                     $result = __('Tiba');
+                    $class = 'primary';
                 } else if(!empty($is_draft)){
                     $result = __('Draft');
                 } else{
                     $result = __('Commit');
+                    $class = 'primary';
                 }
                 break;
         }
 
-        return $result;
+        if( !empty($tag) ) {
+            return $this->Html->tag('span', $result, array(
+                'class' => 'label label-'.$class,
+            ));
+        } else {
+            return $result;
+        }
     }
 
     function _callStatusInvoicePayment ( $data ) {
