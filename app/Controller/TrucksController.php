@@ -5368,11 +5368,16 @@ class TrucksController extends AppController {
         }
 
         $cities = $this->City->getListCities();
+        $customers = $this->Ttuj->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
 
         $this->set('active_menu', 'leadtime_report');
         $this->set(compact(
             'values', 'module_title', 'data_action',
-            'cities'
+            'cities', 'customers'
         ));
 
         if($data_action == 'pdf'){

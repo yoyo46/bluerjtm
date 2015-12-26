@@ -49,6 +49,17 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('customer',array(
+                                'label'=> __('Alokasi'),
+                                'class'=>'form-control chosen-select',
+                                'required' => false,
+                                'options' => !empty($customers)?$customers:false,
+                                'empty' => __('Pilih Alokasi'),
+                            ));
+                    ?>
+                </div>
             </div>
             <div class="col-sm-4">
                 <div class="form-group">
@@ -80,31 +91,22 @@
                             ));
                     ?>
                 </div>
-                <!-- <div class="form-group">
-                    <?php 
-                            // echo $this->Form->input('status',array(
-                            //     'label'=> __('Status'),
-                            //     'class'=>'form-control',
-                            //     'required' => false,
-                            //     'options' => array(
-                            //         'paid' => __('Sudah dibayar'),
-                            //         'unpaid' => __('Belum dibayar'),
-                            //     ),
-                            //     'empty' => __('Semua Status'),
-                            // ));
-                    ?>
-                </div> -->
-            </div>
-            <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('nottuj',array(
-                                'label'=> __('No TTUJ'),
+                            echo $this->Form->input('status',array(
+                                'label'=> __('Status'),
                                 'class'=>'form-control',
                                 'required' => false,
+                                'options' => array(
+                                    'ng' => __('Not Good'),
+                                    'laka' => __('LAKA'),
+                                ),
+                                'empty' => __('Semua Status'),
                             ));
                     ?>
                 </div>
+            </div>
+            <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('tocity',array(
@@ -118,12 +120,33 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('nopol',array(
-                                'label'=> __('Nopol'),
-                                'class'=>'form-control',
-                                'required' => false,
-                            ));
+                            echo $this->Form->label('type', __('Truk'));
                     ?>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <?php 
+                                    echo $this->Form->input('type',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                        'empty' => false,
+                                        'options' => array(
+                                            '1' => __('Nopol'),
+                                            '2' => __('ID Truk'),
+                                        ),
+                                    ));
+                            ?>
+                        </div>
+                        <div class="col-sm-8">
+                            <?php 
+                                    echo $this->Form->input('nopol',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                    ));
+                            ?>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <?php 
