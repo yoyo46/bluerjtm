@@ -336,11 +336,21 @@ class RevenuesController extends AppController {
 
             if( !empty($revenue_id) ) {
                 if( !empty($tarifDefault['jenis_unit']) && $tarifDefault['jenis_unit'] == 'per_unit' && !empty($totalTarif) ) {
+                    $totalTarifWithoutTax = $totalTarif;
+
+                    if( !empty($dataRevenue['Revenue']['pph']) ){
+                        $pph = $totalTarif * ($dataRevenue['Revenue']['pph'] / 100);
+                    }
+                    if( !empty($dataRevenue['Revenue']['ppn']) ){
+                        $ppn = $totalTarif * ($dataRevenue['Revenue']['ppn'] / 100);
+                        $totalTarif += $ppn;
+                    }
+
                     $dataRevenue['Revenue']['total'] = $totalTarif;
-                    $dataRevenue['Revenue']['total_without_tax'] = $totalTarif;
+                    $dataRevenue['Revenue']['total_without_tax'] = $totalTarifWithoutTax;
 
                     $this->Revenue->set('total', $totalTarif);
-                    $this->Revenue->set('total_without_tax', $totalTarif);
+                    $this->Revenue->set('total_without_tax', $totalTarifWithoutTax);
                     $this->Revenue->id = $revenue_id;
                     $this->Revenue->save();
                 }
@@ -775,13 +785,16 @@ class RevenuesController extends AppController {
                                         $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'id');
                                         $tarifDefault = $this->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity']);
 
-                                        $dataRevenue['Revenue'] = array(
+                                        $dataSetting = $this->MkCommon->_callSettingGeneral('Revenue', array( 'pph', 'ppn' ), false);
+                                        $dataSetting = $this->MkCommon->filterEmptyField($dataSetting, 'Revenue');
+
+                                        $dataRevenue['Revenue'] = array_merge($dataSetting, array(
                                             'ttuj_id' => $document_id,
                                             'date_revenue' => $data['Ttuj']['ttuj_date'],
                                             'customer_id' => $data['Ttuj']['customer_id'],
                                             'revenue_tarif_type' => !empty($tarifDefault['jenis_unit'])?$tarifDefault['jenis_unit']:'per_unit',
                                             'branch_id' => $current_branch_id,
-                                        );
+                                        ));
 
                                         if( !empty($tarifDefault['jenis_unit']) && $tarifDefault['jenis_unit'] == 'per_truck' ) {
                                             $dataRevenue['Revenue']['total'] = $tarifDefault['tarif'];
@@ -3377,6 +3390,7 @@ class RevenuesController extends AppController {
         if(!empty($revenues)){
             foreach ($revenues as $key => $value) {
                 $value = $this->Revenue->InvoiceDetail->getInvoicedRevenue($value, $value['Revenue']['id']);
+                $customer_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'customer_id');
 
                 if( empty($value['Revenue']['ttuj_id']) ) {
                     $from_city_id = !empty($value['Revenue']['from_city_id'])?$value['Revenue']['from_city_id']:false;
@@ -3385,13 +3399,16 @@ class RevenuesController extends AppController {
 
                     $value = $this->City->getMerge($value, $from_city_id, 'FromCity');
                     $value = $this->City->getMerge($value, $to_city_id);
-                    $value = $this->Ttuj->Customer->getMerge($value, $value['Revenue']['customer_id']);
                     $value = $this->Ttuj->Truck->getMerge($value, $truck_id);
-                } else {
-                    $value = $this->Ttuj->Customer->getMerge($value, $value['Ttuj']['customer_id']);
                 }
 
-                $revenues[$key] = $this->Ttuj->Customer->getMerge($value, $value['Ttuj']['customer_id']);
+                if( empty($customer_id) ) {
+                    $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
+                }
+
+                $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
+
+                $revenues[$key] = $value;
             }
         }
         $this->set('revenues', $revenues); 
@@ -3439,15 +3456,13 @@ class RevenuesController extends AppController {
     // }
 
     function add( $action_type = false ){
-        $this->loadModel('Revenue');
         $module_title = __('Tambah Revenue');
         $this->set('sub_module_title', trim($module_title));
         $this->doRevenue( false, false, $action_type );
     }
 
     function edit( $id, $action_type = false ){
-        $this->loadModel('Revenue');
-        $revenue = $this->Revenue->getData('first', array(
+        $revenue = $this->Ttuj->Revenue->getData('first', array(
             'conditions' => array(
                 'Revenue.id' => $id
             ),
@@ -3459,7 +3474,7 @@ class RevenuesController extends AppController {
         ));
 
         if(!empty($revenue)){
-            $revenue = $this->Revenue->RevenueDetail->getMergeAll( $revenue, $revenue['Revenue']['id'] );
+            $revenue = $this->Ttuj->Revenue->RevenueDetail->getMergeAll( $revenue, $revenue['Revenue']['id'] );
             $this->MkCommon->getLogs($this->paramController, array( 'revenue_ttuj_add', 'revenue_ttuj_edit', 'revenue_ttuj_toggle', 'edit', 'add', 'revenue_toggle' ), $id);
 
             $module_title = __('Rubah Revenue');
@@ -3482,7 +3497,7 @@ class RevenuesController extends AppController {
             $data = $this->request->data;
             $data['Revenue']['date_revenue'] = $this->MkCommon->getDate($data['Revenue']['date_revenue']);
             $data['Revenue']['branch_id'] = Configure::read('__Site.config_branch_id');
-            $resultSave = $this->Revenue->saveRevenue($id, $data_local, $data, $this);
+            $resultSave = $this->Ttuj->Revenue->saveRevenue($id, $data_local, $data, $this);
             $statusSave = !empty($resultSave['status'])?$resultSave['status']:false;
             $msgSave = !empty($resultSave['msg'])?$resultSave['msg']:false;
             $this->MkCommon->setCustomFlash($msgSave, $statusSave);
@@ -3558,6 +3573,8 @@ class RevenuesController extends AppController {
                     }
                 }
             }
+        } else {
+            $this->MkCommon->_callSettingGeneral('Revenue', array( 'pph', 'ppn' ));
         }
 
         $ttuj_retail = false;
@@ -3630,7 +3647,7 @@ class RevenuesController extends AppController {
                             'TtujTipeMotor.status'=> 1,
                         ));
 
-                        if(!empty($ttujTipeMotor)){
+                        if(!empty($ttujTipeMotor[0]['qty'])){
                             $qty = $ttujTipeMotor[0]['qty'];
                         }
 
@@ -3753,8 +3770,7 @@ class RevenuesController extends AppController {
     }
 
     function revenue_toggle( $id ){
-        $this->loadModel('Revenue');
-        $locale = $this->Revenue->getData('first', array(
+        $locale = $this->Ttuj->Revenue->getData('first', array(
             'conditions' => array(
                 'Revenue.id' => $id
             )
@@ -3775,10 +3791,10 @@ class RevenuesController extends AppController {
                 $value = false;
             }
 
-            $this->Revenue->set('status', $value);
-            $this->Revenue->id = $id;
+            $this->Ttuj->Revenue->set('status', $value);
+            $this->Ttuj->Revenue->id = $id;
 
-            if($this->Revenue->save()){
+            if($this->Ttuj->Revenue->save()){
                 $this->Ttuj->set('is_revenue', 0);
                 $this->Ttuj->id = $locale['Revenue']['ttuj_id'];
                 $this->Ttuj->save();
@@ -4107,7 +4123,6 @@ class RevenuesController extends AppController {
     }
 
     function doInvoice($action, $id = false, $data_local = false){
-        $this->loadModel('Revenue');
         $this->loadModel('Bank');
 
         $elementRevenue = false;
@@ -4166,7 +4181,7 @@ class RevenuesController extends AppController {
                 
                 if($action == 'tarif'){
                     if(!empty($customer)){
-                        $revenue_detail = $this->Revenue->RevenueDetail->getData('all', array(
+                        $revenue_detail = $this->Ttuj->Revenue->RevenueDetail->getData('all', array(
                             'conditions' => array(
                                 'Revenue.customer_id' => $customer_id,
                                 'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
@@ -4204,6 +4219,7 @@ class RevenuesController extends AppController {
                                     if( !empty($data['Invoice']['total']) ) {
                                         $titleJournalInv = sprintf(__('Invoice customer: %s, No: %s'), $customer_name_code, $invoice_number);
                                         $total = $this->MkCommon->filterEmptyField($data, 'Invoice', 'total');
+                                        $total_pph = $this->MkCommon->filterEmptyField($data, 'Invoice', 'total_pph');
 
                                         $this->User->Journal->setJournal($total, array(
                                             'credit' => 'invoice_coa_credit_id',
@@ -4225,12 +4241,22 @@ class RevenuesController extends AppController {
                                             'document_no' => $invoice_number,
                                             'type' => 'invoice',
                                         ));
+                                        $this->User->Journal->setJournal($total_pph, array(
+                                            'credit' => 'pph_coa_credit_id',
+                                            'debit' => 'pph_coa_debit_id',
+                                        ), array(
+                                            'date' => $invoice_date,
+                                            'document_id' => $invoice_id,
+                                            'title' => $titleJournalInv,
+                                            'document_no' => $invoice_number,
+                                            'type' => 'invoice',
+                                        ));
                                     }
 
                                     $this->params['old_data'] = $data_local;
                                     $this->params['data'] = $data;
 
-                                    $this->Revenue->getProsesInvoice( $customer_id, $invoice_id, $action, $tarif_type, $value );
+                                    $this->Ttuj->Revenue->getProsesInvoice( $customer_id, $invoice_id, $action, $tarif_type, $value );
                                     $this->Log->logActivity( sprintf(__('Berhasil %s Invoice #%s'), $msg, $invoice_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $invoice_id );
                                 } else {
                                     $this->Log->logActivity( sprintf(__('Gagal %s Invoice #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
@@ -4255,6 +4281,7 @@ class RevenuesController extends AppController {
                         if( !empty($data['Invoice']['total']) ) {
                             $titleJournalInv = sprintf(__('Invoice customer: %s, No: %s'), $customer_name_code, $document_no);
                             $total = $this->MkCommon->filterEmptyField($data, 'Invoice', 'total');
+                            $total_pph = $this->MkCommon->filterEmptyField($data, 'Invoice', 'total_pph');
 
                             $this->User->Journal->setJournal($total, array(
                                 'credit' => 'invoice_coa_credit_id',
@@ -4269,6 +4296,16 @@ class RevenuesController extends AppController {
                             $this->User->Journal->setJournal($total, array(
                                 'credit' => 'revenue_coa_debit_id',
                                 'debit' => 'revenue_coa_credit_id',
+                            ), array(
+                                'date' => $invoice_date,
+                                'document_id' => $invoice_id,
+                                'title' => $titleJournalInv,
+                                'document_no' => $document_no,
+                                'type' => 'invoice',
+                            ));
+                            $this->User->Journal->setJournal($total_pph, array(
+                                'credit' => 'pph_coa_credit_id',
+                                'debit' => 'pph_coa_debit_id',
                             ), array(
                                 'date' => $invoice_date,
                                 'document_id' => $invoice_id,
@@ -4291,7 +4328,7 @@ class RevenuesController extends AppController {
                         $this->params['old_data'] = $data_local;
                         $this->params['data'] = $data;
 
-                        $this->Revenue->getProsesInvoice( $customer_id, $invoice_id, $action, $tarif_type );
+                        $this->Ttuj->Revenue->getProsesInvoice( $customer_id, $invoice_id, $action, $tarif_type );
                         $this->MkCommon->setCustomFlash(sprintf(__('Berhasil %s Invoice'), $msg), 'success'); 
                         $this->Log->logActivity( sprintf(__('Berhasil %s Invoice #%s'), $msg, $invoice_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $invoice_id );
                         $this->redirect(array(
@@ -4328,7 +4365,7 @@ class RevenuesController extends AppController {
             $conditionsRevenue['revenue_tarif_type'] = 'per_unit';
         }
 
-        $revenues = $this->Revenue->getData('all', array(
+        $revenues = $this->Ttuj->Revenue->getData('all', array(
             'conditions' => $conditionsRevenue,
             'order' => array(
                 'Revenue.date_revenue' => 'ASC'
@@ -4405,10 +4442,10 @@ class RevenuesController extends AppController {
                 $setting = $this->Setting->find('first');
                 $billing_id = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'billing_id');
 
-                $invoice = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getSumUnit($invoice, $invoice['Invoice']['id']);
+                $invoice = $this->Ttuj->Revenue->RevenueDetail->getSumUnit($invoice, $invoice['Invoice']['id']);
                 $invoice = $this->User->getMerge($invoice, $billing_id);
             } else {
-                $revenue_detail = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getPreviewInvoice($invoice['Invoice']['id'], $invoice['Invoice']['tarif_type'], $action_print, $data_print, $revenueDetailId);
+                $revenue_detail = $this->Ttuj->Revenue->RevenueDetail->getPreviewInvoice($invoice['Invoice']['id'], $invoice['Invoice']['tarif_type'], $action_print, $data_print, $revenueDetailId);
             }
 
             $action = $invoice['Invoice']['type_invoice'];
@@ -4787,9 +4824,7 @@ class RevenuesController extends AppController {
     }
 
     function invoice_payments(){
-        $this->loadModel('Invoice');
         $this->loadModel('InvoicePayment');
-        $this->loadModel('Customer');
         
         $this->set('active_menu', 'invoice_payments');
         $this->set('sub_module_title', __('Pembayaran Invoice'));
@@ -4817,13 +4852,13 @@ class RevenuesController extends AppController {
 
         if(!empty($invoices)){
             foreach ($invoices as $key => $value) {
-                $invoices[$key] = $this->InvoicePayment->Customer->getMerge($value, $value['InvoicePayment']['customer_id']);
+                $invoices[$key] = $this->Ttuj->Customer->getMerge($value, $value['InvoicePayment']['customer_id']);
             }
         }
         
         $this->set('invoices', $invoices); 
 
-        $customers = $this->Invoice->Customer->getData('list', array(
+        $customers = $this->Ttuj->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
@@ -4832,16 +4867,14 @@ class RevenuesController extends AppController {
     }
 
     function invoice_payment_add(){
-        $this->loadModel('Invoice');
         $module_title = __('Tambah Pembayaran Invoice');
         $this->set('sub_module_title', trim($module_title));
         $this->doInvoicePayment();
     }
 
-    function doInvoicePayment($id = false, $data_local = false){
-        $this->loadModel('Customer');
-        $this->loadModel('Coa');
-        
+    function doInvoicePayment($id = false, $data_local = false){        
+        $this->loadModel('InvoicePayment');
+
         $head_office = Configure::read('__Site.config_branch_head_office');
         $elementRevenue = false;
 
@@ -4856,7 +4889,7 @@ class RevenuesController extends AppController {
             $customer_id = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'customer_id');
             $coa_id = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'coa_id');
 
-            $customer = $this->Customer->getData('first', array(
+            $customer = $this->Ttuj->Customer->getData('first', array(
                 'conditions' => array(
                     'Customer.id' => $customer_id
                 )
@@ -4864,11 +4897,10 @@ class RevenuesController extends AppController {
             $customer_name_code = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_name_code');
 
             if($id && $data_local){
-                $this->Invoice->InvoicePaymentDetail->InvoicePayment->id = $id;
+                $this->InvoicePayment->id = $id;
                 $msg = 'merubah';
             }else{
-                $this->loadModel('Invoice');
-                $this->Invoice->InvoicePaymentDetail->InvoicePayment->create();
+                $this->InvoicePayment->create();
                 $msg = 'membuat';
             }
 
@@ -4886,7 +4918,7 @@ class RevenuesController extends AppController {
                         $validate_price_pay = false;
                         break;
                     }else{
-                        $invoice_has_paid = $this->Invoice->InvoicePaymentDetail->getData('first', array(
+                        $invoice_has_paid = $this->InvoicePayment->InvoicePaymentDetail->getData('first', array(
                             'conditions' => array(
                                 'InvoicePaymentDetail.invoice_id' => $_invoice_id,
                                 'InvoicePayment.status' => 1,
@@ -4903,7 +4935,7 @@ class RevenuesController extends AppController {
                         $invoice_has_paid = (!empty($invoice_has_paid[0]['invoice_has_paid'])) ? $invoice_has_paid[0]['invoice_has_paid'] : 0;
                         $total_paid = $invoice_has_paid + $price;
 
-                        $invoice_data = $this->Invoice->getData('first', array(
+                        $invoice_data = $this->InvoicePayment->InvoicePaymentDetail->Invoice->getData('first', array(
                             'conditions' => array(
                                 'Invoice.id' => $_invoice_id
                             ),
@@ -4936,14 +4968,14 @@ class RevenuesController extends AppController {
             
             $total = $temptotal;
             $data['InvoicePayment']['grand_total_payment'] = $total;
-            $this->Invoice->InvoicePaymentDetail->InvoicePayment->set($data);
-            $validateInv = $this->Invoice->InvoicePaymentDetail->InvoicePayment->validates();
+            $this->InvoicePayment->set($data);
+            $validateInv = $this->InvoicePayment->validates();
 
             if($validateInv && $validate_price_pay){
-                $this->Invoice->InvoicePaymentDetail->InvoicePayment->set($data);
+                $this->InvoicePayment->set($data);
 
-                if($this->Invoice->InvoicePaymentDetail->InvoicePayment->save()){
-                    $invoice_payment_id = $this->Invoice->InvoicePaymentDetail->InvoicePayment->id;
+                if($this->InvoicePayment->save()){
+                    $invoice_payment_id = $this->InvoicePayment->id;
                     $document_no = !empty($data['InvoicePayment']['nodoc'])?$data['InvoicePayment']['nodoc']:false;
                     $this->User->Journal->deleteJournal($invoice_payment_id, array(
                         'invoice_payment',
@@ -4967,7 +4999,7 @@ class RevenuesController extends AppController {
                     }
 
                     if($id && $data_local){
-                        $this->Invoice->InvoicePaymentDetail->deleteAll(array(
+                        $this->InvoicePayment->InvoicePaymentDetail->deleteAll(array(
                             'InvoicePaymentDetail.invoice_payment_id' => $invoice_payment_id
                         ));
                     }
@@ -4976,20 +5008,20 @@ class RevenuesController extends AppController {
                         foreach ($data['InvoicePaymentDetail']['price_pay'] as $key => $value) {
                             $invoice_id = $data['InvoicePaymentDetail']['invoice_id'][$key];
 
-                            $this->Invoice->InvoicePaymentDetail->create();
-                            $this->Invoice->InvoicePaymentDetail->set(array(
+                            $this->InvoicePayment->InvoicePaymentDetail->create();
+                            $this->InvoicePayment->InvoicePaymentDetail->set(array(
                                 'price_pay' => trim($value),
                                 'invoice_id' => $invoice_id,
                                 'invoice_payment_id' => $invoice_payment_id
                             ));
-                            $this->Invoice->InvoicePaymentDetail->save();
+                            $this->InvoicePayment->InvoicePaymentDetail->save();
 
                             $default_conditions_detail = array(
                                 'InvoicePaymentDetail.invoice_id' => $invoice_id,
                                 'InvoicePaymentDetail.status' => 1
                             );
 
-                            $invoice_has_paid = $this->Invoice->InvoicePaymentDetail->getData('first', array(
+                            $invoice_has_paid = $this->InvoicePayment->InvoicePaymentDetail->getData('first', array(
                                 'conditions' => $default_conditions_detail,
                                 'fields' => array(
                                     '*',
@@ -5003,19 +5035,19 @@ class RevenuesController extends AppController {
                             $invoice_total = !empty($invoice_has_paid['Invoice']['total'])?$invoice_has_paid['Invoice']['total']:0;
                             
                             if($invoice_paid >= $invoice_total){
-                                $this->Invoice->id = $invoice_id;
-                                $this->Invoice->set(array(
+                                $this->InvoicePayment->InvoicePaymentDetail->Invoice->id = $invoice_id;
+                                $this->InvoicePayment->InvoicePaymentDetail->Invoice->set(array(
                                     'paid' => 1,
                                     'complete_paid' => 1
                                 ));
-                                $this->Invoice->save();
+                                $this->InvoicePayment->InvoicePaymentDetail->Invoice->save();
                             }else{
-                                $this->Invoice->id = $invoice_id;
-                                $this->Invoice->set(array(
+                                $this->InvoicePayment->InvoicePaymentDetail->Invoice->id = $invoice_id;
+                                $this->InvoicePayment->InvoicePaymentDetail->Invoice->set(array(
                                     'paid' => 1,
                                     'complete_paid' => 0
                                 ));
-                                $this->Invoice->save();
+                                $this->InvoicePayment->InvoicePaymentDetail->Invoice->save();
                             }
                         }
                     }
@@ -5052,7 +5084,7 @@ class RevenuesController extends AppController {
 
         if(!empty($customer)){
             $bank_id = $this->MkCommon->filterEmptyField($customer, 'Customer', 'bank_id');
-            $invoices = $this->Invoice->getdata('all', array(
+            $invoices = $this->InvoicePayment->InvoicePaymentDetail->Invoice->getdata('all', array(
                 'conditions' => array(
                     'Invoice.customer_id' => $this->request->data['InvoicePayment']['customer_id'],
                     'Invoice.complete_paid' => 0
@@ -5065,7 +5097,7 @@ class RevenuesController extends AppController {
 
             if(!empty($invoices)){
                 foreach ($invoices as $key => $value) {
-                    $invoice_has_paid = $this->Invoice->InvoicePaymentDetail->getData('first', array(
+                    $invoice_has_paid = $this->InvoicePayment->InvoicePaymentDetail->Invoice->InvoicePaymentDetail->getData('first', array(
                         'conditions' => array(
                             'InvoicePaymentDetail.invoice_id' => $value['Invoice']['id']
                         ),
@@ -5081,7 +5113,7 @@ class RevenuesController extends AppController {
             $this->set(compact('invoices'));
         }
 
-        $customers = $this->Invoice->getData('list', array(
+        $customers = $this->InvoicePayment->InvoicePaymentDetail->Invoice->getData('list', array(
             'conditions' => array(
                 'Invoice.complete_paid' => 0
             ),
@@ -5095,7 +5127,7 @@ class RevenuesController extends AppController {
                 'Invoice.id', 'Customer.id'
             )
         ), true, $elementRevenue);
-        $list_customer = $this->Customer->getData('list', array(
+        $list_customer = $this->Ttuj->Customer->getData('list', array(
             'conditions' => array(
                 'Customer.id' => $customers,
             ),
@@ -5103,7 +5135,7 @@ class RevenuesController extends AppController {
                 'Customer.id', 'Customer.customer_name_code'
             ),
         ));
-        $coas = $this->Coa->getData('list', array(
+        $coas = $this->InvoicePayment->Coa->getData('list', array(
             'conditions' => array(
                 'Coa.status' => 1,
                 'Coa.is_cash_bank' => 1
@@ -5112,6 +5144,7 @@ class RevenuesController extends AppController {
                 'Coa.id', 'Coa.coa_name'
             ),
         ));
+        $this->MkCommon->_callSettingGeneral('InvoicePayment', array( 'pph', 'ppn' ));
 
         $this->MkCommon->_layout_file('select');
         $this->set(compact(
@@ -5607,6 +5640,7 @@ class RevenuesController extends AppController {
                             $document_no = !empty($invoice['Invoice']['no_invoice'])?$invoice['Invoice']['no_invoice']:false;
                             $titleJournalInv = sprintf(__('<i>Pembatalan</i> invoice customer: %s, No: %s'), $customer_name_code, $document_no);
                             $total = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'total');
+                            $total_pph = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'total_pph');
 
                             $this->User->Journal->setJournal($total, array(
                                 'credit' => 'invoice_coa_debit_id',
@@ -5621,6 +5655,16 @@ class RevenuesController extends AppController {
                             $this->User->Journal->setJournal($total, array(
                                 'credit' => 'revenue_coa_credit_id',
                                 'debit' => 'revenue_coa_debit_id',
+                            ), array(
+                                'date' => $invoice_date,
+                                'document_id' => $id,
+                                'title' => $titleJournalInv,
+                                'document_no' => $document_no,
+                                'type' => 'invoice_void',
+                            ));
+                            $this->User->Journal->setJournal($total_pph, array(
+                                'credit' => 'pph_coa_debit_id',
+                                'debit' => 'pph_coa_credit_id',
                             ), array(
                                 'date' => $invoice_date,
                                 'document_id' => $id,

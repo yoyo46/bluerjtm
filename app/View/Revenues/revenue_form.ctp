@@ -16,11 +16,6 @@
 		echo $this->Form->hidden('transaction_status', array(
 			'id' => 'transaction_status'
 		));
-
-		echo $this->Form->hidden('to_city_id', array(
-			'id' => 'mainToCityId',
-			'value' => !empty($this->request->data['Ttuj']['to_city_id'])?$this->request->data['Ttuj']['to_city_id']:false,
-		));
 ?>
 <div class="ttuj-form">
 	<div class="row">

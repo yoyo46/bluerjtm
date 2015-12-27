@@ -566,6 +566,8 @@ class AjaxController extends AppController {
 		));
 		$toCities = $this->City->getListCities();
 		$groupMotors = $this->GroupMotor->getData('list');
+        $this->MkCommon->_callSettingGeneral('Revenue', array( 'pph', 'ppn' ));
+
 		$this->set(compact(
 			'data_revenue_detail', 'customers', 'toCities', 'groupMotors',
 			'tarifTruck'
@@ -860,10 +862,25 @@ class AjaxController extends AppController {
 				'RevenueDetail.revenue_id',
 			),
 		), $elementRevenue);
+
         $conditions['Revenue.id'] = $revenueId;
-        $conditions['Revenue.revenue_tarif_type'] = 'per_truck';
+        $conditionRevenue = $conditions;
+
 		$revenue = $this->Revenue->getData('first', array(
-			'conditions' => $conditions,
+			'conditions' => $conditionRevenue,
+			'fields' => array(
+				'SUM(Revenue.total_without_tax * (Revenue.pph / 100)) total_pph',
+				'Revenue.customer_id',
+			),
+			'group' => array(
+				'Revenue.customer_id'
+			),
+		), true, $elementRevenue);
+
+        $conditionRevenueTruck = $conditionRevenue;
+        $conditionRevenueTruck['Revenue.revenue_tarif_type'] = 'per_truck';
+		$revenuePerTruck = $this->Revenue->getData('first', array(
+			'conditions' => $conditionRevenueTruck,
 			'fields' => array(
 				'SUM(Revenue.total_without_tax) total',
 				'Revenue.customer_id',
@@ -872,6 +889,7 @@ class AjaxController extends AppController {
 				'Revenue.customer_id'
 			),
 		), true, $elementRevenue);
+
         $banks = $this->Bank->getData('list', array(
             'conditions' => array(
                 'Bank.status' => 1,
@@ -889,7 +907,8 @@ class AjaxController extends AppController {
 			$this->request->data['Invoice']['bank_id'] = !empty($customer['Customer']['bank_id'])?$customer['Customer']['bank_id']:false;
 			$this->request->data['Invoice']['period_from'] = !empty($revenueDetail[0]['period_from'])?$this->MkCommon->customDate($revenueDetail[0]['period_from'], 'd/m/Y'):false;
 			$this->request->data['Invoice']['period_to'] = !empty($revenueDetail[0]['period_to'])?$this->MkCommon->customDate($revenueDetail[0]['period_to'], 'd/m/Y'):false;
-			$this->request->data['Invoice']['total_revenue'] = !empty($revenue[0]['total'])?$revenue[0]['total']:0;
+			$this->request->data['Invoice']['total_revenue'] = !empty($revenuePerTruck[0]['total'])?$revenuePerTruck[0]['total']:0;
+			$this->request->data['Invoice']['total_pph'] = !empty($revenue[0]['total_pph'])?$revenue[0]['total_pph']:0;
 			$this->request->data['Invoice']['total'] = !empty($revenueDetail[0]['total'])?$revenueDetail[0]['total']:0;
 
 			$customer_group_id = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_group_id');

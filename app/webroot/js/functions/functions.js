@@ -1200,6 +1200,8 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge,
             if( revenue_tarif_type == 'per_unit' ) {
                 parent.find('td.additional-charge-data .additional-charge').attr('disabled', true);
             } else if( revenue_tarif_type == 'per_truck' ) {
+                parent.find('td.additional-charge-data .additional-charge').attr('disabled', false);
+
                 if( jenis_unit_angkutan == 'per_unit' && is_charge == 0 ) {
                     parent.find('td.price-data span').html('');
                 }

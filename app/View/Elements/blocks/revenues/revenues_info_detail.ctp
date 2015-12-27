@@ -65,7 +65,7 @@
                                 $price = '';
                             }
 
-                            if( ( $jenis_unit_angkutan != 'per_truck' && ( $tarif_angkutan_type != 'angkut' && !empty($is_charge) ) ) || $jenis_unit == 'per_unit' ) {
+                            if( ( $jenis_unit_angkutan != 'per_truck' && ( $tarif_angkutan_type != 'angkut' && !empty($is_charge) ) ) || $jenis_unit == 'per_unit' || ( empty($is_charge) && $jenis_unit_angkutan == 'per_unit' ) ) {
                                 $flagShowPrice = true;
                             }
                 ?>

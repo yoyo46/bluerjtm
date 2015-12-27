@@ -17,13 +17,16 @@
 			<?php 
 					$total = 0;
 					$totalWithoutTax = 0;
+					$totalPPh = 0;
 
 					if(!empty($this->request->data['Invoice']['total_revenue'])){
 						$totalWithoutTax = $this->request->data['Invoice']['total_revenue'];
-						
 					}
 					if(!empty($this->request->data['Invoice']['total'])){
 						$total = $this->request->data['Invoice']['total'];
+					}
+					if(!empty($this->request->data['Invoice']['total_pph'])){
+						$totalPPh = $this->request->data['Invoice']['total_pph'];
 					}
 
 					echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
@@ -39,6 +42,12 @@
 						'class'=>'form-control',
 						'readonly' => true,
 						'value' => $totalWithoutTax
+					));
+					echo $this->Form->hidden('Invoice.total_pph',array(
+						'label'=> false, 
+						'class'=>'form-control',
+						'readonly' => true,
+						'value' => $totalPPh
 					));
 			?>
 		</div>

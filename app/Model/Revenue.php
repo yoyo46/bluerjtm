@@ -498,6 +498,10 @@ class Revenue extends AppModel {
         $data['Revenue']['ppn'] = !empty($data['Revenue']['ppn'])?$data['Revenue']['ppn']:0;
         $data['Revenue']['pph'] = !empty($data['Revenue']['pph'])?$data['Revenue']['pph']:0;
         $data['Revenue']['additional_charge'] = !empty($data['Revenue']['additional_charge'])?$data['Revenue']['additional_charge']:0;
+
+        $data['Revenue']['from_city_id'] = !empty($data['Ttuj']['from_city_id'])?$data['Ttuj']['from_city_id']:0;
+        $data['Revenue']['to_city_id'] = !empty($data['Ttuj']['to_city_id'])?$data['Ttuj']['to_city_id']:0;
+
         $ttuj_id = !empty($data['Revenue']['ttuj_id'])?$data['Revenue']['ttuj_id']:false;
         $dataRevenues = array();
         $flagSave = array();
@@ -611,8 +615,10 @@ class Revenue extends AppModel {
         }
 
         $totalWithoutTax = $total_revenue;
+
         if( !empty($dataRevenue['Revenue']['additional_charge']) && $dataRevenue['Revenue']['additional_charge'] > 0 ){
             $total_revenue += $dataRevenue['Revenue']['additional_charge'];
+            $totalWithoutTax += $dataRevenue['Revenue']['additional_charge'];
         }
 
         if( !empty($dataRevenue['Revenue']['pph']) && $dataRevenue['Revenue']['pph'] > 0 ){

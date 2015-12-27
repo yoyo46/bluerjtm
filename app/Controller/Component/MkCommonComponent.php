@@ -1599,5 +1599,38 @@ class MkCommonComponent extends Component {
             return false;
         }
     }
+
+    function _callSettingGeneral ( $modelName = false, $labelName = false, $request = true ) {
+        $data = array();
+
+        if( !empty($modelName) ) {
+            $this->SettingGeneral = ClassRegistry::init('SettingGeneral'); 
+            $conditions = false;
+
+            if( !empty($labelName) ) {
+                $conditions['SettingGeneral.name'] = $labelName;
+            }
+
+            $values = $this->SettingGeneral->find('all', array(
+                'conditions' => $conditions,
+            ));
+            
+
+            if( !empty($values) ) {
+                foreach ($values as $key => $value) {
+                    $lbl = $this->filterEmptyField($value, 'SettingGeneral', 'name');
+                    $value = $this->filterEmptyField($value, 'SettingGeneral', 'value');
+
+                    if( !isset($this->controller->request->data[$modelName][$lbl]) ) {
+                        $data[$modelName][$lbl] = $this->controller->request->data[$modelName][$lbl] = $value;
+                    }
+                }
+            }
+        }
+
+        if( empty($request) ) {
+            return $data;
+        }
+    }
 }
 ?>

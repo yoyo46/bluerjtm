@@ -290,7 +290,7 @@
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
-							echo $this->Form->label('revenue_coa_debit_id', __('PPN'));
+							echo $this->Form->label('ppn_coa_debit_id', __('PPN'));
 					?>
 				</div>
 				<div class="col-sm-4">
@@ -307,6 +307,37 @@
 				<div class="col-sm-4">
 		        	<?php 
 							echo $this->Form->input('ppn_coa_credit_id',array(
+								'label'=> false, 
+								'class'=>'form-control chosen-select',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+					?>
+				</div>
+			</div>
+        </div>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
+							echo $this->Form->label('pph_coa_debit_id', __('PPh'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('pph_coa_debit_id',array(
+								'label'=> false, 
+								'class'=>'form-control chosen-select',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('pph_coa_credit_id',array(
 								'label'=> false, 
 								'class'=>'form-control chosen-select',
 								'required' => false,

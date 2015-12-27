@@ -4535,8 +4535,11 @@ class SettingsController extends AppController {
 
     function index(){
         $this->loadModel('Setting');
+        $this->loadModel('SettingGeneral');
+
         $this->set('sub_module_title', 'Pengaturan');
         $data_local = $this->Setting->find('first');
+        $values = $this->SettingGeneral->find('all');
     
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -4602,6 +4605,7 @@ class SettingsController extends AppController {
             }else{
                 $this->Setting->create();
             }
+
             $this->Setting->set($data);
 
             if($this->Setting->validates($data)){
@@ -4691,6 +4695,16 @@ class SettingsController extends AppController {
                     $this->params['old_data'] = $data_local;
                     $this->params['data'] = $data;
 
+                    if( !empty($data['SettingGeneral']) ) {
+                        foreach ($data['SettingGeneral'] as $lbl => $value) {
+                            $this->SettingGeneral->updateAll( array(
+                                'SettingGeneral.value' => $value,
+                            ), array(
+                                'SettingGeneral.name' => $lbl,
+                            ));
+                        }
+                    }
+
                     $this->MkCommon->setCustomFlash(__('Sukses menyimpan data'), 'success');
                     $this->Log->logActivity( __('Sukses menyimpan data'), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
                     $this->redirect(array(
@@ -4704,8 +4718,17 @@ class SettingsController extends AppController {
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal menyimpan data'), 'error');
             }
-        }else if($data_local){
+        }else if( $data_local || !empty($values) ){
             $this->request->data = $data_local;
+
+            if( !empty($values) ) {
+                foreach ($values as $key => $value) {
+                    $lbl = $this->MkCommon->filterEmptyField($value, 'SettingGeneral', 'name');
+                    $value = $this->MkCommon->filterEmptyField($value, 'SettingGeneral', 'value');
+                    
+                    $this->request->data['SettingGeneral'][$lbl] = $value;
+                }
+            }
         }
 
         $this->set('active_menu', 'settings');
