@@ -5336,6 +5336,7 @@ class TrucksController extends AppController {
                 $value = $this->Ttuj->UangJalan->getMerge($value, $uang_jalan_id);
                 $value = $this->Ttuj->Truck->getMerge($value, $truck_id);
                 $value = $this->Ttuj->getSumUnit( $value, $id );
+                $value = $this->Ttuj->Lku->_callTotalLkuFromTtuj( $value, $id );
 
                 if( !empty($to_time) ) {
                     $leadTimeArrive = $this->MkCommon->dateDiff($from_time, $to_time, 'day', true);

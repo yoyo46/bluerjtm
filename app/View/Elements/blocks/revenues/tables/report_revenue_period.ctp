@@ -13,6 +13,7 @@
                 $no_invoice = $this->Common->filterEmptyField($value, 'Invoice', 'no_invoice');
 
                 $status = $this->Revenue->_callStatus($value, 'Ttuj', 'nodoc');
+                $customTotal = $this->Common->getFormatPrice($total);
                 $customDate = $this->Common->formatDate($date, 'd/m/Y');
 ?>
 <tr>
@@ -26,7 +27,7 @@
             echo $this->Html->tag('td', $from_city_name);
             echo $this->Html->tag('td', $to_city_name);
             echo $this->Html->tag('td', $unit);
-            echo $this->Html->tag('td', $total, array(
+            echo $this->Html->tag('td', $customTotal, array(
                 'style' => 'text-align: right;'
             ));
             echo $this->Html->tag('td', $no_invoice);

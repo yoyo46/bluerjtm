@@ -197,5 +197,19 @@ class Lku extends AppModel {
         
         return $default_options;
     }
+
+    function _callTotalLkuFromTtuj( $data, $ttuj_id = false ) {
+        $this->Ttuj->Lku->virtualFields['qty'] = 'SUM(Lku.total_klaim)';
+        $value = $this->getData('first', array(
+            'conditions' => array(
+                'Lku.ttuj_id' => $ttuj_id
+            ),
+        ), true, array(
+            'branch' => false,
+        ));
+        $data['Lku']['qty'] = !empty($value['Lku']['qty'])?$value['Lku']['qty']:false;
+
+        return $data;
+    }
 }
 ?>

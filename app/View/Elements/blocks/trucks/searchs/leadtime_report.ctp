@@ -24,7 +24,7 @@
             <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->label('date', __('Tanggal Bayar'));
+                            echo $this->Form->label('date', __('Tanggal'));
                     ?>
                     <div class="input-group">
                         <div class="input-group-addon">
@@ -51,7 +51,7 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('customer',array(
+                            echo $this->Form->input('customerid',array(
                                 'label'=> __('Alokasi'),
                                 'class'=>'form-control chosen-select',
                                 'required' => false,
@@ -62,24 +62,6 @@
                 </div>
             </div>
             <div class="col-sm-4">
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->label('datettuj', __('Tanggal TTUJ'));
-                    ?>
-                    <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-calendar"></i>
-                        </div>
-                        <?php 
-                                echo $this->Form->input('datettuj',array(
-                                    'type' => 'text',
-                                    'label'=> false,
-                                    'class'=>'form-control pull-right date-range',
-                                    'required' => false,
-                                ));
-                        ?>
-                    </div>
-                </div>
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('fromcity',array(
@@ -98,8 +80,13 @@
                                 'class'=>'form-control',
                                 'required' => false,
                                 'options' => array(
-                                    'ng' => __('Not Good'),
+                                    'ng' => __('NG'),
                                     'laka' => __('LAKA'),
+                                    'bt' => __('BT'),
+                                    'ab' => __('AB'),
+                                    'sb' => __('SB'),
+                                    'bb' => __('BB'),
+                                    'pool' => __('Pool'),
                                 ),
                                 'empty' => __('Semua Status'),
                             ));

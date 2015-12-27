@@ -740,10 +740,12 @@ class Ttuj extends AppModel {
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
         $to_city = !empty($data['named']['to_city'])?$data['named']['to_city']:false;
         $customer = !empty($data['named']['customer'])?$data['named']['customer']:false;
+        $customerid = !empty($data['named']['customerid'])?$data['named']['customerid']:false;
         $driver = !empty($data['named']['driver'])?$data['named']['driver']:false;
         $fromcity = !empty($data['named']['fromcity'])?$data['named']['fromcity']:false;
         $tocity = !empty($data['named']['tocity'])?$data['named']['tocity']:false;
         $note = !empty($data['named']['note'])?$data['named']['note']:false;
+        $status = !empty($data['named']['status'])?$data['named']['status']:false;
 
         $uj1 = !empty($data['named']['uj1'])?$data['named']['uj1']:false;
         $uj2 = !empty($data['named']['uj2'])?$data['named']['uj2']:false;
@@ -794,6 +796,9 @@ class Ttuj extends AppModel {
                 'branch' => false,
             ));
             $default_options['conditions']['Ttuj.customer_id'] = $customers;
+        }
+        if(!empty($customerid)){
+            $default_options['conditions']['Ttuj.customer_id'] = $customerid;
         }
         if(!empty($uj1)){
             $default_options['conditions']['OR']['Ttuj.uang_jalan_1 <>'] = 0;
@@ -858,6 +863,41 @@ class Ttuj extends AppModel {
                                 'Ttuj.paid_commission_extra' => 'none',
                             ),
                         );
+                    break;
+            }
+        }
+
+        if( !empty($status) ) {
+            switch ($status) {
+                case 'ng':
+                    $this->unBindModel(array(
+                        'hasMany' => array(
+                            'Lku'
+                        )
+                    ));
+
+                    $this->bindModel(array(
+                        'hasOne' => array(
+                            'Lku' => array(
+                                'className' => 'Lku',
+                                'foreignKey' => 'ttuj_id',
+                                'conditions' => array(
+                                    'Lku.status' => 1
+                                ),
+                            ),
+                        )
+                    ), false);
+
+                    $default_options['contain'][] = 'Lku';
+                    $default_options['conditions']['Lku.id NOT'] = NULL;
+                    break;
+                
+                case 'laka':
+                    $default_options['conditions']['Ttuj.is_laka'] = true;
+                    break;
+                
+                case 'bt':
+                    $default_options['conditions']['Ttuj.is_laka'] = true;
                     break;
             }
         }
