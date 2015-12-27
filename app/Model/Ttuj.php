@@ -897,7 +897,43 @@ class Ttuj extends AppModel {
                     break;
                 
                 case 'bt':
-                    $default_options['conditions']['Ttuj.is_laka'] = true;
+                    $default_options['conditions']['Ttuj.is_laka'] = false;
+                    $default_options['conditions']['Ttuj.is_arrive'] = false;
+                    $default_options['conditions']['Ttuj.is_bongkaran'] = false;
+                    $default_options['conditions']['Ttuj.is_balik'] = false;
+                    $default_options['conditions']['Ttuj.is_pool'] = false;
+                    break;
+                
+                case 'ab':
+                    $default_options['conditions']['Ttuj.is_laka'] = false;
+                    $default_options['conditions']['Ttuj.is_arrive'] = true;
+                    $default_options['conditions']['Ttuj.is_bongkaran'] = false;
+                    $default_options['conditions']['Ttuj.is_balik'] = false;
+                    $default_options['conditions']['Ttuj.is_pool'] = false;
+                    break;
+                
+                case 'sb':
+                    $default_options['conditions']['Ttuj.is_laka'] = false;
+                    $default_options['conditions']['Ttuj.is_arrive'] = true;
+                    $default_options['conditions']['Ttuj.is_bongkaran'] = true;
+                    $default_options['conditions']['Ttuj.is_balik'] = false;
+                    $default_options['conditions']['Ttuj.is_pool'] = false;
+                    break;
+                
+                case 'bb':
+                    $default_options['conditions']['Ttuj.is_laka'] = false;
+                    $default_options['conditions']['Ttuj.is_arrive'] = true;
+                    $default_options['conditions']['Ttuj.is_bongkaran'] = true;
+                    $default_options['conditions']['Ttuj.is_balik'] = true;
+                    $default_options['conditions']['Ttuj.is_pool'] = false;
+                    break;
+                
+                case 'pool':
+                    $default_options['conditions']['Ttuj.is_laka'] = false;
+                    $default_options['conditions']['Ttuj.is_arrive'] = true;
+                    $default_options['conditions']['Ttuj.is_bongkaran'] = true;
+                    $default_options['conditions']['Ttuj.is_balik'] = true;
+                    $default_options['conditions']['Ttuj.is_pool'] = true;
                     break;
             }
         }
