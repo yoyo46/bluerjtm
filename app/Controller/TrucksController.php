@@ -5288,6 +5288,11 @@ class TrucksController extends AppController {
             'conditions' => array(
                 'Ttuj.is_draft' => 0,
             ),
+            'order'=> array(
+                'Ttuj.is_pool' => 'ASC',
+                'Ttuj.created' => 'DESC',
+                'Ttuj.id' => 'DESC',
+            ),
         ), true, array(
             'branch' => false,
         ));

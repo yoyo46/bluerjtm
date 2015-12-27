@@ -746,6 +746,7 @@ class Ttuj extends AppModel {
         $tocity = !empty($data['named']['tocity'])?$data['named']['tocity']:false;
         $note = !empty($data['named']['note'])?$data['named']['note']:false;
         $status = !empty($data['named']['status'])?$data['named']['status']:false;
+        $leadtime = !empty($data['named']['leadtime'])?$data['named']['leadtime']:false;
 
         $uj1 = !empty($data['named']['uj1'])?$data['named']['uj1']:false;
         $uj2 = !empty($data['named']['uj2'])?$data['named']['uj2']:false;
@@ -801,19 +802,19 @@ class Ttuj extends AppModel {
             $default_options['conditions']['Ttuj.customer_id'] = $customerid;
         }
         if(!empty($uj1)){
-            $default_options['conditions']['OR']['Ttuj.uang_jalan_1 <>'] = 0;
+            $default_options['conditions'][0]['OR'][]['Ttuj.uang_jalan_1 <>'] = 0;
         }
         if(!empty($uj2)){
-            $default_options['conditions']['OR']['Ttuj.uang_jalan_2 <>'] = 0;
+            $default_options['conditions'][0]['OR'][]['Ttuj.uang_jalan_2 <>'] = 0;
         }
         if(!empty($uje)){
-            $default_options['conditions']['OR']['Ttuj.uang_jalan_extra <>'] = 0;
+            $default_options['conditions'][0]['OR'][]['Ttuj.uang_jalan_extra <>'] = 0;
         }
         if(!empty($com)){
-            $default_options['conditions']['OR']['Ttuj.commission <>'] = 0;
+            $default_options['conditions'][0]['OR'][]['Ttuj.commission <>'] = 0;
         }
         if(!empty($come)){
-            $default_options['conditions']['OR']['Ttuj.commission_extra <>'] = 0;
+            $default_options['conditions'][0]['OR'][]['Ttuj.commission_extra <>'] = 0;
         }
         if(!empty($fromcity)){
             $default_options['conditions']['Ttuj.from_city_id'] = $fromcity;
@@ -827,7 +828,7 @@ class Ttuj extends AppModel {
         if(!empty($status)){
             switch ($status) {
                 case 'paid':
-                        $default_options['conditions']['AND']['OR'] = array(
+                        $default_options['conditions'][1]['OR'] = array(
                             array(
                                 'Ttuj.paid_uang_jalan' => 'full',
                             ),
@@ -846,7 +847,7 @@ class Ttuj extends AppModel {
                         );
                     break;
                 case 'unpaid':
-                        $default_options['conditions']['AND']['OR'] = array(
+                        $default_options['conditions'][1]['OR'] = array(
                             array(
                                 'Ttuj.paid_uang_jalan' => 'none',
                             ),
@@ -937,7 +938,26 @@ class Ttuj extends AppModel {
                     break;
             }
         }
-        
+
+        if( !empty($leadtime) ) {
+            switch ($leadtime) {
+                case 'overleadtime':
+                    $default_options['conditions'][2]['OR'] = array(
+                        'TIMESTAMPDIFF(HOUR, tgljam_berangkat, tgljam_tiba) > UangJalan.arrive_lead_time',
+                        '(TIMESTAMPDIFF(HOUR, tgljam_berangkat, tgljam_tiba) + TIMESTAMPDIFF(HOUR, tgljam_balik, tgljam_pool)) > UangJalan.back_lead_time',
+                    );
+                    $default_options['contain'][] = 'UangJalan';
+                    break;
+                case 'goodleadtime':
+                    $default_options['conditions'][2]['AND'] = array(
+                        'TIMESTAMPDIFF(HOUR, tgljam_berangkat, tgljam_tiba) <= UangJalan.arrive_lead_time',
+                        '(TIMESTAMPDIFF(HOUR, tgljam_berangkat, tgljam_tiba) + TIMESTAMPDIFF(HOUR, tgljam_balik, tgljam_pool)) <= UangJalan.back_lead_time',
+                    );
+                    $default_options['contain'][] = 'UangJalan';
+                    break;
+            }
+        }
+
         return $default_options;
     }
 }
