@@ -471,16 +471,7 @@ class CashbanksController extends AppController {
         $employe_position_id = $this->MkCommon->filterEmptyField($user, 'Employe', 'employe_position_id');
         $user_otorisasi_approvals = $this->User->Employe->EmployePosition->Approval->getUserOtorisasiApproval('cash-bank', $employe_position_id, $grand_total, $id);
 
-        $coas = $this->User->Journal->Coa->getData('list', array(
-            'conditions' => array(
-                'Coa.level' => 4,
-                'Coa.is_cash_bank' => 1,
-                'Coa.status' => 1
-            ),
-            'fields' => array(
-                'Coa.id', 'Coa.coa_name'
-            ),
-        ));
+        $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
         $branches = $this->User->Branch->City->branchCities();
         
         $this->set('active_menu', 'cash_bank');
@@ -1082,13 +1073,7 @@ class CashbanksController extends AppController {
         }
 
         $cash_bank_settings = $this->CashBankSetting->find('all');
-        $coas = $this->Coa->getData('list', array(
-            'conditions' => array(
-                'Coa.level' => 4,
-                'Coa.is_cash_bank' => 1,
-                'Coa.status' => 1
-            )
-        ));
+        $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
         $sub_module_title = 'Setting COA';
         $this->set(compact('cash_bank_settings', 'coas', 'sub_module_title'));
     }
@@ -1488,13 +1473,7 @@ class CashbanksController extends AppController {
             'admin' => false,
         ));
 
-        $coas = $this->User->Journal->Coa->getData('list', array(
-            'fields' => array(
-                'Coa.id', 'Coa.coa_name'
-            ),
-        ), array(
-            'status' => 'cash_bank_child',
-        ));
+        $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
 
         $this->set('active_menu', 'balances');
         $this->set(compact(

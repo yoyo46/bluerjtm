@@ -1410,13 +1410,7 @@ class TrucksController extends AppController {
             $this->request->data['Kir']['note'] = $this->MkCommon->filterEmptyField($kir, 'Kir', 'note');
         }
 
-        $coas = $this->KirPayment->Coa->getData('list', array(
-            'fields' => array(
-                'Coa.id', 'Coa.coa_name'
-            ),
-        ), array(
-            'status' => 'cash_bank_child',
-        ));
+        $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
 
         $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'kir_payments');
@@ -1883,13 +1877,7 @@ class TrucksController extends AppController {
             $this->request->data['Siup']['note'] = $siup['Siup']['note'];
         }
 
-        $coas = $this->SiupPayment->Coa->getData('list', array(
-            'fields' => array(
-                'Coa.id', 'Coa.coa_name'
-            ),
-        ), array(
-            'status' => 'cash_bank_child',
-        ));
+        $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
 
         $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'siup_payments');
@@ -2973,13 +2961,7 @@ class TrucksController extends AppController {
             }
         }
 
-        $coas = $this->StnkPayment->Coa->getData('list', array(
-            'fields' => array(
-                'Coa.id', 'Coa.coa_name'
-            ),
-        ), array(
-            'status' => 'cash_bank_child',
-        ));
+        $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
 
         $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'stnk_payments');

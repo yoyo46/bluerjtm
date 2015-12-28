@@ -60,6 +60,10 @@ class Coa extends AppModel {
             'className' => 'CashBankDetail',
             'foreignKey' => 'coa_id',
         ),
+        'BranchCoa' => array(
+            'className' => 'BranchCoa',
+            'foreignKey' => 'coa_id',
+        ),
     );
 
     function __construct($id = false, $table = null, $ds = null) {

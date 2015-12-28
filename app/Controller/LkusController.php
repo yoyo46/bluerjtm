@@ -954,13 +954,7 @@ class LkusController extends AppController {
             }
         }
         
-        $coas = $this->LkuPayment->Coa->getData('list', array(
-            'fields' => array(
-                'Coa.id', 'Coa.coa_name'
-            ),
-        ), array(
-            'status' => 'cash_bank_child',
-        ));
+        $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
 
         $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'lku_payments');
@@ -1874,13 +1868,7 @@ class LkusController extends AppController {
             }
         }
 
-        $coas = $this->KsuPayment->Coa->getData('list', array(
-            'fields' => array(
-                'Coa.id', 'Coa.coa_name'
-            ),
-        ), array(
-            'status' => 'cash_bank_child',
-        ));
+        $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
 
         $this->MkCommon->_layout_file('select');
         $this->set(compact(

@@ -1634,19 +1634,21 @@ class AjaxController extends AppController {
 	}
 
 	function getInfoCoa(){
-		$this->loadModel('Coa');
+		$this->loadModel('BranchCoa');
 
         $params = $this->MkCommon->_callRefineParams($this->params);
-        $options =  $this->Coa->_callRefineParams($params, array(
+        $options =  $this->BranchCoa->_callRefineParams($params, array(
             'conditions' => array(
-	            'Coa.status' => 1,
-	            'Coa.level' => 4
+                'BranchCoa.branch_id' => Configure::read('__Site.config_branch_id'),
 	        ),
+	        'contain' => array(
+	        	'Coa',
+        	),
             'limit' => Configure::read('__Site.config_pagination'),
         ));
 
-		$this->paginate = $this->Coa->getData('paginate', $options);
-		$coas = $this->paginate('Coa');
+		$this->paginate = $this->BranchCoa->getData('paginate', $options);
+		$coas = $this->paginate('BranchCoa');
         
         $this->set('coas', $coas);
 

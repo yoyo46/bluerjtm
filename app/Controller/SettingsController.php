@@ -5391,27 +5391,39 @@ class SettingsController extends AppController {
     }
 
     public function _callSupportBranch( $id = false ) {
-        $urlReferer = array(
-            'controller' => 'settings',
-            'action' => 'branches',
-            'admin' => false,
-        );
-
         if( !empty($id) ) {
             $value = $this->Branch->getData('first', array(
                 'conditions' => array(
                     'Branch.id' => $id,
                 ),
             ));
+            $urlReferer = array(
+                'controller' => 'settings',
+                'action' => 'branches',
+                'admin' => false,
+            );
 
             if( empty($value) ) {
                 $this->MkCommon->redirectReferer(__('Cabang tidak ditemukan'), 'error', $urlReferer);
+            } else {
+                $branchCoas = $this->Branch->BranchCoa->getList($id);
             }
         } else {
             $value = false;
+            $urlReferer = array(
+                'controller' => 'settings',
+                'action' => 'branch_edit',
+                'admin' => false,
+            );
         }
 
         $result = $this->Branch->doSave( $this->request->data, $value, $id, $this );
+        $id = $this->MkCommon->filterEmptyField( $result, 'id', false, $id );
+        
+        if( empty($value) ) {
+            $urlReferer[] = $id;
+        }
+
         $this->MkCommon->setProcessParams($result, $urlReferer);
 
         $cities = $this->Branch->City->getData('list');
@@ -5421,9 +5433,20 @@ class SettingsController extends AppController {
         $branch_cities = $this->Branch->getData('list');
         $this->MkCommon->_layout_file('select');
 
+        $list_coas = $this->User->Coa->getData('threaded', array(
+            'conditions' => array(
+                'Coa.status' => 1
+            ),
+            'order' => array(
+                'Coa.code IS NULL' => 'ASC',
+                'Coa.code' => 'ASC',
+            )
+        ));
+
         $this->set('active_menu', 'branches');
         $this->set(compact(
-            'cities', 'coas', 'branch_cities'
+            'cities', 'coas', 'branch_cities',
+            'list_coas', 'id', 'branchCoas'
         ));
         $this->render('branch_form');
     }
@@ -5455,6 +5478,47 @@ class SettingsController extends AppController {
         }else{
             $this->MkCommon->redirectReferer(__('Cabang tidak ditemukan'), 'error');
         }
+    }
+
+    public function branch_coa( $branch_id = false, $coa_id = false ) {
+        $result = $this->GroupBranch->Branch->BranchCoa->doSave($branch_id, $coa_id);
+        $this->MkCommon->setProcessParams($result, array(
+            'controller' => 'settings',
+            'action' => 'branch_edit',
+            $branch_id,
+            'admin' => false,
+        ), array(
+            'ajaxFlash' => true,
+            'ajaxRedirect' => true,
+        ));
+    }
+
+    public function branch_coa_checkall( $branch_id = false, $parent_id = false ) {
+        $parent_id = !empty($parent_id)?$parent_id:0;
+        $result = $this->GroupBranch->Branch->BranchCoa->doCheckAll($branch_id, $parent_id);
+        $this->MkCommon->setProcessParams($result, array(
+            'controller' => 'settings',
+            'action' => 'branch_edit',
+            $branch_id,
+            'admin' => false,
+        ), array(
+            'ajaxFlash' => true,
+            'ajaxRedirect' => true,
+        ));
+    }
+
+    public function branch_coa_uncheckall( $branch_id = false, $parent_id = false ) {
+        $parent_id = !empty($parent_id)?$parent_id:0;
+        $result = $this->GroupBranch->Branch->BranchCoa->doUnCheckAll($branch_id, $parent_id);
+        $this->MkCommon->setProcessParams($result, array(
+            'controller' => 'settings',
+            'action' => 'branch_edit',
+            $branch_id,
+            'admin' => false,
+        ), array(
+            'ajaxFlash' => true,
+            'ajaxRedirect' => true,
+        ));
     }
 
     public function coa_import( $download = false ) {

@@ -415,13 +415,7 @@ class LeasingsController extends AppController {
     }
 
     function _callDataSupport () {
-        $coas = $this->Leasing->LeasingPayment->Coa->getData('list', array(
-            'fields' => array(
-                'Coa.id', 'Coa.coa_name'
-            ),
-        ), array(
-            'status' => 'cash_bank_child',
-        ));
+        $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
         $vendors = $this->Leasing->getData('list', array(
             'fields' => array(
                 'Leasing.vendor_id', 'Vendor.name',

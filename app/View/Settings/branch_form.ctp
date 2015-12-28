@@ -129,6 +129,11 @@
 		</div>
 	</div>
 </div>
+<?php
+		if( !empty($id) ) {
+			echo $this->element('blocks/settings/branch_coas');
+		}
+?>
 <div class="box-footer text-center action">
 	<?php
     		echo $this->Form->button(__('Simpan'), array(

@@ -60,6 +60,10 @@ class Branch extends AppModel {
             'className' => 'BranchCity',
             'foreignKey' => 'branch_id',
         ),
+        'BranchCoa' => array(
+            'className' => 'BranchCoa',
+            'foreignKey' => 'branch_id',
+        ),
     );
 
 	function getData($find, $options = false){
@@ -185,6 +189,7 @@ class Branch extends AppModel {
                     }
 
                     $result = array(
+                        'id' => $id,
                         'msg' => sprintf(__('Berhasil %s'), $default_msg),
                         'status' => 'success',
                     );

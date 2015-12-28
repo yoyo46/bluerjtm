@@ -235,16 +235,6 @@ class TtujPayment extends AppModel {
         //     $default_options['conditions']['TtujPaymentDetail.type'][] = $uang_keamanan;
         // }
 
-        if( empty($default_options['conditions']['TtujPaymentDetail.type']) ) {
-            $default_options['conditions']['TtujPaymentDetail.type'] = array(
-                'uang_jalan',
-                'uang_jalan_2',
-                'uang_jalan_extra',
-                'commission',
-                'commission_extra',
-            );
-        }
-
         if(!empty($fromcity)){
             $default_options['conditions']['Ttuj.from_city_id'] = $fromcity;
         }

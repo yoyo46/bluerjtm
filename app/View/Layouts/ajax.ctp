@@ -22,4 +22,8 @@
 		echo $this->Html->css($layout_css);
 	}
 ?>
-<?php echo $this->fetch('content'); ?>
+<?php
+		echo $this->Html->tag('div', $this->fetch('content'), array(
+			'id' => 'wrapper-write',
+		));
+?>

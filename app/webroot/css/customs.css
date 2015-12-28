@@ -299,3 +299,23 @@ tr.expired .red {
 .cashbank-info-detail table tr td.pick-truck a {
 	color: #FFFFFF;
 }
+
+/*Branch*/
+.branch-coas-form .list-auth-action {
+	border: none;
+	padding-bottom: 0;
+}
+.branch-coas-form .action-link-auth {
+	margin-right: 5px;
+	display: inline-block;
+}
+.branch-coas-form .list-coas {
+	margin-bottom: 25px;
+}
+.branch-coas-form .list-coas label {
+	font-weight: normal;
+	cursor: pointer;
+}
+.branch-coas-form .list-coas a {
+	color: #333;
+}

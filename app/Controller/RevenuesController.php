@@ -7028,9 +7028,7 @@ class RevenuesController extends AppController {
                 }
             }
 
-            $this->loadModel('Coa');
-            
-            $coas = $this->Coa->getData('list', array(
+            $coas = $this->User->Coa->getData('list', array(
                 'fields' => array(
                     'Coa.id', 'Coa.coa_name'
                 ),
@@ -7255,15 +7253,7 @@ class RevenuesController extends AppController {
              $this->request->data = $data_local;
         }
 
-        $this->loadModel('Coa');
-
-        $coas = $this->Coa->getData('list', array(
-            'fields' => array(
-                'Coa.id', 'Coa.coa_name'
-            ),
-        ), array(
-            'status' => 'cash_bank_child',
-        ));
+        $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
 
         $this->MkCommon->_layout_file('select');
         $this->set(compact(
@@ -7794,6 +7784,16 @@ class RevenuesController extends AppController {
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
             $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+
+        if( empty($options['conditions']['TtujPaymentDetail.type']) ) {
+            $options['conditions']['TtujPaymentDetail.type'] = array(
+                'uang_jalan',
+                'uang_jalan_2',
+                'uang_jalan_extra',
+                'commission',
+                'commission_extra',
+            );
         }
 
         if( !empty($data_action) ){
