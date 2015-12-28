@@ -1632,5 +1632,9 @@ class MkCommonComponent extends Component {
             return $data;
         }
     }
+
+    function _callPercentAmount ( $total, $percent ) {
+        return $total * ($percent/100);
+    }
 }
 ?>

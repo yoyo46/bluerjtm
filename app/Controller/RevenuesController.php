@@ -4973,6 +4973,8 @@ class RevenuesController extends AppController {
 
             if($validateInv && $validate_price_pay){
                 $this->InvoicePayment->set($data);
+                $pph_total = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'pph_total');
+                $pph_total = $this->MkCommon->_callPriceConverter($pph_total);
 
                 if($this->InvoicePayment->save()){
                     $invoice_payment_id = $this->InvoicePayment->id;
@@ -4989,6 +4991,19 @@ class RevenuesController extends AppController {
                         $this->User->Journal->setJournal($grandTotal, array(
                             'credit' => 'pembayaran_invoice_coa_id',
                             'debit' => $coa_id,
+                        ), array(
+                            'date' => $date_payment,
+                            'document_id' => $invoice_payment_id,
+                            'title' => $titleJournalInv,
+                            'document_no' => $document_no,
+                            'type' => 'invoice_payment',
+                        ));
+                    }
+
+                    if( !empty($pph_total) ) {
+                        $this->User->Journal->setJournal($pph_total, array(
+                            'credit' => 'pph_coa_credit_id',
+                            'debit' => 'pph_coa_debit_id',
                         ), array(
                             'date' => $date_payment,
                             'document_id' => $invoice_payment_id,
@@ -5176,6 +5191,12 @@ class RevenuesController extends AppController {
                 
                 $invoice_payment = $this->Invoice->InvoicePaymentDetail->InvoicePayment->Customer->getMerge($invoice_payment, $customer_id);
                 $customer_name_code = $this->MkCommon->filterEmptyField($invoice_payment, 'Customer', 'customer_name_code');
+                $total_payment = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'total_payment');
+                $pph = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'pph');
+
+                if( !empty($pph) ) {
+                    $pph_total = $this->MkCommon->_callPercentAmount($total_payment, $pph);
+                }
 
                 if(!empty($invoice_payment['InvoicePaymentDetail'])){
                     foreach ($invoice_payment['InvoicePaymentDetail'] as $key => $value) {
@@ -5223,6 +5244,7 @@ class RevenuesController extends AppController {
                 ));
 
                 if($this->Invoice->InvoicePaymentDetail->InvoicePayment->save()){
+
                     if( !empty($invoice_payment['InvoicePayment']['grand_total_payment']) ) {
                         $document_no = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'nodoc');
                         $grandTotal = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'grand_total_payment');
@@ -5233,6 +5255,19 @@ class RevenuesController extends AppController {
                         $this->User->Journal->setJournal($grandTotal, array(
                             'credit' => $coa_id,
                             'debit' => 'pembayaran_invoice_coa_id',
+                        ), array(
+                            'date' => $date_payment,
+                            'document_id' => $id,
+                            'title' => $titleJournalInv,
+                            'document_no' => $document_no,
+                            'type' => 'invoice_payment_void',
+                        ));
+                    }
+
+                    if( !empty($pph_total) ) {
+                        $this->User->Journal->setJournal($pph_total, array(
+                            'credit' => 'pph_coa_debit_id',
+                            'debit' => 'pph_coa_credit_id',
                         ), array(
                             'date' => $date_payment,
                             'document_id' => $id,
