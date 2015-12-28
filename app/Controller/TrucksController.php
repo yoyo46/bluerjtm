@@ -1374,6 +1374,36 @@ class TrucksController extends AppController {
                                 'document_no' => $document_no,
                                 'type' => 'kir',
                             ));
+
+                            if( !empty($data['KirPayment']['biaya_lain']) ) {
+                                $this->User->Journal->setJournal($data['KirPayment']['biaya_lain'], array(
+                                    'credit' => $coa_id,
+                                    'debit' => 'document_other_payment_coa_id',
+                                ), array(
+                                    'date' => $kir_payment_date,
+                                    'document_id' => $id,
+                                    'truck_id' => $truck_id,
+                                    'nopol' => $nopol,
+                                    'title' => $title,
+                                    'document_no' => $document_no,
+                                    'type' => 'kir',
+                                ));
+                            }
+
+                            if( !empty($data['KirPayment']['denda']) ) {
+                                $this->User->Journal->setJournal($data['KirPayment']['denda'], array(
+                                    'credit' => $coa_id,
+                                    'debit' => 'document_denda_payment_coa_id',
+                                ), array(
+                                    'date' => $kir_payment_date,
+                                    'document_id' => $id,
+                                    'truck_id' => $truck_id,
+                                    'nopol' => $nopol,
+                                    'title' => $title,
+                                    'document_no' => $document_no,
+                                    'type' => 'kir',
+                                ));
+                            }
                         }
 
                         $this->params['old_data'] = $kir;
@@ -1467,6 +1497,8 @@ class TrucksController extends AppController {
             $total = $this->MkCommon->filterEmptyField($value, 'KirPayment', 'total_pembayaran');
             $coa_id = $this->MkCommon->filterEmptyField($value, 'KirPayment', 'coa_id');
             $kir_payment_date = $this->MkCommon->filterEmptyField($value, 'KirPayment', 'kir_payment_date');
+            $denda = $this->MkCommon->filterEmptyField($value, 'KirPayment', 'denda');
+            $biaya_lain = $this->MkCommon->filterEmptyField($value, 'KirPayment', 'biaya_lain');
 
             $nopol = $this->MkCommon->filterEmptyField($value, 'Kir', 'no_pol');
             $truck_id = $this->MkCommon->filterEmptyField($value, 'Kir', 'truck_id');
@@ -1504,6 +1536,36 @@ class TrucksController extends AppController {
                         'document_no' => $document_no,
                         'type' => 'kir_void',
                     ));
+
+                    if( !empty($biaya_lain) ) {
+                        $this->User->Journal->setJournal($biaya_lain, array(
+                            'credit' => 'document_other_payment_coa_id',
+                            'debit' => $coa_id,
+                        ), array(
+                            'date' => $kir_payment_date,
+                            'document_id' => $id,
+                            'truck_id' => $truck_id,
+                            'nopol' => $nopol,
+                            'title' => $title,
+                            'document_no' => $document_no,
+                            'type' => 'kir_void',
+                        ));
+                    }
+
+                    if( !empty($denda) ) {
+                        $this->User->Journal->setJournal($denda, array(
+                            'credit' => 'document_denda_payment_coa_id',
+                            'debit' => $coa_id,
+                        ), array(
+                            'date' => $kir_payment_date,
+                            'document_id' => $id,
+                            'truck_id' => $truck_id,
+                            'nopol' => $nopol,
+                            'title' => $title,
+                            'document_no' => $document_no,
+                            'type' => 'kir_void',
+                        ));
+                    }
                 }
 
                 $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
@@ -1842,6 +1904,36 @@ class TrucksController extends AppController {
                                 'document_no' => $document_no,
                                 'type' => 'siup',
                             ));
+
+                            if( !empty($data['SiupPayment']['biaya_lain']) ) {
+                                $this->User->Journal->setJournal($data['SiupPayment']['biaya_lain'], array(
+                                    'credit' => $coa_id,
+                                    'debit' => 'document_other_payment_coa_id',
+                                ), array(
+                                    'date' => $siup_payment_date,
+                                    'document_id' => $id,
+                                    'truck_id' => $truck_id,
+                                    'nopol' => $nopol,
+                                    'title' => $title,
+                                    'document_no' => $document_no,
+                                    'type' => 'siup',
+                                ));
+                            }
+
+                            if( !empty($data['SiupPayment']['denda']) ) {
+                                $this->User->Journal->setJournal($data['SiupPayment']['denda'], array(
+                                    'credit' => $coa_id,
+                                    'debit' => 'document_denda_payment_coa_id',
+                                ), array(
+                                    'date' => $siup_payment_date,
+                                    'document_id' => $id,
+                                    'truck_id' => $truck_id,
+                                    'nopol' => $nopol,
+                                    'title' => $title,
+                                    'document_no' => $document_no,
+                                    'type' => 'siup',
+                                ));
+                            }
                         }
 
                         $this->params['old_data'] = $siup;
@@ -1928,6 +2020,8 @@ class TrucksController extends AppController {
             $total = $this->MkCommon->filterEmptyField($value, 'SiupPayment', 'total_pembayaran');
             $coa_id = $this->MkCommon->filterEmptyField($value, 'SiupPayment', 'coa_id');
             $siup_payment_date = $this->MkCommon->filterEmptyField($value, 'SiupPayment', 'siup_payment_date');
+            $denda = $this->MkCommon->filterEmptyField($value, 'SiupPayment', 'denda');
+            $biaya_lain = $this->MkCommon->filterEmptyField($value, 'SiupPayment', 'biaya_lain');
 
             $nopol = $this->MkCommon->filterEmptyField($value, 'Siup', 'no_pol');
             $truck_id = $this->MkCommon->filterEmptyField($value, 'Siup', 'truck_id');
@@ -1965,6 +2059,36 @@ class TrucksController extends AppController {
                         'document_no' => $document_no,
                         'type' => 'siup_void',
                     ));
+
+                    if( !empty($biaya_lain) ) {
+                        $this->User->Journal->setJournal($biaya_lain, array(
+                            'credit' => 'document_other_payment_coa_id',
+                            'debit' => $coa_id,
+                        ), array(
+                            'date' => $siup_payment_date,
+                            'document_id' => $id,
+                            'truck_id' => $truck_id,
+                            'nopol' => $nopol,
+                            'title' => $title,
+                            'document_no' => $document_no,
+                            'type' => 'siup_void',
+                        ));
+                    }
+
+                    if( !empty($denda) ) {
+                        $this->User->Journal->setJournal($denda, array(
+                            'credit' => 'document_denda_payment_coa_id',
+                            'debit' => $coa_id,
+                        ), array(
+                            'date' => $siup_payment_date,
+                            'document_id' => $id,
+                            'truck_id' => $truck_id,
+                            'nopol' => $nopol,
+                            'title' => $title,
+                            'document_no' => $document_no,
+                            'type' => 'siup_void',
+                        ));
+                    }
                 }
 
                 $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
@@ -2709,6 +2833,8 @@ class TrucksController extends AppController {
             $total = $this->MkCommon->filterEmptyField($value, 'StnkPayment', 'total_pembayaran');
             $coa_id = $this->MkCommon->filterEmptyField($value, 'StnkPayment', 'coa_id');
             $stnk_payment_date = $this->MkCommon->filterEmptyField($value, 'StnkPayment', 'stnk_payment_date');
+            $denda = $this->MkCommon->filterEmptyField($value, 'StnkPayment', 'denda');
+            $biaya_lain = $this->MkCommon->filterEmptyField($value, 'StnkPayment', 'biaya_lain');
 
             $nopol = $this->MkCommon->filterEmptyField($value, 'Stnk', 'no_pol');
             $truck_id = $this->MkCommon->filterEmptyField($value, 'Stnk', 'truck_id');
@@ -2757,6 +2883,36 @@ class TrucksController extends AppController {
                         'document_no' => $document_no,
                         'type' => 'stnk_void',
                     ));
+
+                    if( !empty($biaya_lain) ) {
+                        $this->User->Journal->setJournal($biaya_lain, array(
+                            'credit' => 'document_other_payment_coa_id',
+                            'debit' => $coa_id,
+                        ), array(
+                            'date' => $stnk_payment_date,
+                            'document_id' => $id,
+                            'truck_id' => $truck_id,
+                            'nopol' => $nopol,
+                            'title' => $title,
+                            'document_no' => $document_no,
+                            'type' => 'stnk_void',
+                        ));
+                    }
+
+                    if( !empty($denda) ) {
+                        $this->User->Journal->setJournal($denda, array(
+                            'credit' => 'document_denda_payment_coa_id',
+                            'debit' => $coa_id,
+                        ), array(
+                            'date' => $stnk_payment_date,
+                            'document_id' => $id,
+                            'truck_id' => $truck_id,
+                            'nopol' => $nopol,
+                            'title' => $title,
+                            'document_no' => $document_no,
+                            'type' => 'stnk_void',
+                        ));
+                    }
                 }
 
                 $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
@@ -2921,6 +3077,36 @@ class TrucksController extends AppController {
                                 'document_no' => $document_no,
                                 'type' => 'stnk',
                             ));
+
+                            if( !empty($data['StnkPayment']['biaya_lain']) ) {
+                                $this->User->Journal->setJournal($data['StnkPayment']['biaya_lain'], array(
+                                    'credit' => $coa_id,
+                                    'debit' => 'document_other_payment_coa_id',
+                                ), array(
+                                    'date' => $stnk_payment_date,
+                                    'document_id' => $id,
+                                    'truck_id' => $truck_id,
+                                    'nopol' => $nopol,
+                                    'title' => $title,
+                                    'document_no' => $document_no,
+                                    'type' => 'stnk',
+                                ));
+                            }
+
+                            if( !empty($data['StnkPayment']['denda']) ) {
+                                $this->User->Journal->setJournal($data['StnkPayment']['denda'], array(
+                                    'credit' => $coa_id,
+                                    'debit' => 'document_denda_payment_coa_id',
+                                ), array(
+                                    'date' => $stnk_payment_date,
+                                    'document_id' => $id,
+                                    'truck_id' => $truck_id,
+                                    'nopol' => $nopol,
+                                    'title' => $title,
+                                    'document_no' => $document_no,
+                                    'type' => 'stnk',
+                                ));
+                            }
                         }
 
                         $this->params['old_data'] = $stnk;

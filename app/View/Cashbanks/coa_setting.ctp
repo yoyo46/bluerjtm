@@ -546,6 +546,46 @@
 				</div>
 			</div>
         </div>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
+							echo $this->Form->label('stnk_payment_coa_id', __('Pembayaran Denda'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('document_denda_payment_coa_id',array(
+								'label'=> false, 
+								'class'=>'form-control chosen-select',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+					?>
+				</div>
+			</div>
+        </div>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
+							echo $this->Form->label('stnk_payment_coa_id', __('Pembayaran Biaya Lain-lain'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('document_other_payment_coa_id',array(
+								'label'=> false, 
+								'class'=>'form-control chosen-select',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+					?>
+				</div>
+			</div>
+        </div>
     </div>
 </div>
 <div class="box">
