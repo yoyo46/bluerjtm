@@ -264,7 +264,11 @@
 
                             foreach ($invoices as $key => $invoice) {
                                 $totalUnit = !empty($invoice['qty_unit'])?$invoice['qty_unit']:0;
-                                $totalPPH = !empty($invoice['total_pph'])?$invoice['total_pph']:0;
+                                
+                                $totalPPH = $this->Common->filterEmptyField($invoice, 'Invoice', 'total_pph', 0);
+                                $totalPPH = !empty($invoice[0]['total_pph'])?$invoice[0]['total_pph']:$totalPPH;
+                                // $totalPPH = !empty($invoice['total_pph'])?$invoice['total_pph']:0;
+                                
                                 $dateTOP = !empty($invoice['Invoice']['term_of_payment'])?date('d/m/Y', strtotime(sprintf('+%s day', $invoice['Invoice']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']))):'-';
                                 $datePayment = array();
                                 $totalPaid = 0;

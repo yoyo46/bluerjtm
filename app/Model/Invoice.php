@@ -179,7 +179,8 @@ class Invoice extends AppModel {
                     'InvoicePayment'
                 ),
                 'fields' => array(
-                    'SUM(InvoicePayment.total_payment) total_payment'
+                    'SUM(InvoicePayment.total_payment) total_payment',
+                    'SUM(InvoicePayment.total_payment * (InvoicePayment.pph / 100)) total_pph',
                 ),
                 'group' => array(
                     'InvoicePaymentDetail.invoice_id'

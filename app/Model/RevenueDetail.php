@@ -333,15 +333,15 @@ class RevenueDetail extends AppModel {
                     ),
                 );
 
-                $this->virtualFields['sum_pph'] = 'SUM(Revenue.total * (Revenue.pph/100))';
+                // $this->virtualFields['sum_pph'] = 'SUM(Revenue.total * (Revenue.pph/100))';
                 $data_merge = $this->getData('first', $options, $elementRevenue);
 
                 if(!empty($data_merge['RevenueDetail']['qty_unit'])){
                     $data['qty_unit'] = $data_merge['RevenueDetail']['qty_unit'];
                 }
-                if(!empty($data_merge['RevenueDetail']['sum_pph'])){
-                    $data['total_pph'] = $data_merge['RevenueDetail']['sum_pph'];
-                }
+                // if(!empty($data_merge['RevenueDetail']['sum_pph'])){
+                //     $data['total_pph'] = $data_merge['RevenueDetail']['sum_pph'];
+                // }
                 break;
         }
 
