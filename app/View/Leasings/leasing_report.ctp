@@ -1,4 +1,10 @@
 <?php 
+        if( !empty($data_action) ){
+            $headerRowspan = 2;
+        } else {
+            $headerRowspan = false;
+        }
+
         $element = 'blocks/leasings/tables/leasing_report';
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $dataColumns = array(
@@ -7,23 +13,27 @@
                 'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'no_contract\',width:100',
                 'align' => 'center',
+                'rowspan' => $headerRowspan,
             ),
             'vendor' => array(
                 'name' => __('Vendor'),
                 'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'vendor\',width:120',
                 'align' => 'center',
+                'rowspan' => $headerRowspan,
             ),
             'start_date' => array(
                 'name' => __('Tgl Mulai'),
                 'style' => 'text-align: left;vertical-align: middle;',
                 'data-options' => 'field:\'start_date\',width:100',
                 'align' => 'center',
+                'rowspan' => $headerRowspan,
             ),
             'end_date' => array(
                 'name' => __('Tgl Berakhir'),
                 'style' => 'text-align: left;vertical-align: middle;',
                 'data-options' => 'field:\'end_date\',width:100',
+                'rowspan' => $headerRowspan,
                 'align' => 'center',
                 'fix_column' => true,
             ),
