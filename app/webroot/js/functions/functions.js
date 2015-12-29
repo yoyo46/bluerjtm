@@ -3812,8 +3812,14 @@ $(function() {
                     $('.custom-find-invoice,#invoiceType').trigger('change');
                     alert(message);
                 } else {
+                    var pattern = $.checkUndefined($(response).filter('#pattern-code').val(), '');
+
+                    if( pattern == '' ) {
+                        pattern = $.checkUndefined($(response).find('#pattern-code').val(), '');
+                    }
+
                     $('#invoice-info').html(response);
-                    $('#no_invoice').val($(response).filter('#pattern-code').val());
+                    $('#no_invoice').val(pattern);
                 }
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {

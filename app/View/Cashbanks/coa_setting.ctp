@@ -352,7 +352,7 @@
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
-							echo $this->Form->label('invoice_coa_debit_id', __('Invoice'));
+							echo $this->Form->label('invoice_coa_debit_id', __('Invoice 1'));
 					?>
 				</div>
 				<div class="col-sm-4">
@@ -369,6 +369,37 @@
 				<div class="col-sm-4">
 		        	<?php 
 							echo $this->Form->input('invoice_coa_credit_id',array(
+								'label'=> false, 
+								'class'=>'form-control chosen-select',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+					?>
+				</div>
+			</div>
+        </div>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
+							echo $this->Form->label('invoice_coa_debit_id', __('Invoice 2'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('invoice_coa_2_debit_id',array(
+								'label'=> false, 
+								'class'=>'form-control chosen-select',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('invoice_coa_2_credit_id',array(
 								'label'=> false, 
 								'class'=>'form-control chosen-select',
 								'required' => false,

@@ -4232,8 +4232,8 @@ class RevenuesController extends AppController {
                                             'type' => 'invoice',
                                         ));
                                         $this->User->Journal->setJournal($total, array(
-                                            'credit' => 'revenue_coa_debit_id',
-                                            'debit' => 'revenue_coa_credit_id',
+                                            'credit' => 'invoice_coa_2_credit_id',
+                                            'debit' => 'invoice_coa_2_debit_id',
                                         ), array(
                                             'date' => $invoice_date,
                                             'document_id' => $invoice_id,
@@ -4294,8 +4294,8 @@ class RevenuesController extends AppController {
                                 'type' => 'invoice',
                             ));
                             $this->User->Journal->setJournal($total, array(
-                                'credit' => 'revenue_coa_debit_id',
-                                'debit' => 'revenue_coa_credit_id',
+                                'credit' => 'invoice_coa_2_credit_id',
+                                'debit' => 'invoice_coa_2_debit_id',
                             ), array(
                                 'date' => $invoice_date,
                                 'document_id' => $invoice_id,
@@ -5688,8 +5688,8 @@ class RevenuesController extends AppController {
                                 'type' => 'invoice_void',
                             ));
                             $this->User->Journal->setJournal($total, array(
-                                'credit' => 'revenue_coa_credit_id',
-                                'debit' => 'revenue_coa_debit_id',
+                                'credit' => 'invoice_coa_2_debit_id',
+                                'debit' => 'invoice_coa_2_credit_id',
                             ), array(
                                 'date' => $invoice_date,
                                 'document_id' => $id,
