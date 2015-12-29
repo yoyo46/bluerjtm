@@ -84,12 +84,17 @@
                 </tr>
                 <?php
                         }
+                        
+                        echo $this->Form->hidden('total_leasing',array(
+                            'id'=>'hid-total-leasing',
+                            'value' => $total,
+                        ));
                 ?>
                 <tr id="field-grand-total-leasing">
                     <td align="right" colspan="1"><?php echo __('Total')?></td>
                     <td align="right" id="grand-total-leasing">
                         <?php 
-                            echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
+                                echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
                         ?>
                     </td>
                     <td>&nbsp;</td>

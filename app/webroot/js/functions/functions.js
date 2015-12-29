@@ -1626,6 +1626,7 @@ function grandTotalLeasing(){
     };
 
     $('#grand-total-leasing').text('IDR '+formatNumber(total_price));
+    $('#hid-total-leasing').val(total_price);
 }
 
 var choose_item_info = function(){

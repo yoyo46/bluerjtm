@@ -58,6 +58,10 @@ class LeasingInstallment extends AppModel {
                 $default_options['conditions']['LeasingInstallment.payment_status'] = array( 'unpaid', 'half_paid' );
                 $default_options['conditions']['LeasingInstallment.status'] = 1;
                 break;
+            case 'paid':
+                $default_options['conditions']['LeasingInstallment.payment_status'] = 'paid';
+                $default_options['conditions']['LeasingInstallment.status'] = 1;
+                break;
             
             default:
                 $default_options['conditions']['LeasingInstallment.status'] = 1;
@@ -185,6 +189,27 @@ class LeasingInstallment extends AppModel {
             $id = !empty($value['LeasingInstallment']['id'])?$value['LeasingInstallment']['id']:false;
 
             $value = $this->_callLastPaidInstallment($value, $id);
+            $data = array_merge($data, $value);
+        }
+
+        return $data;
+    }
+
+    function getCountInstallment ( $data, $id ) {
+        $default_options = array(
+            'conditions' => array(
+                'LeasingInstallment.leasing_id' => $id,
+            ),
+            'contain' => false,
+        );
+
+        $this->virtualFields['count_installment'] = 'COUNT(LeasingInstallment.id)';
+        $value = $this->getData('first', $default_options, array(
+            'branch' => false,
+            'status' => 'paid',
+        ));
+
+        if( !empty($value) ) {
             $data = array_merge($data, $value);
         }
 

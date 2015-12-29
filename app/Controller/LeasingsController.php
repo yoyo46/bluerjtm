@@ -243,7 +243,7 @@ class LeasingsController extends AppController {
 
                     if($id && $data_local){
                         $this->Leasing->LeasingDetail->deleteAll(array(
-                            'leasing_id' => $leasing_id
+                            'LeasingDetail.leasing_id' => $leasing_id
                         ));
                     }
 
@@ -688,5 +688,55 @@ class LeasingsController extends AppController {
             'data_change', 'title', 'values',
             'vendor_id', 'data_action'
         ));
+    }
+
+    public function leasing_report( $data_action = false ) {
+        $module_title = __('Laporan Leasing');
+
+        $this->set('sub_module_title', $module_title);
+        $options =  $this->Leasing->getData('paginate', false, array(
+            'branch' => false,
+        ));
+
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Leasing->_callRefineParams($params, $options);
+
+        if( !empty($data_action) ){
+            $values = $this->Leasing->find('all', $options);
+        } else {
+            $options['limit'] = Configure::read('__Site.config_pagination');
+            $this->paginate = $options;
+            $values = $this->paginate('Leasing');
+        }
+
+        if(!empty($values)){
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'Leasing', 'id');
+
+                $value = $this->Leasing->LeasingPayment->getPayment($value, $id);
+                $value = $this->Leasing->LeasingInstallment->getCountInstallment($value, $id);
+
+                $values[$key] = $value;
+            }
+        }
+
+        $vendors = $this->Leasing->Vendor->getData('list');
+
+        $this->set('active_menu', 'report_expense_per_truck');
+        $this->set(compact(
+            'values', 'module_title', 'data_action',
+            'vendors'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $this->MkCommon->_layout_file(array(
+                'select',
+                'freeze',
+            ));
+        }
     }
 }

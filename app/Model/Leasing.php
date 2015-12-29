@@ -196,6 +196,7 @@ class Leasing extends AppModel {
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
         $vendor_id = !empty($data['named']['vendor_id'])?$data['named']['vendor_id']:false;
+        $status = !empty($data['named']['status'])?$data['named']['status']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -211,6 +212,17 @@ class Leasing extends AppModel {
         }
         if( !empty($vendor_id) ) {
             $default_options['conditions']['Leasing.vendor_id'] = $vendor_id;
+        }
+        if( !empty($status) ) {
+            switch ($status) {
+                case 'unpaid':
+                    $default_options['conditions']['Leasing.payment_status'] = array( 'unpaid', 'half_paid' );
+                    break;
+                
+                case 'paid':
+                    $default_options['conditions']['Leasing.payment_status'] = 'paid';
+                    break;
+            }
         }
         
         return $default_options;

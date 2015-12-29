@@ -60,11 +60,10 @@ class LeasingPayment extends AppModel {
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $branch = isset($elements['branch'])?$elements['branch']:true;
 
         $default_options = array(
-            'conditions'=> array(
-                'LeasingPayment.branch_id' => Configure::read('__Site.config_branch_id'),
-            ),
+            'conditions'=> array(),
             'order'=> array(
                 'LeasingPayment.rejected' => 'ASC',
                 'LeasingPayment.created' => 'DESC',
@@ -87,6 +86,10 @@ class LeasingPayment extends AppModel {
             default:
                 $default_options['conditions']['LeasingPayment.status'] = 1;
                 break;
+        }
+
+        if( !empty($branch) ) {
+            $default_options['conditions']['LeasingPayment.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
         if(!empty($options) && $is_merge){
@@ -226,6 +229,29 @@ class LeasingPayment extends AppModel {
         }
         
         return $default_options;
+    }
+
+    function getPayment ( $data, $id ) {
+        $default_options = array(
+            'conditions' => array(
+                'LeasingPaymentDetail.leasing_id' => $id,
+                'LeasingPayment.status' => 1,
+                'LeasingPayment.rejected' => 0,
+            ),
+            'contain' => array(
+                'LeasingPayment',
+            ),
+        );
+
+        $this->virtualFields['grandtotal_installment'] = 'SUM(installment)';
+        $this->virtualFields['grandtotal_installment_rate'] = 'SUM(installment_rate)';
+        $value = $this->LeasingPaymentDetail->getData('first', $default_options);
+
+        if( !empty($value) ) {
+            $data = array_merge($data, $value);
+        }
+
+        return $data;
     }
 }
 ?>

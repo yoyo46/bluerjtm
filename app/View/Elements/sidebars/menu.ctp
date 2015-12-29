@@ -213,9 +213,6 @@
                             'daily_report', 'mutations', 'driver_reports',
                             'leadtime_report',
                         ),
-                        'leasings' => array(
-                            'index'
-                        ),
                         'revenues' => array(
                             'ritase_report', 'achievement_report',
                             'monitoring_truck', 'ttuj_report',
@@ -230,9 +227,9 @@
                             'siup', 'achievement_report',
                             'monitoring_truck', 'capacity_report',
                             'point_perday_report', 'point_perplant_report',
-                            'view_leasing', 'licenses_report', 'truck_import',
+                            'licenses_report', 'truck_import',
                             'daily_report', 'mutations', 'driver_reports',
-                            'ttuj_report', 'leadtime_report'
+                            'ttuj_report', 'leadtime_report',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -281,15 +278,6 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'mutations' )?'active':'',
-                            ));
-
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Leasing', array(
-                                'controller' => 'leasings',
-                                'action' => 'index',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'view_leasing' )?'active':'',
                             ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KIR - Perpanjang', array(
@@ -435,6 +423,53 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'leadtime_report' )?'active':'',
+                            ));
+                    ?>
+                </ul>
+            </li>
+            <?php
+                    }
+
+                    $dataMenu = array(
+                        'leasings' => array(
+                            'index', 'leasing_report',
+                        ),
+                    );
+
+                    if( $this->Common->allowMenu( $dataMenu ) ) {
+                        $activeTruck = false;
+                        $truckMenu = array(
+                            'view_leasing', 'leasing_report'
+                        );
+
+                        if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
+                            $activeTruck = 'active';
+                        }
+            ?>
+            <li class="treeview <?php echo $activeTruck; ?>">
+                <a href="#">
+                    <i class="fa fa-file"></i>
+                    <span>Leasing</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Leasing', array(
+                                'controller' => 'leasings',
+                                'action' => 'index',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'view_leasing' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Leasing', array(
+                                'controller' => 'leasings',
+                                'action' => 'leasing_report',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'leasing_report' )?'active':'',
                             ));
                     ?>
                 </ul>
