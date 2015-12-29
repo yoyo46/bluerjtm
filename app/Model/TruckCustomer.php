@@ -266,5 +266,30 @@ class TruckCustomer extends AppModel {
 
         return $result;
     }
+
+	function getFirst ( $data = false, $truck_id = false ) {
+		if( empty($data['TruckCustomer']) ) {
+			$value = $this->find('first', array(
+				'conditions' => array(
+					'TruckCustomer.truck_id'=> $truck_id,
+				),
+				'order' => array(
+					'TruckCustomer.primary' => 'DESC',
+					'TruckCustomer.id' => 'ASC',
+				),
+			));
+
+			if( !empty($value) ) {
+				$data = array_merge($data, $value);
+			}
+		}
+
+		if( !empty($data['TruckCustomer']) ) {
+			$customer_id = !empty($data['TruckCustomer']['customer_id'])?$data['TruckCustomer']['customer_id']:false;
+        	$data = $this->Customer->getMerge($data, $customer_id);
+		}
+
+		return $data;
+	}
 }
 ?>

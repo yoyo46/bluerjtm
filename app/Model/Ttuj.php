@@ -960,5 +960,36 @@ class Ttuj extends AppModel {
 
         return $default_options;
     }
+
+    function getBiayaUangJalan ( $data, $id, $params = false ) {
+        $dateFrom = !empty($params['named']['DateFrom'])?$params['named']['DateFrom']:false;
+        $dateTo = !empty($params['named']['DateTo'])?$params['named']['DateTo']:false;
+        $default_options = array(
+            'conditions' => array(
+                'Ttuj.truck_id' => $id,
+            ),
+        );
+
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
+
+        $this->virtualFields['biaya_uang_jalan'] = 'SUM(uang_jalan_1+uang_jalan_2+uang_kuli_muat+uang_kuli_bongkar+asdp+uang_kawal+uang_keamanan+uang_jalan_extra)';
+        $value = $this->getData('first', $default_options, true, array(
+            'branch' => false,
+        ));
+
+        if( !empty($value) ) {
+            $data = array_merge($data, $value);
+        }
+
+        return $data;
+    }
 }
 ?>

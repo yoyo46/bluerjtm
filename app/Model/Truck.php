@@ -249,6 +249,10 @@ class Truck extends AppModel {
             'className' => 'Ttuj',
             'foreignKey' => 'truck_id',
         ),
+        'CashBankDetail' => array(
+            'className' => 'CashBankDetail',
+            'foreignKey' => 'truck_id',
+        ),
     );
 
     function uniqueUpdate($data, $id = false){
@@ -530,6 +534,36 @@ class Truck extends AppModel {
         $nopol = !empty($data['named']['nopol'])?urldecode($data['named']['nopol']):false;
         $type = !empty($data['named']['type'])?urldecode($data['named']['type']):1;
         $driver = !empty($data['named']['driver'])?urldecode($data['named']['driver']):false;
+        $customerid = !empty($data['named']['customerid'])?urldecode($data['named']['customerid']):false;
+        $sort = !empty($data['named']['sort'])?urldecode($data['named']['sort']):false;
+        $direction = !empty($data['named']['direction'])?urldecode($data['named']['direction']):false;
+
+        if(!empty($customerid) || $sort == 'CustomerNoType.code'){
+            $this->unBindModel(array(
+                'hasMany' => array(
+                    'TruckCustomer'
+                )
+            ));
+
+            $this->bindModel(array(
+                'hasOne' => array(
+                    'TruckCustomer' => array(
+                        'className' => 'TruckCustomer',
+                        'foreignKey' => 'truck_id',
+                        'conditions' => array(
+                            'TruckCustomer.primary' => 1
+                        )
+                    ),
+                    'CustomerNoType' => array(
+                        'className' => 'CustomerNoType',
+                        'foreignKey' => false,
+                        'conditions' => array(
+                            'TruckCustomer.customer_id = CustomerNoType.id',
+                        )
+                    )
+                )
+            ), false);
+        }
 
         if(!empty($nopol)){
             if( $type == 2 ) {
@@ -542,8 +576,91 @@ class Truck extends AppModel {
             $default_options['conditions']['Driver.name LIKE '] = '%'.$driver.'%';
             $default_options['contain'][] = 'Driver';
         }
+        if(!empty($customerid)){
+            $default_options['conditions']['TruckCustomer.customer_id'] = $customerid;
+            $default_options['contain'][] = 'TruckCustomer';
+        }
+        if( !empty($sort) ) {
+            switch ($sort) {
+                case 'TruckBrand.name':
+                    $default_options['contain'][] = 'TruckBrand';
+                    break;
+                case 'TruckCategory.name':
+                    $default_options['contain'][] = 'TruckCategory';
+                    break;
+                case 'CustomerNoType.code':
+                    $default_options['contain'][] = 'TruckCustomer';
+                    $default_options['contain'][] = 'CustomerNoType';
+                    break;
+                case 'Revenue.total':
+                    $this->unBindModel(array(
+                        'hasMany' => array(
+                            'Revenue',
+                            'Ttuj',
+                        )
+                    ));
+
+                    $this->bindModel(array(
+                        'hasOne' => array(
+                            'Ttuj' => array(
+                                'className' => 'Ttuj',
+                                'foreignKey' => 'truck_id',
+                            ),
+                            'Revenue' => array(
+                                'className' => 'Revenue',
+                                'foreignKey' => false,
+                                'conditions' => array(
+                                    'Revenue.ttuj_id = Ttuj.id',
+                                    'Revenue.status' => 1,
+                                )
+                            )
+                        )
+                    ), false);
+
+                    $this->Revenue->virtualFields['total'] = 'SUM(total_without_tax)';
+
+                    $default_options['contain'][] = 'Ttuj';
+                    $default_options['contain'][] = 'Revenue';
+                    $default_options['group'][] = 'Truck.id';
+                    break;
+            }
+        }
         
         return $default_options;
+    }
+
+    function getBiayaLainLain ( $data, $id, $params = false ) {
+        $dateFrom = !empty($params['named']['DateFrom'])?$params['named']['DateFrom']:false;
+        $dateTo = !empty($params['named']['DateTo'])?$params['named']['DateTo']:false;
+        $default_options = array(
+            'conditions' => array(
+                'CashBank.receiving_cash_type' => array( 'out', 'prepayment_out' ),
+                'CashBankDetail.truck_id' => $id,
+                'CashBank.status' => 1,
+            ),
+            'contain' => array(
+                'CashBank',
+            ),
+        );
+
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
+
+        $this->CashBankDetail->virtualFields['total_cashbank'] = 'SUM(total)';
+        $value = $this->CashBankDetail->getData('first', $default_options);
+
+        if( !empty($value) ) {
+            $data = array_merge($data, $value);
+        }
+
+        return $data;
     }
 }
 ?>

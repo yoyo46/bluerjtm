@@ -61,6 +61,10 @@ class Revenue extends AppModel {
             'className' => 'CustomerNoType',
             'foreignKey' => 'customer_id',
         ),
+        'Truk' => array(
+            'className' => 'Truk',
+            'foreignKey' => 'truck_id',
+        ),
     );
 
     var $hasMany = array(
@@ -869,6 +873,42 @@ class Revenue extends AppModel {
         }
         
         return $default_options;
+    }
+
+    function getTotal ( $data, $id, $params = false ) {
+        if( empty($data['Revenue']) ) {
+            $dateFrom = !empty($params['named']['DateFrom'])?$params['named']['DateFrom']:false;
+            $dateTo = !empty($params['named']['DateTo'])?$params['named']['DateTo']:false;
+            $default_options = array(
+                'conditions' => array(
+                    'Ttuj.truck_id' => $id,
+                ),
+                'contain' => array(
+                    'Ttuj',
+                ),
+            );
+
+            if( !empty($dateFrom) || !empty($dateTo) ) {
+                if( !empty($dateFrom) ) {
+                    $default_options['conditions']['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') >='] = $dateFrom;
+                }
+
+                if( !empty($dateTo) ) {
+                    $default_options['conditions']['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') <='] = $dateTo;
+                }
+            }
+
+            $this->virtualFields['total'] = 'SUM(total_without_tax)';
+            $value = $this->getData('first', $default_options, true, array(
+                'branch' => false,
+            ));
+
+            if( !empty($value) ) {
+                $data = array_merge($data, $value);
+            }
+        }
+
+        return $data;
     }
 }
 ?>

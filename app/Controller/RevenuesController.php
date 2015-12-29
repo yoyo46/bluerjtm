@@ -8042,4 +8042,73 @@ class RevenuesController extends AppController {
             $this->MkCommon->_layout_file('select');
         }
     }
+
+    public function report_expense_per_truck( $data_action = false ) {
+        $this->loadModel('Truck');
+
+        $module_title = __('Laporan Expense Revenue per Truk');
+        $values = array();
+        $dateFrom = date('Y-m-01');
+        $dateTo = date('Y-m-t');
+
+        $this->set('sub_module_title', $module_title);
+        $options =  $this->Truck->getData('paginate', false, true, array(
+            'branch' => false,
+        ));
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->Truck->_callRefineParams($params, $options);
+
+        if( !empty($data_action) ){
+            $values = $this->Truck->find('all', $options);
+        } else {
+            $options['limit'] = Configure::read('__Site.config_pagination');
+            $this->paginate = $options;
+            $values = $this->paginate('Truck');
+        }
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+
+        if(!empty($values)){
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'Truck', 'id');
+                $truck_category_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'truck_category_id');
+                $truck_brand_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'truck_brand_id');
+
+                $value = $this->Truck->TruckCategory->getMerge($value, $truck_category_id);
+                $value = $this->Truck->TruckBrand->getMerge($value, $truck_brand_id);
+                $value = $this->Truck->TruckCustomer->getFirst($value, $id);
+                $value = $this->Ttuj->Revenue->getTotal($value, $id, $params);
+                $value = $this->Ttuj->getBiayaUangJalan($value, $id, $params);
+                $value = $this->Truck->getBiayaLainLain($value, $id, $params);
+
+                $values[$key] = $value;
+            }
+        }
+
+        $customers = $this->Ttuj->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+
+        $this->set('active_menu', 'report_expense_per_truck');
+        $this->set(compact(
+            'values', 'module_title', 'data_action',
+            'customers'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $this->MkCommon->_layout_file('select');
+        }
+    }
 }

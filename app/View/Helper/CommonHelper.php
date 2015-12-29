@@ -944,6 +944,7 @@ class CommonHelper extends AppHelper {
                 $display = isset($dataColumn['display'])?$dataColumn['display']:true;
                 $child = !empty($dataColumn['child'])?$dataColumn['child']:false;
                 $rowspan = !empty($dataColumn['rowspan'])?$dataColumn['rowspan']:false;
+                $colspan = !empty($dataColumn['colspan'])?$dataColumn['colspan']:false;
                 $class = !empty($dataColumn['class'])?$dataColumn['class']:false;
                 $fix_column = !empty($dataColumn['fix_column'])?$dataColumn['fix_column']:false;
                 $data_options = !empty($dataColumn['data-options'])?$dataColumn['data-options']:false;
@@ -981,8 +982,6 @@ class CommonHelper extends AppHelper {
                             // Colspan
                             if( !empty($child) ) {
                                 $colspan = count($child);
-                            } else {
-                                $colspan = false;
                             }
 
                             if( !empty($is_print) ) {
@@ -1004,6 +1003,10 @@ class CommonHelper extends AppHelper {
 
                             // Append Child
                             if( !empty($child) ) {
+                                if( $is_print == 'pdf' ) {
+                                    $options['style'] = 'background-color: #3C8DBC; border-right: 1px solid #FFFFFF; color: #FFFFFF; font-weight: bold;';
+                                }
+
                                 $childArr[] = $this->_generateShowHideColumn( $child, $data_type, $is_print, $options );
                             }
                         }
@@ -1772,9 +1775,9 @@ class CommonHelper extends AppHelper {
         return $this->Number->currency($price, Configure::read('__Site.config_currency_code'), array('places' => 0));
     }
 
-    function getFormatPrice ($price, $empty = 0) {
+    function getFormatPrice ($price, $empty = 0, $places = 0) {
         if( !empty($price) ) {
-            return $this->Number->currency($price, '', array('places' => 0));
+            return $this->Number->currency($price, '', array('places' => $places));
         } else {
             return $empty;
         }
