@@ -172,3 +172,12 @@
 <?php
         }
 ?>
+<script type="text/javascript">
+    function rowColored (index,row) {
+        var value = row.end_date.toLowerCase();
+        
+        if( value == 'total' ) {
+            return 'background: rgba(221, 221, 221,0.5);font-weight:bold;';
+        }
+    }
+</script>

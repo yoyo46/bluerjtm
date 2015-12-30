@@ -40,14 +40,14 @@
             'price' => array(
                 'name' => __('Harga Truk'),
                 'style' => 'text-align: left;vertical-align: middle;',
-                'data-options' => 'field:\'price\',width:100',
+                'data-options' => 'field:\'price\',width:120',
                 'align' => 'center',
                 'rowspan' => 2,
             ),
             'dp' => array(
                 'name' => __('Uang Muka'),
                 'style' => 'text-align: left;vertical-align: middle;',
-                'data-options' => 'field:\'dp\',width:100',
+                'data-options' => 'field:\'dp\',width:120',
                 'align' => 'right',
                 'rowspan' => 2,
             ),
@@ -72,19 +72,19 @@
                     'biaya_maintenance' => array(
                         'name' => __('Pokok'),
                         'style' => 'text-align: center;vertical-align: middle;',
-                        'data-options' => 'field:\'biaya_maintenance\',width:100',
+                        'data-options' => 'field:\'biaya_maintenance\',width:120',
                         'align' => 'right',
                     ),
                     'biaya_lainnya' => array(
                         'name' => __('Bunga'),
                         'style' => 'text-align: center;vertical-align: middle;',
-                        'data-options' => 'field:\'biaya_lainnya\',width:100',
+                        'data-options' => 'field:\'biaya_lainnya\',width:120',
                         'align' => 'right',
                     ),
                     'total' => array(
                         'name' => __('Total'),
                         'style' => 'text-align: center;vertical-align: middle;',
-                        'data-options' => 'field:\'total\',width:100',
+                        'data-options' => 'field:\'total\',width:120',
                         'align' => 'right',
                     ),
                 ),
@@ -98,19 +98,19 @@
                     'pokok' => array(
                         'name' => __('Pokok'),
                         'style' => 'text-align: center;vertical-align: middle;',
-                        'data-options' => 'field:\'pokok\',width:100',
+                        'data-options' => 'field:\'pokok\',width:120',
                         'align' => 'right',
                     ),
                     'bunga' => array(
                         'name' => __('Bunga'),
                         'style' => 'text-align: center;vertical-align: middle;',
-                        'data-options' => 'field:\'bunga\',width:100',
+                        'data-options' => 'field:\'bunga\',width:120',
                         'align' => 'right',
                     ),
                     'installment_total' => array(
                         'name' => __('Total'),
                         'style' => 'text-align: center;vertical-align: middle;',
-                        'data-options' => 'field:\'installment_total\',width:100',
+                        'data-options' => 'field:\'installment_total\',width:120',
                         'align' => 'right',
                     ),
                 ),
@@ -130,19 +130,19 @@
                     'pokok_paid' => array(
                         'name' => __('Pokok'),
                         'style' => 'text-align: center;vertical-align: middle;',
-                        'data-options' => 'field:\'pokok_paid\',width:100',
+                        'data-options' => 'field:\'pokok_paid\',width:120',
                         'align' => 'right',
                     ),
                     'bunga_paid' => array(
                         'name' => __('Bunga'),
                         'style' => 'text-align: center;vertical-align: middle;',
-                        'data-options' => 'field:\'bunga_paid\',width:100',
+                        'data-options' => 'field:\'bunga_paid\',width:120',
                         'align' => 'right',
                     ),
                     'total_paid' => array(
                         'name' => __('Total'),
                         'style' => 'text-align: center;vertical-align: middle;',
-                        'data-options' => 'field:\'total_paid\',width:100',
+                        'data-options' => 'field:\'total_paid\',width:120',
                         'align' => 'right',
                     ),
                 ),
@@ -162,19 +162,19 @@
                     'pokok_sisa' => array(
                         'name' => __('Pokok'),
                         'style' => 'text-align: center;vertical-align: middle;',
-                        'data-options' => 'field:\'pokok_sisa\',width:100',
+                        'data-options' => 'field:\'pokok_sisa\',width:120',
                         'align' => 'right',
                     ),
                     'bunga_sisa' => array(
                         'name' => __('Bunga'),
                         'style' => 'text-align: center;vertical-align: middle;',
-                        'data-options' => 'field:\'bunga_sisa\',width:100',
+                        'data-options' => 'field:\'bunga_sisa\',width:120',
                         'align' => 'right',
                     ),
                     'total_sisa' => array(
                         'name' => __('Total'),
                         'style' => 'text-align: center;vertical-align: middle;',
-                        'data-options' => 'field:\'total_sisa\',width:100',
+                        'data-options' => 'field:\'total_sisa\',width:120',
                         'align' => 'right',
                     ),
                 ),
@@ -215,7 +215,7 @@
         <?php 
                 if(!empty($values)){
         ?>
-        <table id="tt" class="table table-bordered sorting <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" singleSelect="true">
+        <table id="tt" class="table table-bordered sorting <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" singleSelect="true" data-options="rowStyler: rowColored">
             <thead frozen="true">
                 <tr>
                     <?php
