@@ -9,22 +9,22 @@ class MkCommonComponent extends Component {
 		$this->controller = $controller;
 	}
 	
-	function setCustomFlash($message, $type = 'success', $params=array(), $ajaxMsg = false) {
-		$flashType = $type;
+	function setCustomFlash($message, $type = 'success', $params=array(), $flash = true) {
+        if( $flash ){
+            $this->Session->setFlash($message, $type, $params, $type);
+        }
 
-		if( !$ajaxMsg ) {
-			$this->Session->setFlash($message, $flashType, $params, $type);
+        if( $type == 'success' ) {
+            $status = 1;
+        } else if( $type == 'error_login' ) {
+            $status = -1;
+        } else {
+            $status = 0;
+        }
 
-			$this->controller->set('msg', $message);
-
-			if( $type == 'success' ) {
-				$status = 1;
-			} else {
-				$status = 0;
-			}
-			$this->controller->set('status', $status);
-		}
-	}
+        $this->controller->set('msg', $message);
+        $this->controller->set('status', $status);
+    }
 
 	function loggedIn() {
 		$logged_in = false;
@@ -325,11 +325,25 @@ class MkCommonComponent extends Component {
         return str_replace('%2F', '/', $string);
     }
 
-    function filterEmptyField ( $value, $modelName, $fieldName = false, $empty = false ) {
-        if( empty($fieldName) && !empty($value[$modelName]) ) {
-            return $value[$modelName];
-        } else {
-            return !empty($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
+    function filterEmptyField ( $value, $modelName, $fieldName = false, $empty = false, $options = false ) {
+        $type = !empty($options['type'])?$options['type']:'empty';
+
+        switch ($type) {
+            case 'isset':
+                if( empty($fieldName) && isset($value[$modelName]) ) {
+                    return $value[$modelName];
+                } else {
+                    return isset($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
+                }
+                break;
+            
+            default:
+                if( empty($fieldName) && !empty($value[$modelName]) ) {
+                    return $value[$modelName];
+                } else {
+                    return !empty($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
+                }
+                break;
         }
     }
 
@@ -783,13 +797,21 @@ class MkCommonComponent extends Component {
         return $data;
     }
 
-    function redirectReferer ( $msg, $status = 'error', $urlRedirect = false ) {
-        $this->setCustomFlash($msg, $status);
+    function redirectReferer ( $msg, $status = 'error', $urlRedirect = false, $options = array() ) {
+        $flash = $this->filterEmptyField($options, 'flash', false, true, array(
+            'type' => 'isset',
+        ));
+        $paramFlash = $this->filterEmptyField($options, 'paramFlash', false, array());
+        $ajaxRedirect = $this->filterEmptyField($options, 'ajaxRedirect');
 
-        if( !empty($urlRedirect) ) {
-            $this->controller->redirect($urlRedirect);
-        } else {
-            $this->controller->redirect($this->controller->referer());
+        $this->setCustomFlash($msg, $status, $paramFlash, $flash);
+
+        if( !$this->RequestHandler->isAjax() || !empty($ajaxRedirect) ) {
+            if( !empty($urlRedirect) ) {
+                $this->controller->redirect($urlRedirect);
+            } else {
+                $this->controller->redirect($this->controller->referer());
+            }
         }
     }
 
@@ -816,13 +838,40 @@ class MkCommonComponent extends Component {
         }
     }
 
-    function setProcessParams ( $data, $urlRedirect = false ) {
-        if ( !empty($data['msg']) && !empty($data['status']) ) {
-            $this->_callProcessLog($data);
-            $this->_callProcessNotification($data);
+    function setProcessParams ( $data, $urlRedirect = false, $options = array() ) {
+        $redirectError = $this->filterEmptyField($options, 'redirectError');
+        $noRedirect = $this->filterEmptyField($options, 'noRedirect');
+        $ajaxFlash = $this->filterEmptyField($options, 'ajaxFlash');
+        $flash = isset($options['flash'])?$options['flash']:true;
+        $ajaxRedirect = $this->filterEmptyField($options, 'ajaxRedirect');
+        $paramFlash = $this->filterEmptyField($options, 'paramFlash', false, array());
 
-            if ( $data['status'] == 'success' ) {
-                $this->redirectReferer($data['msg'], $data['status'], $urlRedirect);
+        $this->_saveNotification($data);
+
+        if( $this->RequestHandler->isAjax() && !$ajaxFlash ) {
+            $flash = false;
+        }
+
+        if ( !empty($data['msg']) && !empty($data['status']) ) {
+            if ( !empty( $data['Log'] ) ) {
+                $activity = $this->filterEmptyField($data, 'Log', 'activity');
+                $old_data = $this->filterEmptyField($data, 'Log', 'old_data');
+                $document_id = $this->filterEmptyField($data, 'Log', 'document_id');
+                $error = $this->filterEmptyField($data, 'Log', 'error');
+
+                $this->_saveLog( $activity, $old_data, $document_id, $error );
+            }
+
+            if ( !empty( $data['RefreshAuth'] ) ) {
+                $user_id = $this->filterEmptyField($data, 'RefreshAuth', 'id');
+                $this->RmUser->refreshAuth($user_id);
+            }
+
+            if ( ( $data['status'] == 'success' || !empty($redirectError) ) && !$noRedirect ) {
+                $this->redirectReferer($data['msg'], $data['status'], $urlRedirect, array(
+                    'flash' => $flash,
+                    'ajaxRedirect' => $ajaxRedirect,
+                ));
             } else {
                 if( !empty($data['validationErrors']) ) {
                     $msg = $this->_callMsgValidationErrors($data['validationErrors']);
@@ -836,7 +885,7 @@ class MkCommonComponent extends Component {
                 } else {
                     $msg = $data['msg'];
                 }
-                $this->setCustomFlash($msg, $data['status']);
+                $this->setCustomFlash($msg, $data['status'], $paramFlash, $flash);
             }
         }
 

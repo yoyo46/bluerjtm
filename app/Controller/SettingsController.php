@@ -5488,7 +5488,7 @@ class SettingsController extends AppController {
             $branch_id,
             'admin' => false,
         ), array(
-            'ajaxFlash' => true,
+            'ajaxFlash' => false,
             'ajaxRedirect' => true,
         ));
     }
@@ -5502,7 +5502,7 @@ class SettingsController extends AppController {
             $branch_id,
             'admin' => false,
         ), array(
-            'ajaxFlash' => true,
+            'ajaxFlash' => false,
             'ajaxRedirect' => true,
         ));
     }
@@ -5516,7 +5516,7 @@ class SettingsController extends AppController {
             $branch_id,
             'admin' => false,
         ), array(
-            'ajaxFlash' => true,
+            'ajaxFlash' => false,
             'ajaxRedirect' => true,
         ));
     }

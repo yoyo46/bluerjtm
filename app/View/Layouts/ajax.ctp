@@ -23,7 +23,5 @@
 	}
 ?>
 <?php
-		echo $this->Html->tag('div', $this->fetch('content'), array(
-			'id' => 'wrapper-write',
-		));
+		echo $this->fetch('content');
 ?>
