@@ -39,7 +39,7 @@
             ),
             'total' => array(
                 'name' => __('Total'),
-                'style' => 'text-center: right;vertical-align: middle;',
+                'style' => 'text-align: center;vertical-align: middle;',
             ),
             'inv' => array(
                 'name' => __('No Invoice'),

@@ -1,5 +1,8 @@
 <?php
         if(!empty($values)){
+            $totalUnit = 0;
+            $totalInvoice = 0;
+
             foreach ($values as $key => $value) {
                 $date = $this->Common->filterEmptyField($value, 'Revenue', 'date_revenue');
                 $unit = $this->Common->filterEmptyField($value, 'qty_unit');
@@ -15,6 +18,9 @@
                 $status = $this->Revenue->_callStatus($value, 'Ttuj', 'nodoc');
                 $customTotal = $this->Common->getFormatPrice($total);
                 $customDate = $this->Common->formatDate($date, 'd/m/Y');
+
+                $totalUnit += $unit;
+                $totalInvoice += $total;
 ?>
 <tr>
     <?php 
@@ -26,7 +32,9 @@
             echo $this->Html->tag('td', $nopol);
             echo $this->Html->tag('td', $from_city_name);
             echo $this->Html->tag('td', $to_city_name);
-            echo $this->Html->tag('td', $unit);
+            echo $this->Html->tag('td', $unit, array(
+                'style' => 'text-align: center;'
+            ));
             echo $this->Html->tag('td', $customTotal, array(
                 'style' => 'text-align: right;'
             ));
@@ -36,5 +44,27 @@
 </tr>
 <?php
             }
+
+            $totalUnit = $this->Common->getFormatPrice($totalUnit);
+            $totalInvoice = $this->Common->getFormatPrice($totalInvoice);
+?>
+<tr style="font-weight: bold;">
+    <?php 
+            echo $this->Html->tag('td', __('Total'), array(
+                'colspan' => 6,
+                'style' => 'text-align: right;'
+            ));
+            echo $this->Html->tag('td', $totalUnit, array(
+                'style' => 'text-align: center;'
+            ));
+            echo $this->Html->tag('td', $totalInvoice, array(
+                'style' => 'text-align: right;'
+            ));
+            echo $this->Html->tag('td', '', array(
+                'colspan' => 2,
+            ));
+    ?>
+</tr>
+<?php
         }
 ?>
