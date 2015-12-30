@@ -27,6 +27,7 @@
             ),
             'expired_date' => array(
                 'name' => __('Jatuh Tempo'),
+                'field_model' => 'Invoice.expired_date',
                 'style' => 'text-align: center',
                 'display' => true,
             ),

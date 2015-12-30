@@ -11,10 +11,11 @@
                 $period_to = $this->Common->filterEmptyField($value, 'Invoice', 'period_to');
                 $total = $this->Common->filterEmptyField($value, 'Invoice', 'total');
                 $due_invoice = $this->Common->filterEmptyField($value, 'Invoice', 'due_invoice');
-                $expired_date = date('d M Y', strtotime(sprintf("%s +%s day", $invoice_date, $due_invoice)));
+                $expired_date = $this->Common->filterEmptyField($value, 'Invoice', 'expired_date');
 
                 $grandtotal += $total;
                 $customDate = $this->Common->customDate($invoice_date, 'd M Y');
+                $customExpiredDate = $this->Common->customDate($expired_date, 'd M Y');
                 $customTotal = $this->Common->getFormatPrice($total);
                 $customTarifType = ucwords($tarif_type);
                 $customPeriod = $this->Common->getCombineDate($period_from, $period_to);
@@ -26,8 +27,10 @@
                 $content .= $this->Html->tag('td', $customDate, array(
                     'style' => 'text-align: center;',
                 ));
-                $content .= $this->Html->tag('td', $customPeriod);
-                $content .= $this->Html->tag('td', $expired_date, array(
+                $content .= $this->Html->tag('td', $customPeriod, array(
+                    'style' => 'text-align: center;',
+                ));
+                $content .= $this->Html->tag('td', $customExpiredDate, array(
                     'style' => 'text-align: center;',
                 ));
                 $content .= $this->Html->tag('td', $customTotal, array(

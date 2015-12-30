@@ -61,8 +61,8 @@ class Revenue extends AppModel {
             'className' => 'CustomerNoType',
             'foreignKey' => 'customer_id',
         ),
-        'Truk' => array(
-            'className' => 'Truk',
+        'Truck' => array(
+            'className' => 'Truck',
             'foreignKey' => 'truck_id',
         ),
     );

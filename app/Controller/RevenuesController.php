@@ -7713,7 +7713,7 @@ class RevenuesController extends AppController {
 
     public function invoice_report_detail( $id = false, $data_action = false ) {
         $this->loadModel('Invoice');
-        $customer = $this->Ttuj->Customer->getData('all', array(
+        $customer = $this->Ttuj->Customer->getData('first', array(
             'conditions' => array(
                 'Customer.id' => $id,
             ),
@@ -7726,7 +7726,7 @@ class RevenuesController extends AppController {
         $dateTo = date('Y-m-d');
         
         if( !empty($customer) ) {
-            $name = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_name_code');
+            $name = $this->MkCommon->filterEmptyField($customer, 'Customer', 'code');
             $options = array(
                 'conditions' => array(
                     'Invoice.paid' => 0,
@@ -7748,11 +7748,12 @@ class RevenuesController extends AppController {
             $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
             $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
 
+            $this->Invoice->virtualFields['expired_date'] = 'DATE_ADD(Invoice.invoice_date, INTERVAL Invoice.due_invoice DAY)';
             $this->paginate = $this->Invoice->getData('paginate', $options, true, array(
                 'branch' => false,
             ));
             $values = $this->paginate('Invoice');
-            $sub_module_title = sprintf(__('Account Receivable Aging %s'), $name);
+            $sub_module_title = sprintf(__('Account Receivable Aging - %s'), $name);
 
             if( !empty($dateFrom) && !empty($dateTo) ) {
                 $periode = $this->MkCommon->getCombineDate($dateFrom, $dateTo);
