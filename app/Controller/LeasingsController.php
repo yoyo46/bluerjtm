@@ -55,7 +55,7 @@ class LeasingsController extends AppController {
             foreach ($leasings as $key => $value) {
                 // Custom Otorisasi
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Leasing', 'branch_id');
-                $value = $this->City->getMerge($value, $branch_id);
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
                 $leasings[$key] = $value;
             }
         }

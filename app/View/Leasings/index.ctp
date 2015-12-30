@@ -85,7 +85,7 @@
                             $branch_id = $this->Common->filterEmptyField($value, 'Leasing', 'branch_id');
                             // $company = $this->Common->filterEmptyField($value, 'LeasingCompany', 'name');
                             $company = $this->Common->filterEmptyField($value, 'Vendor', 'name');
-                            $branch = $this->Common->filterEmptyField($value, 'City', 'name');
+                            $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
             ?>
             <tr>
                 <td><?php echo $branch;?></td>
