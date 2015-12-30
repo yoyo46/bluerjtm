@@ -10,6 +10,7 @@
                 $leasing_month = $this->Common->filterEmptyField($value, 'Leasing', 'leasing_month');
                 $installment = $this->Common->filterEmptyField($value, 'Leasing', 'installment');
                 $installment_rate = $this->Common->filterEmptyField($value, 'Leasing', 'installment_rate');
+                $annual_interest = $this->Common->filterEmptyField($value, 'Leasing', 'annual_interest');
 
                 $grandtotal_installment = $this->Common->filterEmptyField($value, 'LeasingPayment', 'grandtotal_installment');
                 $grandtotal_installment_rate = $this->Common->filterEmptyField($value, 'LeasingPayment', 'grandtotal_installment_rate');
@@ -62,6 +63,7 @@
             echo $this->Html->tag('td', $customDp, array(
                 'style' => 'text-align: right',
             ));
+            echo $this->Html->tag('td', $annual_interest);
             echo $this->Html->tag('td', $leasing_month);
             echo $this->Html->tag('td', $customPokok);
             echo $this->Html->tag('td', $customBunga);

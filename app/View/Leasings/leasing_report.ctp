@@ -57,6 +57,12 @@
                 'data-options' => 'field:\'facility\'',
                 'align' => 'center',
                 'child' => array(
+                    'bunga_facility' => array(
+                        'name' => __('Bunga (%)'),
+                        'style' => 'text-align: center;vertical-align: middle;',
+                        'data-options' => 'field:\'bunga_facility\',width:100',
+                        'align' => 'center',
+                    ),
                     'uang_jalan' => array(
                         'name' => __('Bulan'),
                         'style' => 'text-align: center;vertical-align: middle;',
