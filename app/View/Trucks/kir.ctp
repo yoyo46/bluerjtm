@@ -26,7 +26,6 @@
             <thead>
                 <tr>
                     <?php
-                            echo $this->Html->tag('th', __('Cabang'));
                             echo $this->Html->tag('th', $this->Paginator->sort('Kir.no_pol', __('No. Pol'), array(
                                 'escape' => false
                             )));
@@ -52,11 +51,9 @@
                     if(!empty($kir)){
                         foreach ($kir as $key => $value) {
                             $id = $value['Kir']['id'];
-                            $branch = $this->Common->filterEmptyField($value, 'City', 'name');
                             $branch_id = $this->Common->filterEmptyField($value, 'Kir', 'branch_id');
             ?>
             <tr>
-                <td><?php echo $branch;?></td>
                 <td><?php echo $value['Truck']['nopol'];?></td>
                 <td><?php echo $this->Common->customDate($value['Kir']['tgl_kir']);?></td>
                 <td><?php echo $this->Common->customDate($value['Kir']['to_date']);?></td>

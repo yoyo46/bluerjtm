@@ -1069,18 +1069,6 @@ class TrucksController extends AppController {
             'status' => 'all',
         ));
         $kir = $this->paginate('Kir');
-
-        if( !empty($kir) ) {
-            $this->loadModel('City');
-
-            foreach ($kir as $key => $value) {
-                // Custom Otorisasi
-                $branch_id = $this->MkCommon->filterEmptyField($value, 'Kir', 'branch_id');
-                $value = $this->City->getMerge($value, $branch_id);
-                $kir[$key] = $value;
-            }
-        }
-
         
         $this->set('active_menu', 'kir');
         $sub_module_title = __('KIR');
