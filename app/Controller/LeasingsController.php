@@ -722,7 +722,7 @@ class LeasingsController extends AppController {
 
         $vendors = $this->Leasing->Vendor->getData('list');
 
-        $this->set('active_menu', 'report_expense_per_truck');
+        $this->set('active_menu', 'leasing_report');
         $this->set(compact(
             'values', 'module_title', 'data_action',
             'vendors'

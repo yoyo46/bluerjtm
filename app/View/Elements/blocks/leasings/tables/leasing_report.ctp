@@ -1,5 +1,24 @@
 <?php
         if(!empty($values)){
+            $grandtotalLeasing = 0;
+            $grandtotalDp = 0;
+            $grandtotalAnnualInterest = 0;
+            $grandtotalLeasingMonth = 0;
+            $grandtotalPokok = 0;
+            $grandtotalBunga = 0;
+            $grandtotalFacility = 0;
+            $grandtotalInstallment = 0;
+            $grandtotalInstallmentRate = 0;
+            $grandtotalAngsuran = 0;
+            $grandtotalCountInstallment = 0;
+            $grandtotalTotalInstallment = 0;
+            $grandtotalTotalInstallmentRate = 0;
+            $grandtotalPembayaran = 0;
+            $grandtotalCountSisa = 0;
+            $grandtotalSisa = 0;
+            $grandtotalSisaRate = 0;
+            $grandtotalSisaAngsuran = 0;
+
             foreach ($values as $key => $value) {
                 $no_contract = $this->Common->filterEmptyField($value, 'Leasing', 'no_contract');
                 $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
@@ -46,6 +65,25 @@
 
                 $customStartDate = $this->Common->formatDate($start_date, 'd/m/Y');
                 $customEndDate = $this->Common->formatDate($end_date, 'd/m/Y');
+
+                $grandtotalLeasing += $total_leasing;
+                $grandtotalDp += $down_payment;
+                $grandtotalAnnualInterest += $annual_interest;
+                $grandtotalLeasingMonth += $leasing_month;
+                $grandtotalPokok += $pokok;
+                $grandtotalBunga += $bunga;
+                $grandtotalFacility += $totalFacility;
+                $grandtotalInstallment += $installment;
+                $grandtotalInstallmentRate += $installment_rate;
+                $grandtotalAngsuran += $totalAngsuran;
+                $grandtotalCountInstallment += $count_installment;
+                $grandtotalTotalInstallment += $grandtotal_installment;
+                $grandtotalTotalInstallmentRate += $grandtotal_installment_rate;
+                $grandtotalPembayaran += $totalPembayaran;
+                $grandtotalCountSisa += $count_sisa;
+                $grandtotalSisa += $grandtotal_sisa;
+                $grandtotalSisaRate += $grandtotal_sisa_rate;
+                $grandtotalSisaAngsuran += $grandtotal_sisa_angsuran;
 ?>
 <tr>
     <?php 
@@ -83,5 +121,54 @@
 </tr>
 <?php
             }
+
+            $grandtotalLeasing = $this->Common->getFormatPrice($grandtotalLeasing);
+            $grandtotalDp = $this->Common->getFormatPrice($grandtotalDp);
+            $grandtotalPokok = $this->Common->getFormatPrice($grandtotalPokok);
+            $grandtotalBunga = $this->Common->getFormatPrice($grandtotalBunga);
+            $grandtotalFacility = $this->Common->getFormatPrice($grandtotalFacility);
+            $grandtotalInstallment = $this->Common->getFormatPrice($grandtotalInstallment);
+            $grandtotalInstallmentRate = $this->Common->getFormatPrice($grandtotalInstallmentRate);
+            $grandtotalAngsuran = $this->Common->getFormatPrice($grandtotalAngsuran);
+            $grandtotalTotalInstallment = $this->Common->getFormatPrice($grandtotalTotalInstallment);
+            $grandtotalTotalInstallmentRate = $this->Common->getFormatPrice($grandtotalTotalInstallmentRate);
+            $grandtotalPembayaran = $this->Common->getFormatPrice($grandtotalPembayaran);
+            $grandtotalSisa = $this->Common->getFormatPrice($grandtotalSisa);
+            $grandtotalSisaRate = $this->Common->getFormatPrice($grandtotalSisaRate);
+            $grandtotalSisaAngsuran = $this->Common->getFormatPrice($grandtotalSisaAngsuran);
+?>
+<tr>
+    <?php 
+            echo $this->Html->tag('td', '');
+            echo $this->Html->tag('td', '');
+            echo $this->Html->tag('td', '');
+            echo $this->Html->tag('td', __('Total'), array(
+                'style' => 'text-align: center',
+            ));
+            echo $this->Html->tag('td', $grandtotalLeasing, array(
+                'style' => 'text-align: right',
+            ));
+            echo $this->Html->tag('td', $grandtotalDp, array(
+                'style' => 'text-align: right',
+            ));
+            echo $this->Html->tag('td', $grandtotalAnnualInterest);
+            echo $this->Html->tag('td', $grandtotalLeasingMonth);
+            echo $this->Html->tag('td', $grandtotalPokok);
+            echo $this->Html->tag('td', $grandtotalBunga);
+            echo $this->Html->tag('td', $grandtotalFacility);
+            echo $this->Html->tag('td', $grandtotalInstallment);
+            echo $this->Html->tag('td', $grandtotalInstallmentRate);
+            echo $this->Html->tag('td', $grandtotalAngsuran);
+            echo $this->Html->tag('td', $grandtotalCountInstallment);
+            echo $this->Html->tag('td', $grandtotalTotalInstallment);
+            echo $this->Html->tag('td', $grandtotalInstallmentRate);
+            echo $this->Html->tag('td', $grandtotalPembayaran);
+            echo $this->Html->tag('td', $grandtotalCountSisa);
+            echo $this->Html->tag('td', $grandtotalSisa);
+            echo $this->Html->tag('td', $grandtotalSisaRate);
+            echo $this->Html->tag('td', $grandtotalSisaAngsuran);
+    ?>
+</tr>
+<?php
         }
 ?>
