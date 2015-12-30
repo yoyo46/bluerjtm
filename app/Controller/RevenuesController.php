@@ -233,6 +233,7 @@ class RevenuesController extends AppController {
             'validates' => true,
             'data' => false,
         );
+        $revenue_tarif_type = $this->MkCommon->filterEmptyField($dataRevenue, 'Revenue', 'revenue_tarif_type');
 
         if( !empty($dataTtujTipeMotor) ) {
             if( !empty($ttuj_id) ) {
@@ -300,9 +301,16 @@ class RevenuesController extends AppController {
                         $jenis_unit = $tarifDefault['jenis_unit'];
                         $tarif_angkutan_type = $tarifDefault['tarif_angkutan_type'];
                     }
-
+                    
                     $qtyMuatan = !empty($dataValidate['TtujTipeMotor']['qty'])?trim($dataValidate['TtujTipeMotor']['qty']):0;
                     $totalTarif += $priceUnit*$qtyMuatan;
+
+                    if( $revenue_tarif_type == 'per_unit' ) {
+                        $total_price_unit = $qtyMuatan * $priceUnit;
+                    } else {
+                        $total_price_unit = 0;
+                    }
+
                     $dataRevenue['RevenueDetail'] = array(
                         'revenue_id' => $revenue_id,
                         'group_motor_id' => $group_motor_id,
@@ -313,6 +321,7 @@ class RevenuesController extends AppController {
                         'tarif_angkutan_id' => $tarif_angkutan_id,
                         'tarif_angkutan_type' => $tarif_angkutan_type,
                         'from_ttuj' => 1,
+                        'total_price_unit' => $total_price_unit,
                     );
                 }
 
@@ -786,7 +795,7 @@ class RevenuesController extends AppController {
                                         $tarifDefault = $this->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity']);
 
                                         $dataSetting = $this->MkCommon->_callSettingGeneral('Revenue', array( 'pph', 'ppn' ), false);
-                                        $dataSetting = $this->MkCommon->filterEmptyField($dataSetting, 'Revenue');
+                                        $dataSetting = $this->MkCommon->filterEmptyField($dataSetting, 'Revenue', false, array());
 
                                         $dataRevenue['Revenue'] = array_merge($dataSetting, array(
                                             'ttuj_id' => $document_id,
@@ -6383,6 +6392,9 @@ class RevenuesController extends AppController {
                     'conditions' => $conditions,
                     'contain' => array(
                         'Revenue',
+                    ),
+                    'order' => array(
+                        'Revenue.date_revenue' => 'ASC',
                     ),
                     'group' => array(
                         'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\')'
