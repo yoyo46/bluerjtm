@@ -219,21 +219,21 @@ class TtujPayment extends AppModel {
         if(!empty($come)){
             $default_options['conditions']['TtujPaymentDetail.type'][] = $come;
         }
-        // if(!empty($kuli_muat)){
-        //     $default_options['conditions']['TtujPaymentDetail.type'][] = $kuli_muat;
-        // }
-        // if(!empty($kuli_bongkar)){
-        //     $default_options['conditions']['TtujPaymentDetail.type'][] = $kuli_bongkar;
-        // }
-        // if(!empty($asdp)){
-        //     $default_options['conditions']['TtujPaymentDetail.type'][] = $asdp;
-        // }
-        // if(!empty($uang_kawal)){
-        //     $default_options['conditions']['TtujPaymentDetail.type'][] = $uang_kawal;
-        // }
-        // if(!empty($uang_keamanan)){
-        //     $default_options['conditions']['TtujPaymentDetail.type'][] = $uang_keamanan;
-        // }
+        if(!empty($kuli_muat)){
+            $default_options['conditions']['TtujPaymentDetail.type'][] = $kuli_muat;
+        }
+        if(!empty($kuli_bongkar)){
+            $default_options['conditions']['TtujPaymentDetail.type'][] = $kuli_bongkar;
+        }
+        if(!empty($asdp)){
+            $default_options['conditions']['TtujPaymentDetail.type'][] = $asdp;
+        }
+        if(!empty($uang_kawal)){
+            $default_options['conditions']['TtujPaymentDetail.type'][] = $uang_kawal;
+        }
+        if(!empty($uang_keamanan)){
+            $default_options['conditions']['TtujPaymentDetail.type'][] = $uang_keamanan;
+        }
 
         if(!empty($fromcity)){
             $default_options['conditions']['Ttuj.from_city_id'] = $fromcity;

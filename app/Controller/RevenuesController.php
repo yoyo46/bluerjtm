@@ -7778,13 +7778,12 @@ class RevenuesController extends AppController {
     public function report_ttuj_payment( $data_action = false ) {
         $this->loadModel('TtujPaymentDetail');
         $this->loadModel('City');
-        $module_title = __('Laporan Rincian Pembayaran Ujalan & Komisi');
+        $module_title = __('Laporan Pembayaran Biaya Uang Jalan');
         $values = array();
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');
 
         $this->set('sub_module_title', $module_title);
-        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $options =  $this->TtujPaymentDetail->TtujPayment->getData('paginate', array(
             'conditions' => array(
                 'TtujPaymentDetail.status' => 1,
@@ -7801,6 +7800,8 @@ class RevenuesController extends AppController {
             //     'TtujPaymentDetail.ttuj_id',
             //     'TtujPaymentDetail.type',
             // ),
+        ), true, array(
+            'branch' => false,
         ));
 
         $params = $this->MkCommon->_callRefineParams($this->params, array(
@@ -7820,16 +7821,6 @@ class RevenuesController extends AppController {
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
             $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
-        }
-
-        if( empty($options['conditions']['TtujPaymentDetail.type']) ) {
-            $options['conditions']['TtujPaymentDetail.type'] = array(
-                'uang_jalan',
-                'uang_jalan_2',
-                'uang_jalan_extra',
-                'commission',
-                'commission_extra',
-            );
         }
 
         if( !empty($data_action) ){

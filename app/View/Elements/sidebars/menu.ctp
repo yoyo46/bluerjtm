@@ -1094,7 +1094,7 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'journal_report' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan rincian pembayaran ujalan & komisi', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pembayaran Biaya Uang Jalan', array(
                                 'controller' => 'revenues',
                                 'action' => 'report_ttuj_payment',
                             ), array(
