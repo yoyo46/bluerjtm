@@ -6393,9 +6393,6 @@ class RevenuesController extends AppController {
                     'contain' => array(
                         'Revenue',
                     ),
-                    'order' => array(
-                        'Revenue.date_revenue' => 'ASC',
-                    ),
                     'group' => array(
                         'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\')'
                     ),
