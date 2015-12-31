@@ -4881,6 +4881,31 @@ class RevenuesController extends AppController {
         $this->doInvoicePayment();
     }
 
+    function invoice_payment_edit($id = false){
+        $this->loadModel('InvoicePayment');
+        $invoice = $this->InvoicePayment->getData('first', array(
+            'conditions' => array(
+                'InvoicePayment.id' => $id,
+                'InvoicePayment.is_canceled' => 0,
+            ),
+        ), true, array(
+            'status' => 'all',
+        ));
+
+        if(!empty($invoice)){
+            $coa_id = $this->MkCommon->filterEmptyField($invoice, 'InvoicePayment', 'coa_id');
+            $invoice = $this->User->Journal->Coa->getMerge($invoice, $coa_id);
+            $invoice = $this->InvoicePayment->InvoicePaymentDetail->getMergeAll($invoice, $id);
+
+            $module_title = __('Edit Pembayaran Invoice');
+            $this->set('sub_module_title', $module_title);
+            $this->doInvoicePayment( $id, $invoice );
+        }else{
+            $this->MkCommon->setCustomFlash(__('Pembayaran invoice tidak ditemukan'), 'error');
+            $this->redirect($this->referer());
+        }
+    }
+
     function doInvoicePayment($id = false, $data_local = false){        
         $this->loadModel('InvoicePayment');
 
@@ -4932,6 +4957,7 @@ class RevenuesController extends AppController {
                                 'InvoicePaymentDetail.invoice_id' => $_invoice_id,
                                 'InvoicePayment.status' => 1,
                                 'InvoicePayment.is_canceled' => 0,
+                                'InvoicePayment.id <>' => $id,
                             ),
                             'fields' => array(
                                 'SUM(InvoicePaymentDetail.price_pay) as invoice_has_paid'
@@ -4946,7 +4972,7 @@ class RevenuesController extends AppController {
 
                         $invoice_data = $this->InvoicePayment->InvoicePaymentDetail->Invoice->getData('first', array(
                             'conditions' => array(
-                                'Invoice.id' => $_invoice_id
+                                'Invoice.id' => $_invoice_id,
                             ),
                         ), true, $elementRevenue);
                         
@@ -5100,20 +5126,42 @@ class RevenuesController extends AppController {
                 }
 
                 $this->MkCommon->setCustomFlash($text, 'error'); 
-            }
+            }            
         }else if(!empty($id) && !empty($data_local)){
-             $this->request->data = $data_local;
-             $this->request->data['InvoicePayment']['date_payment'] = !empty($this->request->data['InvoicePayment']['date_payment']) ? $this->MkCommon->getDate($this->request->data['InvoicePayment']['date_payment'], true) : '';
+            $customer_id = $this->MkCommon->filterEmptyField($data_local, 'InvoicePayment', 'customer_id');
+            $dataDetail = $this->MkCommon->filterEmptyField($data_local, 'InvoicePaymentDetail');
+            unset($data_local['InvoicePaymentDetail']);
+
+            $this->request->data = $data_local;
+            $this->request->data['InvoicePayment']['date_payment'] = !empty($this->request->data['InvoicePayment']['date_payment']) ? $this->MkCommon->getDate($this->request->data['InvoicePayment']['date_payment'], true) : '';
+            $customer = $this->Ttuj->Customer->getMerge(array(), $customer_id);
+
+             if( !empty($dataDetail) ) {
+                foreach ($dataDetail as $key => $value) {
+                    $invoice_id = $this->MkCommon->filterEmptyField($value, 'InvoicePaymentDetail', 'invoice_id');
+                    $price_pay = $this->MkCommon->filterEmptyField($value, 'InvoicePaymentDetail', 'price_pay');
+
+                    $this->request->data['InvoicePaymentDetail']['invoice_id'][$invoice_id] = $invoice_id;
+                    $this->request->data['InvoicePaymentDetail']['price_pay'][$invoice_id] = $price_pay;
+                }
+             }
         }
 
         if(!empty($customer)){
+            $invoice_id = $this->MkCommon->filterEmptyField($this->request->data, 'InvoicePaymentDetail', 'invoice_id');
             $bank_id = $this->MkCommon->filterEmptyField($customer, 'Customer', 'bank_id');
-            $invoices = $this->InvoicePayment->InvoicePaymentDetail->Invoice->getdata('all', array(
+            $options = array(
                 'conditions' => array(
+                    'Invoice.id' => $invoice_id,
                     'Invoice.customer_id' => $this->request->data['InvoicePayment']['customer_id'],
-                    'Invoice.complete_paid' => 0
                 ),
-            ), true, $elementRevenue);
+            );
+
+            if( empty($id) ) {
+                $options['conditions']['Invoice.complete_paid'] = 0;
+            }
+
+            $invoices = $this->InvoicePayment->InvoicePaymentDetail->Invoice->getdata('all', $options, true, $elementRevenue);
 
             if( !empty($bank_id) ) {
                 $this->request->data['InvoicePayment']['bank_id'] = $bank_id;
@@ -5123,10 +5171,11 @@ class RevenuesController extends AppController {
                 foreach ($invoices as $key => $value) {
                     $invoice_has_paid = $this->InvoicePayment->InvoicePaymentDetail->Invoice->InvoicePaymentDetail->getData('first', array(
                         'conditions' => array(
-                            'InvoicePaymentDetail.invoice_id' => $value['Invoice']['id']
+                            'InvoicePaymentDetail.invoice_id' => $value['Invoice']['id'],
+                            'InvoicePaymentDetail.invoice_payment_id <>' => $id,
                         ),
                         'fields' => array(
-                            'SUM(InvoicePaymentDetail.price_pay) as invoice_has_paid'
+                            'SUM(InvoicePaymentDetail.price_pay) as invoice_has_paid',
                         )
                     ));
 
@@ -7030,11 +7079,12 @@ class RevenuesController extends AppController {
         $this->doTtujPayment( $action_type );
     }
 
-    function edit_ttuj_payment($id = false, $action_type = 'uang_jalan_commission'){
+    function edit_ttuj_payment($action_type = 'uang_jalan_commission', $id = false){
         $module_title = __('Kas/Bank');
         $invoice = $this->Ttuj->TtujPaymentDetail->TtujPayment->getData('first', array(
             'conditions' => array(
-                'TtujPayment.id' => $id
+                'TtujPayment.id' => $id,
+                'TtujPayment.is_canceled' => 0,
             ),
             'contain' => array(
                 'TtujPaymentDetail',
@@ -7136,6 +7186,7 @@ class RevenuesController extends AppController {
                 }
             }
 
+            $this->set('document_info', true);
             $this->set(compact(
                 'invoice', 'sub_module_title', 'title_for_layout',
                 'action_type', 'module_title'

@@ -1,9 +1,20 @@
 <?php
+		switch ($action_type) {
+			case 'biaya_ttuj':
+				$titleBrowse = __('Biaya TTUJ');
+				break;
+			
+			default:
+				$titleBrowse = __('Biaya Uang Jalan/Komisi');
+				break;
+		}
+		
 		echo $this->element('blocks/revenues/ttuj_payment_crumb');
 		$this->Html->addCrumb($sub_module_title);
 
 		$receiver_type = false;
 		$receiver_label = false;
+		$id = !empty($id)?$id:false;
 
 		if( !empty($this->request->data['TtujPayment']['receiver_type']) ) {
 			$receiver_type = $this->request->data['TtujPayment']['receiver_type'];
@@ -150,7 +161,8 @@
                     'url' => $this->Html->url( array(
                         'controller'=> 'ajax', 
                         'action' => 'getBiayaTtuj',
-                        $action_type
+                        $action_type,
+                        'payment_id' => $id,
                     )),
                     'title' => sprintf(__('Detail %s'), $titleBrowse),
                 );

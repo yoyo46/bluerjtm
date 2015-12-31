@@ -1920,7 +1920,7 @@ var pickData = function () {
             }
             
             $('#tag-receiver-type').html('('+receiver_type+')');
-            $('#hid-receiver-type').val(receiver_type);
+            $('#hid-receiver-type').val(vthis.attr('data-type'));
         }
 
         if( typeof data_ajax != 'undefined' ) {

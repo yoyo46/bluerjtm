@@ -87,5 +87,25 @@ class InvoicePaymentDetail extends AppModel {
 
         return $data;
     }
+
+    function getMergeAll($data, $id){
+        if(empty($data['InvoicePaymentDetail'])){
+            $data_merge = $this->find('all', array(
+                'conditions' => array(
+                    'InvoicePaymentDetail.invoice_payment_id' => $id,
+                    'InvoicePaymentDetail.status' => 1,
+                ),
+                'order'=> array(
+                    'InvoicePaymentDetail.id' => 'ASC',
+                ),
+            ));
+
+            if(!empty($data_merge)){
+                $data['InvoicePaymentDetail'] = $data_merge;
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

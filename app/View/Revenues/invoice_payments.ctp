@@ -73,6 +73,7 @@
                             ), array(
                                 'class' => 'btn btn-info btn-xs'
                             ));
+
                             if(empty($value['InvoicePayment']['is_canceled'])){
                                 // echo $this->Html->link('Edit', array(
                                 //     'controller' => 'revenues',
@@ -81,6 +82,13 @@
                                 // ), array(
                                 //     'class' => 'btn btn-primary btn-xs'
                                 // ));
+                                echo $this->Html->link(__('Edit'), array(
+                                    'controller' => 'revenues',
+                                    'action' => 'invoice_payment_edit',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
                                 
                                 echo $this->Html->link('Void', array(
                                     'controller' => 'revenues',

@@ -5,6 +5,7 @@
                 'action' => 'search',
                 'getBiayaTtuj',
                 'action_type' => $action_type,
+                'payment_id' => $payment_id,
                 'admin' => false,
             )), 
             'role' => 'form',
@@ -249,6 +250,7 @@
                         'controller' => 'ajax',
                         'action' => 'getBiayaTtuj',
                         $action_type,
+                        'payment_id' => $payment_id,
                     ), array(
                         'escape' => false, 
                         'class'=> 'btn btn-default btn-sm ajaxModal',

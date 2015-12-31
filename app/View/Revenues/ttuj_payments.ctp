@@ -117,17 +117,17 @@
                         ), array(
                             'class' => 'btn btn-info btn-xs'
                         ));
-
-                        $actionDoc .= $this->Html->link(__('Edit'), array(
-                            'controller' => 'revenues',
-                            'action' => 'edit_ttuj_payment',
-                            $id,
-                            $action_type,
-                        ), array(
-                            'class' => 'btn btn-primary btn-xs'
-                        ));
                         
                         if(empty($value['TtujPayment']['is_canceled'])){
+                            $actionDoc .= $this->Html->link(__('Edit'), array(
+                                'controller' => 'revenues',
+                                'action' => 'edit_ttuj_payment',
+                                $action_type,
+                                $id,
+                            ), array(
+                                'class' => 'btn btn-primary btn-xs'
+                            ));
+                            
                             $actionDoc .= $this->Html->link(__('Void'), array(
                                 'controller' => 'revenues',
                                 'action' => 'ttuj_payment_delete',

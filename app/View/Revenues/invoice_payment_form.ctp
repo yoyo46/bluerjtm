@@ -92,6 +92,7 @@
                             'url' => $this->Html->url( array(
 	                            'controller'=> 'ajax', 
 	                            'action' => 'getInfoInvoicePaymentDetail',
+	                            'payment_id' => $id,
 	                        ))
                         );
 						$attrBrowse['class'] = 'btn bg-maroon ajaxModal';

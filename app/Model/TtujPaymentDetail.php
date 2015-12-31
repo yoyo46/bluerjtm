@@ -43,7 +43,7 @@ class TtujPaymentDetail extends AppModel {
         ),
 	);
 
-    function getTotalPayment( $ttuj_id, $data_type ){
+    function getTotalPayment( $ttuj_id, $data_type, $payment_id = false ){
         $result = $this->find('first', array(
             'conditions'=> array(
                 'TtujPaymentDetail.ttuj_id' => $ttuj_id,
@@ -51,6 +51,7 @@ class TtujPaymentDetail extends AppModel {
                 'TtujPaymentDetail.status' => 1,
                 'TtujPayment.is_canceled' => 0,
                 'TtujPayment.status' => 1,
+                'TtujPaymentDetail.ttuj_payment_id <>' => $payment_id,
             ),
             'fields'=> array(
                 'SUM(TtujPaymentDetail.amount) AS amount'

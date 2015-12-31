@@ -30,7 +30,7 @@
 			                        'class' => 'text-center',
 			                    ));
             					
-            					if( empty($invoice) ) {
+            					if( empty($document_info) ) {
 				                    echo $this->Html->tag('th', __('Action'), array(
 				                    	'class' => 'action-biaya-ttuj',
 			                    	));

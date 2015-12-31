@@ -630,6 +630,7 @@ class MkCommonComponent extends Component {
                 $branchs = array_values($branchs);
                 $controllerName = !empty($this->controller->params['controller'])?$this->controller->params['controller']:false;
                 $actionName = $this->controller->action;
+                $extendName = !empty($this->controller->params['pass'][0])?$this->controller->params['pass'][0]:false;
                 $allowBranch = array_intersect($branchs, $branchAllow);
 
                 if( !empty($allowBranch) && !empty($branchs) ) {
@@ -638,6 +639,12 @@ class MkCommonComponent extends Component {
                             if( !empty($moduleAllow[$branch_id][$controllerName]['action']) ) {
                                 if( !in_array($actionName, $moduleAllow[$branch_id][$controllerName]['action']) ) {
                                     $result = false;
+                                } else if( !empty($moduleAllow[$branch_id][$controllerName]['extends'][$actionName]) ) {
+                                    if( !in_array($extendName, $moduleAllow[$branch_id][$controllerName]['extends'][$actionName]) ) {
+                                        $result = false;
+                                    } else {
+                                        $resultExact = true;
+                                    }
                                 } else {
                                     $resultExact = true;
                                 }

@@ -70,7 +70,7 @@
                 $sisaAmount = $this->Common->getBiayaTtuj( $ttuj, $data_type );
                 $amountPayment = !empty($ttujPayment['amount_payment'][$idx])?$ttujPayment['amount_payment'][$idx]:$sisaAmount;
 
-                if( !empty($invoice) ) {
+                if( !empty($document_info) ) {
                     $amountPayment = $this->Common->getFormatPrice($amountPayment);
                     echo $amountPayment;
                 } else {
@@ -90,7 +90,7 @@
 		?>
 	</td>
     <?php 
-            if( empty($invoice) ) {
+            if( empty($document_info) ) {
                 echo $this->Html->tag('td', $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
                     'class' => 'delete-biaya btn btn-danger btn-xs',
                     'escape' => false,

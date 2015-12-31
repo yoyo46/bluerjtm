@@ -50,7 +50,7 @@
                 'label' => false,
                 'div' => false,
                 'required' => false,
-                'class' => 'form-control input_price document-pick-price',
+                'class' => 'form-control input_price document-pick-price text-right',
                 'value' => (!empty($this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']])) ? $this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']] : $price_pay
             ));
 
@@ -104,7 +104,8 @@
                     'class' => 'input_price text-right form-control',
                     'id' => 'ppn-total-invoice',
                     'required' => false,
-                    'div' => false
+                    'div' => false,
+                    'value' => $ppn,
                 ));
         ?>
     </td>
@@ -133,7 +134,8 @@
                     'class' => 'input_price text-right form-control',
                     'id' => 'pph-total-invoice',
                     'required' => false,
-                    'div' => false
+                    'div' => false,
+                    'value' => $pph,
                 ));
         ?>
     </td>
@@ -143,12 +145,12 @@
     <td align="right" colspan="5"><?php echo __('Grand Total')?></td>
     <td align="right" id="all-total-invoice">
         <?php 
-            // if($pph > 0){
-            //     $total -= $pph;
-            // }
-            if($ppn > 0){
-                $total += $ppn;
-            }
+                // if($pph > 0){
+                //     $total -= $pph;
+                // }
+                if($ppn > 0){
+                    $total += $ppn;
+                }
 
             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
         ?>

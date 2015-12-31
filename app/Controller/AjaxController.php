@@ -26,7 +26,15 @@ class AjaxController extends AppController {
             
             if( !empty($named) ) {
             	foreach ($named as $key => $value) {
-            		$params[] = $value;
+            		switch ($key) {
+            			case 'payment_id':
+            				$params[$key] = $value;
+            				break;
+            			
+            			default:
+            				$params[] = $value;
+            				break;
+            		}
             	}
             }
 
@@ -1461,6 +1469,8 @@ class AjaxController extends AppController {
 	function getInfoInvoicePaymentDetail($id = false){
 		$this->loadModel('Invoice');
 		$invoices = array();
+        $named = $this->MkCommon->filterEmptyField($this->params, 'named');
+        $payment_id = $this->MkCommon->filterEmptyField($named, 'payment_id');
         
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');
@@ -1494,7 +1504,8 @@ class AjaxController extends AppController {
 					$invoice_has_paid = $this->Invoice->InvoicePaymentDetail->getData('first', array(
 						'conditions' => array(
 							'InvoicePaymentDetail.invoice_id' => $value['Invoice']['id'],
-							'InvoicePaymentDetail.status' => 1
+							'InvoicePaymentDetail.status' => 1,
+							'InvoicePaymentDetail.invoice_payment_id <>' => $payment_id,
 						),
 						'fields' => array(
 							'SUM(InvoicePaymentDetail.price_pay) as invoice_has_paid'
@@ -1974,6 +1985,8 @@ class AjaxController extends AppController {
     	$this->loadModel('City');
 
 		$document_type = false;
+        $named = $this->MkCommon->filterEmptyField($this->params, 'named');
+        $payment_id = $this->MkCommon->filterEmptyField($named, 'payment_id');
 
         switch ($action_type) {
         	case 'biaya_ttuj':
@@ -2045,19 +2058,19 @@ class AjaxController extends AppController {
 
             	switch ($action_type) {
 		        	case 'biaya_ttuj':
-            				$ttuj['uang_kuli_muat_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kuli_muat');
-            				$ttuj['uang_kuli_bongkar_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kuli_bongkar');
-            				$ttuj['asdp_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'asdp');
-            				$ttuj['uang_keamanan_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_keamanan');
-            				$ttuj['uang_kawal_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kawal');
+            				$ttuj['uang_kuli_muat_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kuli_muat', $payment_id);
+            				$ttuj['uang_kuli_bongkar_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kuli_bongkar', $payment_id);
+            				$ttuj['asdp_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'asdp', $payment_id);
+            				$ttuj['uang_keamanan_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_keamanan', $payment_id);
+            				$ttuj['uang_kawal_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kawal', $payment_id);
 		        		break;
 		        	
 		        	default:
-		            	$ttuj['uang_jalan_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan');
-		            	$ttuj['commission_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'commission');
-		            	$ttuj['uang_jalan_2_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan_2');
-		            	$ttuj['uang_jalan_extra_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan_extra');
-		            	$ttuj['commission_extra_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'commission_extra');
+		            	$ttuj['uang_jalan_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan', $payment_id);
+		            	$ttuj['commission_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'commission', $payment_id);
+		            	$ttuj['uang_jalan_2_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan_2', $payment_id);
+		            	$ttuj['uang_jalan_extra_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan_extra', $payment_id);
+		            	$ttuj['commission_extra_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'commission_extra', $payment_id);
 		        		break;
 		        }
 
@@ -2070,7 +2083,7 @@ class AjaxController extends AppController {
 		$this->set(compact(
 			'data_action', 'title', 'ttujs',
 			'action_type', 'jenisBiaya', 'document_type',
-			'cities'
+			'cities', 'payment_id'
 		));
 	}
 
