@@ -1199,7 +1199,7 @@ class CommonHelper extends AppHelper {
         ));
     }
 
-    function filterEmptyField ( $value, $modelName, $fieldName = false, $empty = false, $removeTag = true ) {
+    function filterEmptyField ( $value, $modelName, $fieldName = false, $empty = false, $removeTag = true, $format = false ) {
         $result = '';
         
         if( empty($fieldName) ) {
@@ -1209,10 +1209,16 @@ class CommonHelper extends AppHelper {
         }
 
         if( !empty($removeTag) && !is_array($result) ) {
-            return $this->safeTagPrint($result);
-        } else {
-            return $result;
+            $result = $this->safeTagPrint($result);
         }
+
+        switch ($format) {
+            case 'EOL':
+                $result = $this->getFormatDesc($result);
+                break;
+        }
+
+        return $result;
     }
 
     function getMergePrepayment ( $prepayment, $class = false ) {

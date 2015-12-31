@@ -7030,8 +7030,71 @@ class RevenuesController extends AppController {
         $this->doTtujPayment( $action_type );
     }
 
+    function edit_ttuj_payment($id = false, $action_type = 'uang_jalan_commission'){
+        $module_title = __('Kas/Bank');
+        $invoice = $this->Ttuj->TtujPaymentDetail->TtujPayment->getData('first', array(
+            'conditions' => array(
+                'TtujPayment.id' => $id
+            ),
+            'contain' => array(
+                'TtujPaymentDetail',
+            ),
+        ));
+
+        switch ($action_type) {
+            case 'biaya_ttuj':
+                $this->set('active_menu', 'biaya_ttuj_payments');
+                $sub_module_title = $title_for_layout = __('Edit Pembayaran Biaya TTUJ');
+                break;
+            
+            default:
+                $this->set('active_menu', 'uang_jalan_commission_payments');
+                $sub_module_title = $title_for_layout = __('Edit Pembayaran Uang Jalan');
+                break;
+        }
+
+        if(!empty($invoice)){
+            if( !empty($this->request->data) ) {
+                $this->doTtujPayment( $action_type, $id, $invoice );
+            } else {
+                $this->request->data = $invoice;
+
+                if( !empty($invoice['TtujPaymentDetail']) ) {
+                    foreach ($invoice['TtujPaymentDetail'] as $key => $ttujPaymentDetail) {
+                        $ttuj_id = !empty($ttujPaymentDetail['ttuj_id'])?$ttujPaymentDetail['ttuj_id']:false;
+                        $dataTtujType = !empty($ttujPaymentDetail['type'])?$ttujPaymentDetail['type']:false;
+                        $amount = !empty($ttujPaymentDetail['amount'])?$ttujPaymentDetail['amount']:0;
+                        $resultTtuj = $this->Ttuj->getTtujPayment($ttuj_id, $dataTtujType, 'UangJalanKomisiPayment');
+
+                        $this->request->data['Ttuj'][] = $resultTtuj;
+                        $this->request->data['TtujPayment']['amount_payment'][] = $amount;
+                        $this->request->data['TtujPayment']['ttuj_id'][] = $ttuj_id;
+                        $this->request->data['TtujPayment']['data_type'][] = $dataTtujType;
+                    }
+                }
+            }
+
+            $coas = $this->User->Coa->getData('list', array(
+                'fields' => array(
+                    'Coa.id', 'Coa.coa_name'
+                ),
+            ), array(
+                'status' => 'cash_bank_child',
+            ));
+
+            $this->set(compact(
+                'invoice', 'sub_module_title', 'title_for_layout',
+                'drivers', 'action_type', 'module_title', 'coas'
+            ));
+
+            $this->render('ttuj_payment_form');
+        }else{
+            $this->MkCommon->setCustomFlash(__('Data tidak ditemukan'), 'error');
+            $this->redirect($this->referer());
+        }
+    }
+
     function detail_ttuj_payment($id = false, $action_type = 'uang_jalan_commission'){
-        $this->loadModel('Customer');
         $module_title = __('Kas/Bank');
         $invoice = $this->Ttuj->TtujPaymentDetail->TtujPayment->getData('first', array(
             'conditions' => array(
@@ -7055,7 +7118,8 @@ class RevenuesController extends AppController {
         }
 
         if(!empty($invoice)){
-            $this->request->data = $invoice;
+            $coa_id = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'coa_id');
+            $invoice = $this->User->Journal->Coa->getMerge($invoice, $coa_id);
 
             if( !empty($invoice['TtujPaymentDetail']) ) {
 
@@ -7065,27 +7129,17 @@ class RevenuesController extends AppController {
                     $amount = !empty($ttujPaymentDetail['amount'])?$ttujPaymentDetail['amount']:0;
                     $resultTtuj = $this->Ttuj->getTtujPayment($ttuj_id, $dataTtujType, 'UangJalanKomisiPayment');
 
-                    $this->request->data['Ttuj'][] = $resultTtuj;
-                    $this->request->data['TtujPayment']['amount_payment'][] = $amount;
-                    $this->request->data['TtujPayment']['ttuj_id'][] = $ttuj_id;
-                    $this->request->data['TtujPayment']['data_type'][] = $dataTtujType;
+                    $invoice['Ttuj'][] = $resultTtuj;
+                    $invoice['TtujPayment']['amount_payment'][] = $amount;
+                    $invoice['TtujPayment']['ttuj_id'][] = $ttuj_id;
+                    $invoice['TtujPayment']['data_type'][] = $dataTtujType;
                 }
             }
 
-            $coas = $this->User->Coa->getData('list', array(
-                'fields' => array(
-                    'Coa.id', 'Coa.coa_name'
-                ),
-            ), array(
-                'status' => 'cash_bank_child',
-            ));
-
             $this->set(compact(
                 'invoice', 'sub_module_title', 'title_for_layout',
-                'drivers', 'action_type', 'module_title', 'coas'
+                'action_type', 'module_title'
             ));
-
-            $this->render('ttuj_payment_form');
         }else{
             $this->MkCommon->setCustomFlash(__('Data tidak ditemukan'), 'error');
             $this->redirect($this->referer());
@@ -7224,8 +7278,6 @@ class RevenuesController extends AppController {
     }
 
     function doTtujPayment( $action_type, $id = false, $data_local = false){
-        $ttuj_id = false;
-
         switch ($action_type) {
             case 'biaya_ttuj':
                 $labelName = 'Biaya TTUJ';
@@ -7247,7 +7299,12 @@ class RevenuesController extends AppController {
             $dataAmount = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'amount_payment');
             $flagTtujPaymentDetail = $this->doTtujPaymentDetail($dataAmount, $data);
 
-            $this->Ttuj->TtujPaymentDetail->TtujPayment->create();
+            if( !empty($id) ) {
+                $this->Ttuj->TtujPaymentDetail->TtujPayment->id = $id;
+            } else {
+                $this->Ttuj->TtujPaymentDetail->TtujPayment->create();
+            }
+
             $this->Ttuj->TtujPaymentDetail->TtujPayment->set($data);
 
             if( $this->Ttuj->TtujPaymentDetail->TtujPayment->validates() && !empty($flagTtujPaymentDetail) ){
@@ -7293,8 +7350,6 @@ class RevenuesController extends AppController {
             }
 
             $this->request->data['TtujPayment']['date_payment'] = !empty($data['TtujPayment']['date_payment']) ? $data['TtujPayment']['date_payment'] : '';
-        }else if(!empty($id) && !empty($data_local)){
-             $this->request->data = $data_local;
         }
 
         $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();

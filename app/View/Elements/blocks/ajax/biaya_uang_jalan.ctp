@@ -18,6 +18,8 @@
 		$alias = sprintf('child-%s-%s', $id, $data_type);
         $addClass = !empty($isAjax)?'hide':'';
 
+        $ttujPayment = $this->Common->filterEmptyField($this->request->data, 'TtujPayment');
+
         if( !empty($checkbox) ) {
             printf('<tr data-value="%s" data-type="%s" class="child %s">', $alias, $data_type, $alias);
 
@@ -58,34 +60,44 @@
                 echo $note;
         ?>
     </td>
-    <td class="total-ttuj">
+    <td class="total-ttuj text-right">
     	<?php
     			echo $this->Common->getBiayaTtuj( $ttuj, $data_type, true, false );
 		?>
 	</td>
-    <td>
+    <td class="text-right">
     	<?php
                 $sisaAmount = $this->Common->getBiayaTtuj( $ttuj, $data_type );
-    			echo $this->Form->input('TtujPayment.amount_payment.',array(
-                    'label'=> false,
-                    'class'=>'form-control input_price_min sisa-ttuj text-right',
-                    'required' => false,
-                    'value' => !empty($this->request->data['TtujPayment']['amount_payment'][$idx])?$this->request->data['TtujPayment']['amount_payment'][$idx]:$sisaAmount,
-                ));
-                echo $this->Form->hidden('TtujPayment.ttuj_id.',array(
-                    'value'=> $id,
-                ));
-                echo $this->Form->hidden('TtujPayment.data_type.',array(
-                    'value'=> $data_type,
-                ));
+                $amountPayment = !empty($ttujPayment['amount_payment'][$idx])?$ttujPayment['amount_payment'][$idx]:$sisaAmount;
+
+                if( !empty($invoice) ) {
+                    $amountPayment = $this->Common->getFormatPrice($amountPayment);
+                    echo $amountPayment;
+                } else {
+        			echo $this->Form->input('TtujPayment.amount_payment.',array(
+                        'label'=> false,
+                        'class'=>'form-control input_price_min sisa-ttuj text-right',
+                        'required' => false,
+                        'value' => $amountPayment,
+                    ));
+                    echo $this->Form->hidden('TtujPayment.ttuj_id.',array(
+                        'value'=> $id,
+                    ));
+                    echo $this->Form->hidden('TtujPayment.data_type.',array(
+                        'value'=> $data_type,
+                    ));
+                }
 		?>
 	</td>
-    <td class="ttuj-payment-action <?php echo $addClass; ?>">
-        <?php
-                echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
+    <?php 
+            if( empty($invoice) ) {
+                echo $this->Html->tag('td', $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
                     'class' => 'delete-biaya btn btn-danger btn-xs',
                     'escape' => false,
                     'data-id' => sprintf('child-%s', $alias),
+                )), array(
+                    'class' => 'ttuj-payment-action '.$addClass,
                 ));
-        ?>
+            }
+    ?>
 </tr>

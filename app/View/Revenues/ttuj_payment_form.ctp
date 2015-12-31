@@ -1,29 +1,9 @@
 <?php
-		switch ($action_type) {
-			case 'biaya_ttuj':
-				$titleCrumb = __('Pembayaran Biaya TTUJ');
-				$titleBrowse = __('Biaya TTUJ');
-				break;
-			
-			default:
-				$titleCrumb = __('Pembayaran Uang Jalan/Komisi');
-				$titleBrowse = __('Biaya Uang Jalan/Komisi');
-				break;
-		}
-
-		$this->Html->addCrumb($titleCrumb, array(
-			'controller' => 'revenues',
-			'action' => 'ttuj_payments',
-			$action_type,
-		));
+		echo $this->element('blocks/revenues/ttuj_payment_crumb');
 		$this->Html->addCrumb($sub_module_title);
-		$disabled = false;
+
 		$receiver_type = false;
 		$receiver_label = false;
-
-		if( !empty($invoice) ) {
-			$disabled = true;
-		}
 
 		if( !empty($this->request->data['TtujPayment']['receiver_type']) ) {
 			$receiver_type = $this->request->data['TtujPayment']['receiver_type'];
@@ -72,7 +52,6 @@
 						'class'=>'form-control',
 						'required' => false,
 						'placeholder' => __('No. Dokumen'),
-						'disabled' => $disabled,
 					));
 			?>
         </div>
@@ -83,7 +62,6 @@
 					'required' => false,
 					'empty' => __('Pilih Kas/Bank '),
 					'options' => !empty($coas)?$coas:false,
-					'disabled' => $disabled,
 				)), array(
 					'class' => 'form-group'
 				));
@@ -96,7 +74,6 @@
                         'type' => 'text',
                         'required' => false,
                         'value' => (!empty($this->request->data['TtujPayment']['date_payment'])) ? $this->Common->customDate($this->request->data['TtujPayment']['date_payment'], 'd/m/Y') : date('d/m/Y'),
-						'disabled' => $disabled,
                     ));
             ?>
         </div>
@@ -113,12 +90,11 @@
 						'id' => 'hid-receiver-type'
 					));
 
-					if( empty($disabled) ) {
-						if( in_array($action_type, array( 'commission', 'uang_jalan' )) ) {
-							$ajaxType = 'driver';
-						} else {
-							$ajaxType = 'ttuj';
-						}
+					if( in_array($action_type, array( 'commission', 'uang_jalan' )) ) {
+						$ajaxType = 'driver';
+					} else {
+						$ajaxType = 'ttuj';
+					}
 			?>
 			<div class="row">
 				<div class="col-sm-10">
@@ -151,16 +127,6 @@
                     ?>
 				</div>
 			</div>
-			<?php
-					} else {
-						echo $this->Form->input('TtujPayment.receiver_name',array(
-							'label'=> false, 
-							'class'=>'form-control',
-							'required' => false,
-							'disabled' => true,
-						));
-					}
-			?>
         </div>
         <?php 
         		}
@@ -172,72 +138,32 @@
                         'class'=>'form-control',
                         'type' => 'textarea',
                         'required' => false,
-						'disabled' => $disabled,
                     ));
             ?>
         </div>
     	<?php 
-    			if( empty($invoice) ) {
-        			$attrBrowse = array(
-                        'class' => 'ajaxModal visible-xs browse-docs',
-                        'escape' => false,
-                        'data-action' => 'browse-check-docs',
-                        'data-change' => 'ttuj-info-table',
-                        'url' => $this->Html->url( array(
-                            'controller'=> 'ajax', 
-                            'action' => 'getBiayaTtuj',
-                            $action_type
-                        )),
-                        'title' => sprintf(__('Detail %s'), $titleBrowse),
-                    );
-					$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-                    echo $this->Html->tag('div', $this->Html->link('<i class="fa fa-plus-square"></i> '.$titleBrowse, 'javascript:', $attrBrowse), array(
-                    	'class' => "form-group",
-                	));
-				}
+    			$attrBrowse = array(
+                    'class' => 'ajaxModal visible-xs browse-docs',
+                    'escape' => false,
+                    'data-action' => 'browse-check-docs',
+                    'data-change' => 'ttuj-info-table',
+                    'url' => $this->Html->url( array(
+                        'controller'=> 'ajax', 
+                        'action' => 'getBiayaTtuj',
+                        $action_type
+                    )),
+                    'title' => sprintf(__('Detail %s'), $titleBrowse),
+                );
+				$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
+                echo $this->Html->tag('div', $this->Html->link('<i class="fa fa-plus-square"></i> '.$titleBrowse, 'javascript:', $attrBrowse), array(
+                	'class' => "form-group",
+            	));
         ?>
     </div>
 </div>
-<div class="checkbox-info-detail <?php echo (!empty($this->request->data['Ttuj'])) ? '' : 'hide';?>">
-	<div class="box box-primary">
-	    <div class="box-header">
-	        <h3 class="box-title"><?php echo __('Detail Biaya Uang Jalan / Komisi'); ?></h3>
-	    </div>
-	    <div class="box-body table-responsive">
-	        <table class="table table-hover">
-	        	<thead>
-	        		<tr>
-	        			<?php 
-			                    echo $this->Html->tag('th', __('No TTUJ'));
-			                    echo $this->Html->tag('th', __('Tgl'), array(
-			                        'width' => '5%',
-			                    ));
-			                    echo $this->Html->tag('th', __('NoPol'));
-			                    echo $this->Html->tag('th', __('Customer'));
-			                    echo $this->Html->tag('th', __('Dari'));
-			                    echo $this->Html->tag('th', __('Tujuan'));
-			                    echo $this->Html->tag('th', __('Supir'));
-			                    echo $this->Html->tag('th', __('Jenis'), array(
-			                        'width' => '5%',
-			                    ));
-			                    echo $this->Html->tag('th', __('Keterangan'));
-			                    echo $this->Html->tag('th', __('Total'));
-			                    echo $this->Html->tag('th', __('Biaya Dibayar'), array(
-			                        'width' => '15%',
-			                    ));
-			                    echo $this->Html->tag('th', __('Action'), array(
-			                    	'class' => 'action-biaya-ttuj',
-		                    	));
-			            ?>
-	        		</tr>
-	        	</thead>
-                <?php
-		    			echo $this->element('blocks/revenues/info_ttuj_payment_detail');
-		    	?>
-	    	</table>
-	    </div>
-	</div>
-</div>
+<?php
+		echo $this->element('blocks/revenues/tables/detail_ttuj_payment');
+?>
 <div class="box-footer text-center action">
 	<?php
     		echo $this->Html->link(__('Kembali'), array(
@@ -246,12 +172,10 @@
 			), array(
 				'class'=> 'btn btn-default',
 			));
-			if( empty($disabled) ) {
-	    		echo $this->Form->button(__('Simpan'), array(
-	    			'type' => 'submit',
-					'class'=> 'btn btn-success btn-lg',
-				));
-			}
+    		echo $this->Form->button(__('Simpan'), array(
+    			'type' => 'submit',
+				'class'=> 'btn btn-success btn-lg',
+			));
 	?>
 </div>
 <?php
