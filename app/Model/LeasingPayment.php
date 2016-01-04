@@ -151,7 +151,7 @@ class LeasingPayment extends AppModel {
             $this->set($data);
             $mainValidate = $this->validates();
 
-            $detailValidates = $this->LeasingPaymentDetail->doSave($dataDetail, $data, false, false, true);
+            $detailValidates = $this->LeasingPaymentDetail->doSave($dataDetail, $data, false, $id, true);
             $statusDetail = !empty($detailValidates['status'])?$detailValidates['status']:false;
 
             if( $mainValidate && $statusDetail == 'success' ) {

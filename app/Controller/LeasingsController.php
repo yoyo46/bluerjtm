@@ -454,7 +454,46 @@ class LeasingsController extends AppController {
         $this->render('payment_form');
     }
 
+    function payment_edit( $id = false ){
+        $this->set('sub_module_title', __('Edit Pembayaran Leasing'));
+        $this->set('active_menu', 'leasing_payments');
 
+        $value = $this->Leasing->LeasingPayment->getData('first', array(
+            'conditions' => array(
+                'LeasingPayment.id' => $id,
+            ),
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->Leasing->LeasingPayment->LeasingPaymentDetail->getMerge($value, $id);
+
+            if( !empty($value['LeasingPaymentDetail']) ) {
+                foreach ($value['LeasingPaymentDetail'] as $key => $detail) {
+                    $leasing_id = $this->MkCommon->filterEmptyField($detail, 'LeasingPaymentDetail', 'leasing_id');
+                    $leasing_installment_id = $this->MkCommon->filterEmptyField($detail, 'LeasingPaymentDetail', 'leasing_installment_id');
+
+                    $detail = $this->Leasing->getMerge($detail, $leasing_id);
+                    $detail = $this->Leasing->LeasingInstallment->getMerge($detail, $leasing_installment_id);
+                    $value['LeasingPaymentDetail'][$key] = $detail;
+                }
+            }
+
+            $data = $this->request->data;
+            $data = $this->_calDataIndexConvertion( $data );
+            $result = $this->Leasing->LeasingPayment->doSave( $data, $value, $id );
+            $this->MkCommon->setProcessParams($result, array(
+                'controller' => 'leasings',
+                'action' => 'payments',
+                'admin' => false,
+            ));
+            $this->request->data = $this->_calDataIndexConvertion($this->request->data, true);
+
+            $this->_callDataSupport();
+            $this->render('payment_form');
+        } else {
+            $this->MkCommon->redirectReferer(__('Pembayaran leasing tidak ditemukan'), 'error');
+        }
+    }
 
     function detail_payment( $id = false ){
         $this->set('sub_module_title', __('Info Pembayaran Leasing'));

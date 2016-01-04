@@ -133,6 +133,14 @@
                             ));
 
                             if( empty($rejected) ){
+                                echo $this->Html->link(__('Edit'), array(
+                                    'controller' => 'leasings',
+                                    'action' => 'payment_edit',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
+
                                 echo $this->Html->link('Void', array(
                                     'controller' => 'leasings',
                                     'action' => 'payment_delete',

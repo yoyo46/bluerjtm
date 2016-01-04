@@ -265,6 +265,8 @@ class AjaxController extends AppController {
 
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');
+        $named = $this->MkCommon->filterEmptyField($this->params, 'named');
+        $payment_id = $this->MkCommon->filterEmptyField($named, 'payment_id');
 
 		$options = array(
 			'conditions' => array(
@@ -313,7 +315,8 @@ class AjaxController extends AppController {
 					$lku_has_paid = $this->LkuPaymentDetail->getData('first', array(
 						'conditions' => array(
 							'LkuPaymentDetail.lku_detail_id' => $value['LkuDetail']['id'],
-							'LkuPaymentDetail.status' => 1
+							'LkuPaymentDetail.status' => 1,
+							'LkuPaymentDetail.lku_payment_id <>' => $payment_id,
 						),
 						'fields' => array(
 							'SUM(LkuPaymentDetail.total_biaya_klaim) as lku_has_paid'

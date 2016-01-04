@@ -63,5 +63,23 @@ class LkuPaymentDetail extends AppModel {
         }
         return $result;
     }
+
+    function getMerge ( $data = false, $id = false ) {
+        if( empty($data['LkuPaymentDetail']) ) {
+            $default_options = array(
+                'conditions' => array(
+                    'LkuPaymentDetail.lku_payment_id'=> $id,
+                ),
+            );
+
+            $values = $this->getData('all', $default_options);
+
+            if( !empty($values) ) {
+                $data['LkuPaymentDetail'] = $values;
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

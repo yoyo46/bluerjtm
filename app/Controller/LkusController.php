@@ -576,6 +576,7 @@ class LkusController extends AppController {
     }
 
     function payment_add(){
+        $this->loadModel('LkuPayment');
         $this->set('sub_module_title', __('Tambah Pembayaran LKU'));
         $this->DoLkuPayment();
     }
@@ -583,17 +584,15 @@ class LkusController extends AppController {
     function payment_edit($id){
         $this->loadModel('LkuPayment');
         $this->set('sub_module_title', 'Rubah Pembayaran LKU');
-        $Lku = $this->LkuPayment->getData('first', array(
+        $value = $this->LkuPayment->getData('first', array(
             'conditions' => array(
                 'LkuPayment.id' => $id
             ),
-            'contain' => array(
-                'LkuPaymentDetail'
-            )
         ));
 
-        if(!empty($Lku)){
-            $this->DoLkuPayment($id, $Lku);
+        if(!empty($value)){
+            $value = $this->LkuPayment->LkuPaymentDetail->getMerge($value, $id);
+            $this->DoLkuPayment($id, $value);
         }else{
             $this->MkCommon->setCustomFlash(__('ID Pembayaran LKU tidak ditemukan'), 'error');  
             $this->redirect(array(
@@ -604,9 +603,6 @@ class LkusController extends AppController {
     }
 
     function DoLkuPayment($id = false, $data_local = false){
-        $this->loadModel('Lku');
-        $this->loadModel('LkuPayment');
-
         if(!empty($this->request->data)){
             $data = $this->request->data;
             $customer_id = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'customer_id');
@@ -615,7 +611,7 @@ class LkusController extends AppController {
             $customer = $this->LkuPayment->Customer->getMerge(array(), $customer_id);
             $customer_name = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_name_code');
 
-            if($id && $data_local){
+            if(!empty($id)){
                 $this->LkuPayment->id = $id;
                 $msg = 'merubah';
             }else{
@@ -648,6 +644,7 @@ class LkusController extends AppController {
                                     'LkuPaymentDetail.lku_detail_id' => $value,
                                     'LkuPayment.status' => 1,
                                     'LkuPayment.is_void' => 0,
+                                    'LkuPayment.id <>' => $id,
                                 ),
                                 'fields' => array(
                                     'SUM(LkuPaymentDetail.total_biaya_klaim) as lku_has_paid'
@@ -660,7 +657,7 @@ class LkusController extends AppController {
                             $lku_has_paid = (!empty($lku_has_paid[0]['lku_has_paid'])) ? $lku_has_paid[0]['lku_has_paid'] : 0;
                             $total_paid = $lku_has_paid + $price;
 
-                            $lku_data = $this->Lku->LkuDetail->getData('first', array(
+                            $lku_data = $this->LkuPayment->LkuPaymentDetail->LkuDetail->getData('first', array(
                                 'conditions' => array(
                                     'LkuDetail.id' => $value
                                 )
@@ -761,19 +758,19 @@ class LkusController extends AppController {
                                 $invoice_total = !empty($lku_has_paid['LkuDetail']['total_price'])?$lku_has_paid['LkuDetail']['total_price']:0;
                                 
                                 if($invoice_paid >= $invoice_total){
-                                    $this->Lku->LkuDetail->id = $lku_detail_id;
-                                    $this->Lku->LkuDetail->set(array(
+                                    $this->LkuPayment->LkuPaymentDetail->LkuDetail->id = $lku_detail_id;
+                                    $this->LkuPayment->LkuPaymentDetail->LkuDetail->set(array(
                                         'paid' => 1,
                                         'complete_paid' => 1
                                     ));
-                                    $this->Lku->LkuDetail->save();
+                                    $this->LkuPayment->LkuPaymentDetail->LkuDetail->save();
                                 }else{
-                                    $this->Lku->LkuDetail->id = $lku_detail_id;
-                                    $this->Lku->LkuDetail->set(array(
+                                    $this->LkuPayment->LkuPaymentDetail->LkuDetail->id = $lku_detail_id;
+                                    $this->LkuPayment->LkuPaymentDetail->LkuDetail->set(array(
                                         'paid' => 1,
                                         'complete_paid' => 0
                                     ));
-                                    $this->Lku->LkuDetail->save();
+                                    $this->LkuPayment->LkuPaymentDetail->LkuDetail->save();
                                 }
                             }
                         }
@@ -811,8 +808,23 @@ class LkusController extends AppController {
                 $this->MkCommon->setCustomFlash($text, 'error');
             }
         } else if($id && $data_local){
+            $dataDetail = $this->MkCommon->filterEmptyField($data_local, 'LkuPaymentDetail');
+            unset($data_local['LkuPaymentDetail']);
+
             $this->request->data = $data_local;
             $this->request->data['LkuPayment']['tgl_bayar'] = (!empty($this->request->data['LkuPayment']['tgl_bayar'])) ? $this->MkCommon->getDate($this->request->data['LkuPayment']['tgl_bayar'], true) : '';
+
+            if( !empty($dataDetail) ) {
+                foreach ($dataDetail as $key => $value) {
+                    $lku_detail_id = $this->MkCommon->filterEmptyField($value, 'LkuPaymentDetail', 'lku_detail_id');
+                    $total_biaya_klaim = $this->MkCommon->filterEmptyField($value, 'LkuPaymentDetail', 'total_biaya_klaim');
+
+                    $this->request->data['LkuPaymentDetail']['lku_detail_id'][$lku_detail_id] = $lku_detail_id;
+                    $this->request->data['LkuPaymentDetail']['total_biaya_klaim'][$lku_detail_id] = $total_biaya_klaim;
+                }
+            }
+
+            $data = $this->request->data;
         }
 
         if(!empty($this->request->data['LkuPaymentDetail']['lku_detail_id'])){
@@ -838,10 +850,13 @@ class LkusController extends AppController {
                     $lku_condition = array(
                         'LkuDetail.id' => $value['lku_detail_id'],
                         'LkuDetail.status' => 1,
-                        'LkuDetail.complete_paid' => 0
                     );
 
-                    $lku_data = $this->Lku->LkuDetail->getData('first', array(
+                    if( empty($id) ) {
+                        $lku_condition['LkuDetail.complete_paid'] = 0;
+                    }
+
+                    $lku_data = $this->LkuPayment->LkuPaymentDetail->LkuDetail->getData('first', array(
                         'conditions' => $lku_condition,
                         'contain' => array(
                             'Lku',
@@ -851,7 +866,7 @@ class LkusController extends AppController {
                     ));
                     
                     if(!empty($lku_data)){
-                        $ttuj = $this->Lku->Ttuj->getData('first', array(
+                        $ttuj = $this->LkuPayment->LkuPaymentDetail->LkuDetail->Lku->Ttuj->getData('first', array(
                             'conditions' => array(
                                 'Ttuj.id' => $lku_data['Lku']['ttuj_id']
                             ),
@@ -866,6 +881,7 @@ class LkusController extends AppController {
                         $lku_has_paid = $this->LkuPayment->LkuPaymentDetail->getData('first', array(
                             'conditions' => array(
                                 'LkuPaymentDetail.lku_detail_id' => $lku_data['LkuDetail']['id'],
+                                'LkuPaymentDetail.lku_payment_id <>' => $id,
                                 'LkuPaymentDetail.status' => 1
                             ),
                             'fields' => array(
@@ -882,7 +898,7 @@ class LkusController extends AppController {
             $this->set(compact('lku_details'));
         }
 
-        $this->Lku->Ttuj->bindModel(array(
+        $this->LkuPayment->LkuPaymentDetail->LkuDetail->Lku->Ttuj->bindModel(array(
             'belongsTo' => array(
                 'CustomerNoType' => array(
                     'className' => 'CustomerNoType',
@@ -893,7 +909,7 @@ class LkusController extends AppController {
         $ttuj_customer_id = array();
 
         if(!empty($this->request->data['LkuPayment']['customer_id'])){
-            $ttuj_customer_id = $this->Lku->Ttuj->getData('list', array(
+            $ttuj_customer_id = $this->LkuPayment->LkuPaymentDetail->LkuDetail->Lku->Ttuj->getData('list', array(
                 'conditions' => array(
                     'Ttuj.customer_id' => $this->request->data['LkuPayment']['customer_id']
                 ),
@@ -906,7 +922,7 @@ class LkusController extends AppController {
             ));
         }
 
-        $customers = $this->Lku->getData('all', array(
+        $customers = $this->LkuPayment->LkuPaymentDetail->LkuDetail->Lku->getData('all', array(
             'conditions' => array(
                 'Lku.completed' => 0,
                 'OR' => array(
@@ -940,7 +956,7 @@ class LkusController extends AppController {
                 $list_customer[$customer_id] = sprintf('%s - %s', $customer_name, $customer_code);
                 $customers = $list_customer;
 
-                $dataCust = $this->Lku->Ttuj->Customer->getData('first', array(
+                $dataCust = $this->LkuPayment->LkuPaymentDetail->LkuDetail->Lku->Ttuj->Customer->getData('first', array(
                     'conditions' => array(
                         'Customer.id' => $customer_id,
                     ),

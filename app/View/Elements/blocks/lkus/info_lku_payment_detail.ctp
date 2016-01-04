@@ -94,7 +94,7 @@
                 'label' => false,
                 'div' => false,
                 'required' => false,
-                'class' => 'form-control input_price document-pick-price',
+                'class' => 'form-control input_price document-pick-price text-right',
                 'value' => (!empty($this->request->data['LkuPaymentDetail'][$Lku['id']]['total_biaya_klaim'])) ? $this->request->data['LkuPaymentDetail'][$Lku['id']]['total_biaya_klaim'] : $total_biaya_klaim
             ));
 

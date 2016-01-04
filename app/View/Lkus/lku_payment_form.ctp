@@ -87,6 +87,7 @@
 			                            'url' => $this->Html->url( array(
 				                            'controller'=> 'ajax', 
 				                            'action' => 'getTtujCustomerInfo',
+	                            			'payment_id' => $id,
 				                        ))
 			                        );
 									$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
@@ -106,7 +107,7 @@
 			        <table class="table table-hover">
 			        	<thead>
 			        		<tr>
-			        			<th width="20%"><?php echo __('No LKU');?></th>
+			        			<th><?php echo __('No LKU');?></th>
 			        			<th><?php echo __('Tgl LKU');?></th>
 				                <th><?php echo __('TTUJ');?></th>
 				                <th><?php echo __('Supir');?></th>

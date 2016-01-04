@@ -5136,7 +5136,7 @@ class RevenuesController extends AppController {
             $this->request->data['InvoicePayment']['date_payment'] = !empty($this->request->data['InvoicePayment']['date_payment']) ? $this->MkCommon->getDate($this->request->data['InvoicePayment']['date_payment'], true) : '';
             $customer = $this->Ttuj->Customer->getMerge(array(), $customer_id);
 
-             if( !empty($dataDetail) ) {
+            if( !empty($dataDetail) ) {
                 foreach ($dataDetail as $key => $value) {
                     $invoice_id = $this->MkCommon->filterEmptyField($value, 'InvoicePaymentDetail', 'invoice_id');
                     $price_pay = $this->MkCommon->filterEmptyField($value, 'InvoicePaymentDetail', 'price_pay');
@@ -5144,7 +5144,7 @@ class RevenuesController extends AppController {
                     $this->request->data['InvoicePaymentDetail']['invoice_id'][$invoice_id] = $invoice_id;
                     $this->request->data['InvoicePaymentDetail']['price_pay'][$invoice_id] = $price_pay;
                 }
-             }
+            }
         }
 
         if(!empty($customer)){
