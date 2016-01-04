@@ -489,6 +489,9 @@ class LeasingsController extends AppController {
             $this->request->data = $this->_calDataIndexConvertion($this->request->data, true);
 
             $this->_callDataSupport();
+            $this->set(compact(
+                'id'
+            ));
             $this->render('payment_form');
         } else {
             $this->MkCommon->redirectReferer(__('Pembayaran leasing tidak ditemukan'), 'error');
@@ -523,12 +526,9 @@ class LeasingsController extends AppController {
                 }
             }
 
-            $this->request->data = $value;
-
             $this->set(compact(
-                'id'
+                'id', 'value'
             ));
-            $this->render('payment_form');
         } else {
             $this->MkCommon->redirectReferer(__('Pembayaran leasing tidak ditemukan'), 'error');
         }
@@ -693,6 +693,8 @@ class LeasingsController extends AppController {
     function leasings_unpaid($vendor_id = false){
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');
+        $named = $this->MkCommon->filterEmptyField($this->params, 'named');
+        $payment_id = $this->MkCommon->filterEmptyField($named, 'payment_id');
 
         $options = array(
             'conditions' => array(
@@ -708,6 +710,14 @@ class LeasingsController extends AppController {
             'dateTo' => $dateTo,
         ));
         $options =  $this->Leasing->_callRefineParams($params, $options);
+        $payments = $this->Leasing->LeasingPaymentDetail->getData('list', array(
+            'conditions' => array(
+                'LeasingPaymentDetail.leasing_payment_id' => $payment_id,
+            ),
+            'fields' => array(
+                'LeasingPaymentDetail.id', 'LeasingPaymentDetail.leasing_installment_id',
+            )
+        ));
 
         $this->paginate = $this->Leasing->getData('paginate', $options);
         $values = $this->paginate('Leasing');
@@ -716,7 +726,7 @@ class LeasingsController extends AppController {
             foreach ($values as $key => $value) {
                 $leasing_id = $this->MkCommon->filterEmptyField($value, 'Leasing', 'id');
 
-                $value = $this->Leasing->LeasingInstallment->_callLastPayment($value, $leasing_id);
+                $value = $this->Leasing->LeasingInstallment->_callLastPayment($value, $leasing_id, $payment_id, $payments);
                 $values[$key] = $value;
             }
         }

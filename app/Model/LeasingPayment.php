@@ -138,7 +138,7 @@ class LeasingPayment extends AppModel {
 
             $data['LeasingPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
             $data['LeasingPayment']['user_id'] = Configure::read('__Site.config_user_id');
-            $resultDetail = $this->LeasingPaymentDetail->getDataModel($data);
+            $resultDetail = $this->LeasingPaymentDetail->getDataModel($data, $id);
 
             $data['LeasingPayment']['total_installment'] = !empty($resultDetail['total_installment'])?$resultDetail['total_installment']:0;
             $data['LeasingPayment']['total_installment_rate'] = !empty($resultDetail['total_installment_rate'])?$resultDetail['total_installment_rate']:0;

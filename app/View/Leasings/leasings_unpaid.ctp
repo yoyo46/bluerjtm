@@ -125,7 +125,9 @@
                             'value' => $id,
                         ));
                         echo $this->Html->tag('td', $contentTd);
-                        echo $this->Html->tag('td', $customLeasingDate);
+                        echo $this->Html->tag('td', $customLeasingDate, array(
+                            'class' => 'on-remove',
+                        ));
 
                         echo $this->Html->tag('td', $customPaidDate.$this->Form->input('LeasingPaymentDetail.expired_date.'.$id, array(
                             'type' => 'hidden',

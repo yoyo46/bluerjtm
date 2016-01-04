@@ -130,16 +130,21 @@ class LeasingInstallment extends AppModel {
         }
     }
 
-    function _callLastPaidInstallment( $value, $id ) {
+    function _callLastPaidInstallment( $value, $id, $leasing_payment_id = false ) {
         $installment = !empty($value['LeasingInstallment']['installment'])?$value['LeasingInstallment']['installment']:0;
         $installment_rate = !empty($value['Leasing']['installment_rate'])?$value['Leasing']['installment_rate']:0;
+        $conditions = array(
+            'LeasingPaymentDetail.leasing_installment_id' => $id,
+            'LeasingPayment.status' => 1,
+            'LeasingPayment.rejected' => 0,
+        );
+
+        if( !empty($leasing_payment_id) ) {
+            $conditions['LeasingPayment.id <>'] = $leasing_payment_id;
+        }
 
         $hasPaid = $this->LeasingPaymentDetail->getData('first', array(
-            'conditions' => array(
-                'LeasingPaymentDetail.leasing_installment_id' => $id,
-                'LeasingPayment.status' => 1,
-                'LeasingPayment.rejected' => 0,
-            ),
+            'conditions' => $conditions,
             'contain' => array(
                 'LeasingPayment',
             ),
@@ -159,26 +164,35 @@ class LeasingInstallment extends AppModel {
         return $value;
     }
 
-    function _callLastPayment ($data, $leasing_id) {
+    function _callLastPayment ($data, $leasing_id, $leasing_payment_id = false, $leasing_installment_id = false) {
+        $conditions = array(
+            'LeasingInstallment.leasing_id' => $leasing_id,
+        );
+
+        if( !empty($leasing_installment_id) ) {
+            $conditions['LeasingInstallment.id'] = $leasing_installment_id;
+        } else {
+            $conditions['LeasingInstallment.payment_status'] = array(
+                'unpaid',
+                'half_paid',
+            );
+        }
+
         $value = $this->getData('first', array(
-            'conditions' => array(
-                'LeasingInstallment.leasing_id' => $leasing_id,
-            ),
-        ), array(
-            'status' => 'unpaid',
+            'conditions' => $conditions,
         ));
 
         if( !empty($value) ) {
             $id = !empty($value['LeasingInstallment']['id'])?$value['LeasingInstallment']['id']:false;
 
-            $value = $this->_callLastPaidInstallment($value, $id);
+            $value = $this->_callLastPaidInstallment($value, $id, $leasing_payment_id);
             $data = array_merge($data, $value);
         }
 
         return $data;
     }
 
-    function getMerge ($data, $id) {
+    function getMerge ($data, $id, $leasing_payment_id = false) {
         $value = $this->getData('first', array(
             'conditions' => array(
                 'LeasingInstallment.id' => $id,
@@ -188,7 +202,7 @@ class LeasingInstallment extends AppModel {
         if( !empty($value) ) {
             $id = !empty($value['LeasingInstallment']['id'])?$value['LeasingInstallment']['id']:false;
 
-            $value = $this->_callLastPaidInstallment($value, $id);
+            $value = $this->_callLastPaidInstallment($value, $id, $leasing_payment_id);
             $data = array_merge($data, $value);
         }
 

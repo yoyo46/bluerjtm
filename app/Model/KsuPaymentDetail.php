@@ -68,5 +68,23 @@ class KsuPaymentDetail extends AppModel {
         }
         return $result;
     }
+
+    function getMerge ( $data = false, $id = false ) {
+        if( empty($data['KsuPaymentDetail']) ) {
+            $default_options = array(
+                'conditions' => array(
+                    'KsuPaymentDetail.ksu_payment_id'=> $id,
+                ),
+            );
+
+            $values = $this->getData('all', $default_options);
+
+            if( !empty($values) ) {
+                $data['KsuPaymentDetail'] = $values;
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

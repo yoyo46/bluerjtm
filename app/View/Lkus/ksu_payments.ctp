@@ -98,6 +98,14 @@
                             ));
 
                             if(empty($value['KsuPayment']['is_void'])){
+                                echo $this->Html->link(__('Edit'), array(
+                                    'controller' => 'lkus',
+                                    'action' => 'ksu_payment_edit',
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
+                                
                                 echo $this->Html->link('void', array(
                                     'controller' => 'lkus',
                                     'action' => 'ksu_payment_delete',

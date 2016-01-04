@@ -4,13 +4,6 @@
 
         $payment_date = $this->Common->filterEmptyField($data, 'LeasingPayment', 'payment_date');
         $customPaymentDate = $this->Common->getDate($payment_date);
-        $totalClass = '';
-        $grandTotalClass = '';
-
-        if( empty($id) ) {
-            $totalClass = 'leasing-total';
-            $grandTotalClass = 'field-grand-total-document';
-        }
 
         if(!empty($data['LeasingPaymentDetail'])){
             foreach ($data['LeasingPaymentDetail'] as  $value) {
@@ -44,7 +37,7 @@
                     'value' => $leasing_installment_id
                 ));
 ?>
-<tr class="child child-<?php echo $addClass;?>" rel="<?php echo $leasing_id;?>">
+<tr class="child child-<?php echo $leasing_installment_id;?> <?php echo $addClass; ?>" rel="<?php echo $leasing_installment_id;?>">
     <?php
             echo $this->Html->tag('td', $no_contract);
             echo $this->Html->tag('td', $customDate.$this->Form->input('LeasingPaymentDetail.expired_date.'.$leasing_id, array(
@@ -78,7 +71,7 @@
                 'value' => $denda,
             )));
             echo $this->Html->tag('td', $customTotal, array(
-                'class' => 'text-right red '.$totalClass,
+                'class' => 'text-right red leasing-total',
             ));
             echo $this->Html->tag('td', $this->Html->link($this->Common->icon('time').__(' Hapus'), 'javascript:', array(
                 'class' => 'delete-custom-field btn btn-danger btn-xs',
@@ -93,9 +86,9 @@
         }
 }
 ?>
-<tr id="<?php echo $grandTotalClass; ?>">
-    <td align="right" colspan="5"><?php echo __('Total')?></td>
-    <td align="right" class="total">
+<tr id="field-grand-total-document">
+    <td align="right" colspan="5" class="bold"><?php echo __('Total')?></td>
+    <td align="right" class="total bold">
         <?php 
                 echo $this->Common->getFormatPrice($grandtotal);
         ?>

@@ -98,6 +98,10 @@ class Leasing extends AppModel {
             'className' => 'LeasingPayment',
             'foreignKey' => 'leasing_id',
         ),
+        'LeasingPaymentDetail' => array(
+            'className' => 'LeasingPaymentDetail',
+            'foreignKey' => 'leasing_id',
+        ),
         'LeasingInstallment' => array(
             'className' => 'LeasingInstallment',
             'foreignKey' => 'leasing_id',

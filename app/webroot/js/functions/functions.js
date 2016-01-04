@@ -2567,6 +2567,7 @@ var check_all_checkbox = function(){
             }else{
                 $('.child-'+rel_id).remove();
                 getTotalPick();
+                $.getLeasingGrandtotal();
             } 
         }
     }
@@ -4304,5 +4305,15 @@ $(function() {
         pph = $.formatDecimal(pph, 2);
 
         $('.invoice-pph').val(pph);
+    });
+
+    $('#id-choosen').change(function(){
+        var self = $(this);
+        var data_reset = $.checkUndefined(self.attr('data-reset'), false);
+        
+        if( data_reset != false ) {
+            $(data_reset).remove();
+            $.getLeasingGrandtotal();
+        }
     });
 });

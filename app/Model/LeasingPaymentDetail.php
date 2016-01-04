@@ -160,7 +160,7 @@ class LeasingPaymentDetail extends AppModel {
         }
     }
 
-    function getDataModel ( $data ) {
+    function getDataModel ( $data, $id = false ) {
         $dataSave = array();
         $total_installment = 0;
         $total_installment_rate = 0;
@@ -197,7 +197,7 @@ class LeasingPaymentDetail extends AppModel {
                     'denda' => $denda,
                     'total' => $total,
                 );
-                $detail = $this->LeasingInstallment->getMerge($detail, $value);
+                $detail = $this->LeasingInstallment->getMerge($detail, $value, $id);
 
                 $dataSave[] = $detail;
             }

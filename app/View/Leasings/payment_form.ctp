@@ -5,6 +5,7 @@
 		$vendor = $this->Common->filterEmptyField($data, 'Vendor', 'name');
 		$coa = $this->Common->filterEmptyField($data, 'Coa', 'name');
 		$this->request->data = $data;
+		$id = !empty($id)?$id:false;
 
 		$this->Html->addCrumb(__('Pembayaran Leasing'), array(
 			'controller' => 'leasings',
@@ -40,14 +41,8 @@
 		        				echo $this->Html->tag('div', $noref);
 							?>
 				        </div>
-				        <div class="form-group">
-				        	<?php 
-		        				echo $this->Html->tag('label', __('No. Dokumen'));
-		        				echo $this->Html->tag('div', $no_doc);
-							?>
-				        </div>
 				        <?php 
-				        		} else {
+				        		}
 				        ?>
 				        <div class="form-group">
 				        	<?php 
@@ -59,39 +54,27 @@
 									));
 							?>
 				        </div>
-				        <?php 
-				        		}
-				        ?>
 				        <div class="form-group">
 							<?php
-									if( !empty($id) ) {
-				        				echo $this->Html->tag('label', __('Account Kas/Bank'));
-				        				echo $this->Html->tag('div', $coa);
-				        			} else {
-										echo $this->Form->input('coa_id',array(
-											'label'=> __('Account Kas/Bank *'), 
-											'class'=>'form-control chosen-select',
-											'required' => false,
-											'empty' => __('Pilih Kas/Bank '),
-											'options' => !empty($coas)?$coas:false,
-										));
-									}
+									echo $this->Form->input('coa_id',array(
+										'label'=> __('Account Kas/Bank *'), 
+										'class'=>'form-control chosen-select',
+										'required' => false,
+										'empty' => __('Pilih Kas/Bank '),
+										'options' => !empty($coas)?$coas:false,
+									));
 							?>
 				        </div>
 				        <div class="form-group">
 				        	<?php 
-				        			if( !empty($id) ) {
-				        				echo $this->Html->tag('label', __('Vendor'));
-				        				echo $this->Html->tag('div', $vendor);
-				        			} else {
-										echo $this->Form->input('vendor_id',array(
-											'label'=> __('Vendor *'), 
-											'class'=>'form-control',
-											'required' => false,
-											'empty' => __('Pilih Vendor'),
-											'id' => 'id-choosen'
-										));
-									}
+									echo $this->Form->input('vendor_id',array(
+										'label'=> __('Vendor *'), 
+										'class'=>'form-control',
+										'required' => false,
+										'empty' => __('Pilih Vendor'),
+										'id' => 'id-choosen',
+										'data-reset' => '.document-pick-info-detail tbody .child'
+									));
 							?>
 				        </div>
 				        <div class="form-group">
@@ -113,9 +96,6 @@
 									));
 							?>
 				        </div>
-				        <?php 
-								if( empty($id) ) {
-				        ?>
 				        <div class="form-group">
 				        	<?php 
 				        			$attrBrowse = array(
@@ -128,15 +108,13 @@
 			                            'url' => $this->Html->url( array(
 				                            'controller'=> 'leasings', 
 				                            'action' => 'leasings_unpaid',
+	                            			'payment_id' => $id,
 				                        ))
 			                        );
 									$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
 			                        echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Ambil Pembayaran'), 'javascript:', $attrBrowse);
 			                ?>
 				        </div>
-				        <?php 
-				        		}
-				        ?>
 				    </div>
 				</div>
 			</div>
@@ -176,12 +154,10 @@
 						'class'=> 'btn btn-default',
 					));
 
-					if( empty($id) ) {
-			    		echo $this->Form->button(__('simpan'), array(
-							'class'=> 'btn btn-success btn-lg',
-							'type' => 'submit'
-						));
-			    	}
+		    		echo $this->Form->button(__('simpan'), array(
+						'class'=> 'btn btn-success btn-lg',
+						'type' => 'submit'
+					));
 			?>
 		</div>
 	</div>

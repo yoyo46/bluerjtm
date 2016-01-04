@@ -21,6 +21,19 @@
 				        <h3 class="box-title"><?php echo __('Informasi Pembayaran LKU'); ?></h3>
 				    </div>
 				    <div class="box-body">
+					    <?php 
+					    		if( !empty($id) ) {
+							        $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+					    ?>
+				        <div class="form-group">
+				        	<?php 
+		        				echo $this->Html->tag('label', __('No. Referensi'));
+		        				echo $this->Html->tag('div', $noref);
+							?>
+				        </div>
+				        <?php 
+				        		}
+				        ?>
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('no_doc',array(
@@ -28,7 +41,6 @@
 										'class'=>'form-control',
 										'required' => false,
 										'placeholder' => __('No. Dokumen'),
-										'readonly' => (!empty($id)) ? true : false
 									));
 							?>
 				        </div>
