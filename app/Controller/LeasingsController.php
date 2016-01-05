@@ -691,8 +691,8 @@ class LeasingsController extends AppController {
     }
 
     function leasings_unpaid($vendor_id = false){
-        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
-        $dateTo = date('Y-m-d');
+        $dateFrom = date('Y-m-d', strtotime('-2 Month'));
+        $dateTo = date('Y-m-d', strtotime('+2 Month'));
         $named = $this->MkCommon->filterEmptyField($this->params, 'named');
         $payment_id = $this->MkCommon->filterEmptyField($named, 'payment_id');
 
@@ -704,12 +704,6 @@ class LeasingsController extends AppController {
             'contain' => false,
             'limit' => Configure::read('__Site.config_pagination'),
         );
-
-        $params = $this->MkCommon->_callRefineParams($this->params, array(
-            'dateFrom' => $dateFrom,
-            'dateTo' => $dateTo,
-        ));
-        $options =  $this->Leasing->_callRefineParams($params, $options);
         $payments = $this->Leasing->LeasingPaymentDetail->getData('list', array(
             'conditions' => array(
                 'LeasingPaymentDetail.leasing_payment_id' => $payment_id,
@@ -718,6 +712,12 @@ class LeasingsController extends AppController {
                 'LeasingPaymentDetail.id', 'LeasingPaymentDetail.leasing_installment_id',
             )
         ));
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->Leasing->_callRefineParams($params, $options, 'LeasingInstallment', $payments);
 
         $this->paginate = $this->Leasing->getData('paginate', $options);
         $values = $this->paginate('Leasing');

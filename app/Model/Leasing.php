@@ -195,7 +195,7 @@ class Leasing extends AppModel {
         return $data;
     }
 
-    public function _callRefineParams( $data = '', $default_options = false ) {
+    public function _callRefineParams( $data = '', $default_options = false, $modelName = 'Leasing', $leasing_installment_id = false ) {
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
@@ -203,12 +203,56 @@ class Leasing extends AppModel {
         $status = !empty($data['named']['status'])?$data['named']['status']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
+            switch ($modelName) {
+                case 'LeasingInstallment':
+                    $fieldName = 'LeasingInstallment.paid_date';
+                    $default_options['contain'][] = 'LeasingInstallment';
+                    $default_options['group'][] = 'LeasingInstallment.leasing_id';
+                    $conditionsInstallment = array(
+                        'LeasingInstallment.status' => 1,
+                    );
+
+                    if( !empty($leasing_installment_id) ) {
+                        $conditionsInstallment['LeasingInstallment.id'] = $leasing_installment_id;
+                    } else {
+                        $conditionsInstallment['LeasingInstallment.payment_status'] = array(
+                            'unpaid',
+                            'half_paid',
+                        );
+                    }
+
+                    $this->unBindModel(array(
+                        'hasMany' => array(
+                            'LeasingInstallment'
+                        )
+                    ));
+
+                    $this->bindModel(array(
+                        'hasOne' => array(
+                            'LeasingInstallment' => array(
+                                'className' => 'LeasingInstallment',
+                                'foreignKey' => 'leasing_id',
+                                'conditions' => $conditionsInstallment,
+                                'order' => array(
+                                    'LeasingInstallment.paid_date' => 'ASC',
+                                    'LeasingInstallment.id' => 'ASC',
+                                ),
+                            ),
+                        )
+                    ), false);
+                    break;
+                
+                default:
+                    $fieldName = 'Leasing.paid_date';
+                    break;
+            }
+
             if( !empty($dateFrom) ) {
-                $default_options['conditions']['DATE_FORMAT(Leasing.paid_date, \'%Y-%m-%d\') >='] = $dateFrom;
+                $default_options['conditions']['DATE_FORMAT('.$fieldName.', \'%Y-%m-%d\') >='] = $dateFrom;
             }
 
             if( !empty($dateTo) ) {
-                $default_options['conditions']['DATE_FORMAT(Leasing.paid_date, \'%Y-%m-%d\') <='] = $dateTo;
+                $default_options['conditions']['DATE_FORMAT('.$fieldName.', \'%Y-%m-%d\') <='] = $dateTo;
             }
         }
         if( !empty($nodoc) ) {
