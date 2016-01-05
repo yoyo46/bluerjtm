@@ -2,7 +2,6 @@
         if(!empty($values)){
             $grandtotal = 0;
             $totalPaid = 0;
-            $totalSaldo = 0;
 
             foreach ($values as $key => $value) {
                 $date_payment = $this->Common->filterEmptyField($value, 'TtujPayment', 'date_payment');
@@ -27,11 +26,8 @@
                 $customDatePayment = $this->Common->formatDate($date_payment, 'd/m/Y');
                 $customTtujDate = $this->Common->formatDate($ttuj_date, 'd/m/Y');
 
-                $saldo = $total - $paid;
-
                 $grandtotal += $total;
                 $totalPaid += $paid;
-                $totalSaldo += $saldo;
                 $customType = $this->Common->_callLabelBiayaTtuj($type);
 ?>
 <tr>
@@ -50,7 +46,6 @@
             echo $this->Html->tag('td', $customType);
             echo $this->Html->tag('td', $this->Common->getFormatPrice($total));
             echo $this->Html->tag('td', $this->Common->getFormatPrice($paid));
-            echo $this->Html->tag('td', $this->Common->getFormatPrice($saldo));
     ?>
 </tr>
 <?php
@@ -77,9 +72,6 @@
                 'style' => 'text-align: right;vertical-align: middle;font-weight:bold;',
             ));
             echo $this->Html->tag('td', $this->Html->tag('strong', $this->Common->getFormatPrice($totalPaid)), array(
-                'style' => 'text-align: right;vertical-align: middle;font-weight:bold;',
-            ));
-            echo $this->Html->tag('td', $this->Html->tag('strong', $this->Common->getFormatPrice($totalSaldo)), array(
                 'style' => 'text-align: right;vertical-align: middle;font-weight:bold;',
             ));
     ?>

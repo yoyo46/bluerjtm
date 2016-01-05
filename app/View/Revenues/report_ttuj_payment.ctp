@@ -75,12 +75,6 @@
                 'align' => 'right',
                 'data-options' => 'field:\'paid\',width:100',
             ),
-            'saldo' => array(
-                'name' => __('Saldo'),
-                'style' => 'text-align: right;vertical-align: middle;',
-                'align' => 'right',
-                'data-options' => 'field:\'saldo\',width:100',
-            ),
         );
 
         if( !empty($data_action) ){
