@@ -530,7 +530,7 @@ class UangJalanKomisiPayment extends AppModel {
 		}
 
 		$sql = $uj1Query . ' UNION ' . $uj2Query . ' UNION '. $ujExtraQuery . ' UNION '. $commissionQuery . ' UNION '. $commissionExtraQuery . ' UNION ' . $uangKuliQuery . ' UNION ' . $uangKuliBongkarQuery . ' UNION '. $asdpQuery . ' UNION '. $uangKawalQuery . ' UNION '. $uangKeamananQuery;
-		$sql = 'SELECT UangJalanKomisiPayment.*
+		$sql = 'SELECT COUNT(UangJalanKomisiPayment.id) AS cnt
 	    		FROM (
 	                '.$sql.'
 	            ) AS UangJalanKomisiPayment
@@ -538,7 +538,7 @@ class UangJalanKomisiPayment extends AppModel {
 				'.$default_conditions;
 	    $results = $this->query($sql);
 
-	    return count($results);
+	    return !empty($results[0][0]['cnt'])?$results[0][0]['cnt']:0;
 	}
 
     public function _callRefineParams( $data = '', $default_options = false ) {

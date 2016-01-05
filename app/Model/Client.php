@@ -223,7 +223,7 @@ class Client extends AppModel {
 		}
 
 		$sql = $empQuery . ' UNION ' . $custQuery . ' UNION '. $venQuery . ' UNION '. $driverQuery . (!empty($order)?' '.$order:'');
-		$sql = 'SELECT Client.id, Client.name, Client.address, Client.type, Client.model
+		$sql = 'SELECT COUNT(Client.id) AS cnt
 	    		FROM (
 	                '.$sql.'
 	            ) AS Client
@@ -232,7 +232,7 @@ class Client extends AppModel {
 	    $this->recursive = $recursive;
 	    $results = $this->query($sql);
 
-	    return count($results);
+	    return !empty($results[0][0]['cnt'])?$results[0][0]['cnt']:0;
 	}
 
     public function _callRefineParams( $data = '', $default_options = false ) {
