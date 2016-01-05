@@ -18,10 +18,10 @@
         <div class="form-group">
             <?php 
                     echo $this->Form->input('date',array(
-                        'label'=> __('Tanggal'),
+                        'label'=> __('Tgl Jatuh Tempo'),
                         'class'=>'form-control date-range',
                         'required' => false,
-                        'placeholder' => __('Tanggal')
+                        'placeholder' => __('Tgl Jatuh Tempo')
                     ));
             ?>
         </div>
