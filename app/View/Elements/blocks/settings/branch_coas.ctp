@@ -1,9 +1,11 @@
 <div id="auth-box" class="branch-coas-form">
   	<div class="box">
 	    <div class="box-header">
-	        <div class="box-title">
-	        	<?php
-						$link_check = $this->Html->link('checkall', array(
+	        <h3 class="box-title block">
+		        <?php
+		        		echo __('Akses COA');
+
+		        		$link_check = $this->Html->link('checkall', array(
 							'controller' => 'settings',
 							'action' => 'branch_coa_checkall',
 							$id,
@@ -23,11 +25,12 @@
 							'class' => 'ajax-link',
 							'data-wrapper-write' => '#wrapper-branch-form',
 						), __('Anda yakin ingin menghapus semua COA pada cabang ini?'));
+
 						echo $this->Html->tag('div', sprintf('%s / %s', $link_check, $link_uncheck), array(
-							'class' => 'branch-action'
+							'class' => 'branch-action pull-right'
 						));
 	        	?>
-	        </div>
+	        </h3>
 	    </div>
     	<?php
 	    		echo  $this->Html->tag('div', $this->element('blocks/settings/branch_coa_items'), array(

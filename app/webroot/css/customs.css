@@ -319,3 +319,10 @@ tr.expired .red {
 .branch-coas-form .list-coas a {
 	color: #333;
 }
+.branch-coas-form .box-header .box-title {
+	display: block;
+	width: 100%;
+}
+.branch-coas-form .box-header .box-title a {
+	color: #0462F0;
+}
