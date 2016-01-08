@@ -67,7 +67,13 @@
 					                $biaya_lain = $this->Common->filterEmptyField($value, 'DocumentTruck', 'biaya_lain');
 					                $price_estimate = $this->Common->filterEmptyField($value, 'DocumentTruck', 'price_estimate');
 					                $note = $this->Common->filterEmptyField($value, 'DocumentTruck', 'note');
-					                $total = $price + $denda + $biaya_lain;
+
+					                if( !empty($data['DocumentPaymentDetail']['amount'][$key]) ) {
+					                	$total = $this->Common->convertPriceToString($data['DocumentPaymentDetail']['amount'][$key]);
+					                } else {
+					                	$total = $price + $denda + $biaya_lain;
+					                }
+
 									$grandTotal += $total;
 					                
 					                switch ($data_type) {

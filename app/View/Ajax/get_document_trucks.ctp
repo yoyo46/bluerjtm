@@ -120,8 +120,9 @@
                         $denda = $this->Common->filterEmptyField($value, 'DocumentTruck', 'denda');
                         $biaya_lain = $this->Common->filterEmptyField($value, 'DocumentTruck', 'biaya_lain');
                         $price_estimate = $this->Common->filterEmptyField($value, 'DocumentTruck', 'price_estimate');
+                        $last_paid = $this->Common->filterEmptyField($value, 'DocumentTruck', 'last_paid', 0);
                         $note = $this->Common->filterEmptyField($value, 'DocumentTruck', 'note');
-                        $total = $price + $denda + $biaya_lain;
+                        $total = $price + $denda + $biaya_lain - $last_paid;
 
                         $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                         $to_date = $this->Common->formatDate($to_date, 'd/m/Y');

@@ -3,6 +3,13 @@ class DocumentTruck extends AppModel {
 	var $name = 'DocumentTruck';
 	public $useTable = false;
 
+	var $hasMany = array(
+		'DocumentPaymentDetail' => array(
+			'className' => 'DocumentPaymentDetail',
+			'foreignKey' => 'document_id',
+		)
+	);
+
 	public function paginate($conditions, $fields, $order, $limit, $page = 1, $recursive = null, $extra = array()) {
         $this->Truck = ClassRegistry::init('Truck');
 

@@ -2552,6 +2552,17 @@ class AjaxController extends AppController {
         $this->paginate = $options;
         $values = $this->paginate('DocumentTruck');
 
+        if( !empty($values) ) {
+        	foreach ($values as $key => $value) {
+        		$document_id = $this->MkCommon->filterEmptyField($value, 'DocumentTruck', 'id');
+        		$document_type = $this->MkCommon->filterEmptyField($value, 'DocumentTruck', 'data_type');
+
+				$value['DocumentTruck']['last_paid'] = $this->DocumentTruck->DocumentPaymentDetail->getTotalPayment($document_id, $document_type, $payment_id);
+
+            	$values[$key] = $value;
+        	}
+        }
+
         $data_action = 'browse-check-docs';
 		$this->set(compact(
 			'data_action', 'title', 'values',

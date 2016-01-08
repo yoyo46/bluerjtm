@@ -5694,14 +5694,14 @@ class TrucksController extends AppController {
                 }
             }
 
-            $this->request->data['DocumentPayment'] = $this->MkCommon->filterEmptyField($val, 'DocumentPayment');
+            $this->request->data['DocumentPayment'] = $this->MkCommon->filterEmptyField($value, 'DocumentPayment');
         }
 
         $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
 
         $this->MkCommon->_layout_file('select');
         $this->set(compact(
-            'coas'
+            'id', 'coas'
         ));
         $this->render('document_payment_add');
     }

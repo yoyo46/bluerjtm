@@ -52,6 +52,7 @@ class DocumentPaymentDetail extends AppModel {
 	);
 
     function getTotalPayment( $document_id, $data_type, $payment_id = false ){
+        $this->virtualFields['amount'] = 'SUM(DocumentPaymentDetail.amount)';
         $result = $this->find('first', array(
             'conditions'=> array(
                 'DocumentPaymentDetail.document_id' => $document_id,
@@ -61,15 +62,12 @@ class DocumentPaymentDetail extends AppModel {
                 'DocumentPayment.status' => 1,
                 'DocumentPaymentDetail.document_payment_id <>' => $payment_id,
             ),
-            'fields'=> array(
-                'SUM(DocumentPaymentDetail.amount) AS amount'
-            ),
             'contain' => array(
                 'DocumentPayment'
             ),
         ));
 
-        return !empty($result[0]['amount'])?$result[0]['amount']:0;
+        return !empty($result['DocumentPaymentDetail']['amount'])?$result['DocumentPaymentDetail']['amount']:0;
     }
 
     function amountValidate () {
