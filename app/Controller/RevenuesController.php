@@ -6771,7 +6771,8 @@ class RevenuesController extends AppController {
 
                         if( !empty($invoice['Revenue']) ) {
                             foreach ($invoice['Revenue'] as $key => $revenue) {
-                                $revenue = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getSumUnit($revenue, $id, 'revenue');
+                                $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'id');
+                                $revenue = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getSumUnit($revenue, $revenue_id, 'revenue', 'RevenueDetail.revenue_id');
                                 $revenue = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getSumUnit($revenue, $id, 'revenue_price');
                                 $invoice['Revenue'][$key] = $revenue;
                             }
@@ -6783,7 +6784,7 @@ class RevenuesController extends AppController {
                     $revenue_detail = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getPreviewInvoice($invoice['Invoice']['id'], $invoice['Invoice']['tarif_type'], $action_print, $data_print);
                     break;
             }
-
+            
             $this->set(compact(
                 'invoice', 'action_print', 'revenue_detail'
             ));
