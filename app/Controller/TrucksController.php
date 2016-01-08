@@ -1336,8 +1336,8 @@ class TrucksController extends AppController {
 
                 $this->KirPayment->set($data);
                 $this->Truck->set($data);
-                $this->Kir->set($data);
                 $this->Truck->id = $kir['Kir']['truck_id'];
+                $this->Kir->set($data);
                 $this->Kir->id = $kir['Kir']['id'];
 
                 if( $this->KirPayment->validates($data) && $this->Truck->validates($data) && $this->Kir->validates($data) ){
@@ -5726,6 +5726,7 @@ class TrucksController extends AppController {
                 $document_id = !empty($data['DocumentPaymentDetail']['document_id'][$key])?$data['DocumentPaymentDetail']['document_id'][$key]:false;
                 $document_type = !empty($data['DocumentPaymentDetail']['document_type'][$key])?$data['DocumentPaymentDetail']['document_type'][$key]:false;
                 $amount = !empty($amount)?$this->MkCommon->convertPriceToString($amount, 0):0;
+                $document_type = strtolower($document_type);
 
                 $modelName = $this->RjTruck->_callDocumentType($document_type);
 
@@ -5750,6 +5751,21 @@ class TrucksController extends AppController {
                     $biaya_lain = $this->MkCommon->filterEmptyField($value, $modelName, 'biaya_lain');
                     $total = $price + $denda + $biaya_lain;
 
+                    switch ($document_type) {
+                        case 'kir':
+                            $fieldName = 'tgl_kir';
+                            break;
+                        case 'siup':
+                            $fieldName = 'tgl_siup';
+                            break;
+                        default:
+                            $fieldName = 'tgl_stnk';
+                            break;
+                    }
+                    
+                    $truck_id = $this->MkCommon->filterEmptyField($value, $modelName, 'truck_id');
+                    $document_date = $this->MkCommon->filterEmptyField($value, $modelName, 'to_date');
+
                     if( !empty($total_dibayar) ) {
                         $flagPaid = 'half';
 
@@ -5759,8 +5775,17 @@ class TrucksController extends AppController {
                     
                         $this->DocumentPayment->DocumentPaymentDetail->$modelName->set('paid', $flagPaid);
                         $this->DocumentPayment->DocumentPaymentDetail->$modelName->id = $document_id;
+
+                        if( $document_type == 'stnk_5_thn' ) {
+                            $plat_to_date = $this->MkCommon->filterEmptyField($value, $modelName, 'plat_to_date');
+                            $this->DocumentPayment->DocumentPaymentDetail->$modelName->Truck->set('tgl_stnk_plat', $plat_to_date);
+                        }
+
+                        $this->DocumentPayment->DocumentPaymentDetail->$modelName->Truck->set($fieldName, $document_date);
+                        $this->DocumentPayment->DocumentPaymentDetail->$modelName->Truck->id = $truck_id;
+                        $truckSave = $this->DocumentPayment->DocumentPaymentDetail->$modelName->Truck->save();
                         
-                        if( !$this->DocumentPayment->DocumentPaymentDetail->$modelName->save() ) {
+                        if( !$this->DocumentPayment->DocumentPaymentDetail->$modelName->save() || !$truckSave ) {
                             $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran Surat-surat #%s'), $document_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $document_id );
                         }
                     }
@@ -5794,8 +5819,8 @@ class TrucksController extends AppController {
                 $document_no = $this->MkCommon->filterEmptyField($data, 'DocumentPayment', 'nodoc');
                 $coa_id = $this->MkCommon->filterEmptyField($data, 'DocumentPayment', 'coa_id');
 
-                $titleJournalInv = sprintf(__('Pembayaran Surat-surat Truk'));
-                $titleJournalInv = $this->MkCommon->filterEmptyField($data, 'DocumentPayment', 'description', $titleJournalInv);
+                $titleJournal = sprintf(__('Pembayaran Surat-surat Truk'));
+                $titleJournal = $this->MkCommon->filterEmptyField($data, 'DocumentPayment', 'description', $titleJournal);
 
                 $this->User->Journal->deleteJournal($document_payment_id, array(
                     'document_payment',
@@ -5806,7 +5831,7 @@ class TrucksController extends AppController {
                 ), array(
                     'date' => $date_payment,
                     'document_id' => $document_payment_id,
-                    'title' => $titleJournalInv,
+                    'title' => $titleJournal,
                     'document_no' => $document_no,
                     'type' => 'document_payment',
                 ));
@@ -5863,5 +5888,144 @@ class TrucksController extends AppController {
             $this->MkCommon->setCustomFlash(__('Data tidak ditemukan'), 'error');
             $this->redirect($this->referer());
         }
+    }
+
+    function document_payment_delete($id = false){
+        $this->loadModel('DocumentPayment');
+        $is_ajax = $this->RequestHandler->isAjax();
+        $msg = array(
+            'msg' => '',
+            'type' => 'error'
+        );
+        $value = $this->DocumentPayment->getData('first', array(
+            'conditions' => array(
+                'DocumentPayment.id' => $id,
+            ),
+        ));
+
+        if( !empty($value) ){
+            if(!empty($this->request->data)){
+                $data = $this->request->data;
+                $data = $this->MkCommon->dataConverter($data, array(
+                    'date' => array(
+                        'DocumentPayment' => array(
+                            'canceled_date',
+                        ),
+                    )
+                ));
+
+                $value = $this->DocumentPayment->DocumentPaymentDetail->getMerge($value, $id);
+                $date_payment = $this->MkCommon->filterEmptyField($value, 'DocumentPayment', 'date_payment');
+
+                if(!empty($data['DocumentPayment']['canceled_date'])){
+                    $data['DocumentPayment']['canceled_date'] = $this->MkCommon->filterEmptyField($data, 'DocumentPayment', 'canceled_date');
+                    $data['DocumentPayment']['is_canceled'] = 1;
+
+                    $this->DocumentPayment->id = $id;
+                    $this->DocumentPayment->set($data);
+
+                    if($this->DocumentPayment->save()){
+                        $document_no = $this->MkCommon->filterEmptyField($value, 'DocumentPayment', 'nodoc');
+                        $coa_id = $this->MkCommon->filterEmptyField($value, 'DocumentPayment', 'coa_id');
+
+                        if( !empty($value['DocumentPaymentDetail']) ) {
+                            foreach ($value['DocumentPaymentDetail'] as $key => $detail) {
+                                $document_id = $this->MkCommon->filterEmptyField($detail, 'DocumentPaymentDetail', 'document_id');
+                                $document_type = $this->MkCommon->filterEmptyField($detail, 'DocumentPaymentDetail', 'document_type');
+                                $total_dibayar = $this->DocumentPayment->DocumentPaymentDetail->getTotalPayment($document_id, $document_type);
+                                $flagPaid = 'none';
+                                $document_type = strtolower($document_type);
+
+                                if( !empty($total_dibayar) ) {
+                                    $flagPaid = 'half';
+                                }
+
+                                switch ($document_type) {
+                                    case 'kir':
+                                        $fieldName = 'tgl_kir';
+                                        $modelName = 'Kir';
+                                        break;
+                                    case 'siup':
+                                        $fieldName = 'tgl_siup';
+                                        $modelName = 'Siup';
+                                        break;
+                                    default:
+                                        $fieldName = 'tgl_stnk';
+                                        $modelName = 'Stnk';
+                                        break;
+                                }
+                                
+                                $dataDoc = $this->DocumentPayment->DocumentPaymentDetail->$modelName->getMerge(array(), $document_id);
+                                $document_date = $this->MkCommon->filterEmptyField($dataDoc, $modelName, 'from_date');
+                                $truck_id = $this->MkCommon->filterEmptyField($dataDoc, $modelName, 'truck_id');
+
+                                if( $document_type == 'stnk_5_thn' ) {
+                                    $plat_from_date = $this->MkCommon->filterEmptyField($dataDoc, $modelName, 'plat_from_date');
+                                    $this->DocumentPayment->DocumentPaymentDetail->$modelName->Truck->set('tgl_stnk_plat', $plat_from_date);
+                                }
+
+                                $this->DocumentPayment->DocumentPaymentDetail->$modelName->Truck->set($fieldName, $document_date);
+                                $this->DocumentPayment->DocumentPaymentDetail->$modelName->Truck->id = $truck_id;
+                                $truckSave = $this->DocumentPayment->DocumentPaymentDetail->$modelName->Truck->save();
+                                    
+                                $this->DocumentPayment->DocumentPaymentDetail->$modelName->set('paid', $flagPaid);
+                                $this->DocumentPayment->DocumentPaymentDetail->$modelName->id = $document_id;
+                                
+                                if( !$this->DocumentPayment->DocumentPaymentDetail->$modelName->save() || !$truckSave ) {
+                                    $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran surat-surat #%s'), $document_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $document_id );
+                                }
+                            }
+                        }
+
+                        if( !empty($value['DocumentPayment']['total_payment']) ) {
+                            $titleJournal = __('pembayaran biaya surat-surat truk');
+                            $titleJournal = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($value, 'DocumentPayment', 'description', $titleJournal));
+                            $totalPayment = $this->MkCommon->filterEmptyField($value, 'DocumentPayment', 'total_payment');
+
+                            $this->User->Journal->setJournal($totalPayment, array(
+                                'credit' => 'document_payment_coa_id',
+                                'debit' => $coa_id,
+                            ), array(
+                                'date' => $date_payment,
+                                'document_id' => $id,
+                                'title' => $titleJournal,
+                                'document_no' => $document_no,
+                                'type' => 'document_payment_void',
+                            ));
+                        }
+
+                        $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                        $msg = array(
+                            'msg' => sprintf(__('Berhasil menghapus pembayaran surat-surat truk #%s'), $noref),
+                            'type' => 'success'
+                        );
+                        $this->MkCommon->setCustomFlash( $msg['msg'], $msg['type']);  
+                        $this->Log->logActivity( sprintf(__('Berhasil menghapus pembayaran surat-surat truk #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
+                    }else{
+                        $this->Log->logActivity( sprintf(__('Gagal menghapus pembayaran surat-surat truk #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+                    }
+                }else{
+                    $msg = array(
+                        'msg' => __('Harap masukkan tanggal pembatalan pembayaran.'),
+                        'type' => 'error'
+                    );
+                }
+            }
+
+            $this->set('value', $value);
+        }else{
+            $msg = array(
+                'msg' => __('Data tidak ditemukan'),
+                'type' => 'error'
+            );
+        }
+
+        $modelName = 'DocumentPayment';
+        $canceled_date = !empty($this->request->data['DocumentPayment']['canceled_date']) ? $this->request->data['DocumentPayment']['canceled_date'] : false;
+        $this->set(compact(
+            'msg', 'is_ajax', 'action_type',
+            'canceled_date', 'modelName'
+        ));
+        $this->render('/Elements/blocks/common/form_delete');
     }
 }

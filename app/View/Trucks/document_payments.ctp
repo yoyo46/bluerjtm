@@ -27,14 +27,14 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('DocumentPayment.nodoc', __('No. Dokumen'), array(
                             'escape' => false
                         )));
-
-                        echo $this->Html->tag('th', $this->Paginator->sort('DocumentPayment.total_payment', __('Total Dibayar'), array(
-                            'escape' => false,
+                        echo $this->Html->tag('th', $this->Paginator->sort('DocumentPayment.date_payment', __('Tgl pembayaran'), array(
+                            'escape' => false
                         )), array(
                             'class' => 'text-center'
                         ));
-                        echo $this->Html->tag('th', $this->Paginator->sort('DocumentPayment.date_payment', __('Tgl pembayaran'), array(
-                            'escape' => false
+
+                        echo $this->Html->tag('th', $this->Paginator->sort('DocumentPayment.total_payment', __('Total Dibayar'), array(
+                            'escape' => false,
                         )), array(
                             'class' => 'text-center'
                         ));
@@ -65,11 +65,11 @@
                 <?php 
                         echo $this->Html->tag('td', $noref);
                         echo $this->Html->tag('td', $nodoc);
-                        echo $this->Html->tag('td', $total_payment, array(
-                            'class' => 'text-right'
-                        ));
                         echo $this->Html->tag('td', $date_payment, array(
                             'class' => 'text-center'
+                        ));
+                        echo $this->Html->tag('td', $total_payment, array(
+                            'class' => 'text-right'
                         ));
 
                         if(empty($is_canceled)){

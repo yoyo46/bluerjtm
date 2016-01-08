@@ -16,16 +16,49 @@
         <div class="form-group">
             <?php 
                     echo $this->Form->input('date',array(
-                        'label'=> __('Tanggal'),
+                        'label'=> __('Tanggal Berakhir'),
                         'class'=>'form-control date-range',
                         'required' => false,
                         'placeholder' => __('Tanggal')
                     ));
             ?>
         </div>
+        <div class="form-group">
+            <?php 
+                    echo $this->Form->label('type', __('Truk'));
+            ?>
+            <div class="row">
+                <div class="col-sm-4">
+                    <?php 
+                            echo $this->Form->input('type',array(
+                                'label'=> false,
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => false,
+                                'options' => array(
+                                    '1' => __('Nopol'),
+                                    '2' => __('ID Truk'),
+                                ),
+                            ));
+                    ?>
+                </div>
+                <div class="col-sm-8">
+                    <?php 
+                            echo $this->Form->input('nopol',array(
+                                'label'=> false,
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-sm-6">
         <div class="form-group">
+            <?php 
+                    echo $this->Form->label('document_type', __('Jenis Surat'));
+            ?>
             <div class="row">
                 <?php 
                         echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('kir', array(
@@ -56,7 +89,18 @@
                             'required' => false,
                             'value' => 1,
                             'div' => false,
-                        )).__('STNK')), array(
+                        )).__('STNK 1 Thn')), array(
+                            'class' => 'checkbox',
+                        )), array(
+                            'class' => 'col-sm-6',
+                        ));
+                        echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('stnk_5_thn', array(
+                            'type' => 'checkbox',
+                            'label'=> false,
+                            'required' => false,
+                            'value' => 1,
+                            'div' => false,
+                        )).__('STNK 5 Thn')), array(
                             'class' => 'checkbox',
                         )), array(
                             'class' => 'col-sm-6',
