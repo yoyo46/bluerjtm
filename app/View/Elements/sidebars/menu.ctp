@@ -929,7 +929,8 @@
                         'uang_jalan_commission_payments',
                         'biaya_ttuj_payments', 'leasing_payments',
                         'journal_report', 'prepayment_report', 'ledger_report',
-                        'report_ttuj_payment', 'report_ttuj_outstanding'
+                        'report_ttuj_payment', 'report_ttuj_outstanding',
+                        'document_payments',
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
@@ -938,6 +939,7 @@
                         ),
                         'trucks' => array(
                             'kir_payments', 'stnk_payments', 'siup_payments',
+                            'document_payments',
                         ),
                         'revenues' => array(
                             'invoice_payments', 'ttuj_payments',
@@ -1033,6 +1035,15 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'leasing_payments' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Surat-surat Truk', array(
+                                'controller' => 'trucks',
+                                'action' => 'document_payments',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'document_payments' )?'active':'',
                             ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KIR - Pembayaran', array(

@@ -147,5 +147,21 @@ class Kir extends AppModel {
         
         return $default_options;
     }
+
+    function getMerge($data, $id){
+        if(empty($data['Kir'])){
+            $data_merge = $this->find('first', array(
+                'conditions' => array(
+                    'Kir.id' => $id
+                ),
+            ));
+
+            if(!empty($data_merge)){
+                $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

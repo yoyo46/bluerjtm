@@ -76,7 +76,7 @@
                 } else {
         			echo $this->Form->input('TtujPayment.amount_payment.',array(
                         'label'=> false,
-                        'class'=>'form-control input_price_min sisa-ttuj text-right',
+                        'class'=>'form-control input_price_min sisa-amount text-right',
                         'required' => false,
                         'value' => $amountPayment,
                     ));
@@ -92,11 +92,11 @@
     <?php 
             if( empty($document_info) ) {
                 echo $this->Html->tag('td', $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
-                    'class' => 'delete-biaya btn btn-danger btn-xs',
+                    'class' => 'delete-document-current btn btn-danger btn-xs',
                     'escape' => false,
                     'data-id' => sprintf('child-%s', $alias),
                 )), array(
-                    'class' => 'ttuj-payment-action '.$addClass,
+                    'class' => 'document-table-action '.$addClass,
                 ));
             }
     ?>

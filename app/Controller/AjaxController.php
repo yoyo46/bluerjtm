@@ -2524,5 +2524,40 @@ class AjaxController extends AppController {
     	));
     	$this->render('/Elements/blocks/ttuj/forms/ttuj_lanjutan');
 	}
+
+	function getDocumentTrucks(){
+		$this->loadModel('DocumentTruck');
+
+        $named = $this->MkCommon->filterEmptyField($this->params, 'named');
+        $payment_id = $this->MkCommon->filterEmptyField($named, 'payment_id');
+
+		$title = __('Dokumen Truk');
+    	$jenisBiaya = array(
+    		'kir' => __('KIR'),
+    		'siup' => __('SIUP'),
+    		'stnk' => __('STNK'),
+		);
+
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->DocumentTruck->_callRefineParams($params, array(
+            'limit' => Configure::read('__Site.config_pagination'),
+    	));
+
+        if(!empty($this->params)){
+            if(!empty($this->params['named']['kir']) || !empty($this->params['named']['siup']) || !empty($this->params['named']['stnk']) ){
+                $document_type = true;
+        	}
+        }
+
+        $this->paginate = $options;
+        $values = $this->paginate('DocumentTruck');
+
+        $data_action = 'browse-check-docs';
+		$this->set(compact(
+			'data_action', 'title', 'values',
+			'jenisBiaya', 'document_type',
+			'payment_id'
+		));
+	}
 }
 ?>

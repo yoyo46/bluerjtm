@@ -156,5 +156,22 @@ class RjTruckComponent extends Component {
 
 		return $parameters;
 	}
+
+	function _callDocumentType ( $type ) {
+		switch ($type) {
+            case 'stnk':
+                $modelName = 'Stnk';
+                break;
+            case 'stnk_5_thn':
+                $modelName = 'Stnk';
+                break;
+            
+            default:
+                $modelName = ucwords($type);
+                break;
+        }
+
+        return $modelName;
+	}
 }
 ?>

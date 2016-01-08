@@ -2080,7 +2080,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                                 obj: $('#myModal .modal-body .input_price'),
                             });
                             input_price_min($('#myModal .modal-body .input_price_min'));
-                            sisa_ttuj($('#myModal .modal-body .sisa-ttuj'));
+                            sisa_amount($('#myModal .modal-body .sisa-amount'));
                             popup_checkbox();
                             daterangepicker( $('#myModal .modal-body .date-range') );
                         } else {
@@ -2644,21 +2644,24 @@ var popup_checkbox = function(){
             if( $('#checkbox-info-table .child-'+id).length <= 0 ) {
                 if($('.child-'+id).length <= 0){
                     var html_content = '<tr class="child child-'+id+'">'+parent.html()+'</tr>';
-                    var sisa = convert_number(parent.find('.sisa-ttuj').val(), 'int');
+                    var sisa = convert_number(parent.find('.sisa-amount').val(), 'int');
 
                     $('#checkbox-info-table').append(html_content);
-                    $('#checkbox-info-table .child-'+id+' .sisa-ttuj').val(sisa);
+                    $('#checkbox-info-table .child-'+id+' .sisa-amount').val(sisa);
+
                     $('.child-'+id).find('.checkbox-action').remove();
                     $('.child-'+id).find('.on-remove').remove();
-                    $('#checkbox-info-table .child-'+id+' .ttuj-payment-action').removeClass('hide');
+                    $('.child-'+id).find('.on-show').removeClass('hide');
+                    
+                    $('#checkbox-info-table .child-'+id+' .document-table-action').removeClass('hide');
                     $('.action-biaya-ttuj').removeClass('hide');
 
                     $.inputPrice({
                         obj: $('.child-'+id+' .input_price'),
                     });
                     input_price_min( $('.child-'+id+' .input_price_min') );
-                    sisa_ttuj($('#checkbox-info-table .child-'+id+' .sisa-ttuj'));
-                    delete_biaya_ttuj($('#checkbox-info-table .child-'+id+' .ttuj-payment-action a'));
+                    sisa_amount($('#checkbox-info-table .child-'+id+' .sisa-amount'));
+                    delete_current_document($('#checkbox-info-table .child-'+id+' .document-table-action a'));
                 }
             }
         }else{
@@ -2853,8 +2856,8 @@ var convert_number = function ( num, type ) {
 }
 
 var calcTotalBiayaTtuj = function () {
-    var biayaObj = $('#checkbox-info-table .sisa-ttuj');
-    var biayaLen = $('#checkbox-info-table .sisa-ttuj').length;
+    var biayaObj = $('#checkbox-info-table .sisa-amount');
+    var biayaLen = $('#checkbox-info-table .sisa-amount').length;
     var totalBiaya = 0;
 
     for (i = 0; i < biayaLen; i++) {
@@ -2864,9 +2867,9 @@ var calcTotalBiayaTtuj = function () {
     $('#total-biaya').html('IDR '+formatNumber( totalBiaya, 0 ));
 }
 
-var sisa_ttuj = function ( obj ) {
+var sisa_amount = function ( obj ) {
     if( typeof obj == 'undefined' ) {
-        obj = $('.sisa-ttuj');
+        obj = $('.sisa-amount');
     }
 
     obj.blur(function(){
@@ -2886,9 +2889,9 @@ var sisa_ttuj = function ( obj ) {
     });
 }
 
-var delete_biaya_ttuj = function ( obj ) {
+var delete_current_document = function ( obj ) {
     if( typeof obj == 'undefined' ) {
-        obj = $('.ttuj-payment-action a');
+        obj = $('.document-table-action a');
     }
 
     obj.click(function(){
@@ -3251,8 +3254,8 @@ $(function() {
     price_tipe_motor();
     price_perlengkapan();
     
-    sisa_ttuj();
-    delete_biaya_ttuj();
+    sisa_amount();
+    delete_current_document();
 
     auth_form_open();
     action_child_module();

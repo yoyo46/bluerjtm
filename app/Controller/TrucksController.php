@@ -8,7 +8,7 @@ class TrucksController extends AppController {
     );
 
     public $helper = array(
-        'PhpExcel'
+        'PhpExcel', 'Truck',
     );
 
     function beforeFilter() {
@@ -5551,6 +5551,317 @@ class TrucksController extends AppController {
                 'select',
                 'freeze',
             ));
+        }
+    }
+
+    function document_payments(){
+        $this->loadModel('DocumentPayment');
+        $options = array(
+            'order' => array(
+                'DocumentPayment.created' => 'DESC',
+                'DocumentPayment.id' => 'DESC',
+            ),
+        );
+
+        $this->set('active_menu', 'document_payments');
+        $this->set('sub_module_title', __('Pembayaran Surat-surat Truk'));
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->DocumentPayment->_callRefineParams($params, $options);
+
+        $this->paginate = $this->DocumentPayment->getData('paginate', $options);
+        $values = $this->paginate('DocumentPayment');
+
+        $this->set(compact(
+            'values'
+        )); 
+    }
+
+    function document_payment_add(){
+        $this->loadModel('DocumentPayment');
+        $module_title = __('Tambah Pembayaran Surat-surat Truk');
+        $this->set('sub_module_title', $module_title);
+
+        $this->doDocumentPayment();
+    }
+
+    function document_payment_edit( $id = false ){
+        $this->loadModel('DocumentPayment');
+        $module_title = __('Edit Pembayaran Surat-surat Truk');
+        $this->set('sub_module_title', $module_title);
+
+        $head_office = Configure::read('__Site.config_branch_head_office');
+
+        if( !empty($head_office) ) {
+            $elementRevenue = array(
+                'branch' => false,
+            );
+        }
+
+        $value = $this->DocumentPayment->getData('first', array(
+            'conditions' => array(
+                'DocumentPayment.id' => $id
+            ),
+        ), $elementRevenue);
+        $value = $this->DocumentPayment->DocumentPaymentDetail->getMerge($value, $id);
+
+        $this->doDocumentPayment( $id, $value );
+    }
+
+    function doDocumentPayment( $id = false, $value = false ){
+        $this->set('active_menu', 'document_payments');
+
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            $data['DocumentPayment']['date_payment'] = !empty($data['DocumentPayment']['date_payment']) ? $this->MkCommon->getDate($data['DocumentPayment']['date_payment']) : '';
+            $data['DocumentPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
+
+            $dataAmount = $this->MkCommon->filterEmptyField($data, 'DocumentPaymentDetail', 'amount');
+            $flagPaymentDetail = $this->doDocumentPaymentDetail($dataAmount, $data);
+
+            if( !empty($id) ) {
+                $this->DocumentPayment->id = $id;
+            } else {
+                $this->DocumentPayment->create();
+            }
+
+            $this->DocumentPayment->set($data);
+
+            if( $this->DocumentPayment->validates() && !empty($flagPaymentDetail) ){
+                if($this->DocumentPayment->save()){
+                    $document_id = $this->DocumentPayment->id;
+                    $flagPaymentDetail = $this->doDocumentPaymentDetail($dataAmount, $data, $document_id);
+
+                    $this->params['old_data'] = $value;
+                    $this->params['data'] = $data;
+
+                    $noref = str_pad($document_id, 6, '0', STR_PAD_LEFT);
+                    $this->MkCommon->setCustomFlash(sprintf(__('Berhasil melakukan Pembayaran dokumen #%s'), $noref), 'success'); 
+                    $this->Log->logActivity( sprintf(__('Berhasil melakukan Pembayaran dokumen #%s'), $document_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $document_id );
+                    
+                    $this->redirect(array(
+                        'action' => 'document_payments',
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal melakukan Pembayaran dokumen'), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal melakukan Pembayaran dokumen #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
+                }
+            }else{
+                $msgError = array();
+
+                if( !empty($this->DocumentPayment->DocumentPaymentDetail->validationErrors) ) {
+                    $errorPaymentDetails = $this->DocumentPayment->DocumentPaymentDetail->validationErrors;
+
+                    foreach ($errorPaymentDetails as $key => $errorPaymentDetail) {
+                        if( !empty($errorPaymentDetail) ) {
+                            foreach ($errorPaymentDetail as $key => $err_msg) {
+                                $msgError[] = $err_msg;
+                            }
+                        }
+                    }
+                }
+
+                if( !empty($msgError) ) {
+                    $this->MkCommon->setCustomFlash('<ul><li>'.implode('</li><li>', $msgError).'</li></ul>', 'error'); 
+                } else if( $flagPaymentDetail ) {
+                    $this->MkCommon->setCustomFlash(__('Gagal melakukan Pembayaran dokumen'), 'error'); 
+                }
+            }
+
+            $this->request->data['DocumentPayment']['date_payment'] = !empty($data['DocumentPayment']['date_payment']) ? $data['DocumentPayment']['date_payment'] : '';
+        } else if( !empty($value) ) {
+            if( !empty($value['DocumentPaymentDetail']) ) {
+                foreach ($value['DocumentPaymentDetail'] as $key => $val) {
+                    $document_id = $this->MkCommon->filterEmptyField($val, 'DocumentPaymentDetail', 'document_id');
+                    $document_type = $this->MkCommon->filterEmptyField($val, 'DocumentPaymentDetail', 'document_type');
+                    $amount = $this->MkCommon->filterEmptyField($val, 'DocumentPaymentDetail', 'amount');
+                    $modelName = $this->RjTruck->_callDocumentType($document_type);
+
+                    $val = $this->DocumentPayment->DocumentPaymentDetail->$modelName->getMerge($val, $document_id);
+
+                    $this->request->data['DocumentTruck'][$key]['DocumentTruck'] = $this->MkCommon->filterEmptyField($val, $modelName);
+                    $this->request->data['DocumentTruck'][$key]['DocumentTruck']['data_type'] = $document_type;
+
+                    $this->request->data['DocumentPaymentDetail']['amount'][$key] = $amount;
+                    $this->request->data['DocumentPaymentDetail']['document_id'][$key] = $document_id;
+                    $this->request->data['DocumentPaymentDetail']['document_type'][$key] = $document_type;
+                }
+            }
+
+            $this->request->data['DocumentPayment'] = $this->MkCommon->filterEmptyField($val, 'DocumentPayment');
+        }
+
+        $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
+
+        $this->MkCommon->_layout_file('select');
+        $this->set(compact(
+            'coas'
+        ));
+        $this->render('document_payment_add');
+    }
+
+    function doDocumentPaymentDetail ( $dataAmount, $data, $document_payment_id = false ) {
+        $flagPaymentDetail = true;
+        $totalPayment = 0;
+        $date_payment = $this->MkCommon->filterEmptyField($data, 'DocumentPayment', 'date_payment');
+        $data = $this->request->data;
+
+        if( !empty($document_payment_id) ) {
+            $this->DocumentPayment->DocumentPaymentDetail->updateAll( array(
+                'DocumentPaymentDetail.status' => 0,
+            ), array(
+                'DocumentPaymentDetail.document_payment_id' => $document_payment_id,
+            ));
+        }
+
+
+        if( !empty($dataAmount) ) {
+            foreach ($dataAmount as $key => $amount) {
+                $document_id = !empty($data['DocumentPaymentDetail']['document_id'][$key])?$data['DocumentPaymentDetail']['document_id'][$key]:false;
+                $document_type = !empty($data['DocumentPaymentDetail']['document_type'][$key])?$data['DocumentPaymentDetail']['document_type'][$key]:false;
+                $amount = !empty($amount)?$this->MkCommon->convertPriceToString($amount, 0):0;
+
+                $modelName = $this->RjTruck->_callDocumentType($document_type);
+
+                $dataPaymentDetail = array(
+                    'DocumentPaymentDetail' => array(
+                        'document_id' => $document_id,
+                        'document_type' => $document_type,
+                        'amount' => $amount,
+                    ),
+                );
+
+                $totalPayment += $amount;
+                $total_dibayar = $this->DocumentPayment->DocumentPaymentDetail->getTotalPayment($document_id, $document_type) + $amount;
+                $value = $this->DocumentPayment->DocumentPaymentDetail->$modelName->getMerge(array(), $document_id);
+                $this->request->data['DocumentTruck'][$key]['DocumentTruck'] = !empty($value[$modelName])?$value[$modelName]:false;
+                $this->request->data['DocumentTruck'][$key]['DocumentTruck']['data_type'] = $document_type;
+
+                if( !empty($document_payment_id) ) {
+                    $dataPaymentDetail['DocumentPaymentDetail']['document_payment_id'] = $document_payment_id;
+                    $price = $this->MkCommon->filterEmptyField($value, $modelName, 'price');
+                    $denda = $this->MkCommon->filterEmptyField($value, $modelName, 'denda');
+                    $biaya_lain = $this->MkCommon->filterEmptyField($value, $modelName, 'biaya_lain');
+                    $total = $price + $denda + $biaya_lain;
+
+                    if( !empty($total_dibayar) ) {
+                        $flagPaid = 'half';
+
+                        if( $total <= $total_dibayar ) {
+                            $flagPaid = 'full';
+                        }
+                    
+                        $this->DocumentPayment->DocumentPaymentDetail->$modelName->set('paid', $flagPaid);
+                        $this->DocumentPayment->DocumentPaymentDetail->$modelName->id = $document_id;
+                        
+                        if( !$this->DocumentPayment->DocumentPaymentDetail->$modelName->save() ) {
+                            $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran Surat-surat #%s'), $document_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $document_id );
+                        }
+                    }
+                }
+
+                $this->DocumentPayment->DocumentPaymentDetail->create();
+                $this->DocumentPayment->DocumentPaymentDetail->set($dataPaymentDetail);
+
+                if( !empty($document_payment_id) ) {
+                    if( !$this->DocumentPayment->DocumentPaymentDetail->save() ) {
+                        $flagPaymentDetail = false;
+                    }
+                } else {
+                    if( !$this->DocumentPayment->DocumentPaymentDetail->validates() ) {
+                        $flagPaymentDetail = false;
+                    }
+                }
+            }
+        } else {
+            $flagPaymentDetail = false;
+            $this->MkCommon->setCustomFlash(__('Mohon pilih biaya yang akan dibayar.'), 'error'); 
+        }
+
+        if( !empty($totalPayment) && !empty($document_payment_id) ) {
+            $this->DocumentPayment->id = $document_payment_id;
+            $this->DocumentPayment->set('total_payment', $totalPayment);
+
+            if( !$this->DocumentPayment->save() ) {
+                $this->Log->logActivity( sprintf(__('Gagal mengubah total pembayaran Surat-surat #%s'), $document_payment_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $document_payment_id );
+            } else {
+                $document_no = $this->MkCommon->filterEmptyField($data, 'DocumentPayment', 'nodoc');
+                $coa_id = $this->MkCommon->filterEmptyField($data, 'DocumentPayment', 'coa_id');
+
+                $titleJournalInv = sprintf(__('Pembayaran Surat-surat Truk'));
+                $titleJournalInv = $this->MkCommon->filterEmptyField($data, 'DocumentPayment', 'description', $titleJournalInv);
+
+                $this->User->Journal->deleteJournal($document_payment_id, array(
+                    'document_payment',
+                ));
+                $this->User->Journal->setJournal($totalPayment, array(
+                    'credit' => $coa_id,
+                    'debit' => 'document_payment_coa_id',
+                ), array(
+                    'date' => $date_payment,
+                    'document_id' => $document_payment_id,
+                    'title' => $titleJournalInv,
+                    'document_no' => $document_no,
+                    'type' => 'document_payment',
+                ));
+            }
+        }
+
+        return $flagPaymentDetail;
+    }
+
+    function document_payment_detail($id = false){
+        $this->loadModel('DocumentPayment');
+        $module_title = __('Kas/Bank');
+        $elementRevenue = false;
+        $head_office = Configure::read('__Site.config_branch_head_office');
+
+        if( !empty($head_office) ) {
+            $elementRevenue = array(
+                'branch' => false,
+            );
+        }
+
+        $value = $this->DocumentPayment->getData('first', array(
+            'conditions' => array(
+                'DocumentPayment.id' => $id
+            ),
+        ), $elementRevenue);
+
+        $this->set('active_menu', 'document_payments');
+        $sub_module_title = $title_for_layout = 'Detail Pembayaran Surat-surat Truk';
+
+        if(!empty($value)){
+            $coa_id = $this->MkCommon->filterEmptyField($value, 'DocumentPayment', 'coa_id');
+
+            $value = $this->User->Journal->Coa->getMerge($value, $coa_id);
+            $value = $this->DocumentPayment->DocumentPaymentDetail->getMerge($value, $id);
+
+            if( !empty($value['DocumentPaymentDetail']) ) {
+                foreach ($value['DocumentPaymentDetail'] as $key => $val) {
+                    $document_id = $this->MkCommon->filterEmptyField($val, 'DocumentPaymentDetail', 'document_id');
+                    $document_type = $this->MkCommon->filterEmptyField($val, 'DocumentPaymentDetail', 'document_type');
+                    $modelName = $this->RjTruck->_callDocumentType($document_type);
+
+                    $val = $this->DocumentPayment->DocumentPaymentDetail->$modelName->getMerge($val, $document_id);
+
+                    $value['DocumentPaymentDetail'][$key] = $val;
+                }
+            }
+
+            $this->set(compact(
+                'value', 'sub_module_title', 'title_for_layout',
+                'module_title'
+            ));
+        }else{
+            $this->MkCommon->setCustomFlash(__('Data tidak ditemukan'), 'error');
+            $this->redirect($this->referer());
         }
     }
 }

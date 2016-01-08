@@ -237,6 +237,10 @@ class Truck extends AppModel {
             'className' => 'Stnk',
             'foreignKey' => 'truck_id',
         ),
+        'Kir' => array(
+            'className' => 'Kir',
+            'foreignKey' => 'truck_id',
+        ),
         'TruckCustomer' => array(
             'className' => 'TruckCustomer',
             'foreignKey' => 'truck_id',

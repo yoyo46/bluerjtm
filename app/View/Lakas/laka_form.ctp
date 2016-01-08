@@ -442,7 +442,8 @@
 					));
 		    		echo $this->Html->link(__('Next'), '#step2', array(
 						'class'=> 'btn btn-success',
-						'id' => 'nextLaka'
+						'id' => 'nextLaka',
+						'allow' => true,
 					));
 			?>
 		</div>
@@ -727,7 +728,8 @@
 			<?php
 		    		echo $this->Html->link(__('Kembali'), '#step1', array(
 						'class'=> 'btn btn-default',
-						'id' => 'backLaka'
+						'id' => 'backLaka',
+						'allow' => true,
 					));
 
 					echo $this->Form->button(__('Simpan'), array(
