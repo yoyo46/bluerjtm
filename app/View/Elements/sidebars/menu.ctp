@@ -1046,32 +1046,32 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'document_payments' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KIR - Pembayaran', array(
-                                'controller' => 'trucks',
-                                'action' => 'kir_payments',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'kir_payments' )?'active':'',
-                            ));
+                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> KIR - Pembayaran', array(
+                            //     'controller' => 'trucks',
+                            //     'action' => 'kir_payments',
+                            // ), array(
+                            //     'escape' => false
+                            // )), array(
+                            //     'class' => ( !empty($active_menu) && $active_menu == 'kir_payments' )?'active':'',
+                            // ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> STNK - Pembayaran', array(
-                                'controller' => 'trucks',
-                                'action' => 'stnk_payments',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'stnk_payments' )?'active':'',
-                            ));
+                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> STNK - Pembayaran', array(
+                            //     'controller' => 'trucks',
+                            //     'action' => 'stnk_payments',
+                            // ), array(
+                            //     'escape' => false
+                            // )), array(
+                            //     'class' => ( !empty($active_menu) && $active_menu == 'stnk_payments' )?'active':'',
+                            // ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Ijin Usaha - Pembayaran', array(
-                                'controller' => 'trucks',
-                                'action' => 'siup_payments',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'siup_payments' )?'active':'',
-                            ));
+                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Ijin Usaha - Pembayaran', array(
+                            //     'controller' => 'trucks',
+                            //     'action' => 'siup_payments',
+                            // ), array(
+                            //     'escape' => false
+                            // )), array(
+                            //     'class' => ( !empty($active_menu) && $active_menu == 'siup_payments' )?'active':'',
+                            // ));
 
                             // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LAKA', '#', array(
                             //     'escape' => false

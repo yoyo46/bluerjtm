@@ -161,7 +161,7 @@
             echo $this->Html->tag('td', $grandtotalAngsuran);
             echo $this->Html->tag('td', $grandtotalCountInstallment);
             echo $this->Html->tag('td', $grandtotalTotalInstallment);
-            echo $this->Html->tag('td', $grandtotalInstallmentRate);
+            echo $this->Html->tag('td', $grandtotalTotalInstallmentRate);
             echo $this->Html->tag('td', $grandtotalPembayaran);
             echo $this->Html->tag('td', $grandtotalCountSisa);
             echo $this->Html->tag('td', $grandtotalSisa);

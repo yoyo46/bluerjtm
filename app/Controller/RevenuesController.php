@@ -6440,7 +6440,9 @@ class RevenuesController extends AppController {
                 $revenues = $this->Revenue->RevenueDetail->getData('all', array(
                     'conditions' => $conditions,
                     'contain' => array(
-                        'Revenue',
+                        'Revenue' => array(
+                            'Ttuj',
+                        ),
                     ),
                     'group' => array(
                         'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\')'
@@ -8217,5 +8219,50 @@ class RevenuesController extends AppController {
         } else {
             $this->MkCommon->_layout_file('select');
         }
+    }
+
+    function generateRevenue () {
+        $revenues = $this->Ttuj->Revenue->RevenueDetail->find('all', array(
+            'conditions' => array(
+                'Revenue.total' => 0,
+                'Revenue.pph' => 0,
+                'Revenue.ppn' => 0,
+                'Revenue.revenue_tarif_type' => 'per_unit',
+                'RevenueDetail.status' => 1,
+                'RevenueDetail.total_price_unit <>' => 0,
+            ),
+            'contain' => array(
+                'Revenue',
+            ),
+            'group' => array(
+                'RevenueDetail.revenue_id',
+            ),
+            // 'limit' => 5,
+        ));
+
+        if( !empty($revenues) ) {
+            foreach ($revenues as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField( $value, 'Revenue', 'id' );
+
+                $this->Ttuj->Revenue->RevenueDetail->virtualFields['total'] = 'SUM(RevenueDetail.total_price_unit)';
+                $detail = $this->Ttuj->Revenue->RevenueDetail->find('first', array(
+                    'conditions' => array(
+                        'RevenueDetail.status' => 1,
+                        'RevenueDetail.revenue_id' => $id,
+                    ),
+                    'group' => array(
+                        'RevenueDetail.revenue_id',
+                    ),
+                ));
+                $total = $this->MkCommon->filterEmptyField( $detail, 'RevenueDetail', 'total' );
+
+                $this->Ttuj->Revenue->id = $id;
+                $this->Ttuj->Revenue->set('total', $total);
+                $this->Ttuj->Revenue->set('total_without_tax', $total);
+                $this->Ttuj->Revenue->save();
+            }
+        }
+
+        die();
     }
 }
