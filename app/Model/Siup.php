@@ -47,6 +47,11 @@ class Siup extends AppModel {
         )
     );
 
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['status_paid'] = 'CASE WHEN Siup.paid = \'none\' THEN 0 WHEN Siup.paid = \'half\' THEN 1 ELSE 2 END';
+    }
+
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
         $default_options = array(
@@ -56,7 +61,7 @@ class Siup extends AppModel {
             ),
             'order'=> array(
                 'Siup.rejected' => 'ASC',
-                'Siup.paid' => 'ASC',
+                'Siup.status_paid' => 'ASC',
                 'Siup.tgl_siup' => 'DESC',
             ),
             'contain' => array(

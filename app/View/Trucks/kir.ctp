@@ -52,6 +52,7 @@
                         foreach ($kir as $key => $value) {
                             $id = $value['Kir']['id'];
                             $branch_id = $this->Common->filterEmptyField($value, 'Kir', 'branch_id');
+                            $paid = $this->Common->filterEmptyField($value, 'Kir', 'paid');
             ?>
             <tr>
                 <td><?php echo $value['Truck']['nopol'];?></td>
@@ -64,8 +65,10 @@
                     <?php 
                             if( empty($value['Kir']['status']) ) {
                                 echo '<span class="label label-danger">Non-Aktif</span>'; 
-                            } else if( !empty($value['Kir']['paid']) ) {
+                            } else if( $paid == 'full' ) {
                                 echo '<span class="label label-success">Sudah Bayar</span>'; 
+                            } else if( $paid == 'half' ) {
+                                echo '<span class="label label-success">Dibayar Sebagian</span>'; 
                             } else if( !empty($value['Kir']['rejected']) ) {
                                 echo '<span class="label label-danger">Ditolak</span>'; 
                             } else {
@@ -76,7 +79,7 @@
                 <td><?php echo $this->Time->niceShort($value['Kir']['created']);?></td>
                 <td class="action">
                     <?php
-                            if(!empty($value['Kir']['status']) && empty($value['Kir']['paid'])) {
+                            if(!empty($value['Kir']['status']) && $paid == 'none') {
                                 $label = __('Edit');
                             } else {
                                 $label = __('Detail');
@@ -92,7 +95,7 @@
                             ));
 
                             if( !empty($value['Kir']['status']) ) {
-                                if( empty($value['Kir']['paid']) && empty($value['Kir']['rejected']) ){
+                                if( $paid == 'none' && empty($value['Kir']['rejected']) ){
                                     echo $this->Html->link(__('Void'), array(
                                         'controller' => 'trucks',
                                         'action' => 'kir_delete',

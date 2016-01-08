@@ -1227,7 +1227,7 @@ class AjaxController extends AppController {
 		$data_change = 'truckID';
 		$options = array(
 			'conditions' => array(
-	            'Kir.paid' => 0,
+	            'Kir.paid <>' => 'full',
 	            'Kir.rejected' => 0,
             ),
             'limit' => Configure::read('__Site.config_pagination'),
@@ -1263,7 +1263,7 @@ class AjaxController extends AppController {
         $options = array(
 			'conditions' => array(
 	            'Stnk.status' => 1,
-	            'Stnk.paid' => 0,
+	            'Stnk.paid <>' => 'full',
 	            'Stnk.rejected' => 0,
             ),
             'contain' => array(
@@ -1298,7 +1298,7 @@ class AjaxController extends AppController {
 		$data_change = 'truckID';
         $options = array(
 			'conditions' => array(
-	            'Siup.paid' => 0,
+	            'Siup.paid <>' => 'full',
 	            'Siup.rejected' => 0,
             ),
             'limit' => Configure::read('__Site.config_pagination'),

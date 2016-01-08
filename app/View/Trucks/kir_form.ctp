@@ -5,6 +5,8 @@
 		));
 		$this->Html->addCrumb($sub_module_title);
 
+        $paid = $this->Common->filterEmptyField($kir, 'Kir', 'paid');
+
 		echo $this->Form->create('Kir', array(
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
@@ -198,7 +200,7 @@
 <div class="box-footer text-center action">
 	<?php
 			if( empty($kir) || !empty($kir['Kir']['status']) ) {
-	            if( empty($kir['Kir']['paid']) && empty($kir['Kir']['rejected']) ){
+	            if( $paid == 'none' && empty($kir['Kir']['rejected']) ){
 		    		echo $this->Form->button(__('Simpan'), array(
 						'div' => false, 
 						'class'=> 'btn btn-success',

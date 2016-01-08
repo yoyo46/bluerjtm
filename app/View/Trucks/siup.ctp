@@ -53,6 +53,7 @@
                     if(!empty($siup)){
                         foreach ($siup as $key => $value) {
                             $id = $value['Siup']['id'];
+                            $paid = $this->Common->filterEmptyField($value, 'Siup', 'paid');
             ?>
             <tr>
                 <td><?php echo $value['Truck']['nopol'];?></td>
@@ -65,8 +66,10 @@
                     <?php 
                             if( empty($value['Siup']['status']) ) {
                                 echo '<span class="label label-danger">Non-Aktif</span>'; 
-                            } else if( !empty($value['Siup']['paid']) ) {
+                            } else if( $paid == 'full' ) {
                                 echo '<span class="label label-success">Sudah Bayar</span>'; 
+                            } else if( $paid == 'half' ) {
+                                echo '<span class="label label-success">Dibayar Sebagian</span>'; 
                             } else if( !empty($value['Siup']['rejected']) ) {
                                 echo '<span class="label label-danger">Ditolak</span>'; 
                             } else {
@@ -77,7 +80,7 @@
                 <td><?php echo $this->Time->niceShort($value['Siup']['created']);?></td>
                 <td class="action">
                     <?php
-                            if(!empty($value['Siup']['status']) && empty($value['Siup']['paid'])) {
+                            if(!empty($value['Siup']['status']) && $paid == 'none') {
                                 $label = __('Ubah');
                             } else {
                                 $label = __('Detail');
@@ -92,7 +95,7 @@
                             ));
 
                             if( !empty($value['Siup']['status']) ) {
-                                if( empty($value['Siup']['paid']) && empty($value['Siup']['rejected']) ){
+                                if( $paid == 'none' && empty($value['Siup']['rejected']) ){
                                     echo $this->Html->link(__('Void'), array(
                                         'controller' => 'trucks',
                                         'action' => 'siup_delete',

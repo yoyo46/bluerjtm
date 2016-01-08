@@ -72,6 +72,7 @@
                 <dl class="dl-horizontal">
                     <?php 
                             $id = $this->Common->filterEmptyField($siup, 'SiupPayment', 'id');
+                            $paid = $this->Common->filterEmptyField($siup, 'Kir', 'paid');
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                     ?>
                     <dt><?php echo __('No. Referensi')?></dt>
@@ -86,8 +87,10 @@
                     <dd>
                         <?php 
                                 if(empty($siup['SiupPayment']['is_void'])){
-                                    if( !empty($siup['Siup']['paid']) ) {
+                                    if( $paid == 'full' ) {
                                         echo '<span class="label label-success">Sudah Bayar</span>'; 
+                                    } else if( $paid == 'half' ) {
+                                        echo '<span class="label label-success">Dibayar Sebagian</span>'; 
                                     } else if( !empty($siup['Siup']['rejected']) ) {
                                         echo '<span class="label label-danger">Ditolak</span>'; 
                                     } else {

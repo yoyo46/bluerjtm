@@ -54,6 +54,7 @@
                 if(!empty($stnks)){
                     foreach ($stnks as $key => $value) {
                         $id = $value['Stnk']['id'];
+                        $paid = $this->Common->filterEmptyField($value, 'Stnk', 'paid');
             ?>
             <tr>
                 <td><?php echo $value['Stnk']['no_pol'];?></td>
@@ -69,8 +70,10 @@
                     <?php 
                             if( empty($value['Stnk']['status']) ) {
                                 echo '<span class="label label-danger">Non-Aktif</span>'; 
-                            } else if( !empty($value['Stnk']['paid']) ) {
+                            } else if( $paid == 'full' ) {
                                 echo '<span class="label label-success">Sudah Bayar</span>'; 
+                            } else if( $paid == 'half' ) {
+                                echo '<span class="label label-success">Dibayar Sebagian</span>'; 
                             } else if( !empty($value['Stnk']['rejected']) ) {
                                 echo '<span class="label label-danger">Ditolak</span>'; 
                             } else {
@@ -81,7 +84,7 @@
                 <td><?php echo $this->Time->niceShort($value['Stnk']['created']);?></td>
                 <td class="action">
                     <?php
-                            if(!empty($value['Stnk']['status']) && empty($value['Stnk']['paid'])) {
+                            if(!empty($value['Stnk']['status']) && $paid == 'none') {
                                 $label = __('Ubah');
                             } else {
                                 $label = __('Detail');
@@ -96,7 +99,7 @@
                             ));
 
                             if( !empty($value['Stnk']['status']) ) {
-                                if( empty($value['Stnk']['paid']) && empty($value['Stnk']['rejected']) ){
+                                if( $paid == 'none' && empty($value['Stnk']['rejected']) ){
                                     echo $this->Html->link(__('Void'), array(
                                         'controller' => 'trucks',
                                         'action' => 'stnk_delete',

@@ -59,6 +59,11 @@ class Stnk extends AppModel {
         )
     );
 
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['status_paid'] = 'CASE WHEN Stnk.paid = \'none\' THEN 0 WHEN Stnk.paid = \'half\' THEN 1 ELSE 2 END';
+    }
+
     function validDateStnk($data){
         $result = false;
         if(strtotime($data['tgl_berakhir']) > strtotime($this->data['Stnk']['tgl_bayar'])){

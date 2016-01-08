@@ -93,6 +93,7 @@
                 <dl class="dl-horizontal">
                     <?php 
                             $id = $this->Common->filterEmptyField($stnk, 'StnkPayment', 'id');
+                            $paid = $this->Common->filterEmptyField($stnk, 'Stnk', 'paid');
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                     ?>
                     <dt><?php echo __('No. Referensi')?></dt>
@@ -107,8 +108,10 @@
                     <dd>
                         <?php 
                                 if(empty($stnk['StnkPayment']['is_void'])){
-                                    if( !empty($stnk['Stnk']['paid']) ) {
+                                    if( $paid == 'full' ) {
                                         echo '<span class="label label-success">Sudah Bayar</span>'; 
+                                    } else if( $paid == 'half' ) {
+                                        echo '<span class="label label-success">Dibayar Sebagian</span>'; 
                                     } else if( !empty($stnk['Stnk']['rejected']) ) {
                                         echo '<span class="label label-danger">Ditolak</span>'; 
                                     } else {

@@ -1062,7 +1062,7 @@ class TrucksController extends AppController {
             'order'=> array(
                 'Kir.status' => 'DESC',
                 'Kir.rejected' => 'ASC',
-                'Kir.paid' => 'ASC',
+                'Kir.status_paid' => 'ASC',
                 'Kir.tgl_kir' => 'DESC',
             ),
         ), true, array(
@@ -1254,7 +1254,7 @@ class TrucksController extends AppController {
             $kir = $this->Kir->getData('first', array(
                 'conditions' => array(
                     'Kir.rejected' => 0,
-                    'Kir.paid' => 0,
+                    'Kir.paid <>' => 'full',
                     'Kir.id' => $kir_id,
                 ),
             ));
@@ -1263,7 +1263,7 @@ class TrucksController extends AppController {
         $this->doKirPayment($kir_id, $kir);
         $kirs = $this->Kir->getData('list', array(
             'conditions' => array(
-                'Kir.paid' => 0,
+                'Kir.paid <>' => 'full',
                 'Kir.rejected' => 0,
             ),
             'fields' => array(
@@ -1442,7 +1442,7 @@ class TrucksController extends AppController {
         $this->loadModel('Kir');
         $kir = $this->Kir->getData('first', array(
             'conditions' => array(
-                'Kir.paid' => 0,
+                'Kir.paid <>' => 'full',
                 'Kir.rejected' => 0,
                 'Kir.id' => $id,
             ),
@@ -1783,7 +1783,7 @@ class TrucksController extends AppController {
             $siup = $this->Siup->getData('first', array(
                 'conditions' => array(
                     'Siup.rejected' => 0,
-                    'Siup.paid' => 0,
+                    'Siup.paid <>' => 'full',
                     'Siup.id' => $siup_id,
                 ),
             ));
@@ -1792,7 +1792,7 @@ class TrucksController extends AppController {
         $this->doSiupPayment($siup_id, $siup);
         $siups = $this->Siup->getData('list', array(
             'conditions' => array(
-                'Siup.paid' => 0,
+                'Siup.paid <>' => 'full',
                 'Siup.rejected' => 0,
             ),
             'fields' => array(
@@ -1971,7 +1971,7 @@ class TrucksController extends AppController {
         $this->loadModel('Siup');
         $siup = $this->Siup->getData('first', array(
             'conditions' => array(
-                'Siup.paid' => 0,
+                'Siup.paid <>' => 'full',
                 'Siup.rejected' => 0,
                 'Siup.id' => $id,
             ),
@@ -2783,7 +2783,7 @@ class TrucksController extends AppController {
         $this->loadModel('Stnk');
         $stnk = $this->Stnk->getData('first', array(
             'conditions' => array(
-                'Stnk.paid' => 0,
+                'Stnk.paid <>' => 'full',
                 'Stnk.rejected' => 0,
                 'Stnk.id' => $id,
             ),
@@ -2951,7 +2951,7 @@ class TrucksController extends AppController {
             $stnk = $this->Stnk->getData('first', array(
                 'conditions' => array(
                     'Stnk.rejected' => 0,
-                    'Stnk.paid' => 0,
+                    'Stnk.paid <>' => 'full',
                     'Stnk.id' => $stnk_id,
                 ),
             ));
@@ -2960,7 +2960,7 @@ class TrucksController extends AppController {
         $this->doStnkPayment($stnk_id, $stnk);
         $stnks = $this->Stnk->getData('list', array(
             'conditions' => array(
-                'Stnk.paid' => 0,
+                'Stnk.paid <>' => 'full',
                 'Stnk.rejected' => 0,
             ),
             'fields' => array(

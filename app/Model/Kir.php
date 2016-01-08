@@ -47,6 +47,11 @@ class Kir extends AppModel {
 		)
 	);
 
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['status_paid'] = 'CASE WHEN Kir.paid = \'none\' THEN 0 WHEN Kir.paid = \'half\' THEN 1 ELSE 2 END';
+    }
+
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
         $branch = isset($elements['branch'])?$elements['branch']:true;
@@ -59,7 +64,7 @@ class Kir extends AppModel {
             'order'=> array(
                 'Kir.status' => 'DESC',
                 'Kir.rejected' => 'ASC',
-                'Kir.paid' => 'ASC',
+                'Kir.status_paid' => 'ASC',
                 'Kir.tgl_kir' => 'DESC',
             ),
             'contain' => array(
