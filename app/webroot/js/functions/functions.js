@@ -988,6 +988,10 @@ var delete_custom_field = function( obj ) {
                 grandTotalLeasing();
                 getTotalPick();
                 $.getLeasingGrandtotal();
+
+                if( action_type == 'cashbank_first' ) {
+                    calcTotalBiaya();
+                }
             } else if( action_type == 'lku_second' || action_type == 'ksu_second'){
                 self.parents('tr').remove();
                 getTotalLkuPayment();
@@ -2591,7 +2595,7 @@ var check_all_checkbox = function(){
 
                 var html_content = '<tr class="child child-'+id_child+'" rel="'+rel_id+'">'+parent.html()+'</tr>';
 
-                $('.cashbanks-info-table').append(html_content);
+                $('.cashbanks-info-table > tbody').append(html_content);
 
                 var truck_obj = $('.child-'+id_child+'[rel="'+rel_id+'"]').find('.pick-truck input[type="text"]');
                 var truck_browse_obj = $('.child-'+id_child+'[rel="'+rel_id+'"]').find('.pick-truck a.browse-docs');
@@ -2611,6 +2615,7 @@ var check_all_checkbox = function(){
                 input_price_min($('.child-'+id_child+'[rel="'+rel_id+'"] .input_price_min'));
                 delete_custom_field($('.child-'+id_child+'[rel="'+rel_id+'"] .delete-custom-field'));
                 ajaxModal($('.child-'+id_child+'[rel="'+rel_id+'"] .ajaxModal'));
+                sisa_amount($('.child-'+id_child+'[rel="'+rel_id+'"] .sisa-amount'));
             }
         } else if( allow_multiple != 'true' ) {
             $('.child-'+rel_id).remove();
@@ -2669,7 +2674,7 @@ var popup_checkbox = function(){
         } 
 
         if( $('#total-biaya').length > 0 ) {
-            calcTotalBiayaTtuj();
+            calcTotalBiaya();
         }
     }
 }
@@ -2782,13 +2787,13 @@ var get_document_cashbank = function(){
                         if(doc_type == 'prepayment_in'){
                             content_table = content_table.replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/opentd/gi, "td").replace(/closetd/gi, "/td").replace(/opentr/gi, "tr").replace(/closetr/gi, "/tr");
 
-                            $('.cashbanks-info-table').empty();
-                            $('.cashbanks-info-table').html(content_table);
+                            $('.cashbanks-info-table > tbody').empty();
+                            $('.cashbanks-info-table > tbody').html(content_table);
                             $.inputPrice({
-                                obj: $('.cashbanks-info-table .child .input_price'),
+                                obj: $('.cashbanks-info-table > tbody .child .input_price'),
                             });
                             delete_custom_field();
-                            ajaxModal($('.cashbanks-info-table .child .ajaxModal'));
+                            ajaxModal($('.cashbanks-info-table > tbody .child .ajaxModal'));
                         } else {
                             var html_content = '<tr class="child child-'+coa_id+'" rel="'+coa_id+'"> \
                                 <td>\
@@ -2802,17 +2807,18 @@ var get_document_cashbank = function(){
                                     '+truck_options+' \
                                 </td> \
                                 <td class="action-search"> \
-                                    <input name="data[CashBankDetail][total][]" class="form-control input_price" type="text" id="CashBankDetailTotal" value="'+ppn+'"> \
+                                    <input name="data[CashBankDetail][total][]" class="form-control input_price sisa-amount text-right" type="text" id="CashBankDetailTotal" value="'+ppn+'"> \
                                 </td> \
                                 <td class="action-search"> \
                                     <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="cashbank_first"><i class="fa fa-times"></i> Hapus</a> \
                                 </td> \
                             </tr>';
-                            $('.cashbanks-info-table').append(html_content);
+                            $('.cashbanks-info-table > tbody').append(html_content);
                             $.inputPrice({
-                                obj: $('.cashbanks-info-table .child:last-child .input_price'),
+                                obj: $('.cashbanks-info-table > tbody .child:last-child .input_price'),
                             });
-                            ajaxModal($('.cashbanks-info-table .child .ajaxModal'));
+                            ajaxModal($('.cashbanks-info-table > tbody .child .ajaxModal'));
+                            sisa_amount($('.cashbanks-info-table > tbody .child .sisa-amount'));
                         }
                     } else {
                         $('#receiver-type').val('');
@@ -2855,7 +2861,7 @@ var convert_number = function ( num, type ) {
     return num;
 }
 
-var calcTotalBiayaTtuj = function () {
+var calcTotalBiaya = function () {
     var biayaObj = $('#checkbox-info-table .sisa-amount');
     var biayaLen = $('#checkbox-info-table .sisa-amount').length;
     var totalBiaya = 0;
@@ -2882,10 +2888,10 @@ var sisa_amount = function ( obj ) {
             alert('Sisa tidak boleh melebihi total biaya');
             self.val(formatNumber( total, 0 ));
         } else if( sisa == 0 ) {
-            alert('Silahkan isi sisa biaya yang akan dibayar');
+            alert('Silahkan isi biaya yang akan dibayar');
         }
 
-        calcTotalBiayaTtuj();
+        calcTotalBiaya();
     });
 }
 
@@ -2901,7 +2907,7 @@ var delete_current_document = function ( obj ) {
         
         if( confirm('Anda ingin menghapus biaya ini?') ) {
             parent.remove();
-            calcTotalBiayaTtuj();
+            calcTotalBiaya();
         }
     });
 }

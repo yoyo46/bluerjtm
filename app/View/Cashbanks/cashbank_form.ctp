@@ -181,7 +181,7 @@
 	        <h3 class="box-title"><?php echo __('Detail Info Kas/Bank'); ?></h3>
 	    </div>
 	    <div class="box-body table-responsive">
-	        <table class="table table-hover">
+	        <table class="table table-hover cashbanks-info-table">
 	        	<thead>
 	        		<tr>
                     	<?php 
@@ -195,11 +195,9 @@
                     	?>
 	        		</tr>
 	        	</thead>
-	        	<tbody class="cashbanks-info-table">
-	                <?php
-			    		echo $this->element('blocks/cashbanks/info_cash_bank_detail');
-			    	?>
-	        	</tbody>
+                <?php
+		    		echo $this->element('blocks/cashbanks/info_cash_bank_detail');
+		    	?>
 	    	</table>
 	    </div>
 	</div>

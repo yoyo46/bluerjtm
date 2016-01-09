@@ -704,7 +704,7 @@ class CommonHelper extends AppHelper {
 
                 $debit_form = $this->Form->input('CashBankDetail.total.', array(
                     'type' => 'text',
-                    'class' => 'form-control input_price',
+                    'class' => 'form-control input_price sisa-amount text-right',
                     'label' => false,
                     'div' => false,
                     'required' => false,
