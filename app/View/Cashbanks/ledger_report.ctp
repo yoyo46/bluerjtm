@@ -39,7 +39,7 @@
             echo $this->element('blocks/cashbanks/searchs/ledger_report');
         }
         
-        if(!empty($values)){
+        if(!empty($coa)){
             if( !empty($data_action) ){
                 $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 

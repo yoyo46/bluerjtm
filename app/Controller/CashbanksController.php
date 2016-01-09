@@ -1227,6 +1227,8 @@ class CashbanksController extends AppController {
             'dateTo' => $dateTo,
         ));
 
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+
         if( !empty($named) ) {
             $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
             $coa_id = $this->MkCommon->filterEmptyField($named, 'coa');
@@ -1254,6 +1256,22 @@ class CashbanksController extends AppController {
                     ),
                 ));
                 $values = $this->User->Journal->getData('all', $options);
+
+                $this->User->Journal->virtualFields['begining_balance_credit'] = 'SUM(Journal.credit)';
+                $this->User->Journal->virtualFields['begining_balance_debit'] = 'SUM(Journal.debit)';
+                $summaryBalance = $this->User->Journal->getData('first', array(
+                    'conditions' => array_merge(array(
+                        'Journal.coa_id' => $coa_id,
+                        'DATE_FORMAT(Journal.date, \'%Y-%m-%d\') <' => $dateFrom,
+                    ), $conditions),
+                    'group' => array(
+                        'Journal.coa_id',
+                    ),
+                    'contain' => false,
+                ));
+                $balance_credit = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'begining_balance_credit', 0);
+                $balance_debit = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'begining_balance_debit', 0);
+                $beginingBalance = $balance_debit - $balance_credit;
             } else {
                 $this->MkCommon->redirectReferer(__('Mohon pilih COA terlebih dahulu'), 'error', array(
                     'action' => 'ledger_report',
@@ -1279,7 +1297,7 @@ class CashbanksController extends AppController {
         $this->set(compact(
             'coas', 'values', 'module_title',
             'coa_name', 'data_action',
-            'coa'
+            'coa', 'beginingBalance'
         ));
 
         if($data_action == 'pdf'){

@@ -3,42 +3,44 @@
         $beginningBalance = 0;
         $totalDebit = 0;
         $totalCredit = 0;
-        $saldo_awal = $this->Common->filterEmptyField($coa, 'Coa', 'balance');
-        $customBalance = $saldo_awal;
+        // $saldo_awal = $this->Common->filterEmptyField($coa, 'Coa', 'balance');
+        $beginingBalance = !empty($beginingBalance)?$beginingBalance:0;
+        $customBalance = $beginingBalance;
 
-        foreach ($values as $key => $value) {
-            $document_no = $this->Common->filterEmptyField($value, 'Journal', 'document_no');
-            $document_id = $this->Common->filterEmptyField($value, 'Journal', 'document_id');
-            $title = $this->Common->filterEmptyField($value, 'Journal', 'title', false, false);
-            $date = $this->Common->filterEmptyField($value, 'Journal', 'date');
-            $type = $this->Common->filterEmptyField($value, 'Journal', 'type');
-            $debit = $this->Common->filterEmptyField($value, 'Journal', 'debit');
-            $credit = $this->Common->filterEmptyField($value, 'Journal', 'credit');
-            $nopol = $this->Common->filterEmptyField($value, 'Journal', 'nopol');
-            // $saldo_awal = $this->Common->filterEmptyField($value, 'Journal', 'saldo_awal');
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $document_no = $this->Common->filterEmptyField($value, 'Journal', 'document_no');
+                $document_id = $this->Common->filterEmptyField($value, 'Journal', 'document_id');
+                $title = $this->Common->filterEmptyField($value, 'Journal', 'title', false, false);
+                $date = $this->Common->filterEmptyField($value, 'Journal', 'date');
+                $type = $this->Common->filterEmptyField($value, 'Journal', 'type');
+                $debit = $this->Common->filterEmptyField($value, 'Journal', 'debit');
+                $credit = $this->Common->filterEmptyField($value, 'Journal', 'credit');
+                $nopol = $this->Common->filterEmptyField($value, 'Journal', 'nopol');
+                // $saldo_awal = $this->Common->filterEmptyField($value, 'Journal', 'saldo_awal');
 
-            $coa = $this->Common->filterEmptyField($value, 'Coa', 'coa_name');
-            $balance = $this->CashBank->_callCalcSaldo($value);
+                $coa = $this->Common->filterEmptyField($value, 'Coa', 'coa_name');
+                $balance = $this->CashBank->_callCalcSaldo($value);
 
-            $new = sprintf('%s-%s', $type, $document_no);
-            $customDate = $this->Common->formatDate($date, 'd/m/Y');
-            $customDebit = $this->Common->getFormatPrice($debit, false);
-            $customCredit = $this->Common->getFormatPrice($credit, false);
-            $customSaldoAwal = $this->Common->getFormatPrice($saldo_awal);
-            
-            $noref = str_pad($document_id, 6, '0', STR_PAD_LEFT);
-            $customNoref = $this->Common->_callDocumentJournal( $noref, $document_id, $type, $data_action );
+                $new = sprintf('%s-%s', $type, $document_no);
+                $customDate = $this->Common->formatDate($date, 'd/m/Y');
+                $customDebit = $this->Common->getFormatPrice($debit, false);
+                $customCredit = $this->Common->getFormatPrice($credit, false);
+                $customSaldoAwal = $this->Common->getFormatPrice($beginingBalance);
+                
+                $noref = str_pad($document_id, 6, '0', STR_PAD_LEFT);
+                $customNoref = $this->Common->_callDocumentJournal( $noref, $document_id, $type, $data_action );
 
-            $totalDebit += $debit;
-            $totalCredit += $credit;
+                $totalDebit += $debit;
+                $totalCredit += $credit;
 
-            $customBalance += $debit;
-            $customBalance -= $credit;
+                $customBalance += $debit;
+                $customBalance -= $credit;
 
-            $customFormatBalance = $this->Common->getFormatPrice($customBalance);
+                $customFormatBalance = $this->Common->getFormatPrice($customBalance);
 
-            if( $no == 1 ) {
-                $beginningBalance = $saldo_awal;
+                if( $no == 1 ) {
+                    $beginningBalance = $beginingBalance;
 ?>
 <tr class="beginning">
     <?php
@@ -125,3 +127,11 @@
             ));
     ?>
 </tr>
+<?php 
+        } else {
+            echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
+                'class' => 'alert alert-warning text-center',
+                'colspan' => '8'
+            )));
+        }
+?>
