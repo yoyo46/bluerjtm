@@ -19,3 +19,11 @@ table td {
 	font-family:verdana;
 	font-size: 14px;
 }
+
+@media print{
+  body,
+  table th,
+  table td {
+    font-size: 10px;
+  }
+}

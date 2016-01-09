@@ -2627,6 +2627,9 @@ Component: timeline
 .invoice-title {
   margin-top: 0;
 }
+.lbl-kwitansi {
+  font-size: 20px;
+}
 /* Enhancement for printing */
 @media print {
   .invoice {
@@ -4212,5 +4215,23 @@ table.sorting thead th a {
   body.fixed > .wrapper,
   body.fixed .sidebar-offcanvas {
     margin-top: 100px!important;
+  }
+}
+
+@media print{
+  body,
+  table th,
+  table td {
+    font-size: 10px;
+  }
+
+  h3.header-invoice,
+  .page-header,
+  .header-invoice {
+    font-size: 14px;
+  }
+
+  .lbl-kwitansi {
+    font-size: 12px;
   }
 }

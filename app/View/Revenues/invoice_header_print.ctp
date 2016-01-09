@@ -165,7 +165,7 @@ readfile($path.'/'.$filename);
 									<?php 
 											$company_name = $this->Common->getDataSetting( $setting, 'company_name' );
 											printf('%s%s', $company_name, $this->Html->tag('div', __('KWITANSI'), array(
-												'style' => 'font-size:20px;',
+												'class' => 'lbl-kwitansi',
 											)));
 									?>
 								</td>

@@ -274,7 +274,7 @@
 
         if( empty($preview) ) {
 ?>
-<div class="box-footer text-center action">
+<div class="box-footer text-center action hidden-print">
 	<?php
     		echo $this->Html->link(__('Kembali'), array(
                 'controller' => 'revenues', 
