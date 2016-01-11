@@ -27,19 +27,16 @@
                 if( $expired_date < $customPaymentDate ) {
                     $addClass .= ' expired';
                 }
-
-                echo $this->Form->input('LeasingPaymentDetail.leasing_id.'.$leasing_id, array(
-                    'type' => 'hidden',
-                    'value' => $leasing_id
-                ));
-                echo $this->Form->input('LeasingPaymentDetail.leasing_installment_id.'.$leasing_id, array(
-                    'type' => 'hidden',
-                    'value' => $leasing_installment_id
-                ));
 ?>
 <tr class="child child-<?php echo $leasing_installment_id;?> <?php echo $addClass; ?>" rel="<?php echo $leasing_installment_id;?>">
     <?php
-            echo $this->Html->tag('td', $no_contract);
+            echo $this->Html->tag('td', $no_contract.$this->Form->input('LeasingPaymentDetail.leasing_id.'.$leasing_id, array(
+                'type' => 'hidden',
+                'value' => $leasing_id
+            )).$this->Form->input('LeasingPaymentDetail.leasing_installment_id.'.$leasing_id, array(
+                'type' => 'hidden',
+                'value' => $leasing_installment_id
+            )));
             echo $this->Html->tag('td', $customDate.$this->Form->input('LeasingPaymentDetail.expired_date.'.$leasing_id, array(
                 'type' => 'hidden',
                 'value' => $expired_date,

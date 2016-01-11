@@ -14,7 +14,7 @@
 
                 $coa = $this->Common->filterEmptyField($value, 'Coa', 'coa_name');
 
-                $new = sprintf('%s-%s-%s', $document_id, $type, $document_no);
+                $new = sprintf('%s-%s', $document_id, $type);
                 $customDate = $this->Common->formatDate($date, 'd/m/Y');
                 $customDebit = $this->Common->getFormatPrice($debit, false);
                 $customCredit = $this->Common->getFormatPrice($credit, false);

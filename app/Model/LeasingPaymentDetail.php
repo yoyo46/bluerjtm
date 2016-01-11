@@ -27,10 +27,10 @@ class LeasingPaymentDetail extends AppModel {
             ),
         ),
         'installment' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Pokok harap diisi'
-            ),
+            // 'notempty' => array(
+            //     'rule' => array('notempty'),
+            //     'message' => 'Pokok harap diisi'
+            // ),
             'numeric' => array(
                 'rule' => array('notempty'),
                 'message' => 'Pokok harap diisi dan berupa angka'
@@ -41,10 +41,10 @@ class LeasingPaymentDetail extends AppModel {
             ),
         ),
         'installment_rate' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Bunga harap diisi'
-            ),
+            // 'notempty' => array(
+            //     'rule' => array('notempty'),
+            //     'message' => 'Bunga harap diisi'
+            // ),
             'numeric' => array(
                 'rule' => array('notempty'),
                 'message' => 'Bunga harap diisi dan berupa angka'
@@ -174,7 +174,7 @@ class LeasingPaymentDetail extends AppModel {
             foreach ($values as $key => $value) {
                 $leasing_id = !empty($dataPayment['leasing_id'][$key])?$dataPayment['leasing_id'][$key]:false;
                 $installment = !empty($dataPayment['installment'][$key])?trim(str_replace(array(',', ','), array('', ''), $dataPayment['installment'][$key])):false;
-                $installment_rate = !empty($dataPayment['installment_rate'][$key])?trim(str_replace(array(',', ','), array('', ''), $dataPayment['installment_rate'][$key])):false;
+                $installment_rate = !empty($dataPayment['installment_rate'][$key])?trim(str_replace(array(',', ','), array('', ''), $dataPayment['installment_rate'][$key])):0;
                 $denda = !empty($dataPayment['denda'][$key])?trim(str_replace(array(',', ','), array('', ''), $dataPayment['denda'][$key])):0;
                 $expired_date = !empty($dataPayment['expired_date'][$key])?$dataPayment['expired_date'][$key]:false;
                 $total = $installment+$installment_rate+$denda;
@@ -185,8 +185,8 @@ class LeasingPaymentDetail extends AppModel {
                 $grandtotal += $total;
 
                 $installment = !empty($installment)?$installment:false;
-                $installment_rate = !empty($installment_rate)?$installment_rate:false;
-                $denda = !empty($denda)?$denda:false;
+                $installment_rate = !empty($installment_rate)?$installment_rate:0;
+                $denda = !empty($denda)?$denda:0;
 
                 $detail['LeasingPaymentDetail'] = array(
                     'leasing_installment_id' => $value,

@@ -511,10 +511,10 @@
         };
 
         settings.obj.keyup(function(){
-            getTotal( settings.obj.parents('tr') );
+            getTotal( $(this).parents('tr') );
         });
 
-        getTotal( settings.obj.parents('tr') );
+        // getTotal( settings.obj.parents('tr') );
     }
 
     $.inputPrice = function(options){

@@ -719,6 +719,7 @@ class LeasingsController extends AppController {
         ));
         $options =  $this->Leasing->_callRefineParams($params, $options, 'LeasingInstallment', $payments);
 
+        $this->Leasing->LeasingInstallment->virtualFields['min_paid_date'] = 'MIN(LeasingInstallment.paid_date)';
         $this->paginate = $this->Leasing->getData('paginate', $options);
         $values = $this->paginate('Leasing');
 
@@ -732,7 +733,7 @@ class LeasingsController extends AppController {
         }
         
         $data_change = $data_action = 'browse-invoice';
-        $title = __('Pembayaran Leasing');
+        $title = __('Detail Pembayaran');
         $this->set(compact(
             'data_change', 'title', 'values',
             'vendor_id', 'data_action'

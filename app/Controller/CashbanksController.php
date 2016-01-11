@@ -1186,6 +1186,8 @@ class CashbanksController extends AppController {
         }
 
         if( !empty($journals) ) {
+            $this->User->Journal->virtualFields['sorting_journal'] = 'CASE WHEN Journal.credit <> 0 THEN 1 ELSE 0 END';
+
             foreach ($journals as $key => $value) {
                 $document_id = $this->MkCommon->filterEmptyField($value, 'Journal', 'document_id');
                 $type = $this->MkCommon->filterEmptyField($value, 'Journal', 'type');
@@ -1195,8 +1197,14 @@ class CashbanksController extends AppController {
                         'Journal.document_id' => $document_id,
                         'Journal.type' => $type,
                     ),
+                    'order'=> array(
+                        'Journal.date' => 'DESC',
+                        'Journal.document_id' => 'DESC',
+                        'Journal.sorting_journal' => 'ASC',
+                        'Journal.id' => 'ASC',
+                    ),
                 ));
-                
+
                 $values = array_merge($values, $journal);
             }
         }

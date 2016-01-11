@@ -205,9 +205,8 @@ class Leasing extends AppModel {
         if( !empty($dateFrom) || !empty($dateTo) ) {
             switch ($modelName) {
                 case 'LeasingInstallment':
-                    $fieldName = 'LeasingInstallment.paid_date';
+                    $fieldName = 'MIN(LeasingInstallment.paid_date)';
                     $default_options['contain'][] = 'LeasingInstallment';
-                    $default_options['group'][] = 'LeasingInstallment.leasing_id';
                     $conditionsInstallment = array(
                         'LeasingInstallment.status' => 1,
                     );
@@ -240,19 +239,23 @@ class Leasing extends AppModel {
                             ),
                         )
                     ), false);
+
+                    if( !empty($default_options['group']) ) {
+                        unset($default_options['group']);
+                    }
+
+                    $default_options['group'][] = 'LeasingInstallment.leasing_id HAVING MIN(LeasingInstallment.paid_date) >= \''.$dateFrom.'\' AND MIN(LeasingInstallment.paid_date) <= \''.$dateTo.'\'';
                     break;
                 
                 default:
-                    $fieldName = 'Leasing.paid_date';
+                    if( !empty($dateFrom) ) {
+                        $default_options['conditions']['DATE_FORMAT(Leasing.paid_date, \'%Y-%m-%d\') >='] = $dateFrom;
+                    }
+
+                    if( !empty($dateTo) ) {
+                        $default_options['conditions']['DATE_FORMAT(Leasing.paid_date, \'%Y-%m-%d\') <='] = $dateTo;
+                    }
                     break;
-            }
-
-            if( !empty($dateFrom) ) {
-                $default_options['conditions']['DATE_FORMAT('.$fieldName.', \'%Y-%m-%d\') >='] = $dateFrom;
-            }
-
-            if( !empty($dateTo) ) {
-                $default_options['conditions']['DATE_FORMAT('.$fieldName.', \'%Y-%m-%d\') <='] = $dateTo;
             }
         }
         if( !empty($nodoc) ) {
