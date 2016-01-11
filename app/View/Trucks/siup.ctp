@@ -53,7 +53,7 @@
                     if(!empty($siup)){
                         foreach ($siup as $key => $value) {
                             $id = $value['Siup']['id'];
-                            $paid = $this->Common->filterEmptyField($value, 'Siup', 'paid');
+                            $paid = $this->Common->filterEmptyField($value, 'Siup', 'paid', 'none');
             ?>
             <tr>
                 <td><?php echo $value['Truck']['nopol'];?></td>

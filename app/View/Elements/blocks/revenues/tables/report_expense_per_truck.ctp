@@ -10,8 +10,9 @@
                 $total_revenue = $this->Common->filterEmptyField($value, 'Revenue', 'total');
                 $biaya_uang_jalan = $this->Common->filterEmptyField($value, 'Ttuj', 'biaya_uang_jalan');
                 $total_cashbank = $this->Common->filterEmptyField($value, 'CashBankDetail', 'total_cashbank');
+                $total_document = $this->Common->filterEmptyField($value, 'DocumentPaymentDetail', 'total_amount');
 
-                $total_expense = $biaya_uang_jalan + $total_cashbank;
+                $total_expense = $biaya_uang_jalan + $total_cashbank + $total_document;
                 $total_gross_profit = $total_revenue - $total_expense;
 
                 if( !empty($total_revenue) ) {
@@ -22,7 +23,7 @@
 
                 $customTotalRevenue = $this->Common->getFormatPrice($total_revenue);
                 $customBiayaUangJalan = $this->Common->getFormatPrice($biaya_uang_jalan);
-                $customTotalCashBank = $this->Common->getFormatPrice($total_cashbank);
+                $customTotalCashBank = $this->Common->getFormatPrice($total_cashbank+$total_document);
                 $customTotalExpense = $this->Common->getFormatPrice($total_expense);
                 $customTotalGrossProfit = $this->Common->getFormatPrice($total_gross_profit);
                 $customER = $this->Common->getFormatPrice($er, 0, 2);

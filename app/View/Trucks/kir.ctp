@@ -52,7 +52,7 @@
                         foreach ($kir as $key => $value) {
                             $id = $value['Kir']['id'];
                             $branch_id = $this->Common->filterEmptyField($value, 'Kir', 'branch_id');
-                            $paid = $this->Common->filterEmptyField($value, 'Kir', 'paid');
+                            $paid = $this->Common->filterEmptyField($value, 'Kir', 'paid', 'none');
             ?>
             <tr>
                 <td><?php echo $value['Truck']['nopol'];?></td>

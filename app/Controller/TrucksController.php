@@ -5729,9 +5729,17 @@ class TrucksController extends AppController {
                 $document_type = strtolower($document_type);
 
                 $modelName = $this->RjTruck->_callDocumentType($document_type);
+                $value = $this->DocumentPayment->DocumentPaymentDetail->$modelName->getMerge(array(), $document_id);
+                
+                $truck_id = $this->MkCommon->filterEmptyField($value, $modelName, 'truck_id');
+                $price = $this->MkCommon->filterEmptyField($value, $modelName, 'price');
+                $denda = $this->MkCommon->filterEmptyField($value, $modelName, 'denda');
+                $biaya_lain = $this->MkCommon->filterEmptyField($value, $modelName, 'biaya_lain');
+                $document_date = $this->MkCommon->filterEmptyField($value, $modelName, 'to_date');
 
                 $dataPaymentDetail = array(
                     'DocumentPaymentDetail' => array(
+                        'truck_id' => $truck_id,
                         'document_id' => $document_id,
                         'document_type' => $document_type,
                         'amount' => $amount,
@@ -5740,15 +5748,11 @@ class TrucksController extends AppController {
 
                 $totalPayment += $amount;
                 $total_dibayar = $this->DocumentPayment->DocumentPaymentDetail->getTotalPayment($document_id, $document_type) + $amount;
-                $value = $this->DocumentPayment->DocumentPaymentDetail->$modelName->getMerge(array(), $document_id);
                 $this->request->data['DocumentTruck'][$key]['DocumentTruck'] = !empty($value[$modelName])?$value[$modelName]:false;
                 $this->request->data['DocumentTruck'][$key]['DocumentTruck']['data_type'] = $document_type;
 
                 if( !empty($document_payment_id) ) {
                     $dataPaymentDetail['DocumentPaymentDetail']['document_payment_id'] = $document_payment_id;
-                    $price = $this->MkCommon->filterEmptyField($value, $modelName, 'price');
-                    $denda = $this->MkCommon->filterEmptyField($value, $modelName, 'denda');
-                    $biaya_lain = $this->MkCommon->filterEmptyField($value, $modelName, 'biaya_lain');
                     $total = $price + $denda + $biaya_lain;
 
                     switch ($document_type) {
@@ -5763,9 +5767,6 @@ class TrucksController extends AppController {
                             break;
                     }
                     
-                    $truck_id = $this->MkCommon->filterEmptyField($value, $modelName, 'truck_id');
-                    $document_date = $this->MkCommon->filterEmptyField($value, $modelName, 'to_date');
-
                     if( !empty($total_dibayar) ) {
                         $flagPaid = 'half';
 

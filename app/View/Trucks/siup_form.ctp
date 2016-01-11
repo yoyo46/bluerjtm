@@ -5,7 +5,7 @@
 		));
 		$this->Html->addCrumb($sub_module_title);
 		
-        $paid = $this->Common->filterEmptyField($siup, 'Siup', 'paid');
+        $paid = $this->Common->filterEmptyField($siup, 'Siup', 'paid', 'none');
 
 		echo $this->Form->create('Siup', array(
 			'url'=> $this->Html->url( null, true ), 

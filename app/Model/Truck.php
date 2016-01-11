@@ -257,6 +257,10 @@ class Truck extends AppModel {
             'className' => 'CashBankDetail',
             'foreignKey' => 'truck_id',
         ),
+        'DocumentPaymentDetail' => array(
+            'className' => 'DocumentPaymentDetail',
+            'foreignKey' => 'truck_id',
+        ),
     );
 
     function uniqueUpdate($data, $id = false){
@@ -641,27 +645,46 @@ class Truck extends AppModel {
                 'CashBank.receiving_cash_type' => array( 'out', 'prepayment_out' ),
                 'CashBankDetail.truck_id' => $id,
                 'CashBank.status' => 1,
+                'CashBank.is_rejected' => 0,
             ),
             'contain' => array(
                 'CashBank',
+            ),
+        );
+        $document_options = array(
+            'conditions' => array(
+                'DocumentPaymentDetail.truck_id' => $id,
+                'DocumentPayment.status' => 1,
+                'DocumentPayment.is_canceled' => 0,
+            ),
+            'contain' => array(
+                'DocumentPayment',
             ),
         );
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
                 $default_options['conditions']['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') >='] = $dateFrom;
+                $document_options['conditions']['DATE_FORMAT(DocumentPayment.date_payment, \'%Y-%m-%d\') >='] = $dateFrom;
             }
 
             if( !empty($dateTo) ) {
                 $default_options['conditions']['DATE_FORMAT(CashBank.tgl_cash_bank, \'%Y-%m-%d\') <='] = $dateTo;
+                $document_options['conditions']['DATE_FORMAT(DocumentPayment.date_payment, \'%Y-%m-%d\') <='] = $dateTo;
             }
         }
 
         $this->CashBankDetail->virtualFields['total_cashbank'] = 'SUM(total)';
         $value = $this->CashBankDetail->getData('first', $default_options);
 
+        $this->DocumentPaymentDetail->virtualFields['total_amount'] = 'SUM(DocumentPaymentDetail.amount)';
+        $document = $this->DocumentPaymentDetail->getData('first', $document_options);
+
         if( !empty($value) ) {
             $data = array_merge($data, $value);
+        }
+        if( !empty($document) ) {
+            $data = array_merge($data, $document);
         }
 
         return $data;

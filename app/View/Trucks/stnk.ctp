@@ -54,7 +54,7 @@
                 if(!empty($stnks)){
                     foreach ($stnks as $key => $value) {
                         $id = $value['Stnk']['id'];
-                        $paid = $this->Common->filterEmptyField($value, 'Stnk', 'paid');
+                        $paid = $this->Common->filterEmptyField($value, 'Stnk', 'paid', 'none');
             ?>
             <tr>
                 <td><?php echo $value['Stnk']['no_pol'];?></td>
