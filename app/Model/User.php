@@ -36,6 +36,10 @@ class User extends AppModel {
             'className' => 'SupplierQuotation',
             'foreignKey' => 'user_id',
         ),
+        'CashBank' => array(
+            'className' => 'CashBank',
+            'foreignKey' => 'user_id',
+        ),
     );
     
     var $validate = array(
