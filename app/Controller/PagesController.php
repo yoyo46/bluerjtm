@@ -80,7 +80,8 @@ class PagesController extends AppController {
         $want_to_read_id = array();
         $this->paginate = $this->Notification->getData('paginate', array(
             'conditions' => array(
-                'Notification.user_id' => $this->user_id
+                'Notification.user_id' => $this->user_id,
+                'Notification.action <>' => 'Kas/Bank',
             ),
             'limit' => 20
         ));
@@ -89,5 +90,25 @@ class PagesController extends AppController {
         $this->set('title_for_layout', __('ERP RJTM | Notifikasi'));
         $this->set('module_title', __('Notifikasi'));
         $this->set('values', $values);
+    }
+
+    function approval_notifications(){
+        $this->loadModel('Notification');
+
+        $want_to_read_id = array();
+        $this->paginate = $this->Notification->getData('paginate', array(
+            'conditions' => array(
+                'Notification.user_id' => $this->user_id,
+                'Notification.action' => 'Kas/Bank',
+            ),
+            'limit' => 20
+        ));
+        $values = $this->paginate('Notification');
+
+        $this->set('title_for_layout', __('ERP RJTM | Notifikasi Kas/Bank'));
+        $this->set('module_title', __('Notifikasi Kas/Bank'));
+        $this->set('values', $values);
+
+        $this->render('notifications');
     }
 }

@@ -1,6 +1,9 @@
 <?php 
         $notifs = $this->Common->filterEmptyField($notifications, 'notifications');
         $notifCnt = $this->Common->filterEmptyField($notifications, 'cnt');
+
+        $app_notifs = $this->Common->filterEmptyField($approval_notifs, 'notifications');
+        $app_notifCnt = $this->Common->filterEmptyField($approval_notifs, 'cnt');
 ?>
 <header class="header">
     <?php 
@@ -19,14 +22,54 @@
         <div class="navbar-right">
             <ul class="nav navbar-nav">
                 <?php 
+                        if(!empty($app_notifs)){
+                ?>
+                <li class="dropdown notifications-menu">
+                    <a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" title="Notifikasi Kas/Bank">
+                        <?php
+                                echo $this->Common->icon('refresh');
+                                echo $this->Html->tag('span', $app_notifCnt, array(
+                                    'class' => 'label label-info',
+                                ));
+                        ?>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <?php
+                                echo $this->Html->tag('li', sprintf('Anda memiliki %s notifikasi kas/bank', $app_notifCnt), array(
+                                    'class' => 'header'
+                                ));
+
+                        ?>
+                        <li>
+                            <ul class="menu">
+                                <?php
+                                        foreach ($app_notifs as $key => $notification) {
+                                            echo $this->Common->getNotif($notification);
+                                        }
+                                ?>
+                            </ul>
+                        </li>
+                        <?php
+                                echo $this->Html->tag('li', $this->Html->link(__('Selengkapnya'), array(
+                                    'controller' => 'pages',
+                                    'action' => 'approval_notifications',
+                                )), array(
+                                    'class' => 'footer'
+                                ) );
+                        ?>
+                    </ul>
+                </li>
+                <?php
+                        }
+
                         if(!empty($notifs)){
                 ?>
                 <li class="dropdown notifications-menu">
-                    <a href="javascript:" class="dropdown-toggle" data-toggle="dropdown">
+                    <a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" title="Notifikasi">
                         <?php
                                 echo $this->Common->icon('warning');
                                 echo $this->Html->tag('span', $notifCnt, array(
-                                    'class' => 'label label-info'
+                                    'class' => 'label label-info',
                                 ));
                         ?>
                     </a>

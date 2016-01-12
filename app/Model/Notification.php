@@ -128,11 +128,41 @@ class Notification extends AppModel {
         $notifications = $this->getData('all', array(
             'conditions' => array(
                 'Notification.user_id' => $user_id,
-            )
+                'Notification.action <>' => 'Kas/Bank',
+            ),
+            'limit' => 10,
         ));
         $cnt = $this->getData('count', array(
             'conditions' => array(
                 'Notification.user_id' => $user_id,
+                'Notification.action <>' => 'Kas/Bank',
+            )
+        ), array(
+            'read' => false,
+        ));
+
+        return array(
+            'notifications' => $notifications,
+            'cnt' => $cnt,
+        );
+    }
+
+    function _callApprovalNotifs ( $user_id = false ) {
+        if( empty($user_id) ) {
+            $user_id = Configure::read('__Site.config_user_id');
+        }
+
+        $notifications = $this->getData('all', array(
+            'conditions' => array(
+                'Notification.user_id' => $user_id,
+                'Notification.action' => 'Kas/Bank',
+            ),
+            'limit' => 10,
+        ));
+        $cnt = $this->getData('count', array(
+            'conditions' => array(
+                'Notification.user_id' => $user_id,
+                'Notification.action' => 'Kas/Bank',
             )
         ), array(
             'read' => false,

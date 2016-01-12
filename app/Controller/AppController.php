@@ -406,6 +406,7 @@ class AppController extends Controller {
 			// }
 
 			$notifications = $this->User->Notification->_callNotifications();
+			$approval_notifs = $this->User->Notification->_callApprovalNotifs();
 		} else if( $paramAction != 'login' && $paramController == 'users' ) {
 			$this->redirect('/');
 		}
@@ -421,7 +422,7 @@ class AppController extends Controller {
 	    	'logged_in', 'GroupId', 'User',
 	    	'invStatus', 'postingUnposting', 'notifications',
 	    	'list_branches', 'current_branch_id',
-	    	'isAjax'
+	    	'isAjax', 'approval_notifs'
     	));
 	}
 
