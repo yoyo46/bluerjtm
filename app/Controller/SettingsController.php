@@ -4697,11 +4697,24 @@ class SettingsController extends AppController {
 
                     if( !empty($data['SettingGeneral']) ) {
                         foreach ($data['SettingGeneral'] as $lbl => $value) {
-                            $this->SettingGeneral->updateAll( array(
-                                'SettingGeneral.value' => $value,
-                            ), array(
-                                'SettingGeneral.name' => $lbl,
-                            ));
+                            if( !empty($value) ) {
+                                $general = $this->SettingGeneral->find('first', array(
+                                    'conditions' => array(
+                                        'SettingGeneral.name' => $lbl,
+                                    ),
+                                ));
+
+                                if( !empty($general) ) {
+                                    $general_id = $this->MkCommon->filterEmptyField($general, 'SettingGeneral', 'id');
+                                    $this->SettingGeneral->id = $general_id;
+                                } else {
+                                    $this->SettingGeneral->create();
+                                }
+
+                                $this->SettingGeneral->set('value', $value);
+                                $this->SettingGeneral->set('name', $lbl);
+                                $this->SettingGeneral->save();
+                            }
                         }
                     }
 

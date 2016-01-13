@@ -40,6 +40,10 @@ class User extends AppModel {
             'className' => 'CashBank',
             'foreignKey' => 'user_id',
         ),
+        'PaymentNotification' => array(
+            'className' => 'PaymentNotification',
+            'foreignKey' => 'user_id',
+        ),
     );
     
     var $validate = array(

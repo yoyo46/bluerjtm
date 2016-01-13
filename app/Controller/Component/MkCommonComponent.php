@@ -1692,5 +1692,35 @@ class MkCommonComponent extends Component {
     function _callPercentAmount ( $total, $percent ) {
         return $total * ($percent/100);
     }
+
+    function _callPaymentNotifs () {
+        $allowModule = Configure::read('__Site.config_allow_module');
+        $groupId = Configure::read('__Site.config_group_id');
+        $actionController = !empty($allowModule['leasings'])?$allowModule['leasings']:false;
+        $actionAllow = !empty($actionController['action'])?$actionController['action']:false;
+
+        if( $groupId == 1 || ( !empty($actionController) && in_array('payments', $actionAllow) ) ) {
+            $this->controller->loadModel('PaymentNotification');
+
+            $this->controller->paginate = array(
+                'conditions' => array(
+                    'DATEDIFF(PaymentNotification.paid_date, DATE_FORMAT(NOW(), \'%Y-%m-%d\')) <=' => 30,
+                ),
+                'limit' => 10,
+            );
+            $notifications = $this->controller->paginate('PaymentNotification');
+
+            $cnt = $this->controller->PaymentNotification->paginateCount(array(
+                'DATEDIFF(PaymentNotification.paid_date, DATE_FORMAT(NOW(), \'%Y-%m-%d\')) <=' => 30,
+            ));
+
+            return array(
+                'notifications' => $notifications,
+                'cnt' => $cnt,
+            );
+        } else {
+            return false;
+        }
+    }
 }
 ?>

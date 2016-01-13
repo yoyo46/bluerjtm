@@ -4,6 +4,9 @@
 
         $app_notifs = $this->Common->filterEmptyField($approval_notifs, 'notifications');
         $app_notifCnt = $this->Common->filterEmptyField($approval_notifs, 'cnt');
+
+        $paid_notifs = $this->Common->filterEmptyField($payment_notifs, 'notifications');
+        $paid_notifCnt = $this->Common->filterEmptyField($payment_notifs, 'cnt');
 ?>
 <header class="header">
     <?php 
@@ -22,6 +25,46 @@
         <div class="navbar-right">
             <ul class="nav navbar-nav">
                 <?php 
+                        if(!empty($paid_notifs)){
+                ?>
+                <li class="dropdown notifications-menu">
+                    <a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" title="Notifikasi Kas/Bank">
+                        <?php
+                                echo $this->Common->icon('creative-commons');
+                                echo $this->Html->tag('span', $paid_notifCnt, array(
+                                    'class' => 'label label-info',
+                                ));
+                        ?>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <?php
+                                echo $this->Html->tag('li', sprintf('Anda memiliki %s notifikasi Pembayaran', $paid_notifCnt), array(
+                                    'class' => 'header'
+                                ));
+
+                        ?>
+                        <li>
+                            <ul class="menu">
+                                <?php
+                                        foreach ($paid_notifs as $key => $notification) {
+                                            echo $this->Common->getPaymentNotif($notification);
+                                        }
+                                ?>
+                            </ul>
+                        </li>
+                        <?php
+                                echo $this->Html->tag('li', $this->Html->link(__('Selengkapnya'), array(
+                                    'controller' => 'pages',
+                                    'action' => 'approval_notifications',
+                                )), array(
+                                    'class' => 'footer'
+                                ) );
+                        ?>
+                    </ul>
+                </li>
+                <?php
+                        }
+
                         if(!empty($app_notifs)){
                 ?>
                 <li class="dropdown notifications-menu">

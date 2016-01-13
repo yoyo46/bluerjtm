@@ -288,6 +288,37 @@
 		    </div>
 		</div>
 	</div>
+	<div class="col-sm-6">
+		<div class="box box-primary">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Notifikasi Pembayaran'); ?></h3>
+		    </div>
+		    <div class="box-body">
+		    	<div class="row">
+		    		<div class="col-sm-6">
+		    			<div class="form-group">
+				    		<?php 
+				    				echo $this->Form->label('SettingGeneral.leasing_expired_day', __('Pembayaran Leasing'));
+				    		?>
+		                    <div class="input-group">
+						    	<?php 
+										echo $this->Form->input('SettingGeneral.leasing_expired_day',array(
+											'type' => 'text',
+											'label'=> false, 
+											'class'=>'form-control input_number',
+											'required' => false,
+										));
+						    			echo $this->Html->tag('span', __('Hari Sebelum'), array(
+						    				'class' => 'input-group-addon'
+					    				));
+								?>
+							</div>
+						</div>
+		    		</div>
+		    	</div>
+		    </div>
+		</div>
+	</div>
 	<?php
 	/*
 	<div class="col-sm-6">

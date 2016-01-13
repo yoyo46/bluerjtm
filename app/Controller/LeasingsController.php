@@ -578,6 +578,7 @@ class LeasingsController extends AppController {
                             $denda = 0;
 
                             foreach ($value['LeasingPaymentDetail'] as $key => $detail) {
+                                $detail_id = $this->MkCommon->filterEmptyField($detail, 'LeasingPaymentDetail', 'id');
                                 $leasing_payment_id = $this->MkCommon->filterEmptyField($detail, 'LeasingPaymentDetail', 'leasing_installment_id');
                                 $leasing_id = $this->MkCommon->filterEmptyField($detail, 'LeasingPaymentDetail', 'leasing_id');
 
@@ -592,7 +593,13 @@ class LeasingsController extends AppController {
                                 ));
                                 $totalLeasingPaid = $this->Leasing->LeasingPayment->LeasingPaymentDetail->getData('count', array(
                                     'conditions' => array(
-                                        'LeasingPaymentDetail.leasing_id <>' => $leasing_id,
+                                        'LeasingPayment.status' => 1,
+                                        'LeasingPayment.rejected' => 0,
+                                        'LeasingPaymentDetail.leasing_id' => $leasing_id,
+                                        'LeasingPaymentDetail.id <>' => $detail_id,
+                                    ),
+                                    'contain' => array(
+                                        'LeasingPayment',
                                     ),
                                 ));
 
