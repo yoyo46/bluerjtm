@@ -1700,8 +1700,13 @@ class MkCommonComponent extends Component {
         $actionAllow = !empty($actionController['action'])?$actionController['action']:false;
 
         if( $groupId == 1 || ( !empty($actionController) && in_array('payments', $actionAllow) ) ) {
-            $dataSetting = $this->_callSettingGeneral('PaymentNotification', array( 'leasing_expired_day' ), false);
-            $leasing_expired_day = $this->filterEmptyField($dataSetting, 'PaymentNotification', 'leasing_expired_day');
+            $this->SettingGeneral = ClassRegistry::init('SettingGeneral'); 
+            $dataSetting = $this->SettingGeneral->find('first', array(
+                'conditions' => array(
+                    'SettingGeneral.name' => 'leasing_expired_day',
+                ),
+            ));
+            $leasing_expired_day = $this->filterEmptyField($dataSetting, 'SettingGeneral', 'value');
 
             if( !empty($leasing_expired_day) ) {
                 $this->controller->loadModel('PaymentNotification');
