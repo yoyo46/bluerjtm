@@ -216,6 +216,7 @@
                         'revenues' => array(
                             'ritase_report', 'achievement_report',
                             'monitoring_truck', 'ttuj_report',
+                            'report_expense_per_truck',
                         ),
                     );
 
@@ -230,6 +231,7 @@
                             'licenses_report', 'truck_import',
                             'daily_report', 'mutations', 'driver_reports',
                             'ttuj_report', 'leadtime_report',
+                            'report_expense_per_truck'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -424,6 +426,15 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'leadtime_report' )?'active':'',
                             ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Expense Revenue per Truk', array(
+                                'controller' => 'revenues',
+                                'action' => 'report_expense_per_truck',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'report_expense_per_truck' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>
@@ -595,8 +606,7 @@
                             'ar_period_reports', 'list_kwitansi',
                             'report_customers', 'report_revenue_customers',
                             'report_monitoring_sj_revenue',
-                            'report_revenue_monthly', 'report_revenue_period',
-                            'report_expense_per_truck'
+                            'report_revenue_monthly', 'report_revenue_period'
                         ),
                     );
 
@@ -608,7 +618,6 @@
                             'list_kwitansi', 'report_customers',
                             'report_revenue_customers', 'report_monitoring_sj_revenue',
                             'report_revenue_monthly', 'report_revenue_period',
-                            'report_expense_per_truck'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
@@ -720,15 +729,6 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'report_revenue_period' )?'active':'',
-                            ));
-
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Expense Revenue per Truk', array(
-                                'controller' => 'revenues',
-                                'action' => 'report_expense_per_truck',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'report_expense_per_truck' )?'active':'',
                             ));
                     ?>
                 </ul>
