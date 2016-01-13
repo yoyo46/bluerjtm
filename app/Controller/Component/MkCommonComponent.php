@@ -1700,24 +1700,31 @@ class MkCommonComponent extends Component {
         $actionAllow = !empty($actionController['action'])?$actionController['action']:false;
 
         if( $groupId == 1 || ( !empty($actionController) && in_array('payments', $actionAllow) ) ) {
-            $this->controller->loadModel('PaymentNotification');
+            $dataSetting = $this->_callSettingGeneral('PaymentNotification', array( 'leasing_expired_day' ), false);
+            $leasing_expired_day = $this->filterEmptyField($dataSetting, 'PaymentNotification', 'leasing_expired_day');
 
-            $this->controller->paginate = array(
-                'conditions' => array(
-                    'DATEDIFF(PaymentNotification.paid_date, DATE_FORMAT(NOW(), \'%Y-%m-%d\')) <=' => 30,
-                ),
-                'limit' => 10,
-            );
-            $notifications = $this->controller->paginate('PaymentNotification');
+            if( !empty($leasing_expired_day) ) {
+                $this->controller->loadModel('PaymentNotification');
 
-            $cnt = $this->controller->PaymentNotification->paginateCount(array(
-                'DATEDIFF(PaymentNotification.paid_date, DATE_FORMAT(NOW(), \'%Y-%m-%d\')) <=' => 30,
-            ));
+                $this->controller->paginate = array(
+                    'conditions' => array(
+                        'DATEDIFF(PaymentNotification.paid_date, DATE_FORMAT(NOW(), \'%Y-%m-%d\')) <=' => $leasing_expired_day,
+                    ),
+                    'limit' => 10,
+                );
+                $notifications = $this->controller->paginate('PaymentNotification');
 
-            return array(
-                'notifications' => $notifications,
-                'cnt' => $cnt,
-            );
+                $cnt = $this->controller->PaymentNotification->paginateCount(array(
+                    'DATEDIFF(PaymentNotification.paid_date, DATE_FORMAT(NOW(), \'%Y-%m-%d\')) <=' => $leasing_expired_day,
+                ));
+
+                return array(
+                    'notifications' => $notifications,
+                    'cnt' => $cnt,
+                );
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
