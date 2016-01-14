@@ -30,7 +30,7 @@
                 <li class="dropdown notifications-menu">
                     <a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" title="Notifikasi Kas/Bank">
                         <?php
-                                echo $this->Common->icon('creative-commons');
+                                echo $this->Common->icon('money');
                                 echo $this->Html->tag('span', $paid_notifCnt, array(
                                     'class' => 'label label-info',
                                 ));
