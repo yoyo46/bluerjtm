@@ -4409,15 +4409,8 @@ class RevenuesController extends AppController {
 
     function invoice_print($id, $action_print = false){
         $this->loadModel('Invoice');
+        $data_print = $this->MkCommon->filterEmptyField($this->params, 'named', 'print', 'invoice');
 
-        if( !empty($this->params['named']) ){
-            $data_print = $this->params['named']['print'];
-        } else {
-            $data_print = 'invoice';
-        }
-
-        $module_title = __('Print Invoice');
-        $this->set('sub_module_title', trim($module_title));
         $this->set('active_menu', 'invoices');
 
         $head_office = Configure::read('__Site.config_branch_head_office');
@@ -4441,6 +4434,7 @@ class RevenuesController extends AppController {
         if(!empty($invoice)){
             $this->loadModel('Bank');
 
+            $no_invoice = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'no_invoice');
             $invoice = $this->Invoice->Customer->getMerge($invoice, $invoice['Invoice']['customer_id']);
             $invoice = $this->User->getMerge($invoice, $invoice['Invoice']['billing_id']);
             $invoice = $this->Bank->getMerge($invoice, $invoice['Invoice']['bank_id']);
@@ -4462,19 +4456,29 @@ class RevenuesController extends AppController {
                 'invoice', 'revenue_detail', 'action',
                 'setting', 'data_print'
             ));
-        }
 
-        if($action_print == 'pdf'){
-            $this->layout = 'pdf';
-        }else if($action_print == 'excel'){
-            $this->layout = 'ajax';
-        }
-        
-        $this->set('action_print', $action_print);
-        switch ($data_print) {
-            case 'header':
-                $this->render('invoice_header_print');
-                break;
+            if($action_print == 'pdf'){
+                $this->layout = 'pdf';
+            }else if($action_print == 'excel'){
+                $this->layout = 'ajax';
+            }
+            
+            $module_title = sprintf(__('Kwitansi No.%s'), $no_invoice);
+            $this->set('sub_module_title', trim($module_title));
+            $this->set('module_title', trim($module_title));
+            $this->set('action_print', $action_print);
+
+            switch ($data_print) {
+                case 'header':
+                    $this->render('invoice_header_print');
+                    break;
+                case 'mpm':
+                    $this->render('invoice_mpm_print');
+                    break;
+            }
+        } else {
+            $this->MkCommon->setCustomFlash(__('Kwitansi tidak ditemukan'), 'error');
+            $this->redirect($this->referer());
         }
     }
 

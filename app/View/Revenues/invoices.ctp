@@ -127,6 +127,13 @@
                                             //     $id,
                                             // )));
                                         }
+
+                                        echo $this->Html->tag('li', $this->Html->link(__('Print Format MPM MD-D'), array(
+                                            'controller' => 'revenues',
+                                            'action' => 'invoice_print',
+                                            'print' => 'mpm',
+                                            $id,
+                                        )));
                                     }
                                     
                                     echo $this->Html->tag('li', $this->Html->link(__('Print Header'), array(
