@@ -22,14 +22,19 @@
         $tableBody = !empty($tableBody)?$tableBody:false;
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $date_title = $sub_module_title;
+        $filename = !empty($filename)?$filename:$sub_module_title;
         $print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
             'style' => 'font-size: 24px;font-style: italic;margin-top: 10px;'
         ));
-$tbl = <<<EOD
 
-      <div class="clearfix container_16" id="content">
-
+        if( empty($customHeader) ) {
+            $customHeader = <<<EOD
         <h2 class="grid_8" style="text-align: center;">$date_title</h2>
+EOD;
+        }
+
+        if( empty($tableContent) ) {
+            $tableContent = <<<EOD
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table">
             <thead>
                 <tr style="$table_tr_head">
@@ -40,6 +45,14 @@ $tbl = <<<EOD
                 $tableBody
             </tbody>
         </table> 
+      </div>
+EOD;
+        }
+$tbl = <<<EOD
+
+      <div class="clearfix container_16" id="content">
+        $customHeader
+        $tableContent
         <br>
         $print_label
       </div>
@@ -54,10 +67,10 @@ EOD;
         $tcpdf->SetFont($textfont,'B',10);
 
         $path = $this->Common->pathDirTcpdf();
-        $filename = $this->Common->toSlug($date_title).'.pdf';
+        $filename = $this->Common->toSlug($filename).'.pdf';
         $pathFile = $path.'/'.$filename;
         
-        $tcpdf->Output($pathFile, 'F'); 
+        $tcpdf->Output($pathFile, 'I'); 
 
         header('Content-type: application/pdf');
         header('Content-Disposition: attachment; filename="'.$filename.'"');
