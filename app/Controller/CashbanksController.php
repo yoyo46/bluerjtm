@@ -1288,7 +1288,12 @@ class CashbanksController extends AppController {
             }
         }
 
-        $coas = $this->User->Journal->Coa->_callOptGroup();
+        $coas = $this->GroupBranch->Branch->BranchCoa->getCoas(array(
+            'Coa.id', 'Coa.id'
+        ), false);
+        $coas = $this->User->Journal->Coa->_callOptGroup( false, false, false, $coas );
+        $coas = $this->MkCommon->array_filter_recursive($coas);
+        
         $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
         $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
         $module_title = __('Laporan Ledger');

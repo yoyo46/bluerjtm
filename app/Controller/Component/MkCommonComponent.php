@@ -1734,5 +1734,15 @@ class MkCommonComponent extends Component {
             return false;
         }
     }
+
+    function array_filter_recursive($input) { 
+        foreach ($input as &$value) {
+            if (is_array($value)) {
+                $value = $this->array_filter_recursive($value);
+            }
+        }
+
+        return array_filter($input); 
+    }
 }
 ?>

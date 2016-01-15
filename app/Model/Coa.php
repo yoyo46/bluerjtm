@@ -223,7 +223,7 @@ class Coa extends AppModel {
         return $result;
     }
 
-    function _callOptGroup ( $id = false, $categories = false, $modelName = false ) {
+    function _callOptGroup ( $id = false, $categories = false, $modelName = false, $allowCoas = false ) {
         $result = array();
         
         if( empty($categories) ) {
@@ -239,12 +239,25 @@ class Coa extends AppModel {
                     $child = !empty($value['children'])?$value['children']:false;
 
                     if( !empty($child) ) {
-                        $result[$name] = $this->_callOptGroup($id, $child, $name);
+                        $result[$name] = $this->_callOptGroup($id, $child, $name, $allowCoas);
                     } else {
+
+                        if( !empty($allowCoas) ) {
+                            if( in_array($cat_id, $allowCoas) ) {
+                                $flag = true;
+                            } else {
+                                $flag = false;
+                            }
+                        } else {
+                            $flag = true;
+                        }
+
                         // if( !empty($modelName) ) {
                         //     $result[$modelName][$cat_id] = $name;
                         // } else {
+                        if( !empty($flag) ) {
                             $result[$cat_id] = $name;
+                        }
                         // }
                     }
                 }
