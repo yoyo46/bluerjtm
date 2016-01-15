@@ -1349,8 +1349,10 @@ class CashbanksController extends AppController {
 
     public function prepayment_report( $data_action = false ) {
         $this->loadModel('CashBank');
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $options = array(
             'conditions' => array(
+                'CashBank.branch_id' => $allow_branch_id,
                 'CashBank.is_rejected' => 0,
                 'CashBank.receiving_cash_type' => 'prepayment_out',
             ),
@@ -1367,6 +1369,14 @@ class CashbanksController extends AppController {
             'dateTo' => $dateTo,
         ));
         $options =  $this->CashBank->_callRefineParams($params, $options);
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            // Custom Otorisasi
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'CashBank', $options );
+        }
+        
         $prepayments = $this->CashBank->getData('all', $options);
 
         if( !empty($prepayments) ) {
