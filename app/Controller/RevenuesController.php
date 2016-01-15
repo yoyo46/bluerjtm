@@ -7994,10 +7994,12 @@ class RevenuesController extends AppController {
         $values = array();
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
 
         $this->set('sub_module_title', $module_title);
         $options =  $this->TtujPaymentDetail->TtujPayment->getData('paginate', array(
             'conditions' => array(
+                'TtujPayment.branch_id' => $allow_branch_id,
                 'TtujPaymentDetail.status' => 1,
             ),
             'contain' => array(
@@ -8100,7 +8102,11 @@ class RevenuesController extends AppController {
         ));
         $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
         $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
-        $options =  $this->TtujOutstanding->_callRefineParams($params);
+        $options =  $this->TtujOutstanding->_callRefineParams($params, array(
+            'conditions' => array(
+                'TtujOutstanding.branch_id' => $allow_branch_id,
+            ),
+        ));
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
