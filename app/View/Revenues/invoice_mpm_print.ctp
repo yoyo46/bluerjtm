@@ -329,4 +329,19 @@ $tcpdf->Output($path.'/'.$filename, 'F');
 	        	));
 			}
 		}
+
+        if( empty($preview) ) {
+?>
+<div class="box-footer text-center action hidden-print">
+	<?php
+    		echo $this->Html->link(__('Kembali'), array(
+                'controller' => 'revenues', 
+				'action' => 'invoices', 
+			), array(
+				'class'=> 'btn btn-default',
+			));
+	?>
+</div>
+<?php 
+		}
 ?>

@@ -28,20 +28,20 @@
 			</th>
 		</tr>
 		<tr>
-			<th class="text-center"><?php echo __('No.');?></th>
-			<th class="text-center"><?php echo __('No. Truk');?></th>
-			<th class="text-center">
+			<th class="text-center" style="width: 5%;"><?php echo __('No.');?></th>
+			<th class="text-center" style="width: 10%;"><?php echo __('No. Truk');?></th>
+			<th class="text-center" style="width: 12%;">
 				<?php
 						echo __('No.DO');
 				?>
 			</th>
-			<th class="text-center"><?php echo __('No.Shipping List');?></th>
-			<th class="text-center"><?php echo __('Nama Dealer');?></th>
-			<th class="text-center"><?php echo __('Tanggal');?></th>
-			<th class="text-center"><?php echo __('Total Unit');?></th>
-			<th class="text-center"><?php echo __('Harga');?></th>
-			<th class="text-center"><?php echo __('Total');?></th>
-			<th class="text-center"><?php echo __('No. Ref');?></th>
+			<th class="text-center" style="width: 13%;"><?php echo __('No.Shipping List');?></th>
+			<th class="text-center" style="width: 15%;"><?php echo __('Nama Dealer');?></th>
+			<th class="text-center" style="width: 10%;"><?php echo __('Tanggal');?></th>
+			<th class="text-center" style="width: 5%;"><?php echo __('Total Unit');?></th>
+			<th class="text-center" style="width: 10%;"><?php echo __('Harga');?></th>
+			<th class="text-center" style="width: 10%;"><?php echo __('Total');?></th>
+			<th class="text-center" style="width: 10%;"><?php echo __('No. Ref');?></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -111,7 +111,9 @@
 							$nopol = false;
 						}
 
-						$colom = $this->Html->tag('td', $no++);
+						$colom = $this->Html->tag('td', $no++, array(
+							'style' => 'text-align: center;'
+						));
 
 						if( !empty($data_print) && $data_print == 'date' ) {
 							$city_name = !empty($value['City']['name'])?$value['City']['name']:false;
