@@ -1,14 +1,23 @@
 <?php 
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
+        $filename = !empty($filename)?$filename:$sub_module_title;
+
         $contentTr = isset($contentTr)?$contentTr:true;
         header('Content-type: application/ms-excel');
-        header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
+        header('Content-Disposition: attachment; filename='.$filename.'.xls');
 ?>
 <section class="content invoice">
+    <?php 
+            if( !empty($customHeader) ) {
+                echo $customHeader;
+            } else if( !empty($sub_module_title) ) {
+    ?>
     <h2 class="page-header" style="text-align: center;">
         <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
     </h2>
     <?php 
+            }
+
             if( !empty($tableContent) ) {
                 echo $tableContent;
             } else {

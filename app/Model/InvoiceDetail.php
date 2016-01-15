@@ -21,6 +21,10 @@ class InvoiceDetail extends AppModel {
             'className' => 'Revenue',
             'foreignKey' => 'revenue_id',
         ),
+        'RevenueDetail' => array(
+            'className' => 'RevenueDetail',
+            'foreignKey' => 'revenue_detail_id',
+        ),
         'Invoice' => array(
             'className' => 'Invoice',
             'foreignKey' => 'invoice_id',

@@ -6810,8 +6810,6 @@ class RevenuesController extends AppController {
 
     function invoice_hso_print($id, $action_print = false){
         $this->loadModel('Invoice');
-        $this->loadModel('GroupMotor');
-        $this->loadModel('City');
 
         $module_title = __('Print Invoice HSO');
         $this->set('sub_module_title', trim($module_title));
@@ -6823,7 +6821,7 @@ class RevenuesController extends AppController {
             $data_print = 'invoice';
         }
 
-        if( $action_print == 'excel' && !empty($this->params['named']) ) {
+        if( ( $action_print == 'excel' && $data_print == 'hso' ) && !empty($this->params['named']) ) {
             $data_print = 'invoice';
         }
 
@@ -6837,31 +6835,48 @@ class RevenuesController extends AppController {
 
         if(!empty($invoice)){
             $invoice = $this->Invoice->Customer->getMerge($invoice, $invoice['Invoice']['customer_id']);
+            $tarif_type = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'tarif_type');
 
-            switch ($data_print) {
-                case 'header':
-                    $invoice = $this->Invoice->InvoiceDetail->getMerge($invoice, $invoice['Invoice']['id']);
+            if( in_array($data_print, array( 'header', 'hso-yogya' )) ) {
+                $invoice = $this->Invoice->InvoiceDetail->getMerge($invoice, $invoice['Invoice']['id']);
 
-                    if( !empty($invoice['InvoiceDetail']) ) {
-                        $revenue_id = Set::extract('/InvoiceDetail/revenue_id', $invoice['InvoiceDetail']);
-                        $invoice = $this->Invoice->InvoiceDetail->Revenue->getMerge($invoice, $id, $revenue_id, 'all');
+                if( !empty($invoice['InvoiceDetail']) ) {
+                    switch ($data_print) {
+                        case 'hso-yogya':
+                            if( !empty($invoice['InvoiceDetail']) ) {
+                                foreach ($invoice['InvoiceDetail'] as $key => $detail) {
+                                    $revenue_id = $this->MkCommon->filterEmptyField($detail, 'InvoiceDetail', 'revenue_id');
+                                    $revenue_detail_id = $this->MkCommon->filterEmptyField($detail, 'InvoiceDetail', 'revenue_detail_id');
 
-                        if( !empty($invoice['Revenue']) ) {
-                            foreach ($invoice['Revenue'] as $key => $revenue) {
-                                $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'id');
-                                $revenue = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getSumUnit($revenue, $revenue_id, 'revenue', 'RevenueDetail.revenue_id');
-                                $revenue = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getSumUnit($revenue, $id, 'revenue_price');
-                                $invoice['Revenue'][$key] = $revenue;
+                                    $detail = $this->Invoice->InvoiceDetail->RevenueDetail->getMerge($detail, $revenue_detail_id);
+                                    $detail = $this->Invoice->InvoiceDetail->Revenue->getMerge($detail, false, $revenue_id);
+                                    $ttuj_id = $this->MkCommon->filterEmptyField($detail, 'Revenue', 'ttuj_id');
+                                   
+                                    $detail = $this->Ttuj->getMerge($detail, $ttuj_id);
+                                    $invoice['InvoiceDetail'][$key] = $detail;
+                                }
                             }
-                        }
-                    }
-                    break;
+                            break;
+                        
+                        default:
+                            $revenue_id = Set::extract('/InvoiceDetail/revenue_id', $invoice['InvoiceDetail']);
+                            $invoice = $this->Invoice->InvoiceDetail->Revenue->getMerge($invoice, $id, $revenue_id, 'all');
 
-                default:
-                    $revenue_detail = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getPreviewInvoice($invoice['Invoice']['id'], $invoice['Invoice']['tarif_type'], $action_print, $data_print);
-                    break;
+                            if( !empty($invoice['Revenue']) ) {
+                                foreach ($invoice['Revenue'] as $key => $revenue) {
+                                    $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'id');
+                                    $revenue = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getSumUnit($revenue, $revenue_id, 'revenue', 'RevenueDetail.revenue_id');
+                                    $revenue = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getSumUnit($revenue, $id, 'revenue_price');
+                                    $invoice['Revenue'][$key] = $revenue;
+                                }
+                            }
+                            break;
+                    }
+                }
+            } else {
+                $revenue_detail = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getPreviewInvoice($id, $tarif_type, $action_print, $data_print);
             }
-            
+
             $this->set(compact(
                 'invoice', 'action_print', 'revenue_detail'
             ));
@@ -6872,8 +6887,10 @@ class RevenuesController extends AppController {
                 $this->layout = 'ajax';
             }
 
-            if( $data_print == 'invoice' || $action_print == 'excel' ) {
+            if( $data_print == 'invoice' || ( $action_print == 'excel' && $data_print == 'hso' ) ) {
                 $this->render('invoice_hso_non_header_print');
+            } else if( $data_print == 'hso-yogya' ) {
+                $this->render('invoice_hso_yogya_print');
             }
         } else {
             $this->MkCommon->setCustomFlash(__('Invoice tidak ditemukan'), 'error');  

@@ -4222,16 +4222,17 @@ table.sorting thead th a {
   body,
   table th,
   table td {
-    font-size: 10px;
+    font-size: 10px !important;
   }
 
   h3.header-invoice,
   .page-header,
-  .header-invoice {
-    font-size: 14px;
+  .header-invoice,
+  .no-invoice > p {
+    font-size: 14px !important;
   }
 
   .lbl-kwitansi {
-    font-size: 12px;
+    font-size: 12px !important;
   }
 }

@@ -134,6 +134,13 @@
                                             'print' => 'mpm',
                                             $id,
                                         )));
+
+                                        echo $this->Html->tag('li', $this->Html->link(__('Print Format HSO Yogya'), array(
+                                            'controller' => 'revenues',
+                                            'action' => 'invoice_hso_print',
+                                            'print' => 'hso-yogya',
+                                            $id,
+                                        )));
                                     }
                                     
                                     echo $this->Html->tag('li', $this->Html->link(__('Print Header'), array(
