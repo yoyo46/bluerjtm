@@ -1,3 +1,6 @@
+<style>
+    .string{ mso-number-format:\@; }
+</style>
 <?php
 		if(!empty($revenue_detail)){
 			foreach ($revenue_detail as $key => $val_detail) {
@@ -167,7 +170,9 @@
 							));
 						}
 
-						$colom .= $this->Html->tag('td', sprintf('#%s', $this->Common->getNoRef($value['Revenue']['id'])));
+						$colom .= $this->Html->tag('td', $this->Common->getNoRef($value['Revenue']['id']), array(
+			                'class' => 'string',
+			            ));
 						$trData .= $this->Html->tag('tr', $colom);
 						$grandTotal += $total;
 						$old_revenue_id = sprintf('%s-%s', $revenue_id, $is_charge);

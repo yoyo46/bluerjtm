@@ -82,7 +82,6 @@
 									$date_revenue = $this->Common->formatDate($date_revenue, 'd/m/Y');
 									$customPrice = $this->Common->getFormatPrice($price_unit);
 									$customAmount = $this->Common->getFormatPrice($amount);
-									$noref = sprintf('#%s', $noref);
 					?>
 					<tr>
 						<?php 
@@ -114,6 +113,7 @@
 									'style' => 'text-align: center;padding: 10px;',
 								));
 								echo $this->Html->tag('td', $noref, array(
+									'class' => 'string',
 									'style' => 'padding: 10px;',
 								));
 						?>

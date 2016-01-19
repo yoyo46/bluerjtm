@@ -1,3 +1,6 @@
+<style>
+    .string{ mso-number-format:\@; }
+</style>
 <?php 
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $filename = !empty($filename)?$filename:$sub_module_title;

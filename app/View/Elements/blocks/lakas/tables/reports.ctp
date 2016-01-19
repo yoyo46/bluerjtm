@@ -19,10 +19,6 @@
                 $category = $this->Common->filterEmptyField($value, 'TruckCategory', 'name');
                 $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
 
-                if( !empty($data_action) ) {
-                    $noref = sprintf('#%s', $noref);
-                }
-
                 if( !empty($insurance) ) {
                     if( in_array(1, $insurance) ) {
                         $insurance = __('Tidak');
@@ -56,7 +52,9 @@
 ?>
 <tr>
     <?php 
-            echo $this->Html->tag('td', $noref);
+            echo $this->Html->tag('td', $noref, array(
+                'class' => 'string',
+            ));
             echo $this->Html->tag('td', $nodoc);
 
             if( !empty($withNumber) ) {
