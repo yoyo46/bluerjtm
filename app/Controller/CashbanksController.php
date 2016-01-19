@@ -638,6 +638,7 @@ class CashbanksController extends AppController {
             $debit_total = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'debit_total', 0);
             $credit_total = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'credit_total', 0);
             $grand_total = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'grand_total', 0);
+            $description = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'description');
             
             $cashbank = $this->User->getMerge($cashbank, $user_id);
             $cashbank = $this->CashBank->Coa->getMerge($cashbank, $document_coa_id);
@@ -815,16 +816,20 @@ class CashbanksController extends AppController {
                                                 $documentType = $this->MkCommon->filterEmptyField($documentType, $receiving_cash_type);
                                                 $receiver_name = $this->RjCashBank->_callReceiverName($receiver_id, $receiver_type);
 
-                                                if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
-                                                    $title = sprintf(__('%s kepada %s'), $documentType, $receiver_name);
-                                                    $coaArr = array(
-                                                        'debit' => $coa_id
-                                                    );
+                                                if( !empty($description) ) {
+                                                    $title = $description;
                                                 } else {
-                                                    $title = sprintf(__('%s dari %s'), $documentType, $receiver_name);
-                                                    $coaArr = array(
-                                                        'credit' => $coa_id
-                                                    );
+                                                    if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
+                                                        $title = sprintf(__('%s kepada %s'), $documentType, $receiver_name);
+                                                        $coaArr = array(
+                                                            'debit' => $coa_id
+                                                        );
+                                                    } else {
+                                                        $title = sprintf(__('%s dari %s'), $documentType, $receiver_name);
+                                                        $coaArr = array(
+                                                            'credit' => $coa_id
+                                                        );
+                                                    }
                                                 }
 
                                                 $this->User->Journal->setJournal($total, $coaArr, array(
@@ -835,25 +840,25 @@ class CashbanksController extends AppController {
                                                     'date' => $tgl_cash_bank,
                                                 ));
                                             }
-                                        }
 
-                                        if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
-                                            $coaArr = array(
-                                                'credit' => $document_coa_id,
-                                            );
-                                        } else {
-                                            $coaArr = array(
-                                                'debit' => $document_coa_id,
-                                            );
-                                        }
+                                            if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
+                                                $coaArr = array(
+                                                    'credit' => $document_coa_id,
+                                                );
+                                            } else {
+                                                $coaArr = array(
+                                                    'debit' => $document_coa_id,
+                                                );
+                                            }
 
-                                        $this->User->Journal->setJournal($grand_total, $coaArr, array(
-                                            'document_id' => $id,
-                                            'title' => $title,
-                                            'document_no' => $nodoc,
-                                            'type' => $receiving_cash_type,
-                                            'date' => $tgl_cash_bank,
-                                        ));
+                                            $this->User->Journal->setJournal($grand_total, $coaArr, array(
+                                                'document_id' => $id,
+                                                'title' => $title,
+                                                'document_no' => $nodoc,
+                                                'type' => $receiving_cash_type,
+                                                'date' => $tgl_cash_bank,
+                                            ));
+                                        }
                                     }
 
                                     if( !empty($msgRevision) ) {

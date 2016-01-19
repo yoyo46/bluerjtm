@@ -221,6 +221,7 @@ class Approval extends AppModel {
 
         $values = $this->ApprovalDetail->getData('all', array(
             'conditions' => array(
+                'Approval.status' => 1,
                 'Approval.approval_module_id' => $module_id,
                 'Approval.employe_position_id' => $employe_position_id,
                 'ApprovalDetail.min_amount <=' => $total,
