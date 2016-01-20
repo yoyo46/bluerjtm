@@ -372,7 +372,7 @@ class Revenue extends AppModel {
         return $this->save();
     }
 
-    function getProsesInvoice ( $customer_id, $invoice_id, $action, $tarif_type, $data = false ) {
+    function getProsesInvoice ( $customer_id, $invoice_id, $action, $tarif_type, $data = false, $journalData = false ) {
         $revenueId = array();
         $head_office = Configure::read('__Site.config_branch_head_office');
         $elementRevenue = false;
@@ -386,10 +386,13 @@ class Revenue extends AppModel {
         switch ($action) {
             case 'tarif':
                 if( !empty($data) ) {
+                    $total_price = 0;
+
                     foreach ($data as $key => $value_detail) {
                         if( !empty($value_detail['RevenueDetail']['id']) ) {
                             $revenue_id = !empty($value_detail['Revenue']['id'])?$value_detail['Revenue']['id']:false;
                             $revenue_detail_id = !empty($value_detail['RevenueDetail']['id'])?$value_detail['RevenueDetail']['id']:false;
+                            $total_price_unit = !empty($value_detail['RevenueDetail']['total_price_unit'])?$value_detail['RevenueDetail']['total_price_unit']:0;
                             
                             $this->InvoiceDetail->create();
                             $this->InvoiceDetail->set(array(
@@ -403,7 +406,26 @@ class Revenue extends AppModel {
                             $this->RevenueDetail->set('invoice_id', $invoice_id);
                             $this->RevenueDetail->save();
                             $revenueId[] = $revenue_id;
+                            $total_price += $total_price_unit;
                         }
+                    }
+
+                    $this->InvoiceDetail->Invoice->updateAll(array(
+                        'Invoice.total' => $total_price,
+                    ), array(
+                        'Invoice.id' => $invoice_id,
+                    ));
+
+                    if( !empty($journalData) ) {
+                        $this->Journal = ClassRegistry::init('Journal');
+                        $this->Journal->setJournal($total_price, array(
+                            'credit' => 'invoice_coa_credit_id',
+                            'debit' => 'invoice_coa_debit_id',
+                        ), $journalData);
+                        $this->Journal->setJournal($total_price, array(
+                            'credit' => 'invoice_coa_2_credit_id',
+                            'debit' => 'invoice_coa_2_debit_id',
+                        ), $journalData);
                     }
                 }
                 break;

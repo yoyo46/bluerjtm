@@ -4225,47 +4225,29 @@ class RevenuesController extends AppController {
                                     $invoice_number = $this->CustomerGroupPattern->addPattern($customer, $data);
                                     $this->CustomerGroupPattern->addPattern($customer, $data);
 
+                                    $titleJournalInv = sprintf(__('Invoice customer: %s, No: %s'), $customer_name_code, $invoice_number);
+                                    $journalData = array(
+                                        'date' => $invoice_date,
+                                        'document_id' => $invoice_id,
+                                        'title' => $titleJournalInv,
+                                        'document_no' => $invoice_number,
+                                        'type' => 'invoice',
+                                    );
+
                                     if( !empty($data['Invoice']['total']) ) {
-                                        $titleJournalInv = sprintf(__('Invoice customer: %s, No: %s'), $customer_name_code, $invoice_number);
                                         $total = $this->MkCommon->filterEmptyField($data, 'Invoice', 'total');
                                         $total_pph = $this->MkCommon->filterEmptyField($data, 'Invoice', 'total_pph');
 
-                                        $this->User->Journal->setJournal($total, array(
-                                            'credit' => 'invoice_coa_credit_id',
-                                            'debit' => 'invoice_coa_debit_id',
-                                        ), array(
-                                            'date' => $invoice_date,
-                                            'document_id' => $invoice_id,
-                                            'title' => $titleJournalInv,
-                                            'document_no' => $invoice_number,
-                                            'type' => 'invoice',
-                                        ));
-                                        $this->User->Journal->setJournal($total, array(
-                                            'credit' => 'invoice_coa_2_credit_id',
-                                            'debit' => 'invoice_coa_2_debit_id',
-                                        ), array(
-                                            'date' => $invoice_date,
-                                            'document_id' => $invoice_id,
-                                            'title' => $titleJournalInv,
-                                            'document_no' => $invoice_number,
-                                            'type' => 'invoice',
-                                        ));
                                         $this->User->Journal->setJournal($total_pph, array(
                                             'credit' => 'pph_coa_credit_id',
                                             'debit' => 'pph_coa_debit_id',
-                                        ), array(
-                                            'date' => $invoice_date,
-                                            'document_id' => $invoice_id,
-                                            'title' => $titleJournalInv,
-                                            'document_no' => $invoice_number,
-                                            'type' => 'invoice',
-                                        ));
+                                        ), $journalData);
                                     }
 
                                     $this->params['old_data'] = $data_local;
                                     $this->params['data'] = $data;
 
-                                    $this->Ttuj->Revenue->getProsesInvoice( $customer_id, $invoice_id, $action, $tarif_type, $value );
+                                    $this->Ttuj->Revenue->getProsesInvoice( $customer_id, $invoice_id, $action, $tarif_type, $value, $journalData );
                                     $this->Log->logActivity( sprintf(__('Berhasil %s Invoice #%s'), $msg, $invoice_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $invoice_id );
                                 } else {
                                     $this->Log->logActivity( sprintf(__('Gagal %s Invoice #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
