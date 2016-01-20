@@ -6,7 +6,7 @@
 
 		if(!empty($revenue_detail)){
 			foreach ($revenue_detail as $key => $val_detail) {
-				if( in_array($data_print, array( 'date', 'hso-smg' )) ) {
+				if( in_array($data_print, array( 'date' )) ) {
 					$totalMerge = 10;
 					$totalMergeTotal = 6;
 				} else {
@@ -62,8 +62,13 @@
 				?>
 			</th>
 			<th class="text-center" style="width: 15%;"><?php echo __('No. SJ');?></th>
-			<th class="text-center" style="width: 10%;"><?php echo __('Tanggal');?></th>
-			<?php 
+			<?php
+					if( $data_print != 'hso-smg' ) {
+						echo $this->Html->tag('th', __('Tanggal'), array(
+							'style' => 'width: 10%;text-align: center;',
+						));
+					}
+
 					if( $data_print == 'hso-smg' ) {
 						echo $this->Html->tag('th', __('Kota'), array(
 							'class' => 'text-center',
@@ -140,7 +145,10 @@
 						$colom .= $this->Html->tag('td', $nopol);
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_sj']);
-						$colom .= $this->Html->tag('td', $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y'));
+
+						if( $data_print != 'hso-smg' ) {
+							$colom .= $this->Html->tag('td', $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y'));
+						}
 
 						if( $data_print == 'hso-smg' ) {
 							$city_name = !empty($value['City']['name'])?$value['City']['name']:false;
