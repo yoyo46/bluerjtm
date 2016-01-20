@@ -203,6 +203,7 @@ class Journal extends AppModel {
         $sort = !empty($data['named']['sort'])?$data['named']['sort']:false;
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
         $journalcoa = !empty($data['named']['journalcoa'])?$data['named']['journalcoa']:false;
+        $status = !empty($data['named']['status'])?$data['named']['status']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -252,6 +253,9 @@ class Journal extends AppModel {
         }
         if( !empty($journalcoa) ) {
             $default_options['conditions']['Journal.coa_id'] = $journalcoa;
+        }
+        if( $status == 'active' ) {
+            $default_options['conditions']['Journal.type NOT LIKE'] = '%void%';
         }
         
         return $default_options;
