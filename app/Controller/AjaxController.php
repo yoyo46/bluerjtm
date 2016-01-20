@@ -1022,7 +1022,7 @@ class AjaxController extends AppController {
 		), true, $elementRevenue);
 
 		if(!empty($revenue_id)){
-            $revenue_detail = $this->Revenue->RevenueDetail->getPreviewInvoice($revenue_id, $invoice_type, $action);
+            $revenue_detail = $this->Revenue->RevenueDetail->getPreviewInvoice($revenue_id, $invoice_type, $action, 'preview');
 		}
 
 		$this->layout = 'ajax';
