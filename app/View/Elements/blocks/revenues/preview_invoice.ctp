@@ -2,11 +2,11 @@
     .string{ mso-number-format:\@; }
 </style>
 <?php
+		$data_print = !empty($data_print)?$data_print:'invoice';
+
 		if(!empty($revenue_detail)){
 			foreach ($revenue_detail as $key => $val_detail) {
-				$data_print = !empty($data_print)?$data_print:'invoice';
-
-				if( !empty($data_print) && $data_print == 'date' ) {
+				if( in_array($data_print, array( 'date', 'hso-smg' )) ) {
 					$totalMerge = 10;
 					$totalMergeTotal = 6;
 				} else {
@@ -25,7 +25,7 @@
 						if($action == 'tarif' && $data_print == 'invoice'){
 							printf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_second_code'), array('places' => 0)) );
 						}else{
-			                if( $data_print == 'date' && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
+			                if( in_array($data_print, array( 'date', 'hso-smg' )) && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
 								echo $this->Common->customDate($val_detail[0]['Revenue']['date_revenue'], 'd/m/Y');
 			                } else {
 			                	if( $val_detail[0]['Revenue']['revenue_tarif_type'] == 'per_truck' && !empty($val_detail[0]['Revenue']['no_doc']) ) {
@@ -44,7 +44,7 @@
 		<tr>
 			<th class="text-center" style="width: 5%;"><?php echo __('No.');?></th>
 			<?php 
-					if( !empty($data_print) && $data_print == 'date' ) {
+					if( $data_print == 'date' ) {
 						echo $this->Html->tag('th', __('Kota'), array(
 							'class' => 'text-center',
 							'width' => '13%'
@@ -62,8 +62,15 @@
 				?>
 			</th>
 			<th class="text-center" style="width: 15%;"><?php echo __('No. SJ');?></th>
-			<!-- <th class="text-center"><?php // echo __('Keterangan');?></th> -->
 			<th class="text-center" style="width: 10%;"><?php echo __('Tanggal');?></th>
+			<?php 
+					if( $data_print == 'hso-smg' ) {
+						echo $this->Html->tag('th', __('Kota'), array(
+							'class' => 'text-center',
+							'width' => '13%'
+						));
+					}
+			?>
 			<th class="text-center" style="width: 8%;"><?php echo __('Total Unit');?></th>
 			<th class="text-center" style="width: 10%;"><?php echo __('Harga');?></th>
 			<th class="text-center" style="width: 10%;"><?php echo __('Total');?></th>
@@ -125,7 +132,7 @@
 							'style' => 'text-align: center;'
 						));
 
-						if( !empty($data_print) && $data_print == 'date' ) {
+						if( $data_print == 'date' ) {
 							$city_name = !empty($value['City']['name'])?$value['City']['name']:false;
 							$colom .= $this->Html->tag('td', $value['City']['name']);
 						}
@@ -133,8 +140,13 @@
 						$colom .= $this->Html->tag('td', $nopol);
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_sj']);
-						// $colom .= $this->Html->tag('td', $value['RevenueDetail']['note']);
 						$colom .= $this->Html->tag('td', $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y'));
+
+						if( $data_print == 'hso-smg' ) {
+							$city_name = !empty($value['City']['name'])?$value['City']['name']:false;
+							$colom .= $this->Html->tag('td', $value['City']['name']);
+						}
+
 						$colom .= $this->Html->tag('td', $qty, array(
 							'align' => 'center'
 						));

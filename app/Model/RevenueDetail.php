@@ -193,7 +193,7 @@ class RevenueDetail extends AppModel {
         $head_office = Configure::read('__Site.config_branch_head_office');
         $elementRevenue = false;
         
-        if( $data_action == 'date' ) {
+        if( in_array($data_action, array( 'date', 'hso-smg' )) ) {
             $options['contain'][] = 'Invoice';
         }
         if( !empty($head_office) ) {
@@ -207,7 +207,7 @@ class RevenueDetail extends AppModel {
                 'RevenueDetail.id' => $revenue_detail_id,
                 'Revenue.status' => 1,
             );
-        } else if( in_array($data_action, array( 'invoice', 'date' )) ) {
+        } else if( in_array($data_action, array( 'invoice', 'date', 'hso-smg' )) ) {
             $options['conditions'] = array(
                 'RevenueDetail.invoice_id' => $id,
             );
@@ -243,6 +243,7 @@ class RevenueDetail extends AppModel {
 
             foreach ($revenue_detail as $key => $value) {
                 if(!empty($value['RevenueDetail'])){
+                    $date_revenue = !empty($value['Revenue']['date_revenue'])?$value['Revenue']['date_revenue']:false;
                     $from_city_id = !empty($value['Revenue']['Ttuj']['from_city_id'])?$value['Revenue']['Ttuj']['from_city_id']:false;
                     $fromCity = $this->City->getMerge($value, $from_city_id);
                     $value['FromCity'] = !empty($fromCity['City'])?$fromCity['City']:false;
@@ -269,6 +270,8 @@ class RevenueDetail extends AppModel {
                     } else {
                         if( $value['Revenue']['revenue_tarif_type'] == 'per_truck' ) {
                             $result[$value['Revenue']['no_doc']][] = $value;
+                        } else if( $data_action == 'hso-smg' ) {
+                            $result[$date_revenue][] = $value;
                         } else {
                             $result[$value['RevenueDetail']['city_id']][] = $value;
                         }

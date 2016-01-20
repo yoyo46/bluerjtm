@@ -1,4 +1,6 @@
 <?php
+		$data_print = !empty($data_print)?$data_print:'invoice';
+
 if($action_print == 'pdf'){
 	App::import('Vendor','xtcpdf');
     ob_end_clean();
@@ -24,14 +26,12 @@ if($action_print == 'pdf'){
     $content = '';
 
     if(!empty($revenue_detail)){
-		foreach ($revenue_detail as $key => $val_detail) {
-			$data_print = !empty($data_print)?$data_print:'invoice';
-			
+		foreach ($revenue_detail as $key => $val_detail) {			
 			if($action == 'tarif' && $data_print == 'invoice'){
 				$cityName = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_second_code'), array('places' => 0)) );
 			}else{
-                if( $data_print == 'date' && !empty($val_detail[0]['Invoice']['invoice_date']) ) {
-					$cityName = $this->Common->customDate($val_detail[0]['Invoice']['invoice_date'], 'd/m/Y');
+                if( in_array($data_print, array( 'date', 'hso-smg' )) && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
+					$cityName = $this->Common->customDate($val_detail[0]['Revenue']['date_revenue'], 'd/m/Y');
                 } else {
                 	if( $val_detail[0]['Revenue']['revenue_tarif_type'] == 'per_truck' && !empty($val_detail[0]['Revenue']['no_doc']) ) {
 						$cityName = $val_detail[0]['Revenue']['no_doc'];
@@ -41,14 +41,21 @@ if($action_print == 'pdf'){
                 }
 			}
 
-			if( !empty($data_print) && $data_print == 'date' ) {
+			$colName = '';
+			$colNameCity = '';
+
+			if( in_array($data_print, array( 'date', 'hso-smg' )) ) {
 				$totalMerge = 10;
 				$totalMergeTotal = 6;
-				$colName = '<th class="text-center">Kota</th>';
+
+				if( $data_print == 'date' ) {
+					$colName = '<th class="text-center">Kota</th>';
+				} else if( $data_print == 'hso-smg' ) {
+					$colNameCity = '<th class="text-center">Kota</th>';
+				}
 			} else {
 				$totalMerge = 9;
 				$totalMergeTotal = 5;
-				$colName = '';
 			}
 
 			$content .= '<table border="1" width="100%" style="padding: 5px; font-size: 25px;">
@@ -63,6 +70,7 @@ if($action_print == 'pdf'){
 						<th class="text-center">No.DO</th>
 						<th class="text-center">No.SJ</th>
 						<th class="text-center">Tanggal</th>
+						'.$colNameCity.'
 						<th class="text-center">Total Unit</th>
 						<th class="text-center">Harga</th>
 						<th class="text-center">Total</th>
@@ -107,7 +115,7 @@ if($action_print == 'pdf'){
 
 					$colom = $this->Html->tag('td', $no++);
 
-					if( !empty($data_print) && $data_print == 'date' ) {
+					if( $data_print == 'date' ) {
 						$city_name = !empty($value['City']['name'])?$value['City']['name']:false;
 						$colom .= $this->Html->tag('td', $value['City']['name']);
 					}
@@ -115,12 +123,17 @@ if($action_print == 'pdf'){
 					$colom .= $this->Html->tag('td', $nopol);
 					$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
 					$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_sj']);
-					// $colom .= $this->Html->tag('td', !empty($value['RevenueDetail']['note'])?$value['RevenueDetail']['note']:'');
 
 					if(!empty($value['Revenue']['date_revenue'])){
 						$date_revenue = $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y');
 					}
 					$colom .= $this->Html->tag('td', $date_revenue);
+
+					if( $data_print == 'hso-smg' ) {
+						$city_name = !empty($value['City']['name'])?$value['City']['name']:false;
+						$colom .= $this->Html->tag('td', $value['City']['name']);
+					}
+
 					$colom .= $this->Html->tag('td', $qty, array(
 						'style' => 'text-align:center;',
 					));
@@ -276,7 +289,7 @@ $tcpdf->SetTextColor(0, 0, 0);
 $tcpdf->SetFont($textfont,'B',10);
 
 $path = $this->Common->pathDirTcpdf();
-$filename = 'Laporan_'.$date_title.'.pdf';
+$filename = 'Laporan_'.$this->Common->toSlug($date_title).'.pdf';
 $tcpdf->Output($path.'/'.$filename, 'F'); 
 
 		header('Content-type: application/pdf');

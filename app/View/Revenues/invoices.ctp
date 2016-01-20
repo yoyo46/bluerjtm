@@ -141,6 +141,13 @@
                                             'print' => 'hso-yogya',
                                             $id,
                                         )));
+
+                                        echo $this->Html->tag('li', $this->Html->link(__('Print detail per kota HSO.SMG MD-D'), array(
+                                            'controller' => 'revenues',
+                                            'action' => 'invoice_print',
+                                            $id,
+                                            'print' => 'hso-smg',
+                                        )));
                                     }
                                     
                                     echo $this->Html->tag('li', $this->Html->link(__('Print Header'), array(
