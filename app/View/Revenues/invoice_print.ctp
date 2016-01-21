@@ -27,18 +27,22 @@ if($action_print == 'pdf'){
 
     if(!empty($revenue_detail)){
 		foreach ($revenue_detail as $key => $val_detail) {			
-			if($action == 'tarif' && $data_print == 'invoice'){
-				$cityName = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_second_code'), array('places' => 0)) );
-			}else{
-                if( in_array($data_print, array( 'date', 'hso-smg' )) && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
-					$cityName = $this->Common->customDate($val_detail[0]['Revenue']['date_revenue'], 'd/m/Y');
-                } else {
-                	if( $val_detail[0]['Revenue']['revenue_tarif_type'] == 'per_truck' && !empty($val_detail[0]['Revenue']['no_doc']) ) {
-						$cityName = $val_detail[0]['Revenue']['no_doc'];
-                	} else {
-						$cityName = $val_detail[0]['City']['name'];
-					}
-                }
+			$cityName = false;
+
+			if( !in_array($data_print, array( 'date', 'hso-smg' )) ) {
+				if($action == 'tarif' && $data_print == 'invoice'){
+					$cityName = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_second_code'), array('places' => 0)) );
+				}else{
+	                if( in_array($data_print, array( 'date', 'hso-smg' )) && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
+						$cityName = $this->Common->customDate($val_detail[0]['Revenue']['date_revenue'], 'd/m/Y');
+	                } else {
+	                	if( $val_detail[0]['Revenue']['revenue_tarif_type'] == 'per_truck' && !empty($val_detail[0]['Revenue']['no_doc']) ) {
+							$cityName = $val_detail[0]['Revenue']['no_doc'];
+	                	} else {
+							$cityName = $val_detail[0]['City']['name'];
+						}
+	                }
+				}
 			}
 
 			$colName = '';
@@ -58,11 +62,15 @@ if($action_print == 'pdf'){
 				$totalMergeTotal = 5;
 			}
 
+			if( !empty($cityName) ) {
+				$cityName = '<tr>
+					<th colspan="'.$totalMerge.'" style="text-transform:uppercase;text-align: center;">'.$cityName.'</th>
+				</tr>';
+			}
+
 			$content .= '<table border="1" width="100%" style="padding: 5px; font-size: 25px;">
 				<thead class="header-invoice-print">
-					<tr>
-						<th colspan="'.$totalMerge.'" style="text-transform:uppercase;text-align: center;">'.$cityName.'</th>
-					</tr>
+					'.$cityName.'
 					<tr>
 						<th class="text-center">No.</th>
 						'.$colName.'

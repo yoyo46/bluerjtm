@@ -3,10 +3,15 @@
 </style>
 <?php
 		$data_print = !empty($data_print)?$data_print:'invoice';
+		$footerGrandTotal = 0;
+		$footerGrandTotalUnit = 0;
+		$idx = 0;
 
 		if(!empty($revenue_detail)){
 			foreach ($revenue_detail as $key => $val_detail) {
-				if( in_array($data_print, array( 'date' )) ) {
+				$idx++;
+
+				if( in_array($data_print, array( 'date', 'hso-smg' )) ) {
 					$totalMerge = 10;
 					$totalMergeTotal = 6;
 				} else {
@@ -17,15 +22,15 @@
 <table border="1" width="100%" style="margin-top: 20px;">
 	<thead class="header-invoice-print">
 		<?php 
-				if( $data_print != 'date' ) {
+				if( !in_array($data_print, array( 'date', 'hso-smg' )) ) {
 		?>
 		<tr>
 			<th colspan="<?php echo $totalMerge; ?>" class="text-center" style="text-transform:uppercase;">
 				<?php 
 						if($action == 'tarif' && $data_print == 'invoice'){
-							printf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_second_code'), array('places' => 0)) );
+							printf('Tarif Angkutan : %s', $this->Common->getFormatPrice($val_detail[0]['RevenueDetail']['price_unit']) );
 						}else{
-			                if( in_array($data_print, array( 'date', 'hso-smg' )) && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
+			                if( in_array($data_print, array( 'date' )) && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
 								echo $this->Common->customDate($val_detail[0]['Revenue']['date_revenue'], 'd/m/Y');
 			                } else {
 			                	if( $val_detail[0]['Revenue']['revenue_tarif_type'] == 'per_truck' && !empty($val_detail[0]['Revenue']['no_doc']) ) {
@@ -62,13 +67,8 @@
 				?>
 			</th>
 			<th class="text-center" style="width: 15%;"><?php echo __('No. SJ');?></th>
-			<?php
-					if( $data_print != 'hso-smg' ) {
-						echo $this->Html->tag('th', __('Tanggal'), array(
-							'style' => 'width: 10%;text-align: center;',
-						));
-					}
-
+			<th class="text-center" style="width: 10%;"><?php echo __('Tanggal');?></th>
+			<?php 
 					if( $data_print == 'hso-smg' ) {
 						echo $this->Html->tag('th', __('Kota'), array(
 							'class' => 'text-center',
@@ -120,7 +120,7 @@
 							$priceFormat = '-';
 						} else if( !empty($value['RevenueDetail']['total_price_unit']) ) {
 							$price = $value['RevenueDetail']['price_unit'];
-							$priceFormat = $this->Number->currency($price, '', array('places' => 0));
+							$priceFormat = $this->Common->getFormatPrice($price);
 						} else {
 							$priceFormat = '-';
 						}
@@ -145,10 +145,7 @@
 						$colom .= $this->Html->tag('td', $nopol);
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_sj']);
-
-						if( $data_print != 'hso-smg' ) {
-							$colom .= $this->Html->tag('td', $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y'));
-						}
+						$colom .= $this->Html->tag('td', $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y'));
 
 						if( $data_print == 'hso-smg' ) {
 							$city_name = !empty($value['City']['name'])?$value['City']['name']:false;
@@ -166,13 +163,13 @@
 							if( !empty($value['RevenueDetail']['total_price_unit']) ) {
 								$total = $value['RevenueDetail']['total_price_unit'];
 
-								$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
+								$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($total), array(
 									'align' => 'right'
 								));
 							} else {
 								if( $revenue_temp != $old_revenue_id ) {
 									$total = !empty($value['Revenue']['tarif_per_truck'])?$value['Revenue']['tarif_per_truck']:0;
-									$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
+									$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($total), array(
 										'align' => 'right',
 										'rowspan' => !empty($recenueCnt[$revenue_id])?$recenueCnt[$revenue_id]:false,
 									));
@@ -181,7 +178,7 @@
 						} else if( !empty($value['RevenueDetail']['total_price_unit']) ) {
 							$total = $price * $qty;
 
-							$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
+							$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($total), array(
 								'align' => 'right'
 							));
 						} else {
@@ -200,17 +197,18 @@
 
 					echo $trData;
 
-					$colom = $this->Html->tag('td', '&nbsp;', array(
+					$colom = $this->Html->tag('td', __('Total '), array(
 						'colspan' => $totalMergeTotal,
+						'style' => 'text-align: right;',
 					));
 					$colom .= $this->Html->tag('td', $this->Number->format($grandTotalUnit), array(
 						'align' => 'center'
 					));
-					$colom .= $this->Html->tag('td', __('Total '), array(
+					$colom .= $this->Html->tag('td', '&nbsp;', array(
 						'align' => 'right',
 						'style' => 'font-weight: bold;',
 					));
-					$colom .= $this->Html->tag('td', $this->Number->currency($grandTotal, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+					$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($grandTotal), array(
 						'align' => 'right',
 						'style' => 'font-weight: bold;',
 					));
@@ -231,7 +229,7 @@
 							'align' => 'right',
 							'style' => 'font-weight: bold;',
 						));
-						$colom .= $this->Html->tag('td', $this->Number->currency($ppn, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+						$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($ppn), array(
 							'align' => 'right',
 							'style' => 'font-weight: bold;',
 						));
@@ -250,7 +248,7 @@
 					// 		'align' => 'right',
 					// 		'style' => 'font-weight: bold;',
 					// 	));
-					// 	$colom .= $this->Html->tag('td', $this->Number->currency($pph, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+					// 	$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($pph), array(
 					// 		'align' => 'right',
 					// 		'style' => 'font-weight: bold;',
 					// 	));
@@ -261,9 +259,10 @@
 					// 	));
 					// }
 
+					$grandTotalInvoice = $grandTotal + $ppn;
+
 					if( !empty($ppn) || !empty($pph) ) {
 						// $grandTotalInvoice = $grandTotal + $ppn - $pph;
-						$grandTotalInvoice = $grandTotal + $ppn;
 						$colom = $this->Html->tag('td', '&nbsp;', array(
 							'colspan' => $totalMergeTotal+1,
 						));
@@ -271,7 +270,7 @@
 							'align' => 'right',
 							'style' => 'font-weight: bold;',
 						));
-						$colom .= $this->Html->tag('td', $this->Number->currency($grandTotalInvoice, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+						$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($grandTotalInvoice), array(
 							'align' => 'right',
 							'style' => 'font-weight: bold;',
 						));
@@ -287,6 +286,35 @@
 					));
 
 					echo $this->Html->tag('tr', $colom);
+				}
+
+				$footerGrandTotal += $grandTotalInvoice;
+				$footerGrandTotalUnit += $grandTotalUnit;
+
+				if( $idx == count($revenue_detail) && $data_print == 'hso-smg' ) {
+					$footerGrandTotal = $this->Common->getFormatPrice($footerGrandTotal);
+					$footerGrandTotalUnit = $this->Common->getFormatPrice($footerGrandTotalUnit);
+
+					$colom = $this->Html->tag('td', __('Grandtotal'), array(
+						'colspan' => 6,
+						'style' => 'text-align: right;',
+					));
+					$colom .= $this->Html->tag('td', $footerGrandTotalUnit, array(
+						'align' => 'center'
+					));
+					$colom .= $this->Html->tag('td', '&nbsp;', array(
+						'align' => 'right',
+						'style' => 'font-weight: bold;',
+					));
+					$colom .= $this->Html->tag('td', $footerGrandTotal, array(
+						'align' => 'right',
+						'style' => 'font-weight: bold;',
+					));
+					$colom .= $this->Html->tag('td', '&nbsp;');
+					
+					echo $this->Html->tag('tr', $colom, array(
+						'class' => 'total-row'
+					));
 				}
 		?>
 	</tbody>
