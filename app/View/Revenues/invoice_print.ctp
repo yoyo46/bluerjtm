@@ -325,7 +325,11 @@ $tcpdf->Output($path.'/'.$filename, 'F');
         		$this->Html->addCrumb($sub_module_title);
 
 				echo $this->Html->tag('span', 'RJTM Invoice', array(
-					'class' => 'header-invoice',
+					'class' => 'header-invoice hidden-print',
+				));
+				echo $this->Html->tag('span', $sub_module_title, array(
+					'style' => 'display: block;text-align:center;font-size:14px;font-weight:bold;',
+					'class' => 'visible-print',
 				));
             }
 
