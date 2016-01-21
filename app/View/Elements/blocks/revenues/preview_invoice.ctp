@@ -13,7 +13,12 @@
 
 				if( in_array($data_print, array( 'date', 'hso-smg' )) ) {
 					$totalMerge = 10;
-					$totalMergeTotal = 6;
+					
+					if( $data_print == 'hso-smg' ) {
+						$totalMergeTotal = 5;
+					} else {
+						$totalMergeTotal = 6;
+					}
 				} else {
 					$totalMerge = 9;
 					$totalMergeTotal = 5;
@@ -62,11 +67,22 @@
 						if( $data_print == 'date' ) {
 							echo __('Keterangan');
 						} else {
-							echo __('No.DO');
+							if( $data_print != 'hso-smg' ) {
+								echo __('No.DO');
+							} else {
+								echo __('No.DO - Nama Dealer');
+							}
 						}
 				?>
 			</th>
-			<th class="text-center" style="width: 15%;"><?php echo __('No. SJ');?></th>
+			<?php 
+					if( $data_print != 'hso-smg' ) {
+						echo $this->Html->tag('th', __('No. SJ'), array(
+							'class' => 'text-center',
+							'width' => '15%'
+						));
+					}
+			?>
 			<th class="text-center" style="width: 10%;"><?php echo __('Tanggal');?></th>
 			<?php 
 					if( $data_print == 'hso-smg' ) {
@@ -76,7 +92,7 @@
 						));
 					}
 			?>
-			<th class="text-center" style="width: 8%;"><?php echo __('Total Unit');?></th>
+			<th class="text-center" style="width: 8%;"><?php echo __('Unit');?></th>
 			<th class="text-center" style="width: 10%;"><?php echo __('Harga');?></th>
 			<th class="text-center" style="width: 10%;"><?php echo __('Total');?></th>
 			<th class="text-center" style="width: 7%;"><?php echo __('No. Ref');?></th>
@@ -144,7 +160,11 @@
 
 						$colom .= $this->Html->tag('td', $nopol);
 						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
-						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_sj']);
+
+						if( $data_print != 'hso-smg' ) {
+							$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_sj']);
+						}
+
 						$colom .= $this->Html->tag('td', $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y'));
 
 						if( $data_print == 'hso-smg' ) {
@@ -296,7 +316,7 @@
 					$footerGrandTotalUnit = $this->Common->getFormatPrice($footerGrandTotalUnit);
 
 					$colom = $this->Html->tag('td', __('Grandtotal'), array(
-						'colspan' => 6,
+						'colspan' => $totalMergeTotal,
 						'style' => 'text-align: right;',
 					));
 					$colom .= $this->Html->tag('td', $footerGrandTotalUnit, array(
