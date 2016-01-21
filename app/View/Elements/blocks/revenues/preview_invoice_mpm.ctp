@@ -16,7 +16,7 @@
 			<th colspan="<?php echo $totalMerge; ?>" class="text-center" style="text-transform:uppercase;">
 				<?php 
 						if($action == 'tarif' && $data_print == 'invoice'){
-							printf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_second_code'), array('places' => 0)) );
+							printf('Tarif Angkutan : %s', $this->Common->getFormatPrice($val_detail[0]['RevenueDetail']['price_unit']) );
 						}else{
 		                	if( $val_detail[0]['Revenue']['revenue_tarif_type'] == 'per_truck' && !empty($val_detail[0]['Revenue']['no_doc']) ) {
 								echo $val_detail[0]['Revenue']['no_doc'];
@@ -98,7 +98,7 @@
 							$priceFormat = '-';
 						} else if( !empty($total_price_unit) ) {
 							$price = $this->Common->filterEmptyField($value, 'RevenueDetail', 'price_unit');
-							$priceFormat = $this->Number->currency($price, '', array('places' => 0));
+							$priceFormat = $this->Common->getFormatPrice($price);
 						} else {
 							$priceFormat = '-';
 						}
@@ -138,13 +138,13 @@
 							if( !empty($total_price_unit) ) {
 								$total = $total_price_unit;
 
-								$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
+								$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($total), array(
 									'align' => 'right'
 								));
 							} else {
 								if( $revenue_temp != $old_revenue_id ) {
 									$total = !empty($value['Revenue']['tarif_per_truck'])?$value['Revenue']['tarif_per_truck']:0;
-									$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
+									$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($total), array(
 										'align' => 'right',
 										'rowspan' => !empty($recenueCnt[$revenue_id])?$recenueCnt[$revenue_id]:false,
 									));
@@ -153,7 +153,7 @@
 						} else if( !empty($total_price_unit) ) {
 							$total = $price * $qty;
 
-							$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
+							$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($total), array(
 								'align' => 'right'
 							));
 						} else {
@@ -187,7 +187,7 @@
 						'align' => 'right',
 						'style' => 'font-weight: bold;',
 					));
-					$colom .= $this->Html->tag('td', $this->Number->currency($grandTotal, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+					$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($grandTotal), array(
 						'align' => 'right',
 						'style' => 'font-weight: bold;',
 					));
@@ -208,7 +208,7 @@
 							'align' => 'right',
 							'style' => 'font-weight: bold;',
 						));
-						$colom .= $this->Html->tag('td', $this->Number->currency($ppn, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+						$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($ppn), array(
 							'align' => 'right',
 							'style' => 'font-weight: bold;',
 						));
@@ -230,7 +230,7 @@
 							'align' => 'right',
 							'style' => 'font-weight: bold;',
 						));
-						$colom .= $this->Html->tag('td', $this->Number->currency($grandTotalInvoice, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+						$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($grandTotalInvoice), array(
 							'align' => 'right',
 							'style' => 'font-weight: bold;',
 						));
@@ -263,7 +263,7 @@
 					'align' => 'center'
 				));
 				$colom .= $this->Html->tag('td', '&nbsp;');
-				$colom .= $this->Html->tag('td', $this->Number->currency($totalAll, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+				$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($totalAll), array(
 					'align' => 'right',
 					'style' => 'font-weight: bold;',
 				));
