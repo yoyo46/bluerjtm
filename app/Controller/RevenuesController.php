@@ -8235,6 +8235,93 @@ class RevenuesController extends AppController {
         }
     }
 
+    public function report_revenue( $data_action = false ) {
+        $this->loadModel('RevenueDetail');
+        $this->loadModel('City');
+        $module_title = __('Laporan Detail Revenue');
+        $values = array();
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $this->set('sub_module_title', $module_title);
+        $options =  $this->Ttuj->Revenue->getData('paginate', array(
+            'conditions' => array(
+                'RevenueDetail.status' => 1,
+            ),
+            'contain' => array(
+                'Revenue',
+            ),
+        ), true, array(
+            'branch' => false,
+        ));
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+        $options =  $this->RevenueDetail->_callRefineParams($params, $options);
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            // Custom Otorisasi
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Revenue', $options );
+        }
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+
+        if( !empty($data_action) ){
+            $values = $this->RevenueDetail->find('all', $options);
+        } else {
+            $options['limit'] = Configure::read('__Site.config_pagination');
+            $this->paginate = $options;
+            $values = $this->paginate('RevenueDetail');
+        }
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'id');
+                $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'ttuj_id');
+                $invoice_id = $this->MkCommon->filterEmptyField($value, 'RevenueDetail', 'invoice_id');
+                $city_id = $this->MkCommon->filterEmptyField($value, 'RevenueDetail', 'city_id');
+                $value = $this->Ttuj->getMerge($value, $ttuj_id);
+
+                $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
+                $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
+                $value = $this->RevenueDetail->getSumUnit($value, $id, 'revenue', 'RevenueDetail.revenue_id');
+                $value = $this->RevenueDetail->Invoice->getMerge($value, $invoice_id);
+                $value = $this->RevenueDetail->City->getMerge($value, $city_id);
+
+                $values[$key] = $value;
+            }
+        }
+
+        $cities = $this->City->getListCities();
+        $customers = $this->Ttuj->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+
+        $this->set('active_menu', 'report_revenue_period');
+        $this->set(compact(
+            'values', 'module_title', 'data_action',
+            'cities', 'customers'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $this->MkCommon->_layout_file('select');
+        }
+    }
+
     public function report_expense_per_truck( $data_action = false ) {
         $this->loadModel('Truck');
 

@@ -394,6 +394,7 @@ class RevenueDetail extends AppModel {
         $status = !empty($data['named']['status'])?$data['named']['status']:false;
         $fromcity = !empty($data['named']['fromcity'])?$data['named']['fromcity']:false;
         $tocity = !empty($data['named']['tocity'])?$data['named']['tocity']:false;
+        $tocityDetail = !empty($data['named']['tocityDetail'])?$data['named']['tocityDetail']:false;
 
         if(!empty($fromcity) || !empty($tocity) || $nopol){
             $this->bindModel(array(
@@ -455,6 +456,9 @@ class RevenueDetail extends AppModel {
         }
         if(!empty($tocity)){
             $default_options['conditions']['Ttuj.to_city_id'] = $tocity;
+        }
+        if(!empty($tocityDetail)){
+            $default_options['conditions']['RevenueDetail.city_id'] = $tocityDetail;
         }
         
         return $default_options;
