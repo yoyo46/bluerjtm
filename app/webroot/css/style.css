@@ -4236,4 +4236,14 @@ table.sorting thead th a {
   .lbl-kwitansi {
     font-size: 12px !important;
   }
+  .pt20 {
+    padding-top: 20px !important;
+  }
+
+  #invoice-header-preview table td {
+    font-size: 12px !important;
+  }
+  #invoice-header-preview table.text {
+    width: 100%;
+  }
 }

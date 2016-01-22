@@ -23,7 +23,7 @@ if($action_print == 'pdf'){
 	$customer_name = sprintf(': %s', $invoice['Customer']['name']);
 	$total = sprintf(': %s', $this->Html->tag('strong', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_second_code'), array('places' => 0))));
 	$terbilang = sprintf(': %s', $this->Common->terbilang($invoice['Invoice']['total']));
-	$totalUnit = sprintf(__(': JASA ANGKUT SEPEDA MOTOR<br>&nbsp;&nbsp;Sebanyak %s unit<br>&nbsp;&nbsp;PERIODE : <i>%s s/d %s</i>'), $qty_unit, $this->Common->customDate($invoice['Invoice']['period_from'], 'd/m/Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd/m/Y'));
+	$totalUnit = sprintf(__(': JASA ANGKUT SEPEDA MOTOR<br>&nbsp;&nbsp;Sebanyak %s unit<br>&nbsp;&nbsp;PERIODE : <i>%s s/d %s</i>'), $qty_unit, $this->Common->customDate($invoice['Invoice']['period_from'], 'd F Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd F Y'));
 	$dateLocation = sprintf('%s, %s', $this->Common->getDataSetting( $setting, 'pusat' ), date('d F Y'));
 	$billing_name = $full_name;
 	// $note = sprintf(__('*Mohon pembayaran dilakukan paling lambat %s hari dari tanggal kwitansi.'), $invoice['Invoice']['due_invoice']);
@@ -145,7 +145,7 @@ readfile($path.'/'.$filename);
 <?php 
 		}
 ?>
-<div align="center">
+<div align="center" id="invoice-header-preview">
 	<table class="text">
 		<tbody>
 			<tr align="center">
@@ -227,13 +227,13 @@ readfile($path.'/'.$filename);
                         		break;
                         }
 
-						echo $this->Html->tag('td', sprintf(__(': %s<br>&nbsp;&nbsp;Sebanyak %s unit<br>&nbsp;&nbsp;PERIODE : <i>%s s/d %s</i>'), $ket, $qty_unit, $this->Common->customDate($invoice['Invoice']['period_from'], 'd/m/Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd/m/Y')), array(
+						echo $this->Html->tag('td', sprintf(__(': %s<br>&nbsp;&nbsp;Sebanyak %s unit<br>&nbsp;&nbsp;PERIODE : <i>%s s/d %s</i>'), $ket, $qty_unit, $this->Common->customDate($invoice['Invoice']['period_from'], 'd F Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd F Y')), array(
 							'style' => 'padding-left: 5px;',
 						));
 				?>
 			</tr>
 			<tr>
-			  	<td style="padding-top: 50px;">
+			  	<td style="padding-top: 50px;" class="pt20">
 					<table style="border-collapse:collapse" border="1">
 						<tbody>
 							<tr valign="middle">
@@ -255,7 +255,7 @@ readfile($path.'/'.$filename);
 						</tbody>
 					</table>
 				</td>
-				<td valign="top" align="right" style="padding-top: 50px;">
+				<td valign="top" align="right" style="padding-top: 50px;" class="pt20">
 					<?php 
 							echo $this->Html->tag('p', sprintf('%s, %s', $this->Common->getDataSetting( $setting, 'pusat' ), date('d F Y')));
 							echo $this->Html->tag('p', $full_name, array(
