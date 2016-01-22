@@ -282,11 +282,11 @@ class SettingsController extends AppController {
             }else{
                 $this->Customer->create();
                 $msg = 'menambah';
+                $data['Customer']['branch_id'] = Configure::read('__Site.config_branch_id');
             }
                         
             $data['Customer']['bank_id'] = !empty($data['Customer']['bank_id'])?$data['Customer']['bank_id']:0;
             $data['Customer']['billing_id'] = !empty($data['Customer']['billing_id'])?$data['Customer']['billing_id']:0;
-            $data['Customer']['branch_id'] = Configure::read('__Site.config_branch_id');
             $this->Customer->set($data);
 
             if($this->Customer->validates($data)){

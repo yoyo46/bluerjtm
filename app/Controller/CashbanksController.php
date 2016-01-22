@@ -1255,6 +1255,7 @@ class CashbanksController extends AppController {
             if( !empty($coa_id) ) {
                 $coa = $this->User->Journal->Coa->getMerge(array(), $coa_id);
                 $coa_name = $this->MkCommon->filterEmptyField($coa, 'Coa', 'coa_name');
+                $balance = $this->MkCommon->filterEmptyField($coa, 'Coa', 'balance', 0);
 
                 $options =  $this->User->Journal->_callRefineParams($params, array(
                     'conditions' => $conditions,
@@ -1284,7 +1285,7 @@ class CashbanksController extends AppController {
                 ));
                 $balance_credit = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'begining_balance_credit', 0);
                 $balance_debit = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'begining_balance_debit', 0);
-                $beginingBalance = $balance_debit - $balance_credit;
+                $beginingBalance = $balance + ( $balance_debit - $balance_credit );
             } else {
                 $this->MkCommon->redirectReferer(__('Mohon pilih COA terlebih dahulu'), 'error', array(
                     'action' => 'ledger_report',
