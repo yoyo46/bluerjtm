@@ -189,7 +189,7 @@
             if( converter_uang_jalan_extra != 0 ) {
                 totalMuatanExtra += qtyMuatan * converter_uang_jalan_extra;
             } else {
-                totalMuatanExtra = total_muatan;
+                totalMuatanExtra += qtyMuatan;
             }
 
             if( typeof $('.uang-jalan-1-'+group_motor_id).html() != 'undefined' ) {

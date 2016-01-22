@@ -1181,16 +1181,16 @@ class RevenuesController extends AppController {
                 }
             }
 
-            $converterUjs = $this->Ttuj->TtujTipeMotor->TipeMotor->GroupMotor->getData('all', array(
-                'contain' => false,
-            ), true, array(
-                'converter' => true,
-            ));
-
             if( !empty($this->request->data['Ttuj']['from_city_id']) ) {
                 $toCities = $this->Ttuj->UangJalan->getKotaTujuan($this->request->data['Ttuj']['from_city_id']);
             }
         }
+
+        $converterUjs = $this->Ttuj->TtujTipeMotor->TipeMotor->GroupMotor->getData('all', array(
+            'contain' => false,
+        ), true, array(
+            'converter' => true,
+        ));
 
         $customer_id = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'customer_id');
         $from_city_id = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'from_city_id');

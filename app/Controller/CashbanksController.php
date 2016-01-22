@@ -1273,6 +1273,7 @@ class CashbanksController extends AppController {
 
                 $this->User->Journal->virtualFields['begining_balance_credit'] = 'SUM(Journal.credit)';
                 $this->User->Journal->virtualFields['begining_balance_debit'] = 'SUM(Journal.debit)';
+
                 $summaryBalance = $this->User->Journal->getData('first', array(
                     'conditions' => array_merge(array(
                         'Journal.coa_id' => $coa_id,
@@ -1283,6 +1284,7 @@ class CashbanksController extends AppController {
                     ),
                     'contain' => false,
                 ));
+
                 $balance_credit = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'begining_balance_credit', 0);
                 $balance_debit = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'begining_balance_debit', 0);
                 $beginingBalance = $balance + ( $balance_debit - $balance_credit );
@@ -1314,7 +1316,7 @@ class CashbanksController extends AppController {
             $module_title .= '<br>'.$coa_name;
         }
 
-        $this->set('active_menu', 'journal_report');
+        $this->set('active_menu', 'ledger_report');
         $this->set(compact(
             'coas', 'values', 'module_title',
             'coa_name', 'data_action',
