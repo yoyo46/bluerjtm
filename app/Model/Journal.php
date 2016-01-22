@@ -256,6 +256,25 @@ class Journal extends AppModel {
         }
         if( $status == 'active' ) {
             $default_options['conditions']['Journal.type NOT LIKE'] = '%void%';
+            $default_options['conditions']['JournalVoid.id'] = NULL;
+            $default_options['contain'][] = 'JournalVoid';
+
+            $this->bindModel(array(
+                'belongsTo' => array(
+                    'JournalVoid' => array(
+                        'className' => 'Journal',
+                        'foreignKey' => false,
+                        'conditions' => array(
+                            'Journal.document_id = JournalVoid.document_id',
+                            'Journal.document_no = JournalVoid.document_no',
+                            'OR' => array(
+                                'JournalVoid.type = CONCAT(Journal.type, \'_void\')',
+                                'JournalVoid.type = CONCAT(\'void_\', Journal.type)',
+                            ),
+                        ),
+                    ),
+                )
+            ), false);
         }
         
         return $default_options;

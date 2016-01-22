@@ -128,5 +128,50 @@ class RjCashBankComponent extends Component {
 
 		return sprintf('%s (%s)', $this->MkCommon->filterEmptyField($value, $model, $fieldName), $labelName);
 	}
+
+	function _callCalcBalanceCoa ( $values, $dateFrom = false, $dateTo = false ) {
+		if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+		        $id = $this->MkCommon->filterEmptyField($value, 'Coa', 'id');
+		        $level = $this->MkCommon->filterEmptyField($value, 'Coa', 'level');
+		        $childrens = $this->MkCommon->filterEmptyField($value, 'children');
+
+		        if( !empty($childrens) ) {
+        			$childrens = $this->_callCalcBalanceCoa($childrens, $dateFrom, $dateTo);
+		           	$value['children'] = $childrens;
+		        } else if( $level == 4 ) {
+			        if( !empty($dateFrom) && !empty($dateTo) ) {
+			        	$tmpDateFrom = $dateFrom;
+			        	$tmpDateTo = $dateTo;
+
+			            while( $tmpDateFrom <= $tmpDateTo ) {
+			                $fieldName = sprintf('month_%s', $tmpDateFrom);
+			                
+				            $this->controller->User->Journal->virtualFields['balancing'] = 'SUM(Journal.credit) - SUM(Journal.debit)';
+				            $summaryBalance = $this->controller->User->Journal->getData('first', array(
+				                'conditions' => array(
+				                    'Journal.coa_id' => $id,
+				                    'DATE_FORMAT(Journal.date, \'%Y-%m\')' => $tmpDateFrom,
+				                ),
+				                'group' => array(
+				                    'Journal.coa_id',
+				                ),
+				                'contain' => false,
+				            ));
+
+				            $balancing = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'balancing', 0);
+
+				            $value['Coa'][$tmpDateFrom]['balancing'] = $balancing;
+			                $tmpDateFrom = date('Y-m', strtotime('+1 Month', strtotime($tmpDateFrom)));
+			            }
+			        }
+		        }
+
+	            $values[$key] = $value;
+            }
+        }
+
+        return $values;
+	}
 }
 ?>

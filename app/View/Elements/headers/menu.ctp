@@ -8,7 +8,7 @@
         $paid_notifs = $this->Common->filterEmptyField($payment_notifs, 'notifications');
         $paid_notifCnt = $this->Common->filterEmptyField($payment_notifs, 'cnt');
 ?>
-<header class="header">
+<header class="header hiddn-print">
     <?php 
             echo $this->Html->link($this->Html->image('/img/logo-rjtm.png').__('RJTM'), '/', array(
                 'class' => 'logo',

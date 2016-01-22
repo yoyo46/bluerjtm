@@ -2078,7 +2078,7 @@ class CommonHelper extends AppHelper {
                 $id,
                 'admin' => false,
             );
-        } else if( in_array($type, array( 'in', 'void_in', 'out', 'void_out', 'ppn_out', 'void_ppn_out', 'prepayment_out', 'void_prepayment_out' )) ) {
+        } else if( in_array($type, array( 'in', 'void_in', 'out', 'void_out', 'ppn_out', 'void_ppn_out', 'prepayment_out', 'void_prepayment_out', 'prepayment_in', 'void_prepayment_in' )) ) {
             $urlDefault = array(
                 'controller' => 'cashbanks',
                 'action' => 'detail',

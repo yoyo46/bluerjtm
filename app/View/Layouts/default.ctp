@@ -88,7 +88,7 @@
             <!-- /.content -->
         </aside><!-- /.right-side -->
     </div><!-- ./wrapper -->
-	<div id="myModal" class="modal fade">
+	<div id="myModal" class="modal fade hidden-print">
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content no-radius">
 				<div class="modal-header">

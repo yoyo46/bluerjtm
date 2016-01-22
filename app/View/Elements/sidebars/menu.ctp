@@ -4,7 +4,7 @@
         $list_branches = !empty($list_branches)?$list_branches:false;
 ?>
 <!-- Left side column. contains the logo and sidebar -->
-<aside class="left-side sidebar-offcanvas">
+<aside class="left-side sidebar-offcanvas hidden-print">
     <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar">
         <!-- /.search form -->
@@ -1102,7 +1102,7 @@
                             ), array(
                                 'escape' => false
                             )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'journal_report' )?'active':'',
+                                'class' => ( !empty($active_menu) && $active_menu == 'ledger_report' )?'active':'',
                             ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pembayaran Biaya Uang Jalan', array(
