@@ -946,7 +946,7 @@
                     $dataMenu = array(
                         'cashbanks' => array(
                             'index', 'journal_report', 'prepayment_report',
-                            'ledger_report',
+                            'ledger_report', 'profit_loss',
                         ),
                         'trucks' => array(
                             'kir_payments', 'stnk_payments', 'siup_payments',
@@ -1132,6 +1132,15 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'report_ttuj_outstanding' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Laba Rugi', array(
+                                'controller' => 'cashbanks',
+                                'action' => 'profit_loss',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'profit_loss' )?'active':'',
                             ));
                     ?>
                 </ul>

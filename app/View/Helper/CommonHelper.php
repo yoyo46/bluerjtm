@@ -2175,4 +2175,14 @@ class CommonHelper extends AppHelper {
             return sprintf('#%s', $label);
         }
     }
+
+    function array_filter_recursive($input) { 
+        foreach ($input as &$value) { 
+            if (is_array($value)) { 
+                $value = $this->array_filter_recursive($value);
+            }
+        }
+
+        return array_filter($input);
+    }
 }

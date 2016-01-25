@@ -4325,4 +4325,12 @@ $(function() {
             $.getLeasingGrandtotal();
         }
     });
+
+    $('.change-month,.change-year').change(function(){
+        var month = $('.change-month').val();
+        var year = $.convertNumber($('.change-year').val(), 'int', 0);
+        
+        $('.target-month').val(month);
+        $('.target-year').val(year+1);
+    });
 });

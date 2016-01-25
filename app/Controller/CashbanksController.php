@@ -1533,39 +1533,44 @@ class CashbanksController extends AppController {
     }
 
     function profit_loss () {
-        $module_title = __('Laporan Laba Rugi');
-        $dateFrom = date('Y-m', strtotime('-11 Month'));
+        $module_title = $sub_module_title = __('Laporan Laba Rugi');
+        $dateFrom = date('Y-m', strtotime('-12 Month'));
         $dateTo = date('Y-m');
 
         $values = $this->User->Coa->getData('threaded', array(
             'conditions' => array(
-                'Coa.status' => 1
+                'Coa.first_code >=' => 4,
+                'Coa.status' => 1,
             ),
             'order' => array(
+                'Coa.order_sort' => 'ASC',
+                'Coa.order' => 'ASC',
                 'Coa.code IS NULL' => 'ASC',
                 'Coa.code' => 'ASC',
             )
         ));
         $params = $this->MkCommon->_callRefineParams($this->params, array(
-            'dateFrom' => $dateFrom,
-            'dateTo' => $dateTo,
+            'monthFrom' => $dateFrom,
+            'monthTo' => $dateTo,
         ));
-        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
-        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'MonthFrom');
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'MonthTo');
 
         $values = $this->RjCashBank->_callCalcBalanceCoa($values, $dateFrom, $dateTo);
-        $this->MkCommon->_layout_file(array(
-            'freeze',
-        ));
+        // $this->MkCommon->_layout_file(array(
+        //     'freeze',
+        // ));
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
-            $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+            $sub_module_title = sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        } else {
+            $sub_module_title = false;
         }
 
         // debug($values);die();
         $this->set(compact(
             'values', 'module_title', 'dateFrom',
-            'dateTo'
+            'dateTo', 'sub_module_title'
         ));
     }
 }

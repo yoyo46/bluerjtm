@@ -1503,10 +1503,15 @@ class MkCommonComponent extends Component {
         $datettuj = $this->filterEmptyField($data, 'Search', 'datettuj');
         $params = array();
 
+        $dateFrom = $this->filterEmptyField($data, 'Search', 'from');
+        $monthFrom = $this->filterEmptyField($dateFrom, 'month');
+        $yearFrom = $this->filterEmptyField($dateFrom, 'year');
+
         $data = $this->_callUnset(array(
             'Search' => array(
                 'date',
                 'datettuj',
+                'from',
             ),
         ), $data);
         $dataSearch = $this->filterEmptyField($data, 'Search');
@@ -1546,6 +1551,10 @@ class MkCommonComponent extends Component {
         }
         if( !empty($datettuj) ) {
             $params['datettuj'] = rawurlencode(urlencode($datettuj));
+        }
+        if( !empty($monthFrom) && !empty($yearFrom) ) {
+            $params['monthFrom'] = urlencode($monthFrom);
+            $params['yearFrom'] = urlencode($yearFrom);
         }
         
         return $params;
@@ -1590,8 +1599,14 @@ class MkCommonComponent extends Component {
         $dateFrom = $this->filterEmptyField($options, 'dateFrom');
         $dateTo = $this->filterEmptyField($options, 'dateTo');
 
+        $monthFrom = $this->filterEmptyField($options, 'monthFrom');
+        $monthTo = $this->filterEmptyField($options, 'monthTo');
+
         $dateFromTtuj = $this->filterEmptyField($options, 'dateFromTtuj');
         $dateToTtuj = $this->filterEmptyField($options, 'dateToTtuj');
+
+        $paramMonthFrom = $this->filterEmptyField($result, 'named', 'monthFrom');
+        $paramYearFrom = $this->filterEmptyField($result, 'named', 'yearFrom');
 
         $date = $this->filterEmptyField($result, 'named', 'date');
         $datettuj = $this->filterEmptyField($result, 'named', 'datettuj');
@@ -1643,6 +1658,20 @@ class MkCommonComponent extends Component {
 
             $result['named']['DateFrom'] = $dateFrom;
             $result['named']['DateTo'] = $dateTo;
+        }
+        if( !empty($paramMonthFrom) && !empty($paramYearFrom) ) {
+            $monthFrom = sprintf('%s-%s', $paramYearFrom, $paramMonthFrom);
+            $monthTo = date('Y-m', strtotime('+12 Month', strtotime($monthFrom)));
+        }
+        if( !empty($monthFrom) && !empty($monthTo) ) {
+            $this->controller->request->data['Search']['from']['month'] = date('m', strtotime($monthFrom));
+            $this->controller->request->data['Search']['from']['year'] = date('Y', strtotime($monthFrom));
+
+            $this->controller->request->data['Search']['to']['month'] = date('m', strtotime($monthTo));
+            $this->controller->request->data['Search']['to']['year'] = date('Y', strtotime($monthTo));
+
+            $result['named']['MonthFrom'] = $monthFrom;
+            $result['named']['MonthTo'] = $monthTo;
         }
 
         return $result;

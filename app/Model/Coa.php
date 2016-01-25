@@ -69,6 +69,8 @@ class Coa extends AppModel {
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         $this->virtualFields['coa_name'] = 'CASE WHEN Coa.with_parent_code IS NOT NULL AND Coa.with_parent_code <> \'\' THEN CONCAT(Coa.with_parent_code, \' - \', Coa.name) WHEN Coa.code <> \'\' THEN CONCAT(Coa.code, \' - \', Coa.name) ELSE Coa.name END';
+        $this->virtualFields['first_code'] = 'CASE WHEN SUBSTR(Coa.code, 1, 1) REGEXP \'[0-9]+\' THEN SUBSTR(Coa.code, 1, 1) ELSE 5 END';
+        $this->virtualFields['order_sort'] = sprintf('CASE WHEN %s.order IS NULL THEN 1 ELSE 0 END', $this->alias);
     }
 
     function getData( $find, $options = false, $elements = array() ){
@@ -177,16 +179,16 @@ class Coa extends AppModel {
         }
     }
 
-    function getMerge($data, $id){
-        if(empty($data['Coa'])){
+    function getMerge($data, $id, $modelName = 'Coa'){
+        if(empty($data[$modelName])){
             $data_merge = $this->find('first', array(
                 'conditions' => array(
                     'Coa.id' => $id,
                 )
             ));
 
-            if(!empty($data_merge)){
-                $data = array_merge($data, $data_merge);
+            if(!empty($data_merge['Coa'])){
+                $data[$modelName] = $data_merge['Coa'];
             }
         }
 
