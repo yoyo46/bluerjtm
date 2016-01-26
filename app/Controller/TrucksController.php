@@ -5377,11 +5377,13 @@ class TrucksController extends AppController {
         if( !empty($ttujs) ) {
             foreach ($ttujs as $key => $value) {
                 $id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
+                $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'branch_id');
                 $driver_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_id');
                 $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
                 $is_retail = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'is_retail');
 
+                $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
                 $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
                 $value = $this->Truck->Driver->getMerge($value, $driver_id);
                 $value = $this->Truck->Driver->getMerge($value, $driver_penganti_id, 'DriverPenganti');
@@ -5412,6 +5414,14 @@ class TrucksController extends AppController {
         }
 
         $companies = $this->Truck->Company->getData('list');
+        $customers = $this->Ttuj->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ), true, array(
+            'branch' => false,
+            'plant' => false,
+        ));
 
         $this->set('active_menu', 'ttuj_report');
         $this->set('sub_module_title', $sub_module_title);
@@ -5419,13 +5429,19 @@ class TrucksController extends AppController {
         $this->set(compact(
             'ttujs', 'from_date', 'to_date', 
             'data_action', 'header_module_title',
-            'periode', 'allow_branch', 'companies'
+            'periode', 'allow_branch', 'companies',
+            'customers'
         ));
 
         if($data_action == 'pdf'){
             $this->layout = 'pdf';
         }else if($data_action == 'excel'){
             $this->layout = 'ajax';
+        } else {
+            $this->MkCommon->_layout_file(array(
+                'select',
+                'freeze',
+            ));
         }
     }
 

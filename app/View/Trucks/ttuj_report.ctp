@@ -2,119 +2,122 @@
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $header_module_title = !empty($header_module_title)?$header_module_title:false;
         $dataColumns = array(
+            'branch' => array(
+                'name' => __('Cabang'),
+                'style' => 'text-align: center',
+                'data-options' => 'field:\'branch\',width:80',
+            ),
             'date' => array(
                 'name' => __('Tanggal'),
-                'field_model' => 'Ttuj.ttuj_date',
                 'style' => 'text-align: center',
-                'display' => true,
+                'data-options' => 'field:\'date\',width:100',
             ),
             'no_ttuj' => array(
                 'name' => __('No TTUJ'),
-                'field_model' => 'Ttuj.no_ttuj',
                 'style' => 'text-align: center',
-                'display' => true,
+                'data-options' => 'field:\'no_ttuj\',width:100',
+            ),
+            'customer' => array(
+                'name' => __('Customer'),
+                'style' => 'text-align: center',
+                'data-options' => 'field:\'customer\',width:100',
             ),
             'nopol' => array(
                 'name' => __('Nopol'),
-                'field_model' => 'Ttuj.nopol',
                 'style' => 'text-align: center',
-                'display' => true,
+                'data-options' => 'field:\'nopol\',width:100',
             ),
             'driver' => array(
                 'name' => __('Supir'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'data-options' => 'field:\'driver\',width:100',
+                'fix_column' => true,
             ),
             'from_city' => array(
                 'name' => __('Dari'),
-                'field_model' => 'Ttuj.from_city_name',
                 'style' => 'text-align: center',
-                'display' => true,
+                'data-options' => 'field:\'from_city\',width:100',
             ),
             'to_city' => array(
                 'name' => __('Tujuan'),
-                'field_model' => 'Ttuj.to_city_name',
                 'style' => 'text-align: center',
-                'display' => true,
+                'data-options' => 'field:\'to_city\',width:100',
             ),
             'note' => array(
                 'name' => __('Keterangan Muat'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'data-options' => 'field:\'note\',width:120',
             ),
             'unit' => array(
                 'name' => __('Unit'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'data-options' => 'field:\'unit\',width:80',
             ),
             'uang_jalan' => array(
                 'name' => __('Uang Jalan 1'),
-                'field_model' => false,
+                'align' => 'right',
                 'style' => 'text-align: center',
-                'display' => true,
+                'data-options' => 'field:\'uang_jalan\',width:100',
             ),
             'uang_jalan_2' => array(
                 'name' => __('Uang Jalan 2'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'align' => 'right',
+                'data-options' => 'field:\'uang_jalan_2\',width:100',
             ),
             'uang_jalan_extra' => array(
                 'name' => __('Uang Jalan Extra'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'align' => 'right',
+                'data-options' => 'field:\'uang_jalan_extra\',width:100',
             ),
             'commission' => array(
                 'name' => __('Komisi'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'align' => 'right',
+                'data-options' => 'field:\'commission\',width:100',
             ),
             'commission_extra' => array(
                 'name' => __('Komisi Extra'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'align' => 'right',
+                'data-options' => 'field:\'commission_extra\',width:100',
             ),
             'uang_kuli_muat' => array(
                 'name' => __('Uang Kuli Muat'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'align' => 'right',
+                'data-options' => 'field:\'uang_kuli_muat\',width:100',
             ),
             'uang_kuli_bongkar' => array(
                 'name' => __('Uang Kuli Bongkar'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'align' => 'right',
+                'data-options' => 'field:\'uang_kuli_bongkar\',width:100',
             ),
             'uang_penyebrangan' => array(
                 'name' => __('Uang Penyebrangan'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'align' => 'right',
+                'data-options' => 'field:\'uang_penyebrangan\',width:100',
             ),
             'uang_kawal' => array(
                 'name' => __('Uang Kawal'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'align' => 'right',
+                'data-options' => 'field:\'uang_kawal\',width:100',
             ),
             'uang_keamanan' => array(
                 'name' => __('Uang Keamanan'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'align' => 'right',
+                'data-options' => 'field:\'uang_keamanan\',width:100',
             ),
             'total' => array(
                 'name' => __('Total'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'align' => 'right',
+                'data-options' => 'field:\'total\',width:100',
             ),
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table', $data_action );
@@ -132,7 +135,7 @@
             } else {
                 $this->Html->addCrumb($sub_module_title);
                 echo $this->element('blocks/trucks/search_ttuj_report');
-        }
+            }
 ?>
 <section class="content invoice">
     <h2 class="page-header">
@@ -155,8 +158,8 @@
             }
     ?>
     <div class="table-responsive center-table">
-        <table class="table table-bordered sorting" border="<?php echo $border; ?>">
-            <thead>
+        <table class="table table-bordered sorting easyui-datagrid" border="<?php echo $border; ?>">
+            <thead frozen="true">
                 <tr>
                     <?php
                             if( !empty($fieldColumn) ) {

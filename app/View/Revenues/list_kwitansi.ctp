@@ -49,7 +49,7 @@
                     <?php 
                             echo $this->Form->input('Ttuj.customer',array(
                                 'label'=> __('Customer'),
-                                'class'=>'form-control',
+                                'class'=>'form-control chosen-select',
                                 'required' => false,
                                 'empty' => __('Pilih Customer'),
                             ));

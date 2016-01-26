@@ -103,6 +103,17 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('customerid',array(
+                                'label'=> __('Customer'),
+                                'class'=>'form-control chosen-select',
+                                'required' => false,
+                                'empty' => __('Pilih Customer'),
+                                'options' => !empty($customers)?$customers:false,
+                            ));
+                    ?>
+                </div>
                 <?php 
                         // Custom Otorisasi
                         echo $this->Common->getCheckboxBranch();

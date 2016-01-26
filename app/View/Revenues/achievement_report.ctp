@@ -395,10 +395,19 @@ EOD;
     }
 
     function calcPencapaian (value,row,index) {
-        var target = parseInt(row.total_target_side.replace(/,/gi, ""));
-        var value = parseInt(value.replace(/,/gi, ""));
+        var target = 0;
 
-        if( !isNaN(value) && !isNaN(target) && value != 0 && value >= target ) {
+        if(typeof row.total_target_side != 'undefined' ){
+            target = parseInt(row.total_target_side.replace(/,/gi, ""));
+        }
+
+        if(typeof value != 'undefined' ){
+            value = parseInt(value.toString().replace(/,/gi, ""));
+        } else {
+            value = 0;
+        }
+
+        if( !isNaN(value) && !isNaN(target) && value >= target ) {
             return 'background-color:#dff0d8;color:#3c763d;';
         } else {
             return 'background-color:#f2dede;color:#a94442;';

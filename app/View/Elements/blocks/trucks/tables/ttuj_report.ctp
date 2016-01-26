@@ -19,8 +19,6 @@
                 $ttuj_date = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date');
                 $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
                 $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
-                $driver_pengganti = $this->Common->filterEmptyField($value, 'DriverPenganti', 'driver_name');
-                $driver = $this->Common->filterEmptyField($value, 'Driver', 'driver_name', $driver_pengganti);
                 $from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
                 $to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
                 $total_unit = $this->Common->filterEmptyField($value, 'Ttuj', 'total_unit', '-');
@@ -38,6 +36,12 @@
                 $uang_jalan_extra = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_extra', 0);
                 $commission = $this->Common->filterEmptyField($value, 'Ttuj', 'commission', 0);
                 $commission_extra = $this->Common->filterEmptyField($value, 'Ttuj', 'commission_extra', 0);
+
+                $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
+                $customer = $this->Common->filterEmptyField($value, 'Customer', 'code');
+                $driver_pengganti = $this->Common->filterEmptyField($value, 'DriverPenganti', 'driver_name');
+                $driver = $this->Common->filterEmptyField($value, 'Driver', 'driver_name', $driver_pengganti);
+
                 $total += $uang_jalan + $uang_jalan_extra + $uang_jalan_2 + $commission + $commission_extra;
 
                 $grandtotal_uang_jalan += $uang_jalan;
@@ -54,12 +58,18 @@
                 $grandtotal += $total;
                 $grandtotal_unit += $total_unit;
 
-                $content = $this->Common->_getDataColumn($this->Common->customDate($ttuj_date, 'd M Y'), 'Ttuj', 'ttuj_date', array(
+                $content = $this->Common->_getDataColumn($branch, 'Branch', 'code', array(
+                    'class' => 'branch',
+                ));
+                $content .= $this->Common->_getDataColumn($this->Common->customDate($ttuj_date, 'd M Y'), 'Ttuj', 'ttuj_date', array(
                     'style' => 'text-align: center;',
                     'class' => 'ttuj_date',
                 ));
                 $content .= $this->Common->_getDataColumn($no_ttuj, 'Ttuj', 'no_ttuj', array(
                     'class' => 'no_ttuj',
+                ));
+                $content .= $this->Common->_getDataColumn($customer, 'Customer', 'code', array(
+                    'class' => 'customer',
                 ));
                 $content .= $this->Common->_getDataColumn($nopol, 'Ttuj', 'nopol', array(
                     'class' => 'nopol',
