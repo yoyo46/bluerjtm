@@ -170,7 +170,12 @@ class RjCashBankComponent extends Component {
 	            		
 		            		$amount = !empty($values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'])?$values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing']:0;
 	    					$values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'] = $amount + $balancing;
-				        } else if( $level != 1 ) {
+				        } else if( $level == 1 ) {
+		        			$balancing = !empty($value['children']['TotalCoa'][$id][$tmpDateFrom]['balancing'])?$value['children']['TotalCoa'][$id][$tmpDateFrom]['balancing']:0;
+		            		$amount = !empty($values['TotalCoa'][$tmpDateFrom]['balancing'])?$values['TotalCoa'][$tmpDateFrom]['balancing']:0;
+
+							$values['TotalCoa'][$tmpDateFrom]['balancing'] = $amount + $balancing;
+				        } else {
 		        			$balancing = !empty($value['children']['TotalCoa'][$id][$tmpDateFrom]['balancing'])?$value['children']['TotalCoa'][$id][$tmpDateFrom]['balancing']:0;
 		            		$amount = !empty($values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'])?$values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing']:0;
 

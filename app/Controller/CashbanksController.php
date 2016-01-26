@@ -1539,7 +1539,7 @@ class CashbanksController extends AppController {
 
         $values = $this->User->Coa->getData('threaded', array(
             'conditions' => array(
-                'Coa.first_code >=' => 4,
+                'Coa.coa_profit_loss >=' => 4,
                 'Coa.status' => 1,
             ),
             'order' => array(
@@ -1560,6 +1560,45 @@ class CashbanksController extends AppController {
         // $this->MkCommon->_layout_file(array(
         //     'freeze',
         // ));
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $sub_module_title = sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        } else {
+            $sub_module_title = false;
+        }
+
+        // debug($values);die();
+        $this->set(compact(
+            'values', 'module_title', 'dateFrom',
+            'dateTo', 'sub_module_title'
+        ));
+    }
+
+    function balance_sheets () {
+        $module_title = $sub_module_title = __('Laporan Neraca');
+        $dateFrom = date('Y-m', strtotime('-12 Month'));
+        $dateTo = date('Y-m');
+
+        $values = $this->User->Coa->getData('threaded', array(
+            'conditions' => array(
+                'Coa.coa_balance_sheets <' => 4,
+                'Coa.status' => 1,
+            ),
+            'order' => array(
+                'Coa.order_sort' => 'ASC',
+                'Coa.order' => 'ASC',
+                'Coa.code IS NULL' => 'ASC',
+                'Coa.code' => 'ASC',
+            )
+        ));
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'monthFrom' => $dateFrom,
+            'monthTo' => $dateTo,
+        ));
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'MonthFrom');
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'MonthTo');
+
+        $values = $this->RjCashBank->_callCalcBalanceCoa($values, $dateFrom, $dateTo);
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
             $sub_module_title = sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));

@@ -1142,6 +1142,15 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'profit_loss' )?'active':'',
                             ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Neraca', array(
+                                'controller' => 'cashbanks',
+                                'action' => 'balance_sheets',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'profit_loss' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>
