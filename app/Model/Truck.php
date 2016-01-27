@@ -441,28 +441,29 @@ class Truck extends AppModel {
         return $data;
     }
 
-    function getListTruck ( $include_this_truck_id = false, $only_bind = false, $nopol = false, $branch_id = false ) {
-        $this->bindModel(array(
-            'hasOne' => array(
-                'Ttuj' => array(
-                    'className' => 'Ttuj',
-                    'foreignKey' => 'truck_id',
-                    'conditions' => array(
-                        'Ttuj.status' => 1,
-                        'Ttuj.is_pool' => 0,
-                        'Ttuj.is_laka' => 0,
-                        'Ttuj.completed' => 0,
-                    ),
-                )
-            )
-        ), false);
-        
+    function getListTruck ( $include_this_truck_id = false, $only_bind = false, $nopol = false, $branch_id = false ) {        
+        $ttujs = $this->Ttuj->getData('list', array(
+            'fields' => array(
+                'Ttuj.id', 'Ttuj.truck_id',
+            ),
+            'conditions' => array(
+                'Ttuj.status' => 1,
+                'Ttuj.is_pool' => 0,
+                'Ttuj.is_laka' => 0,
+                'Ttuj.completed' => 0,
+            ),
+        ));
+
         if( !empty($include_this_truck_id) ) {
             // Ambil data truck berikut id ini
             $conditions = array(
                 'OR' => array(
-                    'Truck.id' => $include_this_truck_id,
-                    'Ttuj.id' => NULL,
+                    array(
+                        'Truck.id' => $include_this_truck_id,
+                    ),
+                    array(
+                        'Truck.id <>' => $ttujs,
+                    ),
                 ),
                 'AND' => array(
                     'OR' => array(
@@ -473,7 +474,7 @@ class Truck extends AppModel {
             );
         } else {
             $conditions = array(
-                'Ttuj.id' => NULL,
+                'Truck.id <>' => $ttujs,
                 'Truck.branch_id' => Configure::read('__Site.config_branch_id'),
             );
         }
@@ -487,9 +488,6 @@ class Truck extends AppModel {
                 'conditions' => $conditions,
                 'fields' => array(
                     'Truck.id', 'Truck.nopol'
-                ),
-                'contain' => array(
-                    'Ttuj'
                 ),
                 'order' => array(
                     'Truck.nopol'
