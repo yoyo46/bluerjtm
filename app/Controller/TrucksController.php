@@ -4702,6 +4702,7 @@ class TrucksController extends AppController {
 
             foreach ($ttujs as $key => $value) {
                 $id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
+                $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'branch_id');
                 $driver_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_id');
                 $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
@@ -4710,6 +4711,7 @@ class TrucksController extends AppController {
                 $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
                 $value = $this->Driver->getMerge($value, $driver_id);
                 $value = $this->Driver->getMerge($value, $driver_penganti_id, 'DriverPenganti');
+                $value = $this->Truck->getMerge($value, $truck_id);
 
                 if( !empty($is_retail) ) {
                     $value = $this->Ttuj->TtujTipeMotor->getMergeTtujTipeMotor( $value, $id );
@@ -4752,6 +4754,10 @@ class TrucksController extends AppController {
             $this->layout = 'pdf';
         }else if($data_action == 'excel'){
             $this->layout = 'ajax';
+        } else {
+            $this->MkCommon->_layout_file(array(
+                'freeze',
+            ));
         }
     }
 
@@ -5381,12 +5387,14 @@ class TrucksController extends AppController {
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'branch_id');
                 $driver_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_id');
                 $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
+                $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
                 $is_retail = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'is_retail');
 
                 $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
                 $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
                 $value = $this->Truck->Driver->getMerge($value, $driver_id);
                 $value = $this->Truck->Driver->getMerge($value, $driver_penganti_id, 'DriverPenganti');
+                $value = $this->Truck->getMerge($value, $truck_id);
 
                 if( !empty($is_retail) ) {
                     $value = $this->Ttuj->TtujTipeMotor->getMergeTtujTipeMotor( $value, $id );

@@ -23,6 +23,7 @@
                 $to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
                 $total_unit = $this->Common->filterEmptyField($value, 'Ttuj', 'total_unit', '-');
                 $note = $this->Common->filterEmptyField($value, 'Ttuj', 'note');
+                $capacity = $this->Common->filterEmptyField($value, 'Truck', 'capacity');
 
                 $uang_kuli_muat = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_kuli_muat', 0);
                 $uang_kuli_bongkar = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_kuli_bongkar', 0);
@@ -73,6 +74,10 @@
                 ));
                 $content .= $this->Common->_getDataColumn($nopol, 'Ttuj', 'nopol', array(
                     'class' => 'nopol',
+                ));
+                $content .= $this->Common->_getDataColumn($capacity, 'Truck', 'capacity', array(
+                    'class' => 'capacity',
+                    'style' => 'text-align: center;',
                 ));
                 $content .= $this->Common->_getDataColumn($driver, 'Driver', 'driver_name', array(
                     'class' => 'driver',

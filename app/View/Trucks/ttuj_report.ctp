@@ -27,6 +27,12 @@
                 'style' => 'text-align: center',
                 'data-options' => 'field:\'nopol\',width:100',
             ),
+            'capacity' => array(
+                'name' => __('Kapasitas'),
+                'style' => 'text-align: center',
+                'align' => 'center',
+                'data-options' => 'field:\'capacity\',width:80',
+            ),
             'driver' => array(
                 'name' => __('Supir'),
                 'style' => 'text-align: center',
@@ -51,6 +57,7 @@
             'unit' => array(
                 'name' => __('Unit'),
                 'style' => 'text-align: center',
+                'align' => 'center',
                 'data-options' => 'field:\'unit\',width:80',
             ),
             'uang_jalan' => array(
@@ -63,13 +70,13 @@
                 'name' => __('Uang Jalan 2'),
                 'style' => 'text-align: center',
                 'align' => 'right',
-                'data-options' => 'field:\'uang_jalan_2\',width:100',
+                'data-options' => 'field:\'uang_jalan_2\',width:120',
             ),
             'uang_jalan_extra' => array(
                 'name' => __('Uang Jalan Extra'),
                 'style' => 'text-align: center',
                 'align' => 'right',
-                'data-options' => 'field:\'uang_jalan_extra\',width:100',
+                'data-options' => 'field:\'uang_jalan_extra\',width:120',
             ),
             'commission' => array(
                 'name' => __('Komisi'),
@@ -81,25 +88,25 @@
                 'name' => __('Komisi Extra'),
                 'style' => 'text-align: center',
                 'align' => 'right',
-                'data-options' => 'field:\'commission_extra\',width:100',
+                'data-options' => 'field:\'commission_extra\',width:120',
             ),
             'uang_kuli_muat' => array(
                 'name' => __('Uang Kuli Muat'),
                 'style' => 'text-align: center',
                 'align' => 'right',
-                'data-options' => 'field:\'uang_kuli_muat\',width:100',
+                'data-options' => 'field:\'uang_kuli_muat\',width:120',
             ),
             'uang_kuli_bongkar' => array(
                 'name' => __('Uang Kuli Bongkar'),
                 'style' => 'text-align: center',
                 'align' => 'right',
-                'data-options' => 'field:\'uang_kuli_bongkar\',width:100',
+                'data-options' => 'field:\'uang_kuli_bongkar\',width:130',
             ),
             'uang_penyebrangan' => array(
                 'name' => __('Uang Penyebrangan'),
                 'style' => 'text-align: center',
                 'align' => 'right',
-                'data-options' => 'field:\'uang_penyebrangan\',width:100',
+                'data-options' => 'field:\'uang_penyebrangan\',width:150',
             ),
             'uang_kawal' => array(
                 'name' => __('Uang Kawal'),
@@ -111,7 +118,7 @@
                 'name' => __('Uang Keamanan'),
                 'style' => 'text-align: center',
                 'align' => 'right',
-                'data-options' => 'field:\'uang_keamanan\',width:100',
+                'data-options' => 'field:\'uang_keamanan\',width:120',
             ),
             'total' => array(
                 'name' => __('Total'),

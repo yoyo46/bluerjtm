@@ -6,63 +6,71 @@
                 'name' => __('Tanggal'),
                 'field_model' => 'Ttuj.ttuj_date',
                 'style' => 'text-align: center',
-                'display' => true,
+                'data-options' => 'field:\'date\',width:80',
             ),
             'nottuj' => array(
                 'name' => __('No TTUJ'),
                 'style' => 'text-align: center',
+                'data-options' => 'field:\'nottuj\',width:100',
             ),
             'nopol' => array(
                 'name' => __('Nopol'),
                 'field_model' => 'Ttuj.nopol',
                 'style' => 'text-align: center',
-                'display' => true,
+                'data-options' => 'field:\'nopol\',width:80',
+            ),
+            'capacity' => array(
+                'name' => __('Kapasitas'),
+                'style' => 'text-align: center',
+                'align' => 'center',
+                'data-options' => 'field:\'capacity\',width:80',
             ),
             'driver' => array(
                 'name' => __('Supir'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'data-options' => 'field:\'driver\',width:100',
+                'fix_column' => true,
             ),
             'from_city' => array(
                 'name' => __('Dari'),
                 'field_model' => 'Ttuj.from_city_name',
                 'style' => 'text-align: center',
-                'display' => true,
+                'data-options' => 'field:\'from_city\',width:100',
             ),
             'to_city' => array(
                 'name' => __('Tujuan'),
                 'field_model' => 'Ttuj.to_city_name',
                 'style' => 'text-align: center',
-                'display' => true,
+                'data-options' => 'field:\'to_city\',width:100',
             ),
             'note' => array(
                 'name' => __('Keterangan Muat'),
                 'style' => 'text-align: center',
+                'data-options' => 'field:\'note\',width:100',
             ),
             'unit' => array(
                 'name' => __('Unit'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'align' => 'center',
+                'data-options' => 'field:\'unit\',width:80',
             ),
             'uang_jalan' => array(
                 'name' => __('Uang Jalan'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'align' => 'right',
+                'data-options' => 'field:\'uang_jalan\',width:100',
             ),
             'uang_jalan_extra' => array(
                 'name' => __('Uang Jalan Extra'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'align' => 'right',
+                'data-options' => 'field:\'uang_jalan_extra\',width:120',
             ),
             'total' => array(
                 'name' => __('Total'),
-                'field_model' => false,
                 'style' => 'text-align: center',
-                'display' => true,
+                'align' => 'right',
+                'data-options' => 'field:\'total\',width:120',
             ),
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table', $data_action );
@@ -105,8 +113,8 @@
             }
     ?>
     <div class="table-responsive center-table">
-        <table class="table table-bordered sorting" border="<?php echo $border; ?>" style="<?php echo $tableStyle; ?>">
-            <thead>
+        <table class="table table-bordered sorting easyui-datagrid" border="<?php echo $border; ?>" style="<?php echo $tableStyle; ?>">
+            <thead frozen="true">
                 <tr>
                     <?php
                             if( !empty($fieldColumn) ) {
