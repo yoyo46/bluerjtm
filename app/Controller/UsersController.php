@@ -18,9 +18,12 @@ class UsersController extends AppController {
     function search( $index = 'index', $admin = false ){
         $refine = array();
         if(!empty($this->request->data)) {
-            $refine = $this->RjUser->processRefine($this->request->data);
+            $data = $this->request->data;
+            $refine = $this->RjUser->processRefine($data);
             $params = $this->RjUser->generateSearchURL($refine);
+            $result = $this->MkCommon->processFilter($data);
             $params['action'] = $index;
+            $params = array_merge($params, $result);
 
             if( $admin ) {
                 $params['admin'] = true;
@@ -1094,6 +1097,65 @@ class UsersController extends AppController {
         }
 
         $this->redirect($this->referer());
+    }
+
+    public function report_logins( $data_action = false ) {
+        $module_title = __('Laporan Log User');
+        $values = array();
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $this->set('sub_module_title', $module_title);
+        $options =  $this->User->LogUserLogin->getData('paginate');
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->User->LogUserLogin->_callRefineParams($params, $options);
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            // Custom Otorisasi
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Employe', $options );
+        }
+
+        if( !empty($data_action) ){
+            $values = $this->User->LogUserLogin->find('all', $options);
+        } else {
+            $this->loadModel('LogUserLogin');
+            $options['limit'] = Configure::read('__Site.config_pagination');
+            $this->paginate = $options;
+            $values = $this->paginate('LogUserLogin');
+        }
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $user_id = $this->MkCommon->filterEmptyField($value, 'LogUserLogin', 'user_id');
+
+                $value = $this->User->getMerge($value, $user_id);
+                $employe_id = $this->MkCommon->filterEmptyField($value, 'User', 'employe_id');
+
+                $value = $this->User->Employe->getMerge($value, $employe_id);
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Employe', 'branch_id');
+
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+
+                $values[$key] = $value;
+            }
+        }
+
+        $this->set('active_menu', 'report_logins');
+        $this->set(compact(
+            'values', 'module_title', 'data_action'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        }
     }
 }
 ?>

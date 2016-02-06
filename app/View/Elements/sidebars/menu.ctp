@@ -40,7 +40,7 @@
                     $dataMenu = array(
                         'users' => array(
                             'list_user', 'groups', 'employes',
-                            'employe_positions',
+                            'employe_positions', 'report_logins',
                         ),
                     );
 
@@ -91,6 +91,15 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'employes' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Log User', array(
+                                'controller' => 'users',
+                                'action' => 'report_logins',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'report_logins' )?'active':'',
                             ));
                     ?>
                 </ul>

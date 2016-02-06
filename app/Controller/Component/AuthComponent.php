@@ -406,6 +406,8 @@ class AuthComponent extends Component {
 			if( !empty($data) ) {
 				$user = array_merge($data, $data['User']);
 				unset($user['User']);
+				
+				$model->LogUserLogin->logLogin($user, $this->RequestHandler);
 			
 				return $user;
 			}

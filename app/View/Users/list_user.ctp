@@ -6,42 +6,37 @@
             'full_name' => array(
                 'name' => __('Nama'),
                 'field_model' => 'Employe.full_name',
-                'display' => true,
             ),
             'branch' => array(
                 'name' => __('Cabang'),
-                'field_model' => false,
-                'display' => true,
             ),
             'group' => array(
                 'name' => __('Grup User'),
                 'field_model' => 'Group.name',
-                'display' => true,
             ),
             'email' => array(
                 'name' => __('Email'),
                 'field_model' => 'User.email',
-                'display' => true,
             ),
             'phone' => array(
                 'name' => __('Telepon'),
                 'field_model' => 'Employe.phone',
-                'display' => true,
+            ),
+            'last_login' => array(
+                'name' => __('Terakhir Login'),
+                'field_model' => 'User.last_login',
             ),
             'modified' => array(
                 'name' => __('Dirubah'),
                 'field_model' => 'User.modified',
-                'display' => true,
             ),
             'status' => array(
                 'name' => __('Status'),
                 'field_model' => 'User.status',
-                'display' => true,
             ),
             'action' => array(
                 'name' => __('Action'),
-                'field_model' => false,
-                'display' => true,
+                'width' => '15%',
             ),
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
@@ -78,14 +73,18 @@
                             $value_data = $value['User'];
                             $id = $value_data['id'];
 
-                            $name = !empty($value['Employe']['full_name'])?$value['Employe']['full_name']:false;
-                            $phone = !empty($value['Employe']['phone'])?$value['Employe']['phone']:false;
-                            $group_name = !empty($value['Group']['name'])?$value['Group']['name']:false;
+                            $name = $this->Common->filterEmptyField($value, 'Employe', 'full_name');
+                            $phone = $this->Common->filterEmptyField($value, 'Employe', 'phone');
+                            $group_name = $this->Common->filterEmptyField($value, 'Group', 'name');
+                            $last_login = $this->Common->filterEmptyField($value, 'User', 'last_login');
+
                             $activate = array(
                                 'controller' => 'users',
                                 'action' => 'toggle',
                                 $id
                             );
+
+                            $last_login = $this->Common->formatDate($last_login);
             ?>
             <tr>
                 <td><?php echo $name;?></td>
@@ -93,7 +92,8 @@
                 <td><?php echo $group_name;?></td>
                 <td><?php echo $value_data['email'];?></td>
                 <td><?php echo $phone;?></td>
-                <td><?php echo $this->Common->customDate($value_data['modified']);?></td>
+                <td class="text-center"><?php echo $last_login;?></td>
+                <td><?php echo $this->Common->customDate($value_data['modified'], 'd/m/Y');?></td>
                 <td>
                     <?php 
                             if(!empty($value_data['status'])){
@@ -120,13 +120,6 @@
                             ), array(
                                 'class' => 'btn btn-primary btn-xs'
                             ));
-                            echo $this->Html->link(__('Ganti Password'), array(
-                                'controller' => 'users',
-                                'action' => 'password',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-warning btn-xs'
-                            ));
 
                             if(!empty($value_data['status'])){
                                 echo $this->Html->link(__('Non-Aktif'), $activate, array(
@@ -139,6 +132,14 @@
                                     'title' => 'enable status user'
                                 ), sprintf(__('Apakah Anda yakin akan mengaktifkan %s?'), $name));
                             }
+                            
+                            echo $this->Html->link(__('Ganti Password'), array(
+                                'controller' => 'users',
+                                'action' => 'password',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-warning btn-xs'
+                            ));
                     ?>
                 </td>
             </tr>

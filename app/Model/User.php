@@ -44,6 +44,10 @@ class User extends AppModel {
             'className' => 'PaymentNotification',
             'foreignKey' => 'user_id',
         ),
+        'LogUserLogin' => array(
+            'className' => 'LogUserLogin',
+            'foreignKey' => 'user_id',
+        ),
     );
     
     var $validate = array(

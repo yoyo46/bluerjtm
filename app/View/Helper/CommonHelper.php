@@ -939,6 +939,7 @@ class CommonHelper extends AppHelper {
                     $fieldName = false;
                 }
 
+                $width = !empty($dataColumn['width'])?$dataColumn['width']:false;
                 $style = !empty($dataColumn['style'])?$dataColumn['style']:false;
                 $name = !empty($dataColumn['name'])?$dataColumn['name']:false;
                 $display = isset($dataColumn['display'])?$dataColumn['display']:true;
@@ -995,6 +996,7 @@ class CommonHelper extends AppHelper {
                                 'rowspan' => $rowspan,
                                 'data-options' => $data_options,
                                 'align' => $align,
+                                'width' => $width,
                             ));
 
                             if( $fix_column && empty($is_print) ) {
@@ -1405,9 +1407,9 @@ class CommonHelper extends AppHelper {
     *   @param string $format : format tanggal
     *   @return string tanggal
     */
-    function formatDate($dateString, $format = false, $separator = '-') {
+    function formatDate($dateString, $format = false, $empty = '-') {
         if( empty($dateString) || $dateString == '0000-00-00' || $dateString == '0000-00-00 00:00:00') {
-            return $separator;
+            return $empty;
         } else {
             if( !empty($format) ) {
                 return date($format, strtotime($dateString));
