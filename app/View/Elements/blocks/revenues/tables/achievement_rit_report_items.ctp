@@ -1,12 +1,14 @@
 <?php
         if(!empty($values)){
             $grandtotalArr = array();
+            $numbering = !empty($numbering)?$numbering:false;
 
             $grandtotalRit = 0;
             $grandtotalTargetRit = 0;
 
             $grandtotalUnit = 0;
             $grandtotalTargetUnit = 0;
+            $idx = 1;
 
             foreach ($values as $key => $value) {
                 $sidetotalRit = 0;
@@ -22,6 +24,12 @@
 ?>
 <tr>
     <?php 
+            if( !empty($numbering) ) {
+                echo $this->Html->tag('td', $idx, array(
+                    'style' => 'text-align: center;',
+                ));
+            }
+
             echo $this->Html->tag('td', $nopol);
 
             if( isset($totalCnt) ) {
@@ -83,11 +91,21 @@
     ?>
 </tr>
 <?php
+            $idx++;
         }
 ?>
 <tr>
     <?php 
-            echo $this->Html->tag('td', __('Total'));
+            if( !empty($numbering) ) {
+                $colspan = 2;
+            } else {
+                $colspan = false;
+            }
+
+            echo $this->Html->tag('td', __('Total'), array(
+                'colspan' => $colspan,
+                'style' => 'text-align: right;font-weight: bold;',
+            ));
             
             if( isset($totalCnt) ) {
                 for ($i=0; $i <= $totalCnt; $i++) {
@@ -98,31 +116,31 @@
                     $total_unit = $this->Common->filterEmptyField($grandtotalArr, 'TotalUnit', $month, 0);
 
                     echo $this->Html->tag('td', $target_rit, array(
-                        'style' => 'text-align: center;',
+                        'style' => 'text-align: center;font-weight: bold;',
                     ));
                     echo $this->Html->tag('td', $total_rit, array(
-                        'style' => 'text-align: center;',
+                        'style' => 'text-align: center;font-weight: bold;',
                     ));
                     echo $this->Html->tag('td', $target_unit, array(
-                        'style' => 'text-align: center;',
+                        'style' => 'text-align: center;font-weight: bold;',
                     ));
                     echo $this->Html->tag('td', $total_unit, array(
-                        'style' => 'text-align: center;',
+                        'style' => 'text-align: center;font-weight: bold;',
                     ));
                 }
             }
 
             echo $this->Html->tag('td', $grandtotalTargetRit, array(
-                'style' => 'text-align: center;',
+                'style' => 'text-align: center;font-weight: bold;',
             ));
             echo $this->Html->tag('td', $grandtotalRit, array(
-                'style' => 'text-align: center;',
+                'style' => 'text-align: center;font-weight: bold;',
             ));
             echo $this->Html->tag('td', $grandtotalTargetUnit, array(
-                'style' => 'text-align: center;',
+                'style' => 'text-align: center;font-weight: bold;',
             ));
             echo $this->Html->tag('td', $grandtotalUnit, array(
-                'style' => 'text-align: center;',
+                'style' => 'text-align: center;font-weight: bold;',
             ));
     ?>
 </tr>

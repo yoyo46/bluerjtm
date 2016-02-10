@@ -1507,6 +1507,10 @@ class MkCommonComponent extends Component {
         $monthFrom = $this->filterEmptyField($dateFrom, 'month');
         $yearFrom = $this->filterEmptyField($dateFrom, 'year');
 
+        $dateTo = $this->filterEmptyField($data, 'Search', 'to');
+        $monthTo = $this->filterEmptyField($dateTo, 'month');
+        $yearTo = $this->filterEmptyField($dateTo, 'year');
+
         $data = $this->_callUnset(array(
             'Search' => array(
                 'date',
@@ -1555,6 +1559,10 @@ class MkCommonComponent extends Component {
         if( !empty($monthFrom) && !empty($yearFrom) ) {
             $params['monthFrom'] = urlencode($monthFrom);
             $params['yearFrom'] = urlencode($yearFrom);
+        }
+        if( !empty($monthTo) && !empty($yearTo) ) {
+            $params['monthTo'] = urlencode($monthTo);
+            $params['yearTo'] = urlencode($yearTo);
         }
         
         return $params;

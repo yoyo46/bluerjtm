@@ -26,124 +26,8 @@
             }
 
             if( $data_action != 'excel' ) {
+                echo $this->element('blocks/revenues/searchs/achievement_rit_report');
 ?>
-<div class="box">
-    <div class="box-header">
-        <h3 class="box-title">Pencarian</h3>
-        <div class="box-tools pull-right">
-            <button class="btn btn-default btn-sm" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
-        </div>
-    </div>
-    <div class="box-body">
-        <?php 
-            echo $this->Form->create('Ttuj', array(
-                'url'=> $this->Html->url( array(
-                    'controller' => 'revenues',
-                    'action' => 'search',
-                    'achievement_rit_report'
-                )), 
-                'role' => 'form',
-                'inputDefaults' => array('div' => false),
-            ));
-        ?>
-        <div class="row">
-            <div class="col-sm-6">
-                <?php 
-                        echo $this->Form->label('fromMonth', __('Dari Bulan'));
-                ?>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <?php 
-                                    echo $this->Form->month('from', array(
-                                        'label'=> false, 
-                                        'class'=>'form-control',
-                                        'required' => false,
-                                        'empty' => false,
-                                    ));
-                            ?>
-                        </div>
-                        <div class="form-group">
-                            <?php 
-                                    echo $this->Form->input('customer',array(
-                                        'label'=> __('Customer'),
-                                        'class'=>'form-control',
-                                        'required' => false,
-                                    ));
-                            ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <?php 
-                                    echo $this->Form->year('from', 1949, date('Y'), array(
-                                        'label'=> false, 
-                                        'class'=>'form-control',
-                                        'required' => false,
-                                        'empty' => false,
-                                    ));
-                            ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group action">
-                    <?php
-                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
-                                'div' => false, 
-                                'class'=> 'btn btn-success btn-sm',
-                                'type' => 'submit',
-                            ));
-                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'achievement_rit_report', 
-                            ), array(
-                                'escape' => false, 
-                                'class'=> 'btn btn-default btn-sm',
-                            ));
-                    ?>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <?php 
-                        echo $this->Form->label('fromMonth', __('Sampai Bulan'));
-                ?>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <?php 
-                                    echo $this->Form->month('to', array(
-                                        'label'=> false, 
-                                        'class'=>'form-control',
-                                        'required' => false,
-                                        'empty' => false,
-                                    ));
-                            ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <?php 
-                                    echo $this->Form->year('to', 1949, date('Y'), array(
-                                        'label'=> false, 
-                                        'class'=>'form-control',
-                                        'empty' => false,
-                                    ));
-                            ?>
-                        </div>
-                    </div>
-                    <div class="col-sm-12">
-                        <?php 
-                                // Custom Otorisasi
-                                echo $this->Common->getCheckboxBranch();
-                        ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <?php 
-                echo $this->Form->end();
-        ?>
-    </div>
-</div>
 <section class="content invoice">
     <h2 class="page-header">
         <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
@@ -191,8 +75,8 @@
             </thead>
             <thead>
                 <tr>
-            <?php 
-                    }
+                    <?php 
+                            }
 
                             if( isset($totalCnt) ) {
                                 for ($i=0; $i <= $totalCnt; $i++) {
@@ -240,14 +124,14 @@
 
                             echo $this->Html->tag('th', __('RIT'), array(
                                 'style' => 'text-align: center;',
-                                'data-options' => 'field:\'grandtotal_rit\',width:100',
+                                'data-options' => 'field:\'side_grandtotal_rit\',width:100',
                                 'align' => 'center',
                                 'colspan' => 2,
                             ));
 
                             echo $this->Html->tag('th', __('UNIT'), array(
                                 'style' => 'text-align: center;',
-                                'data-options' => 'field:\'grandtotal_unit\',width:100',
+                                'data-options' => 'field:\'side_grandtotal_unit\',width:100',
                                 'align' => 'center',
                                 'colspan' => 2,
                             ));
@@ -264,7 +148,7 @@
                                     ));
                                     echo $this->Html->tag('th', __('PENCAPAIAN'), array(
                                         'style' => 'text-align: center;',
-                                        'data-options' => 'field:\'total_rit_'.$i.'\',width:100',
+                                        'data-options' => 'field:\'total_rit_'.$i.'\',width:100,styler:targetRit',
                                         'align' => 'center',
                                         'rel' => $i,
                                     ));
@@ -275,7 +159,7 @@
                                     ));
                                     echo $this->Html->tag('th', __('PENCAPAIAN'), array(
                                         'style' => 'text-align: center;',
-                                        'data-options' => 'field:\'total_unit_'.$i.'\',width:100',
+                                        'data-options' => 'field:\'total_unit_'.$i.'\',width:100,styler:targetUnit',
                                         'align' => 'center',
                                         'rel' => $i,
                                     ));
@@ -290,7 +174,7 @@
 
                             echo $this->Html->tag('th', __('PENCAPAIAN'), array(
                                 'style' => 'text-align: center;',
-                                'data-options' => 'field:\'grandtotal_rit\',width:100',
+                                'data-options' => 'field:\'grandtotal_rit\',width:100,styler:calcGrandtotalTargetRit',
                                 'align' => 'center',
                             ));
 
@@ -302,7 +186,7 @@
 
                             echo $this->Html->tag('th', __('PENCAPAIAN'), array(
                                 'style' => 'text-align: center;',
-                                'data-options' => 'field:\'grandtotal_unit\',width:100',
+                                'data-options' => 'field:\'grandtotal_unit\',width:100,styler:calcGrandtotalTargetUnit',
                                 'align' => 'center',
                             ));
                     ?>
@@ -356,11 +240,13 @@
             $table_th = 'padding-top: 3px';
             $table = 'width:100%;font-size: 24px; border: 1px solid #CCC; border-collapse: collapse; padding: 0; margin: 0;';
         
-            $no = 1;
-            $each_loop_message = $this->element('blocks/revenues/tables/achievement_rit_report_items');
+            $each_loop_message = $this->element('blocks/revenues/tables/achievement_rit_report_items', array(
+                'numbering' => true,
+            ));
 
             $topHeader = '';
-            $cityHeader = '';
+            $secondHeader = '';
+            $thirdHeader = '';
 
             if( isset($totalCnt) ) {
                 for ($i=0; $i <= $totalCnt; $i++) {
@@ -369,45 +255,91 @@
                     if( $fromYear != $toYear ) {
                         $formatDate = 'F Y';
                     }
+
                     $topHeader .= $this->Html->tag('th', date($formatDate, mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear)), array(
+                        'style' => 'text-align: center;',
                         'colspan' => 4,
-                        'style' => 'text-align: center;'
-                    ));
-                }
-
-                $topHeader .= $this->Html->tag('th', __('Grandtotal'), array(
-                    'style' => 'text-align: center;',
-                    'colspan' => 4,
-                ));
-            }
-
-            if( isset($totalCnt) ) {
-                for ($i=0; $i <= $totalCnt; $i++) {
-                    $cityHeader .= $this->Html->tag('th', __('RIT'), array(
-                        'style' => 'text-align: center;'
-                    ));
-                    $cityHeader .= $this->Html->tag('th', __('UNIT'), array(
-                        'style' => 'text-align: center;'
+                        'align' => 'center',
                     ));
                 }
             }
+
+            $topHeader .= $this->Html->tag('th', __('Grandtotal'), array(
+                'style' => 'text-align: center;',
+                'align' => 'center',
+                'colspan' => 4,
+            ));
 
             if( isset($totalCnt) ) {
                 for ($i=0; $i <= $totalCnt; $i++) {
-                    $subHeader .= $this->Html->tag('th', __('TARGET'), array(
-                        'style' => 'text-align: center;'
+                    $secondHeader .= $this->Html->tag('th', __('RIT'), array(
+                        'style' => 'text-align: center;',
+                        'align' => 'center',
+                        'colspan' => 2,
                     ));
-                    $subHeader .= $this->Html->tag('th', __('PENCAPAIAN'), array(
-                        'style' => 'text-align: center;'
-                    ));
-                    $subHeader .= $this->Html->tag('th', __('TARGET'), array(
-                        'style' => 'text-align: center;'
-                    ));
-                    $subHeader .= $this->Html->tag('th', __('PENCAPAIAN'), array(
-                        'style' => 'text-align: center;'
+                    $secondHeader .= $this->Html->tag('th', __('UNIT'), array(
+                        'style' => 'text-align: center;',
+                        'align' => 'center',
+                        'rel' => $i,
+                        'colspan' => 2,
                     ));
                 }
             }
+
+            $secondHeader .= $this->Html->tag('th', __('RIT'), array(
+                'style' => 'text-align: center;',
+                'align' => 'center',
+                'colspan' => 2,
+            ));
+
+            $secondHeader .= $this->Html->tag('th', __('UNIT'), array(
+                'style' => 'text-align: center;',
+                'align' => 'center',
+                'colspan' => 2,
+            ));
+
+            if( isset($totalCnt) ) {
+                for ($i=0; $i <= $totalCnt; $i++) {
+                    $thirdHeader .= $this->Html->tag('th', __('TARGET'), array(
+                        'style' => 'text-align: center;',
+                        'align' => 'center',
+                    ));
+                    $thirdHeader .= $this->Html->tag('th', __('PENCAPAIAN'), array(
+                        'style' => 'text-align: center;',
+                        'align' => 'center',
+                        'rel' => $i,
+                    ));
+                    $thirdHeader .= $this->Html->tag('th', __('TARGET'), array(
+                        'style' => 'text-align: center;',
+                        'align' => 'center',
+                    ));
+                    $thirdHeader .= $this->Html->tag('th', __('PENCAPAIAN'), array(
+                        'style' => 'text-align: center;',
+                        'align' => 'center',
+                        'rel' => $i,
+                    ));
+                }
+            }
+
+            $thirdHeader .= $this->Html->tag('th', __('TARGET'), array(
+                'style' => 'text-align: center;',
+                'align' => 'center',
+            ));
+
+            $thirdHeader .= $this->Html->tag('th', __('PENCAPAIAN'), array(
+                'style' => 'text-align: center;',
+                'align' => 'center',
+            ));
+
+            $thirdHeader .= $this->Html->tag('th', __('TARGET'), array(
+                'style' => 'text-align: center;',
+                'align' => 'center',
+            ));
+
+            $thirdHeader .= $this->Html->tag('th', __('PENCAPAIAN'), array(
+                'style' => 'text-align: center;',
+                'align' => 'center',
+            ));
 
             $date_title = $sub_module_title;
             $print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
@@ -421,15 +353,15 @@ $tbl = <<<EOD
         <table cellpadding="2" cellspacing="2" nobr="true" style="$table">
             <thead>
                 <tr style="$table_tr_head">
-                    <th rowspan="2">No. </th>
-                    <th rowspan="2">Customer</th>
+                    <th rowspan="3" style="text-align: center;">No. </th>
+                    <th rowspan="3">NoPol</th>
                     $topHeader
                 </tr>
                 <tr style="$table_tr_head">
-                    $cityHeader
+                    $secondHeader
                 </tr>
                 <tr style="$table_tr_head">
-                    $subHeader
+                    $thirdHeader
                 </tr>
             </thead>
             <tbody>          
@@ -458,3 +390,82 @@ EOD;
         readfile($path.'/'.$filename);
     }
 ?>
+<script type="text/javascript">
+    function targetRit(value,row,index, rel){
+        var tmp = 'row.target_rit_'+rel;
+        var target = eval(tmp);
+        target = parseInt(target.replace(/,/gi, ""));
+
+        if( !isNaN(value) ) {
+            value = parseInt(value.replace(/,/gi, ""));
+        }
+
+        if (!isNaN(value) && !isNaN(target) && target != 0){
+            if( value >= target ) {
+                return 'background-color:#dff0d8;color:#3c763d;';
+            } else {
+                return 'background-color:#f2dede;color:#a94442;';
+            }
+        } else {
+            return false;
+        }
+    }
+    function targetUnit(value,row,index, rel){
+        var tmp = 'row.target_unit_'+rel;
+        var target = eval(tmp);
+        target = parseInt(target.replace(/,/gi, ""));
+        
+        if( !isNaN(value) ) {
+            value = parseInt(value.replace(/,/gi, ""));
+        }
+
+        if (!isNaN(value) && !isNaN(target) && target != 0){
+            if( value >= target ) {
+                return 'background-color:#dff0d8;color:#3c763d;';
+            } else {
+                return 'background-color:#f2dede;color:#a94442;';
+            }
+        } else {
+            return false;
+        }
+    }
+
+    function calcGrandtotalTargetRit (value,row,index) {
+        var target = 0;
+
+        if(typeof row.grandtotal_target_rit != 'undefined' ){
+            target = parseInt(row.grandtotal_target_rit.replace(/,/gi, ""));
+        }
+
+        if(typeof value != 'undefined' ){
+            value = parseInt(value.toString().replace(/,/gi, ""));
+        } else {
+            value = 0;
+        }
+
+        if( !isNaN(value) && !isNaN(target) && value >= target ) {
+            return 'background-color:#dff0d8;color:#3c763d;';
+        } else {
+            return 'background-color:#f2dede;color:#a94442;';
+        }
+    }
+    function calcGrandtotalTargetUnit (value,row,index) {
+        var target = 0;
+
+        if(typeof row.grandtotal_target_unit != 'undefined' ){
+            target = parseInt(row.grandtotal_target_unit.replace(/,/gi, ""));
+        }
+
+        if(typeof value != 'undefined' ){
+            value = parseInt(value.toString().replace(/,/gi, ""));
+        } else {
+            value = 0;
+        }
+
+        if( !isNaN(value) && !isNaN(target) && value >= target ) {
+            return 'background-color:#dff0d8;color:#3c763d;';
+        } else {
+            return 'background-color:#f2dede;color:#a94442;';
+        }
+    }
+</script>

@@ -2631,23 +2631,21 @@ class RevenuesController extends AppController {
             'limit' => Configure::read('__Site.config_pagination'),
         );
 
+
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Ttuj->Truck->_callRefineParams($params, $options);
+
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
 
-            if(!empty($refine['customer'])){
-                $customer = urldecode($refine['customer']);
-                $this->request->data['Ttuj']['customer'] = $customer;
-                $options['conditions']['Customer.code LIKE '] = '%'.$customer.'%';
+            if( !empty($refine['monthFrom']) && !empty($refine['yearFrom']) ){
+                $fromMonth = urldecode($refine['monthFrom']);
+                $fromYear = urldecode($refine['yearFrom']);
             }
 
-            if( !empty($refine['fromMonth']) && !empty($refine['fromYear']) ){
-                $fromMonth = urldecode($refine['fromMonth']);
-                $fromYear = urldecode($refine['fromYear']);
-            }
-
-            if( !empty($refine['toMonth']) && !empty($refine['toYear']) ){
-                $toMonth = urldecode($refine['toMonth']);
-                $toYear = urldecode($refine['toYear']);
+            if( !empty($refine['monthTo']) && !empty($refine['yearTo']) ){
+                $toMonth = urldecode($refine['monthTo']);
+                $toYear = urldecode($refine['yearTo']);
             }
 
             // Custom Otorisasi
@@ -2787,10 +2785,10 @@ class RevenuesController extends AppController {
 
         $module_title = __('Laporan Pencapaian Per RIT');
 
-        $this->request->data['Ttuj']['from']['month'] = $fromMonth;
-        $this->request->data['Ttuj']['from']['year'] = $fromYear;
-        $this->request->data['Ttuj']['to']['month'] = $toMonth;
-        $this->request->data['Ttuj']['to']['year'] = $toYear;
+        $this->request->data['Search']['from']['month'] = $fromMonth;
+        $this->request->data['Search']['from']['year'] = $fromYear;
+        $this->request->data['Search']['to']['month'] = $toMonth;
+        $this->request->data['Search']['to']['year'] = $toYear;
         $module_title .= sprintf(' Periode %s %s - %s %s', date('F', mktime(0, 0, 0, $fromMonth, 10)), $fromYear, date('F', mktime(0, 0, 0, $toMonth, 10)), $toYear);
         $totalCnt = $toMonth - $fromMonth;
         $totalYear = $toYear - $fromYear;
