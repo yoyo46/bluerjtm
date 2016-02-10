@@ -17,27 +17,40 @@ class TruckCustomer extends AppModel {
 		),
 	);
 
-	function getMergeTruckCustomer ( $data = false, $truck_id = false ) {
+	function getMergeTruckCustomer ( $data = false, $truck_id = false, $primary = 'all' ) {
 		if( !empty($truck_id) ) {
 			$data['Truck']['id'] = $truck_id;
 		}
 
 		if( !empty($data['Truck']['id']) && empty($data['TruckCustomer']) ) {
-			$truckCustomers = $this->find('all', array(
-				'conditions' => array(
-					'TruckCustomer.truck_id'=> $data['Truck']['id'],
-				),
-				'order' => array(
-					'TruckCustomer.id' => 'ASC',
-				),
-			));
+			if( (string)$primary == 'all' || empty($primary) ) {
+				$truckCustomers = $this->find('all', array(
+					'conditions' => array(
+						'TruckCustomer.truck_id'=> $data['Truck']['id'],
+					),
+					'order' => array(
+						'TruckCustomer.id' => 'ASC',
+					),
+				));
 
-			if( !empty($truckCustomers) ) {
-				foreach ($truckCustomers as $key => $truckCustomer) {
-                	$truckCustomer = $this->Customer->getMerge($truckCustomer, $truckCustomer['TruckCustomer']['customer_id']);
-                	$truckCustomers[$key] = $truckCustomer;
+				if( !empty($truckCustomers) ) {
+					foreach ($truckCustomers as $key => $truckCustomer) {
+	                	$truckCustomer = $this->Customer->getMerge($truckCustomer, $truckCustomer['TruckCustomer']['customer_id']);
+	                	$truckCustomers[$key] = $truckCustomer;
+					}
+					$data['TruckCustomer'] = $truckCustomers;
 				}
-				$data['TruckCustomer'] = $truckCustomers;
+			} else if( !empty($primary) ) {
+				$value = $this->find('first', array(
+					'conditions' => array(
+						'TruckCustomer.truck_id'=> $truck_id,
+						'TruckCustomer.primary'=> 1,
+					),
+				));
+
+				if( !empty($value) ) {
+					$data = array_merge($data, $value);
+				}
 			}
 		}
 

@@ -225,7 +225,7 @@
                         'revenues' => array(
                             'ritase_report', 'achievement_report',
                             'monitoring_truck', 'ttuj_report',
-                            'report_expense_per_truck',
+                            'report_expense_per_truck', 'achievement_rit_report',
                         ),
                     );
 
@@ -240,7 +240,7 @@
                             'licenses_report', 'truck_import',
                             'daily_report', 'mutations', 'driver_reports',
                             'ttuj_report', 'leadtime_report',
-                            'report_expense_per_truck'
+                            'report_expense_per_truck', 'achievement_rit_report'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -362,6 +362,15 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'achievement_report' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pencapaian Per RIT', array(
+                                'controller' => 'revenues',
+                                'action' => 'achievement_rit_report',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'achievement_rit_report' )?'active':'',
                             ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Monitoring Truk', array(
@@ -1093,11 +1102,14 @@
                             //     'class' => ( !empty($active_menu) && $active_menu == 'siup_payments' )?'active':'',
                             // ));
 
-                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LAKA', '#', array(
-                            //     'escape' => false
-                            // )), array(
-                            //     // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
-                            // ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran LAKA', array(
+                                'controller' => 'lakas',
+                                'action' => 'payments'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'laka_payments' )?'active':'',
+                            ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Prepayment', array(
                                 'controller' => 'cashbanks',

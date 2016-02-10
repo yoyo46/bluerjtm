@@ -2570,5 +2570,37 @@ class AjaxController extends AppController {
 			'payment_id'
 		));
 	}
+
+	function getLakas(){
+		$this->loadModel('Laka');
+
+        $named = $this->MkCommon->filterEmptyField($this->params, 'named');
+        $payment_id = $this->MkCommon->filterEmptyField($named, 'payment_id');
+		$title = __('LAKA');
+
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Laka->_callRefineParams($params, array(
+            'limit' => Configure::read('__Site.config_pagination'),
+    	));
+
+        $this->paginate = $options;
+        $values = $this->paginate('Laka');
+
+        if( !empty($values) ) {
+        	foreach ($values as $key => $value) {
+        		$document_id = $this->MkCommon->filterEmptyField($value, 'Laka', 'id');
+
+				$value['Laka']['last_paid'] = $this->Laka->LakaPaymentDetail->getTotalPayment($document_id, $payment_id);
+
+            	$values[$key] = $value;
+        	}
+        }
+
+        $data_action = 'browse-check-docs';
+		$this->set(compact(
+			'data_action', 'title', 'values',
+			'payment_id'
+		));
+	}
 }
 ?>

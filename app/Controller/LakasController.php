@@ -523,4 +523,419 @@ class LakasController extends AppController {
             $this->MkCommon->_layout_file('freeze');
         }
     }
+
+    function payments(){
+        $this->loadModel('LakaPayment');
+        $options = array(
+            'order' => array(
+                'LakaPayment.created' => 'DESC',
+                'LakaPayment.id' => 'DESC',
+            ),
+        );
+
+        $this->set('active_menu', 'laka_payments');
+        $this->set('sub_module_title', __('Pembayaran LAKA'));
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->LakaPayment->_callRefineParams($params, $options);
+
+        $this->paginate = $this->LakaPayment->getData('paginate', $options);
+        $values = $this->paginate('LakaPayment');
+
+        $this->set(compact(
+            'values'
+        )); 
+    }
+
+    function payment_add(){
+        $this->loadModel('LakaPayment');
+        $module_title = __('Tambah Pembayaran LAKA');
+        $this->set('sub_module_title', $module_title);
+
+        $this->doLakaPayment();
+    }
+
+    function payment_edit( $id = false ){
+        $this->loadModel('LakaPayment');
+        $module_title = __('Edit Pembayaran LAKA');
+        $this->set('sub_module_title', $module_title);
+
+        $head_office = Configure::read('__Site.config_branch_head_office');
+
+        if( !empty($head_office) ) {
+            $elementRevenue = array(
+                'branch' => false,
+            );
+        }
+
+        $value = $this->LakaPayment->getData('first', array(
+            'conditions' => array(
+                'LakaPayment.id' => $id
+            ),
+        ), $elementRevenue);
+        $value = $this->LakaPayment->LakaPaymentDetail->getMerge($value, $id);
+
+        $this->doLakaPayment( $id, $value );
+    }
+
+    function doLakaPayment( $id = false, $value = false ){
+        $this->set('active_menu', 'laka_payments');
+
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            $data['LakaPayment']['date_payment'] = !empty($data['LakaPayment']['date_payment']) ? $this->MkCommon->getDate($data['LakaPayment']['date_payment']) : '';
+            $data['LakaPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
+
+            $dataAmount = $this->MkCommon->filterEmptyField($data, 'LakaPaymentDetail', 'amount');
+            $flagPaymentDetail = $this->doLakaPaymentDetail($dataAmount, $data);
+
+            if( !empty($id) ) {
+                $this->LakaPayment->id = $id;
+            } else {
+                $this->LakaPayment->create();
+            }
+
+            $this->LakaPayment->set($data);
+
+            if( $this->LakaPayment->validates() && !empty($flagPaymentDetail) ){
+                if($this->LakaPayment->save()){
+                    $laka_id = $this->LakaPayment->id;
+                    $flagPaymentDetail = $this->doLakaPaymentDetail($dataAmount, $data, $laka_id);
+
+                    $this->params['old_data'] = $value;
+                    $this->params['data'] = $data;
+
+                    $noref = str_pad($laka_id, 6, '0', STR_PAD_LEFT);
+                    $this->MkCommon->setCustomFlash(sprintf(__('Berhasil melakukan Pembayaran LAKA #%s'), $noref), 'success'); 
+                    $this->Log->logActivity( sprintf(__('Berhasil melakukan Pembayaran LAKA #%s'), $laka_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $laka_id );
+                    
+                    $this->redirect(array(
+                        'action' => 'payments',
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal melakukan Pembayaran LAKA'), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal melakukan Pembayaran LAKA #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
+                }
+            }else{
+                $msgError = array();
+
+                if( !empty($this->LakaPayment->LakaPaymentDetail->validationErrors) ) {
+                    $errorPaymentDetails = $this->LakaPayment->LakaPaymentDetail->validationErrors;
+
+                    foreach ($errorPaymentDetails as $key => $errorPaymentDetail) {
+                        if( !empty($errorPaymentDetail) ) {
+                            foreach ($errorPaymentDetail as $key => $err_msg) {
+                                $msgError[] = $err_msg;
+                            }
+                        }
+                    }
+                }
+
+                if( !empty($msgError) ) {
+                    $this->MkCommon->setCustomFlash('<ul><li>'.implode('</li><li>', $msgError).'</li></ul>', 'error'); 
+                } else if( $flagPaymentDetail ) {
+                    $this->MkCommon->setCustomFlash(__('Gagal melakukan Pembayaran LAKA'), 'error'); 
+                }
+            }
+
+            $this->request->data['LakaPayment']['date_payment'] = !empty($data['LakaPayment']['date_payment']) ? $data['LakaPayment']['date_payment'] : '';
+        } else if( !empty($value) ) {
+            if( !empty($value['LakaPaymentDetail']) ) {
+                foreach ($value['LakaPaymentDetail'] as $key => $val) {
+                    $laka_id = $this->MkCommon->filterEmptyField($val, 'LakaPaymentDetail', 'laka_id');
+                    $amount = $this->MkCommon->filterEmptyField($val, 'LakaPaymentDetail', 'amount');
+
+                    $this->request->data = $this->LakaPayment->LakaPaymentDetail->Laka->getMerge($this->request->data, $laka_id);
+
+                    $this->request->data['LakaPaymentDetail']['amount'][$key] = $amount;
+                    $this->request->data['LakaPaymentDetail']['laka_id'][$key] = $laka_id;
+                }
+            }
+
+            $this->request->data['LakaPayment'] = $this->MkCommon->filterEmptyField($value, 'LakaPayment');
+        }
+
+        $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
+
+        $this->MkCommon->_layout_file('select');
+        $this->set(compact(
+            'id', 'coas'
+        ));
+        $this->render('payment_add');
+    }
+
+    function doLakaPaymentDetail ( $dataAmount, $data, $laka_payment_id = false ) {
+        $flagPaymentDetail = true;
+        $totalPayment = 0;
+        $date_payment = $this->MkCommon->filterEmptyField($data, 'LakaPayment', 'date_payment');
+        $data = $this->request->data;
+
+        if( !empty($laka_payment_id) ) {
+            $this->LakaPayment->LakaPaymentDetail->updateAll( array(
+                'LakaPaymentDetail.status' => 0,
+            ), array(
+                'LakaPaymentDetail.laka_payment_id' => $laka_payment_id,
+            ));
+        }
+
+
+        if( !empty($dataAmount) ) {
+            foreach ($dataAmount as $key => $amount) {
+                $laka_id = !empty($data['LakaPaymentDetail']['laka_id'][$key])?$data['LakaPaymentDetail']['laka_id'][$key]:false;
+                $amount = !empty($amount)?$this->MkCommon->convertPriceToString($amount, 0):0;
+
+                $value = $this->LakaPayment->LakaPaymentDetail->Laka->getMerge(array(), $laka_id);
+                
+                $truck_id = $this->MkCommon->filterEmptyField($value, 'Laka', 'truck_id');
+                $price = $this->MkCommon->filterEmptyField($value, 'Laka', 'price');
+                $denda = $this->MkCommon->filterEmptyField($value, 'Laka', 'denda');
+                $biaya_lain = $this->MkCommon->filterEmptyField($value, 'Laka', 'biaya_lain');
+                $laka_date = $this->MkCommon->filterEmptyField($value, 'Laka', 'to_date');
+
+                $dataPaymentDetail = array(
+                    'LakaPaymentDetail' => array(
+                        'truck_id' => $truck_id,
+                        'laka_id' => $laka_id,
+                        'amount' => $amount,
+                    ),
+                );
+
+                $totalPayment += $amount;
+                $total_dibayar = $this->LakaPayment->LakaPaymentDetail->getTotalPayment($laka_id) + $amount;
+                $this->request->data['Laka'][$key]['Laka'] = !empty($value['Laka'])?$value['Laka']:false;
+
+                if( !empty($laka_payment_id) ) {
+                    $dataPaymentDetail['LakaPaymentDetail']['laka_payment_id'] = $laka_payment_id;
+                    $total = $price + $denda + $biaya_lain;
+
+                    if( !empty($total_dibayar) ) {
+                        $flagPaid = 'half';
+
+                        if( $total <= $total_dibayar ) {
+                            $flagPaid = 'full';
+                        }
+                    
+                        $this->LakaPayment->LakaPaymentDetail->Laka->set('paid', $flagPaid);
+                        $this->LakaPayment->LakaPaymentDetail->Laka->id = $laka_id;
+
+                        if( !$this->LakaPayment->LakaPaymentDetail->Laka->save() ) {
+                            $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran Surat-surat #%s'), $laka_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $laka_id );
+                        }
+                    }
+                }
+
+                $this->LakaPayment->LakaPaymentDetail->create();
+                $this->LakaPayment->LakaPaymentDetail->set($dataPaymentDetail);
+
+                if( !empty($laka_payment_id) ) {
+                    if( !$this->LakaPayment->LakaPaymentDetail->save() ) {
+                        $flagPaymentDetail = false;
+                    }
+                } else {
+                    if( !$this->LakaPayment->LakaPaymentDetail->validates() ) {
+                        $flagPaymentDetail = false;
+                    }
+                }
+            }
+        } else {
+            $flagPaymentDetail = false;
+            $this->MkCommon->setCustomFlash(__('Mohon pilih biaya yang akan dibayar.'), 'error'); 
+        }
+
+        if( !empty($totalPayment) && !empty($laka_payment_id) ) {
+            $this->LakaPayment->id = $laka_payment_id;
+            $this->LakaPayment->set('total_payment', $totalPayment);
+
+            if( !$this->LakaPayment->save() ) {
+                $this->Log->logActivity( sprintf(__('Gagal mengubah total pembayaran Surat-surat #%s'), $laka_payment_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $laka_payment_id );
+            } else {
+                $laka_no = $this->MkCommon->filterEmptyField($data, 'LakaPayment', 'nodoc');
+                $coa_id = $this->MkCommon->filterEmptyField($data, 'LakaPayment', 'coa_id');
+
+                $titleJournal = sprintf(__('Pembayaran Surat-surat Truk'));
+                $titleJournal = $this->MkCommon->filterEmptyField($data, 'LakaPayment', 'description', $titleJournal);
+
+                $this->User->Journal->deleteJournal($laka_payment_id, array(
+                    'laka_payment',
+                ));
+                $this->User->Journal->setJournal($totalPayment, array(
+                    'credit' => $coa_id,
+                    'debit' => 'laka_payment_coa_id',
+                ), array(
+                    'date' => $date_payment,
+                    'document_id' => $laka_payment_id,
+                    'title' => $titleJournal,
+                    'document_no' => $laka_no,
+                    'type' => 'laka_payment',
+                ));
+            }
+        }
+
+        return $flagPaymentDetail;
+    }
+
+    function payment_detail($id = false){
+        $this->loadModel('LakaPayment');
+        $module_title = __('Kas/Bank');
+        $elementRevenue = false;
+        $head_office = Configure::read('__Site.config_branch_head_office');
+
+        if( !empty($head_office) ) {
+            $elementRevenue = array(
+                'branch' => false,
+            );
+        }
+
+        $value = $this->LakaPayment->getData('first', array(
+            'conditions' => array(
+                'LakaPayment.id' => $id
+            ),
+        ), $elementRevenue);
+
+        $this->set('active_menu', 'laka_payments');
+        $sub_module_title = $title_for_layout = 'Detail Pembayaran Surat-surat Truk';
+
+        if(!empty($value)){
+            $coa_id = $this->MkCommon->filterEmptyField($value, 'LakaPayment', 'coa_id');
+
+            $value = $this->User->Journal->Coa->getMerge($value, $coa_id);
+            $value = $this->LakaPayment->LakaPaymentDetail->getMerge($value, $id);
+
+            if( !empty($value['LakaPaymentDetail']) ) {
+                foreach ($value['LakaPaymentDetail'] as $key => $val) {
+                    $laka_id = $this->MkCommon->filterEmptyField($val, 'LakaPaymentDetail', 'laka_id');
+                    $val = $this->LakaPayment->LakaPaymentDetail->Laka->getMerge($val, $laka_id);
+
+                    $value['LakaPaymentDetail'][$key] = $val;
+                }
+            }
+
+            $this->set(compact(
+                'value', 'sub_module_title', 'title_for_layout',
+                'module_title'
+            ));
+        }else{
+            $this->MkCommon->setCustomFlash(__('Data tidak ditemukan'), 'error');
+            $this->redirect($this->referer());
+        }
+    }
+
+    function payment_delete($id = false){
+        $this->loadModel('LakaPayment');
+        $is_ajax = $this->RequestHandler->isAjax();
+        $msg = array(
+            'msg' => '',
+            'type' => 'error'
+        );
+        $value = $this->LakaPayment->getData('first', array(
+            'conditions' => array(
+                'LakaPayment.id' => $id,
+            ),
+        ));
+
+        if( !empty($value) ){
+            if(!empty($this->request->data)){
+                $data = $this->request->data;
+                $data = $this->MkCommon->dataConverter($data, array(
+                    'date' => array(
+                        'LakaPayment' => array(
+                            'canceled_date',
+                        ),
+                    )
+                ));
+
+                $value = $this->LakaPayment->LakaPaymentDetail->getMerge($value, $id);
+                $date_payment = $this->MkCommon->filterEmptyField($value, 'LakaPayment', 'date_payment');
+
+                if(!empty($data['LakaPayment']['canceled_date'])){
+                    $data['LakaPayment']['canceled_date'] = $this->MkCommon->filterEmptyField($data, 'LakaPayment', 'canceled_date');
+                    $data['LakaPayment']['is_canceled'] = 1;
+
+                    $this->LakaPayment->id = $id;
+                    $this->LakaPayment->set($data);
+
+                    if($this->LakaPayment->save()){
+                        $laka_no = $this->MkCommon->filterEmptyField($value, 'LakaPayment', 'nodoc');
+                        $coa_id = $this->MkCommon->filterEmptyField($value, 'LakaPayment', 'coa_id');
+
+                        if( !empty($value['LakaPaymentDetail']) ) {
+                            foreach ($value['LakaPaymentDetail'] as $key => $detail) {
+                                $laka_id = $this->MkCommon->filterEmptyField($detail, 'LakaPaymentDetail', 'laka_id');
+                                $total_dibayar = $this->LakaPayment->LakaPaymentDetail->getTotalPayment($laka_id);
+                                $flagPaid = 'none';
+
+                                if( !empty($total_dibayar) ) {
+                                    $flagPaid = 'half';
+                                }
+                                
+                                $dataDoc = $this->LakaPayment->LakaPaymentDetail->Laka->getMerge(array(), $laka_id);
+                                $laka_date = $this->MkCommon->filterEmptyField($dataDoc, 'Laka', 'from_date');
+                                $truck_id = $this->MkCommon->filterEmptyField($dataDoc, 'Laka', 'truck_id');
+
+                                $this->LakaPayment->LakaPaymentDetail->Laka->set('paid', $flagPaid);
+                                $this->LakaPayment->LakaPaymentDetail->Laka->id = $laka_id;
+                                
+                                if( !$this->LakaPayment->LakaPaymentDetail->Laka->save() ) {
+                                    $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran surat-surat #%s'), $laka_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $laka_id );
+                                }
+                            }
+                        }
+
+                        if( !empty($value['LakaPayment']['total_payment']) ) {
+                            $titleJournal = __('pembayaran biaya surat-surat truk');
+                            $titleJournal = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($value, 'LakaPayment', 'description', $titleJournal));
+                            $totalPayment = $this->MkCommon->filterEmptyField($value, 'LakaPayment', 'total_payment');
+
+                            $this->User->Journal->setJournal($totalPayment, array(
+                                'credit' => 'laka_payment_coa_id',
+                                'debit' => $coa_id,
+                            ), array(
+                                'date' => $date_payment,
+                                'document_id' => $id,
+                                'title' => $titleJournal,
+                                'document_no' => $laka_no,
+                                'type' => 'laka_payment_void',
+                            ));
+                        }
+
+                        $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                        $msg = array(
+                            'msg' => sprintf(__('Berhasil menghapus pembayaran surat-surat truk #%s'), $noref),
+                            'type' => 'success'
+                        );
+                        $this->MkCommon->setCustomFlash( $msg['msg'], $msg['type']);  
+                        $this->Log->logActivity( sprintf(__('Berhasil menghapus pembayaran surat-surat truk #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
+                    }else{
+                        $this->Log->logActivity( sprintf(__('Gagal menghapus pembayaran surat-surat truk #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+                    }
+                }else{
+                    $msg = array(
+                        'msg' => __('Harap masukkan tanggal pembatalan pembayaran.'),
+                        'type' => 'error'
+                    );
+                }
+            }
+
+            $this->set('value', $value);
+        }else{
+            $msg = array(
+                'msg' => __('Data tidak ditemukan'),
+                'type' => 'error'
+            );
+        }
+
+        $modelName = 'LakaPayment';
+        $canceled_date = !empty($this->request->data['LakaPayment']['canceled_date']) ? $this->request->data['LakaPayment']['canceled_date'] : false;
+        $this->set(compact(
+            'msg', 'is_ajax', 'action_type',
+            'canceled_date', 'modelName'
+        ));
+        $this->render('/Elements/blocks/common/form_delete');
+    }
 }

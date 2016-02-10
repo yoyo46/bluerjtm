@@ -121,6 +121,10 @@ class Laka extends AppModel {
             'className' => 'LakaMedias',
             'foreignKey' => 'laka_id',
         ),
+        'LakaPaymentDetail' => array(
+            'className' => 'LakaPaymentDetail',
+            'foreignKey' => 'laka_id',
+        ),
     );
 
     function validateTtuj($data){

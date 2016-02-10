@@ -2615,6 +2615,218 @@ class RevenuesController extends AppController {
         }
     }
 
+    public function achievement_rit_report( $data_action = false ) {
+        $this->loadModel('TtujTipeMotor');
+        $this->set('active_menu', 'achievement_rit_report');
+
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+        $fromMonth = 01;
+        $fromYear = date('Y');
+        $toMonth = date('m');
+        $toYear = date('Y');
+        $options = array(
+            'conditions' => array(
+                'Truck.branch_id' => $allow_branch_id,
+            ),
+            'limit' => Configure::read('__Site.config_pagination'),
+        );
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['customer'])){
+                $customer = urldecode($refine['customer']);
+                $this->request->data['Ttuj']['customer'] = $customer;
+                $options['conditions']['Customer.code LIKE '] = '%'.$customer.'%';
+            }
+
+            if( !empty($refine['fromMonth']) && !empty($refine['fromYear']) ){
+                $fromMonth = urldecode($refine['fromMonth']);
+                $fromYear = urldecode($refine['fromYear']);
+            }
+
+            if( !empty($refine['toMonth']) && !empty($refine['toYear']) ){
+                $toMonth = urldecode($refine['toMonth']);
+                $toYear = urldecode($refine['toYear']);
+            }
+
+            // Custom Otorisasi
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Truck', $options );
+        }
+
+        $conditions = array(
+            'TtujTipeMotor.status'=> 1,
+            'Ttuj.status'=> 1,
+            'Ttuj.is_draft'=> 0,
+            'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') >=' => date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear)),
+            'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') <=' => date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear)),
+        );
+        $defaultConditionsTtuj = array(
+            'OR' => array(
+                array(
+                    'Ttuj.is_pool'=> 1,
+                    'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') >='=> date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear)),
+                    'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') <=' => date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear)),
+                ),
+                array(
+                    'Ttuj.completed'=> 1,
+                    'DATE_FORMAT(Ttuj.completed_date, \'%Y-%m\') >='=> date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear)),
+                    'DATE_FORMAT(Ttuj.completed_date, \'%Y-%m\') <=' => date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear)),
+                ),
+            ),
+        );
+
+        if( !empty($data_action) ) {
+            $values = $this->Ttuj->Truck->getData('all', $options);
+        } else {
+            $this->loadModel('Truck');
+            $this->paginate = $this->Truck->getData('paginate', $options);
+            $values = $this->paginate('Truck');
+        }
+        $cntPencapaian = array();
+        $cntUnit = array();
+        $targetUnit = array();
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $truck_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'id');
+
+                $value = $this->Ttuj->Truck->TruckCustomer->getMergeTruckCustomer($value, $truck_id, true);
+                $customer_id = $this->MkCommon->filterEmptyField($value, 'TruckCustomer', 'customer_id');
+                $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
+
+                $conditionsTtuj = $defaultConditionsTtuj;
+                $conditionsTtuj['Ttuj.truck_id'] = $truck_id;
+
+                $this->Ttuj->virtualFields['dt'] = 'CASE WHEN Ttuj.completed = 1 THEN DATE_FORMAT(Ttuj.completed_date, \'%Y-%m\') ELSE DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') END';
+                $this->Ttuj->virtualFields['cnt'] = 'COUNT(Ttuj.truck_id)';
+
+                $totals = $this->Ttuj->getData('all', array(
+                    'conditions' => $conditionsTtuj,
+                    'group' => array(
+                        'Ttuj.dt'
+                    ),
+                    'fields'=> array(
+                        'Ttuj.id', 
+                        'Ttuj.truck_id', 
+                        'Ttuj.cnt',
+                        'Ttuj.dt',
+                    ),
+                ), true, array(
+                    'branch' => false,
+                ));
+
+                if( !empty($totals) ) {
+                    foreach ($totals as $key => $total) {
+                        $dt = $this->MkCommon->filterEmptyField($total, 'Ttuj', 'dt');
+                        $cnt = $this->MkCommon->filterEmptyField($total, 'Ttuj', 'cnt');
+
+                        $cntPencapaian[$truck_id][$dt] = $cnt;
+                    }
+                }
+
+                $conditions['Ttuj.truck_id'] = $truck_id;
+
+                $this->Ttuj->TtujTipeMotor->virtualFields['dt'] = 'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\')';
+                $this->Ttuj->TtujTipeMotor->virtualFields['cnt'] = 'SUM(TtujTipeMotor.qty)';
+
+                $tipeMotors = $this->Ttuj->TtujTipeMotor->find('all', array(
+                    'conditions' => $conditions,
+                    'contain' => array(
+                        'Ttuj',
+                    ),
+                    'group' => array(
+                        'TtujTipeMotor.dt'
+                    ),
+                    'fields'=> array(
+                        'Ttuj.id', 
+                        'Ttuj.truck_id', 
+                        'TtujTipeMotor.cnt',
+                        'TtujTipeMotor.dt',
+                    ),
+                ), false);
+                
+                if( !empty($tipeMotors) ) {
+                    foreach ($tipeMotors as $key => $total) {
+                        $dt = $this->MkCommon->filterEmptyField($total, 'TtujTipeMotor', 'dt');
+                        $cnt = $this->MkCommon->filterEmptyField($total, 'TtujTipeMotor', 'cnt');
+
+                        $cntUnit[$truck_id][$dt] = $cnt;
+                    }
+                }
+
+                $values[$key] = $value;
+            }
+        }
+
+        $customerTargetUnits = $this->Ttuj->Customer->CustomerTargetUnit->CustomerTargetUnitDetail->find('all', array(
+            'conditions' => array(
+                'CustomerTargetUnit.status' => 1,
+                'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\') >=' => date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear)),
+                'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\') <=' => date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear)),
+            ),
+            'order' => array(
+                'CustomerTargetUnit.customer_id' => 'ASC', 
+            ),
+            'contain' => array(
+                'CustomerTargetUnit'
+            ),
+        ));
+        
+        if( !empty($customerTargetUnits) ) {
+            foreach ($customerTargetUnits as $key => $target) {
+                $yearUnit = $this->MkCommon->filterEmptyField($target, 'CustomerTargetUnit', 'year');
+                $monthUnit = $this->MkCommon->filterEmptyField($target, 'CustomerTargetUnit', 'month');
+                $customer_id = $this->MkCommon->filterEmptyField($target, 'CustomerTargetUnit', 'customer_id');
+                $unit = $this->MkCommon->filterEmptyField($target, 'CustomerTargetUnitDetail', 'unit');
+
+                $dt = sprintf('%s-%s', $yearUnit, date('m', mktime(0, 0, 0, $monthUnit, 10)));
+                $targetUnit[$customer_id][$dt] = $unit;
+            }
+        }
+
+        $module_title = __('Laporan Pencapaian Per RIT');
+
+        $this->request->data['Ttuj']['from']['month'] = $fromMonth;
+        $this->request->data['Ttuj']['from']['year'] = $fromYear;
+        $this->request->data['Ttuj']['to']['month'] = $toMonth;
+        $this->request->data['Ttuj']['to']['year'] = $toYear;
+        $module_title .= sprintf(' Periode %s %s - %s %s', date('F', mktime(0, 0, 0, $fromMonth, 10)), $fromYear, date('F', mktime(0, 0, 0, $toMonth, 10)), $toYear);
+        $totalCnt = $toMonth - $fromMonth;
+        $totalYear = $toYear - $fromYear;
+
+        if( !empty($totalYear) && $totalYear > 0 ) {
+            $totalYear = 12 * $totalYear;
+            $totalCnt += $totalYear;
+        }
+
+        $this->set('sub_module_title', $module_title);
+
+        $this->set(compact(
+            'values', 'data_action', 'totalCnt',
+            'fromMonth', 'fromYear', 'cntPencapaian',
+            'toYear', 'toMonth', 'customerTargetUnit',
+            'targetUnit', 'cntUnit'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $layout_js = array(
+                'freeze',
+            );
+            $layout_css = array(
+                'freeze',
+            );
+
+            $this->set(compact(
+                'layout_css', 'layout_js'
+            ));
+        }
+    }
+
     public function monitoring_truck( $data_action = false ) {
         $this->loadModel('Customer');
         $this->loadModel('TruckCustomer');

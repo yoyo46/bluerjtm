@@ -24,6 +24,13 @@ class CustomerTargetUnit extends AppModel {
         ),
 	);
 
+    var $belongsTo = array(
+        'Customer' => array(
+            'className' => 'Customer',
+            'foreignKey' => 'customer_id',
+        ),
+    );
+
     var $hasMany = array(
         'CustomerTargetUnitDetail' => array(
             'className' => 'CustomerTargetUnitDetail',
