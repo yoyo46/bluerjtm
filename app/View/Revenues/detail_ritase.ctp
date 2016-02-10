@@ -4,22 +4,37 @@
 			'action' => 'ritase_report'
 		));
 		$this->Html->addCrumb($sub_module_title);
-
 		echo $this->element('blocks/revenues/search_detail_ritase');
+
+		$photo = $this->Common->filterEmptyField($truk, 'Truck', 'photo');
+		$truck_id = $this->Common->filterEmptyField($truk, 'Truck', 'id');
+		$nopol = $this->Common->filterEmptyField($truk, 'Truck', 'nopol');
+		$tahun = $this->Common->filterEmptyField($truk, 'Truck', 'tahun');
+		$capacity = $this->Common->filterEmptyField($truk, 'Truck', 'capacity');
+
+		$brand_name = $this->Common->filterEmptyField($truk, 'TruckBrand', 'name');
+		$category_name = $this->Common->filterEmptyField($truk, 'TruckCategory', 'name');
+		$facility_name = $this->Common->filterEmptyField($truk, 'TruckFacility', 'name');
+		$driver_name = $this->Common->filterEmptyField($truk, 'Driver', 'name');
+		$customer = $this->Common->filterEmptyField($truk, 'Customer', 'name');
 ?>
 <div class="row">
 	<div class="col-sm-12">
 		<div class="box box-primary">
 		    <div class="box-header">
-		        <h3 class="box-title"><?php echo __('Data Ritase Armada'); ?></h3>
+		        <?php
+		        		echo $this->Html->tag('h3', __('Data Ritase Armada'), array(
+				        	'class' => 'box-title',
+				        ));
+		        ?>
 		    </div>
 		    <div class="box-body">
 		        <div class="row">
 		        	<?php
-		        			if(!empty($truk['Truck']['photo']) && !is_array($truk['Truck']['photo'])){
+		        			if( !empty($photo) ){
 			    				echo $this->Html->tag('div', $this->Common->photo_thumbnail(array(
 									'save_path' => Configure::read('__Site.truck_photo_folder'), 
-									'src' => $truk['Truck']['photo'], 
+									'src' => $photo, 
 									'thumb'=>true,
 									'size' => 'm',
 									'thumb' => true,
@@ -31,17 +46,6 @@
 		        	<div class="col-sm-6">
 		        		<ul class="conntent-ritase-truk">
 		        			<?php
-		        					$truck_id = $this->Common->filterEmptyField($truk, 'Truck', 'id');
-		        					$nopol = $this->Common->filterEmptyField($truk, 'Truck', 'nopol');
-		        					$tahun = $this->Common->filterEmptyField($truk, 'Truck', 'tahun');
-		        					$capacity = $this->Common->filterEmptyField($truk, 'Truck', 'capacity');
-
-		        					$brand_name = $this->Common->filterEmptyField($truk, 'TruckBrand', 'name');
-		        					$category_name = $this->Common->filterEmptyField($truk, 'TruckCategory', 'name');
-		        					$facility_name = $this->Common->filterEmptyField($truk, 'TruckFacility', 'name');
-		        					$driver_name = $this->Common->filterEmptyField($truk, 'Driver', 'name');
-		        					$customer = $this->Common->filterEmptyField($truk, 'Customer', 'name');
-
 			        				$label = $this->Html->tag('label', __('VIN'));
 				        			echo $this->Html->tag('li', sprintf('%s : %s', $label, $truck_id));
 
@@ -165,251 +169,278 @@
 		</div>
 	</div>
 	<div class="col-sm-12">
-		<div class="box box-primary">
-		    <div class="box-body">
-		    	<?php
-		    			if(!empty($truk_ritase)){
-					        $dataColumns = array(
-					            'no' => array(
-					                'name' => __('No.'),
-					                'field_model' => false,
-					                'class' => 'text-center',
-					                'display' => true,
-					            ),
-					            'qty' => array(
-					                'name' => __('Qty'),
-					                'field_model' => false,
-					                'class' => 'text-center',
-					                'display' => true,
-					            ),
-					            'from_city_name' => array(
-					                'name' => __('Dari'),
-					                'field_model' => false,
-					                'display' => true,
-					            ),
-					            'to_city_name' => array(
-					                'name' => __('Tujuan'),
-					                'field_model' => false,
-					                'display' => true,
-					            ),
-					            'driver_name' => array(
-					                'name' => __('Supir'),
-					                'field_model' => false,
-					                'display' => true,
-					            ),
-					            'status' => array(
-					                'name' => __('Status'),
-					                'field_model' => false,
-					                'display' => true,
-					            ),
-					            'tgljam_berangkat' => array(
-					                'name' => __('Muat'),
-					                'field_model' => false,
-					                'display' => true,
-					            ),
-					            'tgljam_tiba' => array(
-					                'name' => __('Tiba'),
-					                'field_model' => false,
-					                'display' => true,
-					            ),
-					            'lt_arrive' => array(
-					                'name' => __('LT Tiba'),
-					                'field_model' => false,
-					                'class' => 'text-center',
-					                'display' => true,
-					            ),
-					            'tgljam_bongkaran' => array(
-					                'name' => __('Bongkaran'),
-					                'field_model' => false,
-					                'display' => true,
-					            ),
-					            'tgljam_balik' => array(
-					                'name' => __('Balik'),
-					                'field_model' => false,
-					                'display' => true,
-					            ),
-					            'tgljam_pool' => array(
-					                'name' => __('Sampai Pool'),
-					                'field_model' => false,
-					                'display' => true,
-					            ),
-					            'lt_kembali' => array(
-					                'name' => __('LT Kembali'),
-					                'field_model' => false,
-					                'class' => 'text-center',
-					                'display' => true,
-					            ),
-					            'ng' => array(
-					                'name' => __('NG'),
-					                'field_model' => false,
-					                'class' => 'text-center',
-					                'display' => true,
-					            ),
-					            'ksu' => array(
-					                'name' => __('KSU'),
-					                'field_model' => false,
-					                'class' => 'text-center',
-					                'display' => true,
-					            ),
-					        );
-        					$fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
-		    	?>
-		    	<div class="box-body table-responsive">
-			        <table class="table table-hover">
-	                    <?php
-	                            if( !empty($fieldColumn) ) {
-	                                echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));
-	                            }
-	                    ?>
-			        	<tbody>
-			        		<?php
-				        			$i=1;
-				        			foreach ($truk_ritase as $key => $value) {
-				        				$qty = $this->Common->filterEmptyField($value, 'qty_ritase');
-				        				$lku_qty = $this->Common->filterEmptyField($value, 'Lku', 'qty');
-				        				$ksu_qty = $this->Common->filterEmptyField($value, 'Ksu', 'qty');
+    	<?php
+    			if(!empty($truk_ritase)){
+			        $dataColumns = array(
+			            'no' => array(
+			                'name' => __('No.'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'no_contract\',width:50',
+			                'align' => 'center',
+			            ),
+			            'customer' => array(
+			                'name' => __('Csutomer'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'customer\',width:100',
+			            ),
+			            'qty' => array(
+			                'name' => __('Qty'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'qty\',width:70',
+			                'align' => 'center',
+			            ),
+			            'from_city_name' => array(
+			                'name' => __('Dari'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'from_city_name\',width:100',
+			            ),
+			            'to_city_name' => array(
+			                'name' => __('Tujuan'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'to_city_name\',width:100',
+        					'fix_column' => true,
+			            ),
+			            'driver_name' => array(
+			                'name' => __('Supir'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'driver_name\',width:100',
+			            ),
+			            'status' => array(
+			                'name' => __('Status'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'status\',width:80',
+			                'align' => 'center',
+			            ),
+			            'ttuj_date' => array(
+			                'name' => __('Tgl TTUJ'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'ttuj_date\',width:100',
+			                'align' => 'center',
+			            ),
+			            'note' => array(
+			                'name' => __('Keterangan'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'note\',width:120',
+			            ),
+			            'tgljam_berangkat' => array(
+			                'name' => __('Muat'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'tgljam_berangkat\',width:100',
+			                'align' => 'center',
+			            ),
+			            'tgljam_tiba' => array(
+			                'name' => __('Tiba'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'tgljam_tiba\',width:100',
+			                'align' => 'center',
+			            ),
+			            'lt_arrive' => array(
+			                'name' => __('LT Tiba'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'lt_arrive\',width:80',
+			                'align' => 'center',
+			            ),
+			            'tgljam_bongkaran' => array(
+			                'name' => __('Bongkaran'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'tgljam_bongkaran\',width:100',
+			                'align' => 'center',
+			            ),
+			            'tgljam_balik' => array(
+			                'name' => __('Balik'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'tgljam_balik\',width:100',
+			                'align' => 'center',
+			            ),
+			            'tgljam_pool' => array(
+			                'name' => __('Sampai Pool'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'tgljam_pool\',width:100',
+			                'align' => 'center',
+			            ),
+			            'lt_kembali' => array(
+			                'name' => __('LT Kembali'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'lt_kembali\',width:80',
+			                'align' => 'center',
+			            ),
+			            'ng' => array(
+			                'name' => __('NG'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'ng\',width:80',
+			                'align' => 'center',
+			            ),
+			            'ksu' => array(
+			                'name' => __('KSU'),
+			                'style' => 'text-align: center;vertical-align: middle;',
+			                'data-options' => 'field:\'ksu\',width:80',
+			                'align' => 'center',
+			            ),
+			        );
+					$fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
+    	?>
+    	<div class="box-body table-responsive">
+	        <table class="table table-hover easyui-datagrid" style="width: 100%;height: 550px;" singleSelect="true">
+                <?php
+                        if( !empty($fieldColumn) ) {
+                            echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn), array(
+                            	'frozen' => 'true',
+                        	));
+                        }
+                ?>
+	        	<tbody>
+	        		<?php
+		        			$i=1;
+		        			foreach ($truk_ritase as $key => $value) {
+		        				$qty = $this->Common->filterEmptyField($value, 'qty_ritase');
+		        				$lku_qty = $this->Common->filterEmptyField($value, 'Lku', 'qty');
+		        				$ksu_qty = $this->Common->filterEmptyField($value, 'Ksu', 'qty');
 
-				        				$from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
-				        				$to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
-				        				$driver = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
-				        				$tgljam_berangkat = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_berangkat');
-				        				$tgljam_tiba = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_tiba');
-				        				$tgljam_bongkaran = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_bongkaran');
-				        				$tgljam_balik = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_balik');
-				        				$tgljam_pool = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_pool');
+		        				$customer = $this->Common->filterEmptyField($value, 'Customer', 'code');
 
-				        				$arrive_lead_time = $this->Common->filterEmptyField($value, 'ArriveLeadTime', 'total_hour');
-				        				$back_lead_time = $this->Common->filterEmptyField($value, 'BackLeadTime', 'total_hour');
+		        				$ttuj_date = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date');
+		        				$from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
+		        				$to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
+		        				$driver = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
+		        				$tgljam_berangkat = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_berangkat');
+		        				$tgljam_tiba = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_tiba');
+		        				$tgljam_bongkaran = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_bongkaran');
+		        				$tgljam_balik = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_balik');
+		        				$tgljam_pool = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_pool');
+		        				$note = $this->Common->filterEmptyField($value, 'Ttuj', 'note', '-');
 
-				        				$arrive_over_time = $this->Common->filterEmptyField($value, 'UangJalan', 'arrive_lead_time');
-				        				$back_orver_time = $this->Common->filterEmptyField($value, 'UangJalan', 'back_lead_time');
+		        				$arrive_lead_time = $this->Common->filterEmptyField($value, 'ArriveLeadTime', 'total_hour');
+		        				$back_lead_time = $this->Common->filterEmptyField($value, 'BackLeadTime', 'total_hour');
 
-				        				$customTglBerangkat = $this->Common->formatDate($tgljam_berangkat, 'd/m/Y H:i:s');
-				        				$customTglTiba = $this->Common->formatDate($tgljam_tiba, 'd/m/Y H:i:s');
-				        				$customTglBongkaran = $this->Common->formatDate($tgljam_bongkaran, 'd/m/Y H:i:s');
-				        				$customTglBalik = $this->Common->formatDate($tgljam_balik, 'd/m/Y H:i:s');
-				        				$customTglPool = $this->Common->formatDate($tgljam_pool, 'd/m/Y H:i:s');
-				        				$customStatus = $this->Revenue->_callStatusTTUJ($value, 'sort');
+		        				$arrive_over_time = $this->Common->filterEmptyField($value, 'UangJalan', 'arrive_lead_time');
+		        				$back_orver_time = $this->Common->filterEmptyField($value, 'UangJalan', 'back_lead_time');
 
-				        				if( $arrive_lead_time > $arrive_over_time ){
-				        					$labelClass = 'danger';
-				        				} else {
-				        					$labelClass = 'success';
-				        				}
+		        				$customTglBerangkat = $this->Common->formatDate($tgljam_berangkat, 'd/m/Y H:i:s');
+		        				$customTglTiba = $this->Common->formatDate($tgljam_tiba, 'd/m/Y H:i:s');
+		        				$customTglBongkaran = $this->Common->formatDate($tgljam_bongkaran, 'd/m/Y H:i:s');
+		        				$customTglBalik = $this->Common->formatDate($tgljam_balik, 'd/m/Y H:i:s');
+		        				$customTglPool = $this->Common->formatDate($tgljam_pool, 'd/m/Y H:i:s');
+		        				$customStatus = $this->Revenue->_callStatusTTUJ($value, 'sort');
+		        				$customTtujDate = $this->Common->formatDate($ttuj_date, 'd/m/Y');
 
-				        				$arriveLeadTime = $this->Common->filterEmptyField($value, 'ArriveLeadTime', 'FormatArr');
-			        					
-			        					if( !empty($arriveLeadTime) ) {
-					        				$arriveLeadTime = implode('<br>', $arriveLeadTime);
-					        				$customLeadTimeArrive = $this->Html->tag('span', $arriveLeadTime, array(
-					        					'class' => sprintf('block label label-%s', $labelClass),
-					        				));
-					        			} else {
-					        				$customLeadTimeArrive = '-';
-					        			}
+		        				if( $arrive_lead_time > $arrive_over_time ){
+		        					$labelClass = 'danger';
+		        				} else {
+		        					$labelClass = 'success';
+		        				}
 
-				        				if( $back_lead_time > $back_orver_time ){
-				        					$labelClass = 'danger';
-				        				} else {
-				        					$labelClass = 'success';
-				        				}
-
-			        					$backLeadTime = $this->Common->filterEmptyField($value, 'BackLeadTime', 'FormatArr');
-
-			        					if( !empty($backLeadTime) ) {
-				        					$backLeadTime = implode('<br>', $backLeadTime);
-					        				$customLeadTimeBack = $this->Html->tag('span', $backLeadTime, array(
-					        					'class' => sprintf('block label label-%s', $labelClass),
-					        				));
-				        				} else {
-				        					$customLeadTimeBack = '-';
-				        				}
-
-				        				if( !empty($lku_qty) ) {
-				        					$customLku = $this->Html->link($lku_qty, array(
-				        						'controller' => 'lkus',
-				        						'action' => 'index',
-				        						'nopol' => $nopol,
-			        						), array(
-			        							'class' => 'white',
-			        							'target' => '_blank',
-			        						));
-					        				$customLku = $this->Html->tag('span', $customLku, array(
-					        					'class' => 'label label-warning block',
-				        					));
-				        				} else {
-				        					$customLku = '-';
-				        				}
-
-				        				if( !empty($ksu_qty) ) {
-				        					$customKsu = $this->Html->link($ksu_qty, array(
-				        						'controller' => 'lkus',
-				        						'action' => 'ksus',
-				        						'nopol' => $nopol,
-			        						), array(
-			        							'class' => 'white',
-			        							'target' => '_blank',
-			        						));
-					        				$customKsu = $this->Html->tag('span', $customKsu, array(
-					        					'class' => 'label label-warning block',
-				        					));
-				        				} else {
-				        					$customKsu = '-';
-				        				}
-			        		?>
-			        		<tr>
-			        			<?php
-				        				echo $this->Html->tag('td', $i++, array(
-				        					'class' => 'text-center',
-			        					));
-				        				
-				        				echo $this->Html->tag('td', $qty, array(
-				        					'class' => 'text-center',
-			        					));
-
-				        				echo $this->Html->tag('td', $from_city);
-				        				echo $this->Html->tag('td', $to_city);
-				        				echo $this->Html->tag('td', $driver);
-				        				echo $this->Html->tag('td', $this->Html->tag('span', $customStatus, array(
-				        					'class' => 'label label-primary',
-			        					)), array(
-				        					'class' => 'text-center',
-			        					));
-				        				echo $this->Html->tag('td', $customTglBerangkat);
-				        				echo $this->Html->tag('td', $customTglTiba);
-				        				echo $this->Html->tag('td', $customLeadTimeArrive, array(
-				        					'class' => 'text-center',
-			        					));
-
-				        				echo $this->Html->tag('td', $customTglBongkaran);
-				        				echo $this->Html->tag('td', $customTglBalik);
-				        				echo $this->Html->tag('td', $customTglPool);
-				        				echo $this->Html->tag('td', $customLeadTimeBack, array(
-				        					'class' => 'text-center',
-			        					));
-				        				echo $this->Html->tag('td', $customLku, array(
-				        					'class' => 'text-center',
-			        					));
-			        					echo $this->Html->tag('td', $customKsu, array(
-				        					'class' => 'text-center',
-			        					));
-			        			?>
-			        		</tr>
-			        		<?php
+		        				$arriveLeadTime = $this->Common->filterEmptyField($value, 'ArriveLeadTime', 'FormatArr');
+	        					
+	        					if( !empty($arriveLeadTime) ) {
+			        				$arriveLeadTime = implode('<br>', $arriveLeadTime);
+			        				$customLeadTimeArrive = $this->Html->tag('span', $arriveLeadTime, array(
+			        					'class' => sprintf('block label label-%s', $labelClass),
+			        				));
+			        			} else {
+			        				$customLeadTimeArrive = '-';
 			        			}
-			        		?>
-			        	</tbody>
-			        </table>
-			    </div>
-		    	<?php
-		    		}else{
-		    			echo $this->Html->tag('div', __('Data belum tersedia'), array(
-		    				'class' => 'alert alert-warning text-center',
-		    			));
-		    		}
-		    	?>
-		    </div>
-		</div>
+
+		        				if( $back_lead_time > $back_orver_time ){
+		        					$labelClass = 'danger';
+		        				} else {
+		        					$labelClass = 'success';
+		        				}
+
+	        					$backLeadTime = $this->Common->filterEmptyField($value, 'BackLeadTime', 'FormatArr');
+
+	        					if( !empty($backLeadTime) ) {
+		        					$backLeadTime = implode('<br>', $backLeadTime);
+			        				$customLeadTimeBack = $this->Html->tag('span', $backLeadTime, array(
+			        					'class' => sprintf('block label label-%s', $labelClass),
+			        				));
+		        				} else {
+		        					$customLeadTimeBack = '-';
+		        				}
+
+		        				if( !empty($lku_qty) ) {
+		        					$customLku = $this->Html->link($lku_qty, array(
+		        						'controller' => 'lkus',
+		        						'action' => 'index',
+		        						'nopol' => $nopol,
+	        						), array(
+	        							'class' => 'white',
+	        							'target' => '_blank',
+	        						));
+			        				$customLku = $this->Html->tag('span', $customLku, array(
+			        					'class' => 'label label-warning block',
+		        					));
+		        				} else {
+		        					$customLku = '-';
+		        				}
+
+		        				if( !empty($ksu_qty) ) {
+		        					$customKsu = $this->Html->link($ksu_qty, array(
+		        						'controller' => 'lkus',
+		        						'action' => 'ksus',
+		        						'nopol' => $nopol,
+	        						), array(
+	        							'class' => 'white',
+	        							'target' => '_blank',
+	        						));
+			        				$customKsu = $this->Html->tag('span', $customKsu, array(
+			        					'class' => 'label label-warning block',
+		        					));
+		        				} else {
+		        					$customKsu = '-';
+		        				}
+	        		?>
+	        		<tr>
+	        			<?php
+		        				echo $this->Html->tag('td', $i++, array(
+		        					'class' => 'text-center',
+	        					));
+		        				echo $this->Html->tag('td', $customer);
+		        				echo $this->Html->tag('td', $qty, array(
+		        					'class' => 'text-center',
+	        					));
+		        				echo $this->Html->tag('td', $from_city);
+		        				echo $this->Html->tag('td', $to_city);
+		        				echo $this->Html->tag('td', $driver);
+		        				echo $this->Html->tag('td', $this->Html->tag('span', $customStatus, array(
+		        					'class' => 'label label-primary',
+	        					)), array(
+		        					'class' => 'text-center',
+	        					));
+		        				echo $this->Html->tag('td', $customTtujDate);
+		        				echo $this->Html->tag('td', $note);
+		        				echo $this->Html->tag('td', $customTglBerangkat);
+		        				echo $this->Html->tag('td', $customTglTiba);
+		        				echo $this->Html->tag('td', $customLeadTimeArrive, array(
+		        					'class' => 'text-center',
+	        					));
+
+		        				echo $this->Html->tag('td', $customTglBongkaran);
+		        				echo $this->Html->tag('td', $customTglBalik);
+		        				echo $this->Html->tag('td', $customTglPool);
+		        				echo $this->Html->tag('td', $customLeadTimeBack, array(
+		        					'class' => 'text-center',
+	        					));
+		        				echo $this->Html->tag('td', $customLku, array(
+		        					'class' => 'text-center',
+	        					));
+	        					echo $this->Html->tag('td', $customKsu, array(
+		        					'class' => 'text-center',
+	        					));
+	        			?>
+	        		</tr>
+	        		<?php
+	        			}
+	        		?>
+	        	</tbody>
+	        </table>
+	    </div>
+    	<?php
+    		}else{
+    			echo $this->Html->tag('div', __('Data belum tersedia'), array(
+    				'class' => 'alert alert-warning text-center',
+    			));
+    		}
+    	?>
 	</div>
 	<?php echo $this->element('pagination');?>
 </div>

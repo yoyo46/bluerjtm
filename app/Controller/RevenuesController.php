@@ -4188,7 +4188,9 @@ class RevenuesController extends AppController {
 
                     foreach ($truk_ritase as $key => $value) {
                         $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
+                        $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
 
+                        $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
                         $qty_ritase = $this->TtujTipeMotor->getData('first', array(
                             'conditions' => array(
                                 'TtujTipeMotor.ttuj_id' => $ttuj_id,
@@ -4227,6 +4229,7 @@ class RevenuesController extends AppController {
                         $to_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_pool');
                         $leadTimeBack = $this->MkCommon->dateDiff($from_time, $to_time, 'day', true);
 
+                        $truk_ritase[$key] = $value;
                         $truk_ritase[$key] = $this->Ttuj->UangJalan->getMerge($truk_ritase[$key], $uang_jalan_id);
                         $truk_ritase[$key]['ArriveLeadTime'] = $leadTimeArrive;
                         $truk_ritase[$key]['BackLeadTime'] = $leadTimeBack;
@@ -4243,6 +4246,10 @@ class RevenuesController extends AppController {
                         $total_ksu += $qty_ksu;
                     }
                 }
+                
+                $this->MkCommon->_layout_file(array(
+                    'freeze',
+                ));
 
                 $sub_module_title = __('Detail Ritase Truk');
                 $this->set('active_menu', 'ritase_report');

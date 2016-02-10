@@ -1,6 +1,7 @@
 <?php 
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $cities = !empty($cities)?array_filter($cities):false;
+        $paramDate = $this->Common->filterEmptyField($this->params, 'named', 'date');
         
         if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
             $this->Html->addCrumb($sub_module_title);
@@ -164,49 +165,6 @@
     <div class="row no-print print-action">
         <div class="col-xs-12 action">
             <?php 
-                    /*
-                    if( !empty($cities) ) {
-            ?>
-            <div class="list-field">
-                <?php 
-                        echo $this->Html->link('<i class="fa fa-th-large"></i> Kolom Laporan', 'javascript:', array(
-                            'escape' => false,
-                            'class' => 'show',
-                        ));                        
-                ?>
-                <ul>
-                    <?php 
-                            echo $this->Html->link('<i class="fa fa-times"></i>', 'javascript:', array(
-                                'escape' => false,
-                                'class' => 'close'
-                            ));
-
-                            foreach ($cities as $key => $value) {
-                                $slug = $this->Common->toSlug($value);
-                    ?>
-                    <li>
-                        <div class="checkbox">
-                            <label>
-                                <?php
-                                        echo $this->Form->checkbox($this->Common->toSlug($value), array(
-                                            'data-field' => sprintf('%s-%s', $slug, $key),
-                                            'data-parent' => 'col-alokasi',
-                                            'checked' => true,
-                                        ));
-                                        echo $value;
-                                ?>
-                            </label>
-                        </div>
-                    </li>
-                    <?php
-                            }
-                    ?>
-                </ul>
-            </div>
-            <?php
-                    }
-                    */
-                    
                     $urlDefault = $this->passedArgs;
                     $urlDefault['controller'] = 'revenues';
                     $urlDefault['action'] = 'ritase_report';
@@ -362,7 +320,8 @@
                             $link_truck = $this->Html->link($value['Truck']['nopol'], array(
                                 'controller' => 'revenues',
                                 'action' => 'detail_ritase',
-                                $id
+                                $id,
+                                'date' => $paramDate,
                             ));
                             echo $this->Html->tag('td', $link_truck);
 
