@@ -8716,12 +8716,19 @@ class RevenuesController extends AppController {
                 if( !empty($tarif) ) {
                     $tarif_angkutan = $this->MkCommon->filterEmptyField( $tarif, 'tarif' );
                     $jenis_unit = $this->MkCommon->filterEmptyField( $tarif, 'jenis_unit' );
-                    
+
                     if( $jenis_unit == 'per_truck' ) {
                         $price_unit = $total_price_unit;
                     }
 
                     if( $tarif_angkutan != $price_unit ) {
+                        $journals = $this->User->Journal->find('all', array(
+                            'conditions' => array(
+                                'Journal.status' => 1,
+                                'Journal.type' => 'revenue',
+                                'Journal.document_id' => $revenue_id,
+                            ),
+                        ));
 
                         $this->Ttuj->Revenue->RevenueDetail->id = $revenue_detail_id;
 
@@ -8749,6 +8756,24 @@ class RevenuesController extends AppController {
                         $this->Ttuj->Revenue->set('total', $total_revenue);
                         $this->Ttuj->Revenue->set('total_without_tax', $total_revenue);
                         $this->Ttuj->Revenue->save();
+
+                        if( !empty($journals) ) {
+                            foreach ($journals as $key => $journal) {
+                                $journal_id = $this->MkCommon->filterEmptyField( $journal, 'Journal', 'id' );
+                                $debit = $this->MkCommon->filterEmptyField( $journal, 'Journal', 'debit' );
+                                $credit = $this->MkCommon->filterEmptyField( $journal, 'Journal', 'credit' );
+
+                                $this->User->Journal->id = $journal_id;
+
+                                if( !empty($credit) ) {
+                                    $this->User->Journal->set('credit', $total_revenue);
+                                } else if( !empty($debit) ) {
+                                    $this->User->Journal->set('debit', $total_revenue);
+                                }
+
+                                $this->User->Journal->save();
+                            }
+                        }
 
                         echo sprintf('Tarif: %s <br>', $tarif_angkutan);
                         echo sprintf('Branch: %s <br>', $branch);
