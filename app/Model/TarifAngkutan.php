@@ -191,7 +191,18 @@ class TarifAngkutan extends AppModel {
                         'tarif_angkutan_id' => $result['TarifAngkutan']['id'],
                         'tarif_angkutan_type' => $result['TarifAngkutan']['type'],
                     );
+                } else if( ($flagTarifGroupMotor && empty($tarifCapacity)) || ($flagTarifCapacity && empty($tarifGroupMotor)) ) {
+                    $tmpResult = array(
+                        'jenis_unit' => $result['TarifAngkutan']['jenis_unit'],
+                        'tarif' => $result['TarifAngkutan']['tarif'],
+                        'tarif_angkutan_id' => $result['TarifAngkutan']['id'],
+                        'tarif_angkutan_type' => $result['TarifAngkutan']['type'],
+                    );
                 }
+            }
+
+            if( !empty($tmpResult) ) {
+                return $tmpResult;
             }
 
             if( empty($addConditions['TarifAngkutan.group_motor_id']) ) {
