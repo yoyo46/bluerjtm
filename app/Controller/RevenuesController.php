@@ -8652,8 +8652,24 @@ class RevenuesController extends AppController {
     }
 
     public function generate_tarif_angkut () {
+        $revenues = $this->Ttuj->Revenue->InvoiceDetail->find('list', array(
+            'conditions' => array(
+                'InvoiceDetail.status' => 1,
+                'Invoice.status' => 1,
+            ),
+            'fields' => array(
+                'InvoiceDetail.id', 'InvoiceDetail.revenue_id',
+            ),
+            'contain' => array(
+                'Invoice',
+            ),
+            'group' => array(
+                'InvoiceDetail.revenue_id',
+            ),
+        ));
         $values = $this->Ttuj->Revenue->RevenueDetail->find('all', array(
             'conditions' => array(
+                'Revenue.id NOT' => $revenues,
                 'RevenueDetail.status' => 1,
                 'Revenue.status' => 1,
                 'revenue_tarif_type <>' => 'per_truck',
@@ -8700,11 +8716,12 @@ class RevenuesController extends AppController {
                 if( !empty($tarif) ) {
                     $tarif_angkutan = $this->MkCommon->filterEmptyField( $tarif, 'tarif' );
                     $jenis_unit = $this->MkCommon->filterEmptyField( $tarif, 'jenis_unit' );
+                    
+                    if( $jenis_unit == 'per_truck' ) {
+                        $price_unit = $total_price_unit;
+                    }
 
                     if( $tarif_angkutan != $price_unit ) {
-                        if( $jenis_unit == 'per_truck' ) {
-                            $price_unit = $total_price_unit;
-                        }
 
                         $this->Ttuj->Revenue->RevenueDetail->id = $revenue_detail_id;
 
