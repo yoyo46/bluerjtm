@@ -416,6 +416,17 @@ class CashbanksController extends AppController {
                 $data_local = $this->CashBank->getDataCashBank($data_local, $prepayment_out_id);
                 $this->request->data = $data = $data_local;
                 $this->request->data['CashBank']['tgl_cash_bank'] = $this->MkCommon->getDate($this->request->data['CashBank']['tgl_cash_bank'], true);
+            } else {
+                $lastCashBank = $this->CashBank->getData('first', array(
+                    'conditions' => array(
+                        'CashBank.user_id' => $this->user_id,
+                    ),
+                    'order' => array(
+                        'CashBank.id' => 'DESC',
+                        'CashBank.created' => 'DESC',
+                    ),
+                ));
+                $this->request->data['CashBank']['coa_id'] = $this->MkCommon->filterEmptyField($lastCashBank, 'CashBank', 'coa_id');
             }
         }
 

@@ -2112,6 +2112,11 @@ var ajaxModal = function ( obj, prettyPhoto ) {
         $('.modal-dialog').removeClass('expand-modal');
         $('.modal-content').removeClass('expand-content-modal');
     });
+    $('#myModal,.staticModal').on('shown.bs.modal', function () {
+        if( $('#myModal .modal-body .on-focus').length > 0 ) {
+            $('#myModal .modal-body .on-focus').focus();
+        }
+    })
 }
 
 var ajaxLink = function ( obj, prettyPhoto ) {
@@ -4292,6 +4297,7 @@ $(function() {
     $.inputPrice();
     $.inputNumber();
     $.rebuildFunction();
+    $.onFocused();
 
     $('#ppn-total-invoice').blur(function(){
         var self = $(this);

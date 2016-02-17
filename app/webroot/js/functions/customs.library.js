@@ -7,6 +7,16 @@
         return value;
     }
 
+    $.onFocused = function (options) {
+        var settings = $.extend({
+            obj: $('.on-focus'),
+        }, options );
+
+        if( settings.obj.length > 0 ) {
+            settings.obj.focus();
+        }
+    }
+
     $.rowAdded = function(options){
         var settings = $.extend({
             obj: $('.field-added'),
@@ -1014,7 +1024,7 @@
 
         datepicker(obj.find('.custom-date'));
         timepicker(obj.find('.timepicker'));
-        
+
         $.rebuildFunction();
     }
 

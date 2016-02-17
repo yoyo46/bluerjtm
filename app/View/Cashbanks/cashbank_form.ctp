@@ -4,7 +4,9 @@
 			'action' => 'index'
 		));
 		$this->Html->addCrumb($sub_module_title);
-        echo $this->element('blocks/cashbanks/tables/list_approvals');
+        echo $this->element('blocks/cashbanks/tables/list_approvals', array(
+        	'urlBack' => false,
+    	));
 
 		echo $this->Form->create('CashBank', array(
 			'url'=> $this->Html->url( null, true ), 
@@ -21,9 +23,9 @@
 			<?php
 					echo $this->Form->input('nodoc',array(
 						'label'=> __('No. Dokumen'), 
-						'class'=>'form-control',
+						'class'=>'form-control on-focus',
 						'required' => false,
-						'placeholder' => __('No. Dokumen')
+						'placeholder' => __('No. Dokumen'),
 					));
 			?>
 		</div>
