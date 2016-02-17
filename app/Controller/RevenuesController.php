@@ -3738,6 +3738,7 @@ class RevenuesController extends AppController {
             }
         }else if($id && $data_local){
             $this->request->data = $data_local;
+            $transaction_status = $this->MkCommon->filterEmptyField($data_local, 'Revenue', 'transaction_status');
 
             if( !empty($this->request->data['Revenue']['date_revenue']) && $this->request->data['Revenue']['date_revenue'] != '0000-00-00' ) {
                 $this->request->data['Revenue']['date_revenue'] = date('d/m/Y', strtotime($this->request->data['Revenue']['date_revenue']));
@@ -3745,7 +3746,29 @@ class RevenuesController extends AppController {
                 $this->request->data['Revenue']['date_revenue'] = '';
             }
 
-            if( !empty($data_local['Revenue']['tarif_per_truck']) && !empty($data_local['Revenue']['revenue_tarif_type']) && $data_local['Revenue']['revenue_tarif_type'] == 'per_truck' ) {
+            if( $transaction_status == 'unposting' ) {
+                $from_city_id = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'from_city_id');
+                $to_city_id = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'to_city_id');
+                $truck_capacity = $this->MkCommon->filterEmptyField($data_local, 'Revenue', 'truck_capacity');
+                $customer_id = $this->MkCommon->filterEmptyField($data_local, 'Revenue', 'customer_id');
+                $add_charge = $this->MkCommon->filterEmptyField($data_local, 'Revenue', 'additional_charge');
+
+                $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->findTarif($from_city_id, $to_city_id, $customer_id, $truck_capacity);
+                $jenis_unit = $this->MkCommon->filterEmptyField($tarif, 'jenis_unit');
+                $tarif_amount = $this->MkCommon->filterEmptyField($tarif, 'tarif');
+                $tarif_angkutan_id = $this->MkCommon->filterEmptyField($tarif, 'tarif_angkutan_id');
+                $tarif_angkutan_type = $this->MkCommon->filterEmptyField($tarif, 'tarif_angkutan_type');
+                
+                if( $jenis_unit == 'per_truck' ) {
+                    $tarifTruck = array(
+                        'jenis_unit' => 'per_truck',
+                        'tarif' => $tarif_amount,
+                        'addCharge' => $add_charge,
+                        'tarif_angkutan_id' => $tarif_angkutan_id,
+                        'tarif_angkutan_type' => $tarif_angkutan_type,
+                    );
+                }
+            } else if( !empty($data_local['Revenue']['tarif_per_truck']) && !empty($data_local['Revenue']['revenue_tarif_type']) && $data_local['Revenue']['revenue_tarif_type'] == 'per_truck' ) {
                 $tarifAmount = $data_local['Revenue']['tarif_per_truck'];
                 $addCharge = $data_local['Revenue']['additional_charge'];
 

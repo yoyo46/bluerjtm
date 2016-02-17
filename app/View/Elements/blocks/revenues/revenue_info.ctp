@@ -27,6 +27,12 @@
 				'required' => false,
 				'readonly' => true
 			));
+			echo $this->Form->hidden('Ttuj.truck_id',array(
+				'label'=> false, 
+				'class'=>'form-control',
+				'readonly' => true,
+				'id' => 'TruckId'
+			));
 	?>
 </div>
 <div class="form-group">

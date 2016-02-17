@@ -1259,7 +1259,6 @@ var city_revenue_change = function( obj_city, obj_tipe_motor ){
         var data_type = self.attr('data-type');
 
         changeDetailRevenue( parent, city_id, val, 0, qty, data_type, from_ttuj );
-
         return false;
     });
 }
@@ -1331,7 +1330,7 @@ function grandTotalRevenue(){
 
             $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-revenue-perunit').html('IDR '+formatNumber(totalPrice));
             $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-price-perunit').val(totalPrice);
-        } else if( revenue_tarif_type == 'per_truck' && is_additional_charge[i].checked != true ) {
+        } else if( revenue_tarif_type == 'per_truck' && is_additional_charge[i].checked == false ) {
             $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-revenue-perunit').html('');
         }
     };
