@@ -460,10 +460,22 @@ class RevenuesController extends AppController {
                 $this->Ttuj->id = $id;
                 $msg = 'merubah';
                 $no_ttuj = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'no_ttuj');
+                $redirectUrl = array(
+                    'controller' => 'revenues',
+                    'action' => 'ttuj_edit',
+                    $id,
+                    'admin' => false,
+                );
             }else{
                 $this->Ttuj->create();
                 $msg = 'menambah';
                 $no_ttuj = $data['Ttuj']['no_ttuj'] = $this->Ttuj->generateNoId();
+                $redirectUrl = array(
+                    'controller' => 'revenues',
+                    'action' => 'ttuj_add',
+                    $data_action,
+                    'admin' => false,
+                );
             }
 
             $customer_id = !empty($data['Ttuj']['customer_id'])?$data['Ttuj']['customer_id']:false;
@@ -840,10 +852,7 @@ class RevenuesController extends AppController {
                                 $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s TTUJ dengan no %s'), $msg, $no_ttuj), 'success');
                                 $this->Log->logActivity( sprintf(__('Sukses %s TTUJ #%s'), $msg, $document_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $document_id );
 
-                                $this->redirect(array(
-                                    'controller' => 'revenues',
-                                    'action' => 'ttuj'
-                                ));
+                                $this->redirect($redirectUrl);
                             }else{
                                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Ttuj'), $msg), 'error'); 
                                 $this->Log->logActivity( sprintf(__('Gagal %s TTUJ #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
