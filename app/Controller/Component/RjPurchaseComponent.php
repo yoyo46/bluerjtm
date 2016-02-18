@@ -34,6 +34,7 @@ class RjPurchaseComponent extends Component {
             }
 
             if( !empty($dataDetailPrice) ) {
+                $grandtotal = 0;
                 $values = array_filter($dataDetailPrice);
                 unset($data['SupplierQuotationDetail']);
 
@@ -45,6 +46,7 @@ class RjPurchaseComponent extends Component {
                     $ppn = $this->MkCommon->_callPriceConverter($ppn);
                     $disc = $this->MkCommon->_callPriceConverter($disc);
                     $price = $this->MkCommon->_callPriceConverter($price);
+                    $total = $price - $disc + $ppn;
 
                     $dataSQDetail['SupplierQuotationDetail'] = array(
                         'product_id' => $product_id,
@@ -54,7 +56,10 @@ class RjPurchaseComponent extends Component {
                     );
                     $dataSQDetail = $this->controller->PurchaseOrder->PurchaseOrderDetail->Product->getMerge($dataSQDetail, $product_id);
                     $dataSave[] = $dataSQDetail;
+                    $grandtotal += $total;
                 }
+
+                $data['SupplierQuotation']['grandtotal'] = $grandtotal;
             }
 
             if( !empty($dataSave) ) {

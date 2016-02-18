@@ -1,6 +1,6 @@
 <?php
-class CashBankAuthMaster extends AppModel {
-	var $name = 'CashBankAuthMaster';
+class DocumentAuthMaster extends AppModel {
+	var $name = 'DocumentAuthMaster';
 	var $validate = array(
         'coa_id' => array(
             'notempty' => array(
@@ -11,9 +11,9 @@ class CashBankAuthMaster extends AppModel {
 	);
 
 	var $belongsTo = array(
-        'CashBankAuth' => array(
-            'className' => 'CashBankAuth',
-            'foreignKey' => 'cash_bank_auth_master_id',
+        'DocumentAuth' => array(
+            'className' => 'DocumentAuth',
+            'foreignKey' => 'document_auth_master_id',
         ),
         'User' => array(
             'className' => 'User',
@@ -58,7 +58,7 @@ class CashBankAuthMaster extends AppModel {
     }
 
     function getUserApproval ( $id = false ) {
-        $cash_bank_auth_master = $this->find('all', array(
+        $document_auth_master = $this->find('all', array(
             'contain' => array(
                 'User' => array(
                     'Group'
@@ -66,27 +66,27 @@ class CashBankAuthMaster extends AppModel {
             )
         ));
 
-        if(!empty($cash_bank_auth_master)){
-            foreach ($cash_bank_auth_master as $key => $value) {
+        if(!empty($document_auth_master)){
+            foreach ($document_auth_master as $key => $value) {
                 $conditions = array(
-                    'CashBankAuth.cash_bank_auth_master_id' => $value['CashBankAuthMaster']['id'],
+                    'DocumentAuth.document_auth_master_id' => $value['DocumentAuthMaster']['id'],
                 );
 
                 if( !empty($id) ) {
-                    $conditions['CashBankAuth.cash_bank_id'] = $id;
+                    $conditions['DocumentAuth.document_id'] = $id;
                 }
 
-                $cash_bank_auth = $this->CashBankAuth->getData('first', array(
+                $document_auth = $this->DocumentAuth->getData('first', array(
                     'conditions' => $conditions,
                 ));
 
-                if(!empty($cash_bank_auth)){
-                    $cash_bank_auth_master[$key] = array_merge($value, $cash_bank_auth);
+                if(!empty($document_auth)){
+                    $document_auth_master[$key] = array_merge($value, $document_auth);
                 }
             }
         }
 
-        return $cash_bank_auth_master;
+        return $document_auth_master;
     }
 }
 ?>

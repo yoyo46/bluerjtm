@@ -459,7 +459,7 @@ class MkCommonComponent extends Component {
             $continue = strtolower($name[1]) == 'xls' ? true : false;
 
             if(!$continue) {
-                $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
+                $this->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
                 $this->redirect(array('action'=>'import'));
             } else {
                 $path = APP.'webroot'.DS.'files'.DS.date('Y').DS.date('m').DS;
@@ -1780,6 +1780,210 @@ class MkCommonComponent extends Component {
         }
 
         return array_filter($input); 
+    }
+
+    function _callAllowApproval ( $value, $user_id, $document_id, $document_type ) {
+        $approval_id = false;
+        $approval_detail_id = false;
+        $approval_detail_position_id = false;
+        $show_approval = false;
+        $dataOtorisasiApproval = false;
+        $value = $this->controller->User->getMerge($value, $user_id);
+        $user_position_id = $this->filterEmptyField($value, 'Employe', 'employe_position_id');
+
+        $user_otorisasi_approvals = $this->controller->User->Employe->EmployePosition->Approval->getUserOtorisasiApproval($document_type, $user_position_id, false, $document_id);
+
+        if( !empty($user_otorisasi_approvals) ) {
+            $position_otorisasi_approvals = Set::extract('/EmployePosition/id', $user_otorisasi_approvals);
+        } else {
+            $position_otorisasi_approvals = array();
+        }
+
+        $approval = $this->controller->user_data;
+
+        $approval_employe_id = $this->filterEmptyField($approval, 'employe_id');
+        $approval = $this->controller->User->Employe->getMerge($approval, $approval);
+
+        $approval_position_id = $this->filterEmptyField($approval, 'Employe', 'employe_position_id');
+        $idx_arr_otorisasi = array_search($approval_position_id, $position_otorisasi_approvals);
+        $show_approval = false;
+
+        if( is_numeric($idx_arr_otorisasi) && !empty($user_otorisasi_approvals[$idx_arr_otorisasi]) ) {
+            $dataOtorisasiApproval = $user_otorisasi_approvals[$idx_arr_otorisasi];
+
+            $approval_detail_id = $this->filterEmptyField($dataOtorisasiApproval, 'ApprovalDetailPosition', 'approval_detail_id');
+            $approval_detail_position_id = $this->filterEmptyField($dataOtorisasiApproval, 'ApprovalDetailPosition', 'id');
+
+            $approvalDetail = $this->controller->User->Employe->EmployePosition->Approval->ApprovalDetail->getData('first', array(
+                'conditions' => array(
+                    'ApprovalDetail.id' => $approval_detail_id,
+                ),
+            ));
+            $approval_id = $this->filterEmptyField($approvalDetail, 'ApprovalDetail', 'approval_id');
+
+            $this->DocumentAuth = ClassRegistry::init('DocumentAuth'); 
+            $auth = $this->DocumentAuth->getData('first', array(
+                'conditions' => array(
+                    'DocumentAuth.document_id' => $document_id,
+                    'DocumentAuth.approval_id' => $approval_id,
+                    'DocumentAuth.approval_detail_id' => $approval_detail_id,
+                    'DocumentAuth.approval_detail_position_id' => $approval_detail_position_id,
+                ),
+            ));
+
+            if( empty($auth) ) {
+                $show_approval = in_array($approval_position_id, $position_otorisasi_approvals)?true:false;
+            }
+        }
+
+        return array(
+            'approval_id' => $approval_id,
+            'approval_detail_id' => $approval_detail_id,
+            'approval_detail_position_id' => $approval_detail_position_id,
+            'user_otorisasi_approvals' => $user_otorisasi_approvals,
+            'show_approval' => $show_approval,
+            'data_otorisasi_approval' => $dataOtorisasiApproval,
+        );
+    }
+
+    function _callProcessApproval ( $result_approval, $document, $id, $document_type ) {
+        $data = $this->controller->request->data;
+        $approval_id = $this->filterEmptyField($result_approval, 'approval_id');
+        $approval_detail_id = $this->filterEmptyField($result_approval, 'approval_detail_id');
+        $approval_detail_position_id = $this->filterEmptyField($result_approval, 'approval_detail_position_id');
+        $dataOtorisasiApproval = $this->filterEmptyField($result_approval, 'data_otorisasi_approval');
+        $user_otorisasi_approvals = $this->filterEmptyField($result_approval, 'user_otorisasi_approvals');
+
+        $is_priority = $this->filterEmptyField($dataOtorisasiApproval, 'ApprovalDetailPosition', 'is_priority');
+        $employe_position_id = $this->filterEmptyField($dataOtorisasiApproval, 'ApprovalDetailPosition', 'employe_position_id');
+        $status_document = $this->filterEmptyField($data, 'DocumentAuth', 'status_document');
+
+        $data_arr = false;
+        $msgRevision = false;
+        $nodoc = $this->filterEmptyField($document, 'SupplierQuotation', 'nodoc');
+
+        $position_approval = $this->controller->User->Employe->EmployePosition->Approval->getPositionPriority($user_otorisasi_approvals);
+        $position_priority = $this->filterEmptyField($position_approval, 'Priority');
+        $position_normal = $this->filterEmptyField($position_approval, 'Normal');
+
+        $data['DocumentAuth']['document_id'] = $id;
+        $data['DocumentAuth']['document_type'] = $document_type;
+        $data['DocumentAuth']['approval_id'] = $approval_id;
+        $data['DocumentAuth']['approval_detail_id'] = $approval_detail_id;
+        $data['DocumentAuth']['approval_detail_position_id'] = $approval_detail_position_id;
+
+        $this->DocumentAuth = ClassRegistry::init('DocumentAuth'); 
+        $position_auths = $this->DocumentAuth->getData('all', array(
+            'conditions' => array(
+                'DocumentAuth.document_id' => $id,
+            ),
+            'contain' => array(
+                'ApprovalDetailPosition',
+            ),
+        ));
+        $position_priority_auth = array();
+        $position_normal_auth = array();
+
+        if( !empty($position_auths) ) {
+            foreach ($position_auths as $key => $value) {
+                if( !empty($value['ApprovalDetailPosition']['employe_position_id']) ) {
+                    if( !empty($value['ApprovalDetailPosition']['is_priority']) ) {
+                        $position_priority_auth[] = $value['ApprovalDetailPosition']['employe_position_id'];
+                    } else {
+                        $position_normal_auth[] = $value['ApprovalDetailPosition']['employe_position_id'];
+                    }
+                }
+            }
+        }
+
+        $position_priority_auth = array_values($position_priority_auth);
+
+        if( !empty($is_priority) ) {
+            $position_priority_auth[] = $employe_position_id;
+            $position_priority_auth = array_unique($position_priority_auth);
+        } else {
+            $position_normal_auth[] = $employe_position_id;
+            $position_normal_auth = array_unique($position_normal_auth);
+        }
+
+        if( !empty($status_document) ) {
+            $this->DocumentAuth->create();
+            $this->DocumentAuth->set($data);
+
+            if($this->DocumentAuth->save()){
+                $data_arr = array();
+
+                if( $this->checkArrayApproval($position_priority_auth, $position_priority) || ( empty($position_priority) && $this->checkArrayApproval($position_normal_auth, $position_normal) ) ){
+                    switch ($status_document) {
+                        case 'approve':
+                            $msgRevision = sprintf(__('Dokumen dengan No Dokumen %s telah disetujui'), $nodoc);
+
+                            if( $document_type == 'cash_bank' ) {
+                                $data_arr = array(
+                                    'completed' => 1,
+                                    'is_revised' => 0,
+                                    'is_rejected' => 0
+                                );
+                            } else {
+                                $data_arr = array(
+                                    'approval' => 'approved',
+                                );
+                            }
+                            break;
+                        case 'revise':
+                            $msgRevision = sprintf(__('Dokumen dengan No Dokumen %s memerlukan resivisi Anda'), $nodoc);
+
+                            if( $document_type == 'cash_bank' ) {
+                                $data_arr = array(
+                                    'completed' => 0,
+                                    'is_revised' => 1,
+                                    'is_rejected' => 0
+                                );
+                            } else {
+                                $data_arr = array(
+                                    'approval' => 'revised',
+                                );
+                            }
+                            break;
+                        case 'reject':
+                            $msgRevision = sprintf(__('Dokumen dengan No Dokumen %s telah ditolak'), $nodoc);
+
+                            if( $document_type == 'cash_bank' ) {
+                                $data_arr = array(
+                                    'completed' => 0,
+                                    'is_revised' => 0,
+                                    'is_rejected' => 1
+                                );
+                            } else {
+                                $data_arr = array(
+                                    'approval' => 'rejected',
+                                );
+                            }
+                            break;
+                    }
+                }else if($status_document == 'revise'){
+                    if( $document_type == 'cash_bank' ) {
+                        $data_arr = array(
+                            'is_revised' => 1,
+                        );
+                    } else {
+                        $data_arr = array(
+                            'approval' => 'revised',
+                        );
+                    }
+                    $msgRevision = sprintf(__('Dokumen dengan No Dokumen %s memerlukan resivisi Anda'), $nodoc);
+                }
+            }else{
+                $this->setCustomFlash('Gagal melakukan Approval.', 'error');
+            }
+        }else{
+            $this->setCustomFlash('Silahkan pilih Status Approval', 'error');
+        }
+
+        return array(
+            'data' => $data_arr,
+            'msg_revision' => $msgRevision,
+        );
     }
 }
 ?>

@@ -9,6 +9,7 @@ class Notification extends AppModel {
             ),
         ),
 	);
+    var $approvalAction = array( 'Kas/Bank', 'Supplier Quotation' );
 
 	var $belongsTo = array(
 		'User' => array(
@@ -128,14 +129,14 @@ class Notification extends AppModel {
         $notifications = $this->getData('all', array(
             'conditions' => array(
                 'Notification.user_id' => $user_id,
-                'Notification.action <>' => 'Kas/Bank',
+                'Notification.action <>' => $this->approvalAction,
             ),
             'limit' => 10,
         ));
         $cnt = $this->getData('count', array(
             'conditions' => array(
                 'Notification.user_id' => $user_id,
-                'Notification.action <>' => 'Kas/Bank',
+                'Notification.action <>' => $this->approvalAction,
             )
         ), array(
             'read' => false,
@@ -155,14 +156,14 @@ class Notification extends AppModel {
         $notifications = $this->getData('all', array(
             'conditions' => array(
                 'Notification.user_id' => $user_id,
-                'Notification.action' => 'Kas/Bank',
+                'Notification.action' => $this->approvalAction,
             ),
             'limit' => 10,
         ));
         $cnt = $this->getData('count', array(
             'conditions' => array(
                 'Notification.user_id' => $user_id,
-                'Notification.action' => 'Kas/Bank',
+                'Notification.action' => $this->approvalAction,
             )
         ), array(
             'read' => false,

@@ -336,6 +336,7 @@ class ProductsController extends AppController {
         $productUnits = $this->Product->ProductUnit->getData('list');
         $productCategories = $this->Product->ProductCategory->getData('list');
 
+        $this->set('active_menu', 'products');
         $this->set(compact(
             'productUnits', 'productCategories'
         ));

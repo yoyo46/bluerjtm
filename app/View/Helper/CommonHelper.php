@@ -1658,6 +1658,70 @@ class CommonHelper extends AppHelper {
         return $content;
     }
 
+    function _callStatusApproval ( $status ) {
+        switch ($status) {
+            case 'approved':
+                $content = $this->Html->tag('span', __('Disetujui'), array(
+                    'class' => 'label label-success',
+                ));
+                break;
+
+            case 'rejected':
+                $content = $this->Html->tag('span', __('Ditolak'), array(
+                    'class' => 'label label-danger',
+                ));
+                break;
+
+            case 'revised':
+                $content = $this->Html->tag('span', __('Direvisi'), array(
+                    'class' => 'label label-warning',
+                ));
+                break;
+            
+            default:
+                $content = $this->Html->tag('span', __('Tertunda'), array(
+                    'class' => 'label label-default',
+                ));
+                break;
+        }
+
+        return $content;
+    }
+
+    function _callStatusAuth ( $data ) {
+        $status = $this->filterEmptyField($data, 'DocumentAuth', 'status_document', '-');
+
+        if( $status != '-' ) {
+            switch ($status) {
+                case 'approve':
+                    $status = __('Disetujui');
+                    $labelClass = 'success';
+                    break;
+
+                case 'reject':
+                    $status = __('Ditolak');
+                    $labelClass = 'danger';
+                    break;
+
+                case 'revise':
+                    $status = __('Revisi');
+                    $labelClass = 'warning';
+                    break;
+                
+                default:
+                    $status = __('Pending');
+                    $labelClass = 'default';
+                    break;
+            }
+
+            $status = $this->Html->tag('div', ucwords($status), array(
+                'class' => sprintf('label label-%s', $labelClass),
+            ));
+        }
+
+        return $status;
+    }
+
     function buildForm ( $fieldName, $fieldLabel, $options = array(), $position = 'vertical' ) {
         $result = '';
         $labelText = false;

@@ -1191,7 +1191,7 @@
                     if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeSetting = false;
                         $settingMenu = array(
-                            'internal', 'product_categories', 'product_units'
+                            'internal', 'product_categories', 'products'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1214,14 +1214,6 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'product_categories' )?'active':'',
                             ));
-                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Satuan Barang', array(
-                            //     'controller' => 'products',
-                            //     'action' => 'units'
-                            // ), array(
-                            //     'escape' => false
-                            // )), array(
-                            //     'class' => ( !empty($active_menu) && $active_menu == 'product_units' )?'active':'',
-                            // ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Barang', array(
                                 'controller' => 'products',
                                 'action' => 'index'

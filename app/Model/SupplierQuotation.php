@@ -175,6 +175,7 @@ class SupplierQuotation extends AppModel {
                     $defaul_msg = sprintf(__('Berhasil %s'), $defaul_msg);
 
                     $result = array(
+                        'id' => $id,
                         'msg' => $defaul_msg,
                         'status' => 'success',
                         'Log' => array(

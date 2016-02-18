@@ -1,6 +1,6 @@
 <?php
-class CashBankAuth extends AppModel {
-	var $name = 'CashBankAuth';
+class DocumentAuth extends AppModel {
+	var $name = 'DocumentAuth';
 	var $validate = array(
         'coa_id' => array(
             'notempty' => array(
@@ -37,9 +37,9 @@ class CashBankAuth extends AppModel {
 	);
 
 	var $belongsTo = array(
-        // 'CashBankAuthMaster' => array(
-        //     'className' => 'CashBankAuthMaster',
-        //     'foreignKey' => 'cash_bank_auth_master_id',
+        // 'DocumentAuthMaster' => array(
+        //     'className' => 'DocumentAuthMaster',
+        //     'foreignKey' => 'document_auth_master_id',
         // ),
         'ApprovalDetailPosition' => array(
             'className' => 'ApprovalDetailPosition',

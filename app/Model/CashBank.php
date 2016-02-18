@@ -76,9 +76,12 @@ class CashBank extends AppModel {
             'className' => 'CashBankDetail',
             'foreignKey' => 'cash_bank_id',
         ),
-        'CashBankAuth' => array(
-            'className' => 'CashBankAuth',
-            'foreignKey' => 'cash_bank_id',
+        'DocumentAuth' => array(
+            'className' => 'DocumentAuth',
+            'foreignKey' => 'document_id',
+            'conditions' => array(
+                'DocumentAuth.document_type' => 'cash_bank',
+            ),
         ),
     );
 

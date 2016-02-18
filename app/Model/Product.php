@@ -63,6 +63,11 @@ class Product extends AppModel {
         ),
 	);
 
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['full_name'] = 'CONCAT(Product.code, " - ", Product.name)';
+    }
+
 	function getData( $find, $options = false, $elements = false ){
         $status = isset($elements['status'])?$elements['status']:'active';
 

@@ -55,40 +55,6 @@ class CashBankHelper extends AppHelper {
         }
     }
 
-    function _callStatusAuth ( $data ) {
-        $status = $this->Common->filterEmptyField($data, 'CashBankAuth', 'status_document', '-');
-
-        if( $status != '-' ) {
-            switch ($status) {
-                case 'approve':
-                    $status = __('Disetujui');
-                    $labelClass = 'success';
-                    break;
-
-                case 'reject':
-                    $status = __('Ditolak');
-                    $labelClass = 'danger';
-                    break;
-
-                case 'revise':
-                    $status = __('Revisi');
-                    $labelClass = 'warning';
-                    break;
-                
-                default:
-                    $status = __('Pending');
-                    $labelClass = 'default';
-                    break;
-            }
-
-            $status = $this->Html->tag('div', ucwords($status), array(
-                'class' => sprintf('label label-%s', $labelClass),
-            ));
-        }
-
-        return $status;
-    }
-
     function getTruckCashbank ( $value = false ) {
         $uuid = sprintf('truck-%s', String::uuid());
 

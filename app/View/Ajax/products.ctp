@@ -137,7 +137,7 @@
                         }
                     }else{
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan'), array(
-                            'colspan' => 6,
+                            'colspan' => 7,
                             'class' => 'text-center alert alert-warning',
                         )));
                     }
