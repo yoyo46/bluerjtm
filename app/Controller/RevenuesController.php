@@ -7035,8 +7035,6 @@ class RevenuesController extends AppController {
         }
     }
 
-
-
     function invoice_hso_print($id, $action_print = false){
         $this->loadModel('Invoice');
 
@@ -8821,5 +8819,57 @@ class RevenuesController extends AppController {
             }
         }
         die();
+    }
+
+    function invoice_yamaha_print($id = false, $action_print = false){
+        $this->loadModel('Invoice');
+
+        $module_title = __('Faktur Jasa Angkutan');
+        $this->set('sub_module_title', trim($module_title));
+        $this->set('active_menu', 'invoices');
+
+        $data_print = $this->MkCommon->filterEmptyField($this->params, 'named', 'print', 'default');
+
+        $value = $this->Invoice->getData('first', array(
+            'conditions' => array(
+                'Invoice.id' => $id,
+            ),
+        ), true, array(
+            'status' => 'all',
+        ));
+
+        if(!empty($value)){
+            $customer_id = $this->MkCommon->filterEmptyField($value, 'Invoice', 'customer_id');
+            $tarif_type = $this->MkCommon->filterEmptyField($value, 'Invoice', 'tarif_type');
+
+            $value = $this->Invoice->Customer->getMerge($value, $customer_id);
+            $value = $this->Invoice->InvoiceDetail->getMerge($value, $id);
+
+            $invDetails = $this->MkCommon->filterEmptyField($value, 'InvoiceDetail');
+
+            if( !empty($invDetails) ) {
+                foreach ($invDetails as $idx => $detail) {
+                    $revenue_detail_id = $this->MkCommon->filterEmptyField($detail, 'InvoiceDetail', 'revenue_detail_id');
+                    $revenue_id = $this->MkCommon->filterEmptyField($detail, 'InvoiceDetail', 'revenue_id');
+
+                    $detail = $this->Invoice->InvoiceDetail->RevenueDetail->getMerge($detail, $revenue_detail_id);
+                    $detail = $this->Invoice->InvoiceDetail->Revenue->getMerge($detail, false, $revenue_id);
+                    $invDetails[$idx] = $detail;
+                }
+            }
+
+            $this->set(compact(
+                'value', 'action_print', 'invDetails'
+            ));
+
+            if($action_print == 'pdf'){
+                $this->layout = 'pdf';
+            }else if($action_print == 'excel'){
+                $this->layout = 'ajax';
+            }
+        } else {
+            $this->MkCommon->setCustomFlash(__('Invoice tidak ditemukan'), 'error');  
+            $this->redirect($this->referer());
+        }
     }
 }

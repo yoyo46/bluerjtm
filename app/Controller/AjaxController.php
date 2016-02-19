@@ -2602,5 +2602,26 @@ class AjaxController extends AppController {
 			'payment_id'
 		));
 	}
+
+	function invoice_report ( $id = false ) {
+		$this->loadModel('Invoice');
+		$head_office = Configure::read('__Site.config_branch_head_office');
+        $elementRevenue = array(
+            'status' => 'all',
+        );
+
+        if( !empty($head_office) ) {
+            $elementRevenue['branch'] = false;
+        }
+        
+        $value = $this->Invoice->getData('first', array(
+            'conditions' => array(
+                'Invoice.id' => $id,
+            ),
+        ), true, $elementRevenue);
+		$this->set(compact(
+			'value', 'id'
+		));
+	}
 }
 ?>
