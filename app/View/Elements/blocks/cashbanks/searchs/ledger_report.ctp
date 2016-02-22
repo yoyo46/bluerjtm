@@ -54,8 +54,8 @@
                                 'required' => false,
                                 'empty' => false,
                                 'options' => array(
+                                    'active' => __('Aktif'),
                                     'all' => __('Semua'),
-                                    'active' => __('Aktif')
                                 ),
                             ));
                     ?>
