@@ -1681,8 +1681,7 @@ class AjaxController extends AppController {
 		$title = __('Detail Kas/Bank');
 
 		$this->set(compact(
-			'data_action', 'title', 'coas',
-			'coa_name'
+			'data_action', 'title', 'coas'
 		));
 	}
 
