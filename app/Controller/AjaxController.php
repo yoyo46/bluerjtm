@@ -1661,7 +1661,13 @@ class AjaxController extends AppController {
     	));
         $coa_code = $this->MkCommon->filterEmptyField($coa, 'Coa', 'coa_code');
         $params['named'] = $this->MkCommon->filterEmptyField($this->params, 'named');
-        $params['named']['code'] = $this->MkCommon->filterEmptyField($params, 'named', 'code', $coa_code);
+        $param_code = $this->MkCommon->filterEmptyField($params, 'named', 'code');
+
+        if( $param_code == 'none' ) {
+        	$params['named']['code'] = false;
+        } else {
+        	$params['named']['code'] = $this->MkCommon->filterEmptyField($params, 'named', 'code', $coa_code);
+        }
 
         $params = $this->MkCommon->_callRefineParams($params);
         $options =  $this->BranchCoa->_callRefineParams($params, array(

@@ -48,6 +48,7 @@
             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
                 'controller' => 'ajax',
                 'action' => 'getInfoCoa',
+                'code' => 'none',
             ), array(
                 'escape' => false, 
                 'class'=> 'btn btn-default btn-sm ajaxModal',

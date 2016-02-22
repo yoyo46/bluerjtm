@@ -2666,17 +2666,10 @@ var check_all_checkbox = function(){
         delete_custom_field($('.child-'+id_child+'[rel="'+rel_id+'"] .delete-custom-field'));
         ajaxModal($('.child-'+id_child+'[rel="'+rel_id+'"] .ajaxModal'));
         sisa_amount($('.child-'+id_child+'[rel="'+rel_id+'"] .sisa-amount'));
-        disableAjax = true;
 
         $.ajax({
             url: '/ajax/saveCache/Coa/'+rel_id+'/',
             type: 'POST',
-            success: function(response, status) {
-                disableAjax = false;
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown) {
-                disableAjax = false;
-            }
         });
 
         $('#myModal').modal('hide');
