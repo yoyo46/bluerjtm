@@ -959,7 +959,7 @@
                         'biaya_ttuj_payments', 'leasing_payments',
                         'journal_report', 'prepayment_report', 'ledger_report',
                         'report_ttuj_payment', 'report_ttuj_outstanding',
-                        'document_payments',
+                        'document_payments', 'laka_payments',
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
@@ -979,6 +979,9 @@
                         ),
                         'leasings' => array(
                             'payments',
+                        ),
+                        'lakas' => array(
+                            'laka_payments',
                         ),
                     );
 

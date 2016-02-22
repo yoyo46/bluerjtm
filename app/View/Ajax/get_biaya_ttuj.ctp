@@ -28,7 +28,7 @@
             <?php 
                     echo $this->Form->input('nodoc',array(
                         'label'=> __('No. Doc'),
-                        'class'=>'form-control',
+                        'class'=>'form-control on-focus',
                         'required' => false,
                         'placeholder' => __('No. Doc')
                     ));

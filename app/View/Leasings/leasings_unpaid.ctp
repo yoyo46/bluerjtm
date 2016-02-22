@@ -31,7 +31,7 @@
             <?php 
                     echo $this->Form->input('nodoc',array(
                         'label'=> __('No Kontrak'),
-                        'class'=>'form-control',
+                        'class'=>'form-control on-focus',
                         'required' => false,
                     ));
             ?>

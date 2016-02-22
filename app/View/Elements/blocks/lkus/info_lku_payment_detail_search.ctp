@@ -30,7 +30,7 @@
             <?php 
                     echo $this->Form->input('nodoc',array(
                         'label'=> __('No LKU'),
-                        'class'=>'form-control',
+                        'class'=>'form-control on-focus',
                         'required' => false,
                     ));
             ?>

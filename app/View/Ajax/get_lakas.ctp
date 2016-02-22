@@ -48,7 +48,7 @@
                     <?php 
                             echo $this->Form->input('nopol',array(
                                 'label'=> false,
-                                'class'=>'form-control',
+                                'class'=>'form-control on-focus',
                                 'required' => false,
                             ));
                     ?>

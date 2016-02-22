@@ -17,7 +17,7 @@
             <?php 
                     echo $this->Form->input('name',array(
                         'label'=> __('Nama Supir'),
-                        'class'=>'form-control',
+                        'class'=>'form-control on-focus',
                         'required' => false,
                         'placeholder' => __('Nama Supir')
                     ));

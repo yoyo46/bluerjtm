@@ -21,7 +21,9 @@
     </div>
     <div class="col-sm-6">
         <?php 
-                echo $this->Common->buildInputForm('name', __('Nama Barang'));
+                echo $this->Common->buildInputForm('name', __('Nama Barang'), array(
+                    'class' => 'form-control on-focus'
+                ));
         ?>
     </div>
 </div>
