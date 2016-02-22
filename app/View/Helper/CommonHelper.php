@@ -653,14 +653,14 @@ class CommonHelper extends AppHelper {
                 }
                 $coa_title = $coa['Coa']['name'];
 
-                $content  = $this->Html->tag('td', $this->Form->checkbox('CashBankDetail.coa_id.', array(
-                    'class' => 'check-option',
-                    'data-allow-multiple' => 'true',
-                    'value' => $id,
-                )), array(
-                    'class' => 'checkbox-detail'
-                ));
-                $content  .= $this->Html->tag('td', $codeCoa.$this->Form->input('CashBankDetail.coa_id.', array(
+                // $content  = $this->Html->tag('td', $this->Form->checkbox('CashBankDetail.coa_id.', array(
+                //     'class' => 'check-option',
+                //     'data-allow-multiple' => 'true',
+                //     'value' => $id,
+                // )), array(
+                //     'class' => 'checkbox-detail'
+                // ));
+                $content  = $this->Html->tag('td', $codeCoa.$this->Form->input('CashBankDetail.coa_id.', array(
                     'type' => 'hidden',
                     'value' => $id
                 )));
@@ -722,7 +722,7 @@ class CommonHelper extends AppHelper {
                 ));
                 
                 $dataTree .= $this->Html->tag('tr', $content, array(
-                    'class' => 'child-search child-search-'.$id,
+                    'class' => 'child-search click-child child-search-'.$id,
                     'rel' => $id
                 ));
 

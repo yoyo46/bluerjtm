@@ -1653,7 +1653,17 @@ class AjaxController extends AppController {
 	function getInfoCoa(){
 		$this->loadModel('BranchCoa');
 
-        $params = $this->MkCommon->_callRefineParams($this->params);
+        $coaIdCache = $this->Session->read('Coa.CoaId');
+        $coa = $this->BranchCoa->Coa->getData('first', array(
+        	'conditions' => array(
+        		'Coa.id' => $coaIdCache,
+    		),
+    	));
+        $coa_code = $this->MkCommon->filterEmptyField($coa, 'Coa', 'coa_code');
+        $params['named'] = $this->MkCommon->filterEmptyField($this->params, 'named');
+        $params['named']['code'] = $this->MkCommon->filterEmptyField($params, 'named', 'code', $coa_code);
+
+        $params = $this->MkCommon->_callRefineParams($params);
         $options =  $this->BranchCoa->_callRefineParams($params, array(
             'conditions' => array(
                 'BranchCoa.branch_id' => Configure::read('__Site.config_branch_id'),
@@ -1666,13 +1676,14 @@ class AjaxController extends AppController {
 
 		$this->paginate = $this->BranchCoa->getData('paginate', $options);
 		$coas = $this->paginate('BranchCoa');
-        
-        $this->set('coas', $coas);
 
         $data_action = 'browse-cash-banks';
 		$title = __('Detail Kas/Bank');
 
-		$this->set(compact('data_action', 'title'));
+		$this->set(compact(
+			'data_action', 'title', 'coas',
+			'coa_name'
+		));
 	}
 
 	function getUserEmploye($rel = false, $user_id = false){
@@ -2622,6 +2633,12 @@ class AjaxController extends AppController {
 		$this->set(compact(
 			'value', 'id'
 		));
+	}
+
+	function saveCache ( $field_name = false, $coa_id = false ) {
+		$cacheName = sprintf('%s.CoaId', $field_name);
+        $this->Session->write($cacheName, $coa_id);
+        die();
 	}
 }
 ?>

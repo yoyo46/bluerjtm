@@ -455,27 +455,21 @@ class RevenuesController extends AppController {
         if( !empty($this->request->data) && $is_draft ){
             $data = $this->request->data;
             $is_draft = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'is_draft');
+            $redirectUrl = array(
+                'controller' => 'revenues',
+                'action' => 'ttuj_add',
+                $data_action,
+                'admin' => false,
+            );
 
             if($id && $data_local){
                 $this->Ttuj->id = $id;
                 $msg = 'merubah';
                 $no_ttuj = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'no_ttuj');
-                $redirectUrl = array(
-                    'controller' => 'revenues',
-                    'action' => 'ttuj_edit',
-                    $id,
-                    'admin' => false,
-                );
             }else{
                 $this->Ttuj->create();
                 $msg = 'menambah';
                 $no_ttuj = $data['Ttuj']['no_ttuj'] = $this->Ttuj->generateNoId();
-                $redirectUrl = array(
-                    'controller' => 'revenues',
-                    'action' => 'ttuj_add',
-                    $data_action,
-                    'admin' => false,
-                );
             }
 
             $customer_id = !empty($data['Ttuj']['customer_id'])?$data['Ttuj']['customer_id']:false;

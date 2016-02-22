@@ -1,3 +1,4 @@
+var disableAjax = false;
 var formatNumber = function( number, decimals, dec_point, thousands_sep ){
     // Set the default values here, instead so we can use them in the replace below.
     thousands_sep   = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep;
@@ -2530,6 +2531,10 @@ var check_all_checkbox = function(){
         var self = $(this);
         check_option_coa(self)
     });
+    $('#box-info-coa .click-child').click(function(){
+        var self = $(this);
+        click_option_coa(self)
+    });
     
     $('.child-search .check-option').click(function(){
         var self = $(this);
@@ -2624,6 +2629,58 @@ var check_all_checkbox = function(){
         } else if( allow_multiple != 'true' ) {
             $('.child-'+rel_id).remove();
         } 
+    }
+
+    function click_option_coa(self){
+        var rel_id = self.attr('rel');
+
+        $('.cashbank-info-detail').removeClass('hide');
+
+        var leng_exists = $('.child-'+rel_id).length;
+        var id_child = rel_id;
+
+        if( leng_exists > 0 ) {
+            rel_id += '-' + leng_exists;
+        }
+
+        var html_content = '<tr class="child click-child child-'+id_child+'" rel="'+rel_id+'">'+self.html()+'</tr>';
+
+        $('.cashbanks-info-table > tbody').append(html_content);
+
+        var truck_obj = $('.child-'+id_child+'[rel="'+rel_id+'"]').find('.pick-truck input[type="text"]');
+        var truck_browse_obj = $('.child-'+id_child+'[rel="'+rel_id+'"]').find('.pick-truck a.browse-docs');
+
+        var truck_id = truck_obj.attr('id');
+        var truck_href = truck_browse_obj.attr('href');
+
+        $('.child-'+id_child+'[rel="'+rel_id+'"]').find('.action-search').removeClass('hide');
+        $('.child-'+id_child+'[rel="'+rel_id+'"]').find('.checkbox-detail').remove();
+
+        truck_obj.attr('id', truck_id + '-' + leng_exists);
+        truck_browse_obj.attr('href', truck_href + '-' + leng_exists).attr('data-change', truck_id + '-' + rel_id);
+
+        $.inputPrice({
+            obj: $('.child-'+id_child+'[rel="'+rel_id+'"] .input_price'),
+        });
+        input_price_min($('.child-'+id_child+'[rel="'+rel_id+'"] .input_price_min'));
+        delete_custom_field($('.child-'+id_child+'[rel="'+rel_id+'"] .delete-custom-field'));
+        ajaxModal($('.child-'+id_child+'[rel="'+rel_id+'"] .ajaxModal'));
+        sisa_amount($('.child-'+id_child+'[rel="'+rel_id+'"] .sisa-amount'));
+        disableAjax = true;
+
+        $.ajax({
+            url: '/ajax/saveCache/Coa/'+rel_id+'/',
+            type: 'POST',
+            success: function(response, status) {
+                disableAjax = false;
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                disableAjax = false;
+            }
+        });
+
+        $('#myModal').modal('hide');
+        return false;
     }
 }
 
@@ -4053,9 +4110,13 @@ $(function() {
     });
 
     $(document).ajaxStart(function() {
-        $("#ajaxLoading").slideDown(100);
+        if( !disableAjax ) {
+            $("#ajaxLoading").slideDown(100);
+        }
     }).ajaxStop(function() {
-        $("#ajaxLoading").slideUp(200);
+        if( !disableAjax ) {
+            $("#ajaxLoading").slideUp(200);
+        }
     });
 
     $('.handle-atpm').click(function(){

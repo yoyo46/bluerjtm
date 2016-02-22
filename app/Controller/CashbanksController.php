@@ -162,24 +162,18 @@ class CashbanksController extends AppController {
             $data['CashBank']['is_revised'] = 0;
             $data['CashBank']['branch_id'] = Configure::read('__Site.config_branch_id');
             $data['CashBank']['user_id'] = $this->user_id;
+            $redirectUrl = array(
+                'controller' => 'cashbanks',
+                'action' => 'cashbank_add',
+                'admin' => false,
+            );
 
             if($id && $data_local){
                 $this->CashBank->id = $id;
                 $msg = 'merubah';
-                $redirectUrl = array(
-                    'controller' => 'cashbanks',
-                    'action' => 'cashbank_edit',
-                    $id,
-                    'admin' => false,
-                );
             }else{
                 $this->CashBank->create();
                 $msg = 'menambah';
-                $redirectUrl = array(
-                    'controller' => 'cashbanks',
-                    'action' => 'cashbank_add',
-                    'admin' => false,
-                );
             }
 
             if( !empty($document_id) && $data['CashBank']['document_type'] == 'prepayment' ) {

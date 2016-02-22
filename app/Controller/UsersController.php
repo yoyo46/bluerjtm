@@ -88,6 +88,7 @@ class UsersController extends AppController {
 	}
 
 	function logout() {
+        @$this->Session->destroy();
 		$this->Auth->logout();
 		$this->MkCommon->setCustomFlash(__('Anda berhasil Log out.'), 'success');
 		$this->redirect($this->Auth->logout());

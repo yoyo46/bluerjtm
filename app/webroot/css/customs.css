@@ -326,3 +326,8 @@ tr.expired .red {
 .branch-coas-form .box-header .box-title a {
 	color: #0462F0;
 }
+
+/*Cash Bank*/
+#box-info-coa .click-child {
+	cursor: pointer;
+}
