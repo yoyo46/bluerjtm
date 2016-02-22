@@ -1178,4 +1178,95 @@
             }
         });
     }
+
+    $.Autocomplete = function( options ) {
+        var settings = $.extend({
+            obj: $('#autocomplete'),
+        }, options );
+
+        function _callAutocomplete ( objTarget ) {
+            var url = objTarget.attr('data-ajax-url');
+            var data_change = objTarget.attr('data-change');
+
+            objTarget.typeahead({
+                source: function (query, process) {
+                    return $.ajax({
+                        url: url,
+                        type     : 'POST',
+                        data: {query: query},
+                        loadingClass: "loading-circle",
+                        dataType: 'json',
+                        success: function(json) {
+                            return process(json);
+                        }
+                    });
+                },
+                highlighter: function (item) {
+                    var is_highlighter = objTarget.attr('data-highlighter');
+
+                    var regex = new RegExp( '(' + this.query + ')', 'gi' );
+                    
+                    if(!is_highlighter){
+                        result = "$1";
+                    }else{
+                        result = "<strong>$1</strong>";
+                    }
+
+                    return item.replace( regex, result );
+                },
+                minLength: 3,
+                afterSelect: function(item){
+                    option_id = encodeURI(item.split(/,(.+)?/)[0]);
+
+                    if($('#handle-ajax-medias').length > 0){
+                        var target_ajax = $('#handle-ajax-medias');
+                        
+                        var url = target_ajax.attr('href');
+                        
+                        url_targer = url+'/'+option_id+'/'+$('.file-image-ebrosur').val();
+
+                        target_ajax.attr('href', url_targer);
+
+                        target_ajax.trigger('click');
+
+                        target_ajax.attr('href', url);
+                    }
+
+                    if( data_change == 'true' || data_change == 'trigger' ) {
+                        if( data_change == 'true' ) {
+                            var href = objTarget.attr('href') + '/' + option_id + '/';
+
+                            objTarget.attr('href', href);
+                        }
+
+                        objTarget.attr('is_selected', true);
+                        $.directAjaxLink({
+                            obj: objTarget,
+                        });
+                    }
+                }
+            });
+
+            objTarget.on('keydown', function(e){
+                var code = e.keyCode || e.which;
+                if(code != 9 && code != 20 && code != 16 & code != 17) {
+                    var self = $(this);
+                    var has_been_selected = self.attr('is_selected');
+
+                    if( has_been_selected !== undefined ) {
+                        self.val('');
+                        self.removeAttr('is_selected');
+                        $.directAjaxLink({
+                            obj: self,
+                        });
+                        return false;
+                    }
+                }
+            });
+        }
+
+        if( settings.obj.length > 0 ) {
+            _callAutocomplete(settings.obj);
+        }
+    }
 }( jQuery ));

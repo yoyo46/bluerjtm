@@ -936,6 +936,11 @@ class MkCommonComponent extends Component {
                             'jquery.progresstimer',
                         ));
                         break;
+                    case 'typeahead':
+                        $layout_js = array_merge($layout_js, array(
+                            'functions/bootstrap-typeahead',
+                        ));
+                        break;
                 }
             }
         }
@@ -1984,6 +1989,18 @@ class MkCommonComponent extends Component {
             'data' => $data_arr,
             'msg_revision' => $msgRevision,
         );
+    }
+
+    function convertDataAutocomplete( $data ) {
+        $result = array();
+
+        if( !empty($data) ) {
+            foreach ($data as $id => $value) {
+                array_push($result, $value);
+            }
+        }
+
+        return $result;
     }
 }
 ?>

@@ -148,11 +148,16 @@
 		</div>
 		<?php
 				echo $this->Html->tag('div', $this->Form->input('description',array(
+					'type' => 'textarea',
 					'label'=> __('Keterangan'), 
 					'class'=>'form-control',
 					'required' => false,
 					'placeholder' => __('Keterangan'),
-					'type' => 'textarea'
+					'id' => 'autocomplete',
+					'data-ajax-url' => $this->Html->url(array(
+						'controller' => 'ajax',
+						'action' => 'cashbank_note',
+					)),
 				)), array(
 					'class' => 'form-group'
 				));

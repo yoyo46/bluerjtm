@@ -4351,6 +4351,7 @@ $(function() {
     $.inputNumber();
     $.rebuildFunction();
     $.onFocused();
+    $.Autocomplete();
 
     $('#ppn-total-invoice').blur(function(){
         var self = $(this);

@@ -491,7 +491,10 @@ class CashbanksController extends AppController {
         $this->set('active_menu', 'cash_bank');
         $this->set('module_title', 'Kas/Bank');
 
-        $this->MkCommon->_layout_file('select');
+        $this->MkCommon->_layout_file(array(
+            'select',
+            'typeahead',
+        ));
         $this->set(compact(
             'coas', 'document_id', 'receiving_cash_type',
             'docs', 'urlBrowseDocument', 'prepayment_out_id',

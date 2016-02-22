@@ -2645,5 +2645,34 @@ class AjaxController extends AppController {
         $this->Session->write($cacheName, $coa_id);
         die();
 	}
+
+	function cashbank_note(){
+		$this->loadModel('CashBank');
+		$values = array();
+		$keyword = $this->MkCommon->filterEmptyField($this->request->data, 'query');
+		
+		if( !empty($keyword) ) {
+			$values = $this->CashBank->getData('list', array(
+				'conditions' => array(
+					'CashBank.user_id' => $this->user_id,
+					'CashBank.description LIKE' => '%'.$keyword.'%',
+				),
+				'fields' => array(
+					'CashBank.id', 'CashBank.description',
+				),
+				'order' => array(
+					'CashBank.id' => 'DESC',
+				),
+				'limit' => 10,
+			));
+
+			if( !empty($values) ) {
+				$values = array_values($values);
+			}
+		}
+
+		$this->autoRender = false;
+		return json_encode($values);
+	}
 }
 ?>
