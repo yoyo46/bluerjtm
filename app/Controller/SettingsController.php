@@ -3201,7 +3201,7 @@ class SettingsController extends AppController {
 
             $data['TarifAngkutan']['group_motor_id'] = !empty($data['TarifAngkutan']['group_motor_id'])?$data['TarifAngkutan']['group_motor_id']:0;
             $data['TarifAngkutan']['tarif'] = !empty($data['TarifAngkutan']['tarif'])?str_replace(',', '', $data['TarifAngkutan']['tarif']):false;
-            $data['TarifAngkutan']['capacity'] = !empty($data['TarifAngkutan']['capacity'])?$data['TarifAngkutan']['capacity']:0;
+            $data['TarifAngkutan']['capacity'] = isset($data['TarifAngkutan']['capacity'])?$data['TarifAngkutan']['capacity']:false;
             $data['TarifAngkutan']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             if(!empty($data['TarifAngkutan']['from_city_id'])){
@@ -5029,7 +5029,7 @@ class SettingsController extends AppController {
                                             'customer_id' => !empty($customer_id)?$customer_id:'',
                                             'capacity' => !empty($kapasitas)?$kapasitas:false,
                                             'jenis_unit' => !empty($jenis_tarif)?strtolower($jenis_tarif):false,
-                                            'tarif' => !empty($tarif_angkutan)?$this->MkCommon->convertPriceToString($tarif_angkutan):false,
+                                            'tarif' => !empty($tarif_angkutan)?$this->MkCommon->convertPriceToString($tarif_angkutan):0,
                                             'group_motor_id' => !empty($group_motor_id)?$group_motor_id:0,
                                             'branch_id' => $branch_id,
                                         ),
