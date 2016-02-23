@@ -226,6 +226,8 @@ class RevenueDetail extends AppModel {
         if( $action == 'tarif' && in_array($data_action, array( 'invoice', 'preview' )) ){
             $options['order'] = array(
                 'RevenueDetail.price_unit' => 'DESC',
+                'Revenue.date_revenue' => 'ASC',
+                'Revenue.id' => 'ASC',
                 'RevenueDetail.id' => 'ASC',
             );
         }else{
