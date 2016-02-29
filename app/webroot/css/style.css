@@ -422,6 +422,16 @@ img {
   .right-side {
     margin: 0;
   }
+  .row-offcanvas-left,
+  .remove-blank-print,
+  html {
+    min-height: inherit !important;
+  }
+
+  @page {
+    size: auto;
+    margin: 5mm;
+  }
 }
 /* Remove border radius */
 .flat {
@@ -4285,4 +4295,11 @@ table.sorting thead th a {
   -moz-animation-iteration-count: 1;
   -moz-animation-timing-function: ease;
   -moz-animation-fill-mode: forwards;
+}
+table.uppercase th {
+  text-transform: uppercase;
+}
+table#yamaha-rit>tbody>tr>td,
+table#yamaha-rit>thead>tr>th {
+  border: none;
 }

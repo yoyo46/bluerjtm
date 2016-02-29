@@ -47,7 +47,7 @@
 	<link rel="icon" href="/img/favicon.png" type="image/jpg" />
 </head>
 <!-- <body class="skin-black"> -->
-<body class="skin-blue">
+<body class="skin-blue remove-blank-print">
     <?php
 			echo $this->element('headers/menu');
 	?>
@@ -58,7 +58,7 @@
         <!-- Right side column. Contains the navbar and content of the page -->
         <aside class="right-side">
             <!-- Content Header (Page header) -->
-            <section class="content-header">
+            <section class="content-header hidden-print">
             	<?php 
             			if( !empty($module_title) ) {
             				if( !empty($sub_module_title) ) {

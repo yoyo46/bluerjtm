@@ -6067,15 +6067,6 @@ class RevenuesController extends AppController {
                             ));
                         }
 
-                        $this->Invoice->InvoiceDetail->updateAll(
-                            array(
-                                'InvoiceDetail.status' => 0
-                            ),
-                            array(
-                                'InvoiceDetail.invoice_id' => $id,
-                            )
-                        );
-
                         if($invoice['Invoice']['type_invoice'] == 'region' && !empty($invoice['InvoiceDetail'])){
                             $revenueId = Set::extract('/InvoiceDetail/revenue_id', $invoice);
                             $revenueDetailId = Set::extract('/InvoiceDetail/revenue_detail_id', $invoice);
@@ -8815,10 +8806,10 @@ class RevenuesController extends AppController {
         die();
     }
 
-    function invoice_yamaha_print($id = false, $action_print = false){
+    function invoice_yamaha_rit($id = false, $action_print = false){
         $this->loadModel('Invoice');
 
-        $module_title = __('Faktur Jasa Angkutan');
+        $module_title = __('Print Yamaha Per RIT');
         $this->set('sub_module_title', trim($module_title));
         $this->set('active_menu', 'invoices');
 
@@ -8834,10 +8825,12 @@ class RevenuesController extends AppController {
 
         if(!empty($value)){
             $customer_id = $this->MkCommon->filterEmptyField($value, 'Invoice', 'customer_id');
+            $billing_id = $this->MkCommon->filterEmptyField($value, 'Invoice', 'billing_id');
             $tarif_type = $this->MkCommon->filterEmptyField($value, 'Invoice', 'tarif_type');
 
             $value = $this->Invoice->Customer->getMerge($value, $customer_id);
             $value = $this->Invoice->InvoiceDetail->getMerge($value, $id);
+            $value = $this->User->getMerge($value, $billing_id);
 
             $invDetails = $this->MkCommon->filterEmptyField($value, 'InvoiceDetail');
 
@@ -8845,15 +8838,23 @@ class RevenuesController extends AppController {
                 foreach ($invDetails as $idx => $detail) {
                     $revenue_detail_id = $this->MkCommon->filterEmptyField($detail, 'InvoiceDetail', 'revenue_detail_id');
                     $revenue_id = $this->MkCommon->filterEmptyField($detail, 'InvoiceDetail', 'revenue_id');
-
+                    
                     $detail = $this->Invoice->InvoiceDetail->RevenueDetail->getMerge($detail, $revenue_detail_id);
                     $detail = $this->Invoice->InvoiceDetail->Revenue->getMerge($detail, false, $revenue_id);
+
+                    $ttuj_id = $this->MkCommon->filterEmptyField($detail, 'Revenue', 'ttuj_id');
+                    $detail = $this->Ttuj->getMerge($detail, $ttuj_id);
+
                     $invDetails[$idx] = $detail;
                 }
             }
 
+            $this->loadModel('Setting');
+            $setting = $this->Setting->find('first');
+
             $this->set(compact(
-                'value', 'action_print', 'invDetails'
+                'value', 'action_print', 'invDetails',
+                'setting'
             ));
 
             if($action_print == 'pdf'){
