@@ -78,10 +78,10 @@
             ),
         );
 
-        if( !empty($data_action) ){
+        if( !empty($action_print) ){
             $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
-            echo $this->element(sprintf('blocks/common/tables/export_%s', $data_action), array(
+            echo $this->element(sprintf('blocks/common/tables/export_%s', $action_print), array(
                 'tableHead' => $fieldColumn,
                 'tableBody' => $this->element($element),
                 'sub_module_title' => $sub_module_title,
@@ -96,16 +96,16 @@
         <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
     </h2>
 
-    <div class="action-print pull-right">
-        <?php
-                echo $this->Html->link('<i class="fa fa-print"></i> print', 'javascript:', array(
+    <?php 
+            if( empty($action_print) ) {
+                echo $this->Html->tag('div', $this->Html->link('<i class="fa fa-print"></i> print', 'javascript:', array(
                     'class' => 'btn btn-default hidden-print print-window',
                     'escape' => false
+                )), array(
+                    'class' => 'action-print pull-right',
                 ));
-        ?>
-    </div>
-    <?php 
-            echo $this->Common->_getPrint();
+                echo $this->Common->_getPrint();
+            }
     ?>
     <div class="clear"></div>
 
