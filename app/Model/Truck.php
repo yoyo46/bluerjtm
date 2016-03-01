@@ -453,6 +453,7 @@ class Truck extends AppModel {
                 'Ttuj.completed' => 0,
             ),
         ));
+        $branch_is_plant = Configure::read('__Site.config_branch_plant');
 
         if( !empty($include_this_truck_id) ) {
             // Ambil data truck berikut id ini
@@ -468,15 +469,25 @@ class Truck extends AppModel {
                 'AND' => array(
                     'OR' => array(
                         'Truck.id' => $include_this_truck_id,
-                        'Truck.branch_id' => Configure::read('__Site.config_branch_id'),
                     ),
                 ),
             );
+
+            if( !empty($branch_is_plant) ) {
+                $conditions['AND']['OR']['Truck.branch_id'] = Configure::read('__Site.Branch.Plant.id');
+            } else if( !empty($branch) ) {
+                $conditions['AND']['OR']['Truck.branch_id'] = Configure::read('__Site.config_branch_id');
+            }
         } else {
             $conditions = array(
                 'Truck.id <>' => $ttujs,
-                'Truck.branch_id' => Configure::read('__Site.config_branch_id'),
             );
+
+            if( !empty($branch_is_plant) ) {
+                $conditions['Truck.branch_id'] = Configure::read('__Site.Branch.Plant.id');
+            } else if( !empty($branch) ) {
+                $conditions['Truck.branch_id'] = Configure::read('__Site.config_branch_id');
+            }
         }
 
         if( !empty($branch_id) ) {
