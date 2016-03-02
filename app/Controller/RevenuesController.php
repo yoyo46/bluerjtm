@@ -236,14 +236,14 @@ class RevenuesController extends AppController {
 
         if( !empty($dataTtujTipeMotor) ) {
             if( !empty($ttuj_id) ) {
-                $this->TtujTipeMotor->updateAll( array(
+                $this->Ttuj->TtujTipeMotor->updateAll( array(
                     'TtujTipeMotor.status' => 0,
                 ), array(
                     'TtujTipeMotor.ttuj_id' => $ttuj_id,
                 ));
 
                 if( !empty($revenue_id) ) {
-                    $this->RevenueDetail->updateAll(array(
+                    $this->Ttuj->Revenue->RevenueDetail->updateAll(array(
                         'RevenueDetail.status' => 0
                     ), array(
                         'RevenueDetail.revenue_id' => $revenue_id,
@@ -261,11 +261,11 @@ class RevenuesController extends AppController {
                     $dataValidate['TtujTipeMotor']['city_id'] = !empty($data['TtujTipeMotor']['city_id'][$key])?$data['TtujTipeMotor']['city_id'][$key]:false;
                 }
                 
-                $this->TtujTipeMotor->set($dataValidate);
+                $this->Ttuj->TtujTipeMotor->set($dataValidate);
 
                 if( !empty($dataRevenue) ) {
                     if( !empty($tipe_motor_id) ) {
-                        $groupMotor = $this->TtujTipeMotor->TipeMotor->getData('first', array(
+                        $groupMotor = $this->Ttuj->TtujTipeMotor->TipeMotor->getData('first', array(
                             'conditions' => array(
                                 'TipeMotor.id' => $tipe_motor_id,
                                 'TipeMotor.status' => 1,
@@ -279,9 +279,9 @@ class RevenuesController extends AppController {
 
                     if( !empty($dataRevenue['Revenue']['revenue_tarif_type']) && $dataRevenue['Revenue']['revenue_tarif_type'] == 'per_unit' ) {
                         if( in_array($data_action, array( 'retail', 'demo' )) ) {
-                            $tarif = $this->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $dataValidate['TtujTipeMotor']['city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity'], $group_motor_id);
+                            $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $dataValidate['TtujTipeMotor']['city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity'], $group_motor_id);
                         } else {
-                            $tarif = $this->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity'], $group_motor_id);
+                            $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity'], $group_motor_id);
                         }
                     }
 
@@ -326,15 +326,15 @@ class RevenuesController extends AppController {
 
                 if( !empty($ttuj_id) ) {
                     $dataValidate['TtujTipeMotor']['ttuj_id'] = $ttuj_id;
-                    $this->TtujTipeMotor->create();
-                    $this->TtujTipeMotor->save($dataValidate);
+                    $this->Ttuj->TtujTipeMotor->create();
+                    $this->Ttuj->TtujTipeMotor->save($dataValidate);
 
                     if( !empty($dataRevenue) ) {
-                        $this->RevenueDetail->create();
-                        $this->RevenueDetail->save($dataRevenue);
+                        $this->Ttuj->Revenue->RevenueDetail->create();
+                        $this->Ttuj->Revenue->RevenueDetail->save($dataRevenue);
                     }
                 } else {
-                    if(!$this->TtujTipeMotor->validates($dataValidate)){
+                    if(!$this->Ttuj->TtujTipeMotor->validates($dataValidate)){
                         $result['validates'] = false;
                     } else {
                         $result['data'][$key] = $dataValidate;
@@ -357,13 +357,13 @@ class RevenuesController extends AppController {
                     $dataRevenue['Revenue']['total'] = $totalTarif;
                     $dataRevenue['Revenue']['total_without_tax'] = $totalTarifWithoutTax;
 
-                    $this->Revenue->set('total', $totalTarif);
-                    $this->Revenue->set('total_without_tax', $totalTarifWithoutTax);
-                    $this->Revenue->id = $revenue_id;
-                    $this->Revenue->save();
+                    $this->Ttuj->Revenue->set('total', $totalTarif);
+                    $this->Ttuj->Revenue->set('total_without_tax', $totalTarifWithoutTax);
+                    $this->Ttuj->Revenue->id = $revenue_id;
+                    $this->Ttuj->Revenue->save();
                 }
 
-                $this->Revenue->_callSetJournal($revenue_id, $dataRevenue);
+                $this->Ttuj->Revenue->_callSetJournal($revenue_id, $dataRevenue);
             }
         }
 
@@ -792,7 +792,7 @@ class RevenuesController extends AppController {
 
                                     if( $transaction_status != 'posting' ) {
                                         $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'id');
-                                        $tarifDefault = $this->Ttuj->Ttuj->Revenue->RevenueDetail->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity']);
+                                        $tarifDefault = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity']);
 
                                         $dataSetting = $this->MkCommon->_callSettingGeneral('Revenue', array( 'pph', 'ppn' ), false);
                                         $dataSetting = $this->MkCommon->filterEmptyField($dataSetting, 'Revenue', false, array());
@@ -2452,7 +2452,6 @@ class RevenuesController extends AppController {
 
     public function achievement_report( $data_action = false ) {
         $this->loadModel('CustomerTargetUnitDetail');
-        $this->loadModel('TtujTipeMotor');
         $this->loadModel('Customer');
         $this->set('active_menu', 'achievement_report');
 
@@ -2534,7 +2533,7 @@ class RevenuesController extends AppController {
                 $ttuj = $this->GroupBranch->Branch->getMerge($ttuj, $branch_id);
 
                 $conditions['Ttuj.customer_id'] = $ttuj['Customer']['id'];
-                $ttujTipeMotor = $this->TtujTipeMotor->find('first', array(
+                $ttujTipeMotor = $this->Ttuj->TtujTipeMotor->find('first', array(
                     'conditions' => $conditions,
                     'contain' => array(
                         'Ttuj',
@@ -2825,7 +2824,6 @@ class RevenuesController extends AppController {
     public function monitoring_truck( $data_action = false ) {
         $this->loadModel('Customer');
         $this->loadModel('TruckCustomer');
-        $this->loadModel('TtujTipeMotor');
         $this->loadModel('CalendarEvent');
         $this->loadModel('Laka');
         $this->loadModel('Setting');
@@ -3135,7 +3133,7 @@ class RevenuesController extends AppController {
                 $value = $this->Laka->getMergeTtuj($ttuj_id, $value, array(
                     'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\')' => $currentMonth,
                 ));
-                $ttujTipeMotor = $this->TtujTipeMotor->find('first', array(
+                $ttujTipeMotor = $this->Ttuj->TtujTipeMotor->find('first', array(
                     'conditions' => array(
                         'TtujTipeMotor.status' => 1,
                         'TtujTipeMotor.ttuj_id' => $ttuj_id,
@@ -4128,9 +4126,7 @@ class RevenuesController extends AppController {
                 ));
 
                 if(!empty($ttuj_id)){
-                    $this->loadModel('TtujTipeMotor');
-
-                    $total_unit = $this->TtujTipeMotor->getData('first', array(
+                    $total_unit = $this->Ttuj->TtujTipeMotor->getData('first', array(
                         'conditions' => array(
                             'TtujTipeMotor.ttuj_id' => $ttuj_id
                         ),
@@ -4196,14 +4192,12 @@ class RevenuesController extends AppController {
                 $total_ksu = 0;
 
                 if(!empty($truk_ritase)){
-                    $this->loadModel('TtujTipeMotor');
-
                     foreach ($truk_ritase as $key => $value) {
                         $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
                         $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
 
                         $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
-                        $qty_ritase = $this->TtujTipeMotor->getData('first', array(
+                        $qty_ritase = $this->Ttuj->TtujTipeMotor->getData('first', array(
                             'conditions' => array(
                                 'TtujTipeMotor.ttuj_id' => $ttuj_id,
                                 'TtujTipeMotor.status' => 1
@@ -6617,11 +6611,9 @@ class RevenuesController extends AppController {
             ));
 
             if( !empty($ttujs) ) {
-                $this->loadModel('TtujTipeMotor');
-
                 foreach ($ttujs as $key => $ttuj) {
                     $ttuj['SjKembali'] = $this->Ttuj->SuratJalan->getSJKembali( $ttuj['Ttuj']['id'] );
-                    $ttuj['TotalMuatan'] = $this->TtujTipeMotor->getTotalMuatan( $ttuj['Ttuj']['id'] );
+                    $ttuj['TotalMuatan'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj['Ttuj']['id'] );
                     $ttujs[$key] = $ttuj;
                 }
 
@@ -7886,7 +7878,6 @@ class RevenuesController extends AppController {
                             if(!empty($dataimport)) {
                                 $this->loadModel('CustomerNoType');
                                 $this->loadModel('City');
-                                $this->loadModel('TarifAngkutan');
                                 $this->loadModel('GroupMotor');
                                 $this->loadModel('Revenue');
                                 $data = $dataimport;
@@ -7951,7 +7942,7 @@ class RevenuesController extends AppController {
                                         $from_city_id = !empty($formCity['City']['id'])?$formCity['City']['id']:false;
                                         $to_city_id = !empty($toCity['City']['id'])?$toCity['City']['id']:false;
                                         $tanggal_revenue = $this->MkCommon->getDate($tanggal_revenue);
-                                        $tarif = $this->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, false, $customer_id, $truck_capacity, false );
+                                        $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, false, $customer_id, $truck_capacity, false );
                                         $tarif_per_truck = 0;
                                         $jenis_tarif = !empty($tarif['jenis_unit'])?$tarif['jenis_unit']:'per_unit';
                                         // $no_do = !empty($tarif['no_do'])?$tarif['no_do']:false;
@@ -8007,7 +7998,7 @@ class RevenuesController extends AppController {
                                                     $group_motor_id = !empty($groupMotor['GroupMotor']['id'])?$groupMotor['GroupMotor']['id']:false;
                                                     $total_price_unit = $harga_unit_detail * $jml_unit_detail;
 
-                                                    $tarif_detail = $this->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, $to_city_id_detail, $customer_id, $truck_capacity, $group_motor_id );
+                                                    $tarif_detail = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, $to_city_id_detail, $customer_id, $truck_capacity, $group_motor_id );
 
                                                     if( !empty($tarif_detail) ) {
                                                         $total_tarif_detail = !empty($tarif_detail['tarif'])?$tarif_detail['tarif']:0;
@@ -8363,7 +8354,6 @@ class RevenuesController extends AppController {
     }
 
     public function report_revenue_period( $data_action = false ) {
-        $this->loadModel('RevenueDetail');
         $this->loadModel('City');
         $module_title = __('Laporan Detail Revenue per Priode');
         $values = array();
@@ -8392,7 +8382,7 @@ class RevenuesController extends AppController {
         ));
         $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
         $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
-        $options =  $this->RevenueDetail->_callRefineParams($params, $options);
+        $options =  $this->Ttuj->Revenue->RevenueDetail->_callRefineParams($params, $options);
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -8406,8 +8396,9 @@ class RevenuesController extends AppController {
         }
 
         if( !empty($data_action) ){
-            $values = $this->RevenueDetail->find('all', $options);
+            $values = $this->Ttuj->Revenue->RevenueDetail->find('all', $options);
         } else {
+            $this->loadModel('RevenueDetail');
             $options['limit'] = Configure::read('__Site.config_pagination');
             $this->paginate = $options;
             $values = $this->paginate('RevenueDetail');
@@ -8422,8 +8413,8 @@ class RevenuesController extends AppController {
 
                 $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
                 $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
-                $value = $this->RevenueDetail->getSumUnit($value, $id, 'revenue', 'RevenueDetail.revenue_id');
-                $value = $this->RevenueDetail->Invoice->getMerge($value, $invoice_id);
+                $value = $this->Ttuj->Revenue->RevenueDetail->getSumUnit($value, $id, 'revenue', 'RevenueDetail.revenue_id');
+                $value = $this->Ttuj->Revenue->RevenueDetail->Invoice->getMerge($value, $invoice_id);
 
                 $values[$key] = $value;
             }
@@ -8452,7 +8443,6 @@ class RevenuesController extends AppController {
     }
 
     public function report_revenue( $data_action = false ) {
-        $this->loadModel('RevenueDetail');
         $this->loadModel('City');
         $module_title = __('Laporan Detail Revenue');
         $values = array();
@@ -8477,7 +8467,7 @@ class RevenuesController extends AppController {
         ));
         $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
         $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
-        $options =  $this->RevenueDetail->_callRefineParams($params, $options);
+        $options =  $this->Ttuj->Revenue->RevenueDetail->_callRefineParams($params, $options);
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -8491,8 +8481,9 @@ class RevenuesController extends AppController {
         }
 
         if( !empty($data_action) ){
-            $values = $this->RevenueDetail->find('all', $options);
+            $values = $this->Ttuj->Revenue->RevenueDetail->find('all', $options);
         } else {
+            $this->loadModel('RevenueDetail');
             $options['limit'] = Configure::read('__Site.config_pagination');
             $this->paginate = $options;
             $values = $this->paginate('RevenueDetail');
@@ -8508,9 +8499,9 @@ class RevenuesController extends AppController {
 
                 $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
                 $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
-                $value = $this->RevenueDetail->getSumUnit($value, $id, 'revenue', 'RevenueDetail.revenue_id');
-                $value = $this->RevenueDetail->Invoice->getMerge($value, $invoice_id);
-                $value = $this->RevenueDetail->City->getMerge($value, $city_id);
+                $value = $this->Ttuj->Revenue->RevenueDetail->getSumUnit($value, $id, 'revenue', 'RevenueDetail.revenue_id');
+                $value = $this->Ttuj->Revenue->RevenueDetail->Invoice->getMerge($value, $invoice_id);
+                $value = $this->Ttuj->Revenue->RevenueDetail->City->getMerge($value, $city_id);
 
                 $values[$key] = $value;
             }
