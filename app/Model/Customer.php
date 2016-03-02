@@ -86,6 +86,10 @@ class Customer extends AppModel {
             'className' => 'CustomerTargetUnit',
             'foreignKey' => 'customer_id',
         ),
+        'UangKuli' => array(
+            'className' => 'UangKuli',
+            'foreignKey' => 'customer_id',
+        ),
     );
 
     function __construct($id = false, $table = null, $ds = null) {

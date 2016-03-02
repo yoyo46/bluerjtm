@@ -320,27 +320,24 @@ class Driver extends AppModel {
     }
 
     function getListDriverPenganti ( $include_this_driver_id = false, $only_bind = false ) {
-        $this->bindModel(array(
-            'hasOne' => array(
-                'Ttuj' => array(
-                    'className' => 'Ttuj',
-                    'foreignKey' => 'driver_penganti_id',
-                    'conditions' => array(
-                        'Ttuj.status' => 1,
-                        'Ttuj.is_pool' => 0,
-                        'Ttuj.is_laka' => 0,
-                        'Ttuj.completed' => 0,
-                    ),
-                )
-            )
-        ), false);
+        $ttujs = $this->Truck->Ttuj->getData('list', array(
+            'fields' => array(
+                'Ttuj.id', 'Ttuj.driver_penganti_id',
+            ),
+            'conditions' => array(
+                'Ttuj.status' => 1,
+                'Ttuj.is_pool' => 0,
+                'Ttuj.is_laka' => 0,
+                'Ttuj.completed' => 0,
+            ),
+        ));
         
         if( !empty($include_this_driver_id) ) {
             // Ambil data Driver Penganti berikut id ini
             $conditions = array(
                 'OR' => array(
                     'Driver.id' => $include_this_driver_id,
-                    'Ttuj.id' => NULL,
+                    'Driver.id <>' => $ttujs,
                 ),
                 // 'AND' => array(
                 //     'OR' => array(
@@ -351,7 +348,7 @@ class Driver extends AppModel {
             );
         } else {
             $conditions = array(
-                'Ttuj.id' => NULL,
+                'Driver.id <>' => $ttujs,
                 'Driver.branch_id' => Configure::read('__Site.config_branch_id'),
             );
         }
@@ -370,7 +367,6 @@ class Driver extends AppModel {
                     'Driver.id', 'Driver.driver_name'
                 ),
                 'contain' => array(
-                    'Ttuj',
                     'Truck',
                 ),
             ), true, array(
