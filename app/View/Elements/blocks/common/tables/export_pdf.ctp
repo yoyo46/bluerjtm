@@ -18,6 +18,8 @@
         $table_th = 'padding-top: 3px';
         $table = 'width:100%;font-size: 24px; border: 1px solid #CCC; border-collapse: collapse; padding: 0; margin: 0;';
     
+        $topHeader = !empty($topHeader)?$topHeader:false;
+        $contentHeader = !empty($contentHeader)?$contentHeader:false;
         $tableHead = !empty($tableHead)?$tableHead:false;
         $tableBody = !empty($tableBody)?$tableBody:false;
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
@@ -29,7 +31,7 @@
 
         if( empty($customHeader) ) {
             $customHeader = <<<EOD
-        <h2 class="grid_8" style="text-align: center;">$date_title</h2>
+            <h2 class="grid_8" style="text-align: center;">$date_title</h2>
 EOD;
         }
 
@@ -70,7 +72,7 @@ EOD;
         $filename = $this->Common->toSlug($filename).'.pdf';
         $pathFile = $path.'/'.$filename;
         
-        $tcpdf->Output($pathFile, 'I'); 
+        $tcpdf->Output($pathFile, 'F'); 
 
         header('Content-type: application/pdf');
         header('Content-Disposition: attachment; filename="'.$filename.'"');

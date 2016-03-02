@@ -184,6 +184,36 @@
 							));
 					?>
 		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('company_address',array(
+								'label'=> __('Alamat Perusahaan'), 
+								'class'=>'form-control',
+								'required' => false,
+								'placeholder' => __('Alamat Perusahaan')
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('company_email',array(
+								'label'=> __('Email Perusahaan'), 
+								'class'=>'form-control',
+								'required' => false,
+								'placeholder' => __('Email Perusahaan')
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('company_phone',array(
+								'label'=> __('Telepon Perusahaan'), 
+								'class'=>'form-control',
+								'required' => false,
+								'placeholder' => __('Telepon Perusahaan')
+							));
+					?>
+		        </div>
 		    	<?php
 		    			if(!empty($this->request->data['Setting']['favicon']) && !is_array($this->request->data['Setting']['favicon'])){
 		    				$photo = $this->Common->photo_thumbnail(array(

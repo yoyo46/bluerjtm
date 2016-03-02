@@ -4,6 +4,8 @@
 <?php 
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $filename = !empty($filename)?$filename:$sub_module_title;
+        $contentHeader = !empty($contentHeader)?$contentHeader:false;
+        $topHeader = !empty($topHeader)?$topHeader:false;
 
         $contentTr = isset($contentTr)?$contentTr:true;
         header('Content-type: application/ms-excel');
@@ -11,6 +13,8 @@
 ?>
 <section class="content invoice">
     <?php 
+            echo $topHeader;
+            
             if( !empty($customHeader) ) {
                 echo $customHeader;
             } else if( !empty($sub_module_title) ) {
@@ -20,6 +24,8 @@
     </h2>
     <?php 
             }
+
+            echo $contentHeader;
 
             if( !empty($tableContent) ) {
                 echo $tableContent;

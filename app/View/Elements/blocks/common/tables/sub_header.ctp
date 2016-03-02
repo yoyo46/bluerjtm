@@ -8,7 +8,7 @@
         ));
 
         $contentP = $this->Html->tag('label', $contentLabel, array(
-            'style' => 'width: 140px;font-weight: 600;',
+            'style' => 'width: 140px;font-weight: 600;display: inline-block;',
         ));
         $contentP .= $this->Html->tag('span', $value);
         echo $this->Html->tag('p', $contentP, array(
