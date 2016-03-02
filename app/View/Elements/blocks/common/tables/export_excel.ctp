@@ -6,6 +6,7 @@
         $filename = !empty($filename)?$filename:$sub_module_title;
         $contentHeader = !empty($contentHeader)?$contentHeader:false;
         $topHeader = !empty($topHeader)?$topHeader:false;
+        $noHeader = !empty($noHeader)?$noHeader:false;
 
         $contentTr = isset($contentTr)?$contentTr:true;
         header('Content-type: application/ms-excel');
@@ -17,7 +18,7 @@
             
             if( !empty($customHeader) ) {
                 echo $customHeader;
-            } else if( !empty($sub_module_title) ) {
+            } else if( !empty($sub_module_title) && empty($noHeader) ) {
     ?>
     <h2 class="page-header" style="text-align: center;">
         <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>

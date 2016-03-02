@@ -10,11 +10,11 @@
             ));
             echo $this->element('blocks/common/tables/sub_header', array(
                 'labelName' => __('Nama Pelanggan'),
-                'value' => $customer,
+                'value' => __('PT. YAMAHA INDONESIA MOTOR MFG.'),
             ));
             echo $this->element('blocks/common/tables/sub_header', array(
                 'labelName' => __('Alamat Pelanggan'),
-                'value' => $customer_address,
+                'value' => __('Jl. DR.KRT Radjiman Widyodiningrat - Jakarta'),
             ));
             echo $this->element('blocks/common/tables/sub_header', array(
                 'labelName' => __('Keterangan'),

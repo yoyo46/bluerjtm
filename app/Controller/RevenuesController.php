@@ -8867,4 +8867,138 @@ class RevenuesController extends AppController {
             $this->redirect($this->referer());
         }
     }
+
+    function invoice_yamaha_unit($id = false, $action_print = false){
+        $this->loadModel('Invoice');
+
+        $module_title = __('Print Yamaha Per Unit');
+        $this->set('sub_module_title', trim($module_title));
+        $this->set('active_menu', 'invoices');
+
+        $data_print = $this->MkCommon->filterEmptyField($this->params, 'named', 'print', 'default');
+
+        $value = $this->Invoice->getData('first', array(
+            'conditions' => array(
+                'Invoice.id' => $id,
+            ),
+        ), true, array(
+            'status' => 'all',
+        ));
+
+        if(!empty($value)){
+            $customer_id = $this->MkCommon->filterEmptyField($value, 'Invoice', 'customer_id');
+            $billing_id = $this->MkCommon->filterEmptyField($value, 'Invoice', 'billing_id');
+            $tarif_type = $this->MkCommon->filterEmptyField($value, 'Invoice', 'tarif_type');
+
+            $value = $this->Invoice->Customer->getMerge($value, $customer_id);
+            $value = $this->Invoice->InvoiceDetail->getMerge($value, $id);
+            $value = $this->User->getMerge($value, $billing_id);
+
+            $invDetails = $this->MkCommon->filterEmptyField($value, 'InvoiceDetail');
+
+            if( !empty($invDetails) ) {
+                foreach ($invDetails as $idx => $detail) {
+                    $revenue_detail_id = $this->MkCommon->filterEmptyField($detail, 'InvoiceDetail', 'revenue_detail_id');
+                    $revenue_id = $this->MkCommon->filterEmptyField($detail, 'InvoiceDetail', 'revenue_id');
+                    
+                    $detail = $this->Invoice->InvoiceDetail->RevenueDetail->getMerge($detail, $revenue_detail_id);
+                    $detail = $this->Invoice->InvoiceDetail->Revenue->getMerge($detail, false, $revenue_id);
+
+                    $group_motor_id = $this->MkCommon->filterEmptyField($detail, 'RevenueDetail', 'group_motor_id');
+                    $ttuj_id = $this->MkCommon->filterEmptyField($detail, 'Revenue', 'ttuj_id');
+
+                    $detail = $this->Ttuj->getMerge($detail, $ttuj_id);
+                    $detail = $this->Ttuj->Revenue->RevenueDetail->GroupMotor->getMerge( $detail, $group_motor_id );
+
+                    $invDetails[$idx] = $detail;
+                }
+            }
+
+            $this->loadModel('Setting');
+            $setting = $this->Setting->find('first');
+
+            $this->set(compact(
+                'value', 'action_print', 'invDetails',
+                'setting'
+            ));
+
+            if($action_print == 'pdf'){
+                $this->layout = 'pdf';
+            }else if($action_print == 'excel'){
+                $this->layout = 'ajax';
+            }
+        } else {
+            $this->MkCommon->setCustomFlash(__('Invoice tidak ditemukan'), 'error');  
+            $this->redirect($this->referer());
+        }
+    }
+
+    function invoice_nozomi_unit($id = false, $action_print = false){
+        $this->loadModel('Invoice');
+
+        $module_title = __('Print Nozomi Per Unit');
+        $this->set('sub_module_title', trim($module_title));
+        $this->set('active_menu', 'invoices');
+
+        $data_print = $this->MkCommon->filterEmptyField($this->params, 'named', 'print', 'default');
+
+        $value = $this->Invoice->getData('first', array(
+            'conditions' => array(
+                'Invoice.id' => $id,
+            ),
+        ), true, array(
+            'status' => 'all',
+        ));
+
+        if(!empty($value)){
+            $customer_id = $this->MkCommon->filterEmptyField($value, 'Invoice', 'customer_id');
+            $billing_id = $this->MkCommon->filterEmptyField($value, 'Invoice', 'billing_id');
+            $tarif_type = $this->MkCommon->filterEmptyField($value, 'Invoice', 'tarif_type');
+
+            $value = $this->Invoice->Customer->getMerge($value, $customer_id);
+            $value = $this->Invoice->InvoiceDetail->getMerge($value, $id);
+            $value = $this->User->getMerge($value, $billing_id);
+
+            $invDetails = $this->MkCommon->filterEmptyField($value, 'InvoiceDetail');
+
+            if( !empty($invDetails) ) {
+                foreach ($invDetails as $idx => $detail) {
+                    $revenue_detail_id = $this->MkCommon->filterEmptyField($detail, 'InvoiceDetail', 'revenue_detail_id');
+                    $revenue_id = $this->MkCommon->filterEmptyField($detail, 'InvoiceDetail', 'revenue_id');
+                    
+                    $detail = $this->Invoice->InvoiceDetail->RevenueDetail->getMerge($detail, $revenue_detail_id);
+                    $detail = $this->Invoice->InvoiceDetail->Revenue->getMerge($detail, false, $revenue_id);
+
+                    $ttuj_id = $this->MkCommon->filterEmptyField($detail, 'Revenue', 'ttuj_id');
+                    $detail = $this->Ttuj->getMerge($detail, $ttuj_id);
+
+                    $truck_id = $this->MkCommon->filterEmptyField($detail, 'Ttuj', 'truck_id');
+                    $detail = $this->Ttuj->Truck->getMerge($detail, $truck_id);
+                    
+                    $truck_category_id = $this->MkCommon->filterEmptyField($detail, 'Truck', 'truck_category_id');
+                    $detail = $this->Ttuj->Truck->TruckCategory->getMerge($detail, $truck_category_id);
+
+                    $invDetails[$idx] = $detail;
+                }
+            }
+            // debug($invDetails);die();
+
+            $this->loadModel('Setting');
+            $setting = $this->Setting->find('first');
+
+            $this->set(compact(
+                'value', 'action_print', 'invDetails',
+                'setting'
+            ));
+
+            if($action_print == 'pdf'){
+                $this->layout = 'pdf';
+            }else if($action_print == 'excel'){
+                $this->layout = 'ajax';
+            }
+        } else {
+            $this->MkCommon->setCustomFlash(__('Invoice tidak ditemukan'), 'error');  
+            $this->redirect($this->referer());
+        }
+    }
 }

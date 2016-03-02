@@ -156,6 +156,46 @@
             ?>
         </div>
     </div>
+    <div class="col-lg-3 col-xs-6">
+        <div class="small-box">
+            <?php 
+                    echo $this->Html->tag('div', $this->Html->tag('p', __('Print Yamaha Per Unit')), array(
+                        'class' => 'inner',
+                    ));
+                    echo $this->Html->tag('div', $this->Common->icon('file'), array(
+                        'class' => 'icon',
+                    ));
+                    echo $this->Html->link(sprintf(__('Lihat Laporan %s'), $this->Common->icon('arrow-circle-right')), array(
+                        'controller' => 'revenues',
+                        'action' => 'invoice_yamaha_unit',
+                        $id,
+                    ), array(
+                        'escape' => false,
+                        'class' => 'small-box-footer',
+                    ));
+            ?>
+        </div>
+    </div>
+    <div class="col-lg-3 col-xs-6">
+        <div class="small-box">
+            <?php 
+                    echo $this->Html->tag('div', $this->Html->tag('p', __('Print Nozomi Per Unit')), array(
+                        'class' => 'inner',
+                    ));
+                    echo $this->Html->tag('div', $this->Common->icon('file'), array(
+                        'class' => 'icon',
+                    ));
+                    echo $this->Html->link(sprintf(__('Lihat Laporan %s'), $this->Common->icon('arrow-circle-right')), array(
+                        'controller' => 'revenues',
+                        'action' => 'invoice_nozomi_unit',
+                        $id,
+                    ), array(
+                        'escape' => false,
+                        'class' => 'small-box-footer',
+                    ));
+            ?>
+        </div>
+    </div>
     <?php
             }
     ?>
