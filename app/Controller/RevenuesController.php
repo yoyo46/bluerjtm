@@ -7067,8 +7067,17 @@ class RevenuesController extends AppController {
                 $revenue_detail = $this->Invoice->InvoiceDetail->Revenue->RevenueDetail->getPreviewInvoice($id, $tarif_type, $action_print, $data_print);
             }
 
+            $tarif_angkutans = Set::extract('/InvoiceDetail/RevenueDetail/tarif_angkutan_id', $invoice);
+
+            if( !empty($tarif_angkutans) ) {
+                $tarif_angkutan_id = array_shift(array_values($tarif_angkutans));
+                $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getMerge( array(), $tarif_angkutan_id );
+                $tarif_name = $this->MkCommon->filterEmptyField($tarif, 'TarifAngkutan', 'name_tarif');
+            }
+
             $this->set(compact(
-                'invoice', 'action_print', 'revenue_detail'
+                'invoice', 'action_print', 'revenue_detail',
+                'tarif_name'
             ));
 
             if($action_print == 'pdf'){

@@ -15,6 +15,7 @@
 <table border="0" style="width: 100%;">
 	<?php 
             if( !empty($action_print) ) {
+        		$tarif_name = !empty($tarif_name)?$tarif_name:false;
 				$invoice = !empty($invoice)?$invoice:false;
 				$customer = $this->Common->filterEmptyField($invoice, 'Customer', 'name');
 				$no_invoice = $this->Common->filterEmptyField($invoice, 'Invoice', 'no_invoice');
@@ -25,7 +26,7 @@
 				<tr>
 					<td colspan="5" style="text-align: left;width: 50%;" valign="top">
 						<?php 
-								echo $this->Html->tag('div', sprintf(__('%s - TARIF 3'), $customer), array(
+								echo $this->Html->tag('div', $customer, array(
 									'style' => 'font-size: 18px;font-weight: 700;margin-bottom: 20px;'
 								));
 						?>
@@ -35,7 +36,7 @@
 								echo $this->Html->tag('div', $no_invoice, array(
 									'style' => 'font-size: 16px;font-weight: 700;magin:0;'
 								));
-								echo $this->Html->tag('div', __('JASA ANGKUT JOGYA TARIF 3'), array(
+								echo $this->Html->tag('div', $tarif_name, array(
 									'style' => 'font-size: 16px;font-weight: 700;'
 								));
 						?>

@@ -1,4 +1,5 @@
 <?php
+        $tarif_name = !empty($tarif_name)?$tarif_name:false;
 		$customer = $this->Common->filterEmptyField($invoice, 'Customer', 'name');
 		$no_invoice = $this->Common->filterEmptyField($invoice, 'Invoice', 'no_invoice');
         $element = 'blocks/revenues/prints/invoice_hso_yogya_print';
@@ -76,7 +77,7 @@
 
 <div class="header-title">
 	<?php 
-			echo $this->Html->tag('h3', sprintf(__('%s - TARIF 3'), $customer), array(
+			echo $this->Html->tag('h3', $customer, array(
 				'class' => 'header-invoice pull-left',
 				'style' => 'font-size: 18px;font-weight: 700;margin-top: 0;margin-bottom: 20px;'
 			));
@@ -86,7 +87,7 @@
 				echo $this->Html->tag('p', $no_invoice, array(
 					'style' => 'font-size: 16px;font-weight: 700;margin: 0 0 5px;'
 				));
-				echo $this->Html->tag('p', __('JASA ANGKUT JOGYA TARIF 3'), array(
+				echo $this->Html->tag('p', $tarif_name, array(
 					'style' => 'font-size: 16px;font-weight: 700;margin: 0;'
 				));
 		?>
