@@ -6,7 +6,19 @@
         // $saldo_awal = $this->Common->filterEmptyField($coa, 'Coa', 'balance');
         $beginingBalance = !empty($beginingBalance)?$beginingBalance:0;
         $customBalance = $beginingBalance;
-
+        $customSaldoAwal = $this->Common->getFormatPrice($beginingBalance);
+?>
+<tr class="beginning">
+    <?php
+            echo $this->Html->tag('td', $this->Html->tag('i', __('Beginning Balance')), array(
+                'colspan' => 7,
+            ));
+            echo $this->Html->tag('td', $customSaldoAwal, array(
+                'style' => 'text-align:right;'
+            ));
+    ?>
+</tr>
+<?PHP
         if( !empty($values) ) {
             foreach ($values as $key => $value) {
                 $document_no = $this->Common->filterEmptyField($value, 'Journal', 'document_no');
@@ -26,7 +38,6 @@
                 $customDate = $this->Common->formatDate($date, 'd/m/Y');
                 $customDebit = $this->Common->getFormatPrice($debit, false);
                 $customCredit = $this->Common->getFormatPrice($credit, false);
-                $customSaldoAwal = $this->Common->getFormatPrice($beginingBalance);
                 
                 $noref = str_pad($document_id, 6, '0', STR_PAD_LEFT);
                 $customNoref = $this->Common->_callDocumentJournal( $noref, $document_id, $type, $data_action );
@@ -39,6 +50,7 @@
 
                 $customFormatBalance = $this->Common->getFormatPrice($customBalance);
 
+                /*
                 if( $no == 1 ) {
                     $beginningBalance = $beginingBalance;
 ?>
@@ -54,6 +66,7 @@
 </tr>
 <?php
             }
+            */
 ?>
 <tr>
     <?php

@@ -1696,6 +1696,7 @@ class RevenuesController extends AppController {
                     break;
 
                 case 'pool':
+                    $dataTiba['Ttuj']['is_draft'] = 0;
                     $dataTiba['Ttuj']['is_pool'] = 1;
                     $dataTiba['Ttuj']['tgljam_pool'] = '';
                     $dataTiba['Ttuj']['note_pool'] = !empty($data['Ttuj']['note_pool'])?$data['Ttuj']['note_pool']:'';
