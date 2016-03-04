@@ -411,7 +411,6 @@ class CashbanksController extends AppController {
                 $this->request->data = $data = $data_local;
                 $this->request->data['CashBank']['tgl_cash_bank'] = $this->MkCommon->getDate($this->request->data['CashBank']['tgl_cash_bank'], true);
             } else {
-                $coaIdCache = $this->Session->read('Coa.CoaId');
                 $lastCashBank = $this->CashBank->getData('first', array(
                     'conditions' => array(
                         'CashBank.user_id' => $this->user_id,
@@ -421,12 +420,6 @@ class CashbanksController extends AppController {
                         'CashBank.created' => 'DESC',
                     ),
                 ));
-                $coa = $this->CashBank->Coa->getData('first', array(
-                    'conditions' => array(
-                        'Coa.id' => $coaIdCache,
-                    ),
-                ));
-                $coa_code = $this->MkCommon->filterEmptyField($coa, 'Coa', 'coa_code');
 
                 if( !empty($lastCashBank) ) {
                     $this->request->data['CashBank']['coa_id'] = $this->MkCommon->filterEmptyField($lastCashBank, 'CashBank', 'coa_id');
@@ -511,7 +504,7 @@ class CashbanksController extends AppController {
             'coas', 'document_id', 'receiving_cash_type',
             'docs', 'urlBrowseDocument', 'prepayment_out_id',
             'id', 'data_local', 'branches',
-            'user_otorisasi_approvals', 'coa_code'
+            'user_otorisasi_approvals'
         ));
 
         $this->render('cashbank_form');
