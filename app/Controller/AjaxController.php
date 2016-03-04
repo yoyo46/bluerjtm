@@ -1665,9 +1665,10 @@ class AjaxController extends AppController {
 
         if( $param_code == 'none' ) {
         	$params['named']['code'] = false;
-        } else {
-        	$params['named']['code'] = $this->MkCommon->filterEmptyField($params, 'named', 'code', $coa_code);
         }
+        // else {
+        // 	$params['named']['code'] = $this->MkCommon->filterEmptyField($params, 'named', 'code', $coa_code);
+        // }
 
         $params = $this->MkCommon->_callRefineParams($params);
         $options =  $this->BranchCoa->_callRefineParams($params, array(
@@ -1679,6 +1680,10 @@ class AjaxController extends AppController {
         	),
             'limit' => Configure::read('__Site.config_pagination'),
         ));
+
+        if( empty($params['named']) && !empty($coa_code) && $param_code != 'none' ) {
+        	$options['conditions']['Coa.code LIKE'] = '%'.$coa_code.'%';
+        }
 
 		$this->paginate = $this->BranchCoa->getData('paginate', $options);
 		$coas = $this->paginate('BranchCoa');

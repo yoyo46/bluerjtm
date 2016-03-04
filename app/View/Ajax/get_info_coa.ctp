@@ -38,6 +38,9 @@
 </div>
 <div class="form-group action">
     <?php
+            echo $this->Form->hidden('find',array(
+                'value' => true,
+            ));
             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
                 'div' => false, 
                 'class'=> 'btn btn-success btn-sm ajaxModal',

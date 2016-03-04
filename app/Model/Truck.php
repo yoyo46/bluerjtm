@@ -1,7 +1,7 @@
 <?php
 class Truck extends AppModel {
-	var $name = 'Truck';
-	var $validate = array(
+    var $name = 'Truck';
+    var $validate = array(
         'branch_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -172,7 +172,7 @@ class Truck extends AppModel {
         //         'message' => 'Biaya KIR truk harap diisi'
         //     ),
         // ),
-	);
+    );
 
     var $hasOne = array(
         'Company' => array(
