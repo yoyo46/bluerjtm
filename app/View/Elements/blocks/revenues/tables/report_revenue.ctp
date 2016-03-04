@@ -5,7 +5,7 @@
 
             foreach ($values as $key => $value) {
                 $date = $this->Common->filterEmptyField($value, 'Revenue', 'date_revenue');
-                $unit = $this->Common->filterEmptyField($value, 'qty_unit');
+                $unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'qty_unit');
                 $price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'price_unit');
                 $total = $price_unit * $unit;
 

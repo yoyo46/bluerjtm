@@ -8509,7 +8509,6 @@ class RevenuesController extends AppController {
 
                 $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
                 $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
-                $value = $this->Ttuj->Revenue->RevenueDetail->getSumUnit($value, $id, 'revenue', 'RevenueDetail.revenue_id');
                 $value = $this->Ttuj->Revenue->RevenueDetail->Invoice->getMerge($value, $invoice_id);
                 $value = $this->Ttuj->Revenue->RevenueDetail->City->getMerge($value, $city_id);
 

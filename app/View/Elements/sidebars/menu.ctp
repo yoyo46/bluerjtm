@@ -742,7 +742,7 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'report_revenue_monthly' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Detail Revenue per Periode', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Detail Revenue', array(
                                 'controller' => 'revenues',
                                 'action' => 'report_revenue_period',
                             ), array(
@@ -751,7 +751,7 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'report_revenue_period' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Detail Revenue', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Detail Revenue (Rinci)', array(
                                 'controller' => 'revenues',
                                 'action' => 'report_revenue',
                             ), array(
