@@ -36,7 +36,6 @@ class TrucksController extends AppController {
 
 	public function index() {
         $this->loadModel('Laka');
-        $this->loadModel('Ttuj');
 
         $conditions = array();
         $contain = array(
@@ -77,24 +76,12 @@ class TrucksController extends AppController {
             }
             if(!empty($refine['status'])){
                 $data = urldecode($refine['status']);
+                $truck_ongoing = array();
 
                 if( in_array($data, array( 'laka', 'away', 'available' )) ) {
-                    $this->Truck->bindModel(array(
-                        'hasOne' => array(
-                            'Ttuj' => array(
-                                'className' => 'Ttuj',
-                                'foreignKey' => 'truck_id',
-                                'conditions' => array(
-                                    'Ttuj.status' => 1,
-                                    'Ttuj.is_pool' => 0,
-                                    'Ttuj.completed' => 0,
-                                ),
-                            ),
-                        )
-                    ), false);
+                    $truck_ongoing = $this->Truck->Ttuj->_callTtujOngoing();
                     
                     $contain[] = 'Laka';
-                    $contain[] = 'Ttuj';
                 }
 
                 switch ($data) {
@@ -110,13 +97,13 @@ class TrucksController extends AppController {
                     case 'away':
                         $conditions['Truck.sold'] = 0;
                         $conditions['Laka.id'] = NULL;
-                        $conditions['Ttuj.id <>'] = NULL;
+                        $conditions['Truck.id'] = $truck_ongoing;
                         break;
                     
                     case 'available':
                         $conditions['Truck.sold'] = 0;
                         $conditions['Laka.id'] = NULL;
-                        $conditions['Ttuj.id'] = NULL;
+                        $conditions['Truck.id NOT'] = $truck_ongoing;
                         break;
                 }
                 $this->request->data['Truck']['status'] = $data;
@@ -155,7 +142,7 @@ class TrucksController extends AppController {
                 $value = $this->Truck->TruckBrand->getMerge($value, $truck_brand_id);
                 $value = $this->Truck->Company->getMerge($value, $company_id);
                 $value = $this->Laka->getMerge($id, $value);
-                $value = $this->Ttuj->getTruckStatus($value, $id);
+                $value = $this->Truck->Ttuj->getTruckStatus($value, $id);
 
                 $trucks[$key] = $value;
             }

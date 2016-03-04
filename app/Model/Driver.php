@@ -320,24 +320,18 @@ class Driver extends AppModel {
     }
 
     function getListDriverPenganti ( $include_this_driver_id = false, $only_bind = false ) {
-        $ttujs = $this->Truck->Ttuj->getData('list', array(
+        $ttujs = $this->Truck->Ttuj->_callTtujOngoing(array(
             'fields' => array(
                 'Ttuj.id', 'Ttuj.driver_penganti_id',
             ),
-            'conditions' => array(
-                'Ttuj.status' => 1,
-                'Ttuj.is_pool' => 0,
-                'Ttuj.is_laka' => 0,
-                'Ttuj.completed' => 0,
-            ),
         ));
-        
+
         if( !empty($include_this_driver_id) ) {
             // Ambil data Driver Penganti berikut id ini
             $conditions = array(
                 'OR' => array(
                     'Driver.id' => $include_this_driver_id,
-                    'Driver.id <>' => $ttujs,
+                    'Driver.id NOT' => $ttujs,
                 ),
                 // 'AND' => array(
                 //     'OR' => array(
@@ -348,7 +342,7 @@ class Driver extends AppModel {
             );
         } else {
             $conditions = array(
-                'Driver.id <>' => $ttujs,
+                'Driver.id NOT' => $ttujs,
                 'Driver.branch_id' => Configure::read('__Site.config_branch_id'),
             );
         }
@@ -385,7 +379,7 @@ class Driver extends AppModel {
         $driver = $this->getData('count', array(
             'conditions' => array(
                 'Driver.no_id' => $no_id,
-                'Driver.id <>' => $id,
+                'Driver.id NOT' => $id,
             ),
         ), true, array(
             'branch' => false,

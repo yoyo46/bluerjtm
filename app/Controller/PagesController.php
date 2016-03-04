@@ -25,27 +25,12 @@ class PagesController extends AppController {
             ),
         ));
 
-        $this->Truck->bindModel(array(
-            'hasOne' => array(
-                'Ttuj' => array(
-                    'className' => 'Ttuj',
-                    'foreignKey' => 'truck_id',
-                    'conditions' => array(
-                        'Ttuj.status' => 1,
-                        'Ttuj.is_pool' => 0,
-                        'Ttuj.completed' => 0,
-                    ),
-                ),
-            )
-        ));
+        $truck_ongoing = $this->Truck->Ttuj->_callTtujOngoing();
         $truckAvailable = $this->Truck->getData('count', array(
             'conditions' => array(
                 'Truck.sold' => 0,
-                'Ttuj.id' => NULL,
+                'Truck.id NOT' => $truck_ongoing,
             ),
-            'contain' => array(
-            	'Ttuj'
-        	),
         ));
 
         $this->set(compact(

@@ -289,7 +289,7 @@ class Truck extends AppModel {
             $find = $this->find('count', array(
                 'conditions' => array(
                     'Truck.driver_id' => $this->data['Truck']['driver_id'],
-                    'Truck.id <>' => $truck_id,
+                    'Truck.id NOT' => $truck_id,
                     'Truck.status' => 1,
                 )
             ));
@@ -442,17 +442,7 @@ class Truck extends AppModel {
     }
 
     function getListTruck ( $include_this_truck_id = false, $only_bind = false, $nopol = false, $branch_id = false ) {        
-        $ttujs = $this->Ttuj->getData('list', array(
-            'fields' => array(
-                'Ttuj.id', 'Ttuj.truck_id',
-            ),
-            'conditions' => array(
-                'Ttuj.status' => 1,
-                'Ttuj.is_pool' => 0,
-                'Ttuj.is_laka' => 0,
-                'Ttuj.completed' => 0,
-            ),
-        ));
+        $ttujs = $this->Ttuj->_callTtujOngoing();
         $branch_is_plant = Configure::read('__Site.config_branch_plant');
 
         if( !empty($include_this_truck_id) ) {
@@ -463,7 +453,7 @@ class Truck extends AppModel {
                         'Truck.id' => $include_this_truck_id,
                     ),
                     array(
-                        'Truck.id <>' => $ttujs,
+                        'Truck.id NOT' => $ttujs,
                     ),
                 ),
                 'AND' => array(
@@ -480,7 +470,7 @@ class Truck extends AppModel {
             }
         } else {
             $conditions = array(
-                'Truck.id <>' => $ttujs,
+                'Truck.id NOT' => $ttujs,
             );
 
             if( !empty($branch_is_plant) ) {

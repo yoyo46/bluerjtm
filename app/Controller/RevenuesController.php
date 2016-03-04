@@ -3963,21 +3963,11 @@ class RevenuesController extends AppController {
 
         if( $action_type == 'manual' ) {
             $plantCityId = Configure::read('__Site.Branch.Plant.id');
-            $ttujs = $this->Ttuj->getData('list', array(
-                'fields' => array(
-                    'Ttuj.id', 'Ttuj.truck_id',
-                ),
-                'conditions' => array(
-                    'Ttuj.status' => 1,
-                    'Ttuj.is_pool' => 0,
-                    'Ttuj.is_laka' => 0,
-                    'Ttuj.completed' => 0,
-                ),
-            ));
+            $ttujs = $this->Ttuj->_callTtujOngoing();
 
             $trucks = $this->Ttuj->Truck->getData('list', array(
                 'conditions' => array(
-                    'Truck.id <>' => $ttujs,
+                    'Truck.id NOT' => $ttujs,
                     'Truck.branch_id' => $plantCityId,
                 ),
                 'fields' => array(

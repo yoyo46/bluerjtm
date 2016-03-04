@@ -991,5 +991,22 @@ class Ttuj extends AppModel {
 
         return $data;
     }
+
+    function _callTtujOngoing ( $options = array() ) {
+        $options = array_merge(array(
+            'fields' => array(
+                'Ttuj.id', 'Ttuj.truck_id',
+            ),
+            'conditions' => array(
+                'Ttuj.status' => 1,
+                'Ttuj.is_pool' => 0,
+                'Ttuj.is_laka' => 0,
+                'Ttuj.completed' => 0,
+            ),
+        ), $options);
+        return $this->getData('list', $options, true, array(
+            'plant' => true,
+        ));
+    }
 }
 ?>
