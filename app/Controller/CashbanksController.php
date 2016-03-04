@@ -235,7 +235,7 @@ class CashbanksController extends AppController {
             }else{
                 $coas_validate = false;
             }
-            
+
             $totalCashBank = $debit_total + $credit_total;
 
             if( !empty($document_id) && $data['CashBank']['document_type'] == 'prepayment' ) {
@@ -420,7 +420,12 @@ class CashbanksController extends AppController {
                         'CashBank.created' => 'DESC',
                     ),
                 ));
-                $this->request->data['CashBank']['coa_id'] = $this->MkCommon->filterEmptyField($lastCashBank, 'CashBank', 'coa_id');
+
+                if( !empty($lastCashBank) ) {
+                    $this->request->data['CashBank']['coa_id'] = $this->MkCommon->filterEmptyField($lastCashBank, 'CashBank', 'coa_id');
+                    $this->request->data['CashBank']['receiver_type'] = $this->MkCommon->filterEmptyField($lastCashBank, 'CashBank', 'receiver_type');
+                    $this->request->data['CashBank']['receiver_id'] = $this->MkCommon->filterEmptyField($lastCashBank, 'CashBank', 'receiver_id');
+                }
             }
         }
 
