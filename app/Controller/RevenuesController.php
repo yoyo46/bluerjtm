@@ -2712,7 +2712,7 @@ class RevenuesController extends AppController {
                 ));
 
                 if( !empty($totals) ) {
-                    foreach ($totals as $key => $total) {
+                    foreach ($totals as $idx => $total) {
                         $dt = $this->MkCommon->filterEmptyField($total, 'Ttuj', 'dt');
                         $cnt = $this->MkCommon->filterEmptyField($total, 'Ttuj', 'cnt');
 
@@ -2742,7 +2742,7 @@ class RevenuesController extends AppController {
                 ), false);
                 
                 if( !empty($tipeMotors) ) {
-                    foreach ($tipeMotors as $key => $total) {
+                    foreach ($tipeMotors as $idx => $total) {
                         $dt = $this->MkCommon->filterEmptyField($total, 'TtujTipeMotor', 'dt');
                         $cnt = $this->MkCommon->filterEmptyField($total, 'TtujTipeMotor', 'cnt');
 
