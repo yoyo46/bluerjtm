@@ -12,10 +12,6 @@
 			'inputDefaults' => array('div' => false),
     		'autocomplete'=> 'off', 
 		));
-
-		echo $this->Form->hidden('transaction_status', array(
-			'id' => 'transaction_status'
-		));
 ?>
 <div class="ttuj-form">
 	<div class="row">

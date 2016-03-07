@@ -4,6 +4,8 @@
 			'action' => 'index'
 		));
 		$this->Html->addCrumb($sub_module_title);
+		$data_local = !empty($data_local)?$data_local:false;
+
         echo $this->element('blocks/cashbanks/tables/list_approvals', array(
         	'urlBack' => false,
     	));
@@ -212,17 +214,13 @@
 
 <div class="box-footer text-center action">
 	<?php
-    		echo $this->Form->button(__('Simpan'), array(
-				'div' => false, 
-				'class'=> 'btn btn-success',
-				'type' => 'submit',
-			));
     		echo $this->Html->link(__('Kembali'), array(
 				'controller' => 'cashbanks', 
 				'action' => 'index', 
 			), array(
 				'class'=> 'btn btn-default',
 			));
+			$this->Common->_getButtonPostingUnposting( $data_local, 'CashBank' );
 	?>
 </div>
 <?php

@@ -254,7 +254,7 @@ class PurchasesController extends AppController {
 
             $value = $this->SupplierQuotation->Vendor->getMerge($value, $vendor_id);
             $value = $this->SupplierQuotation->SupplierQuotationDetail->getMerge($value, $id);
-            $result_approval = $this->MkCommon->_callAllowApproval( $value, $user_id, $id, 'supplier_quotation' );
+            $result_approval = $this->MkCommon->_callAllowApproval( $value, $user_id, $id, 'supplier-quotation' );
             $show_approval = $this->MkCommon->filterEmptyField($result_approval, 'show_approval');
 
             if( !empty($this->request->data) ){

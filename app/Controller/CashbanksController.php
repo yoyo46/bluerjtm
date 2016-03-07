@@ -141,6 +141,7 @@ class CashbanksController extends AppController {
         if(!empty($this->request->data)){
             $data = $this->request->data;
             $data['CashBank']['tgl_cash_bank'] = $this->MkCommon->getDate($data['CashBank']['tgl_cash_bank']);
+
             $coas_validate = true;
             $totalTagihanCredit = 0;
             $totalTagihanDebit = 0;
@@ -158,6 +159,7 @@ class CashbanksController extends AppController {
             $receiver_id = $this->MkCommon->filterEmptyField($data, 'CashBank', 'receiver_id');
             $receiver_type = $this->MkCommon->filterEmptyField($data, 'CashBank', 'receiver_type');
             $tgl_cash_bank = $this->MkCommon->filterEmptyField($data, 'CashBank', 'tgl_cash_bank');
+            $transaction_status = $this->MkCommon->filterEmptyField($data, 'CashBank', 'transaction_status');
 
             $data['CashBank']['is_revised'] = 0;
             $data['CashBank']['branch_id'] = Configure::read('__Site.config_branch_id');
@@ -258,7 +260,7 @@ class CashbanksController extends AppController {
 
             $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval(1, $total_coa);
 
-            if( empty($allowApprovals) ) {
+            if( $transaction_status == 'posting' && empty($allowApprovals) ) {
                 $data['CashBank']['completed'] = 1;
             }
 
@@ -328,7 +330,7 @@ class CashbanksController extends AppController {
                                 }
                             }
 
-                            if( empty($allowApprovals) ) {
+                            if( $transaction_status == 'posting' && empty($allowApprovals) ) {
                                 if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
                                     $coaArr = array(
                                         'debit' => $coa_id
@@ -349,7 +351,7 @@ class CashbanksController extends AppController {
                             }
                         }
 
-                        if( empty($allowApprovals) ) {
+                        if( $transaction_status == 'posting' && empty($allowApprovals) ) {
                             if( in_array($receiving_cash_type, array( 'out', 'ppn_out', 'prepayment_out' )) ) {
                                 $coaArr = array(
                                     'credit' => $document_coa_id,
@@ -373,7 +375,7 @@ class CashbanksController extends AppController {
                     $this->params['old_data'] = $data_local;
                     $this->params['data'] = $data;
 
-                    if( !empty($allowApprovals) ) {
+                    if( $transaction_status == 'posting' && !empty($allowApprovals) ) {
                         $this->MkCommon->_saveNotification(array(
                             'action' => __('Kas/Bank'),
                             'name' => sprintf(__('Kas/Bank dengan No Dokumen %s memerlukan ijin Approval'), $document_no),
@@ -488,7 +490,7 @@ class CashbanksController extends AppController {
             ),
         ));
         $employe_position_id = $this->MkCommon->filterEmptyField($user, 'Employe', 'employe_position_id');
-        $user_otorisasi_approvals = $this->User->Employe->EmployePosition->Approval->getUserOtorisasiApproval('cash_bank', $employe_position_id, $grand_total, $id);
+        $user_otorisasi_approvals = $this->User->Employe->EmployePosition->Approval->getUserOtorisasiApproval('cash-bank', $employe_position_id, $grand_total, $id);
 
         $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
         $branches = $this->User->Branch->City->branchCities();
@@ -673,7 +675,7 @@ class CashbanksController extends AppController {
 
             $user_position_id = $this->MkCommon->filterEmptyField($cashbank, 'Employe', 'employe_position_id');
 
-            $user_otorisasi_approvals = $this->User->Employe->EmployePosition->Approval->getUserOtorisasiApproval('cash_bank', $user_position_id, $grand_total, $id);
+            $user_otorisasi_approvals = $this->User->Employe->EmployePosition->Approval->getUserOtorisasiApproval('cash-bank', $user_position_id, $grand_total, $id);
             $position_approval = $this->User->Employe->EmployePosition->Approval->getPositionPriority($user_otorisasi_approvals);
 
             $position_priority = $this->MkCommon->filterEmptyField($position_approval, 'Priority');

@@ -84,6 +84,7 @@
                             $is_revised = $this->Common->filterEmptyField($value, 'CashBank', 'is_revised');
                             $completed = $this->Common->filterEmptyField($value, 'CashBank', 'completed');
                             $is_rejected = $this->Common->filterEmptyField($value, 'CashBank', 'is_rejected');
+                            $transaction_status = $this->Common->filterEmptyField($value, 'CashBank', 'transaction_status');
 
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                             $name_cash = $this->Common->filterEmptyField($value, 'name_cash', false, '-');
@@ -109,8 +110,8 @@
                                 'class' => 'text-center',
                             ));
 
-                            if( !empty($is_revised) ){
-                                $link = $this->Html->link(__('Ubah'), array(
+                            if( !empty($is_revised) || $transaction_status == 'unposting' ){
+                                $link = $this->Html->link(__('Edit'), array(
                                     'controller' => 'cashbanks',
                                     'action' => 'cashbank_edit',
                                     $id,

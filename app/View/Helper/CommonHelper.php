@@ -1114,22 +1114,27 @@ class CommonHelper extends AppHelper {
         return $content;
     }
 
-    function _getButtonPostingUnposting ( $revenue = false ) {
+    function _getButtonPostingUnposting ( $value = false, $modelName = 'Revenue' ) {
         $posting = false;
         $invoiced = false;
-        $revenue_status = true;
+        $_status = true;
 
-        if( !empty($revenue['Revenue']['transaction_status']) && $revenue['Revenue']['transaction_status'] == 'posting' ) {
+        if( !empty($value[$modelName]['transaction_status']) && $value[$modelName]['transaction_status'] == 'posting' ) {
             $posting = true;
         }
-        if( !empty($revenue['Revenue']['transaction_status']) && in_array($revenue['Revenue']['transaction_status'], array( 'invoiced', 'half_invoiced' )) ) {
+        if( !empty($value[$modelName]['transaction_status']) && in_array($value[$modelName]['transaction_status'], array( 'invoiced', 'half_invoiced' )) ) {
             $invoiced = true;
         }
-        if( isset($revenue['Revenue']['status']) && empty($revenue['Revenue']['status']) ) {
-            $revenue_status = false;
+        if( isset($value[$modelName]['status']) && empty($value[$modelName]['status']) ) {
+            $_status = false;
         }
 
-        if( !$invoiced && $revenue_status ) {
+
+        echo $this->Form->hidden('transaction_status', array(
+            'id' => 'transaction_status'
+        ));
+        
+        if( !$invoiced && $_status ) {
             echo $this->Form->button(__('Posting'), array(
                 'type' => 'submit',
                 'class'=> 'btn btn-success submit-form btn-lg',
