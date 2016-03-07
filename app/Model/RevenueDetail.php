@@ -213,6 +213,7 @@ class RevenueDetail extends AppModel {
             );
         } else {
             $options['conditions'] = array(
+                'Revenue.id' => 8209,
                 'RevenueDetail.revenue_id' => $id,
                 'Revenue.status' => 1,
                 'RevenueDetail.invoice_id' => NULL,
