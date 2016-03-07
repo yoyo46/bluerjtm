@@ -7061,7 +7061,8 @@ class RevenuesController extends AppController {
             $tarif_angkutans = Set::extract('/InvoiceDetail/RevenueDetail/tarif_angkutan_id', $invoice);
 
             if( !empty($tarif_angkutans) ) {
-                $tarif_angkutan_id = array_shift(array_values($tarif_angkutans));
+                $tarif_angkutans = array_values($tarif_angkutans);
+                $tarif_angkutan_id = array_shift($tarif_angkutans);
                 $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getMerge( array(), $tarif_angkutan_id );
                 $tarif_name = $this->MkCommon->filterEmptyField($tarif, 'TarifAngkutan', 'name_tarif');
             }
