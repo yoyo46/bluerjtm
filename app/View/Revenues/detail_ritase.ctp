@@ -179,7 +179,7 @@
 			                'align' => 'center',
 			            ),
 			            'customer' => array(
-			                'name' => __('Csutomer'),
+			                'name' => __('Customer'),
 			                'style' => 'text-align: center;vertical-align: middle;',
 			                'data-options' => 'field:\'customer\',width:100',
 			            ),
