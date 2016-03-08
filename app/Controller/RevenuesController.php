@@ -8958,7 +8958,6 @@ class RevenuesController extends AppController {
                     $invDetails[$idx] = $detail;
                 }
             }
-            // debug($invDetails);die();
 
             $this->loadModel('Setting');
             $setting = $this->Setting->find('first');

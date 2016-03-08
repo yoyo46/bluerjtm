@@ -179,7 +179,7 @@
     <div class="col-lg-3 col-xs-6">
         <div class="small-box">
             <?php 
-                    echo $this->Html->tag('div', $this->Html->tag('p', __('Print Nozomi Per Unit')), array(
+                    echo $this->Html->tag('div', $this->Html->tag('p', __('Print Others')), array(
                         'class' => 'inner',
                     ));
                     echo $this->Html->tag('div', $this->Common->icon('file'), array(

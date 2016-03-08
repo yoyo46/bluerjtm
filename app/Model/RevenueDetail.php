@@ -122,7 +122,7 @@ class RevenueDetail extends AppModel {
                     'id' => $id,
                 ),
             ), array(
-                'active' => true
+                'active' => false,
             ), false);
 
             if(!empty($data_merge)){
@@ -213,7 +213,6 @@ class RevenueDetail extends AppModel {
             );
         } else {
             $options['conditions'] = array(
-                'Revenue.id' => 8209,
                 'RevenueDetail.revenue_id' => $id,
                 'Revenue.status' => 1,
                 'RevenueDetail.invoice_id' => NULL,
