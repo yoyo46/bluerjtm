@@ -38,11 +38,12 @@
 			                if( in_array($data_print, array( 'date' )) && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
 								echo $this->Common->customDate($val_detail[0]['Revenue']['date_revenue'], 'd/m/Y');
 			                } else {
-			                	if( $val_detail[0]['Revenue']['revenue_tarif_type'] == 'per_truck' && !empty($val_detail[0]['Revenue']['no_doc']) ) {
-									echo $val_detail[0]['Revenue']['no_doc'];
-			                	} else {
-									echo $val_detail[0]['City']['name'];
-								}
+			      //           	if( $val_detail[0]['Revenue']['revenue_tarif_type'] == 'per_truck' && !empty($val_detail[0]['Revenue']['no_doc']) ) {
+									// echo $val_detail[0]['Revenue']['no_doc'];
+			      //           	} else {
+			                		$no_doc = !empty($val_detail[0]['Revenue']['no_doc'])?$val_detail[0]['Revenue']['no_doc']:false;
+									echo !empty($val_detail[0]['City']['name'])?$val_detail[0]['City']['name']:$no_doc;
+								// }
 			                }
 						}
 				?>
