@@ -5,6 +5,7 @@
             $idx = 1;
             $totalUnit = 0;
             $totalPrice = 0;
+            $temp = false;
 
             foreach ($invDetails as $key => $value) {
                 $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
@@ -12,18 +13,30 @@
                 $to_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
                 $group_motor = $this->Common->filterEmptyField($value, 'GroupMotor', 'name');
 
+                $revenue_id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
                 $date = $this->Common->filterEmptyField($value, 'Revenue', 'date_revenue');
+                $price_truck = $this->Common->filterEmptyField($value, 'Revenue', 'tarif_per_truck');
+                $revenue_tarif_type = $this->Common->filterEmptyField($value, 'Revenue', 'revenue_tarif_type');
 
                 $unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'qty_unit');
                 $rate = $this->Common->filterEmptyField($value, 'RevenueDetail', 'price_unit');
                 $no_do = $this->Common->filterEmptyField($value, 'RevenueDetail', 'no_do', '&nbsp;');
                 $no_sj = $this->Common->filterEmptyField($value, 'RevenueDetail', 'no_sj', '&nbsp;');
 
-                $price = $rate * $unit;
                 $customDate = $this->Common->formatDate($date, 'd-M-y');
-                $customPrice = $this->Common->getFormatPrice($price, false);
                 $customRate = $this->Common->getFormatPrice($rate, false);
 
+                if( $revenue_tarif_type == 'per_truck' ) {
+                    if( $temp != $revenue_id ) {
+                        $price = $price_truck;
+                    } else {
+                        $price = false;
+                    }
+                } else {
+                    $price = $rate * $unit;
+                }
+
+                $customPrice = $this->Common->getFormatPrice($price, false);
                 $totalUnit += $unit;
                 $totalPrice += $price;
 ?>
@@ -60,6 +73,7 @@
 </tr>
 <?php
             $idx++;
+            $temp = $revenue_id;
         }
         
         $customTotalPrice = $this->Common->getFormatPrice($totalPrice, false);
