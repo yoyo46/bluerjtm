@@ -65,7 +65,7 @@
 
                     $grandtotalArr['TargetRit'][$month] = $last_target_rit + $target_rit;
                     $grandtotalArr['TotalRit'][$month] = $last_total_rit + $total_rit;
-                    $grandtotalArr['TargetUnit'][$month] = $last_total_unit + $total_unit;
+                    $grandtotalArr['TargetUnit'][$month] = $last_target_unit + $target_unit;
                     $grandtotalArr['TotalUnit'][$month] = $last_total_unit + $total_unit;
                 }
             }
@@ -106,7 +106,7 @@
                 'colspan' => $colspan,
                 'style' => 'text-align: right;font-weight: bold;',
             ));
-            
+
             if( isset($totalCnt) ) {
                 for ($i=0; $i <= $totalCnt; $i++) {
                     $month = date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
