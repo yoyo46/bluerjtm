@@ -133,6 +133,9 @@
 						$payment_type = !empty($value['RevenueDetail']['payment_type'])?$value['RevenueDetail']['payment_type']:false;
 						$jenis_tarif = !empty($value['Revenue']['revenue_tarif_type'])?$value['Revenue']['revenue_tarif_type']:false;
 
+						$tarif_angkutan_type = $this->Common->filterEmptyField($value, 'RevenueDetail', 'tarif_angkutan_type');
+						$total_price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'total_price_unit');
+
 						if( $payment_type == 'per_truck' ){
 							$priceFormat = '-';
 						} else {
@@ -178,10 +181,13 @@
 							'align' => 'right'
 						));
 
-						if( $jenis_tarif == 'per_truck' ){
-							if( !empty($value['RevenueDetail']['total_price_unit']) ) {
-								$total = $value['RevenueDetail']['total_price_unit'];
-
+						if( $tarif_angkutan_type != 'angkut' && $payment_type == 'per_truck' ) {
+							$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($total_price_unit), array(
+								'align' => 'right'
+							));
+						} else if( $jenis_tarif == 'per_truck' ){
+							if( !empty($total_price_unit) ) {
+								$total = $total_price_unit;
 								$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($total), array(
 									'align' => 'right'
 								));

@@ -549,7 +549,7 @@ class Revenue extends AppModel {
             foreach ($dataRevenue['RevenueDetail']['tarif_angkutan_type'] as $keyDetail => $revenueDetail) {
                 $dataRevenuDetail['RevenueDetail']['city_id'][$idx] = isset($data['RevenueDetail']['city_id'][$keyDetail])?$data['RevenueDetail']['city_id'][$keyDetail]:false;
                 $dataRevenuDetail['RevenueDetail']['tarif_angkutan_id'][$idx] = isset($data['RevenueDetail']['tarif_angkutan_id'][$keyDetail])?$data['RevenueDetail']['tarif_angkutan_id'][$keyDetail]:false;
-                $dataRevenuDetail['RevenueDetail']['tarif_angkutan_type'][$idx] = isset($data['RevenueDetail']['tarif_angkutan_type'][$keyDetail])?$data['RevenueDetail']['tarif_angkutan_type'][$keyDetail]:false;
+                $dataRevenuDetail['RevenueDetail']['tarif_angkutan_type'][$idx] = $tarif_angkutan_type = isset($data['RevenueDetail']['tarif_angkutan_type'][$keyDetail])?$data['RevenueDetail']['tarif_angkutan_type'][$keyDetail]:false;
                 $dataRevenuDetail['RevenueDetail']['no_do'][$idx] = isset($data['RevenueDetail']['no_do'][$keyDetail])?$data['RevenueDetail']['no_do'][$keyDetail]:false;
                 $dataRevenuDetail['RevenueDetail']['no_sj'][$idx] = isset($data['RevenueDetail']['no_sj'][$keyDetail])?$data['RevenueDetail']['no_sj'][$keyDetail]:false;
                 $dataRevenuDetail['RevenueDetail']['group_motor_id'][$idx] = isset($data['RevenueDetail']['group_motor_id'][$keyDetail])?$data['RevenueDetail']['group_motor_id'][$keyDetail]:false;
@@ -560,7 +560,7 @@ class Revenue extends AppModel {
                 $dataRevenuDetail['RevenueDetail']['price_unit'][$idx] = isset($data['RevenueDetail']['price_unit'][$keyDetail])?$data['RevenueDetail']['price_unit'][$keyDetail]:false;
                 $dataRevenuDetail['RevenueDetail']['total_price_unit'][$idx] = isset($data['RevenueDetail']['total_price_unit'][$keyDetail])?$data['RevenueDetail']['total_price_unit'][$keyDetail]:false;
 
-                if( $dataRevenuDetail['RevenueDetail']['payment_type'][$idx] == 'per_truck' && empty($dataRevenuDetail['RevenueDetail']['is_charge'][$idx]) ) {
+                if( $tarif_angkutan_type == 'angkut' && $dataRevenuDetail['RevenueDetail']['payment_type'][$idx] == 'per_truck' && empty($dataRevenuDetail['RevenueDetail']['is_charge'][$idx]) ) {
                     $dataRevenuDetail['RevenueDetail']['total_price_unit'][$idx] = 0;
                 }
                 $idx++;
@@ -594,12 +594,15 @@ class Revenue extends AppModel {
         if(!empty($dataRevenue['RevenueDetail'])){
             foreach ($dataRevenue['RevenueDetail']['no_do'] as $keyDetail => $value) {
                 $tarif_angkutan_type = !empty($dataRevenue['RevenueDetail']['tarif_angkutan_type'][$keyDetail])?$dataRevenue['RevenueDetail']['tarif_angkutan_type'][$keyDetail]:'angkut';
+                $price_unit = !empty($dataRevenue['RevenueDetail']['price_unit'][$keyDetail])?$dataRevenue['RevenueDetail']['price_unit'][$keyDetail]:0;
+                $total_price_unit = !empty($dataRevenue['RevenueDetail']['total_price_unit'][$keyDetail])?$dataRevenue['RevenueDetail']['total_price_unit'][$keyDetail]:0;
+
                 $data_detail['RevenueDetail'] = array(
                     'no_do' => $value,
                     'no_sj' => $dataRevenue['RevenueDetail']['no_sj'][$keyDetail],
                     'qty_unit' => !empty($dataRevenue['RevenueDetail']['qty_unit'][$keyDetail])?$dataRevenue['RevenueDetail']['qty_unit'][$keyDetail]:0,
-                    'price_unit' => !empty($dataRevenue['RevenueDetail']['price_unit'][$keyDetail])?$dataRevenue['RevenueDetail']['price_unit'][$keyDetail]:0,
-                    'total_price_unit' => !empty($dataRevenue['RevenueDetail']['total_price_unit'][$keyDetail])?$dataRevenue['RevenueDetail']['total_price_unit'][$keyDetail]:0,
+                    'price_unit' => $price_unit,
+                    'total_price_unit' => $total_price_unit,
                     'city_id' => $dataRevenue['RevenueDetail']['city_id'][$keyDetail],
                     'group_motor_id' => $dataRevenue['RevenueDetail']['group_motor_id'][$keyDetail],
                     'tarif_angkutan_id' => $dataRevenue['RevenueDetail']['tarif_angkutan_id'][$keyDetail],
@@ -628,11 +631,15 @@ class Revenue extends AppModel {
                     }
                 }
 
-                if(!empty($dataRevenue['RevenueDetail']['price_unit'][$keyDetail]) && $dataRevenue['RevenueDetail']['qty_unit'][$keyDetail]){
+                if( (!empty($price_unit) || $tarif_angkutan_type != 'angkut') && $dataRevenue['RevenueDetail']['qty_unit'][$keyDetail]){
                     if($dataRevenue['RevenueDetail']['payment_type'][$keyDetail] == 'per_truck'){
-                        $total_revenue += $dataRevenue['RevenueDetail']['price_unit'][$keyDetail];
+                        if( $tarif_angkutan_type != 'angkut' ) {
+                            $total_revenue += $total_price_unit;
+                        } else {
+                            $total_revenue += $price_unit;
+                        }
                     }else{
-                        $total_revenue += $dataRevenue['RevenueDetail']['price_unit'][$keyDetail] * $dataRevenue['RevenueDetail']['qty_unit'][$keyDetail];
+                        $total_revenue += $price_unit * $dataRevenue['RevenueDetail']['qty_unit'][$keyDetail];
                     }
                 }
             }
@@ -666,8 +673,6 @@ class Revenue extends AppModel {
         $dataRevenue['Revenue']['total'] = $total_revenue;
         $dataRevenue['Revenue']['total_without_tax'] = $totalWithoutTax;
         $dataRevenue['Revenue']['branch_id'] = Configure::read('__Site.config_branch_id');
-
-        $this->set($dataRevenue);
 
         $validate_qty = true;
         $qtyReview = $this->checkQtyUsed( $ttuj_id, $id );
