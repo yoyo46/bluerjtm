@@ -804,7 +804,7 @@ class RevenuesController extends AppController {
                                             'customer_id' => $data['Ttuj']['customer_id'],
                                             'revenue_tarif_type' => !empty($tarifDefault['jenis_unit'])?$tarifDefault['jenis_unit']:'per_unit',
                                             'from_city_id' => $from_city_id,
-                                            'to_city_id' => $to_city_id,
+                                            'to_city_id' => $current_branch_id,
                                             'branch_id' => $current_branch_id,
                                         ));
 
@@ -8416,9 +8416,23 @@ class RevenuesController extends AppController {
                 $value = $this->Ttuj->getMerge($value, $ttuj_id);
 
                 $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
+                $customer_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'customer_id', $customer_id);
+
+                $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
+                $truck_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'truck_id', $truck_id);
+                $value = $this->Ttuj->Truck->getMerge($value, $truck_id);
+
+                $from_city_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'from_city_id');
+                $to_city_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'to_city_id');
+                $from_city_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'from_city_id', $from_city_id);
+                $to_city_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'to_city_id', $to_city_id);
+
                 $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
                 $value = $this->Ttuj->Revenue->RevenueDetail->getSumUnit($value, $id, 'revenue', 'RevenueDetail.revenue_id');
                 $value = $this->Ttuj->Revenue->RevenueDetail->Invoice->getMerge($value, $invoice_id);
+                
+                $value = $this->City->getMerge($value, $from_city_id, 'FromCity');
+                $value = $this->City->getMerge($value, $to_city_id, 'ToCity');
 
                 $values[$key] = $value;
             }
@@ -8502,9 +8516,19 @@ class RevenuesController extends AppController {
                 $value = $this->Ttuj->getMerge($value, $ttuj_id);
 
                 $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
+                $customer_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'customer_id', $customer_id);
+
+                $from_city_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'from_city_id');
+                $from_city_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'from_city_id', $from_city_id);
+
                 $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
                 $value = $this->Ttuj->Revenue->RevenueDetail->Invoice->getMerge($value, $invoice_id);
                 $value = $this->Ttuj->Revenue->RevenueDetail->City->getMerge($value, $city_id);
+                $value = $this->City->getMerge($value, $from_city_id, 'FromCity');
+
+                $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
+                $truck_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'truck_id', $truck_id);
+                $value = $this->Ttuj->Truck->getMerge($value, $truck_id);
 
                 $values[$key] = $value;
             }

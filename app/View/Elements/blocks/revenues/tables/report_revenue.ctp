@@ -11,8 +11,8 @@
 
                 $customer = $this->Common->filterEmptyField($value, 'Customer', 'code');
                 $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
-                $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
-                $from_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
+                $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
+                $from_city_name = $this->Common->filterEmptyField($value, 'FromCity', 'name');
                 $to_city_name = $this->Common->filterEmptyField($value, 'City', 'name');
                 $no_invoice = $this->Common->filterEmptyField($value, 'Invoice', 'no_invoice');
 

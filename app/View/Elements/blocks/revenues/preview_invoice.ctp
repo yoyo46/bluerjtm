@@ -138,9 +138,11 @@
 
 						if( $payment_type == 'per_truck' ){
 							$priceFormat = '-';
-						} else {
+						} else if( !empty($value['RevenueDetail']['total_price_unit']) ) {
 							$price = $value['RevenueDetail']['price_unit'];
 							$priceFormat = $this->Common->getFormatPrice($price);
+						} else {
+							$priceFormat = '-';
 						}
 
 						if( !empty($value['Revenue']['Ttuj']['nopol']) ) {
@@ -200,10 +202,14 @@
 									));
 								}
 							}
-						} else {
+						} else if( !empty($value['RevenueDetail']['total_price_unit']) ) {
 							$total = $price * $qty;
 
 							$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($total), array(
+								'align' => 'right'
+							));
+						} else {
+							$colom .= $this->Html->tag('td', '-', array(
 								'align' => 'right'
 							));
 						}

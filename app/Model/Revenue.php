@@ -674,6 +674,8 @@ class Revenue extends AppModel {
         $dataRevenue['Revenue']['total_without_tax'] = $totalWithoutTax;
         $dataRevenue['Revenue']['branch_id'] = Configure::read('__Site.config_branch_id');
 
+        $this->set($dataRevenue);
+
         $validate_qty = true;
         $qtyReview = $this->checkQtyUsed( $ttuj_id, $id );
         $qtyTtuj = !empty($qtyReview['qtyTtuj'])?$qtyReview['qtyTtuj']:0;
