@@ -10,7 +10,9 @@
 
                 $customer = $this->Common->filterEmptyField($value, 'Customer', 'code');
                 $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
-                $no_invoice = $this->Common->filterEmptyField($value, 'Invoice', 'no_invoice');
+
+                $no_invoices = Set::extract('/Invoice/Invoice/no_invoice', $value);
+                $no_invoice = !empty($no_invoices)?implode(', ', $no_invoices):false;
 
                 $from_city_name = $this->Common->filterEmptyField($value, 'FromCity', 'name');
                 $to_city_name = $this->Common->filterEmptyField($value, 'ToCity', 'name');

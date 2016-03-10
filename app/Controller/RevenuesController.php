@@ -796,7 +796,6 @@ class RevenuesController extends AppController {
 
                                         $dataSetting = $this->MkCommon->_callSettingGeneral('Revenue', array( 'pph', 'ppn' ), false);
                                         $dataSetting = $this->MkCommon->filterEmptyField($dataSetting, 'Revenue', false, array());
-                                        $dataSetting = $this->MkCommon->filterEmptyField($dataSetting, 'Revenue', false, array());
 
                                         $dataRevenue['Revenue'] = array_merge($dataSetting, array(
                                             'ttuj_id' => $document_id,
@@ -804,7 +803,7 @@ class RevenuesController extends AppController {
                                             'customer_id' => $data['Ttuj']['customer_id'],
                                             'revenue_tarif_type' => !empty($tarifDefault['jenis_unit'])?$tarifDefault['jenis_unit']:'per_unit',
                                             'from_city_id' => $from_city_id,
-                                            'to_city_id' => $current_branch_id,
+                                            'to_city_id' => $to_city_id,
                                             'branch_id' => $current_branch_id,
                                         ));
 
@@ -8365,6 +8364,7 @@ class RevenuesController extends AppController {
         $dateTo = date('Y-m-d');
 
         $this->set('sub_module_title', $module_title);
+        
         $options =  $this->Ttuj->Revenue->getData('paginate', array(
             'conditions' => array(
                 'RevenueDetail.status' => 1,
@@ -8374,7 +8374,7 @@ class RevenuesController extends AppController {
             ),
             'group' => array(
                 'RevenueDetail.revenue_id',
-                'RevenueDetail.invoice_id',
+                // 'RevenueDetail.invoice_id',
             ),
         ), true, array(
             'branch' => false,
@@ -8412,8 +8412,23 @@ class RevenuesController extends AppController {
             foreach ($values as $key => $value) {
                 $id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'id');
                 $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'ttuj_id');
-                $invoice_id = $this->MkCommon->filterEmptyField($value, 'RevenueDetail', 'invoice_id');
                 $value = $this->Ttuj->getMerge($value, $ttuj_id);
+
+                $invoice_id = $this->Ttuj->Revenue->RevenueDetail->getData('list', array(
+                    'conditions' => array(
+                        'RevenueDetail.revenue_id' => $id,
+                        'RevenueDetail.status' => 1,
+                    ),
+                    'fields' => array(
+                        'RevenueDetail.invoice_id', 'RevenueDetail.invoice_id',
+                    ),
+                    'group' => array(
+                        'RevenueDetail.revenue_id',
+                        'RevenueDetail.invoice_id',
+                    ),
+                ), array(
+                    'branch' => false,
+                ));
 
                 $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
                 $customer_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'customer_id', $customer_id);
@@ -8429,7 +8444,7 @@ class RevenuesController extends AppController {
 
                 $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
                 $value = $this->Ttuj->Revenue->RevenueDetail->getSumUnit($value, $id, 'revenue', 'RevenueDetail.revenue_id');
-                $value = $this->Ttuj->Revenue->RevenueDetail->Invoice->getMerge($value, $invoice_id);
+                $value = $this->Ttuj->Revenue->RevenueDetail->Invoice->getMerge($value, $invoice_id, 'all');
                 
                 $value = $this->City->getMerge($value, $from_city_id, 'FromCity');
                 $value = $this->City->getMerge($value, $to_city_id, 'ToCity');
