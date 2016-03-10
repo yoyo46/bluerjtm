@@ -525,8 +525,10 @@ class Revenue extends AppModel {
         $data['Revenue']['pph'] = !empty($data['Revenue']['pph'])?$data['Revenue']['pph']:0;
         $data['Revenue']['additional_charge'] = !empty($data['Revenue']['additional_charge'])?$data['Revenue']['additional_charge']:0;
 
-        $data['Revenue']['from_city_id'] = !empty($data['Ttuj']['from_city_id'])?$data['Ttuj']['from_city_id']:0;
-        $data['Revenue']['to_city_id'] = !empty($data['Ttuj']['to_city_id'])?$data['Ttuj']['to_city_id']:0;
+        if( !empty($data['Ttuj']['from_city_id']) ) {
+            $data['Revenue']['from_city_id'] = !empty($data['Ttuj']['from_city_id'])?$data['Ttuj']['from_city_id']:0;
+            $data['Revenue']['to_city_id'] = !empty($data['Ttuj']['to_city_id'])?$data['Ttuj']['to_city_id']:0;
+        }
 
         $ttuj_id = !empty($data['Revenue']['ttuj_id'])?$data['Revenue']['ttuj_id']:false;
         $dataRevenues = array();

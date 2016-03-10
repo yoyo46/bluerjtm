@@ -796,12 +796,15 @@ class RevenuesController extends AppController {
 
                                         $dataSetting = $this->MkCommon->_callSettingGeneral('Revenue', array( 'pph', 'ppn' ), false);
                                         $dataSetting = $this->MkCommon->filterEmptyField($dataSetting, 'Revenue', false, array());
+                                        $dataSetting = $this->MkCommon->filterEmptyField($dataSetting, 'Revenue', false, array());
 
                                         $dataRevenue['Revenue'] = array_merge($dataSetting, array(
                                             'ttuj_id' => $document_id,
                                             'date_revenue' => $data['Ttuj']['ttuj_date'],
                                             'customer_id' => $data['Ttuj']['customer_id'],
                                             'revenue_tarif_type' => !empty($tarifDefault['jenis_unit'])?$tarifDefault['jenis_unit']:'per_unit',
+                                            'from_city_id' => $from_city_id,
+                                            'to_city_id' => $to_city_id,
                                             'branch_id' => $current_branch_id,
                                         ));
 
