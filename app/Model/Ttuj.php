@@ -715,9 +715,10 @@ class Ttuj extends AppModel {
             ),
             'conditions' => array(
                 'Ttuj.no_ttuj LIKE' => '%'.$format_id.'%',
-            )
+            ),
         ), true, array(
             'status' => 'all',
+            'branch' => false,
         ));
 
         if(!empty($last_data['Ttuj']['no_ttuj'])){
