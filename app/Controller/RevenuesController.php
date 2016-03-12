@@ -475,6 +475,8 @@ class RevenuesController extends AppController {
                 'conditions' => array(
                     'Customer.id' => $customer_id,
                 ),
+            ), true, array(
+                'branch' => false,
             ));
             $conditionsTruck = array(
                 'Truck.id' => $truck_id,
@@ -500,6 +502,8 @@ class RevenuesController extends AppController {
                     'UangJalan.to_city_id' => $to_city_id,
                     'UangJalan.capacity' => $capacity,
                 ),
+            ), true, array(
+                'branch' => false,
             ));
 
             if( !empty($uangJalan) ) {
