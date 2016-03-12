@@ -401,6 +401,8 @@ class UangJalan extends AppModel {
             'contain' => array(
                 'ToCity'
             ),
+        ), true, array(
+            'branch' => false,
         ));
     }
 
