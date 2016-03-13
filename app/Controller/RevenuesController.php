@@ -49,76 +49,20 @@ class RevenuesController extends AppController {
         $this->set('sub_module_title', __('TTUJ'));
         $this->set('label_tgl', __('Tgl Berangkat'));
 
-        $conditions = array();
-
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            if(!empty($refine['nottuj'])){
-                $nottuj = urldecode($refine['nottuj']);
-                $nottuj = $this->MkCommon->replaceSlash($nottuj);
-                $this->request->data['Ttuj']['nottuj'] = $nottuj;
-                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
-            }
-            if(!empty($refine['nopol'])){
-                $nopol = urldecode($refine['nopol']);
-                $this->request->data['Ttuj']['nopol'] = $nopol;
-                $typeTruck = !empty($refine['type'])?$refine['type']:1;
-                $this->request->data['Ttuj']['type'] = $typeTruck;
-
-                if( $typeTruck == 2 ) {
-                    $conditionsNopol = array(
-                        'Truck.id' => $nopol,
-                    );
-                } else {
-                    $conditionsNopol = array(
-                        'Truck.nopol LIKE' => '%'.$nopol.'%',
-                    );
-                }
-
-                $truckSearch = $this->Ttuj->Truck->getData('list', array(
-                    'conditions' => $conditionsNopol,
-                    'fields' => array(
-                        'Truck.id', 'Truck.id',
-                    ),
-                ), true, array(
-                    'status' => 'all',
-                    'branch' => false,
-                ));
-                $conditions['Ttuj.truck_id'] = $truckSearch;
-            }
-            if(!empty($refine['customer'])){
-                $customer = urldecode($refine['customer']);
-                $this->request->data['Ttuj']['customer'] = $customer;
-                $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
-            }
-            if(!empty($refine['date'])){
-                $dateStr = urldecode($refine['date']);
-                $date = explode('-', $dateStr);
-
-                if( !empty($date) ) {
-                    $date[0] = urldecode($date[0]);
-                    $date[1] = urldecode($date[1]);
-                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                    $dateFrom = $this->MkCommon->getDate($date[0]);
-                    $dateTo = $this->MkCommon->getDate($date[1]);
-                    $conditions['DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') >='] = $dateFrom;
-                    $conditions['DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') <='] = $dateTo;
-                }
-                $this->request->data['Ttuj']['date'] = $dateStr;
-            }
-
-            $conditions = $this->RjRevenue->_callRefineStatusTTUJ($refine, $conditions);
-        }
-
-        $this->paginate = $this->Ttuj->getData('paginate', array(
-            'conditions' => $conditions,
+        $options = array(
+            'conditions' => array(),
             'order'=> array(
                 'Ttuj.status' => 'DESC',
                 'Ttuj.created' => 'DESC',
                 'Ttuj.id' => 'DESC',
             ),
-        ), true, array(
+        );
+        $refine = $this->MkCommon->filterEmptyField( $this->params, 'named' );
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Ttuj->_callRefineParams($params, $options);
+        $options['conditions'] = $this->RjRevenue->_callRefineStatusTTUJ($refine, $options['conditions']);
+
+        $this->paginate = $this->Ttuj->getData('paginate', $options, true, array(
             'status' => 'all',
         ));
         $ttujs = $this->paginate('Ttuj');
@@ -129,7 +73,16 @@ class RevenuesController extends AppController {
             }
         }
 
-        $this->set('ttujs', $ttujs);
+        $customers = $this->Ttuj->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+
+        $this->MkCommon->_layout_file('select');
+        $this->set(compact(
+            'ttujs', 'customers'
+        ));
     }
 
     function ttuj_add( $data_action = 'depo' ){

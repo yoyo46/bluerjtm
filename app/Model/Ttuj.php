@@ -735,6 +735,9 @@ class Ttuj extends AppModel {
     public function _callRefineParams( $data = '', $default_options = false ) {
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+        $dateFromTtuj = !empty($data['named']['DateFromTtuj'])?$data['named']['DateFromTtuj']:false;
+        $dateToTtuj = !empty($data['named']['DateToTtuj'])?$data['named']['DateToTtuj']:false;
+
         $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
         $type = !empty($data['named']['type'])?$data['named']['type']:1;
         $company = !empty($data['named']['company'])?$data['named']['company']:false;
@@ -765,6 +768,16 @@ class Ttuj extends AppModel {
                 $default_options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $dateTo;
             }
         }
+        if( !empty($dateFromTtuj) || !empty($dateToTtuj) ) {
+            if( !empty($dateFromTtuj) ) {
+                $default_options['conditions']['DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') >='] = $dateFromTtuj;
+            }
+
+            if( !empty($dateToTtuj) ) {
+                $default_options['conditions']['DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') <='] = $dateToTtuj;
+            }
+        }
+
         if(!empty($nopol)){
             if( $type == 2 ) {
                 $default_options['conditions']['Ttuj.truck_id'] = $nopol;

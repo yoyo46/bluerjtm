@@ -7,7 +7,7 @@
     </div>
     <div class="box-body" style="display: none;">
         <?php 
-                echo $this->Form->create('Ttuj', array(
+                echo $this->Form->create('Search', array(
                     'url'=> $this->Html->url( array(
                         'controller' => 'revenues',
                         'action' => 'search',
@@ -21,14 +21,14 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->label('date', $label_tgl);
+                            echo $this->Form->label('datettuj', $label_tgl);
                     ?>
                     <div class="input-group">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
                         <?php 
-                                echo $this->Form->input('Ttuj.date',array(
+                                echo $this->Form->input('datettuj',array(
                                     'label'=> false,
                                     'class'=>'form-control pull-right date-range',
                                     'required' => false,
@@ -38,7 +38,24 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('nottuj',array(
+                            echo $this->Form->label('date', __('Tgl TTUJ'));
+                    ?>
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <?php 
+                                echo $this->Form->input('date',array(
+                                    'label'=> false,
+                                    'class'=>'form-control pull-right date-range',
+                                    'required' => false,
+                                ));
+                        ?>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('nodoc',array(
                                 'label'=> __('No. Doc'),
                                 'class'=>'form-control',
                                 'required' => false,
@@ -93,20 +110,24 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group select-block">
                     <?php 
-                            echo $this->Form->input('customer',array(
-                                'label'=> __('Customer'),
-                                'class'=>'form-control',
+                            echo $this->Form->label('customerid', __('Customer'), array(
+                                'class' => 'control-label',
+                            ));
+                            echo $this->Form->input('customerid',array(
+                                'label'=> false,
+                                'class'=>'form-control chosen-select',
                                 'required' => false,
-                                'placeholder' => __('Customer')
+                                'empty' => __('Pilih Customer'),
+                                'options' => $customers
                             ));
                     ?>
                 </div>
                 <div class="row">
                     <div class="col-sm-6 col-md-4">
                         <?php 
-                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_draft', array(
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_draft', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
@@ -119,7 +140,7 @@
                     </div>
                     <div class="col-sm-6 col-md-4">
                         <?php 
-                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_commit', array(
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_commit', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
@@ -132,7 +153,7 @@
                     </div>
                     <div class="col-sm-6 col-md-4">
                         <?php 
-                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_arrive', array(
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_arrive', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
@@ -145,7 +166,7 @@
                     </div>
                     <div class="col-sm-6 col-md-4">
                         <?php 
-                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_bongkaran', array(
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_bongkaran', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
@@ -158,7 +179,7 @@
                     </div>
                     <div class="col-sm-6 col-md-4">
                         <?php 
-                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_balik', array(
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_balik', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
@@ -171,7 +192,7 @@
                     </div>
                     <div class="col-sm-6 col-md-4">
                         <?php 
-                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_pool', array(
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_pool', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
@@ -184,7 +205,7 @@
                     </div>
                     <div class="col-sm-6 col-md-4">
                         <?php 
-                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_sj_not_completed', array(
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_sj_not_completed', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
@@ -197,7 +218,7 @@
                     </div>
                     <div class="col-sm-6 col-md-4">
                         <?php 
-                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_sj_completed', array(
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_sj_completed', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
@@ -210,7 +231,7 @@
                     </div>
                     <div class="col-sm-6 col-md-4">
                         <?php 
-                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_revenue', array(
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_revenue', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
@@ -223,7 +244,7 @@
                     </div>
                     <div class="col-sm-6 col-md-4">
                         <?php 
-                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_completed', array(
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_completed', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
@@ -236,7 +257,7 @@
                     </div>
                     <div class="col-sm-12 col-md-6">
                         <?php 
-                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Ttuj.is_not_revenue', array(
+                                echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('is_not_revenue', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
