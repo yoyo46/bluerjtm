@@ -3569,6 +3569,7 @@ class SettingsController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
+
             if($id && $data_local){
                 $this->Bank->id = $id;
                 $msg = 'merubah';
@@ -3580,8 +3581,8 @@ class SettingsController extends AppController {
             $data['Bank']['coa_id'] = !empty($data['Bank']['coa_id'])?$data['Bank']['coa_id']:0;
             $this->Bank->set($data);
 
-            if($this->Bank->validates($data)){
-                if($this->Bank->save($data)){
+            if($this->Bank->validates()){
+                if($this->Bank->save()){
                     $id = $this->Bank->id;
 
                     $this->params['old_data'] = $data_local;

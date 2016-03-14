@@ -220,7 +220,7 @@
 			), array(
 				'class'=> 'btn btn-default',
 			));
-			$this->Common->_getButtonPostingUnposting( $data_local, 'CashBank' );
+			$this->Common->_getButtonPostingUnposting( $data_local, 'CashBank', array( 'Commit', 'Draft' ) );
 	?>
 </div>
 <?php

@@ -1114,7 +1114,7 @@ class CommonHelper extends AppHelper {
         return $content;
     }
 
-    function _getButtonPostingUnposting ( $value = false, $modelName = 'Revenue' ) {
+    function _getButtonPostingUnposting ( $value = false, $modelName = 'Revenue', $lblArr = array( 'Posting', 'Unposting' ) ) {
         $posting = false;
         $invoiced = false;
         $_status = true;
@@ -1135,13 +1135,13 @@ class CommonHelper extends AppHelper {
         ));
         
         if( !$invoiced && $_status ) {
-            echo $this->Form->button(__('Posting'), array(
+            echo $this->Form->button(!empty($lblArr[0])?$lblArr[0]:__('Posting'), array(
                 'type' => 'submit',
                 'class'=> 'btn btn-success submit-form btn-lg',
                 'action_type' => 'posting'
             ));
             
-            echo $this->Form->button(__('Unposting'), array(
+            echo $this->Form->button(!empty($lblArr[1])?$lblArr[1]:__('Unposting'), array(
                 'type' => 'submit',
                 'class'=> 'btn btn-primary submit-form',
                 'action_type' => 'unposting'
