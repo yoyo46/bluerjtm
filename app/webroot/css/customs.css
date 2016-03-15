@@ -78,6 +78,17 @@
 #sj-remove {
 	color: #FFFFFF;
 }
+
+.document-ttuj .checkbox {
+	display: block;
+	border: none;
+	margin: 0;
+}
+.document-ttuj input[type=checkbox] {
+	display: block;
+	position: relative;
+    margin: 0;
+}
 /*
 **	END TTUJ
 */

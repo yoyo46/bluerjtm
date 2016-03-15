@@ -512,7 +512,7 @@
                         ),
                         'revenues' => array(
                             'ttuj', 'truk_tiba', 'bongkaran',
-                            'balik', 'pool'
+                            'balik', 'pool', 'surat_jalan'
                         ),
                     );
 
@@ -522,6 +522,7 @@
                             'ttuj', 'truk_tiba', 'bongkaran',
                             'balik', 'pool', 'uang_jalan',
                             'uang_kuli_muat', 'uang_kuli_bongkar',
+                            'surat_jalan',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $ttujMenu) ) {
@@ -608,6 +609,15 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'pool' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Surat Jalan', array(
+                                'controller' => 'revenues',
+                                'action' => 'surat_jalan',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'surat_jalan' )?'active':'',
                             ));
                     ?>
                 </ul>

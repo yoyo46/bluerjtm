@@ -392,15 +392,15 @@
                                     ), __('Apakah Anda yakin akan membatalkan data ini?'));
                                 }
 
-                                if( empty($is_draft) && !empty($status) ) {
-                                    echo $this->Html->link(__('Surat Jalan'), array(
-                                        'controller' => 'revenues',
-                                        'action' => 'surat_jalan',
-                                        $id
-                                    ), array(
-                                        'class' => 'btn bg-navy btn-xs'
-                                    ));
-                                }
+                                // if( empty($is_draft) && !empty($status) ) {
+                                //     echo $this->Html->link(__('Surat Jalan'), array(
+                                //         'controller' => 'revenues',
+                                //         'action' => 'surat_jalan',
+                                //         $id
+                                //     ), array(
+                                //         'class' => 'btn bg-navy btn-xs'
+                                //     ));
+                                // }
                             }
                     ?>
                 </td>

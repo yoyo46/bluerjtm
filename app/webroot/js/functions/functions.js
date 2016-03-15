@@ -2718,6 +2718,9 @@ var popup_checkbox = function(){
                     $.inputPrice({
                         obj: $('.child-'+id+' .input_price'),
                     });
+                    $.inputNumber({
+                        obj: $('.child-'+id+' .input_number'),
+                    });
                     input_price_min( $('.child-'+id+' .input_price_min') );
                     sisa_amount($('#checkbox-info-table .child-'+id+' .sisa-amount'));
                     delete_current_document($('#checkbox-info-table .child-'+id+' .document-table-action a'));
@@ -2947,7 +2950,7 @@ var calcTotalBiaya = function () {
     };
 
     // $('#total-biaya').html('IDR '+formatNumber( totalBiaya, 2 ));
-    $('#total-biaya').html('IDR '+formatNumber( totalBiaya, 0 ));
+    $('#total-biaya').html(formatNumber( totalBiaya, 0 ));
 }
 
 var sisa_amount = function ( obj ) {
@@ -2958,14 +2961,24 @@ var sisa_amount = function ( obj ) {
     obj.blur(function(){
         var self = $(this);
         var parent = self.parents('tr');
-        var total = convert_number(parent.children('.total-ttuj').html(), 'int');
         var sisa = convert_number(self.val(), 'int');
 
-        if( sisa > total ) {
-            alert('Sisa tidak boleh melebihi total biaya');
-            self.val(formatNumber( total, 0 ));
-        } else if( sisa == 0 ) {
-            alert('Silahkan isi biaya yang akan dibayar');
+        var emptyAlert = $.checkUndefined(self.attr('data-alert'), 'Silahkan isi biaya yang akan dibayar');
+        var objTotal = parent.children('.total-value');
+        var total = convert_number(objTotal.html(), 'int');
+        var totalAlert = $.checkUndefined(objTotal.attr('data-alert'), 'Sisa tidak boleh melebihi total biaya');
+        var allow = true;
+
+        if( objTotal.length > 0 ) {
+            if( sisa > total ) {
+                alert(totalAlert);
+                self.val(formatNumber( total, 0 ));
+                allow = false;
+            }
+        }
+
+        if( allow == true && sisa == 0 ) {
+            alert(emptyAlert);
         }
 
         calcTotalBiaya();
@@ -2981,11 +2994,14 @@ var delete_current_document = function ( obj ) {
         var self = $(this);
         var id = self.attr('data-id');
         var parent = $('tr.'+id);
+        var alert = $.checkUndefined(self.attr('data-alert'), 'Anda ingin menghapus biaya ini?');
         
-        if( confirm('Anda ingin menghapus biaya ini?') ) {
+        if( confirm(alert) ) {
             parent.remove();
             calcTotalBiaya();
         }
+
+        return false;
     });
 }
 

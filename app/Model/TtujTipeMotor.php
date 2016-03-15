@@ -104,7 +104,9 @@ class TtujTipeMotor extends AppModel {
             if(!empty($options['order'])){
                 $default_options['order'] = array_merge($default_options['order'], $options['order']);
             }
-            if(!empty($options['contain'])){
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
             if(!empty($options['fields'])){
@@ -169,18 +171,17 @@ class TtujTipeMotor extends AppModel {
 
     function getTotalMuatan ( $ttuj_id ) {
         $kembali = 0;
+
+        $this->virtualFields['muatan'] = 'SUM(qty)';
         $ttujTipeMotor = $this->getData('first', array(
             'conditions' => array(
-                'TtujTipeMotor.status' => 1,
                 'TtujTipeMotor.ttuj_id' => $ttuj_id,
             ),
-            'fields' => array(
-                'SUM(qty) muatan'
-            ),
+            'contain' => false,
         ));
 
-        if( !empty($ttujTipeMotor[0]['muatan']) ) {
-            $kembali = $ttujTipeMotor[0]['muatan'];
+        if( !empty($ttujTipeMotor['TtujTipeMotor']['muatan']) ) {
+            $kembali = $ttujTipeMotor['TtujTipeMotor']['muatan'];
         }
 
         return $kembali;

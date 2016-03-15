@@ -2,56 +2,81 @@
 class SuratJalan extends AppModel {
 	var $name = 'SuratJalan';
 	var $validate = array(
-        'ttuj_id' => array(
+        // 'nodoc' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'No. Sj harap diisi'
+        //     ),
+        // ),
+        'total_qty' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'TTUJ harap dipilih'
+                'message' => 'Total unit harap diisi'
             ),
         ),
         'tgl_surat_jalan' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Tgl terima harap diisi'
-            ),
-        ),
-        'qty' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Quantity harap diisi'
+                'message' => 'Tanggal Sj harap diisi'
             ),
         ),
 	);
 
-    var $belongsTo = array(
-        'Ttuj' => array(
-            'className' => 'Ttuj',
-            'foreignKey' => 'ttuj_id',
+    var $hasMany = array(
+        'SuratJalanDetail' => array(
+            'className' => 'SuratJalanDetail',
+            'foreignKey' => 'surat_jalan_id',
+            'conditions' => array(
+                'SuratJalanDetail.status' => 1,
+            ),
         ),
     );
 
-	function getData($find, $options = false, $is_merge = true){
+    function getData( $find, $options = false, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
+        $branch = isset($elements['branch'])?$elements['branch']:true;
+        $branch_is_plant = Configure::read('__Site.config_branch_plant');
+
         $default_options = array(
-            'conditions'=> array(
-                'SuratJalan.status' => 1,
-            ),
+            'conditions'=> array(),
             'order'=> array(
-                'SuratJalan.tgl_surat_jalan' => 'DESC',
+                'SuratJalan.created' => 'DESC',
                 'SuratJalan.id' => 'DESC',
             ),
-            'contain' => array(
-                'Ttuj'
-            ),
+            'contain' => array(),
             'fields' => array(),
         );
 
-        if(!empty($options) && $is_merge){
+        switch ($status) {
+            case 'all':
+                $default_options['conditions']['SuratJalan.status'] = array( 0, 1 );
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['SuratJalan.status'] = 0;
+                break;
+            
+            default:
+                $default_options['conditions']['SuratJalan.status'] = 1;
+                break;
+        }
+
+        if( !empty($branch_is_plant) ) {
+            $default_options['conditions']['SuratJalan.branch_id'] = Configure::read('__Site.Branch.Plant.id');
+        } else if( !empty($branch) ) {
+            $default_options['conditions']['SuratJalan.branch_id'] = Configure::read('__Site.config_branch_id');
+        }
+
+        if( !empty($options) ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
             if(!empty($options['order'])){
-                $default_options['order'] = array_merge($default_options['order'], $options['order']);
+                $default_options['order'] = $options['order'];
             }
-            if(!empty($options['contain'])){
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
                 $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
             }
             if(!empty($options['fields'])){
@@ -60,8 +85,9 @@ class SuratJalan extends AppModel {
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
             }
-        } else if( !empty($options) ) {
-            $default_options = $options;
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
+            }
         }
 
         if( $find == 'paginate' ) {
@@ -69,43 +95,71 @@ class SuratJalan extends AppModel {
         } else {
             $result = $this->find($find, $default_options);
         }
+        
         return $result;
     }
 
-    function getSJ ( $data, $ttuj_id, $list = 'first' ) {
-        $sj = $this->getData($list, array(
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+
+        $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
+        $name = !empty($data['named']['name'])?$data['named']['name']:false;
+        $note = !empty($data['named']['note'])?$data['named']['note']:false;
+
+        $status = !empty($data['named']['status'])?$data['named']['status']:false;
+
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(SuratJalan.tgl_surat_jalan, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(SuratJalan.tgl_surat_jalan, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
+        if(!empty($nodoc)){
+            $default_options['conditions']['SuratJalan.nodoc LIKE'] = '%'.$nodoc.'%';
+        }
+        if(!empty($noref)){
+            $default_options['conditions']['LPAD(SuratJalan.id, 6, 0) LIKE'] = '%'.$noref.'%';
+        }
+        if(!empty($note)){
+            $default_options['conditions']['SuratJalan.note LIKE'] = '%'.$note.'%';
+        }
+
+        return $default_options;
+    }
+
+    function getRequestData ( $data, $property_id ) {
+        $dataFacility = $this->find('all', array(
             'conditions' => array(
-                'SuratJalan.ttuj_id' => $ttuj_id,
+                'PropertyFacility.property_id' => $property_id,
+            ),
+            'order' => array(
+                'PropertyFacility.id' => 'ASC',
             ),
         ));
+        $requestData = array();
 
-        if( !empty($sj) ) {
-            if( $list == 'first' ) {
-                $data = array_merge($data, $sj);
-            } else {
-                $data['SuratJalan'] = $sj;
+        if( !empty($dataFacility) ) {
+            foreach ($dataFacility as $key => $value) {
+                $id = !empty($value['PropertyFacility']['facility_id'])?$value['PropertyFacility']['facility_id']:false;
+                $other_text = !empty($value['PropertyFacility']['other_text'])?$value['PropertyFacility']['other_text']:false;
+
+                if( $id == -1 ) {
+                    $requestData['PropertyFacility']['other_id'] = true;
+                    $requestData['PropertyFacility']['other_text'] = $other_text;
+                } else {
+                    $requestData['PropertyFacility']['facility_id'][$id] = true;
+                }
             }
         }
 
+        $data = array_merge($data, $requestData);
+
         return $data;
-    }
-
-    function getSJKembali ( $ttuj_id ) {
-        $muatan_kembali = 0;
-        $sj = $this->getData('first', array(
-            'conditions' => array(
-                'SuratJalan.ttuj_id' => $ttuj_id,
-            ),
-            'fields' => array(
-                'SUM(qty) muatan'
-            ),
-        ));
-
-        if( !empty($sj[0]['muatan']) ) {
-            $muatan_kembali = $sj[0]['muatan'];
-        }
-
-        return $muatan_kembali;
     }
 }
 ?>

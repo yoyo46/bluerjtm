@@ -2268,4 +2268,64 @@ class CommonHelper extends AppHelper {
 
         return array_filter($input);
     }
+
+    function _callStatusVoid ( $value, $modelName = false ) {
+        $is_canceled = $this->filterEmptyField($value, $modelName, 'is_canceled');
+        $canceled_date = $this->filterEmptyField($value, $modelName, 'canceled_date');
+
+        if(!empty($is_canceled)){
+            $statusDoc = $this->Html->tag('span', __('Void'), array(
+                'class' => 'label label-danger'
+            ));
+
+            if(!empty($canceled_date)){
+                $canceled_date = $this->formatDate($canceled_date, 'd/m/Y');
+                $statusDoc .= '<br>'.$canceled_date;
+            }
+        }else{
+            $statusDoc = $this->Html->tag('span', __('Aktif'), array(
+                'class' => 'label label-success'
+            ));
+        }
+
+        return $statusDoc;
+    }
+
+    function _callActionButtn ( $value, $modelName = false, $options = array() ) {
+        $actionDoc = false;
+        $is_canceled = $this->filterEmptyField($value, $modelName, 'is_canceled');
+        $canceled_date = $this->filterEmptyField($value, $modelName, 'canceled_date');
+
+        $detail = $this->filterEmptyField($options, 'Detail', 'label');
+        $detail_url = $this->filterEmptyField($options, 'Detail', 'url', '#');
+
+        $edit = $this->filterEmptyField($options, 'Edit', 'label');
+        $edit_url = $this->filterEmptyField($options, 'Edit', 'url', '#');
+
+        $void = $this->filterEmptyField($options, 'Void', 'label');
+        $void_url = $this->filterEmptyField($options, 'Void', 'url', '#');
+
+        if( !empty($detail) ) {
+            $actionDoc .= $this->Html->link($detail, $detail_url, array(
+                'class' => 'btn btn-info btn-xs'
+            ));
+        }
+        
+        if( empty($is_canceled) ){
+            if( !empty($edit) ) {
+                $actionDoc .= $this->Html->link($edit, $edit_url, array(
+                    'class' => 'btn btn-primary btn-xs'
+                ));
+            }
+            
+            if( !empty($void) ) {
+                $actionDoc .= $this->Html->link($void, $void_url, array(
+                    'class' => 'btn btn-danger btn-xs ajaxModal',
+                    'data-action' => 'cancel_invoice',
+                ));
+            }
+        }
+
+        return $actionDoc;
+    }
 }

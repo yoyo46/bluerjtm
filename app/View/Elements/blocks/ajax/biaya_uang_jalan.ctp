@@ -60,7 +60,7 @@
                 echo $note;
         ?>
     </td>
-    <td class="total-ttuj text-right">
+    <td class="total-value text-right">
     	<?php
     			echo $this->Common->getBiayaTtuj( $ttuj, $data_type, true, false );
 		?>

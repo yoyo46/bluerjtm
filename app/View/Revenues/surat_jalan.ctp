@@ -1,109 +1,125 @@
-<?php
-		$this->Html->addCrumb(__('TTUJ'), array(
-			'controller' => 'revenues',
-			'action' => 'ttuj'
-		));
-		$this->Html->addCrumb($sub_module_title);
+<?php 
+        $dataColumns = array(
+            'noref' => array(
+                'name' => __('No. Referensi'),
+                'class' => 'text-center',
+            ),
+            'nodoc' => array(
+                'name' => __('No. Dokumen'),
+                'class' => 'text-center',
+            ),
+            'date' => array(
+                'name' => __('Tgl Terima'),
+                'class' => 'text-center',
+            ),
+            'ttuj' => array(
+                'name' => __('TTUJ Diterima'),
+                'class' => 'text-center',
+            ),
+            'unit' => array(
+                'name' => __('Unit Diterima'),
+                'class' => 'text-center',
+            ),
+            'status' => array(
+                'name' => __('Status'),
+                'class' => 'text-center',
+            ),
+            'action' => array(
+                'name' => __('Action'),
+                'class' => 'text-center',
+            ),
+        );
+        $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
-		echo $this->element('blocks/revenues/info_ttuj');
+        $this->Html->addCrumb($sub_module_title);
+        echo $this->element('blocks/ttuj/search_sj');
 ?>
-<div class="box box-success">
-    <div class="box-header">
-        <?php 
-                echo $this->Html->tag('h3', $sub_module_title, array(
-                    'class' => 'box-title'
-                ));
-                
-                if( $flagAdd ) {
-        ?>
-        <div class="box-tools">
-            <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Terima Surat Jalan', array(
+<div class="box">
+    <?php 
+            echo $this->element('blocks/common/box_header', array(
+                'title' => $sub_module_title,
+                '_add' => array(
                     'controller' => 'revenues',
                     'action' => 'surat_jalan_add',
-                    $ttuj_id,
-                ), array(
-                    'escape' => false,
-                    'class' => 'btn btn-app btn-success pull-right'
-                ));
-            ?>
-            <div class="clear"></div>
-        </div>
-        <?php 
-                }
-        ?>
-    </div>
+                ),
+            ));
+    ?>
     <div class="box-body table-responsive">
         <table class="table table-hover">
+            <?php
+                    if( !empty($fieldColumn) ) {
+                        echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));
+                    }
+
+                    if(!empty($values)){
+                        foreach ($values as $key => $value) {
+                            $id = $this->Common->filterEmptyField($value, 'SuratJalan', 'id');
+                            $nodoc = $this->Common->filterEmptyField($value, 'SuratJalan', 'nodoc', '-');
+                            $total_qty = $this->Common->filterEmptyField($value, 'SuratJalan', 'qty_unit');
+                            $cnt_ttuj = $this->Common->filterEmptyField($value, 'SuratJalan', 'cnt_ttuj');
+                            $date = $this->Common->filterEmptyField($value, 'SuratJalan', 'tgl_surat_jalan');
+
+                            $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                            $date = $this->Common->formatDate($date, 'd/m/Y');
+                            $status = $this->Common->_callStatusVoid($value, 'SuratJalan');
+                            $actionBtn = $this->Common->_callActionButtn($value, 'SuratJalan', array(
+                                'Detail' => array(
+                                    'label' => __('Detail'),
+                                    'url' => array(
+                                        'controller' => 'revenues',
+                                        'action' => 'surat_jalan_detail',
+                                        $id,
+                                    ),
+                                ),
+                                'Edit' => array(
+                                    'label' => __('Edit'),
+                                    'url' => array(
+                                        'controller' => 'revenues',
+                                        'action' => 'surat_jalan_edit',
+                                        $id,
+                                    ),
+                                ),
+                                'Void' => array(
+                                    'label' => __('Void'),
+                                    'url' => array(
+                                        'controller' => 'revenues',
+                                        'action' => 'surat_jalan_delete',
+                                        $id,
+                                    ),
+                                ),
+                            ));
+            ?>
             <tr>
                 <?php 
-                        echo $this->Html->tag('th', __('Tgl Terima'));
-                        echo $this->Html->tag('th', __('Qty'));
-                        echo $this->Html->tag('th', __('Keterangan'));
-                        echo $this->Html->tag('th', __('Dibuat'));
-                        echo $this->Html->tag('th', __('Action'));
+                        echo $this->Html->tag('td', $noref);
+                        echo $this->Html->tag('td', $nodoc);
+                        echo $this->Html->tag('td', $date, array(
+                            'class' => 'text-center'
+                        ));
+                        echo $this->Html->tag('td', $cnt_ttuj, array(
+                            'class' => 'text-center'
+                        ));
+                        echo $this->Html->tag('td', $total_qty, array(
+                            'class' => 'text-center'
+                        ));
+                        echo $this->Html->tag('td', $status, array(
+                            'class' => 'text-center'
+                        ));
+                        echo $this->Html->tag('td', $actionBtn, array(
+                            'class' => 'text-center action',
+                        ));
                 ?>
             </tr>
             <?php
-                    if(!empty($suratJalans)){
-                    	$totalQtySJ = 0;
-
-                        foreach ($suratJalans as $key => $value) {
-                            $id = $value['SuratJalan']['id'];
-                    		$totalQtySJ += $value['SuratJalan']['qty'];
-            ?>
-            <tr>
-                <td><?php echo $this->Common->customDate($value['SuratJalan']['tgl_surat_jalan'], 'd/m/Y');?></td>
-                <td><?php echo $value['SuratJalan']['qty'];?></td>
-                <td><?php echo $value['SuratJalan']['note'];?></td>
-                <td><?php echo $this->Common->customDate($value['SuratJalan']['created']);?></td>
-                <td class="action">
-                    <?php
-                            echo $this->Html->link(__('Ubah'), array(
-                                'controller' => 'revenues',
-                                'action' => 'surat_jalan_edit',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-primary btn-xs',
-                                'title' => 'disable status brand'
-                            ));
-                            echo $this->Html->link(__('Hapus'), array(
-                                'controller' => 'revenues',
-                                'action' => 'surat_jalan_delete',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-danger btn-xs',
-                                'title' => 'disable status brand'
-                            ), __('Apakah Anda yakin akan membatalkan data ini?'));
-                    ?>
-                </td>
-            </tr>
-            <?php
                         }
-            ?>
-            <tr>
-                <td><?php echo $this->Html->tag('strong', __('Total'));?></td>
-                <td><?php echo $this->Html->tag('strong', $totalQtySJ);?></td>
-                <td colspan="3">&nbsp;</td>
-            </tr>
-            <?php
-                    }else{
+                    } else {
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '10'
+                            'colspan' => '8'
                         )));
                     }
             ?>
         </table>
-    </div><!-- /.box-body -->
-</div>
-<div class="box-footer text-center action">
-	<?php
-    		echo $this->Html->link(__('Kembali'), array(
-				'controller' => 'revenues',
-				'action' => 'ttuj' 
-			), array(
-				'class'=> 'btn btn-default',
-			));
-	?>
+    </div>
+    <?php echo $this->element('pagination');?>
 </div>

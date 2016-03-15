@@ -69,7 +69,16 @@ class RevenuesController extends AppController {
 
         if( !empty($ttujs) ) {
             foreach ($ttujs as $key => $ttuj) {
-                $ttujs[$key] = $this->Ttuj->SuratJalan->getSJ( $ttuj, $ttuj['Ttuj']['id'] );
+                $id = $this->MkCommon->filterEmptyField( $ttuj, 'Ttuj', 'id' );
+                $ttujs[$key] = $this->Ttuj->SuratJalan->SuratJalanDetail->getMergeFirst( $ttuj, $id, 'SuratJalanDetail.ttuj_id', array(
+                    'contain' => array(
+                        'SuratJalan',
+                    ),
+                    'order' => array(
+                        'SuratJalan.tgl_surat_jalan' => 'DESC',
+                        'SuratJalan.id' => 'DESC',
+                    ),
+                ));
             }
         }
 
@@ -6363,172 +6372,508 @@ class RevenuesController extends AppController {
         }
     }
 
-    public function surat_jalan( $ttuj_id = false ) {
-        $ttuj = $this->Ttuj->getData('first', array(
-            'conditions' => array(
-                'Ttuj.id' => $ttuj_id
-            )
+    // public function surat_jalan( $ttuj_id = false ) {
+    //     $ttuj = $this->Ttuj->getData('first', array(
+    //         'conditions' => array(
+    //             'Ttuj.id' => $ttuj_id
+    //         )
+    //     ));
+    //     $is_draft = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'is_draft');
+
+    //     if( !empty($ttuj) && empty($is_draft) ) {
+    //         $ttuj = $this->Ttuj->getMergeContain( $ttuj, $ttuj_id );
+    //         $ttuj = $this->Ttuj->getSumUnit( $ttuj, $ttuj_id );
+    //         $qtySJNow = !empty($ttuj['QtySJ'])?$ttuj['QtySJ']:0;
+    //         $qtyTipeMotor = !empty($ttuj['Qty'])?$ttuj['Qty']:0;
+    //         $flagAdd = false;
+    //         $this->set('active_menu', 'surat_jalan');
+    //         $this->set('sub_module_title', __('Surat Jalan'));
+
+    //         if( $qtySJNow < $qtyTipeMotor ) {
+    //             $flagAdd = true;
+    //         }
+
+    //         $suratJalans = $this->Ttuj->SuratJalan->getData('all', array(
+    //             'conditions' => array(
+    //                 'SuratJalan.status' => 1,
+    //                 'SuratJalan.ttuj_id' => $ttuj_id,
+    //             ),
+    //         ));
+
+    //         $this->set('active_menu', 'ttuj');
+    //         $this->set('suratJalans', $suratJalans);
+    //         $this->set('ttuj_id', $ttuj_id);
+    //         $this->set('ttuj', $ttuj);
+    //         $this->set('flagAdd', $flagAdd);
+    //     } else {
+    //         $this->redirect($this->referer());
+    //     }
+    // }
+    public function surat_jalan() {
+        $this->loadModel('SuratJalan');
+
+        $this->set('active_menu', 'surat_jalan');
+        $this->set('sub_module_title', __('Surat Jalan'));
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
         ));
-        $is_draft = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'is_draft');
+        $options =  $this->Ttuj->SuratJalan->_callRefineParams($params);
 
-        if( !empty($ttuj) && empty($is_draft) ) {
-            $ttuj = $this->Ttuj->getMergeContain( $ttuj, $ttuj_id );
-            $ttuj = $this->Ttuj->getSumUnit( $ttuj, $ttuj_id );
-            $qtySJNow = !empty($ttuj['QtySJ'])?$ttuj['QtySJ']:0;
-            $qtyTipeMotor = !empty($ttuj['Qty'])?$ttuj['Qty']:0;
-            $flagAdd = false;
-            $this->set('active_menu', 'surat_jalan');
-            $this->set('sub_module_title', __('Surat Jalan'));
+        $this->paginate = $this->Ttuj->SuratJalan->getData('paginate', $options);
+        $values = $this->paginate('SuratJalan');
 
-            if( $qtySJNow < $qtyTipeMotor ) {
-                $flagAdd = true;
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'SuratJalan', 'id');
+
+                $value['SuratJalan']['cnt_ttuj'] = $this->Ttuj->SuratJalan->SuratJalanDetail->_callTotalTtujDiterima( $id );
+                $value['SuratJalan']['qty_unit'] = $this->Ttuj->SuratJalan->SuratJalanDetail->_callQtyDetail( $id, 'SuratJalanDetail.surat_jalan_id' );
+
+                $values[$key] = $value;
             }
-
-            $suratJalans = $this->Ttuj->SuratJalan->getData('all', array(
-                'conditions' => array(
-                    'SuratJalan.status' => 1,
-                    'SuratJalan.ttuj_id' => $ttuj_id,
-                ),
-            ));
-
-            $this->set('active_menu', 'ttuj');
-            $this->set('suratJalans', $suratJalans);
-            $this->set('ttuj_id', $ttuj_id);
-            $this->set('ttuj', $ttuj);
-            $this->set('flagAdd', $flagAdd);
-        } else {
-            $this->redirect($this->referer());
         }
-    }
 
-    function surat_jalan_add( $id = false ){
-        $ttuj = $this->Ttuj->getData('first', array(
-            'conditions' => array(
-                'Ttuj.id' => $id
-            )
-        ), true, array(
-            'status' => 'all',
+        $this->set(compact(
+            'values'
         ));
-
-        if( !empty($ttuj) ) {
-            $ttuj = $this->Ttuj->getSumUnit( $ttuj, $id );
-            $this->set('sub_module_title', __('Terima Surat Jalan'));
-            $this->doSuratJalan($id, $ttuj);
-        } else {
-            $this->redirect($this->referer());
-        }
     }
 
-    public function surat_jalan_edit($id = false) {
-        $suratJalan = $this->Ttuj->SuratJalan->getData('first', array(
-            'conditions' => array(
-                'SuratJalan.id' => $id,
-            )
-        ));
+    // function surat_jalan_add( $id = false ){
+    //     $ttuj = $this->Ttuj->getData('first', array(
+    //         'conditions' => array(
+    //             'Ttuj.id' => $id
+    //         )
+    //     ), true, array(
+    //         'status' => 'all',
+    //     ));
 
-        if( !empty($suratJalan['Ttuj']) ) {
-            $suratJalan = $this->Ttuj->SuratJalan->Ttuj->getSumUnit( $suratJalan, $suratJalan['SuratJalan']['ttuj_id'], $suratJalan['SuratJalan']['id'] );
-            $this->set('sub_module_title', __('Terima Surat Jalan'));
-            $this->doSuratJalan($suratJalan['Ttuj']['id'], $suratJalan);
-        } else {
-            $this->redirect($this->referer());
-        }
+    //     if( !empty($ttuj) ) {
+    //         $ttuj = $this->Ttuj->getSumUnit( $ttuj, $id );
+    //         $this->set('sub_module_title', __('Terima Surat Jalan'));
+    //         $this->doSuratJalan($id, $ttuj);
+    //     } else {
+    //         $this->redirect($this->referer());
+    //     }
+    // }
+    function surat_jalan_add(){
+        $module_title = __('Penerimaan Surat Jalan');
+        $this->set('sub_module_title', $module_title);
+
+        $this->doSuratJalan();
     }
 
-    function doSuratJalan( $ttuj_id = false, $ttuj = false ){
-        $qtySJNow = !empty($ttuj['QtySJ'])?$ttuj['QtySJ']:0;
-        $qtyTipeMotor = !empty($ttuj['Qty'])?$ttuj['Qty']:0;
+    // public function surat_jalan_edit($id = false) {
+    //     $suratJalan = $this->Ttuj->SuratJalan->getData('first', array(
+    //         'conditions' => array(
+    //             'SuratJalan.id' => $id,
+    //         )
+    //     ));
 
-        if( $qtySJNow < $qtyTipeMotor ) {
-            if(!empty($this->request->data)){
-                $data = $this->request->data;
-                $qtySJDiterima = !empty($data['SuratJalan']['qty'])?$data['SuratJalan']['qty']:0;
-                $qtySJNow += $qtySJDiterima;
-                $data['SuratJalan']['tgl_surat_jalan'] = $this->MkCommon->getDate($data['SuratJalan']['tgl_surat_jalan']);
-                $data['SuratJalan']['ttuj_id'] = $ttuj_id;
+    //     if( !empty($suratJalan['Ttuj']) ) {
+    //         $suratJalan = $this->Ttuj->SuratJalan->Ttuj->getSumUnit( $suratJalan, $suratJalan['SuratJalan']['ttuj_id'], $suratJalan['SuratJalan']['id'] );
+    //         $this->set('sub_module_title', __('Terima Surat Jalan'));
+    //         $this->doSuratJalan($suratJalan['Ttuj']['id'], $suratJalan);
+    //     } else {
+    //         $this->redirect($this->referer());
+    //     }
+    // }
 
-                if( !empty($ttuj['SuratJalan']['id']) ) {
-                    $this->Ttuj->SuratJalan->id = $ttuj['SuratJalan']['id'];
-                } else {
-                    $this->Ttuj->SuratJalan->create();
-                }
+    function surat_jalan_edit( $id = false, $disabled_edit = false ){
+        $module_title = __('Edit Surat Jalan');
+        $this->set('sub_module_title', $module_title);
 
-                $this->Ttuj->SuratJalan->set($data);
+        $head_office = Configure::read('__Site.config_branch_head_office');
+        $elementRevenue = false;
 
-                if($this->Ttuj->SuratJalan->validates($data)){
-                    if( $qtySJNow <= $qtyTipeMotor ) {
-                        if($this->Ttuj->SuratJalan->save($data)){
-                            $sj_id = $this->Ttuj->SuratJalan->id;
-
-                            if( $qtySJNow >= $qtyTipeMotor ) {
-                                $this->Ttuj->SuratJalan->Ttuj->set('is_sj_completed', 1);
-                            } else {
-                                $this->Ttuj->SuratJalan->Ttuj->set('is_sj_completed', 0);
-                            }
-                            $this->Ttuj->SuratJalan->Ttuj->id = $ttuj_id;
-                            $this->Ttuj->SuratJalan->Ttuj->save();
-
-                            $this->params['old_data'] = $ttuj;
-                            $this->params['data'] = $data;
-
-                            $this->MkCommon->setCustomFlash(__('Sukses menyimpan penerimaan SJ'), 'success');
-                            $this->Log->logActivity( sprintf(__('Sukses menerima SJ #%s'), $sj_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $sj_id );
-                            $this->redirect(array(
-                                'controller' => 'revenues',
-                                'action' => 'surat_jalan',
-                                $ttuj_id,
-                            ));
-                        }else{
-                            $this->MkCommon->setCustomFlash(__('Gagal menyimpan penerimaan SJ'), 'error'); 
-                            $this->Log->logActivity( sprintf(__('Gagal menyimpan penerimaan SJ - TTUJ #%s'), $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_id ); 
-                        }
-                    } else {
-                        $this->MkCommon->setCustomFlash(__('Qty diterima melebihi muatan truk'), 'error');
-                    }
-                }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal menyimpan penerimaan SJ'), 'error');
-                }
-            } else if( !empty($ttuj['SuratJalan']) ) {
-                $this->request->data = $ttuj;
-                $this->request->data['SuratJalan']['tgl_surat_jalan'] = $this->MkCommon->getDate($this->request->data['SuratJalan']['tgl_surat_jalan'], true);
-            }
-
-            $this->set('active_menu', 'ttuj');
-            $this->set('ttuj_id', $ttuj_id);
-            $this->render('surat_jalan_add');
-        } else {
-            $this->MkCommon->setCustomFlash(__('SJ telah lengkap diterima'), 'error');
-            $this->redirect($this->referer());
+        if( !empty($head_office) ) {
+            $elementRevenue = array(
+                'branch' => false,
+            );
         }
-    }
 
-    function surat_jalan_delete( $id = false ){
-        $locale = $this->Ttuj->SuratJalan->getData('first', array(
+        $value = $this->Ttuj->SuratJalan->getData('first', array(
             'conditions' => array(
                 'SuratJalan.id' => $id
-            )
-        ));
+            ),
+        ), $elementRevenue);
+        $value = $this->Ttuj->SuratJalan->SuratJalanDetail->getMerge($value, $id);
 
-        if( !empty($locale) && !empty($locale['Ttuj']['id']) ){
-            $this->Ttuj->SuratJalan->id = $id;
-            $this->Ttuj->SuratJalan->set('status', 0);
+        $this->doSuratJalan( $id, $value, $disabled_edit );
+    }
 
-            if($this->Ttuj->SuratJalan->save()){
-                $this->Ttuj->id = $locale['Ttuj']['id'];
-                $this->Ttuj->set('is_sj_completed', 0);
-                $this->Ttuj->save();
+    function surat_jalan_detail( $id = false ){
+        $this->surat_jalan_edit($id, true);
+    }
 
-                $this->MkCommon->setCustomFlash(__('Sukses membatalkan SJ.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses membatalkan SJ ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
-            }else{
-                $this->MkCommon->setCustomFlash(__('Gagal membatalkan SJ.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal membatalkan SJ ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
-            }
-        }else{
-            $this->MkCommon->setCustomFlash(__('SJ tidak ditemukan.'), 'error');
+    // function doSuratJalan( $ttuj_id = false, $ttuj = false ){
+    //     $qtySJNow = !empty($ttuj['QtySJ'])?$ttuj['QtySJ']:0;
+    //     $qtyTipeMotor = !empty($ttuj['Qty'])?$ttuj['Qty']:0;
+
+    //     if( $qtySJNow < $qtyTipeMotor ) {
+    //         if(!empty($this->request->data)){
+    //             $data = $this->request->data;
+    //             $qtySJDiterima = !empty($data['SuratJalan']['qty'])?$data['SuratJalan']['qty']:0;
+    //             $qtySJNow += $qtySJDiterima;
+    //             $data['SuratJalan']['tgl_surat_jalan'] = $this->MkCommon->getDate($data['SuratJalan']['tgl_surat_jalan']);
+    //             $data['SuratJalan']['ttuj_id'] = $ttuj_id;
+
+    //             if( !empty($ttuj['SuratJalan']['id']) ) {
+    //                 $this->Ttuj->SuratJalan->id = $ttuj['SuratJalan']['id'];
+    //             } else {
+    //                 $this->Ttuj->SuratJalan->create();
+    //             }
+
+    //             $this->Ttuj->SuratJalan->set($data);
+
+    //             if($this->Ttuj->SuratJalan->validates($data)){
+    //                 if( $qtySJNow <= $qtyTipeMotor ) {
+    //                     if($this->Ttuj->SuratJalan->save($data)){
+    //                         $sj_id = $this->Ttuj->SuratJalan->id;
+
+    //                         if( $qtySJNow >= $qtyTipeMotor ) {
+    //                             $this->Ttuj->SuratJalan->Ttuj->set('is_sj_completed', 1);
+    //                         } else {
+    //                             $this->Ttuj->SuratJalan->Ttuj->set('is_sj_completed', 0);
+    //                         }
+    //                         $this->Ttuj->SuratJalan->Ttuj->id = $ttuj_id;
+    //                         $this->Ttuj->SuratJalan->Ttuj->save();
+
+    //                         $this->params['old_data'] = $ttuj;
+    //                         $this->params['data'] = $data;
+
+    //                         $this->MkCommon->setCustomFlash(__('Sukses menyimpan penerimaan SJ'), 'success');
+    //                         $this->Log->logActivity( sprintf(__('Sukses menerima SJ #%s'), $sj_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $sj_id );
+    //                         $this->redirect(array(
+    //                             'controller' => 'revenues',
+    //                             'action' => 'surat_jalan',
+    //                             $ttuj_id,
+    //                         ));
+    //                     }else{
+    //                         $this->MkCommon->setCustomFlash(__('Gagal menyimpan penerimaan SJ'), 'error'); 
+    //                         $this->Log->logActivity( sprintf(__('Gagal menyimpan penerimaan SJ - TTUJ #%s'), $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_id ); 
+    //                     }
+    //                 } else {
+    //                     $this->MkCommon->setCustomFlash(__('Qty diterima melebihi muatan truk'), 'error');
+    //                 }
+    //             }else{
+    //                 $this->MkCommon->setCustomFlash(__('Gagal menyimpan penerimaan SJ'), 'error');
+    //             }
+    //         } else if( !empty($ttuj['SuratJalan']) ) {
+    //             $this->request->data = $ttuj;
+    //             $this->request->data['SuratJalan']['tgl_surat_jalan'] = $this->MkCommon->getDate($this->request->data['SuratJalan']['tgl_surat_jalan'], true);
+    //         }
+
+    //         $this->set('active_menu', 'ttuj');
+    //         $this->set('ttuj_id', $ttuj_id);
+    //         $this->render('surat_jalan_add');
+    //     } else {
+    //         $this->MkCommon->setCustomFlash(__('SJ telah lengkap diterima'), 'error');
+    //         $this->redirect($this->referer());
+    //     }
+    // }
+
+
+
+    function doSjDetail ( $dataDetail, $data, $surat_jalan_id = false ) {
+        $status = true;
+        $totalQty = 0;
+        $tgl_surat_jalan = $this->MkCommon->filterEmptyField($data, 'SuratJalan', 'tgl_surat_jalan');
+        $data = $this->request->data;
+        $msgError = array();
+
+        if( !empty($surat_jalan_id) ) {
+            $this->Ttuj->SuratJalan->SuratJalanDetail->updateAll( array(
+                'SuratJalanDetail.status' => 0,
+            ), array(
+                'SuratJalanDetail.surat_jalan_id' => $surat_jalan_id,
+            ));
         }
 
-        $this->redirect($this->referer());
+        if( !empty($dataDetail) ) {
+            foreach ($dataDetail as $key => $qty) {
+                $qty = !empty($qty)?$qty:'';
+                $ttuj_id = !empty($data['SuratJalanDetail']['ttuj_id'][$key])?$data['SuratJalanDetail']['ttuj_id'][$key]:false;
+                $note = !empty($data['SuratJalanDetail']['note'][$key])?$data['SuratJalanDetail']['note'][$key]:false;
+                $muatan = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
+
+                $dataSjDetail = array(
+                    'SuratJalanDetail' => array(
+                        'ttuj_id' => $ttuj_id,
+                        'qty' => $qty,
+                        'note' => $note,
+                    ),
+                );
+                $dataSjDetail = $this->Ttuj->getMerge($dataSjDetail, $ttuj_id);
+                $dataSjDetail['Ttuj']['qty'] = $muatan;
+
+                // $customer_id = $this->MkCommon->filterEmptyField($dataSjDetail, 'Ttuj', 'customer_id');
+                // $dataSjDetail = $this->Ttuj->Customer->getMerge($dataSjDetail, $customer_id);
+
+                $this->request->data['Ttuj'][$key] = $dataSjDetail;
+
+                $totalQty += $qty;
+
+                if( !empty($surat_jalan_id) ) {
+                    $dataSjDetail['SuratJalanDetail']['surat_jalan_id'] = $surat_jalan_id;
+                }
+
+                $this->Ttuj->SuratJalan->SuratJalanDetail->create();
+                $this->Ttuj->SuratJalan->SuratJalanDetail->set($dataSjDetail);
+
+                if( !empty($surat_jalan_id) ) {
+                    if( !$this->Ttuj->SuratJalan->SuratJalanDetail->save() ) {
+                        $status = false;
+                    } else {
+                        $qtyDiterima = $this->Ttuj->SuratJalan->SuratJalanDetail->_callTotalQtyDiterima( $ttuj_id );
+
+                        if( $qtyDiterima >= $muatan ) {
+                            $this->Ttuj->set('is_sj_completed', 1);
+                        } else {
+                            $this->Ttuj->set('is_sj_completed', 0);
+                        }
+
+                        $this->Ttuj->id = $ttuj_id;
+                        $this->Ttuj->save();
+                    }
+                } else {
+                    if( !$this->Ttuj->SuratJalan->SuratJalanDetail->validates() ) {
+                        $errorValidations = $this->Ttuj->SuratJalan->SuratJalanDetail->validationErrors;
+
+                        if( !empty($errorValidations) ) {
+                            foreach ($errorValidations as $key => $error) {
+                                if( !empty($error) ) {
+                                    foreach ($error as $key => $err_msg) {
+                                        $msgError[] = $err_msg;
+                                    }
+                                }
+                            }
+                        }
+
+                        $status = false;
+                    }
+                }
+            }
+        } else {
+            $status = false;
+            $this->MkCommon->setCustomFlash(__('Mohon pilih TTUJ.'), 'error'); 
+        }
+
+        if( !empty($msgError) ) {
+            $msgError = array_unique($msgError);
+        }
+
+        return array(
+            'status' => $status,
+            'msgError' => $msgError,
+        );
+    }
+
+    function doSuratJalan( $id = false, $value = false, $disabled_edit = false ){
+        $this->set('active_menu', 'surat_jalan');
+
+        if(!empty($this->request->data) && empty($disabled_edit)){
+            $data = $this->request->data;
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'SuratJalan' => array(
+                        'tgl_surat_jalan',
+                    ),
+                )
+            ));
+            $data['SuratJalan']['branch_id'] = Configure::read('__Site.config_branch_id');
+
+            $dataDetail = $this->MkCommon->filterEmptyField($data, 'SuratJalanDetail', 'qty');
+            $resutlDetail = $this->doSjDetail($dataDetail, $data);
+            $flagDetail = $this->MkCommon->filterEmptyField($resutlDetail, 'status');
+            $errorDetail = $this->MkCommon->filterEmptyField($resutlDetail, 'msgError');
+
+            if( !empty($id) ) {
+                $this->Ttuj->SuratJalan->id = $id;
+            } else {
+                $this->Ttuj->SuratJalan->create();
+            }
+
+            $this->Ttuj->SuratJalan->set($data);
+
+            if( $this->Ttuj->SuratJalan->validates() && !empty($flagDetail) ){
+                if($this->Ttuj->SuratJalan->save()){
+                    $document_id = $this->Ttuj->SuratJalan->id;
+                    $this->doSjDetail($dataDetail, $data, $document_id);
+
+                    $this->params['old_data'] = $value;
+                    $this->params['data'] = $data;
+
+                    $noref = str_pad($document_id, 6, '0', STR_PAD_LEFT);
+                    $this->MkCommon->setCustomFlash(sprintf(__('Berhasil melakukan Pembayaran dokumen #%s'), $noref), 'success'); 
+                    $this->Log->logActivity( sprintf(__('Berhasil melakukan Pembayaran dokumen #%s'), $document_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $document_id );
+                    
+                    $this->redirect(array(
+                        'action' => 'surat_jalan',
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal melakukan Pembayaran dokumen'), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal melakukan Pembayaran dokumen #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
+                }
+            }else{
+                if( !empty($errorDetail) ) {
+                    $this->MkCommon->setCustomFlash('<ul><li>'.implode('</li><li>', $errorDetail).'</li></ul>', 'error'); 
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Gagal melakukan penerimaan surat jalan'), 'error'); 
+                }
+            }
+        } else if( !empty($value) ) {
+            if( !empty($value['SuratJalanDetail']) ) {
+                foreach ($value['SuratJalanDetail'] as $key => $val) {
+                    $ttuj_id = $this->MkCommon->filterEmptyField($val, 'SuratJalanDetail', 'ttuj_id');
+                    $qty = $this->MkCommon->filterEmptyField($val, 'SuratJalanDetail', 'qty');
+
+                    $val = $this->Ttuj->getMerge($val, $ttuj_id);
+                    $muatan = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
+                    $val['Ttuj']['qty'] = $muatan;
+
+                    $this->request->data['Ttuj'][$key] = $val;
+
+                    $this->request->data['SuratJalanDetail']['qty'][$key] = $qty;
+                    $this->request->data['SuratJalanDetail']['ttuj_id'][$key] = $ttuj_id;
+                }
+            }
+
+            $this->request->data['SuratJalan'] = $this->MkCommon->filterEmptyField($value, 'SuratJalan');
+            $this->request->data = $this->MkCommon->dataConverter($this->request->data, array(
+                'date' => array(
+                    'SuratJalan' => array(
+                        'tgl_surat_jalan',
+                    ),
+                )
+            ), true);
+        } else {
+            $this->request->data['SuratJalan']['tgl_surat_jalan'] = date('d/m/Y');
+        }
+
+        $this->set(compact(
+            'id', 'disabled_edit'
+        ));
+        $this->render('surat_jalan_add');
+    }
+
+    // function surat_jalan_delete( $id = false ){
+    //     $locale = $this->Ttuj->SuratJalan->getData('first', array(
+    //         'conditions' => array(
+    //             'SuratJalan.id' => $id
+    //         )
+    //     ));
+
+    //     if( !empty($locale) && !empty($locale['Ttuj']['id']) ){
+    //         $this->Ttuj->SuratJalan->id = $id;
+    //         $this->Ttuj->SuratJalan->set('status', 0);
+
+    //         if($this->Ttuj->SuratJalan->save()){
+    //             $this->Ttuj->id = $locale['Ttuj']['id'];
+    //             $this->Ttuj->set('is_sj_completed', 0);
+    //             $this->Ttuj->save();
+
+    //             $this->MkCommon->setCustomFlash(__('Sukses membatalkan SJ.'), 'success');
+    //             $this->Log->logActivity( sprintf(__('Sukses membatalkan SJ ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
+    //         }else{
+    //             $this->MkCommon->setCustomFlash(__('Gagal membatalkan SJ.'), 'error');
+    //             $this->Log->logActivity( sprintf(__('Gagal membatalkan SJ ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+    //         }
+    //     }else{
+    //         $this->MkCommon->setCustomFlash(__('SJ tidak ditemukan.'), 'error');
+    //     }
+
+    //     $this->redirect($this->referer());
+    // }
+
+    function surat_jalan_delete($id = false){
+        $is_ajax = $this->RequestHandler->isAjax();
+        $msg = array(
+            'msg' => '',
+            'type' => 'error'
+        );
+        $value = $this->Ttuj->SuratJalan->getData('first', array(
+            'conditions' => array(
+                'SuratJalan.id' => $id,
+            ),
+        ));
+
+        if( !empty($value) ){
+            if(!empty($this->request->data)){
+                $data = $this->request->data;
+                $data = $this->MkCommon->dataConverter($data, array(
+                    'date' => array(
+                        'SuratJalan' => array(
+                            'canceled_date',
+                        ),
+                    )
+                ));
+
+                $value = $this->Ttuj->SuratJalan->SuratJalanDetail->getMerge($value, $id);
+                $dataDetail = $this->MkCommon->filterEmptyField($value, 'SuratJalanDetail');
+
+                if(!empty($data['SuratJalan']['canceled_date'])){
+                    $data['SuratJalan']['canceled_date'] = $this->MkCommon->filterEmptyField($data, 'SuratJalan', 'canceled_date');
+                    $data['SuratJalan']['is_canceled'] = 1;
+
+                    $this->Ttuj->SuratJalan->id = $id;
+                    $this->Ttuj->SuratJalan->set($data);
+
+                    if($this->Ttuj->SuratJalan->save()){
+                        if( !empty($dataDetail) ) {
+                            foreach ($dataDetail as $key => $detail) {
+                                $ttuj_id = $this->MkCommon->filterEmptyField($detail, 'SuratJalanDetail', 'ttuj_id');
+                                $muatan = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
+                                $qtyDiterima = $this->Ttuj->SuratJalan->SuratJalanDetail->_callTotalQtyDiterima( $ttuj_id );
+
+                                if( $qtyDiterima >= $muatan ) {
+                                    $this->Ttuj->set('is_sj_completed', 1);
+                                } else {
+                                    $this->Ttuj->set('is_sj_completed', 0);
+                                }
+
+                                $this->Ttuj->id = $ttuj_id;
+                                $this->Ttuj->save();
+                            }
+                        }
+
+                        $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                        $msg = array(
+                            'msg' => sprintf(__('Berhasil menghapus surat jalan #%s'), $noref),
+                            'type' => 'success'
+                        );
+                        $this->MkCommon->setCustomFlash( $msg['msg'], $msg['type']);  
+                        $this->Log->logActivity( sprintf(__('Berhasil menghapus surat jalan #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
+                    }else{
+                        $this->Log->logActivity( sprintf(__('Gagal menghapus surat jalan #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+                    }
+                }else{
+                    $msg = array(
+                        'msg' => __('Harap masukkan tanggal pembatalan surat jalan.'),
+                        'type' => 'error'
+                    );
+                }
+            }
+
+            $this->set('value', $value);
+        }else{
+            $msg = array(
+                'msg' => __('Data tidak ditemukan'),
+                'type' => 'error'
+            );
+        }
+
+        $modelName = 'SuratJalan';
+        $canceled_date = !empty($this->request->data['SuratJalan']['canceled_date']) ? $this->request->data['SuratJalan']['canceled_date'] : false;
+        $this->set(compact(
+            'msg', 'is_ajax', 'action_type',
+            'canceled_date', 'modelName'
+        ));
+        $this->render('/Elements/blocks/common/form_delete');
     }
 
     public function surat_jalan_outstanding( $driver_id = false, $pengganti = false ) {
@@ -6579,6 +6924,42 @@ class RevenuesController extends AppController {
             $this->MkCommon->setCustomFlash(__('Supir tidak ditemukan.'), 'error');
             $this->redirect($this->referer());
         }
+    }
+
+    function document_ttujs(  ){
+        $named = $this->MkCommon->filterEmptyField($this->params, 'named');
+        $title = __('Dokumen TTUJ');
+
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Ttuj->_callRefineParams($params, array(
+            'conditions' => array(
+                'Ttuj.is_draft' => 0,
+                'Ttuj.is_sj_completed' => 0,
+            ),
+            'limit' => Configure::read('__Site.config_pagination'),
+        ));
+        $this->paginate = $this->Ttuj->getData('paginate', $options, true, array(
+            'plant' => true,
+        ));
+        $values = $this->paginate('Ttuj');
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
+                $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
+
+                $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
+                $value['Ttuj']['qty'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
+                $value['Ttuj']['qty_diterima'] = $this->Ttuj->SuratJalan->SuratJalanDetail->_callTotalQtyDiterima( $ttuj_id );
+
+                $values[$key] = $value;
+            }
+        }
+
+        $data_action = 'browse-check-docs';
+        $this->set(compact(
+            'data_action', 'title', 'values'
+        ));
     }
 
     public function report_revenue_customers( $data_action = false ) {
@@ -7381,7 +7762,7 @@ class RevenuesController extends AppController {
 
             $this->set(compact(
                 'invoice', 'sub_module_title', 'title_for_layout',
-                'drivers', 'action_type', 'module_title', 'coas'
+                'action_type', 'module_title', 'coas'
             ));
 
             $this->render('ttuj_payment_form');
