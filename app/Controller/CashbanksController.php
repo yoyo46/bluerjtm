@@ -186,7 +186,8 @@ class CashbanksController extends AppController {
                 $arr_list = array();
 
                 foreach ($data['CashBankDetail']['coa_id'] as $key => $coa_id) {
-                    $total_coa_detail = (!empty($data['CashBankDetail']['total'][$key])) ? str_replace(',', '', $data['CashBankDetail']['total'][$key]) : 0;
+                    // $total_coa_detail = (!empty($data['CashBankDetail']['total'][$key])) ? str_replace(array( '.', ',' ), array( '', '.' ), $data['CashBankDetail']['total'][$key]) : 0;
+                    $total_coa_detail = (!empty($data['CashBankDetail']['total'][$key])) ? str_replace(array( ',' ), array( '' ), $data['CashBankDetail']['total'][$key]) : 0;
                     $document_detail_id = (!empty($data['CashBankDetail']['document_detail_id'][$key])) ? $data['CashBankDetail']['document_detail_id'][$key] : false;
                     $nopol = (!empty($data['CashBankDetail']['nopol'][$key])) ? $data['CashBankDetail']['nopol'][$key] : false;
                     $paid = false;

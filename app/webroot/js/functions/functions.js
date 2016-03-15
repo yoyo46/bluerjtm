@@ -2869,7 +2869,7 @@ var get_document_cashbank = function(){
                             </tr>';
                             $('.cashbanks-info-table > tbody').append(html_content);
                             $.inputPrice({
-                                obj: $('.cashbanks-info-table > tbody .child:last-child .input_price'),
+                                objComa: $('.cashbanks-info-table > tbody .child:last-child .input_price'),
                             });
                             ajaxModal($('.cashbanks-info-table > tbody .child .ajaxModal'));
                             sisa_amount($('.cashbanks-info-table > tbody .child .sisa-amount'));
@@ -2914,6 +2914,28 @@ var convert_number = function ( num, type ) {
 
     return num;
 }
+var convert_decimal = function ( num, type ) {
+    if( typeof type == 'undefined' ) {
+        type = 'int';
+    }
+
+    if( typeof num != 'undefined' ) {
+        num = num.replace(/\./g, "");
+        num = num.replace(/,/gi, ".");
+
+        if( type == 'int' ) {
+            num = parseInt(num);
+        } else if( type == 'float' ) {
+            num = parseFloat(num);
+        }
+
+        if( isNaN(num) ) {
+            num = 0;
+        }
+    }
+
+    return num;
+}
 
 var calcTotalBiaya = function () {
     var biayaObj = $('#checkbox-info-table .sisa-amount');
@@ -2921,9 +2943,10 @@ var calcTotalBiaya = function () {
     var totalBiaya = 0;
 
     for (i = 0; i < biayaLen; i++) {
-        totalBiaya += convert_number(biayaObj[i].value, 'int');
+        totalBiaya += convert_number(biayaObj[i].value, 'float');
     };
 
+    // $('#total-biaya').html('IDR '+formatNumber( totalBiaya, 2 ));
     $('#total-biaya').html('IDR '+formatNumber( totalBiaya, 0 ));
 }
 

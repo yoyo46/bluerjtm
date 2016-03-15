@@ -530,6 +530,7 @@
     $.inputPrice = function(options){
         var settings = $.extend({
             obj: $('.input_price'),
+            objComa: $('.input_price_coma'),
         }, options );
 
         if( settings.obj.length > 0 ) {
@@ -539,6 +540,15 @@
                     currencyVal = currencyVal.replace(/,/gi, "")
                     obj.next(".input_hidden").val(currencyVal);
                 }
+            });
+        }
+
+        if( settings.objComa.length > 0 ) {
+            settings.objComa.priceFormat({
+                prefix: '',
+                centsSeparator: ',',
+                thousandsSeparator: '.',
+                centsLimit: 2,
             });
         }
     }

@@ -1892,6 +1892,18 @@ class CommonHelper extends AppHelper {
         }
     }
 
+    function getFormatDecimal ($price, $empty = 0, $places = 2) {
+        if( !empty($price) ) {
+            return $this->Number->currency($price, Configure::read('__Site.config_currency_code'), array(
+                'places' => $places,
+                'thousands' => '.',
+                'decimals' => ',',
+            ));
+        } else {
+            return $empty;
+        }
+    }
+
     function getFormatDesc ( $value ) {
         return str_replace(PHP_EOL, '<br>', $value);
     }

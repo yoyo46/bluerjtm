@@ -44,6 +44,15 @@
                             ), array(
                                 'escape' => false,
                             )));
+                            echo $this->Html->tag('li', '', array(
+                                'class' => 'divider',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link(__('Import Excel by TTUJ'), array(
+                                'controller' => 'revenues',
+                                'action' => 'import_by_ttuj',
+                            ), array(
+                                'escape' => false,
+                            )));
                     ?>
                 </ul>
             </div>

@@ -75,7 +75,7 @@
                     'colspan' => 3,
                     'class' => 'bold text-right',
                 ));
-                echo $this->Html->tag('td', $this->Number->format($grandTotal, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                echo $this->Html->tag('td', $this->Common->getCurrencyPrice($grandTotal), array(
                     'class' => 'text-right',
                     'id' => 'total-biaya',
                 ));
