@@ -465,7 +465,7 @@ class Truck extends AppModel {
 
             if( !empty($branch_is_plant) ) {
                 $conditions['AND']['OR']['Truck.branch_id'] = Configure::read('__Site.Branch.Plant.id');
-            } else if( !empty($branch) ) {
+            } else {
                 $conditions['AND']['OR']['Truck.branch_id'] = Configure::read('__Site.config_branch_id');
             }
         } else {
@@ -475,7 +475,7 @@ class Truck extends AppModel {
 
             if( !empty($branch_is_plant) ) {
                 $conditions['Truck.branch_id'] = Configure::read('__Site.Branch.Plant.id');
-            } else if( !empty($branch) ) {
+            } else {
                 $conditions['Truck.branch_id'] = Configure::read('__Site.config_branch_id');
             }
         }
