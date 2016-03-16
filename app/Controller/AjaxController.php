@@ -855,7 +855,9 @@ class AjaxController extends AppController {
         }
 
 		$revenueDetail = $this->Revenue->RevenueDetail->getData('first', array(
-			'conditions' => $conditionsDetail,
+			'conditions' => array_merge($conditionsDetail, array(
+				'Revenue.revenue_tarif_type' => 'per_unit',
+			)),
 			'order' => array(
 				'Revenue.date_revenue' => 'ASC'
 			),
@@ -914,7 +916,7 @@ class AjaxController extends AppController {
         	'text' => '',
     	);
 
-		if(!empty($revenueDetail) && !empty($customer)){
+		if( !empty($customer) ){
 			$monthFrom = !empty($revenueDetail[0]['period_from'])?$this->MkCommon->customDate($revenueDetail[0]['period_from'], 'Y-m'):false;
 			$monthTo = !empty($revenueDetail[0]['period_to'])?$this->MkCommon->customDate($revenueDetail[0]['period_to'], 'Y-m'):false;
 			

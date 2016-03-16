@@ -1524,4 +1524,156 @@ class CashbanksController extends AppController {
             'dateTo', 'sub_module_title'
         ));
     }
+
+    public function import_revision( $download = false ) {
+        App::import('Vendor', 'excelreader'.DS.'excel_reader2');
+
+        $this->set('module_title', __('Journal'));
+        $this->set('active_menu', 'cash_bank');
+        $this->set('sub_module_title', __('Import Journal'));
+
+        if(!empty($this->request->data)) { 
+            $targetdir = $this->MkCommon->_import_excel( $this->request->data );
+
+            if( !empty($targetdir) ) {
+                $xls_files = glob( $targetdir );
+
+                if(empty($xls_files)) {
+                    $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
+                    $this->redirect(array(
+                        'action'=>'import_revision'
+                    ));
+                } else {
+                    $uploadedXls = $this->MkCommon->addToFiles('xls', $xls_files[0]);
+                    $uploaded_file = $uploadedXls['xls'];
+                    $file = explode(".", $uploaded_file['name']);
+                    $extension = array_pop($file);
+                    
+                    if($extension == 'xls') {
+                        $dataimport = new Spreadsheet_Excel_Reader();
+                        $dataimport->setUTFEncoder('iconv');
+                        $dataimport->setOutputEncoding('UTF-8');
+                        $dataimport->read($uploaded_file['tmp_name']);
+                        
+                        if(!empty($dataimport)) {
+                            $data = $dataimport;
+                            $row_submitted = 0;
+                            $successfull_row = 0;
+                            $failed_row = 0;
+                            $error_message = '';
+
+                            for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
+                                $datavar = array();
+                                $flag = true;
+                                $i = 1;
+                                $notFound = false;
+
+                                while ($flag) {
+                                    if( !empty($data->sheets[0]["cells"][1][$i]) ) {
+                                        $variable = $this->MkCommon->toSlug($data->sheets[0]["cells"][1][$i], '_');
+                                        $thedata = !empty($data->sheets[0]["cells"][$x][$i])?$data->sheets[0]["cells"][$x][$i]:NULL;
+                                        $$variable = $thedata;
+                                        $datavar[] = $thedata;
+                                    } else {
+                                        $flag = false;
+                                    }
+                                    $i++;
+                                }
+
+                                if(array_filter($datavar)) {
+                                    if( !empty($koreksi_keterangan) ) {
+                                        $no_ref = str_replace('#', '', $no_ref);
+
+                                        $value = $this->User->Journal->find('first', array(
+                                            'conditions' => array(
+                                                'Journal.document_id' => $no_ref,
+                                                'Journal.document_no' => $no_dokumen,
+                                            ),
+                                        ));
+
+                                        if( !empty($value) ) {
+                                            $document_id = $this->MkCommon->filterEmptyField($value, 'Journal', 'document_id');
+                                            $type = $this->MkCommon->filterEmptyField($value, 'Journal', 'type');
+
+                                            if( in_array($type, array( 'in', 'void_in', 'out', 'void_out', 'ppn_out', 'void_ppn_out', 'prepayment_out', 'void_prepayment_out', 'prepayment_in', 'void_prepayment_in' )) ) {
+                                                $this->CashBank->id = $document_id;
+                                                $this->CashBank->set('description', $koreksi_keterangan);
+                                                $this->CashBank->save();
+                                            } else if( in_array($type, array( 'leasing_payment', 'leasing_payment_void' )) ) {
+                                                $this->loadModel('LeasingPayment');
+
+                                                $this->LeasingPayment->id = $document_id;
+                                                $this->LeasingPayment->set('note', $koreksi_keterangan);
+                                                $this->LeasingPayment->save();
+                                            } else if( in_array($type, array( 'lku_payment', 'lku_payment_void' )) ) {
+                                                $this->loadModel('LkuPayment');
+                                                
+                                                $this->LkuPayment->id = $document_id;
+                                                $this->LkuPayment->set('description', $koreksi_keterangan);
+                                                $this->LkuPayment->save();
+                                            } else if( in_array($type, array( 'ksu_payment', 'ksu_payment_void' )) ) {
+                                                $this->loadModel('KsuPayment');
+                                                
+                                                $this->KsuPayment->id = $document_id;
+                                                $this->KsuPayment->set('description', $koreksi_keterangan);
+                                                $this->KsuPayment->save();
+                                            } else if( in_array($type, array( 'invoice_payment', 'invoice_payment_void' )) ) {
+                                                $this->loadModel('InvoicePayment');
+                                                
+                                                $this->InvoicePayment->id = $document_id;
+                                                $this->InvoicePayment->set('description', $koreksi_keterangan);
+                                                $this->InvoicePayment->save();
+                                            } else if( in_array($type, array( 'biaya_ttuj_payment', 'biaya_ttuj_payment_void', 'uang_Jalan_commission_payment', 'uang_Jalan_commission_payment_void' )) ) {
+                                                $this->loadModel('TtujPayment');
+                                                
+                                                $this->TtujPayment->id = $document_id;
+                                                $this->TtujPayment->set('description', $koreksi_keterangan);
+                                                $this->TtujPayment->save();
+                                            }
+
+                                            if( $this->User->Journal->updateAll(array(
+                                                'Journal.title'=> "'".$koreksi_keterangan."'",
+                                                'Journal.title_old'=> "'".$keterangan."'",
+                                            ), array(
+                                                'Journal.document_id'=> $no_ref,
+                                                'Journal.document_no'=> $no_dokumen,
+                                            )) ) {
+                                                $successfull_row++;
+                                            } else {
+                                                $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal mengubah keterangan'), $row_submitted+1) . '<br>';
+                                                $failed_row++;
+                                            }
+                                        } else {
+                                            $error_message .= sprintf(__('Gagal pada baris ke %s : Journal tidak ditemukan'), $row_submitted+1) . '<br>';
+                                            $failed_row++;
+                                        }
+                                    } else {
+                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Tidak ada revisi keterangan'), $row_submitted+1) . '<br>';
+                                        $failed_row++;
+                                    }
+
+                                    $row_submitted++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(!empty($successfull_row)) {
+                    $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, $row_submitted);
+                    $this->MkCommon->setCustomFlash(__($message_import1), 'success');
+                }
+                
+                if(!empty($error_message)) {
+                    $this->MkCommon->setCustomFlash(__($error_message), 'error');
+                }
+                $this->redirect(array('action'=>'import_revision'));
+            } else {
+                $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                $this->redirect(array(
+                    'action'=>'import_revision'
+                ));
+            }
+        }
+    }
 }
