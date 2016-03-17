@@ -43,10 +43,10 @@ class CashBankHelper extends AppHelper {
             $status = __('Revisi');
             $class = 'warning';
         }else if( $transaction_status == 'unposting' ) {
-            $status = __('Unposting');
+            $status = __('Draft');
             $class = 'default';
         } else {
-            $status = __('Posting');
+            $status = __('Commit');
             $class = 'info';
         }
 
