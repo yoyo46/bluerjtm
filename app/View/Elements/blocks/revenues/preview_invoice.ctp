@@ -184,7 +184,8 @@
 						));
 
 						if( $tarif_angkutan_type != 'angkut' && $payment_type == 'per_truck' ) {
-							$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($total_price_unit), array(
+							$total = $total_price_unit;
+							$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($total), array(
 								'align' => 'right'
 							));
 						} else if( $jenis_tarif == 'per_truck' ){
