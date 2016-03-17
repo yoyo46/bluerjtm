@@ -247,7 +247,8 @@
 					));
 
 					// $pph = !empty($totalPPh[0]['pph'])?$totalPPh[0]['pph']:0;
-					$ppn = !empty($totalPPN[0]['ppn'])?$totalPPN[0]['ppn']:0;
+					// $ppn = !empty($totalPPN[0]['ppn'])?$totalPPN[0]['ppn']:0;
+					$ppn = 0;
 
 					if( !empty($ppn) ) {
 						$colom = $this->Html->tag('td', '&nbsp;', array(

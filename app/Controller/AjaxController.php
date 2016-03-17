@@ -871,6 +871,20 @@ class AjaxController extends AppController {
 				'Revenue.customer_id'
 			),
 		), $elementRevenue);
+		$periodeRevenue = $this->Revenue->RevenueDetail->getData('first', array(
+			'conditions' => $conditionsDetail,
+			'order' => array(
+				'Revenue.date_revenue' => 'ASC'
+			),
+			'fields' => array(
+				'Revenue.customer_id',
+				'MAX(Revenue.date_revenue) period_to',
+				'MIN(Revenue.date_revenue) period_from',
+			),
+			'group' => array(
+				'Revenue.customer_id'
+			),
+		), $elementRevenue);
 		$revenueId = $this->Revenue->RevenueDetail->getData('list', array(
 			'conditions' => $conditionsDetail,
 			'fields' => array(
@@ -917,12 +931,12 @@ class AjaxController extends AppController {
     	);
 
 		if( !empty($customer) ){
-			$monthFrom = !empty($revenueDetail[0]['period_from'])?$this->MkCommon->customDate($revenueDetail[0]['period_from'], 'Y-m'):false;
-			$monthTo = !empty($revenueDetail[0]['period_to'])?$this->MkCommon->customDate($revenueDetail[0]['period_to'], 'Y-m'):false;
+			$monthFrom = !empty($periodeRevenue[0]['period_from'])?$this->MkCommon->customDate($periodeRevenue[0]['period_from'], 'Y-m'):false;
+			$monthTo = !empty($periodeRevenue[0]['period_to'])?$this->MkCommon->customDate($periodeRevenue[0]['period_to'], 'Y-m'):false;
 			
 			$this->request->data['Invoice']['bank_id'] = !empty($customer['Customer']['bank_id'])?$customer['Customer']['bank_id']:false;
-			$this->request->data['Invoice']['period_from'] = !empty($revenueDetail[0]['period_from'])?$this->MkCommon->customDate($revenueDetail[0]['period_from'], 'd/m/Y'):false;
-			$this->request->data['Invoice']['period_to'] = !empty($revenueDetail[0]['period_to'])?$this->MkCommon->customDate($revenueDetail[0]['period_to'], 'd/m/Y'):false;
+			$this->request->data['Invoice']['period_from'] = !empty($periodeRevenue[0]['period_from'])?$this->MkCommon->customDate($periodeRevenue[0]['period_from'], 'd/m/Y'):false;
+			$this->request->data['Invoice']['period_to'] = !empty($periodeRevenue[0]['period_to'])?$this->MkCommon->customDate($periodeRevenue[0]['period_to'], 'd/m/Y'):false;
 			$this->request->data['Invoice']['total_revenue'] = !empty($revenuePerTruck[0]['total'])?$revenuePerTruck[0]['total']:0;
 			$this->request->data['Invoice']['total_pph'] = !empty($revenue[0]['total_pph'])?$revenue[0]['total_pph']:0;
 			$this->request->data['Invoice']['total'] = !empty($revenueDetail[0]['total'])?$revenueDetail[0]['total']:0;
