@@ -22,12 +22,16 @@
                 $rate = $this->Common->filterEmptyField($value, 'RevenueDetail', 'price_unit');
                 $no_do = $this->Common->filterEmptyField($value, 'RevenueDetail', 'no_do', '&nbsp;');
                 $no_sj = $this->Common->filterEmptyField($value, 'RevenueDetail', 'no_sj', '&nbsp;');
+                $is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
+                $total_price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'total_price_unit');
 
                 $customDate = $this->Common->formatDate($date, 'd-M-y');
                 $customRate = $this->Common->getFormatPrice($rate, false);
 
                 if( $revenue_tarif_type == 'per_truck' ) {
-                    if( $temp != $revenue_id ) {
+                    if( !empty($is_charge) ) {
+                        $price = $total_price_unit;
+                    } else if( $temp != $revenue_id ) {
                         $price = $price_truck;
                     } else {
                         $price = false;

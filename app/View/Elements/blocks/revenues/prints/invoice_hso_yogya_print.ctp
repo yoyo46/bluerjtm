@@ -64,10 +64,16 @@
 								$no = 1;
 								$grandTotalUnit = 0;
 								$grandTotalTarif = 0;
+            					$temp = false;
 
 								foreach ($values as $key => $value) {
 				    				$revenue_id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
 				    				$date_revenue = $this->Common->filterEmptyField($value, 'Revenue', 'date_revenue');
+					                $price_truck = $this->Common->filterEmptyField($value, 'Revenue', 'tarif_per_truck');
+					                $revenue_tarif_type = $this->Common->filterEmptyField($value, 'Revenue', 'revenue_tarif_type');
+					                $is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
+					                $total_price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'total_price_unit');
+
 				    				$nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol', '-');
 				    				$noref = $this->Common->getNoRef($revenue_id);
 
@@ -76,7 +82,18 @@
 				    				$price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'price_unit', 0);
 				    				$totalUnit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'qty_unit', 0);
 
-									$amount = $totalUnit * $price_unit;
+				    				if( $revenue_tarif_type == 'per_truck' ) {
+					                    if( !empty($is_charge) ) {
+					                        $amount = $total_price_unit;
+					                    } else if( $temp != $revenue_id ) {
+					                        $amount = $price_truck;
+					                    } else {
+					                        $amount = false;
+					                    }
+					                } else {
+										$amount = $totalUnit * $price_unit;
+					                }
+
 									$grandTotalUnit += $totalUnit;
 									$grandTotalTarif += $amount;
 
@@ -121,6 +138,7 @@
 					</tr>
 					<?php
 									$no++;
+            						$temp = $revenue_id;
 								}
 
 								$grandTotalTarif = $this->Common->getFormatPrice($grandTotalTarif);
