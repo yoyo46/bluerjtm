@@ -970,11 +970,12 @@
                         'journal_report', 'prepayment_report', 'ledger_report',
                         'report_ttuj_payment', 'report_ttuj_outstanding',
                         'document_payments', 'laka_payments',
+                        'profit_loss', 'balance_sheets',
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
                             'index', 'journal_report', 'prepayment_report',
-                            'ledger_report', 'profit_loss',
+                            'ledger_report', 'profit_loss', 'balance_sheets',
                         ),
                         'trucks' => array(
                             'kir_payments', 'stnk_payments', 'siup_payments',
@@ -1183,7 +1184,7 @@
                             ), array(
                                 'escape' => false
                             )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'profit_loss' )?'active':'',
+                                'class' => ( !empty($active_menu) && $active_menu == 'balance_sheets' )?'active':'',
                             ));
                     ?>
                 </ul>

@@ -6,7 +6,7 @@
         // $saldo_awal = $this->Common->filterEmptyField($coa, 'Coa', 'balance');
         $beginingBalance = !empty($beginingBalance)?$beginingBalance:0;
         $customBalance = $beginingBalance;
-        $customSaldoAwal = $this->Common->getFormatPrice($beginingBalance);
+        $customSaldoAwal = $this->Common->getFormatPrice($beginingBalance, false, 2);
 ?>
 <tr class="beginning">
     <?php
@@ -36,8 +36,8 @@
 
                 $new = sprintf('%s-%s', $type, $document_no);
                 $customDate = $this->Common->formatDate($date, 'd/m/Y');
-                $customDebit = $this->Common->getFormatPrice($debit, false);
-                $customCredit = $this->Common->getFormatPrice($credit, false);
+                $customDebit = $this->Common->getFormatPrice($debit, false, 2);
+                $customCredit = $this->Common->getFormatPrice($credit, false, 2);
                 
                 $noref = str_pad($document_id, 6, '0', STR_PAD_LEFT);
                 $customNoref = $this->Common->_callDocumentJournal( $noref, $document_id, $type, $data_action );
@@ -48,7 +48,7 @@
                 $customBalance += $debit;
                 $customBalance -= $credit;
 
-                $customFormatBalance = $this->Common->getFormatPrice($customBalance);
+                $customFormatBalance = $this->Common->getFormatPrice($customBalance, false, 2);
 
                 /*
                 if( $no == 1 ) {
@@ -93,10 +93,10 @@
         
         $change = $totalDebit - $totalCredit;
 
-        $customBeginningBalance = $this->Common->getFormatPrice($beginningBalance);
-        $customTotalDebit = $this->Common->getFormatPrice($totalDebit);
-        $customTotalCredit = $this->Common->getFormatPrice($totalCredit);
-        $customChange = $this->Common->getFormatPrice($change);
+        $customBeginningBalance = $this->Common->getFormatPrice($beginningBalance, false, 2);
+        $customTotalDebit = $this->Common->getFormatPrice($totalDebit, false, 2);
+        $customTotalCredit = $this->Common->getFormatPrice($totalCredit, false, 2);
+        $customChange = $this->Common->getFormatPrice($change, false, 2);
 ?>
 <tr class="total">
     <?php
@@ -121,7 +121,7 @@
 </tr>
 <tr class="ending">
     <?php
-            $customFormatBalance = $this->Common->getFormatPrice($customBalance);
+            $customFormatBalance = $this->Common->getFormatPrice($customBalance, false, 2);
             
             echo $this->Html->tag('td', $this->Html->tag('strong', __('Ending Balance:')), array(
                 'colspan' => 3,

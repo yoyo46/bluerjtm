@@ -91,7 +91,7 @@
                             $customDate = $this->Common->formatDate($tgl, 'd/m/Y');
                             $customType = strtoupper(str_replace('_', ' ', $type));
                             $customStatus = $this->CashBank->_callStatus($value);
-                            $customGrandTotal = $this->Common->getFormatPrice($grand_total);
+                            $customGrandTotal = $this->Common->getFormatPrice($grand_total, 0, 2);
 
                             $content = $this->Html->tag('td', $noref);
                             $content .= $this->Html->tag('td', $nodoc);

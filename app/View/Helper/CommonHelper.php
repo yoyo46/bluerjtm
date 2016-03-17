@@ -704,7 +704,7 @@ class CommonHelper extends AppHelper {
 
                 $debit_form = $this->Form->input('CashBankDetail.total.', array(
                     'type' => 'text',
-                    'class' => 'form-control input_price sisa-amount text-right',
+                    'class' => 'form-control input_price_coma sisa-amount text-right',
                     'label' => false,
                     'div' => false,
                     'required' => false,
@@ -1631,9 +1631,10 @@ class CommonHelper extends AppHelper {
         return $result;
     }
 
-    function convertPriceToString ( $price, $result = '' ) {
+    function convertPriceToString ( $price, $result = '', $places = 0 ) {
         if( !empty($price) ) {
             $resultTmp = str_replace(array(',', ' '), array('', ''), trim($price));
+            $resultTmp = sprintf('%.'.$places.'f', $resultTmp);
 
             if( !empty($resultTmp) ) {
                 $result = $resultTmp;
@@ -1886,6 +1887,10 @@ class CommonHelper extends AppHelper {
 
     function getFormatPrice ($price, $empty = 0, $places = 0) {
         if( !empty($price) ) {
+            if( strpos($price,'.') == false ) {
+                $places = 0;
+            }
+
             return $this->Number->currency($price, '', array('places' => $places));
         } else {
             return $empty;

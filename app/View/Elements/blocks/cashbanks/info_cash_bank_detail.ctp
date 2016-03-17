@@ -12,6 +12,8 @@
                     $document_detail_id = $value['document_detail_id'];
                     $nopol = $this->Common->filterEmptyField($value, 'nopol');
                   	$total = $this->Common->filterEmptyField($value, 'total');
+
+                    $total = $this->Common->convertPriceToString($total, 0, 2);
                     $grandTotal += $total;
                     
                     if( isset($tmpCOA[$id]) ) {
@@ -48,7 +50,7 @@
 
                 $form = $this->Form->input('CashBankDetail.total.', array(
                     'type' => 'text',
-                    'class' => 'form-control input_price sisa-amount text-right',
+                    'class' => 'form-control input_price_coma sisa-amount text-right',
                     'label' => false,
                     'div' => false,
                     'required' => false,
@@ -75,9 +77,10 @@
                     'colspan' => 3,
                     'class' => 'bold text-right',
                 ));
-                echo $this->Html->tag('td', $this->Common->getCurrencyPrice($grandTotal), array(
+                echo $this->Html->tag('td', $this->Common->getFormatPrice($grandTotal, 0, 2), array(
                     'class' => 'text-right',
                     'id' => 'total-biaya',
+                    'data-cent' => 2,
                 ));
         ?>
     </tr>

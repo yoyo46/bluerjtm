@@ -14,9 +14,9 @@
         $tcpdf->xheadercolor = array(255,255,255);
         $tcpdf->AddPage('L');
         // Table with rowspans and THEAD
-        $table_tr_head = 'background-color: #3C8DBC; border-right: 1px solid #FFFFFF; color: #FFFFFF; font-weight: bold; padding: 0 10px; text-align: left;';
+        $table_tr_head = 'background-color: #3C8DBC; color: #FFFFFF; font-weight: bold; padding: 0 10px; text-align: left;';
         $table_th = 'padding-top: 3px';
-        $table = 'width:100%;font-size: 24px; border: 1px solid #CCC; border-collapse: collapse; padding: 0; margin: 0;';
+        $table = 'font-size: 18px; border-collapse: collapse; padding: 0; margin: 0;';
     
         $topHeader = !empty($topHeader)?$topHeader:false;
         $contentHeader = !empty($contentHeader)?$contentHeader:false;
@@ -26,7 +26,7 @@
         $date_title = $sub_module_title;
         $filename = !empty($filename)?$filename:$sub_module_title;
         $print_label = $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
-            'style' => 'font-size: 24px;font-style: italic;margin-top: 10px;'
+            'style' => 'font-size: 18px;font-style: italic;margin-top: 10px;'
         ));
 
         if( empty($customHeader) ) {

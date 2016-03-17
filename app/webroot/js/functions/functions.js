@@ -2864,7 +2864,7 @@ var get_document_cashbank = function(){
                                     '+truck_options+' \
                                 </td> \
                                 <td class="action-search"> \
-                                    <input name="data[CashBankDetail][total][]" class="form-control input_price sisa-amount text-right" type="text" id="CashBankDetailTotal" value="'+ppn+'"> \
+                                    <input name="data[CashBankDetail][total][]" class="form-control input_price_coma sisa-amount text-right" type="text" id="CashBankDetailTotal" value="'+ppn+'"> \
                                 </td> \
                                 <td class="action-search"> \
                                     <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="cashbank_first"><i class="fa fa-times"></i> Hapus</a> \
@@ -2872,7 +2872,7 @@ var get_document_cashbank = function(){
                             </tr>';
                             $('.cashbanks-info-table > tbody').append(html_content);
                             $.inputPrice({
-                                objComa: $('.cashbanks-info-table > tbody .child:last-child .input_price'),
+                                objComa: $('.cashbanks-info-table > tbody .child:last-child .input_price_coma'),
                             });
                             ajaxModal($('.cashbanks-info-table > tbody .child .ajaxModal'));
                             sisa_amount($('.cashbanks-info-table > tbody .child .sisa-amount'));
@@ -2943,14 +2943,15 @@ var convert_decimal = function ( num, type ) {
 var calcTotalBiaya = function () {
     var biayaObj = $('#checkbox-info-table .sisa-amount');
     var biayaLen = $('#checkbox-info-table .sisa-amount').length;
+    var coma = $.checkUndefined($('#total-biaya').attr('data-cent'), 0);
     var totalBiaya = 0;
 
     for (i = 0; i < biayaLen; i++) {
         totalBiaya += convert_number(biayaObj[i].value, 'float');
     };
 
-    // $('#total-biaya').html('IDR '+formatNumber( totalBiaya, 2 ));
-    $('#total-biaya').html(formatNumber( totalBiaya, 0 ));
+    $('#total-biaya').html(formatNumber( totalBiaya, coma ));
+    // $('#total-biaya').html(formatNumber( totalBiaya, 0 ));
 }
 
 var sisa_amount = function ( obj ) {

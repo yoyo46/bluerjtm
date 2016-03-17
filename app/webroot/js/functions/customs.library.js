@@ -546,8 +546,8 @@
         if( settings.objComa.length > 0 ) {
             settings.objComa.priceFormat({
                 prefix: '',
-                centsSeparator: ',',
-                thousandsSeparator: '.',
+                centsSeparator: '.',
+                thousandsSeparator: ',',
                 centsLimit: 2,
             });
         }

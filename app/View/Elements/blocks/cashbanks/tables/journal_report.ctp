@@ -16,8 +16,8 @@
 
                 $new = sprintf('%s-%s', $document_id, $type);
                 $customDate = $this->Common->formatDate($date, 'd/m/Y');
-                $customDebit = $this->Common->getFormatPrice($debit, false);
-                $customCredit = $this->Common->getFormatPrice($credit, false);
+                $customDebit = $this->Common->getFormatPrice($debit, false, 2);
+                $customCredit = $this->Common->getFormatPrice($credit, false, 2);
                 $noref = str_pad($document_id, 6, '0', STR_PAD_LEFT);
                 $customNoref = $this->Common->_callDocumentJournal( $noref, $document_id, $type, $data_action );
 

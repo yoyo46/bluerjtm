@@ -1444,7 +1444,7 @@ class CashbanksController extends AppController {
         ));
     }
 
-    function profit_loss () {
+    function profit_loss ( $data_action = false ) {
         $module_title = $sub_module_title = __('Laporan Laba Rugi');
         $dateFrom = date('Y-m', strtotime('-12 Month'));
         $dateTo = date('Y-m');
@@ -1474,20 +1474,31 @@ class CashbanksController extends AppController {
         // ));
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
-            $sub_module_title = sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+            $sub_module_title = sprintf('%s<br>Periode %s', $module_title, $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
         } else {
             $sub_module_title = false;
         }
 
+        if( !empty($data_action) ) {
+            $module_title = $sub_module_title;
+
+            if($data_action == 'pdf'){
+                $this->layout = 'pdf';
+            }else if($data_action == 'excel'){
+                $this->layout = 'ajax';
+            }
+        }
+
         // debug($values);die();
+        $this->set('active_menu', 'profit_loss');
         $this->set(compact(
             'values', 'module_title', 'dateFrom',
-            'dateTo', 'sub_module_title'
+            'dateTo', 'sub_module_title', 'data_action'
         ));
     }
 
-    function balance_sheets () {
-        $module_title = $sub_module_title = __('Laporan Neraca');
+    function balance_sheets ( $data_action = false ) {
+        $module_title = __('Laporan Neraca');
         $dateFrom = date('Y-m', strtotime('-12 Month'));
         $dateTo = date('Y-m');
 
@@ -1513,15 +1524,26 @@ class CashbanksController extends AppController {
         $values = $this->RjCashBank->_callCalcBalanceCoa($values, $dateFrom, $dateTo);
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
-            $sub_module_title = sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+            $sub_module_title = sprintf('%s<br>Periode %s', $module_title, $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
         } else {
             $sub_module_title = false;
         }
 
+        if( !empty($data_action) ) {
+            $module_title = $sub_module_title;
+
+            if($data_action == 'pdf'){
+                $this->layout = 'pdf';
+            }else if($data_action == 'excel'){
+                $this->layout = 'ajax';
+            }
+        }
+
         // debug($values);die();
+        $this->set('active_menu', 'balance_sheets');
         $this->set(compact(
             'values', 'module_title', 'dateFrom',
-            'dateTo', 'sub_module_title'
+            'dateTo', 'sub_module_title', 'data_action'
         ));
     }
 

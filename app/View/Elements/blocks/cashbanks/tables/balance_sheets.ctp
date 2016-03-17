@@ -51,7 +51,7 @@
 
                 while( $tmpDateFrom <= $tmpDateTo ) {
                     $balance = $this->Common->filterEmptyField($dataCoa, $tmpDateFrom, 'balancing', 0);
-                    $balance = $this->Common->getFormatPrice($balance);
+                    $balance = $this->Common->getFormatPrice($balance, false, 2);
 
                     echo $this->Html->tag('td', $balance, array(
                         'style' => 'text-align: right',
@@ -94,7 +94,7 @@
 
                         if( isset($idx[$tmpDateFrom]['balancing']) ) {
                             $total = $idx[$tmpDateFrom]['balancing'];
-                            $totalBalance = $this->Common->getFormatPrice($total);
+                            $totalBalance = $this->Common->getFormatPrice($total, false, 2);
 
                             $tmpTr .= $this->Html->tag('td', $totalBalance, array(
                                 'style' => 'text-align: right;font-weight: bold;',
