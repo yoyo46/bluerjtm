@@ -1259,10 +1259,10 @@ class CommonHelper extends AppHelper {
         $content[] = $this->Html->tag('td', $description, array(
             'style' => 'text-align:left;',
         ));
-        $content[] = $this->Html->tag('td', $this->Number->format($debit_total, '', array('places' => 0)), array(
+        $content[] = $this->Html->tag('td', $this->getFormatPrice($debit_total, false, 2), array(
             'style' => 'text-align:right;',
         ));
-        $content[] = $this->Html->tag('td', $this->Number->format($credit_total, '', array('places' => 0)), array(
+        $content[] = $this->Html->tag('td', $this->getFormatPrice($credit_total, false, 2), array(
             'style' => 'text-align:right;',
         ));
 

@@ -16,7 +16,7 @@
 
         $revenue_id = $this->Common->filterEmptyField($cashbank, 'Revenue', 'id');
         $customDate = $this->Common->formatDate($tgl, 'd/m/Y');
-        $customTotal = $this->Common->getFormatPrice($grand_total);
+        $customTotal = $this->Common->getFormatPrice($grand_total, false, 2);
         $customStatus = $this->CashBank->_callStatus($cashbank);
         $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
 ?>
@@ -114,7 +114,7 @@
                                         $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol', '-');
                                         $total = $this->Common->filterEmptyField($value, 'CashBankDetail', 'total');
 
-                                        $customTotal = $this->Common->getFormatPrice($total);
+                                        $customTotal = $this->Common->getFormatPrice($total, false, 2);
                                         $grand_total += $total;
                         ?>
                         <tr>
@@ -135,7 +135,7 @@
                             <td align="right" colspan="3" style="font-weight: bold;">Total</td>
                             <td align="right" style="font-weight: bold;">
                                 <?php
-                                        $customGrandTotal = $this->Common->getFormatPrice($grand_total);
+                                        $customGrandTotal = $this->Common->getFormatPrice($grand_total, false, 2);
                                         echo $customGrandTotal;
                                 ?>
                             </td>

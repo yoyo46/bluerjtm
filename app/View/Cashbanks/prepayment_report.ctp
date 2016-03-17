@@ -133,13 +133,13 @@
                             }
 
                             $kolom = $this->Html->tag('td', __('Total'), array(
-                                'colspan' => 5,
+                                'colspan' => 6,
                                 'style' => 'text-align: right;font-weight:bold;'
                             ));
-                            $kolom .= $this->Html->tag('td', $this->Number->format($total_debit, '', array('places' => 0)), array(
+                            $kolom .= $this->Html->tag('td', $this->Common->getFormatPrice($total_debit, false, 2), array(
                                 'style' => 'text-align: right;font-weight:bold;'
                             ));
-                            $kolom .= $this->Html->tag('td', $this->Number->format($total_credit, '', array('places' => 0)), array(
+                            $kolom .= $this->Html->tag('td', $this->Common->getFormatPrice($total_credit, false, 2), array(
                                 'style' => 'text-align: right;font-weight:bold;'
                             ));
                             echo $this->Html->tag('tr', $kolom);

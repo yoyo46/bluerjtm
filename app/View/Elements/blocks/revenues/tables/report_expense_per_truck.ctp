@@ -21,11 +21,11 @@
                     $er = '';
                 }
 
-                $customTotalRevenue = $this->Common->getFormatPrice($total_revenue);
-                $customBiayaUangJalan = $this->Common->getFormatPrice($biaya_uang_jalan);
-                $customTotalCashBank = $this->Common->getFormatPrice($total_cashbank+$total_document);
-                $customTotalExpense = $this->Common->getFormatPrice($total_expense);
-                $customTotalGrossProfit = $this->Common->getFormatPrice($total_gross_profit);
+                $customTotalRevenue = $this->Common->getFormatPrice($total_revenue, false, 2);
+                $customBiayaUangJalan = $this->Common->getFormatPrice($biaya_uang_jalan, false, 2);
+                $customTotalCashBank = $this->Common->getFormatPrice($total_cashbank+$total_document, false, 2);
+                $customTotalExpense = $this->Common->getFormatPrice($total_expense, false, 2);
+                $customTotalGrossProfit = $this->Common->getFormatPrice($total_gross_profit, false, 2);
                 $customER = $this->Common->getFormatPrice($er, 0, 2);
 ?>
 <tr>
