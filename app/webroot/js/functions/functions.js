@@ -2874,6 +2874,9 @@ var get_document_cashbank = function(){
                             $.inputPrice({
                                 objComa: $('.cashbanks-info-table > tbody .child:last-child .input_price_coma'),
                             });
+                            $.inputNumber({
+                                obj: $('.cashbanks-info-table > tbody .child:last-child .input_number'),
+                            });
                             ajaxModal($('.cashbanks-info-table > tbody .child .ajaxModal'));
                             sisa_amount($('.cashbanks-info-table > tbody .child .sisa-amount'));
                         }
@@ -2959,7 +2962,7 @@ var sisa_amount = function ( obj ) {
         obj = $('.sisa-amount');
     }
 
-    obj.blur(function(){
+    obj.keyup(function(){
         var self = $(this);
         var parent = self.parents('tr');
         var sisa = convert_number(self.val(), 'int');

@@ -544,11 +544,19 @@
         }
 
         if( settings.objComa.length > 0 ) {
-            settings.objComa.priceFormat({
-                prefix: '',
-                centsSeparator: '.',
-                thousandsSeparator: ',',
-                centsLimit: 2,
+            settings.objComa.off('blur');
+            settings.objComa.blur(function(){
+                var self = $(this);
+                var val = $.convertNumber(self.val(), 'string');
+
+                self.val( $.formatDecimal(val, 2) );
+            });
+
+            jQuery.each( settings.objComa, function( i, val ) {
+                var self = $(this);
+                var val = $.convertNumber(self.val(), 'string');
+                
+                self.val( $.formatDecimal(val, 2) );
             });
         }
     }
@@ -932,8 +940,10 @@
                 num = parseFloat(num);
             }
 
-            if( isNaN(num) ) {
-                num = 0;
+            if( type == 'int' || type == 'float' ) {
+                if( isNaN(num) ) {
+                    num = 0;
+                }
             }
         } else {
             num = empty;
