@@ -1189,7 +1189,47 @@
                     ?>
                 </ul>
             </li>
+            <?php 
+                    }
 
+                    $activeSetting = false;
+                    $settingMenu = array(
+                        'group_assets',
+                    );
+                    $dataMenu = array(
+                        'finances' => array(
+                            'groups',
+                        ),
+                    );
+
+                    if( $this->Common->allowMenu( $dataMenu  ) ) {
+                        if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
+                            $activeSetting = 'active';
+                        }
+            ?>
+            <li class="treeview <?php echo $activeSetting; ?>">
+                <?php                            
+                        $contentMenu = $this->Common->icon('files-o');
+                        $contentMenu .= $this->Html->tag('span', __('Asset'));
+                        $contentMenu .= $this->Common->icon('angle-left', false, 'i', 'pull-right');
+
+                        echo $this->Html->link($contentMenu, '#', array(
+                            'escape' => false,
+                        ));
+                ?>
+                <ul class="treeview-menu">
+                    <?php                            
+                            echo $this->Html->tag('li', $this->Html->link(sprintf(__('%s Group Asset'), $this->Common->icon('double-right')), array(
+                                'controller' => 'assets',
+                                'action' => 'groups'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'group_assets' )?'active':'',
+                            ));
+                    ?>
+                </ul>
+            </li>
             <?php 
                     }
 
