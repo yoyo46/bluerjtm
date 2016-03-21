@@ -15,6 +15,7 @@
 		$receiver_type = false;
 		$receiver_label = false;
 		$id = !empty($id)?$id:false;
+		$invoice = !empty($invoice)?$invoice:false;
 
 		if( !empty($this->request->data['TtujPayment']['receiver_type']) ) {
 			$receiver_type = $this->request->data['TtujPayment']['receiver_type'];
@@ -184,10 +185,7 @@
 			), array(
 				'class'=> 'btn btn-default',
 			));
-    		echo $this->Form->button(__('Simpan'), array(
-    			'type' => 'submit',
-				'class'=> 'btn btn-success btn-lg',
-			));
+			$this->Common->_getButtonPostingUnposting( $invoice, 'TtujPayment', array( 'Commit', 'Draft' ) );
 	?>
 </div>
 <?php

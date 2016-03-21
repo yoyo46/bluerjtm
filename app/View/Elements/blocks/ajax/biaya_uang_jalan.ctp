@@ -19,25 +19,28 @@
         $addClass = !empty($isAjax)?'hide':'';
 
         $ttujPayment = $this->Common->filterEmptyField($this->request->data, 'TtujPayment');
+        $sisaAmount = $this->Common->getBiayaTtuj( $ttuj, $data_type );
+        $amountPayment = !empty($ttujPayment['amount_payment'][$idx])?$ttujPayment['amount_payment'][$idx]:$sisaAmount;
 
-        if( !empty($checkbox) ) {
-            printf('<tr data-value="%s" data-type="%s" class="child %s">', $alias, $data_type, $alias);
+        if( !empty($amountPayment) ) {
+            if( !empty($checkbox) ) {
+                printf('<tr data-value="%s" data-type="%s" class="child %s">', $alias, $data_type, $alias);
 
-			$checkboxContent = $this->Form->checkbox('ttuj_checked.', array(
-                'class' => 'check-option',
-                'value' => $id,
-            ));
-            $checkboxContent .= $this->Form->input('TtujPayment.ttuj_id.', array(
-                'type' => 'hidden',
-                'value' => $id,
-            ));
+    			$checkboxContent = $this->Form->checkbox('ttuj_checked.', array(
+                    'class' => 'check-option',
+                    'value' => $id,
+                ));
+                $checkboxContent .= $this->Form->input('TtujPayment.ttuj_id.', array(
+                    'type' => 'hidden',
+                    'value' => $id,
+                ));
 
-            echo $this->Html->tag('td', $checkboxContent, array(
-                'class' => 'checkbox-action',
-            ));
-        } else {
-            printf('<tr class="child child-%s">', $alias);
-        }
+                echo $this->Html->tag('td', $checkboxContent, array(
+                    'class' => 'checkbox-action',
+                ));
+            } else {
+                printf('<tr class="child child-%s">', $alias);
+            }
 ?>
     <td><?php echo $no_ttuj;?></td>
     <td><?php echo date('d M Y', strtotime($ttuj_date));?></td>
@@ -67,9 +70,6 @@
 	</td>
     <td class="text-right">
     	<?php
-                $sisaAmount = $this->Common->getBiayaTtuj( $ttuj, $data_type );
-                $amountPayment = !empty($ttujPayment['amount_payment'][$idx])?$ttujPayment['amount_payment'][$idx]:$sisaAmount;
-
                 if( !empty($document_info) ) {
                     $amountPayment = $this->Common->getFormatPrice($amountPayment);
                     echo $amountPayment;
@@ -101,3 +101,6 @@
             }
     ?>
 </tr>
+<?php 
+        }
+?>

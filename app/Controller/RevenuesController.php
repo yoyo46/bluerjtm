@@ -7488,6 +7488,7 @@ class RevenuesController extends AppController {
         $receiver_name = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'receiver_name');
         $receiver_type = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'receiver_type');
         $date_payment = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'date_payment');
+        $transaction_status = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'transaction_status');
 
         if( !empty($ttuj_payment_id) ) {
             $this->Ttuj->TtujPaymentDetail->updateAll( array(
@@ -7515,24 +7516,30 @@ class RevenuesController extends AppController {
                 $this->request->data['Ttuj'][$key] = $dataTtuj;
                 $this->request->data['TtujPayment']['amount_payment'][$key] = $amount;
                 $totalPayment += $amount;
-                $total_dibayar = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, $data_type) + $amount;
+                $total_dibayar = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, $data_type, false, array(
+                    'conditions' => array(
+                        'TtujPayment.transaction_status' => 'posting',
+                    ),
+                )) + $amount;
 
                 if( !empty($ttuj_payment_id) ) {
                     $dataTtujPaymentDetail['TtujPaymentDetail']['ttuj_payment_id'] = $ttuj_payment_id;
                     $total = !empty($dataTtuj['total'])?$dataTtuj['total']:0;
 
-                    if( !empty($total_dibayar) ) {
-                        $flagPaidTtuj = 'half';
+                    if( $transaction_status == 'posting' ) {
+                        if( !empty($total_dibayar) ) {
+                            $flagPaidTtuj = 'half';
 
-                        if( $total <= $total_dibayar ) {
-                            $flagPaidTtuj = 'full';
-                        }
-                    
-                        $this->Ttuj->TtujPaymentDetail->Ttuj->set('paid_'.$data_type, $flagPaidTtuj);
-                        $this->Ttuj->TtujPaymentDetail->Ttuj->id = $ttuj_id;
+                            if( $total <= $total_dibayar ) {
+                                $flagPaidTtuj = 'full';
+                            }
                         
-                        if( !$this->Ttuj->TtujPaymentDetail->Ttuj->save() ) {
-                            $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran %s #%s'), $data_type, $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_id );
+                            $this->Ttuj->TtujPaymentDetail->Ttuj->set('paid_'.$data_type, $flagPaidTtuj);
+                            $this->Ttuj->TtujPaymentDetail->Ttuj->id = $ttuj_id;
+                            
+                            if( !$this->Ttuj->TtujPaymentDetail->Ttuj->save() ) {
+                                $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran %s #%s'), $data_type, $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_id );
+                            }
                         }
                     }
                 }
@@ -7567,44 +7574,46 @@ class RevenuesController extends AppController {
                 $paidType = $this->MkCommon->filterEmptyField($this->request->data, 'TtujPayment', 'data_type');
                 $paidType = $this->RjRevenue->_callReceiverType($paidType);
 
-                switch ($document_type) {
-                    case 'biaya_ttuj':
-                        $titleJournalInv = sprintf(__('Pembayaran biaya %s kepada %s %s'), $paidType, $receiver_type, $receiver_name);
-                        $titleJournalInv = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'description', $titleJournalInv);
+                if( $transaction_status == 'posting' ) {
+                    switch ($document_type) {
+                        case 'biaya_ttuj':
+                            $titleJournalInv = sprintf(__('Pembayaran biaya %s kepada %s %s'), $paidType, $receiver_type, $receiver_name);
+                            $titleJournalInv = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'description', $titleJournalInv);
 
-                        $this->User->Journal->deleteJournal($ttuj_payment_id, array(
-                            'biaya_ttuj_payment',
-                        ));
-                        $this->User->Journal->setJournal($totalPayment, array(
-                            'credit' => $coa_id,
-                            'debit' => 'biaya_ttuj_payment_coa_id',
-                        ), array(
-                            'date' => $date_payment,
-                            'document_id' => $ttuj_payment_id,
-                            'title' => $titleJournalInv,
-                            'document_no' => $document_no,
-                            'type' => 'biaya_ttuj_payment',
-                        ));
-                        break;
-                    
-                    default:
-                        $titleJournalInv = sprintf(__('Pembayaran biaya %s'), $paidType);
-                        $titleJournalInv = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'description', $titleJournalInv);
+                            $this->User->Journal->deleteJournal($ttuj_payment_id, array(
+                                'biaya_ttuj_payment',
+                            ));
+                            $this->User->Journal->setJournal($totalPayment, array(
+                                'credit' => $coa_id,
+                                'debit' => 'biaya_ttuj_payment_coa_id',
+                            ), array(
+                                'date' => $date_payment,
+                                'document_id' => $ttuj_payment_id,
+                                'title' => $titleJournalInv,
+                                'document_no' => $document_no,
+                                'type' => 'biaya_ttuj_payment',
+                            ));
+                            break;
+                        
+                        default:
+                            $titleJournalInv = sprintf(__('Pembayaran biaya %s'), $paidType);
+                            $titleJournalInv = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'description', $titleJournalInv);
 
-                        $this->User->Journal->deleteJournal($ttuj_payment_id, array(
-                            'uang_Jalan_commission_payment',
-                        ));
-                        $this->User->Journal->setJournal($totalPayment, array(
-                            'credit' => $coa_id,
-                            'debit' => 'uang_Jalan_commission_payment_coa_id',
-                        ), array(
-                            'date' => $date_payment,
-                            'document_id' => $ttuj_payment_id,
-                            'title' => $titleJournalInv,
-                            'document_no' => $document_no,
-                            'type' => 'uang_Jalan_commission_payment',
-                        ));
-                        break;
+                            $this->User->Journal->deleteJournal($ttuj_payment_id, array(
+                                'uang_Jalan_commission_payment',
+                            ));
+                            $this->User->Journal->setJournal($totalPayment, array(
+                                'credit' => $coa_id,
+                                'debit' => 'uang_Jalan_commission_payment_coa_id',
+                            ), array(
+                                'date' => $date_payment,
+                                'document_id' => $ttuj_payment_id,
+                                'title' => $titleJournalInv,
+                                'document_no' => $document_no,
+                                'type' => 'uang_Jalan_commission_payment',
+                            ));
+                            break;
+                    }
                 }
             }
         }
@@ -7612,7 +7621,7 @@ class RevenuesController extends AppController {
         return $flagTtujPaymentDetail;
     }
 
-    function doTtujPayment( $action_type, $id = false, $data_local = false){
+    function doTtujPayment( $action_type, $id = false, $invoice = false){
         switch ($action_type) {
             case 'biaya_ttuj':
                 $labelName = 'Biaya TTUJ';
@@ -7647,7 +7656,7 @@ class RevenuesController extends AppController {
                     $document_id = $this->Ttuj->TtujPaymentDetail->TtujPayment->id;
                     $flagTtujPaymentDetail = $this->doTtujPaymentDetail($dataAmount, $data, $document_id);
 
-                    $this->params['old_data'] = $data_local;
+                    $this->params['old_data'] = $invoice;
                     $this->params['data'] = $data;
 
                     $noref = str_pad($document_id, 6, '0', STR_PAD_LEFT);
@@ -7691,7 +7700,7 @@ class RevenuesController extends AppController {
 
         $this->MkCommon->_layout_file('select');
         $this->set(compact(
-            'action_type', 'coas'
+            'action_type', 'coas', 'invoice'
         ));
         $this->render('ttuj_payment_form');
     }
@@ -7717,6 +7726,7 @@ class RevenuesController extends AppController {
                 $receiver_name = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'receiver_name');
                 $receiver_type = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'receiver_type', __('Supir'));
                 $date_payment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'date_payment');
+                $transaction_status = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'transaction_status');
 
                 switch ($action_type) {
                     case 'biaya_ttuj':
@@ -7745,60 +7755,68 @@ class RevenuesController extends AppController {
                             foreach ($invoice['TtujPaymentDetail'] as $key => $ttujPaymentDetail) {
                                 $ttuj_id = !empty($ttujPaymentDetail['ttuj_id'])?$ttujPaymentDetail['ttuj_id']:false;
                                 $data_type = !empty($ttujPaymentDetail['type'])?$ttujPaymentDetail['type']:false;
-                                $total_dibayar = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, $data_type);
+                                $total_dibayar = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, $data_type, false, array(
+                                    'conditions' => array(
+                                        'TtujPayment.transaction_status' => 'posting',
+                                    ),
+                                ));
                                 $flagPaidTtuj = 'none';
                                 $paidType[] = $data_type;
 
-                                if( !empty($total_dibayar) ) {
-                                    $flagPaidTtuj = 'half';
-                                }
+                                if( $transaction_status == 'posting' ) {
+                                    if( !empty($total_dibayar) ) {
+                                        $flagPaidTtuj = 'half';
+                                    }
+                                        
+                                    $this->Ttuj->set('paid_'.$data_type, $flagPaidTtuj);
+                                    $this->Ttuj->id = $ttuj_id;
                                     
-                                $this->Ttuj->set('paid_'.$data_type, $flagPaidTtuj);
-                                $this->Ttuj->id = $ttuj_id;
-                                
-                                if( !$this->Ttuj->save() ) {
-                                    $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran %s #%s'), $data_type, $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_id );
+                                    if( !$this->Ttuj->save() ) {
+                                        $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran %s #%s'), $data_type, $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_id );
+                                    }
                                 }
                             }
                         }
 
-                        if( !empty($invoice['TtujPayment']['total_payment']) ) {
-                            $paidType = $this->RjRevenue->_callReceiverType($paidType);
+                        if( $transaction_status == 'posting' ) {
+                            if( !empty($invoice['TtujPayment']['total_payment']) ) {
+                                $paidType = $this->RjRevenue->_callReceiverType($paidType);
 
-                            switch ($action_type) {
-                                case 'biaya_ttuj':
-                                    $titleJournalInv = sprintf(__('pembayaran biaya %s kepada %s %s'), $paidType, $receiver_type, $receiver_name);
-                                    $titleJournalInv = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'description', $titleJournalInv));
-                                    $totalPayment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'total_payment');
+                                switch ($action_type) {
+                                    case 'biaya_ttuj':
+                                        $titleJournalInv = sprintf(__('pembayaran biaya %s kepada %s %s'), $paidType, $receiver_type, $receiver_name);
+                                        $titleJournalInv = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'description', $titleJournalInv));
+                                        $totalPayment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'total_payment');
 
-                                    $this->User->Journal->setJournal($totalPayment, array(
-                                        'credit' => 'biaya_ttuj_payment_coa_id',
-                                        'debit' => $coa_id,
-                                    ), array(
-                                        'date' => $date_payment,
-                                        'document_id' => $id,
-                                        'title' => $titleJournalInv,
-                                        'document_no' => $document_no,
-                                        'type' => 'biaya_ttuj_payment_void',
-                                    ));
-                                    break;
-                                
-                                default:
-                                    $titleJournalInv = sprintf(__('pembayaran biaya %s'), $paidType);
-                                    $titleJournalInv = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'description', $titleJournalInv));
-                                    $totalPayment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'total_payment');
+                                        $this->User->Journal->setJournal($totalPayment, array(
+                                            'credit' => 'biaya_ttuj_payment_coa_id',
+                                            'debit' => $coa_id,
+                                        ), array(
+                                            'date' => $date_payment,
+                                            'document_id' => $id,
+                                            'title' => $titleJournalInv,
+                                            'document_no' => $document_no,
+                                            'type' => 'biaya_ttuj_payment_void',
+                                        ));
+                                        break;
+                                    
+                                    default:
+                                        $titleJournalInv = sprintf(__('pembayaran biaya %s'), $paidType);
+                                        $titleJournalInv = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'description', $titleJournalInv));
+                                        $totalPayment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'total_payment');
 
-                                    $this->User->Journal->setJournal($totalPayment, array(
-                                        'credit' => 'uang_Jalan_commission_payment_coa_id',
-                                        'debit' => $coa_id,
-                                    ), array(
-                                        'date' => $date_payment,
-                                        'document_id' => $id,
-                                        'title' => $titleJournalInv,
-                                        'document_no' => $document_no,
-                                        'type' => 'uang_Jalan_commission_payment_void',
-                                    ));
-                                    break;
+                                        $this->User->Journal->setJournal($totalPayment, array(
+                                            'credit' => 'uang_Jalan_commission_payment_coa_id',
+                                            'debit' => $coa_id,
+                                        ), array(
+                                            'date' => $date_payment,
+                                            'document_id' => $id,
+                                            'title' => $titleJournalInv,
+                                            'document_no' => $document_no,
+                                            'type' => 'uang_Jalan_commission_payment_void',
+                                        ));
+                                        break;
+                                }
                             }
                         }
 
@@ -8181,6 +8199,7 @@ class RevenuesController extends AppController {
             'conditions' => array(
                 'TtujPayment.branch_id' => $allow_branch_id,
                 'TtujPaymentDetail.status' => 1,
+                'TtujPayment.transaction_status' => 'posting',
             ),
             'contain' => array(
                 'TtujPayment',
@@ -8229,7 +8248,11 @@ class RevenuesController extends AppController {
                 $type = $this->MkCommon->filterEmptyField($value, 'TtujPaymentDetail', 'type');
 
                 $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
-                $value = $this->TtujPaymentDetail->TtujPayment->_callTtujPaid($value, $ttuj_id, $type);
+                $value = $this->TtujPaymentDetail->TtujPayment->_callTtujPaid($value, $ttuj_id, $type, array(
+                    'conditions' => array(
+                        'TtujPayment.id' => $id,
+                    ),
+                ));
                 
                 $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
                 $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');

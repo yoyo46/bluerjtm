@@ -69,6 +69,7 @@
                         foreach ($invoices as $key => $value) {
                             $id = $value['TtujPayment']['id'];
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                            $customStatus = $this->Revenue->_callStatusTTUJPayment($value);
             ?>
             <tr>
                 <?php 
@@ -87,25 +88,7 @@
                             'class' => 'text-center'
                         ));
 
-                        if(empty($value['TtujPayment']['is_canceled'])){
-                            if($value['TtujPayment']['status']){
-                                $statusDoc = $this->Html->tag('span', 'aktif', array(
-                                    'class' => 'label label-success'
-                                ));
-                            }else{
-                                $statusDoc = $this->Html->tag('span', 'non-aktif', array(
-                                    'class' => 'label label-danger'
-                                ));
-                            }
-                        }else{
-                            $statusDoc = $this->Html->tag('span', __('Void'), array(
-                                'class' => 'label label-danger'
-                            ));
-                            if(!empty($value['TtujPayment']['canceled_date'])){
-                                $statusDoc .= '<br>'.$this->Common->customDate($value['TtujPayment']['canceled_date'], 'd/m/Y');
-                            }
-                        }
-                        echo $this->Html->tag('td', $statusDoc, array(
+                        echo $this->Html->tag('td', $customStatus, array(
                             'class' => 'text-center'
                         ));
 

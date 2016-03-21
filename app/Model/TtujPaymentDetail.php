@@ -43,8 +43,8 @@ class TtujPaymentDetail extends AppModel {
         ),
 	);
 
-    function getTotalPayment( $ttuj_id, $data_type, $payment_id = false ){
-        $result = $this->find('first', array(
+    function getTotalPayment( $ttuj_id, $data_type, $payment_id = false, $options = array() ){
+        $default_options = array(
             'conditions'=> array(
                 'TtujPaymentDetail.ttuj_id' => $ttuj_id,
                 'TtujPaymentDetail.type' => $data_type,
@@ -59,7 +59,13 @@ class TtujPaymentDetail extends AppModel {
             'contain' => array(
                 'TtujPayment'
             ),
-        ));
+        );
+
+        if(!empty($options['conditions'])){
+            $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
+        }
+
+        $result = $this->find('first', $default_options);
         
         return !empty($result[0]['amount'])?$result[0]['amount']:0;
     }

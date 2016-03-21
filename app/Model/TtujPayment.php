@@ -297,13 +297,13 @@ class TtujPayment extends AppModel {
         return $default_options;
     }
 
-    function _callTtujPaid ( $data, $ttuj_id, $type ) {
-        $this->virtualFields['grandtotal'] = 'SUM(amount)';
-        $options =  $this->getData('paginate', array(
+    function _callTtujPaid ( $data, $ttuj_id, $type, $options = array() ) {
+        $default_options = array(
             'conditions' => array(
                 'TtujPaymentDetail.ttuj_id' => $ttuj_id,
                 'TtujPaymentDetail.type' => $type,
                 'TtujPaymentDetail.status' => 1,
+                'TtujPayment.transaction_status' => 'posting',
             ),
             'contain' => array(
                 'TtujPayment',
@@ -312,7 +312,14 @@ class TtujPayment extends AppModel {
                 'TtujPaymentDetail.ttuj_id',
                 'TtujPaymentDetail.type',
             ),
-        ), true, array(
+        );
+
+        if(!empty($options['conditions'])){
+            $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
+        }
+
+        $this->virtualFields['grandtotal'] = 'SUM(amount)';
+        $options =  $this->getData('paginate', $default_options, true, array(
             'branch' => false,
         ));
 

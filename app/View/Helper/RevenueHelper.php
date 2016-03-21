@@ -131,4 +131,44 @@ class RevenueHelper extends AppHelper {
 
         return $result;
     }
+
+    function _callStatusTTUJPayment ( $data, $is_html = true ) {
+        $status = $this->Common->filterEmptyField($data, 'TtujPayment', 'status');
+        $is_canceled = $this->Common->filterEmptyField($data, 'TtujPayment', 'is_canceled');
+        $canceled_date = $this->Common->filterEmptyField($data, 'TtujPayment', 'canceled_date');
+        $transaction_status = $this->Common->filterEmptyField($data, 'TtujPayment', 'transaction_status');
+
+        if(!empty($is_canceled)){
+            $status = __('Void');
+            $class = 'danger';
+        } else if(!empty($status)){
+            if( $transaction_status == 'posting' ) {
+                $status = __('Commit');
+                $class = 'success';
+            } else {
+                $status = __('Draft');
+                $class = 'default';
+            }
+        }else if(!empty($status)){
+            $status = __('Non-Aktif');
+            $class = 'danger';
+        }else {
+            $status = __('Draft');
+            $class = 'default';
+        }
+
+        if( !empty($is_html) ) {
+            $result = $this->Html->tag('span', $status, array(
+                'class' => sprintf('label label-%s', $class)
+            ));
+
+            if(!empty($canceled_date) && !empty($is_canceled)){
+                $result .= '<br>'.$this->Common->customDate($canceled_date, 'd/m/Y');
+            }
+
+            return $result;
+        } else {
+            return $status;
+        }
+    }
 }
