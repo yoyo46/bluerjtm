@@ -558,6 +558,7 @@ class AjaxController extends AppController {
 								'qty' => $qtyTtuj,
 							),
 							'RevenueDetail' => array(
+								'from_ttuj' => true,
 								'to_city_name' => $to_city_name,
 								'price_unit' => $tarif,
 								'qty_unit' => $qtyUnit,
