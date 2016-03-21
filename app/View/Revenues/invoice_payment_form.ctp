@@ -135,10 +135,11 @@
 				), array(
 					'class'=> 'btn btn-default',
 				));
-	    		echo $this->Form->button(__('Simpan'), array(
-	    			'type' => 'submit',
-					'class'=> 'btn btn-success btn-lg',
-				));
+				$this->Common->_getButtonPostingUnposting( $data_local, 'InvoicePayment', array( 'Commit', 'Draft' ) );
+	   //  		echo $this->Form->button(__('Simpan'), array(
+	   //  			'type' => 'submit',
+				// 	'class'=> 'btn btn-success btn-lg',
+				// ));
 		?>
 	</div>
 </div>

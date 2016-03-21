@@ -89,6 +89,8 @@
                         $total = !empty($invoice['total'])?$invoice['total']:0;
                         $totalPaid = !empty($value['invoice_has_paid'])?$value['invoice_has_paid']:0;
                         $sisaPembayaran = $total - $totalPaid;
+
+                        if( $total > $totalPaid ) {
             ?>
             <tr class="child-search child-search-<?php echo $invoice['id'];?>" rel="<?php echo $invoice['id'];?>">
                 <td class="checkbox-detail">
@@ -160,6 +162,7 @@
                 </td>
             </tr>
             <?php
+                        }
                     }
                 }else{
                     echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan')) );

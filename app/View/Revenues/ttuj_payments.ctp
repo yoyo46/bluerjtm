@@ -69,7 +69,8 @@
                         foreach ($invoices as $key => $value) {
                             $id = $value['TtujPayment']['id'];
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
-                            $customStatus = $this->Revenue->_callStatusTTUJPayment($value);
+                            $transaction_status = $this->Common->filterEmptyField($value, 'TtujPayment', 'transaction_status');
+                            $customStatus = $this->Revenue->_callStatusCustom($value, 'TtujPayment');
             ?>
             <tr>
                 <?php 
@@ -102,14 +103,16 @@
                         ));
                         
                         if(empty($value['TtujPayment']['is_canceled'])){
-                            $actionDoc .= $this->Html->link(__('Edit'), array(
-                                'controller' => 'revenues',
-                                'action' => 'edit_ttuj_payment',
-                                $action_type,
-                                $id,
-                            ), array(
-                                'class' => 'btn btn-primary btn-xs'
-                            ));
+                            if( $transaction_status != 'posting' ) {
+                                $actionDoc .= $this->Html->link(__('Edit'), array(
+                                    'controller' => 'revenues',
+                                    'action' => 'edit_ttuj_payment',
+                                    $action_type,
+                                    $id,
+                                ), array(
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
+                            }
                             
                             $actionDoc .= $this->Html->link(__('Void'), array(
                                 'controller' => 'revenues',

@@ -40,7 +40,7 @@
 			</tr>
 			<tr>
 				<th><?php echo __('Status');?></th>
-				<td><?php echo $this->Revenue->_callStatusInvoicePayment($invoice);?></td>
+				<td><?php echo $this->Revenue->_callStatusCustom($invoice, 'InvoicePayment');?></td>
 			</tr>
 			<!-- <tr>
 				<th><?php echo __('Total Pembayaran');?></th>

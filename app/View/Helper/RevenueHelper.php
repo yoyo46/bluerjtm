@@ -132,11 +132,11 @@ class RevenueHelper extends AppHelper {
         return $result;
     }
 
-    function _callStatusTTUJPayment ( $data, $is_html = true ) {
-        $status = $this->Common->filterEmptyField($data, 'TtujPayment', 'status');
-        $is_canceled = $this->Common->filterEmptyField($data, 'TtujPayment', 'is_canceled');
-        $canceled_date = $this->Common->filterEmptyField($data, 'TtujPayment', 'canceled_date');
-        $transaction_status = $this->Common->filterEmptyField($data, 'TtujPayment', 'transaction_status');
+    function _callStatusCustom ( $data, $modelName = 'TtujPayment', $is_html = true ) {
+        $status = $this->Common->filterEmptyField($data, $modelName, 'status');
+        $is_canceled = $this->Common->filterEmptyField($data, $modelName, 'is_canceled');
+        $canceled_date = $this->Common->filterEmptyField($data, $modelName, 'canceled_date');
+        $transaction_status = $this->Common->filterEmptyField($data, $modelName, 'transaction_status');
 
         if(!empty($is_canceled)){
             $status = __('Void');

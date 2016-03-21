@@ -51,6 +51,8 @@
                         foreach ($invoices as $key => $value) {
                             $id = $value['InvoicePayment']['id'];
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                            $transaction_status = $this->Common->filterEmptyField($value, 'InvoicePayment', 'transaction_status');
+                            $customStatus = $this->Revenue->_callStatusCustom($value, 'InvoicePayment');
             ?>
             <tr>
                 <td><?php echo $noref;?></td>
@@ -61,7 +63,7 @@
                 <td class="text-center"><?php echo $this->Common->customDate($value['InvoicePayment']['date_payment'], 'd M Y');?></td>
                 <td>
                     <?php 
-                            echo $this->Revenue->_callStatusInvoicePayment($value);
+                            echo $customStatus;
                     ?>
                 </td>
                 <td class="action">
@@ -82,13 +84,15 @@
                                 // ), array(
                                 //     'class' => 'btn btn-primary btn-xs'
                                 // ));
-                                echo $this->Html->link(__('Edit'), array(
-                                    'controller' => 'revenues',
-                                    'action' => 'invoice_payment_edit',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-primary btn-xs'
-                                ));
+                                if( $transaction_status != 'posting' ) {
+                                    echo $this->Html->link(__('Edit'), array(
+                                        'controller' => 'revenues',
+                                        'action' => 'invoice_payment_edit',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-primary btn-xs'
+                                    ));
+                                }
                                 
                                 echo $this->Html->link('Void', array(
                                     'controller' => 'revenues',

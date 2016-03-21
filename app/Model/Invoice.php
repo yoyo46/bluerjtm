@@ -173,6 +173,7 @@ class Invoice extends AppModel {
             $data_merge = $this->InvoicePaymentDetail->getData('first', array(
                 'conditions' => array(
                     'InvoicePaymentDetail.invoice_id' => $id,
+                    'InvoicePayment.transaction_status' => 'posting',
                     'InvoicePayment.status' => 1,
                 ),
                 'contain' => array(
@@ -193,6 +194,7 @@ class Invoice extends AppModel {
 
             $data_merge = $this->InvoicePaymentDetail->getData('list', array(
                 'conditions' => array(
+                    'InvoicePayment.transaction_status' => 'posting',
                     'InvoicePaymentDetail.invoice_id' => $id,
                     'InvoicePayment.status' => 1,
                 ),
