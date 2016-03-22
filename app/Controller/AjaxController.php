@@ -913,7 +913,7 @@ class AjaxController extends AppController {
 		$revenuePerTruck = $this->Revenue->getData('first', array(
 			'conditions' => $conditionRevenueTruck,
 			'fields' => array(
-				'SUM(Revenue.tarif_per_truck) total',
+				'SUM(Revenue.tarif_per_truck+Revenue.additional_charge) total',
 				'Revenue.customer_id',
 			),
 			'group' => array(

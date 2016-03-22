@@ -1627,6 +1627,7 @@ class MkCommonComponent extends Component {
         $dataString = $this->_callUnset(array(
             'date',
             'datettuj',
+            'to',
         ), $result['named']);
 
         if( !empty($dataString) ) {

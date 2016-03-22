@@ -4018,6 +4018,10 @@ class RevenuesController extends AppController {
                             'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='=> $date_from,
                             'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <=' => $date_to,
                         ),
+                        array(
+                            'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='=> $date_from,
+                            'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <=' => $date_to,
+                        ),
                     );
                 }
 
@@ -4925,6 +4929,14 @@ class RevenuesController extends AppController {
 
         if(!empty($invoice)){
             $coa_id = $this->MkCommon->filterEmptyField($invoice, 'InvoicePayment', 'coa_id');
+            $transaction_status = $this->MkCommon->filterEmptyField($invoice, 'InvoicePayment', 'transaction_status');
+
+            if( $transaction_status == 'posting' ) {
+                $this->MkCommon->setCustomFlash(__('Data tidak ditemukan'), 'error');
+                $this->redirect($this->referer());
+                die();
+            }
+
             $invoice = $this->User->Journal->Coa->getMerge($invoice, $coa_id);
             $invoice = $this->InvoicePayment->InvoicePaymentDetail->getMergeAll($invoice, $id);
 
