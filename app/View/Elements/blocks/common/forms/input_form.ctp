@@ -76,7 +76,7 @@
                 ));
 
                 if( $positionGroup == 'left' ) {
-                    $content = $content.$contentGroup;
+                    $content = $contentGroup.$content;
                 } else {
                     $content .= $contentGroup;
                 }

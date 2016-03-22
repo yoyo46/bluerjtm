@@ -80,13 +80,13 @@ class AssetsController extends AppController {
             $value = $this->Asset->AssetGroup->AssetGroupCoa->getMerge($value, $id);
 
             $data = $this->request->data;
-            $data = $this->RjPurchase->_callBeforeSaveGroup($data);
-            
+            $data = $this->RjAsset->_callBeforeSaveGroup($data, $id);
+
             $result = $this->Asset->AssetGroup->doSave($data, $value, $id);
             $this->MkCommon->setProcessParams($result, array(
                 'action' => 'groups',
             ));
-            $this->request->data = $this->RjPurchase->_callBeforeRenderGroup($this->request->data);
+            $this->request->data = $this->RjAsset->_callBeforeRenderGroup($this->request->data);
 
             $this->set('active_menu', 'asset_groups');
             $this->set(compact(

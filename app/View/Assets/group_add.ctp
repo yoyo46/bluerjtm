@@ -28,7 +28,12 @@
 		                    'positionGroup' => 'right',
 		                    'class' => 'form-control pull-right',
 		                ));
-						echo $this->Common->buildInputForm('nilai_sisa', __('Nilai Sisa *'));
+						echo $this->Common->buildInputForm('nilai_sisa', __('Nilai Sisa *'), array(
+							'type' => 'text',
+		                    'textGroup' => Configure::read('__Site.config_currency_code'),
+		                    'positionGroup' => 'left',
+							'class' => 'form-control input_price pull-left',
+						));
 			    ?>
 		    </div>
 		</div>
@@ -37,22 +42,26 @@
 		<div class="box">
 		    <?php 
 		            echo $this->element('blocks/common/box_header', array(
-		                'title' => __('Account'),
+		                'title' => __('Akun Asset'),
 		            ));
 		    ?>
 		    <div class="box-body">
 		    	<?php 
 						echo $this->Common->buildInputForm('AssetGroupCoa.Asset.coa_id', __('Asset *'), array(
 							'empty' => __('- Pilih COA -'),
+							'class' => 'form-control chosen-select',
 						));
 						echo $this->Common->buildInputForm('AssetGroupCoa.AccumulationDepr.coa_id', __('Accumulation Depr. *'), array(
 							'empty' => __('- Pilih COA -'),
+							'class' => 'form-control chosen-select',
 						));
 						echo $this->Common->buildInputForm('AssetGroupCoa.Depresiasi.coa_id', __('Depresiasi *'), array(
 							'empty' => __('- Pilih COA -'),
+							'class' => 'form-control chosen-select',
 						));
 						echo $this->Common->buildInputForm('AssetGroupCoa.ProfitAsset.coa_id', __('Keuntungan penjualan asset *'), array(
 							'empty' => __('- Pilih COA -'),
+							'class' => 'form-control chosen-select',
 						));
 			    ?>
 		    </div>

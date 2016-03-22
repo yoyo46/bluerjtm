@@ -39,6 +39,13 @@ class AssetGroup extends AppModel {
             ),
         ),
 	);
+    
+    var $hasMany = array(
+        'AssetGroupCoa' => array(
+            'className' => 'AssetGroupCoa',
+            'foreignKey' => 'asset_group_id',
+        ),
+    );
 
     public function getData( $find = 'all', $options = array(), $elements = array()  ) {
         $status = isset($elements['status']) ? $elements['status']:'active';
@@ -128,6 +135,103 @@ class AssetGroup extends AppModel {
         }
         
         return $default_options;
+    }
+
+    function doSave ( $data, $value = false, $id = false ) {
+        $msg = __('Gagal menyimpan asset');
+
+        if( !empty($data) ) {
+            $flag = $this->saveAll($data, array(
+                'validate' => 'only',
+            ));
+            
+            if( !empty($flag) ) {
+                $flag = $this->AssetGroupCoa->updateAll(array(
+                    'AssetGroupCoa.status' => 0,
+                ), array(
+                    'AssetGroupCoa.asset_group_id' => $id,
+                ));
+
+                if( !empty($flag) ) {
+                    $msg = __('Berhasil menyimpan asset');
+                    $this->saveAll($data);
+                    $result = array(
+                        'msg' => $msg,
+                        'status' => 'success',
+                        'Log' => array(
+                            'activity' => $msg,
+                            'old_data' => $value,
+                        ),
+                    );
+                } else {
+                    $result = array(
+                        'msg' => $msg,
+                        'status' => 'error',
+                        'Log' => array(
+                            'activity' => $msg,
+                            'old_data' => $value,
+                            'error' => 1,
+                        ),
+                    );
+                }
+            } else {
+                $result = array(
+                    'msg' => $msg,
+                    'status' => 'error',
+                );
+            }
+        } else {
+            $result['data'] = $value;
+        }
+
+        return $result;
+    }
+
+    function doDelete( $id ) {
+        $result = false;
+        $value = $this->getData('first', array(
+            'conditions' => array(
+                'AssetGroup.id' => $id,
+            ),
+        ));
+
+        if ( !empty($value) ) {
+            $code = !empty($value['AssetGroup']['code'])?$value['AssetGroup']['code']:false;
+            $default_msg = sprintf(__('menghapus asset #%s'), $code);
+
+            $this->id = $id;
+            $this->set('status', 0);
+
+            if( $this->save() ) {
+                $msg = sprintf(__('Berhasil %s'), $default_msg);
+                $result = array(
+                    'msg' => $msg,
+                    'status' => 'success',
+                    'Log' => array(
+                        'activity' => $msg,
+                        'old_data' => $value,
+                    ),
+                );
+            } else {
+                $msg = sprintf(__('Gagal %s'), $default_msg);
+                $result = array(
+                    'msg' => $msg,
+                    'status' => 'error',
+                    'Log' => array(
+                        'activity' => $msg,
+                        'old_data' => $value,
+                        'error' => 1,
+                    ),
+                );
+            }
+        } else {
+            $result = array(
+                'msg' => __('Gagal menghapus asset. Data tidak ditemukan'),
+                'status' => 'error',
+            );
+        }
+
+        return $result;
     }
 }
 ?>

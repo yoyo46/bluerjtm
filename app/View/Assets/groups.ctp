@@ -8,12 +8,19 @@
             ),
             'year' => array(
                 'name' => __('Umur Ekonomis'),
+                'class' => 'text-center',
             ),
             'nilai' => array(
                 'name' => __('Nilai Sisa'),
+                'class' => 'text-center',
+            ),
+            'created' => array(
+                'name' => __('Dibuat'),
+                'class' => 'text-center',
             ),
             'action' => array(
                 'name' => __('Action'),
+                'class' => 'text-center',
             ),
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
@@ -49,6 +56,7 @@
                             $created = $this->Common->filterEmptyField($value, 'AssetGroup', 'created');
 
                             $created = $this->Common->formatDate($created);
+                            $nilai_sisa = $this->Common->getFormatPrice($nilai_sisa);
 
                             $action = $this->Html->link(__('Edit'), array(
                                 'action' => 'group_edit',
@@ -72,15 +80,25 @@
                                     array(
                                         $umur_ekonomis,
                                         array(
-                                            'class' => 'actions tacenter',
+                                            'class' => 'actions text-center',
                                         ),
                                     ),
-                                    $nilai_sisa,
-                                    $created,
+                                    array(
+                                        $nilai_sisa,
+                                        array(
+                                            'class' => 'actions text-right',
+                                        ),
+                                    ),
+                                    array(
+                                        $created,
+                                        array(
+                                            'class' => 'actions text-center',
+                                        ),
+                                    ),
                                     array(
                                         $action,
                                         array(
-                                            'class' => 'actions tacenter',
+                                            'class' => 'action text-center',
                                         ),
                                     ),
                                 )

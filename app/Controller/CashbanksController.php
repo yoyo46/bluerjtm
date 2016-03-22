@@ -93,6 +93,8 @@ class CashbanksController extends AppController {
                     'CashBankDetail',
                     'DocumentAuth'
                 )
+            ), array(
+                'branch' => false,
             ));
 
             if( !empty($cashbank) ) {
@@ -440,16 +442,25 @@ class CashbanksController extends AppController {
 
         if(!empty($data['CashBankDetail'])){
             $this->loadModel('Coa');
-            foreach ($data['CashBankDetail'] as $key => $value) {
-                $curr_coa = $this->User->Journal->Coa->getData('first', array(
-                    'conditions' => array(
-                        'Coa.id' => $value['coa_id']
-                    )
-                ));
 
-                if(!empty($curr_coa)){
-                    $data['CashBankDetail'][$key]['name_coa'] = $curr_coa['Coa']['name'];
-                    $data['CashBankDetail'][$key]['code_coa'] = $curr_coa['Coa']['code'];
+            foreach ($data['CashBankDetail'] as $key => $value) {
+                $coa_id = $this->MkCommon->filterEmptyField($value, 'coa_id');
+                $truck_id = $this->MkCommon->filterEmptyField($value, 'truck_id');
+                
+                $value = $this->User->Journal->Coa->getMerge($value, $coa_id);
+                $value = $this->CashBank->CashBankDetail->Truck->getMerge($value, $truck_id);
+                
+                $code_coa = $this->MkCommon->filterEmptyField($value, 'Coa', 'code');
+                $name_coa = $this->MkCommon->filterEmptyField($value, 'Coa', 'name');
+                $nopol = $this->MkCommon->filterEmptyField($value, 'Truck', 'nopol');
+
+                if(!empty($code_coa)){
+                    $data['CashBankDetail'][$key]['name_coa'] = $name_coa;
+                    $data['CashBankDetail'][$key]['code_coa'] = $code_coa;
+                }
+
+                if(!empty($nopol)){
+                    $data['CashBankDetail'][$key]['nopol'] = $nopol;
                 }
             }
 
