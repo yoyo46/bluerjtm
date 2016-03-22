@@ -46,7 +46,7 @@
 									'class'=>'form-control',
 									'required' => false,
 									'placeholder' => __('No. Dokumen'),
-									'readonly' => (!empty($id) && !empty($this->request->data['Revenue']['no_doc'])) ? true : false
+									// 'readonly' => (!empty($id) && !empty($this->request->data['Revenue']['no_doc'])) ? true : false
 								));
 						?>
 			        </div>
