@@ -67,14 +67,31 @@
 
 				foreach ($invoice['Revenue'] as $key => $revenue) {
 					$showRate = false;
+					$id = !empty($revenue['Revenue']['id'])?$revenue['Revenue']['id']:false;
 					$totalUnit = !empty($revenue['qty_unit'])?$revenue['qty_unit']:0;
 					$grandTotalMainUnit += $totalUnit;
+					$is_charge = false;
 
 					if( !empty($revenue['RevenueDetail'][0]) ) {
 						$revenueDetail = $revenue['RevenueDetail'][0];
 						$price_unit = $revenueDetail['price_unit'];
+						$is_charge = $revenueDetail['is_charge'];
 						$grandTotalUnit += $revenueDetail['qty_unit'];
-						$amount = $revenueDetail['qty_unit'] * $price_unit;
+
+						$payment_type = $this->Common->filterEmptyField($revenueDetail, 'payment_type');
+						$total_price_unit = $this->Common->filterEmptyField($revenueDetail, 'total_price_unit');
+						$revenue_temp = sprintf('%s-%s', $id, $is_charge);
+
+						if( $payment_type == 'per_truck' ){
+							if( !empty($total_price_unit) ) {
+								$amount = $total_price_unit;
+							} else {
+								$amount = !empty($revenue['Revenue']['tarif_per_truck'])?$revenue['Revenue']['tarif_per_truck']:0;
+							}
+						}else{
+							$amount = $price_unit * $revenueDetail['qty_unit'];
+						}
+
 						$grandTotalTarif += $amount;
 
 						if( $tempRate != $price_unit ) {
@@ -89,6 +106,7 @@
 
 					echo $this->element('blocks/revenues/invoice_hso', array(
 						'no' => $no,
+						'revenue_temp' => $revenue_temp,
 						'revenue' => $revenue,
 						'revenueDetail' => $revenueDetail,
 						'totalUnit' => $totalUnit,
@@ -98,9 +116,23 @@
 					if( !empty($revenue['RevenueDetail']) ) {
 						foreach ($revenue['RevenueDetail'] as $key => $revenueDetail) {
 							$showRate = false;
+							$id = !empty($revenue['Revenue']['id'])?$revenue['Revenue']['id']:false;
 							$price_unit = $revenueDetail['price_unit'];
+							$is_charge = $revenueDetail['is_charge'];
 							$grandTotalUnit += $revenueDetail['qty_unit'];
-							$amount = $revenueDetail['qty_unit'] * $price_unit;
+						
+							$payment_type = $this->Common->filterEmptyField($revenueDetail, 'payment_type');
+							$total_price_unit = $this->Common->filterEmptyField($revenueDetail, 'total_price_unit');
+							$amount = 0;
+
+							if( $payment_type == 'per_truck' ){
+								if( !empty($is_charge) ) {
+									$amount = $total_price_unit;
+								}
+							}else{
+								$amount = $price_unit * $revenueDetail['qty_unit'];
+							}
+
 							$grandTotalTarif += $amount;
 
 							if( $tempRate != $price_unit ) {
@@ -108,7 +140,9 @@
 								$showRate = true;
 							}
 
+							$revenue_temp = sprintf('%s-%s', $id, $is_charge);
 							echo $this->element('blocks/revenues/invoice_hso', array(
+								'revenue_temp' => $revenue_temp,
 								'revenue' => $revenue,
 								'revenueDetail' => $revenueDetail,
 								'showRate' => $showRate,

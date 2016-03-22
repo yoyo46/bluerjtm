@@ -32,7 +32,7 @@ if($action_print == 'pdf'){
 			$data_print = !empty($data_print)?$data_print:'invoice';
 			
 			if($action == 'tarif' && $data_print == 'invoice'){
-				$cityName = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_second_code'), array('places' => 0)) );
+				$cityName = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], false, array('places' => 0)) );
 			}else{
             	if( $val_detail[0]['Revenue']['revenue_tarif_type'] == 'per_truck' && !empty($val_detail[0]['Revenue']['no_doc']) ) {
 					$cityName = $val_detail[0]['Revenue']['no_doc'];
@@ -75,11 +75,14 @@ if($action_print == 'pdf'){
 
 				foreach ($val_detail as $key => $value) {
     				$revenue_id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
+    				$is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
 
-					if( !empty($recenueCnt[$revenue_id]) ) {
-						$recenueCnt[$revenue_id]++;
-					} else {
-						$recenueCnt[$revenue_id] = 1;
+    				if( empty($is_charge) ) {
+						if( !empty($recenueCnt[$revenue_id]) ) {
+							$recenueCnt[$revenue_id]++;
+						} else {
+							$recenueCnt[$revenue_id] = 1;
+						}
 					}
 				}
 
@@ -89,6 +92,7 @@ if($action_print == 'pdf'){
 
     				$no_do = $this->Common->filterEmptyField($value, 'RevenueDetail', 'no_do');
     				$sj = $this->Common->filterEmptyField($value, 'RevenueDetail', 'no_sj');
+    				$is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
 
     				if( !empty($sj) ) {
         				$no_sj = substr($sj, 0, 28);
@@ -177,7 +181,7 @@ if($action_print == 'pdf'){
 				$colom .= $this->Html->tag('td', '&nbsp;', array(
 					'style' => 'text-align:right;',
 				));
-				$colom .= $this->Html->tag('td', $this->Number->currency($grandTotal, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+				$colom .= $this->Html->tag('td', $this->Number->currency($grandTotal, false, array('places' => 0)), array(
 					'style' => 'text-align:right;',
 				));
 				$colom .= $this->Html->tag('td', '&nbsp;');
@@ -192,7 +196,7 @@ if($action_print == 'pdf'){
 					$colom .= $this->Html->tag('td', __('PPN '), array(
 						'style' => 'font-weight: bold;text-align:right;',
 					));
-					$colom .= $this->Html->tag('td', $this->Number->currency($ppn, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+					$colom .= $this->Html->tag('td', $this->Number->currency($ppn, false, array('places' => 0)), array(
 						'style' => 'font-weight: bold;text-align:right;',
 					));
 					$colom .= $this->Html->tag('td', '&nbsp;');
@@ -213,7 +217,7 @@ if($action_print == 'pdf'){
 						'align' => 'right',
 						'style' => 'font-weight: bold;',
 					));
-					$colom .= $this->Html->tag('td', $this->Number->currency($grandTotalInvoice, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+					$colom .= $this->Html->tag('td', $this->Number->currency($grandTotalInvoice, false, array('places' => 0)), array(
 						'align' => 'right',
 						'style' => 'font-weight: bold;',
 					));
@@ -246,7 +250,7 @@ if($action_print == 'pdf'){
 				$colom .= $this->Html->tag('td', '&nbsp;', array(
 					'style' => 'text-align:right;',
 				));
-				$colom .= $this->Html->tag('td', $this->Number->currency($totalAll, Configure::read('__Site.config_currency_second_code'), array('places' => 0)), array(
+				$colom .= $this->Html->tag('td', $this->Number->currency($totalAll, false, array('places' => 0)), array(
 					'style' => 'text-align:right;',
 				));
 				$colom .= $this->Html->tag('td', '&nbsp;');
@@ -268,7 +272,7 @@ if($action_print == 'pdf'){
 
     $title_tipe_invoice = '';
     if($action == 'tarif'){
-		$title_tipe_invoice = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_second_code'), array('places' => 0)) );
+		$title_tipe_invoice = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], false, array('places' => 0)) );
 	}else{
 		$title_tipe_invoice = $val_detail[0]['City']['name'];
 	}

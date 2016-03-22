@@ -58,12 +58,15 @@
 					foreach ($val_detail as $key => $value) {
         				$revenue_id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
         				$total_price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'total_price_unit');
+    					$is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
 
-						if( empty($total_price_unit) ) {
-							if( !empty($recenueCnt[$revenue_id]) ) {
-								$recenueCnt[$revenue_id]++;
-							} else {
-								$recenueCnt[$revenue_id] = 1;
+	    				if( empty($is_charge) ) {
+							if( empty($total_price_unit) ) {
+								if( !empty($recenueCnt[$revenue_id]) ) {
+									$recenueCnt[$revenue_id]++;
+								} else {
+									$recenueCnt[$revenue_id] = 1;
+								}
 							}
 						}
 					}
@@ -71,6 +74,8 @@
 					foreach ($val_detail as $key => $value) {
         				$revenue_id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
         				$date_revenue = $this->Common->filterEmptyField($value, 'Revenue', 'date_revenue');
+        				$total_price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'total_price_unit');
+        				$price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'price_unit');
 
         				$is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
         				$no_do = $this->Common->filterEmptyField($value, 'RevenueDetail', 'no_do');
@@ -96,11 +101,9 @@
 
 						if( $payment_type == 'per_truck' ){
 							$priceFormat = '-';
-						} else if( !empty($total_price_unit) ) {
-							$price = $this->Common->filterEmptyField($value, 'RevenueDetail', 'price_unit');
-							$priceFormat = $this->Common->getFormatPrice($price);
 						} else {
-							$priceFormat = '-';
+							$price = $price_unit;
+							$priceFormat = $this->Number->currency($price, '', array('places' => 0));
 						}
 
 						if( !empty($value['Revenue']['Ttuj']['nopol']) ) {
@@ -134,7 +137,7 @@
 							'align' => 'right'
 						));
 
-						if( $jenis_tarif == 'per_truck' ){
+						if( $payment_type == 'per_truck' ){
 							if( !empty($total_price_unit) ) {
 								$total = $total_price_unit;
 
@@ -150,15 +153,11 @@
 									));
 								}
 							}
-						} else if( !empty($total_price_unit) ) {
+						}else{
 							$total = $price * $qty;
 
-							$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($total), array(
-								'align' => 'right'
-							));
-						} else {
-							$colom .= $this->Html->tag('td', '-', array(
-								'align' => 'right'
+							$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
+								'style' => 'text-align:right;',
 							));
 						}
 
