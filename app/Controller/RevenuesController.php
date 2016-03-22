@@ -2539,7 +2539,6 @@ class RevenuesController extends AppController {
             'conditions' => array(
                 'Truck.branch_id' => $allow_branch_id,
             ),
-            'limit' => Configure::read('__Site.config_pagination'),
         );
 
 
@@ -2589,9 +2588,11 @@ class RevenuesController extends AppController {
             $values = $this->Ttuj->Truck->getData('all', $options);
         } else {
             $this->loadModel('Truck');
+            $options['limit'] = Configure::read('__Site.config_pagination');
             $this->paginate = $this->Truck->getData('paginate', $options);
             $values = $this->paginate('Truck');
         }
+
         $cntPencapaian = array();
         $cntUnit = array();
         $targetUnit = array();

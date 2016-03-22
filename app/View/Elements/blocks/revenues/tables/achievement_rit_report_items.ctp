@@ -21,6 +21,8 @@
                 $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
                 $target_rit = $this->Common->filterEmptyField($value, 'Customer', 'target_rit', '-');
                 $customer_id = $this->Common->filterEmptyField($value, 'Customer', 'id');
+                $customer_code = $this->Common->filterEmptyField($value, 'Customer', 'code');
+                $capacity = $this->Common->filterEmptyField($value, 'Truck', 'capacity');
 ?>
 <tr>
     <?php 
@@ -31,6 +33,8 @@
             }
 
             echo $this->Html->tag('td', $nopol);
+            echo $this->Html->tag('td', $customer_code);
+            echo $this->Html->tag('td', $capacity);
 
             if( isset($totalCnt) ) {
                 for ($i=0; $i <= $totalCnt; $i++) {

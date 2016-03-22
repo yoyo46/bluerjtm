@@ -68,6 +68,17 @@
                                 'data-options' => 'field:\'nopol\',width:150,',
                                 'rowspan' => $headerRowspan,
                             ));
+                            echo $this->Html->tag('th', __('Alokasi'), array(
+                                'style' => 'text-align: center;width: 120px;',
+                                'data-options' => 'field:\'alocation\',width:150,',
+                                'rowspan' => $headerRowspan,
+                            ));
+                            echo $this->Html->tag('th', __('Kapasitas'), array(
+                                'style' => 'text-align: center;width: 80px;',
+                                'data-options' => 'field:\'capacity\',width:80,',
+                                'rowspan' => $headerRowspan,
+                                'align' => 'center',
+                            ));
 
                             if( $data_action != 'excel' ) {
                     ?>
@@ -355,6 +366,8 @@ $tbl = <<<EOD
                 <tr style="$table_tr_head">
                     <th rowspan="3" style="text-align: center;">No. </th>
                     <th rowspan="3">NoPol</th>
+                    <th rowspan="3">Alokasi</th>
+                    <th rowspan="3">Kapasitas</th>
                     $topHeader
                 </tr>
                 <tr style="$table_tr_head">

@@ -1628,6 +1628,7 @@ class MkCommonComponent extends Component {
             'date',
             'datettuj',
             'to',
+            'from',
         ), $result['named']);
 
         if( !empty($dataString) ) {
