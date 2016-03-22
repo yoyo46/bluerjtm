@@ -101,7 +101,7 @@
 <tr>
     <?php 
             if( !empty($numbering) ) {
-                $colspan = 4;
+                $colspan = 2;
             } else {
                 $colspan = false;
             }
