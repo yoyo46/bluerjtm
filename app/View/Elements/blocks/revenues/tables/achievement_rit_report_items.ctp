@@ -101,11 +101,13 @@
 <tr>
     <?php 
             if( !empty($numbering) ) {
-                $colspan = 2;
+                $colspan = 4;
             } else {
                 $colspan = false;
             }
 
+            echo $this->Html->tag('td', '&nbsp;');
+            echo $this->Html->tag('td', '&nbsp;');
             echo $this->Html->tag('td', __('Total'), array(
                 'colspan' => $colspan,
                 'style' => 'text-align: right;font-weight: bold;',
