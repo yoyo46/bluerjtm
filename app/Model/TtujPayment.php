@@ -156,6 +156,7 @@ class TtujPayment extends AppModel {
         $asdp = !empty($data['named']['asdp'])?$data['named']['asdp']:false;
         $uang_kawal = !empty($data['named']['uang_kawal'])?$data['named']['uang_kawal']:false;
         $uang_keamanan = !empty($data['named']['uang_keamanan'])?$data['named']['uang_keamanan']:false;
+        $transaction_status = !empty($data['named']['transaction_status'])?urldecode($data['named']['transaction_status']):false;
 
         $fromcity = !empty($data['named']['fromcity'])?$data['named']['fromcity']:false;
         $tocity = !empty($data['named']['tocity'])?$data['named']['tocity']:false;
@@ -290,6 +291,21 @@ class TtujPayment extends AppModel {
                                 'Ttuj.paid_commission_extra' => 'none',
                             ),
                         );
+                    break;
+            }
+        }
+        if( !empty($transaction_status) ) {
+            switch ($transaction_status) {
+                case 'draft':
+                    $default_options['conditions']['TtujPayment.transaction_status'] = 'unposting';
+                    $default_options['conditions']['TtujPayment.is_canceled'] = 0;
+                    break;
+                case 'commit':
+                    $default_options['conditions']['TtujPayment.transaction_status'] = 'posting';
+                    $default_options['conditions']['TtujPayment.is_canceled'] = 0;
+                    break;
+                case 'void':
+                    $default_options['conditions']['TtujPayment.is_canceled'] = 1;
                     break;
             }
         }

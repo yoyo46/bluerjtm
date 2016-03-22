@@ -47,6 +47,28 @@
                         ));
                     ?>
                 </div>
+
+                <?php 
+                        if( $action_type == 'biaya_ttuj' ) {
+                ?>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('transaction_status',array(
+                                'label'=> __('Status'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Status'),
+                                'options' => array(
+                                    'draft' => 'Draft',
+                                    'commit' => 'Commit',
+                                    'void' => 'Void',
+                                )
+                            ));
+                    ?>
+                </div>
+                <?php
+                        }
+                ?>
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
@@ -69,6 +91,24 @@
                             )), array(
                                 'class' => 'form-group',
                             ));
+                        } else {
+                ?>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('transaction_status',array(
+                                'label'=> __('Status'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Status'),
+                                'options' => array(
+                                    'draft' => 'Draft',
+                                    'commit' => 'Commit',
+                                    'void' => 'Void',
+                                )
+                            ));
+                    ?>
+                </div>
+                <?php
                         }
                 ?>
             </div>

@@ -315,6 +315,7 @@ class CashBank extends AppModel {
         $total = !empty($data['named']['total'])?$data['named']['total']:false;
         $description = !empty($data['named']['description'])?$data['named']['description']:false;
         $documenttype = !empty($data['CashBank']['documenttype'])?urldecode($data['CashBank']['documenttype']):false;
+        $transaction_status = !empty($data['named']['transaction_status'])?urldecode($data['named']['transaction_status']):false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -412,6 +413,31 @@ class CashBank extends AppModel {
         }
         if(!empty($noref)){
             $default_options['conditions']['LPAD(CashBank.id, 6, 0) LIKE'] = '%'.$noref.'%';
+        }
+        if( !empty($transaction_status) ) {
+            switch ($transaction_status) {
+                case 'draft':
+                    $default_options['conditions']['CashBank.transaction_status'] = 'unposting';
+                    $default_options['conditions']['CashBank.is_rejected'] = 0;
+                    break;
+                case 'commit':
+                    $default_options['conditions']['CashBank.transaction_status'] = 'posting';
+                    $default_options['conditions']['CashBank.is_rejected'] = 0;
+                    $default_options['conditions']['CashBank.completed'] = 0;
+                    $default_options['conditions']['CashBank.is_revised'] = 0;
+                    break;
+                case 'approved':
+                    $default_options['conditions']['CashBank.completed'] = 1;
+                    $default_options['conditions']['CashBank.is_rejected'] = 0;
+                    break;
+                case 'revised':
+                    $default_options['conditions']['CashBank.is_revised'] = 1;
+                    $default_options['conditions']['CashBank.is_rejected'] = 0;
+                    break;
+                case 'void':
+                    $default_options['conditions']['CashBank.is_rejected'] = 1;
+                    break;
+            }
         }
         
         return $default_options;

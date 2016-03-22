@@ -68,6 +68,10 @@
                         foreach ($payments as $key => $value) {
                             $id = $value['KsuPayment']['id'];
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                            
+                            $transaction_status = $this->Common->filterEmptyField($value, 'KsuPayment', 'transaction_status');
+
+                            $customStatus = $this->Lku->_callStatus($value, 'KsuPayment');
             ?>
             <tr>
                 <td><?php echo $noref;?></td>
@@ -76,15 +80,7 @@
                 <td><?php echo $value['Customer']['customer_name_code'];?></td>
                 <td><?php echo $this->Number->currency($value['KsuPayment']['grandtotal'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <?php 
-                        if(!empty($value['KsuPayment']['is_void'])){
-                            echo $this->Html->tag('td', '<span class="label label-danger">Void</span>');
-                        }else{
-                            if(!empty($value['KsuPayment']['paid'])){
-                                echo $this->Html->tag('td', '<span class="label label-success">Telah di bayar</span>');
-                            } else{
-                                echo $this->Html->tag('td', '<span class="label label-warning">Belum di bayar</span>');
-                            }
-                        }
+                        echo $this->Html->tag('td', $customStatus);
                 ?>
                 <td><?php echo $this->Common->customDate($value['KsuPayment']['created']);?></td>
                 <td class="action">
@@ -98,13 +94,15 @@
                             ));
 
                             if(empty($value['KsuPayment']['is_void'])){
-                                echo $this->Html->link(__('Edit'), array(
-                                    'controller' => 'lkus',
-                                    'action' => 'ksu_payment_edit',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-primary btn-xs'
-                                ));
+                                if( $transaction_status != 'posting' ) {
+                                    echo $this->Html->link(__('Edit'), array(
+                                        'controller' => 'lkus',
+                                        'action' => 'ksu_payment_edit',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-primary btn-xs'
+                                    ));
+                                }
                                 
                                 echo $this->Html->link('void', array(
                                     'controller' => 'lkus',

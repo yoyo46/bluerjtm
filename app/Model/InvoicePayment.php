@@ -139,6 +139,7 @@ class InvoicePayment extends AppModel {
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
         $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
+        $transaction_status = !empty($data['named']['transaction_status'])?urldecode($data['named']['transaction_status']):false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -154,6 +155,21 @@ class InvoicePayment extends AppModel {
         }
         if(!empty($noref)){
             $default_options['conditions']['LPAD(InvoicePayment.id, 6, 0) LIKE'] = '%'.$noref.'%';
+        }
+        if( !empty($transaction_status) ) {
+            switch ($transaction_status) {
+                case 'draft':
+                    $default_options['conditions']['InvoicePayment.transaction_status'] = 'unposting';
+                    $default_options['conditions']['InvoicePayment.is_canceled'] = 0;
+                    break;
+                case 'commit':
+                    $default_options['conditions']['InvoicePayment.transaction_status'] = 'posting';
+                    $default_options['conditions']['InvoicePayment.is_canceled'] = 0;
+                    break;
+                case 'void':
+                    $default_options['conditions']['InvoicePayment.is_canceled'] = 1;
+                    break;
+            }
         }
         
         return $default_options;

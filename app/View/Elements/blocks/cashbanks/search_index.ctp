@@ -74,6 +74,23 @@
                 </div>
                 <div class="form-group">
                     <?php 
+                            echo $this->Form->input('transaction_status',array(
+                                'label'=> __('Status'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Status'),
+                                'options' => array(
+                                    'draft' => 'Draft',
+                                    'commit' => 'Commit',
+                                    'approved' => 'Approved',
+                                    'revised' => 'Revisi',
+                                    'void' => 'Void',
+                                )
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
                             echo $this->Form->input('note',array(
                                 'label'=> __('Keterangan'),
                                 'class'=>'form-control',

@@ -5,6 +5,8 @@
 		));
 		$this->Html->addCrumb($sub_module_title);
 
+		$data_local = !empty($data_local)?$data_local:false;
+
 		echo $this->Form->create('LkuPayment', array(
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
@@ -148,10 +150,7 @@
 					), array(
 						'class'=> 'btn btn-default',
 					));
-		    		echo $this->Form->button(__('simpan'), array(
-						'class'=> 'btn btn-success btn-lg',
-						'type' => 'submit'
-					));
+					$this->Common->_getButtonPostingUnposting( $data_local, 'LkuPayment', array( 'Commit', 'Draft' ) );
 			?>
 		</div>
 	</div>

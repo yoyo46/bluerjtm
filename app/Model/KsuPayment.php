@@ -150,6 +150,7 @@ class KsuPayment extends AppModel {
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
         $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
         $customer = !empty($data['named']['customer'])?$data['named']['customer']:false;
+        $transaction_status = !empty($data['named']['transaction_status'])?urldecode($data['named']['transaction_status']):false;
 
         if(!empty($nodoc)){
             $default_options['conditions']['KsuPayment.no_doc LIKE'] = '%'.$nodoc.'%';
@@ -159,6 +160,21 @@ class KsuPayment extends AppModel {
         }
         if(!empty($customer)){
             $default_options['conditions']['KsuPayment.customer_id'] = $customer;
+        }
+        if( !empty($transaction_status) ) {
+            switch ($transaction_status) {
+                case 'draft':
+                    $default_options['conditions']['KsuPayment.transaction_status'] = 'unposting';
+                    $default_options['conditions']['KsuPayment.is_void'] = 0;
+                    break;
+                case 'commit':
+                    $default_options['conditions']['KsuPayment.transaction_status'] = 'posting';
+                    $default_options['conditions']['KsuPayment.is_void'] = 0;
+                    break;
+                case 'void':
+                    $default_options['conditions']['KsuPayment.is_void'] = 1;
+                    break;
+            }
         }
         
         return $default_options;

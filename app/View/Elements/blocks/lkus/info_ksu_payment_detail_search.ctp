@@ -91,8 +91,21 @@
 
                     foreach ($ksu_details as $key => $value) {
                         $ksu = $value['Ksu'];
-                        
+
+                        $price_pay = 0;
                         $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
+                        $total_price = $this->Common->filterEmptyField($value, 'KsuDetail', 'total_price', 0);
+                        $ksu_has_paid = $this->Common->filterEmptyField($value, 'KsuDetail', 'ksu_has_paid');
+                        
+                        if(!empty($ksu_has_paid)){
+                            $price_pay = $total_price - $ksu_has_paid;
+                            $price_pay_custom = $this->Number->currency($ksu_has_paid, Configure::read('__Site.config_currency_code'), array('places' => 0)); 
+                        }else{
+                            $price_pay = $total_price;
+                            $price_pay_custom = '-';
+                        }
+
+                        if( $price_pay > 0 ) {
             ?>
             <tr class="child-search child-search-<?php echo $value['KsuDetail']['id'];?>" rel="<?php echo $value['KsuDetail']['id'];?>">
                 <td class="checkbox-detail">
@@ -148,24 +161,17 @@
                 </td>
                 <td class="text-right">
                     <?php
-                        echo $this->Number->currency($value['KsuDetail']['total_price'], Configure::read('__Site.config_currency_code'), array('places' => 0));
+                        echo $this->Number->currency($total_price, Configure::read('__Site.config_currency_code'), array('places' => 0));
 
                         echo $this->Form->hidden('KsuPaymentDetail.total_biaya_klaim.'.$value['KsuDetail']['id'], array(
                             'class' => 'ksu-price-payment',
-                            'value' => (!empty($value['KsuDetail']['total_price'])) ? $value['KsuDetail']['total_price'] : 0
+                            'value' => $total_price
                         ));
                     ?>
                 </td>
                 <td class="text-right">
                     <?php
-                        $price_pay = 0;
-                        if(!empty($value['KsuDetail']['ksu_has_paid'])){
-                            echo $this->Number->currency($value['KsuDetail']['ksu_has_paid'], Configure::read('__Site.config_currency_code'), array('places' => 0)); 
-                            $price_pay = $value['KsuDetail']['total_price'] - $value['KsuDetail']['ksu_has_paid'];
-                        }else{
-                            echo '-';
-                            $price_pay = $value['KsuDetail']['total_price'];
-                        }
+                            echo $price_pay_custom;
                     ?>
                 </td>
                 <td class="text-right action-search hide" valign="top">
@@ -195,6 +201,7 @@
                 </td>
             </tr>
             <?php
+                        }
                     }
             ?>
         </tbody>

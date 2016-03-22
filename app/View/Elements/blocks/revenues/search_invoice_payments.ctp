@@ -58,6 +58,21 @@
                         ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('transaction_status',array(
+                                'label'=> __('Status'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Status'),
+                                'options' => array(
+                                    'draft' => 'Draft',
+                                    'commit' => 'Commit',
+                                    'void' => 'Void',
+                                )
+                            ));
+                    ?>
+                </div>
             </div>
         </div>
         <div class="row">
