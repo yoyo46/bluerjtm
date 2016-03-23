@@ -2696,5 +2696,45 @@ class AjaxController extends AppController {
 		$this->autoRender = false;
 		return json_encode($values);
 	}
+
+	function truck_picker () {
+		$this->loadModel('Truck');
+
+		$title = __('Truk');
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Truck->_callRefineParams($params, array(
+            'limit' => 20,
+        ));
+        $return_value = $this->MkCommon->filterEmptyField($this->params, 'named', 'return_value', 'id');
+        $target = $this->MkCommon->filterEmptyField($this->params, 'named', 'target', '#document-id');
+
+		$this->paginate = $this->Truck->getData('paginate', $options, true, array(
+			'plant' => true,
+		));
+        $values = $this->paginate('Truck');
+
+        if(!empty($values)){
+            foreach ($values as $key => $value) {
+                $driver_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'driver_id');
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'branch_id');
+                $truck_category_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'truck_category_id');
+                $truck_brand_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'truck_brand_id');
+                $company_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'company_id');
+
+                $value = $this->Truck->TruckCategory->getMerge($value, $truck_category_id);
+                $value = $this->Truck->TruckBrand->getMerge($value, $truck_brand_id);
+                $value = $this->Truck->Company->getMerge($value, $company_id);
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+				$value = $this->Truck->Driver->getMerge($value, $driver_id);
+
+                $values[$key] = $value;
+            }
+        }
+
+        $this->set(compact(
+        	'values', 'title', 'return_value',
+        	'target'
+    	));
+	}
 }
 ?>

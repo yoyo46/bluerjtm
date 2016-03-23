@@ -102,4 +102,86 @@ class AssetsController extends AppController {
         $result = $this->Asset->AssetGroup->doDelete( $id );
         $this->MkCommon->setProcessParams($result);
     }
+
+    function index(){
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Asset->_callRefineParams($params);
+
+        $this->paginate = $this->Asset->getData('paginate', $options);
+        $values = $this->paginate('Asset');
+        $values = $this->Asset->getDataList($values);
+
+        $this->RjAsset->_callBeforeRender();
+        $this->set('active_menu', 'assets');
+        $this->set('sub_module_title', __('Asset'));
+        $this->set(compact(
+            'values'
+        ));
+    }
+
+    public function add() {
+        $this->set('sub_module_title', __('Tambah Asset'));
+        $data = $this->request->data;
+
+        if( !empty($data) ) {
+            $data = $this->RjAsset->_callBeforeSave($data);
+
+            $result = $this->Asset->doSave($data);
+            $this->MkCommon->setProcessParams($result, array(
+                'action' => 'index',
+            ));
+        }
+
+        $this->request->data = $this->RjAsset->_callBeforeRender($this->request->data);
+        $this->set('active_menu', 'assets');
+    }
+
+    public function edit( $id = false ) {
+        $this->set('sub_module_title', __('Edit Asset'));
+        $data = $this->request->data;
+        $value = $this->Asset->getData('first', array(
+            'conditions' => array(
+                'Asset.id' => $id,
+            ),
+        ));
+
+        if( !empty($value) ) {
+            $data = $this->request->data;
+            $data = $this->RjAsset->_callBeforeSave($data, $id);
+
+            $result = $this->Asset->doSave($data, $value, $id);
+            $this->MkCommon->setProcessParams($result, array(
+                'action' => 'index',
+            ));
+            $this->request->data = $this->RjAsset->_callBeforeRender($this->request->data);
+
+            $this->set('active_menu', 'assets');
+            $this->set(compact(
+                'value'
+            ));
+            $this->render('add');
+        } else {
+            $this->MkCommon->setCustomFlash(__('Group tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function toggle( $id ) {
+        $result = $this->Asset->doDelete( $id );
+        $this->MkCommon->setProcessParams($result);
+    }
+
+    function get_asset_group ( $id = false ) {
+        $value = $this->Asset->AssetGroup->getData('first', array(
+            'conditions' => array(
+                'AssetGroup.id' => $id,
+            ),
+        ));
+
+        $this->set(compact(
+            'value'
+        ));
+
+        $this->layout = false;
+        $this->render('/Elements/blocks/assets/group');
+    }
 }

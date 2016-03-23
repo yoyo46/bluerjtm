@@ -422,11 +422,11 @@ class Truck extends AppModel {
         return $result;
     }
 
-    function getMerge($data, $id){
+    function getMerge($data, $id, $fieldName = 'Truck.id'){
         if(empty($data['Truck'])){
             $data_merge = $this->find('first', array(
                 'conditions' => array(
-                    'Truck.id' => $id,
+                    $fieldName => $id,
                     'Truck.status' => 1,
                 )
             ), true, array(

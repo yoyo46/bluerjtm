@@ -767,7 +767,11 @@ class SettingsController extends AppController {
                     $this->Log->logActivity( sprintf(__('Sukses %s Coa #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
 
                     if( !empty($saldo) && !empty($title) ) {
-                        $this->MkCommon->_saveLog( $title, $data_local, $id );
+                        $this->MkCommon->_saveLog(array(
+                            'activity' => $title,
+                            'old_data' => $data_local,
+                            'document_id' => $id,
+                        ));
                     }
 
                     $this->redirect(array(

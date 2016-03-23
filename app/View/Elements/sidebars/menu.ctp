@@ -1194,11 +1194,11 @@
 
                     $activeSetting = false;
                     $settingMenu = array(
-                        'group_assets',
+                        'group_assets', 'assets',
                     );
                     $dataMenu = array(
-                        'finances' => array(
-                            'groups',
+                        'assets' => array(
+                            'groups', 'index',
                         ),
                     );
 
@@ -1218,7 +1218,7 @@
                         ));
                 ?>
                 <ul class="treeview-menu">
-                    <?php                            
+                    <?php
                             echo $this->Html->tag('li', $this->Html->link(sprintf(__('%s Group Asset'), $this->Common->icon('double-right')), array(
                                 'controller' => 'assets',
                                 'action' => 'groups'
@@ -1226,6 +1226,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'group_assets' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link(sprintf(__('%s Asset'), $this->Common->icon('double-right')), array(
+                                'controller' => 'assets',
+                                'action' => 'index'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'assets' )?'active':'',
                             ));
                     ?>
                 </ul>

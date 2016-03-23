@@ -46,6 +46,11 @@ class AssetGroup extends AppModel {
             'foreignKey' => 'asset_group_id',
         ),
     );
+    
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['group_name'] = sprintf('CONCAT(%s.code, " - ", %s.name)', $this->alias, $this->alias);
+    }
 
     public function getData( $find = 'all', $options = array(), $elements = array()  ) {
         $status = isset($elements['status']) ? $elements['status']:'active';
@@ -138,7 +143,7 @@ class AssetGroup extends AppModel {
     }
 
     function doSave ( $data, $value = false, $id = false ) {
-        $msg = __('Gagal menyimpan asset');
+        $msg = __('Gagal menyimpan group asset');
 
         if( !empty($data) ) {
             $flag = $this->saveAll($data, array(
@@ -153,7 +158,7 @@ class AssetGroup extends AppModel {
                 ));
 
                 if( !empty($flag) ) {
-                    $msg = __('Berhasil menyimpan asset');
+                    $msg = __('Berhasil menyimpan group asset');
                     $this->saveAll($data);
                     $result = array(
                         'msg' => $msg,
@@ -197,7 +202,7 @@ class AssetGroup extends AppModel {
 
         if ( !empty($value) ) {
             $code = !empty($value['AssetGroup']['code'])?$value['AssetGroup']['code']:false;
-            $default_msg = sprintf(__('menghapus asset #%s'), $code);
+            $default_msg = sprintf(__('menghapus group asset #%s'), $code);
 
             $this->id = $id;
             $this->set('status', 0);
@@ -226,7 +231,7 @@ class AssetGroup extends AppModel {
             }
         } else {
             $result = array(
-                'msg' => __('Gagal menghapus asset. Data tidak ditemukan'),
+                'msg' => __('Gagal menghapus group asset. Data tidak ditemukan'),
                 'status' => 'error',
             );
         }

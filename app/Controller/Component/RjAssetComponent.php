@@ -73,5 +73,72 @@ class RjAssetComponent extends Component {
 
         return $data;
     }
+
+    function _callBeforeRender ( $data = false ) {
+        if( !empty($data) ) {
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'Asset' => array(
+                        'purchase_date',
+                        'neraca_date',
+                    ),
+                ),
+            ), true);
+        } else {
+            $data['Asset']['purchase_date'] = date('d/m/Y');
+            $data['Asset']['neraca_date'] = date('d/m/Y');
+        }
+
+        $assetGroups = $this->controller->Asset->AssetGroup->getData('list', array(
+            'fields' => array(
+                'AssetGroup.id', 'AssetGroup.group_name',
+            ),
+        ));
+        $this->MkCommon->_layout_file('select');
+
+        $this->controller->set(compact(
+            'assetGroups'
+        ));
+
+        return $data;
+    }
+
+    function _callBeforeSave ( $data, $id = false ) {
+        if( !empty($data) ) {
+            $dataSave = array();
+            $data = $this->MkCommon->dataConverter($data, array(
+                'price' => array(
+                    'Asset' => array(
+                        'nilai_perolehan',
+                        'depr_bulan',
+                        'ak_penyusutan',
+                        'nilai_buku',
+                    ),
+                ),
+                'date' => array(
+                    'Asset' => array(
+                        'purchase_date',
+                        'neraca_date',
+                    ),
+                ),
+            ));
+            $data = $this->MkCommon->_callUnset(array(
+                'AssetGroup',
+            ), $data);
+
+            $nopol = $this->MkCommon->filterEmptyField($data, 'Asset', 'name');
+            $truck = $this->controller->Asset->Truck->getMerge(array(), $nopol, 'Truck.nopol');
+            $truck_id = $this->MkCommon->filterEmptyField($truck, 'Truck', 'id');
+
+            if( !empty($id) ) {
+                $data['Asset']['id'] = $id;
+            }
+            if( !empty($truck_id) ) {
+                $data['Asset']['truck_id'] = $truck_id;
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

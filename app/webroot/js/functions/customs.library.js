@@ -548,8 +548,13 @@
             settings.objComa.blur(function(){
                 var self = $(this);
                 var val = $.convertNumber(self.val(), 'string');
+                var func = $.checkUndefined(self.attr('data-function'), false);
 
                 self.val( $.formatDecimal(val, 2) );
+
+                if( func != false ) {
+                    eval(func + '();');
+                }
             });
 
             jQuery.each( settings.objComa, function( i, val ) {
@@ -1069,9 +1074,13 @@
         settings.objChange.off('change');
         settings.objChange.change(function(){
             var self = $(this);
-            
+            var href = self.attr('href');
+
+            href += '/' + self.val();
+
             $.directAjaxLink({
                 obj: self,
+                url: href,
             });
 
             return false;
@@ -1092,9 +1101,10 @@
     $.directAjaxLink = function( options ) {
         var settings = $.extend({
             obj: $('.ajax-link'),
+            url: false,
         }, options );
 
-        var url = settings.obj.attr('href');
+        var url = settings.url;
         var parents = settings.obj.parents('.ajax-parent');
         var type = settings.obj.attr('data-type');
         var flag_alert = settings.obj.attr('data-alert');
@@ -1106,7 +1116,12 @@
         var data_form = settings.obj.attr('data-form');
         var data_scroll = settings.obj.attr('data-scroll');
         var data_show = settings.obj.attr('data-show');
+        var func = $.checkUndefined(settings.obj.attr('data-function'), false);
         var formData = false; 
+
+        if( url == false ) {
+            url = settings.obj.attr('href');
+        }
 
         if( flag_alert != null ) {
             if ( !confirm(flag_alert) ) { 
@@ -1157,7 +1172,7 @@
                     if(typeof contentHtml == 'undefined' ) {
                         contentHtml = $(result).find(data_wrapper_write).html();
                     }
-                        
+
                     if(typeof data_scroll != 'undefined' ) {
                         var theOffset = $(data_scroll).offset();
                         $('html, body').animate({
@@ -1183,6 +1198,10 @@
                             $.updateLiveBanner();
                             $.limit_word_package();
                         }
+                    }
+
+                    if( func != false ) {
+                        eval(func + '();');
                     }
 
                     if(typeof data_show != 'undefined' ) {
@@ -1287,6 +1306,32 @@
 
         if( settings.obj.length > 0 ) {
             _callAutocomplete(settings.obj);
+        }
+    }
+    
+    settings_nilai_perolehan = $('.nilai_perolehan');
+
+    if( settings_nilai_perolehan.length > 0 ) {
+        var calcDeprBulan = function () {
+            settings_nilai_perolehan = $('.nilai_perolehan');
+            settings_nilai_sisa = $('.nilai_sisa');
+            settings_umur_ekonomis = $('.umur_ekonomis');
+            settings_depr_bulan = $('.depr_bulan');
+            settings_ak_penyusutan = $('.ak_penyusutan');
+            settings_nilai_buku = $('.nilai_buku');
+            settings_asset_group = $('.asset_group');
+
+            nilai_perolehan = $.convertNumber(settings_nilai_perolehan.val(), 'float', 0);
+            nilai_sisa = $.convertNumber(settings_nilai_sisa.val(), 'float', 0);
+            umur_ekonomis = $.convertNumber(settings_umur_ekonomis.val(), 'float', 0);
+
+            depr_bulan = ( ( nilai_perolehan - nilai_sisa ) / settings_umur_ekonomis.val() ) / 12;
+            ak_penyusutan = depr_bulan;
+            nilai_buku = nilai_perolehan - ak_penyusutan;
+            
+            settings_depr_bulan.val( $.formatDecimal(depr_bulan, 2) );
+            settings_ak_penyusutan.val( $.formatDecimal(ak_penyusutan, 2) );
+            settings_nilai_buku.val( $.formatDecimal(nilai_buku, 2) );
         }
     }
 }( jQuery ));

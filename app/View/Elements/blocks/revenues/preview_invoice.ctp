@@ -320,7 +320,7 @@
 				$footerGrandTotal += $grandTotalInvoice;
 				$footerGrandTotalUnit += $grandTotalUnit;
 
-				if( $idx == count($revenue_detail) && $data_print == 'hso-smg' ) {
+				if( $idx == count($revenue_detail) && in_array($data_print, array( 'hso-smg', 'invoice' )) ) {
 					$footerGrandTotal = $this->Common->getFormatPrice($footerGrandTotal);
 					$footerGrandTotalUnit = $this->Common->getFormatPrice($footerGrandTotalUnit);
 

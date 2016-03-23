@@ -824,13 +824,7 @@ class MkCommonComponent extends Component {
 
     function _callProcessLog ( $data ) {
         if ( !empty( $data['Log'] ) ) {
-            $activity = $this->filterEmptyField($data, 'Log', 'activity');
-            $old_data = $this->filterEmptyField($data, 'Log', 'old_data');
-            $document_id = $this->filterEmptyField($data, 'Log', 'document_id');
-            $error = $this->filterEmptyField($data, 'Log', 'error');
-            $custom_action = $this->filterEmptyField($data, 'Log', 'custom_action');
-
-            $this->_saveLog( $activity, $old_data, $document_id, $error, $custom_action );
+            $this->_saveLog( $data['Log'] );
         }
     }
 
@@ -861,12 +855,7 @@ class MkCommonComponent extends Component {
 
         if ( !empty($data['msg']) && !empty($data['status']) ) {
             if ( !empty( $data['Log'] ) ) {
-                $activity = $this->filterEmptyField($data, 'Log', 'activity');
-                $old_data = $this->filterEmptyField($data, 'Log', 'old_data');
-                $document_id = $this->filterEmptyField($data, 'Log', 'document_id');
-                $error = $this->filterEmptyField($data, 'Log', 'error');
-
-                $this->_saveLog( $activity, $old_data, $document_id, $error );
+                $this->_saveLog( $data['Log'] );
             }
 
             if ( !empty( $data['RefreshAuth'] ) ) {
@@ -1398,8 +1387,14 @@ class MkCommonComponent extends Component {
         return $conditions;
     }
 
-    function _saveLog( $activity = NULL, $old_data = false, $document_id = false, $error = 0, $custom_action = false ){
+    function _saveLog( $options = false ){
         $this->Log = ClassRegistry::init('Log'); 
+
+        $activity = $this->filterEmptyField($options, 'activity');
+        $old_data = $this->filterEmptyField($options, 'old_data');
+        $document_id = $this->filterEmptyField($options, 'document_id');
+        $error = $this->filterEmptyField($options, 'error');
+        $custom_action = $this->filterEmptyField($options, 'custom_action');
 
         $log = array();
         $user_id = Configure::read('__Site.config_user_id');

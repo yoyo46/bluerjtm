@@ -1901,13 +1901,17 @@ var pickData = function () {
         var data_ajax = vthis.attr('href');
         var data_change_extra = vthis.attr('data-change-extra');
         var data_extra_text = $.filterEmptyField(vthis.attr('data-extra-text'));
+        var type = $(data_change).attr('type');
 
         if(data_change == '.cash-bank-auth-user'){
             data_change = vthis.attr('data-rel')+' '+data_change;
         }
 
         $(data_change).val(data_value);
-        $(data_change).trigger('change');
+
+        if( type != 'text' ) {
+            $(data_change).trigger('change');
+        }
         
         if(data_change == '#receiver-id'){
             var receiver_type = '';
