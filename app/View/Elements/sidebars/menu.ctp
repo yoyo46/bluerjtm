@@ -1194,7 +1194,7 @@
 
                     $activeSetting = false;
                     $settingMenu = array(
-                        'group_assets', 'assets',
+                        'asset_groups', 'assets',
                     );
                     $dataMenu = array(
                         'assets' => array(

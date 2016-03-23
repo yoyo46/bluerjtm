@@ -65,7 +65,7 @@ class UsersController extends AppController {
                     $this->Cookie->write($session_try_login, 0);
 
                     $this->MkCommon->_saveLog(array(
-                        'activity' => $title,
+                        'activity' => $acticity,
                         'document_id' => $id,
                     ));
                     $this->redirect($this->Auth->redirect());   

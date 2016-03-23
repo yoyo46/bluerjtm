@@ -194,6 +194,7 @@ class Asset extends AppModel {
             } else {
                 $result = array(
                     'msg' => $msg,
+                    'data' => $data,
                     'status' => 'error',
                     'Log' => array(
                         'activity' => $msg,
