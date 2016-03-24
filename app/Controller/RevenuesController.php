@@ -5881,6 +5881,8 @@ class RevenuesController extends AppController {
                                 'fields' => array(
                                     'RevenueDetail.revenue_id'
                                 )
+                            ), array(
+                                'branch' => false,
                             ));
                             $revenueDetailId = $this->Revenue->RevenueDetail->getData('list', array(
                                 'conditions' => array(
@@ -5889,6 +5891,8 @@ class RevenuesController extends AppController {
                                 'fields' => array(
                                     'RevenueDetail.id', 'RevenueDetail.id',
                                 )
+                            ), array(
+                                'branch' => false,
                             ));
                         }
 
@@ -5912,6 +5916,8 @@ class RevenuesController extends AppController {
                                         'RevenueDetail.revenue_id' => $revenue_id,
                                         'RevenueDetail.invoice_id' => $id,
                                     ),
+                                ), array(
+                                    'branch' => false,
                                 ));
 
                                 $this->Revenue->id = $revenue_id;
