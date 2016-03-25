@@ -1534,7 +1534,7 @@ class LkusController extends AppController {
         }else{
             $this->MkCommon->setCustomFlash(__('ID Pembayaran KSU tidak ditemukan'), 'error');  
             $this->redirect(array(
-                'controller' => 'lkus',
+                'controller' => 'Lkus',
                 'action' => 'ksu_payments'
             ));
         }

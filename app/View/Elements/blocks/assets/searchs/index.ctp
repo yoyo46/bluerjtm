@@ -16,15 +16,15 @@
         <div class="row">
             <div class="col-sm-6">
                 <?php 
-                        echo $this->Common->buildInputForm('purchase_date', __('Tanggal pembelian *'), array(
+                        echo $this->Common->buildInputForm('daterange', __('Tanggal pembelian *'), array(
                             'type' => 'text',
                             'class' => 'date-range form-control',
                         ));
-                        echo $this->Common->buildInputForm('neraca_date', __('Tanggal neraca *'), array(
+                        echo $this->Common->buildInputForm('date', __('Tanggal neraca *'), array(
                             'type' => 'text',
                             'class' => 'date-range form-control',
                         ));
-                        echo $this->Common->buildInputForm('id', __('No. Ref'));
+                        echo $this->Common->buildInputForm('noref', __('No. Ref'));
                 ?>
             </div>
             <div class="col-sm-6">
@@ -40,7 +40,7 @@
                             'submitText' => sprintf(__('%s Search'), $this->Common->icon('search')),
                             'backText' => sprintf(__('%s Reset'), $this->Common->icon('refresh')),
                             'urlBack' => array(
-                                'action' => 'groups', 
+                                'action' => 'index', 
                             ),
                         ));
                 ?>

@@ -27,7 +27,7 @@
 						));
 						echo $this->Common->buildInputForm('asset_group_id', __('Group Asset *'), array(
 							'empty' => __('Pilih Group Asset'),
-							'class' => 'ajax-change form-control asset_group chosen-select',
+							'class' => 'ajax-change form-control asset_group',
 							'attributes' => array(
 								'data-wrapper-write' => '#asset-group-content',
 								'href' => $this->Html->url(array(

@@ -91,7 +91,7 @@
                             $customDate = $this->Common->formatDate($tgl, 'd/m/Y');
                             $customType = strtoupper(str_replace('_', ' ', $type));
                             $customStatus = $this->CashBank->_callStatus($value);
-                            $customGrandTotal = $this->Common->getFormatPrice($grand_total, 0, 2);
+                            $customGrandTotal = $this->Common->getFormatPrice($grand_total, 0);
 
                             $content = $this->Html->tag('td', $noref);
                             $content .= $this->Html->tag('td', $nodoc);
@@ -110,7 +110,7 @@
                                 'class' => 'text-center',
                             ));
 
-                            if( ( !empty($is_revised) || $transaction_status == 'unposting' ) && empty($is_rejected) ){
+                            if( !empty($is_revised) || $transaction_status == 'unposting' ){
                                 $link = $this->Html->link(__('Edit'), array(
                                     'controller' => 'cashbanks',
                                     'action' => 'cashbank_edit',

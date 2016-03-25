@@ -94,7 +94,6 @@ class RjAssetComponent extends Component {
                 'AssetGroup.id', 'AssetGroup.group_name',
             ),
         ));
-        $this->MkCommon->_layout_file('select');
 
         $this->controller->set(compact(
             'assetGroups'

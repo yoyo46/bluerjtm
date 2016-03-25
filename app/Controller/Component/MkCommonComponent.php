@@ -1182,7 +1182,7 @@ class MkCommonComponent extends Component {
     }
 
     function _callPriceConverter ($price) {
-        return trim(str_replace(array( ',', '.' ), array( '', '' ), $price));
+        return trim(str_replace(array( ',' ), array( '' ), $price));
     }
 
     function _callDateRangeConverter ( $date ) {
@@ -1500,6 +1500,7 @@ class MkCommonComponent extends Component {
 
     function processFilter ( $data ) {
         $date = $this->filterEmptyField($data, 'Search', 'date');
+        $daterange = $this->filterEmptyField($data, 'Search', 'daterange');
         $datettuj = $this->filterEmptyField($data, 'Search', 'datettuj');
         $params = array();
 
@@ -1514,6 +1515,7 @@ class MkCommonComponent extends Component {
         $data = $this->_callUnset(array(
             'Search' => array(
                 'date',
+                'daterange',
                 'datettuj',
                 'from',
             ),
@@ -1555,6 +1557,9 @@ class MkCommonComponent extends Component {
         }
         if( !empty($datettuj) ) {
             $params['datettuj'] = rawurlencode(urlencode($datettuj));
+        }
+        if( !empty($daterange) ) {
+            $params['daterange'] = rawurlencode(urlencode($daterange));
         }
         if( !empty($monthFrom) && !empty($yearFrom) ) {
             $params['monthFrom'] = urlencode($monthFrom);
@@ -1601,6 +1606,28 @@ class MkCommonComponent extends Component {
         return $date;
     }
 
+    function _callDateRangeFormat ( $result, $daterange, $fieldName = 'date', $fromName = 'DateFrom', $toName = 'DateTo' ) {
+        if( !empty($daterange) ) {
+            $dateStr = urldecode($daterange);
+            $daterange = explode('-', $dateStr);
+
+            if( !empty($daterange) ) {
+                $daterange[0] = urldecode($daterange[0]);
+                $daterange[1] = urldecode($daterange[1]);
+                $dateFrom = $this->getDate($daterange[0]);
+                $dateTo = $this->getDate($daterange[1]);
+                $result['named'][$fromName] = $dateFrom;
+                $result['named'][$toName] = $dateTo;
+            }
+
+            if( !empty($dateFrom) && !empty($dateTo) ) {
+                $this->controller->request->data['Search'][$fieldName] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
+            }
+        }
+
+        return $result;
+    }
+
     function _callRefineParams ( $data, $options = array() ) {
         $result['named'] = $this->filterEmptyField($data, 'named');
 
@@ -1618,9 +1645,11 @@ class MkCommonComponent extends Component {
 
         $date = $this->filterEmptyField($result, 'named', 'date');
         $datettuj = $this->filterEmptyField($result, 'named', 'datettuj');
+        $daterange = $this->filterEmptyField($result, 'named', 'daterange');
 
         $dataString = $this->_callUnset(array(
             'date',
+            'daterange',
             'datettuj',
             'to',
             'from',
@@ -1634,40 +1663,13 @@ class MkCommonComponent extends Component {
         }
 
         if( !empty($date) ) {
-            $dateStr = urldecode($date);
-            $date = explode('-', $dateStr);
-
-            if( !empty($date) ) {
-                $date[0] = urldecode($date[0]);
-                $date[1] = urldecode($date[1]);
-                $dateFrom = $this->getDate($date[0]);
-                $dateTo = $this->getDate($date[1]);
-                $result['named']['DateFrom'] = $dateFrom;
-                $result['named']['DateTo'] = $dateTo;
-            }
+            $result = $this->_callDateRangeFormat($result, $date);
         }
         if( !empty($datettuj) ) {
-            $dateStr = urldecode($datettuj);
-            $datettuj = explode('-', $dateStr);
-
-            if( !empty($datettuj) ) {
-                $datettuj[0] = urldecode($datettuj[0]);
-                $datettuj[1] = urldecode($datettuj[1]);
-                $dateFromTtuj = $this->getDate($datettuj[0]);
-                $dateToTtuj = $this->getDate($datettuj[1]);
-                $result['named']['DateFromTtuj'] = $dateFromTtuj;
-                $result['named']['DateToTtuj'] = $dateToTtuj;
-            }
-
-            if( !empty($dateFromTtuj) && !empty($dateToTtuj) ) {
-                $this->controller->request->data['Search']['datettuj'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFromTtuj)), date('d/m/Y', strtotime($dateToTtuj)));
-            }
+            $result = $this->_callDateRangeFormat($result, $datettuj, 'datettuj', 'DateFromTtuj', 'DateToTtuj');
         }
-        if( !empty($dateFrom) && !empty($dateTo) ) {
-            $this->controller->request->data['Search']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
-
-            $result['named']['DateFrom'] = $dateFrom;
-            $result['named']['DateTo'] = $dateTo;
+        if( !empty($daterange) ) {
+            $result = $this->_callDateRangeFormat($result, $daterange, 'daterange', 'DateFromRange', 'DateToRange');
         }
         if( !empty($paramMonthFrom) && !empty($paramYearFrom) ) {
             $monthFrom = sprintf('%s-%s', $paramYearFrom, $paramMonthFrom);

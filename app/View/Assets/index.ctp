@@ -83,10 +83,10 @@
                             $purchase_date = $this->Common->formatDate($purchase_date, 'd/m/Y');
                             $neraca_date = $this->Common->formatDate($neraca_date, 'd/m/Y');
                             $created = $this->Common->formatDate($created);
-                            $nilai_perolehan = $this->Common->getFormatPrice($nilai_perolehan);
-                            $depr_bulan = $this->Common->getFormatPrice($depr_bulan);
-                            $ak_penyusutan = $this->Common->getFormatPrice($ak_penyusutan);
-                            $nilai_buku = $this->Common->getFormatPrice($nilai_buku);
+                            $nilai_perolehan = $this->Common->getFormatPrice($nilai_perolehan, 0, 2);
+                            $depr_bulan = $this->Common->getFormatPrice($depr_bulan, 0, 2);
+                            $ak_penyusutan = $this->Common->getFormatPrice($ak_penyusutan, 0, 2);
+                            $nilai_buku = $this->Common->getFormatPrice($nilai_buku, 0, 2);
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
 
                             $action = $this->Html->link(__('Edit'), array(

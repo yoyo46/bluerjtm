@@ -162,14 +162,40 @@ class Asset extends AppModel {
     }
 
     public function _callRefineParams( $data = '', $default_options = false ) {
-        $code = !empty($data['named']['code'])?$data['named']['code']:false;
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+        $dateFromRange = !empty($data['named']['DateFromRange'])?$data['named']['DateFromRange']:false;
+        $dateToRange = !empty($data['named']['DateToRange'])?$data['named']['DateToRange']:false;
+        $asset_group_id = !empty($data['named']['asset_group_id'])?$data['named']['asset_group_id']:false;
         $name = !empty($data['named']['name'])?$data['named']['name']:false;
+        $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
 
-        if( !empty($code) ) {
-            $default_options['conditions']['AssetGroup.code LIKE'] = '%'.$code.'%';
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(Asset.neraca_date, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(Asset.neraca_date, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
+        if( !empty($dateFromRange) || !empty($dateToRange) ) {
+            if( !empty($dateFromRange) ) {
+                $default_options['conditions']['DATE_FORMAT(Asset.purchase_date, \'%Y-%m-%d\') >='] = $dateFromRange;
+            }
+
+            if( !empty($dateToRange) ) {
+                $default_options['conditions']['DATE_FORMAT(Asset.purchase_date, \'%Y-%m-%d\') <='] = $dateToRange;
+            }
+        }
+        if( !empty($asset_group_id) ) {
+            $default_options['conditions']['Asset.asset_group_id'] = $asset_group_id;
         }
         if( !empty($name) ) {
-            $default_options['conditions']['AssetGroup.name LIKE'] = '%'.$name.'%';
+            $default_options['conditions']['Asset.name LIKE'] = '%'.$name.'%';
+        }
+        if(!empty($noref)){
+            $default_options['conditions']['LPAD(Asset.id, 6, 0) LIKE'] = '%'.$noref.'%';
         }
         
         return $default_options;

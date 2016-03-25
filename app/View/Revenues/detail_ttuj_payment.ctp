@@ -34,10 +34,16 @@
 				<th><?php echo __('Tgl Dibayar');?></th>
 				<td><?php echo $datePayment;?></td>
 			</tr>
+			<?php 
+					if( !empty($receiver_name) ) {
+			?>
 			<tr>
 				<th><?php echo __('Dibayar Kepada');?></th>
 				<td><?php echo $receiver_name;?></td>
 			</tr>
+			<?php 
+					}
+			?>
 			<tr>
 				<th><?php echo __('Keterangan');?></th>
 				<td><?php echo $description;?></td>
