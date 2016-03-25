@@ -2710,13 +2710,18 @@ class RevenuesController extends AppController {
             $totalCnt += $totalYear;
         }
 
-        $this->set('sub_module_title', $module_title);
+        $customers = $this->Ttuj->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
 
+        $this->set('sub_module_title', $module_title);
         $this->set(compact(
             'values', 'data_action', 'totalCnt',
             'fromMonth', 'fromYear', 'cntPencapaian',
             'toYear', 'toMonth', 'customerTargetUnit',
-            'targetUnit', 'cntUnit'
+            'targetUnit', 'cntUnit', 'customers'
         ));
 
         if($data_action == 'pdf'){
@@ -2724,15 +2729,9 @@ class RevenuesController extends AppController {
         }else if($data_action == 'excel'){
             $this->layout = 'ajax';
         } else {
-            $layout_js = array(
+            $this->MkCommon->_layout_file(array(
+                'select',
                 'freeze',
-            );
-            $layout_css = array(
-                'freeze',
-            );
-
-            $this->set(compact(
-                'layout_css', 'layout_js'
             ));
         }
     }
