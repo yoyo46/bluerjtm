@@ -3424,6 +3424,7 @@ class RevenuesController extends AppController {
         ));
         $cities = $this->City->getListCities();
 
+        $this->MkCommon->_layout_file('select');
         $this->set(compact(
             'cities', 'customers', 'revenues'
         ));

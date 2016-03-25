@@ -39,7 +39,8 @@
                         echo $this->Common->buildInputForm('nottuj', __('No. TTUJ'));
                         echo $this->Common->buildInputForm('customer', __('Customer'), array(
                             'empty' => __('Pilih Customer'),
-                            'options' => $customers
+                            'options' => $customers,
+                            'class' => 'chosen-select form-control',
                         ));
                         echo $this->Common->buildInputForm('noref', __('No. Reference'));
                 ?>
@@ -48,12 +49,14 @@
                             echo $this->Html->tag('div', $this->Common->buildInputForm('fromcity', __('Dari'), array(
                                 'empty' => __('Pilih Kota'),
                                 'options' => $cities,
+                                'class' => 'chosen-select form-control',
                             )), array(
                                 'class' => 'col-sm-6',
                             ));
                             echo $this->Html->tag('div', $this->Common->buildInputForm('tocity', __('Tujuan'), array(
                                 'empty' => __('Pilih Kota'),
                                 'options' => $cities,
+                                'class' => 'chosen-select form-control',
                             )), array(
                                 'class' => 'col-sm-6',
                             ));
