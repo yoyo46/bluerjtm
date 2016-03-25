@@ -866,7 +866,7 @@ class Revenue extends AppModel {
         if(!empty($status)){
             if( $status == 'paid' ) {
                 $revenueList = $this->getData('list', array(
-                    'conditions' => $default_options['conditions'],
+                    'conditions' => !empty($default_options['conditions'])?$default_options['conditions']:false,
                     'contain' => array(
                         'Ttuj',
                     ),
@@ -878,6 +878,7 @@ class Revenue extends AppModel {
                 $default_options['conditions']['Revenue.id'] = $paidList;
             } else {
                 $default_options['conditions']['Revenue.transaction_status'] = $status;
+                $default_options['conditions']['Revenue.status'] = 1;
             }
         }
 

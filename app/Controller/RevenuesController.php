@@ -3375,109 +3375,8 @@ class RevenuesController extends AppController {
         $this->set('active_menu', 'revenues');
         $this->set('sub_module_title', __('Revenue'));
 
-        $from_date = '';
-        $to_date = '';
-        $conditions = array();
-
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            if(!empty($refine['nodoc'])){
-                $nodoc = urldecode($refine['nodoc']);
-                $nodoc = $this->MkCommon->replaceSlash($nodoc);
-                $this->request->data['Revenue']['nodoc'] = $nodoc;
-                $conditions['Revenue.nodoc LIKE '] = '%'.$nodoc.'%';
-            }
-            if(!empty($refine['no_ttuj'])){
-                $no_ttuj = urldecode($refine['no_ttuj']);
-                $this->request->data['Ttuj']['no_ttuj'] = $no_ttuj;
-                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$no_ttuj.'%';
-            }
-            if(!empty($refine['customer'])){
-                $customer = urldecode($refine['customer']);
-                $this->request->data['Revenue']['customer_id'] = $customer;
-                $conditions['Revenue.customer_id'] = $customer;
-            }
-            if(!empty($refine['no_ref'])){
-                $no_ref = urldecode($refine['no_ref']);
-                $this->request->data['RevenueDetail']['no_reference'] = $no_ref;
-
-                if( is_numeric($no_ref) ) {
-                    $no_ref = intval($no_ref);
-                }
-
-                $conditions['LPAD(Revenue.id, 5, 0) LIKE'] = '%'.$no_ref.'%';
-            }
-
-            if(!empty($refine['date'])){
-                $dateStr = urldecode($refine['date']);
-                $date = explode('-', $dateStr);
-
-                if( !empty($date) ) {
-                    $date[0] = urldecode($date[0]);
-                    $date[1] = urldecode($date[1]);
-                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                    $dateFrom = $this->MkCommon->getDate($date[0]);
-                    $dateTo = $this->MkCommon->getDate($date[1]);
-                    $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') >='] = $dateFrom;
-                    $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m-%d\') <='] = $dateTo;
-                }
-                $this->request->data['Revenue']['date'] = $dateStr;
-            }
-
-            if(!empty($refine['nopol'])){
-                $nopol = urldecode($refine['nopol']);
-                $this->request->data['Ttuj']['nopol'] = $nopol;
-                $typeTruck = !empty($refine['type'])?$refine['type']:1;
-                $this->request->data['Ttuj']['type'] = $typeTruck;
-
-                if( $typeTruck == 2 ) {
-                    $conditionsNopol = array(
-                        'Truck.id' => $nopol,
-                    );
-                } else {
-                    $conditionsNopol = array(
-                        'Truck.nopol LIKE' => '%'.$nopol.'%',
-                    );
-                }
-
-                $truckSearch = $this->Ttuj->Truck->getData('list', array(
-                    'conditions' => $conditionsNopol,
-                    'fields' => array(
-                        'Truck.id', 'Truck.id',
-                    ),
-                ), true, array(
-                    'branch' => false,
-                ));
-                $conditions['Ttuj.truck_id'] = $truckSearch;
-            }
-
-            if(!empty($refine['status'])){
-                $status = urldecode($refine['status']);
-
-                if( $status == 'paid' ) {
-                    $this->request->data['Revenue']['transaction_status'] = $status;
-
-                    $revenueList = $this->Revenue->getData('list', array(
-                        'conditions' => $conditions,
-                        'contain' => array(
-                            'Ttuj',
-                        ),
-                        'fields' => array(
-                            'Revenue.id', 'Revenue.id'
-                        ),
-                    ));
-                    $paidList = $this->Revenue->InvoiceDetail->getInvoicedRevenueList($revenueList);
-                    $conditions['Revenue.id'] = $paidList;
-                } else {
-                    $this->request->data['Revenue']['transaction_status'] = $status;
-                    $conditions['Revenue.transaction_status'] = $status;
-                }
-            }
-        }
-
-        $this->paginate = $this->Revenue->getData('paginate', array(
-            'conditions' => $conditions,
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Revenue->_callRefineParams($params, array(
             'contain' => array(
                 'Ttuj',
             ),
@@ -3486,7 +3385,9 @@ class RevenuesController extends AppController {
                 'Revenue.created' => 'DESC',
                 'Revenue.id' => 'DESC',
             ),
-        ), true, array(
+        ));
+
+        $this->paginate = $this->Revenue->getData('paginate', $options, true, array(
             'status' => 'all',
         ));
         $revenues = $this->paginate('Revenue');
@@ -3515,15 +3416,17 @@ class RevenuesController extends AppController {
                 $revenues[$key] = $value;
             }
         }
-        $this->set('revenues', $revenues); 
-
-        $this->loadModel('Customer');
-        $customers = $this->Customer->getData('list', array(
+        
+        $customers = $this->Ttuj->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
         ));
-        $this->set('customers', $customers);
+        $cities = $this->City->getListCities();
+
+        $this->set(compact(
+            'cities', 'customers', 'revenues'
+        ));
     }
 
     function add( $action_type = false ){

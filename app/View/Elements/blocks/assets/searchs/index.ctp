@@ -9,8 +9,6 @@
                         'action' => 'search',
                         'index',
                     )), 
-                    'role' => 'form',
-                    'inputDefaults' => array('div' => false),
                 ));
         ?>
         <div class="row">

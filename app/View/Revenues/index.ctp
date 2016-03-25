@@ -101,13 +101,13 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Revenue.id', __('No. Ref'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Revenue.no_doc', __('No. Dokumen'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Revenue.no_doc', __('No. Dok'), array(
                             'escape' => false
                         )));
                         // echo $this->Html->tag('th', $this->Paginator->sort('Revenue.type', __('Jenis Tarif'), array(
                         //     'escape' => false
                         // )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Revenue.date_revenue', __('Tanggal Revenue'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Revenue.date_revenue', __('Tgl Revenue'), array(
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.no_ttuj', __('No. TTUJ'), array(
@@ -116,7 +116,10 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.nopol', __('Truk'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('Customer.name', __('Customer'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Customer.code', __('Customer'), array(
+                            'escape' => false
+                        )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.from_city_name', __('Dari-Tujuan'), array(
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Revenue.transaction_status', __('Status'), array(
@@ -134,6 +137,8 @@
                     if(!empty($revenues)){
                         foreach ($revenues as $key => $value) {
                             $id = $value['Revenue']['id'];
+                            $from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
+                            $to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
             ?>
             <tr>
                 <td>
@@ -164,9 +169,12 @@
                 </td>
                 <td>
                     <?php
-                            echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-';
+                            echo !empty($value['Customer']['code'])?$value['Customer']['code']:'-';
                     ?>
                 </td>
+                <?php 
+                        echo $this->Html->tag('td', sprintf('%s - %s', $from_city, $to_city));
+                ?>
                 <td>
                     <?php 
                             $class_status = 'label label-default';
@@ -230,7 +238,7 @@
                     }else{
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '10'
+                            'colspan' => '11'
                         )));
                     }
             ?>
