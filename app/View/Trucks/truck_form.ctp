@@ -200,6 +200,7 @@
 									'type' => 'text',
 									'class' => 'custom-date form-control neraca-form',
 									'fieldError' => 'Asset.purchase_date',
+									'disabled' => $assetDisabled,
 								));
 	 							echo $this->Common->buildInputForm('asset_group_id', __('Group Asset *'), array(
 									'empty' => __('Pilih Group Asset'),
@@ -211,11 +212,13 @@
 									'type' => 'text',
 									'class' => 'input_price_coma form-control neraca-form',
 									'fieldError' => 'Asset.nilai_perolehan',
+									'disabled' => $assetDisabled,
 								));
 								echo $this->Common->buildInputForm('ak_penyusutan', __('Ak. Penyusutan *'), array(
 									'type' => 'text',
 									'class' => 'input_price_coma form-control neraca-form',
 									'fieldError' => 'Asset.ak_penyusutan',
+									'disabled' => $assetDisabled,
 								));
 							}
 		        		}
