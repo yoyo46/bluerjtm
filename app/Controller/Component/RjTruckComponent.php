@@ -1,6 +1,13 @@
 <?php
 App::uses('Sanitize', 'Utility');
 class RjTruckComponent extends Component {
+	var $components = array(
+		'MkCommon'
+	);
+
+	function initialize(Controller $controller, $settings = array()) {
+		$this->controller = $controller;
+	}
 	
 	function processRefine($refine = false, $default_conditions = array()) {
 		if(!$refine) {
@@ -172,6 +179,35 @@ class RjTruckComponent extends Component {
         }
 
         return $modelName;
+	}
+
+	function _callBeforeSave ( $data ) {
+        $is_asset = $this->MkCommon->filterEmptyField($data, 'Truck', 'is_asset');
+        $result = false;
+
+        if( !empty($is_asset) ) {
+	        $nopol = $this->MkCommon->filterEmptyField($data, 'Truck', 'nopol');
+	        $asset_group_id = $this->MkCommon->filterEmptyField($data, 'Truck', 'asset_group_id');
+	        $nilai_perolehan = $this->MkCommon->filterEmptyField($data, 'Truck', 'nilai_perolehan');
+	        $description = $this->MkCommon->filterEmptyField($data, 'Truck', 'description');
+	        $tahun_neraca = $this->MkCommon->filterEmptyField($data, 'Truck', 'tahun_neraca');
+	        $ak_penyusutan = $this->MkCommon->filterEmptyField($data, 'Truck', 'ak_penyusutan');
+	        $purchase_date = $this->MkCommon->filterEmptyField($data, 'Truck', 'purchase_date');
+
+	        $result = array(
+	        	'Asset' => array(
+	        		'name' => $nopol,
+	        		'asset_group_id' => $asset_group_id,
+	        		'nilai_perolehan' => $nilai_perolehan,
+	        		'ak_penyusutan' => $ak_penyusutan,
+	        		'note' => $description,
+	        		'neraca_date' => sprintf('%s-01-01', $tahun_neraca),
+	        		'purchase_date' => $purchase_date,
+        		),
+        	);
+		}
+
+		return $result;
 	}
 }
 ?>

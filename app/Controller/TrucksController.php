@@ -224,6 +224,7 @@ class TrucksController extends AppController {
             // $branch_id = $this->MkCommon->filterEmptyField($truck, 'Truck', 'branch_id');
             // $this->MkCommon->allowPage($branch_id);
 
+            $truck = $this->Truck->Asset->getMerge($truck, $id, 'Asset.truck_id');
             $truck = $this->Truck->TruckCustomer->getMergeTruckCustomer($truck);
             $this->doTruck($id, $truck);
         }else{
@@ -249,11 +250,29 @@ class TrucksController extends AppController {
             if($id && $data_local){
                 $this->Truck->id = $id;
                 $msg = 'merubah';
+                $assetValidate = true;
             }else{
                 $this->loadModel('Truck');
                 $this->Truck->create();
                 $msg = 'menambah';
                 $data_local = $this->Driver->getGenerateDate($data_local);
+
+                $data = $this->MkCommon->dataConverter($data, array(
+                    'price' => array(
+                        'Truck' => array(
+                            'nilai_perolehan',
+                            'ak_penyusutan',
+                        ),
+                    ),
+                    'date' => array(
+                        'Truck' => array(
+                            'purchase_date',
+                        ),
+                    ),
+                ));
+
+                $assetData = $this->RjTruck->_callBeforeSave($data);
+                $assetValidate = $this->Truck->Asset->_callBeforeSave($assetData, true);
             }
             
             $data['Truck']['driver_id'] = (!empty($data['Truck']['driver_id'])) ? $data['Truck']['driver_id'] : 0;
@@ -314,7 +333,7 @@ class TrucksController extends AppController {
                 }
             }
 
-            if($this->Truck->validates($data) && $check_alokasi){
+            if($this->Truck->validates($data) && $check_alokasi && $assetValidate){
                 if(!empty($temp_image) && is_array($temp_image)){
                     $uploaded = $this->RjImage->upload($temp_image, '/'.Configure::read('__Site.truck_photo_folder').'/', String::uuid());
                     if(!empty($uploaded)) {
@@ -328,6 +347,11 @@ class TrucksController extends AppController {
 
                 if($this->Truck->save($data)){
                     $truck_id = $this->Truck->id;
+
+                    if( !empty($assetData) ) {
+                        $assetData['Asset']['truck_id'] = $truck_id;
+                        $this->Truck->Asset->_callBeforeSave($assetData);
+                    }
                     
                     if( empty($allowSaveTruckCustomer) ) {
                         /*Begin Alokasi*/
@@ -462,7 +486,6 @@ class TrucksController extends AppController {
             'branch' => false,
         ));
         $branches = $this->City->branchCities();
-
         $customers = $this->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
@@ -471,11 +494,16 @@ class TrucksController extends AppController {
             'branch' => false,
             'plant' => false,
         ));
+        $assetGroups = $this->Truck->Asset->AssetGroup->getData('list', array(
+            'fields' => array(
+                'AssetGroup.id', 'AssetGroup.group_name',
+            ),
+        ));
 
         $now_year = date('Y');
         $start_year = 1984;
-
         $years = array();
+
         for($now_year;$now_year >= $start_year;$now_year--){
             $years[$now_year] = $now_year;
         }
@@ -485,7 +513,7 @@ class TrucksController extends AppController {
             'truck_brands', 'truck_categories', 'truck_brands', 
             'companies', 'drivers', 'years', 'customers',
             'truck_facilities', 'data_local', 'id',
-            'branches', 'allowEditAsset'
+            'branches', 'allowEditAsset', 'assetGroups'
         ));
         $this->render('truck_form');
     }
@@ -2455,6 +2483,7 @@ class TrucksController extends AppController {
                 $branch_id = $this->MkCommon->filterEmptyField($truck, 'Truck', 'branch_id');
                 // $this->MkCommon->allowPage($branch_id);
                 
+                $truck = $this->Truck->Asset->getMerge($truck, $truck_id, 'Asset.truck_id');
                 $truck = $this->GroupBranch->Branch->getMerge($truck, $branch_id);
                 $truckPerlengkapans = $this->TruckPerlengkapan->getData('all', array(
                     'conditions' => array(

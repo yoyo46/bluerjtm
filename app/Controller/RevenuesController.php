@@ -3492,11 +3492,14 @@ class RevenuesController extends AppController {
                 $this->request->data['Revenue']['date_revenue'] = '';
             }
 
+            $from_city_id = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'from_city_id');
+            $to_city_id = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'to_city_id');
+            $truck_capacity = $this->MkCommon->filterEmptyField($data_local, 'Revenue', 'truck_capacity');
+            $customer_id = $this->MkCommon->filterEmptyField($data_local, 'Revenue', 'customer_id');
+            
+            $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->findTarif($from_city_id, $to_city_id, $customer_id, $truck_capacity);
+
             if( $transaction_status == 'unposting' ) {
-                $from_city_id = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'from_city_id');
-                $to_city_id = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'to_city_id');
-                $truck_capacity = $this->MkCommon->filterEmptyField($data_local, 'Revenue', 'truck_capacity');
-                $customer_id = $this->MkCommon->filterEmptyField($data_local, 'Revenue', 'customer_id');
                 $add_charge = $this->MkCommon->filterEmptyField($data_local, 'Revenue', 'additional_charge');
 
                 $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->findTarif($from_city_id, $to_city_id, $customer_id, $truck_capacity);
@@ -3536,12 +3539,12 @@ class RevenuesController extends AppController {
 
                         if( $value['RevenueDetail']['payment_type'] == 'per_truck' ) {
                             if( empty($value['RevenueDetail']['is_charge']) && $jenis_unit == 'per_truck' ) {
-                                $tarif = $data_local['Revenue']['tarif_per_truck'];
+                                $tarifAngkut = $data_local['Revenue']['tarif_per_truck'];
                             } else {
-                                $tarif = 0;
+                                $tarifAngkut = 0;
                             }
                         } else {
-                            $tarif = $value['RevenueDetail']['price_unit'];
+                            $tarifAngkut = $value['RevenueDetail']['price_unit'];
                         }
 
                         $data_revenue_detail[$key] = array(
@@ -3554,7 +3557,7 @@ class RevenuesController extends AppController {
                                 'to_city_name' => !empty($value['City']['name'])?$value['City']['name']:'',
                                 'price_unit' => array(
                                     'jenis_unit' => $value['RevenueDetail']['payment_type'],
-                                    'tarif' => $tarif,
+                                    'tarif' => $tarifAngkut,
                                     'tarif_angkutan_id' => $value['RevenueDetail']['tarif_angkutan_id'],
                                     'tarif_angkutan_type' => $value['RevenueDetail']['tarif_angkutan_type'],
                                 ),
@@ -3716,7 +3719,7 @@ class RevenuesController extends AppController {
 
         $this->set(compact(
             'toCities', 'groupMotors', 'tarifTruck',
-            'id', 'data_local', 'trucks'
+            'id', 'data_local', 'trucks', 'tarif'
         ));
         $this->set('active_menu', 'revenues');
 

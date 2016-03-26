@@ -14,6 +14,14 @@
         $positionGroup = !empty($positionGroup)?$positionGroup:'right';
         $inputText = !empty($inputText)?$inputText:false;
         $column = !empty($column)?$column:false;
+
+        $fieldError = isset($fieldError)?$fieldError:false;
+
+        if( !empty($fieldError) && $this->Form->isFieldError($fieldError) ) {
+            $errorMsg = $this->Form->error($fieldError, null, array(
+                'class' => 'error-message'
+            ));
+        }
 ?>
 <div class="<?php echo $frameClass; ?>">
     <?php 
@@ -68,6 +76,10 @@
                 }
 
                 $content .= $this->Form->input($fieldName, $optionsInput);
+
+                if( !empty($errorMsg) ) {
+                    $content .= $errorMsg;
+                }
             }
 
             if( !empty($textGroup)) {

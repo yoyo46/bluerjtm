@@ -2,10 +2,21 @@
 class Asset extends AppModel {
 	var $name = 'Asset';
 	var $validate = array(
+        'truck_id' => array(
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'allowEmpty' => true,
+                'message' => 'Truk telah terdaftar',
+            ),
+        ),
         'name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'Nama asset harap diisi'
+            ),
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'message' => 'Asset telah terdaftar',
             ),
         ),
         'asset_group_id' => array(
@@ -143,11 +154,11 @@ class Asset extends AppModel {
         return $result;
     }
 
-    function getMerge($data, $id){
+    function getMerge( $data, $id, $fieldName = 'Asset.id' ){
         if(empty($data['Asset'])){
             $data_merge = $this->getData('first', array(
                 'conditions' => array(
-                    'Asset.id' => $id
+                    $fieldName => $id
                 )
             ), array(
                 'status' => 'all',
@@ -302,6 +313,40 @@ class Asset extends AppModel {
         }
 
         return $data;
+    }
+
+    function _callBeforeSave ( $data, $validate = false ) {
+        $result = false;
+
+        if( !empty($data) ) {
+            $asset_group_id = $this->filterEmptyField($data, 'Asset', 'asset_group_id');
+            $nilai_perolehan = $this->filterEmptyField($data, 'Asset', 'nilai_perolehan');
+            $ak_penyusutan = $this->filterEmptyField($data, 'Asset', 'ak_penyusutan');
+
+            $assetGroup = $this->AssetGroup->getData('first', array(
+                'conditions' => array(
+                    'AssetGroup.id' => $asset_group_id,
+                ),
+            ));
+            $umur_ekonomis = $this->filterEmptyField($assetGroup, 'AssetGroup', 'umur_ekonomis');
+            $nilai_sisa = $this->filterEmptyField($assetGroup, 'AssetGroup', 'nilai_sisa');
+
+            $depr_bulan = (($nilai_perolehan - $nilai_sisa) / $umur_ekonomis) / 12;
+            $nilai_buku = $nilai_perolehan - $ak_penyusutan;
+
+            $data['Asset']['depr_bulan'] = $this->convertPriceToString($depr_bulan, 0, 2);
+            $data['Asset']['nilai_buku'] = $this->convertPriceToString($nilai_buku, 0, 2);
+
+            $this->set($data);
+
+            if( !empty($validate) ) {
+                $result = $this->validates();
+            } else {
+                $result = $this->save();
+            }
+        }
+
+        return $result;
     }
 }
 ?>

@@ -191,6 +191,10 @@ class Truck extends AppModel {
                 'Laka.completed' => 0,
             ),
         ),
+        'Asset' => array(
+            'className' => 'Asset',
+            'foreignKey' => 'asset_id',
+        ),
     );
 
     var $belongsTo = array(

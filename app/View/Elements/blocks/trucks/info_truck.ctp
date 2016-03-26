@@ -1,3 +1,7 @@
+<?php 
+        $is_asset = $this->Common->filterEmptyField($truck, 'Truck', 'is_asset');
+        $asset_id = $this->Common->filterEmptyField($truck, 'Asset', 'id');
+?>
 <div class="row">
     <div class="col-sm-6">
         <div class="box">
@@ -53,6 +57,19 @@
                     <dd><?php echo !empty($truck['Truck']['is_asset'])?'Ya':'Tidak';;?></dd>
                     <dt><?php echo __('Tahun Neraca')?></dt>
                     <dd><?php echo !empty($truck['Truck']['tahun_neraca'])?$truck['Truck']['tahun_neraca']:'-';?></dd>
+                    <?php 
+                            if( !empty($is_asset) && !empty($asset_id) ) {
+                                echo $this->Html->tag('dt', '&nbsp;');
+                                echo $this->Html->tag('dd', $this->Html->link(__('Lihat Detail Asset'), array(
+                                    'controller' => 'assets',
+                                    'action' => 'edit',
+                                    $asset_id,
+                                ), array(
+                                    'escape' => false,
+                                    'target' => '_blank',
+                                )));
+                            }
+                    ?>
                 </dl>
             </div>
         </div>

@@ -420,8 +420,12 @@
     </div>
 </div>
 <?php 
+        $tarif = !empty($tarif)?$tarif:false;
+        $jenis_unit = $this->Common->filterEmptyField($tarif, 'jenis_unit');
+
         echo $this->Form->hidden('Revenue.revenue_tarif_type', array(
             'class' => 'revenue_tarif_type',
+            'value' => $jenis_unit,
         ));
         echo $this->Form->hidden('Revenue.additional_charge', array(
             'class' => 'additional_charge',

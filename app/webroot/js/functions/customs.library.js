@@ -1321,12 +1321,12 @@
             settings_nilai_buku = $('.nilai_buku');
             settings_asset_group = $('.asset_group');
 
+            ak_penyusutan = $.convertNumber(settings_ak_penyusutan.val(), 'float', 0);
             nilai_perolehan = $.convertNumber(settings_nilai_perolehan.val(), 'float', 0);
             nilai_sisa = $.convertNumber(settings_nilai_sisa.val(), 'float', 0);
             umur_ekonomis = $.convertNumber(settings_umur_ekonomis.val(), 'float', 0);
 
             depr_bulan = ( ( nilai_perolehan - nilai_sisa ) / settings_umur_ekonomis.val() ) / 12;
-            ak_penyusutan = depr_bulan;
             nilai_buku = nilai_perolehan - ak_penyusutan;
             
             settings_depr_bulan.val( $.formatDecimal(depr_bulan, 2) );

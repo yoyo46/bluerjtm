@@ -12,10 +12,20 @@
 			'type' => 'file'
 		));
 
+		$data = $this->request->data;
+        $is_asset = $this->Common->filterEmptyField($data, 'Truck', 'is_asset');
+        $asset_id = $this->Common->filterEmptyField($data, 'Asset', 'id');
+
 		if( !empty($id) ) {
 			$disabled = true;
 		} else {
 			$disabled = false;
+		}
+
+		if( !empty($is_asset) ) {
+			$assetDisabled = false;
+		} else {
+			$assetDisabled = true;
 		}
 ?>
 <div class="row">
@@ -161,19 +171,53 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-						echo $this->Form->label('tahun_neraca',__('Tahun Neraca *')); 
+							echo $this->Form->label('tahun_neraca',__('Tahun Neraca *')); 
 
-						echo $this->Form->input('tahun_neraca',array(
-							'label'=> false, 
-							'class'=>'form-control neraca-form',
-							'required' => false,
-							'empty' => __('Pilih Tahun Neraca'),
-							'options' => $years,
-							'disabled' => (!empty($this->request->data['Truck']['is_asset'])) ? false : 'disabled'
-						));
+							echo $this->Form->input('tahun_neraca',array(
+								'label'=> false, 
+								'class'=>'form-control neraca-form',
+								'required' => false,
+								'empty' => __('Pilih Tahun Neraca'),
+								'options' => $years,
+								'disabled' => $assetDisabled,
+							));
 					?>
 		        </div>
-		        <?php 
+		        <?php
+							if( !empty($id) && !empty($asset_id) ) {
+								echo $this->Html->tag('div', $this->Html->link(__('Lihat Detail Asset'), array(
+                                    'controller' => 'assets',
+                                    'action' => 'edit',
+                                    $asset_id,
+                                ), array(
+                                    'escape' => false,
+                                    'target' => '_blank',
+                                )), array(
+                                    'class' => 'form-group',
+                                ));
+							} else if( empty($id) ) {
+								echo $this->Common->buildInputForm('purchase_date', __('Tanggal pembelian *'), array(
+									'type' => 'text',
+									'class' => 'custom-date form-control neraca-form',
+									'fieldError' => 'Asset.purchase_date',
+								));
+	 							echo $this->Common->buildInputForm('asset_group_id', __('Group Asset *'), array(
+									'empty' => __('Pilih Group Asset'),
+									'disabled' => $assetDisabled,
+									'class'=>'form-control neraca-form',
+									'fieldError' => 'Asset.asset_group_id',
+								));
+								echo $this->Common->buildInputForm('nilai_perolehan', __('Nilai perolehan *'), array(
+									'type' => 'text',
+									'class' => 'input_price_coma form-control neraca-form',
+									'fieldError' => 'Asset.nilai_perolehan',
+								));
+								echo $this->Common->buildInputForm('ak_penyusutan', __('Ak. Penyusutan *'), array(
+									'type' => 'text',
+									'class' => 'input_price_coma form-control neraca-form',
+									'fieldError' => 'Asset.ak_penyusutan',
+								));
+							}
 		        		}
 		        ?>
 		        <div class="form-group">
