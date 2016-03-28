@@ -11,13 +11,21 @@ class RevenueDetail extends AppModel {
         'qty_unit' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Quantity harap diisi'
+                'message' => 'Qty harap diisi'
+            ),
+            'validNumber' => array(
+                'rule' => array('validNumber', 'qty_unit'),
+                'message' => 'Qty harap diisi'
             ),
         ),
         'price_unit' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Quantity harap diisi'
+                'message' => 'Tarif harap diisi'
+            ),
+            'validNumber' => array(
+                'rule' => array('validNumber', 'price_unit'),
+                'message' => 'Tarif harap diisi'
             ),
         ),
         'group_motor_id' => array(
@@ -62,6 +70,14 @@ class RevenueDetail extends AppModel {
             'foreignKey' => 'tarif_angkutan_id',
         ),
     );
+
+    function validNumber( $data, $field ) {
+        if( !empty($data[$field]) ) {
+            return true;
+        } else {
+            return false;   
+        }
+    }
 
 	function getData( $find, $options = false, $elements = array(), $is_merge = true ){
         $active = isset($elements['active'])?$elements['active']:true;
@@ -135,6 +151,8 @@ class RevenueDetail extends AppModel {
 
     function getMergeAll($data, $revenue_id){
         if(empty($data['RevenueDetail'])){
+            $this->virtualFields['qty_unit'] = 'SUM(RevenueDetail.qty_unit)';
+            $this->virtualFields['total_price_unit'] = 'SUM(RevenueDetail.total_price_unit)';
             $data_merge = $this->getData('all', array(
                 'conditions' => array(
                     'RevenueDetail.revenue_id' => $revenue_id,
@@ -146,20 +164,11 @@ class RevenueDetail extends AppModel {
                     'RevenueDetail.id' => 'ASC',
                 ),
                 'group' => array(
+                    'RevenueDetail.is_charge',
                     'RevenueDetail.no_do',
                     'RevenueDetail.no_sj',
                     'RevenueDetail.group_motor_id',
                     'RevenueDetail.city_id',
-                ),
-                'fields' => array(
-                    'RevenueDetail.id', 'RevenueDetail.group_motor_id',
-                    'SUM(RevenueDetail.qty_unit) AS qty_unit', 'RevenueDetail.no_do',
-                    'RevenueDetail.no_sj', 'City.name',
-                    'RevenueDetail.payment_type', 'RevenueDetail.is_charge',
-                    'RevenueDetail.price_unit', 'RevenueDetail.tarif_angkutan_id',
-                    'RevenueDetail.total_price_unit', 'RevenueDetail.city_id',
-                    'SUM(RevenueDetail.total_price_unit) AS total_price_unit',
-                    'RevenueDetail.tarif_angkutan_type', 'MAX(RevenueDetail.from_ttuj) from_ttuj',
                 ),
             ), array(
                 'active' => true,
@@ -207,6 +216,7 @@ class RevenueDetail extends AppModel {
                 'RevenueDetail.id' => $revenue_detail_id,
                 'Revenue.status' => 1,
             );
+            $elementRevenue['active'] = false;
         } else if( in_array($data_action, array( 'invoice', 'date', 'hso-smg' )) ) {
             $options['conditions'] = array(
                 'RevenueDetail.invoice_id' => $id,
@@ -234,6 +244,7 @@ class RevenueDetail extends AppModel {
             $options['order'] = array(
                 'Revenue.date_revenue' => 'ASC',
                 'Revenue.id' => 'ASC',
+                'RevenueDetail.is_charge' => 'DESC',
                 'RevenueDetail.id' => 'ASC',
             );
         }

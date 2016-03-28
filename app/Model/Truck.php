@@ -265,6 +265,10 @@ class Truck extends AppModel {
             'className' => 'DocumentPaymentDetail',
             'foreignKey' => 'truck_id',
         ),
+        'PurchaseOrderDetail' => array(
+            'className' => 'PurchaseOrderDetail',
+            'foreignKey' => 'truck_id',
+        ),
     );
 
     function uniqueUpdate($data, $id = false){

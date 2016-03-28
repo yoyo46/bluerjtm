@@ -13,7 +13,6 @@
 
                 $revenue_id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
                 $date = $this->Common->filterEmptyField($value, 'Revenue', 'date_revenue');
-                $price_truck = $this->Common->filterEmptyField($value, 'Revenue', 'tarif_per_truck');
                 $revenue_tarif_type = $this->Common->filterEmptyField($value, 'Revenue', 'revenue_tarif_type');
 
                 $unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'qty_unit');
@@ -25,21 +24,21 @@
 
                 $customDate = $this->Common->formatDate($date, 'd-M-y');
                 $customRate = $this->Common->getFormatPrice($rate, false);
+                $totalPriceFormat = '';
 
-                if( $revenue_tarif_type == 'per_truck' ) {
-                    if( !empty($is_charge) ) {
-                        $price = $total_price_unit;
-                    } else if( $temp != $revenue_id ) {
-                        $price = $price_truck;
-                    } else {
-                        $price = false;
-                    }
+                if( !empty($is_charge) ) {
+                    $totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
                 } else {
-                    $price = $rate * $unit;
+                    $total_price_unit = 0;
                 }
 
-                $customPrice = $this->Common->getFormatPrice($price, false);
-                $totalPrice += $price;
+                if( !empty($value['Revenue']['Ttuj']['nopol']) ) {
+                    $nopol = $value['Revenue']['Ttuj']['nopol'];
+                } else if( !empty($value['Truck']['nopol']) ) {
+                    $nopol = $value['Truck']['nopol'];
+                }
+
+                $totalPrice += $total_price_unit;
 ?>
 <tr>
     <?php
@@ -61,7 +60,7 @@
             echo $this->Html->tag('td', $customRate, array(
                 'style' => 'text-align:center;border-left: 1px solid #000;'
             ));
-            echo $this->Html->tag('td', $customPrice, array(
+            echo $this->Html->tag('td', $totalPriceFormat, array(
                 'style' => 'text-align:right;border-left: 1px solid #000;'
             ));
             echo $this->Html->tag('td', $to_city_name, array(

@@ -848,7 +848,7 @@ var add_custom_field = function( obj ){
                     $('#muatan-revenue-detail tbody.tipe-motor-table').append(' \
                     <tr rel="'+count_next+'" class="list-revenue"> \
                         <td class="city-data"> \
-                            <select name="data[RevenueDetail][city_id][]" class="form-control city-revenue-change" id="RevenueDetailCityId" data-type="revenue-manual">'+optionCity+'</select> \
+                            <select name="data[RevenueDetail][city_id][]" class="form-control city-revenue-change" id="RevenueDetailCityId">'+optionCity+'</select> \
                             <input type="hidden" name="data[RevenueDetail][tarif_angkutan_id][]" class="tarif_angkutan_id" id="RevenueDetailTarifAngkutanId"> \
                             <input type="hidden" name="data[RevenueDetail][tarif_angkutan_type][]" class="tarif_angkutan_type" id="RevenueDetailTarifAngkutanType"> \
                         </td> \
@@ -859,36 +859,42 @@ var add_custom_field = function( obj ){
                             <input name="data[RevenueDetail][no_sj][]" class="form-control" type="text" id="RevenueDetailNoSj"> \
                         </td> \
                         <td class="tipe-motor-data"> \
-                            <select name="data[RevenueDetail][group_motor_id][]" class="form-control revenue-group-motor" id="RevenueDetailGroupMotorId" data-type="revenue-manual">'+groupMotorRevenue+'</select> \
+                            <select name="data[RevenueDetail][group_motor_id][]" class="form-control revenue-group-motor" id="RevenueDetailGroupMotorId">'+groupMotorRevenue+'</select> \
                         </td> \
                         <td class="qty-tipe-motor-data" align="center"> \
                             <input name="data[RevenueDetail][qty_unit][]" class="form-control revenue-qty input_number" type="text" id="RevenueDetailQtyUnit"> \
                             <input type="hidden" name="data[RevenueDetail][payment_type][]" class="jenis_unit" id="RevenueDetailPaymentType"> \
                         </td> \
-                        <td class="additional-charge-data" align="center"> \
-                            <input type="checkbox" name="data[RevenueDetail][is_charge_temp][]" class="additional-charge" value="1" disabled="disabled" id="RevenueDetailIsChargeTemp" data-type="revenue-manual"> \
-                            <input type="hidden" name="data[RevenueDetail][is_charge][]" value="0" class="additional-charge-hidden" id="RevenueDetailIsCharge"> \
-                        </td> \
                         <td class="price-data text-right"> \
                             <span></span> \
-                            <input type="hidden" name="data[RevenueDetail][price_unit][]" class="form-control price-unit-revenue input_number" id="RevenueDetailPriceUnit"> \
+                            <input type="hidden" name="data[RevenueDetail][price_unit][]" class="form-control price-unit-revenue input_price text-right" id="RevenueDetailPriceUnit"> \
+                        </td> \
+                        <td class="additional-charge-data" align="center"> \
+                            <input type="checkbox" name="data[RevenueDetail][is_charge_temp][]" class="additional-charge" value="1" id="RevenueDetailIsChargeTemp"> \
+                            <input type="hidden" name="data[RevenueDetail][is_charge][]" value="0" class="additional-charge-hidden" id="RevenueDetailIsCharge"> \
                         </td> \
                         <td class="total-price-revenue text-right"> \
                             <span class="total-revenue-perunit"></span> \
-                            <input type="hidden" name="data[RevenueDetail][total_price_unit][]" class="total-price-perunit" id="RevenueDetailTotalPriceUnit"> \
                         </td> \
                         <td class="handle-row"> \
-                            <a action_type="revenue-detail" href="javascript:" class="delete-custom-field btn btn-danger btn-xs" title="Hapus Muatan" rel="'+count_next+'"><i class="fa fa-times"></i></a> \
+                            <a href="#" class="duplicate-row btn btn-warning btn-xs" title="Duplicate"><i class="fa fa-copy "></i></a> \
+                            <a action_type="revenue-detail" href="#" class="delete-custom-field btn btn-danger btn-xs" title="Hapus Muatan" rel="'+count_next+'"><i class="fa fa-times"></i></a> \
                         </td> \
                     </tr>');
 
                     objQty = $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .revenue-qty');
                     objPrice = $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .price-unit-revenue');
+                    objTotalPrice = $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .total-revenue-perunit');
                     objPPhPPn = $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .revenue-pph, #muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .revenue-ppn');
+
                     delete_custom_field( $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .delete-custom-field') );
                     city_revenue_change( $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .city-revenue-change'), $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .revenue-group-motor') );
                     checkCharge( $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .additional-charge') );
-                    revenue_detail( objQty, objPrice, objPPhPPn );
+                    revenue_detail( objQty, objPrice, objPPhPPn, objTotalPrice );
+                    $.inputPrice({
+                        obj: $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .input_price'),
+                    });
+                    duplicate_row();
 
                     $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .city-revenue-change').val( to_city_id );
                 } else {
@@ -1120,36 +1126,30 @@ var delete_custom_field = function( obj ) {
 }
 
 var duplicate_row = function(){
+    $('.duplicate-row').off('click');
     $('.duplicate-row').click(function(){
         var self = $(this);
         var parent = self.parents('tr');
         var tag_element = parent.html();
         var uniqid = Date.now();
-        var revenue_tarif_type = $('.revenue_tarif_type').val();
+        var jenis_unit = $('.jenis_unit').val();
         var html = '<tr rel="'+uniqid+'" class="list-revenue">'+
             '<td class="city-data">'+$(tag_element).filter('.city-data').html()+'</td>'+
             '<td class="no-do-data" align="center">'+$(tag_element).filter('.no-do-data').html()+'</td>'+
             '<td class="no-sj-data">'+$(tag_element).filter('.no-sj-data').html()+'</td>'+
             '<td class="tipe-motor-data">'+$(tag_element).filter('.tipe-motor-data').html()+'</td>'+
             '<td class="qty-tipe-motor-data" align="center">'+$(tag_element).filter('.qty-tipe-motor-data').html()+'</td>'+
-            '<td class="additional-charge-data" align="center">'+$(tag_element).filter('.additional-charge-data').html()+'</td>'+
             '<td class="price-data text-right">'+$(tag_element).filter('.price-data').html()+'</td>'+
+            '<td class="additional-charge-data" align="center">'+$(tag_element).filter('.additional-charge-data').html()+'</td>'+
             '<td class="total-price-revenue text-right">'+$(tag_element).filter('.total-price-revenue').html()+'</td>'+
-            '<td class="handle-row"><a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="revenue_detail" title="hapus baris"><i class="fa fa-times"></i></a></td>'+
+            '<td class="handle-row action text-center"><a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="revenue_detail" title="hapus baris"><i class="fa fa-times"></i></a></td>'+
         '</tr>';
 
         parent.after(html);
 
         $('tr[rel="'+uniqid+'"] .city-revenue-change').val(parent.find('.city-revenue-change').val());
         $('tr[rel="'+uniqid+'"] .revenue-qty').val('');
-        $('tr[rel="'+uniqid+'"] .additional-charge').attr('checked', false);
-        $('tr[rel="'+uniqid+'"] .total-revenue-perunit').html('');
-        $('tr[rel="'+uniqid+'"] .total-price-perunit').html('');
         $('tr[rel="'+uniqid+'"] .from-ttuj').val('');
-
-        if( revenue_tarif_type == 'per_truck' ) {
-            $('tr[rel="'+uniqid+'"] .additional-charge').attr('disabled', false);
-        }
 
         revenue_detail();
         grandTotalRevenue();
@@ -1157,14 +1157,19 @@ var duplicate_row = function(){
         city_revenue_change( $('tr[rel="'+uniqid+'"] .city-revenue-change'), $('tr[rel="'+uniqid+'"] .revenue-group-motor') );
         checkCharge( $('tr[rel="'+uniqid+'"] .additional-charge') );
 
+        $.inputPrice({
+            obj: $('tr[rel="'+uniqid+'"] .input_price'),
+        });
+
+        return false;
     });
 }
 
-var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge, qty, data_type, from_ttuj ) {
+var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge, qty ) {
     var ttuj_id = $('#getTtujInfoRevenue').val();
     var customer_id = $('.change-customer-revenue').val();
     var to_city_id = $('#toCityId').val();
-    var revenue_tarif_type = $('.revenue_tarif_type').val();
+    var data_type = $('.revenue-data-type').val();
 
     if( typeof customer_id == 'undefined' || isNaN(customer_id) || customer_id == '' ){
         customer_id = 0;
@@ -1179,15 +1184,15 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge,
         group_motor_id = 0;
     }
     
-    var url = '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+revenue_tarif_type+'/0/0/'+from_ttuj+'/';
+    var url = '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/0/0/';
     
-    if( data_type == 'revenue-manual' ) {
+    if( data_type == 'manual' ) {
         customer_id = $('#customer-revenue-manual').val();
         truck_id = $('.truck-revenue-id').val();
         from_city_id = $('#from-city-revenue-id').val();
         to_city_id = $('#to-city-revenue-id').val();
 
-        url = '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+revenue_tarif_type+'/'+from_city_id+'/'+truck_id+'/'+from_ttuj+'/';;
+        url = '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+from_city_id+'/'+truck_id+'/';
     }
 
     $.ajax({
@@ -1202,21 +1207,10 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge,
             parent.find('td.qty-tipe-motor-data .jenis_unit').val(jenis_unit_angkutan);
             parent.find('td.additional-charge-data').html($(response).filter('#additional-charge-data').html());
 
-            if( revenue_tarif_type == 'per_unit' ) {
-                parent.find('td.additional-charge-data .additional-charge').attr('disabled', true);
-            } else if( revenue_tarif_type == 'per_truck' ) {
-                parent.find('td.additional-charge-data .additional-charge').attr('disabled', false);
-
-                if( jenis_unit_angkutan == 'per_unit' && is_charge == 0 ) {
-                    parent.find('td.price-data span').html('');
-                }
-            }
-
             if( is_charge == 1 ) {
-                parent.find('td.total-price-revenue').html(0);
                 parent.find('td.total-price-revenue').html($(response).filter('#total-price-revenue').html());
             } else {
-                parent.find('td.total-price-revenue').html($(response).filter('#total-price-revenue').html());
+                parent.find('td.total-price-revenue').html('0');
             }
 
             revenue_detail();
@@ -1238,28 +1232,26 @@ var city_revenue_change = function( obj_city, obj_tipe_motor ){
         obj_tipe_motor = $('.revenue-group-motor')
     }
 
+    obj_city.off('change');
     obj_city.change(function(){
         var self = $(this);
         var val = self.val();
         var parent = self.parents('tr');
         var group_motor_id = parent.find('.revenue-group-motor').val();
         var qty = parent.find('.revenue-qty').val();
-        var from_ttuj = parent.find('.from-ttuj').val();
-        var data_type = self.attr('data-type');
 
-        changeDetailRevenue( parent, val, group_motor_id, 0, qty, data_type, from_ttuj );
+        changeDetailRevenue( parent, val, group_motor_id, 0, qty );
     });
 
+    obj_tipe_motor.off('change');
     obj_tipe_motor.change(function() {
         var self = $(this);
         var val = self.val();
         var parent = self.parents('tr');
         var city_id = parent.find('.city-revenue-change').val();
         var qty = parent.find('.revenue-qty').val();
-        var from_ttuj = parent.find('.from-ttuj').val();
-        var data_type = self.attr('data-type');
 
-        changeDetailRevenue( parent, city_id, val, 0, qty, data_type, from_ttuj );
+        changeDetailRevenue( parent, city_id, val, 0, qty );
         return false;
     });
 }
@@ -1267,16 +1259,12 @@ var city_revenue_change = function( obj_city, obj_tipe_motor ){
 function grandTotalRevenue(){
     var qty = $('.revenue-qty');
     var price = $('.price-unit-revenue');
-    var total_price = $('.total-price-perunit');
+    var totalPrices = $('.total-revenue-perunit');
     var is_additional_charge = $('.additional-charge');
     var jenis_unit = $('.jenis_unit');
-    var tarif_angkutan_type = $('.tarif_angkutan_type');
     var length = $('.tipe-motor-table tr.list-revenue').length;
     var listRevenue = $('.tipe-motor-table tr.list-revenue');
-    var total_temp = $('#total_retail_revenue').val();
-    var revenue_tarif_type = $('.revenue_tarif_type').val();
     var total = 0;
-    var additional_charge = 0;
     var ppn = 0;
     var revenue_ppn = $('.revenue-ppn').val();
     var formatAdditionalCharge = 0;
@@ -1284,78 +1272,56 @@ function grandTotalRevenue(){
 
     for (var i = 0; i < length; i++) {
         var rel = listRevenue[i].getAttribute('rel');
+        var msg = '';
+        var totalPriceUnit = 0;
 
         if( typeof price[i] != 'undefined' && price[i].value != '' ) {
-            priceUnit = parseInt(price[i].value);
+            priceUnit = $.convertNumber(price[i].value, 'int');
+            checkString = parseInt(price[i].value);
+
+            if( isNaN(checkString) ) {
+                msg = price[i].value;
+            }
+
+            if( typeof totalPrices[i] != 'undefined' ) {
+                totalPriceUnit = $.convertNumber(totalPrices[i].value, 'int');
+            }
         } else {
             priceUnit = 0;
         }
 
         if( typeof qty[i] != 'undefined' && qty[i].value != '' ) {
-            qtyUnit = parseInt(qty[i].value);
+            qtyUnit = $.convertNumber(qty[i].value, 'int');
         } else {
             qtyUnit = 0;
         }
 
-        if( typeof tarif_angkutan_type[i] != 'undefined' && tarif_angkutan_type[i].value != '' ) {
-            tarifAngkutanType = tarif_angkutan_type[i].value;
-        } else {
-            tarifAngkutanType = 'angkut';
-        }
-
         totalQty += qtyUnit;
 
-        if( ( tarifAngkutanType != 'angkut' || is_additional_charge[i].checked == true ) || revenue_tarif_type == 'per_unit'  ) {
-            if( revenue_tarif_type == 'per_truck' && is_additional_charge[i].checked == true ) {
-                if( jenis_unit[i].value == 'per_unit' ) {
-                    addCharge = priceUnit * qtyUnit;
-                } else {
-                    addCharge = parseInt(total_price[i].value);
-                }
+        if( jenis_unit[i].value == 'per_truck'){
+            totalPrice = totalPriceUnit;
+        } else {
+            totalPrice = priceUnit * qtyUnit;
+        }
 
-                if( isNaN(addCharge) ) {
-                    addCharge = 0;
-                }
+        if( is_additional_charge[i].checked == true ) {
+            total += totalPrice;
 
-                additional_charge += addCharge;
-            } else if( typeof jenis_unit[i] != 'undefined' && jenis_unit[i].value == 'per_unit'){
-                var priceTotal = priceUnit * qtyUnit;
-                total += priceTotal;
-            }else{
-                total += parseInt(total_price[i].value);
+            if( jenis_unit[i].value != 'per_truck'){
+                $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-revenue-perunit').val(formatNumber(totalPrice));
+                $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-revenue-perunit-text').html(formatNumber(totalPrice));
             }
         }
 
-        if( ( jenis_unit[i].value != 'per_truck' && ( tarifAngkutanType != 'angkut' && is_additional_charge[i].checked == true ) ) || ( revenue_tarif_type == 'per_unit' && jenis_unit[i].value != 'per_truck' ) ) {
-            var totalPrice = priceUnit * qtyUnit;
-
-            $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-revenue-perunit').html('IDR '+formatNumber(totalPrice));
-            $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-price-perunit').val(totalPrice);
-        } else if( revenue_tarif_type == 'per_truck' && is_additional_charge[i].checked == false ) {
-            $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-revenue-perunit').html('');
+        if( msg != '' ) {
+            $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.price-data span').html(msg);
+        } else {
+            $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.price-unit-revenue').val(formatNumber(priceUnit));
         }
     };
 
     $('#qty-revenue').html(totalQty);
-
-    if( revenue_tarif_type == 'per_truck' ) {
-        total = parseInt(total_temp);
-
-        if( isNaN(total) ) {
-            total = 0;
-        }
-    }
-
-    if( revenue_tarif_type != 'per_truck' ) {
-        $('#grand-total-revenue').html('IDR '+formatNumber(total));
-        $('.tarif_per_truck').val(total);
-    } else if( additional_charge != 0 ) {
-        total += additional_charge;
-        formatAdditionalCharge = 'IDR '+formatNumber(additional_charge);
-    }
-
-    $('#additional-total-revenue').html(formatAdditionalCharge);
-    $('.additional_charge').val(additional_charge);
+    $('#grand-total-revenue').html(formatNumber(total));
 
     if(typeof revenue_ppn != 'undefined' && revenue_ppn != ''){
         ppn = total * (parseInt(revenue_ppn) / 100);
@@ -1369,19 +1335,15 @@ function grandTotalRevenue(){
     }
     $('#pph-total-revenue').html(formatNumber(pph));
     
-    // if(pph > 0){
-    //     total -= pph;
-    // }
     if(ppn > 0){
         total += ppn;
     }
 
-    $('#all-total-revenue').html('IDR '+formatNumber(total));
+    $('#all-total-revenue').html(formatNumber(total));
 }
 
 function calcPPNPPH(){
     var total = parseInt($('#grand-total-revenue').html().replace(/,/gi, "").replace(/IDR/gi, ""));
-    var additional_charge = parseInt($('#additional-total-revenue').html().replace(/,/gi, "").replace(/IDR/gi, ""));
     var ppn = 0;
     var pph = 0;
     var revenue_ppn = $('.revenue-ppn').val();
@@ -1391,12 +1353,6 @@ function calcPPNPPH(){
         total = 0;
     }
 
-    if( isNaN(additional_charge) ) {
-        additional_charge = 0;
-    }
-
-    total += additional_charge;
-
     if(typeof revenue_ppn != 'undefined' && revenue_ppn != ''){
         ppn = total * (parseInt(revenue_ppn) / 100);
     }
@@ -1416,7 +1372,7 @@ function calcPPNPPH(){
         total += ppn;
     }
 
-    $('#all-total-revenue').html('IDR '+formatNumber(total));
+    $('#all-total-revenue').html(formatNumber(total));
 }
 
 var part_motor_lku = function(){
@@ -1778,7 +1734,7 @@ var choose_item_info = function(){
 }
 choose_item_info();
 
-var revenue_detail = function( objQty, objPrice, objPPhPPn ){
+var revenue_detail = function( objQty, objPrice, objPPhPPn, objTotalPrice ){
     if( typeof objQty == 'undefined' ) {
         objQty = $('.revenue-qty');
     }
@@ -1788,7 +1744,11 @@ var revenue_detail = function( objQty, objPrice, objPPhPPn ){
     if( typeof objPPhPPn == 'undefined' ) {
         objPPhPPn = $('.revenue-pph, .revenue-ppn');
     }
+    if( typeof objTotalPrice == 'undefined' ) {
+        objTotalPrice = $('.total-revenue-perunit');
+    }
 
+    objQty.off('keyup');
     objQty.keyup(function(event){
         var self = $(this);
         // var max = parseInt(self.attr('max'));
@@ -1803,23 +1763,23 @@ var revenue_detail = function( objQty, objPrice, objPPhPPn ){
         total_revenue_unit(self);
     });
 
+    objPrice.off('keyup');
     objPrice.keyup(function(){
         total_revenue_unit(self);
     });
 
+    objTotalPrice.off('keyup');
+    objTotalPrice.keyup(function(){
+        grandTotalRevenue();
+    });
+
+    objPPhPPn.off('keyup');
     objPPhPPn.keyup(function(){
         calcPPNPPH();
     });
 }
 
 function total_revenue_unit(self){
-    var target = self.parents('tr');
-    var price = target.find('.price-unit-revenue').val();
-    var qty = target.find('.revenue-qty').val();
-    var jenis_unit = $('.jenis_unit');
-    var revenue_tarif_type = $('.revenue_tarif_type').val();
-    var total = 0;
-
     grandTotalRevenue();
 }
 
@@ -2350,14 +2310,13 @@ var change_customer_revenue = function(){
 }
 
 var checkCharge = function ( obj ) {
+    obj.off('click');
     obj.click(function(){
         var parent = $(this).parents('tr');
         var val = 0;
         var city_id = parent.find('.city-revenue-change').val();
         var group_motor_id = parent.find('.revenue-group-motor').val();
         var qty = parent.find('.revenue-qty').val();
-        var data_type = $(this).attr('data-type');
-        var from_ttuj = parent.find('.from-ttuj').val();
 
         if( $(this).is(':checked') ) {
             val = 1;
@@ -2365,7 +2324,7 @@ var checkCharge = function ( obj ) {
 
         parent.find('.additional-charge-hidden').val(val);
 
-        changeDetailRevenue( parent, city_id, group_motor_id, val, qty, data_type, from_ttuj );
+        changeDetailRevenue( parent, city_id, group_motor_id, val, qty );
     });
 }
 var leasing_action = function(){
@@ -4230,20 +4189,16 @@ $(function() {
 
         if( customer_id != '' && truck_id != '' && from_city_id != '' && to_city_id != '' ) {
             $.ajax({
-                url: '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+to_city_id+'/0/0/'+to_city_id+'/0/angkut/'+from_city_id+'/'+truck_id+'/',
+                url: '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+to_city_id+'/0/0/'+to_city_id+'/0/'+from_city_id+'/'+truck_id+'/',
                 type: 'POST',
                 success: function(response, status) {
                     var jenis_unit = $(response).find('.jenis_unit').val();
                     $('.revenue_tarif_type').val( jenis_unit );
-                    $('#revenue-truck-capacity').val( $(response).filter('#truck_capacity').val() );
 
                     if( jenis_unit == 'per_truck' ) {
-                        var totalPriceFormat = $(response).find('.total-revenue-perunit').html();
-                        var totalPrice = $(response).find('.total-price-perunit').val();
+                        var totalPriceFormat = $(response).find('.total-revenue-perunit').val();
 
                         $('#grand-total-revenue').html( totalPriceFormat );
-                        $('#total_retail_revenue').val( totalPrice );
-                        $('.tarif_per_truck').val( totalPrice );
                     }
                     
                     grandTotalRevenue();

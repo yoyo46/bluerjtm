@@ -553,14 +553,21 @@ class AjaxController extends AppController {
 					}
 
 					if( !empty($qtyUnit) ) {
+	                    $tarif_angkutan = $this->MkCommon->filterEmptyField( $tarif, 'tarif' );
+	                    $jenis_unit = $this->MkCommon->filterEmptyField( $tarif, 'jenis_unit' );
+	                    $tarif_angkutan_type = $this->MkCommon->filterEmptyField( $tarif, 'tarif_angkutan_type' );
+	                    $tarif_angkutan_id = $this->MkCommon->filterEmptyField( $tarif, 'tarif_angkutan_id' );
+
 						$data_revenue_detail[$key] = array(
 							'TtujTipeMotor' => array(
 								'qty' => $qtyTtuj,
 							),
 							'RevenueDetail' => array(
-								'from_ttuj' => true,
+								'tarif_angkutan_id' => $tarif_angkutan_id,
 								'to_city_name' => $to_city_name,
-								'price_unit' => $tarif,
+								'price_unit' => $tarif_angkutan,
+								'payment_type' => $jenis_unit,
+								'tarif_angkutan_type' => $tarif_angkutan_type,
 								'qty_unit' => $qtyUnit,
 								'group_motor_id' => $group_motor_id,
 								'city_id' => $to_city_id,
@@ -777,7 +784,7 @@ class AjaxController extends AppController {
         $this->redirect($this->referer());
     }
 
-	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $detail_city_id = false, $group_motor_id = false, $is_charge = false, $main_city_id = false, $qty = 0, $jenis_unit = '', $from_city_id = false, $truck_id = false, $from_ttuj = false ){
+	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $detail_city_id = false, $group_motor_id = false, $is_charge = false, $main_city_id = false, $qty = 0, $from_city_id = false, $truck_id = false, $from_ttuj = false ){
 		$this->loadModel('Ttuj');
 
 		$data_ttuj = $this->Ttuj->getData('first', array(
@@ -820,7 +827,7 @@ class AjaxController extends AppController {
 		$tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getTarifAngkut( $from_city_id, $main_city_id, $detail_city_id, $customer_id, $truck_capacity, $group_motor_id );
 		$this->set(compact(
 			'is_charge', 'tarif',
-			'qty', 'jenis_unit', 'truck',
+			'qty', 'truck',
 			'ttuj_id', 'from_ttuj'
 		));
 	}
@@ -848,6 +855,7 @@ class AjaxController extends AppController {
         $conditionsDetail = $conditions;
         $conditionsDetail['RevenueDetail.invoice_id'] = NULL;
         $conditionsDetail['RevenueDetail.tarif_angkutan_type'] = $tarif_type;
+        $conditionsDetail['RevenueDetail.is_charge'] = 1;
 
         if( !empty($head_office) ) {
         	$elementRevenue = array(
@@ -855,32 +863,14 @@ class AjaxController extends AppController {
             );
         }
 
+        $this->Revenue->RevenueDetail->virtualFields['total'] = 'SUM(RevenueDetail.total_price_unit)';
+        $this->Revenue->RevenueDetail->virtualFields['period_to'] = 'MAX(Revenue.date_revenue)';
+        $this->Revenue->RevenueDetail->virtualFields['period_from'] = 'MIN(Revenue.date_revenue)';
+		
 		$revenueDetail = $this->Revenue->RevenueDetail->getData('first', array(
-			'conditions' => array_merge($conditionsDetail, array(
-				'Revenue.revenue_tarif_type' => 'per_unit',
-			)),
-			'order' => array(
-				'Revenue.date_revenue' => 'ASC'
-			),
-			'fields' => array(
-				'SUM(RevenueDetail.total_price_unit) total',
-				'Revenue.customer_id',
-				'MAX(Revenue.date_revenue) period_to',
-				'MIN(Revenue.date_revenue) period_from',
-			),
-			'group' => array(
-				'Revenue.customer_id'
-			),
-		), $elementRevenue);
-		$periodeRevenue = $this->Revenue->RevenueDetail->getData('first', array(
 			'conditions' => $conditionsDetail,
 			'order' => array(
 				'Revenue.date_revenue' => 'ASC'
-			),
-			'fields' => array(
-				'Revenue.customer_id',
-				'MAX(Revenue.date_revenue) period_to',
-				'MIN(Revenue.date_revenue) period_from',
 			),
 			'group' => array(
 				'Revenue.customer_id'
@@ -897,30 +887,10 @@ class AjaxController extends AppController {
         $conditions['Revenue.id'] = $revenueId;
         $conditionRevenue = $conditions;
 
+        $this->Revenue->virtualFields['total_pph'] = 'SUM(Revenue.total_without_tax * (Revenue.pph / 100))';
 		$revenue = $this->Revenue->getData('first', array(
 			'conditions' => $conditionRevenue,
-			'fields' => array(
-				'SUM(Revenue.total_without_tax * (Revenue.pph / 100)) total_pph',
-				'Revenue.customer_id',
-			),
-			'group' => array(
-				'Revenue.customer_id'
-			),
 		), true, $elementRevenue);
-
-        $conditionRevenueTruck = $conditionRevenue;
-        $conditionRevenueTruck['Revenue.revenue_tarif_type'] = 'per_truck';
-		$revenuePerTruck = $this->Revenue->getData('first', array(
-			'conditions' => $conditionRevenueTruck,
-			'fields' => array(
-				'SUM(Revenue.tarif_per_truck+Revenue.additional_charge) total',
-				'Revenue.customer_id',
-			),
-			'group' => array(
-				'Revenue.customer_id'
-			),
-		), true, $elementRevenue);
-
         $banks = $this->Bank->getData('list', array(
             'conditions' => array(
                 'Bank.status' => 1,
@@ -932,24 +902,26 @@ class AjaxController extends AppController {
     	);
 
 		if( !empty($customer) ){
-			$monthFrom = !empty($periodeRevenue[0]['period_from'])?$this->MkCommon->customDate($periodeRevenue[0]['period_from'], 'Y-m'):false;
-			$monthTo = !empty($periodeRevenue[0]['period_to'])?$this->MkCommon->customDate($periodeRevenue[0]['period_to'], 'Y-m'):false;
+			$total_pph = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'total_pph');
+			$total = $this->MkCommon->filterEmptyField($revenueDetail, 'RevenueDetail', 'total');
+			$period_from = $this->MkCommon->filterEmptyField($revenueDetail, 'RevenueDetail', 'period_from');
+			$period_to = $this->MkCommon->filterEmptyField($revenueDetail, 'RevenueDetail', 'period_to');
+
+			$monthFrom = $this->MkCommon->customDate($period_from, 'Y-m');
+			$monthTo = $this->MkCommon->customDate($period_to, 'Y-m');
+
+			$period_from = $this->MkCommon->customDate($period_from, 'd/m/Y');
+			$period_to = $this->MkCommon->customDate($period_to, 'd/m/Y');
 			
 			$this->request->data['Invoice']['bank_id'] = !empty($customer['Customer']['bank_id'])?$customer['Customer']['bank_id']:false;
-			$this->request->data['Invoice']['period_from'] = !empty($periodeRevenue[0]['period_from'])?$this->MkCommon->customDate($periodeRevenue[0]['period_from'], 'd/m/Y'):false;
-			$this->request->data['Invoice']['period_to'] = !empty($periodeRevenue[0]['period_to'])?$this->MkCommon->customDate($periodeRevenue[0]['period_to'], 'd/m/Y'):false;
-			$this->request->data['Invoice']['total_revenue'] = !empty($revenuePerTruck[0]['total'])?$revenuePerTruck[0]['total']:0;
-			$this->request->data['Invoice']['total_pph'] = !empty($revenue[0]['total_pph'])?$revenue[0]['total_pph']:0;
-			$this->request->data['Invoice']['total'] = !empty($revenueDetail[0]['total'])?$revenueDetail[0]['total']:0;
+			$this->request->data['Invoice']['period_from'] = $period_from;
+			$this->request->data['Invoice']['period_to'] = $period_to;
+			$this->request->data['Invoice']['total'] = $total;
+			$this->request->data['Invoice']['total_revenue'] = $total;
+			$this->request->data['Invoice']['total_pph'] = $total_pph;
 
 			$customer_group_id = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_group_id');
 			$customer = $this->Customer->CustomerGroup->getMerge($customer, $customer_group_id);
-
-			switch ($tarif_type) {
-				case 'angkut':
-					$this->request->data['Invoice']['total'] += $this->request->data['Invoice']['total_revenue'];
-					break;
-			}
 
 			if( $monthFrom != $monthTo ) {
 		        $msg = array(
@@ -1019,24 +991,6 @@ class AjaxController extends AppController {
 				'Revenue.id', 'Revenue.id',
 			),
 		), true, $elementRevenue);
-		$totalPPN = $this->Revenue->getData('first', array(
-			'conditions' => $conditions,
-			'group' => array(
-				'Revenue.customer_id'
-			),
-			'fields' => array(
-				'SUM(total_without_tax * (ppn / 100)) ppn',
-			),
-		), true, $elementRevenue);
-		$totalPPh = $this->Revenue->getData('first', array(
-			'conditions' => $conditions,
-			'group' => array(
-				'Revenue.customer_id'
-			),
-			'fields' => array(
-				'SUM(total_without_tax * (pph / 100)) pph',
-			),
-		), true, $elementRevenue);
 
 		if(!empty($revenue_id)){
             $revenue_detail = $this->Revenue->RevenueDetail->getPreviewInvoice($revenue_id, $invoice_type, $action, 'preview');
@@ -1049,7 +1003,7 @@ class AjaxController extends AppController {
 
 		$this->set(compact(
 			'revenue_detail', 'action', 'layout_css',
-			'invoice_type', 'totalPPN', 'totalPPh'
+			'invoice_type'
 		));
 	}
 
@@ -1069,7 +1023,7 @@ class AjaxController extends AppController {
         switch ($action_type) {
         	case 'pengganti':
         		$options['conditions'] = $this->Driver->getListDriverPenganti($id, true);
-        		$options['contain'][] = 'Ttuj';
+        		// $options['contain'][] = 'Ttuj';
         		break;
         	
         	default:
@@ -2460,6 +2414,7 @@ class AjaxController extends AppController {
 
 	function products ( $action_type = 'sq' ) {
         $this->loadModel('Product');
+        $wrapper = $this->MkCommon->filterEmptyField($this->params, 'named', 'wrapper');
 
         $params = $this->MkCommon->_callRefineParams($this->params);
         $options =  $this->Product->_callRefineParams($params, array(
@@ -2497,7 +2452,8 @@ class AjaxController extends AppController {
         $groups = $this->Product->ProductCategory->getData('list');
         $this->set('module_title', __('Barang'));
         $this->set(compact(
-        	'values', 'groups', 'action_type'
+        	'values', 'groups', 'action_type',
+        	'wrapper'
     	));
 	}
 
@@ -2705,8 +2661,10 @@ class AjaxController extends AppController {
         $options =  $this->Truck->_callRefineParams($params, array(
             'limit' => 20,
         ));
-        $return_value = $this->MkCommon->filterEmptyField($this->params, 'named', 'return_value', 'id');
-        $target = $this->MkCommon->filterEmptyField($this->params, 'named', 'target', '#document-id');
+
+        $wrapper = $this->MkCommon->filterEmptyField($params, 'named', 'wrapper');
+        $return_value = $this->MkCommon->filterEmptyField($params, 'named', 'return_value', 'id');
+        $target = $this->MkCommon->filterEmptyField($params, 'named', 'target', '#document-id');
 
 		$this->paginate = $this->Truck->getData('paginate', $options, true, array(
 			'plant' => true,
@@ -2733,8 +2691,36 @@ class AjaxController extends AppController {
 
         $this->set(compact(
         	'values', 'title', 'return_value',
-        	'target'
+        	'target', 'wrapper'
     	));
+	}
+
+	function document_type ( $type = false ) {
+        $wrapper = $this->MkCommon->filterEmptyField($this->params, 'named', 'wrapper');
+
+		switch ($type) {
+			case 'trucks':
+				$this->redirect(array(
+					'controller' => 'ajax',
+					'action' => 'truck_picker',
+					'return_value' => 'nopol',
+					'wrapper' => $wrapper,
+				));
+				break;
+			
+			case 'po':
+				$this->redirect(array(
+					'controller' => 'ajax',
+					'action' => 'products',
+					'wrapper' => $wrapper,
+					'po',
+				));
+				break;
+
+			default:
+		        $this->redirect($this->referer());
+				break;
+		}
 	}
 }
 ?>

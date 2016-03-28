@@ -142,7 +142,6 @@ class SpkController extends AppController {
             $data['Revenue']['date_revenue'] = $this->MkCommon->getDate($data['Revenue']['date_revenue']);
             $data['Revenue']['ppn'] = !empty($data['Revenue']['ppn'])?$data['Revenue']['ppn']:0;
             $data['Revenue']['pph'] = !empty($data['Revenue']['pph'])?$data['Revenue']['pph']:0;
-            $data['Revenue']['additional_charge'] = !empty($data['Revenue']['additional_charge'])?$data['Revenue']['additional_charge']:0;
             $tarif_angkutan_types = !empty($data['RevenueDetail']['tarif_angkutan_type'])?$data['RevenueDetail']['tarif_angkutan_type']:array();
             $dataRevenues = array();
             $flagSave = array();
@@ -215,10 +214,6 @@ class SpkController extends AppController {
 
                         if( !empty($tarif['jenis_unit']) && $tarif['jenis_unit'] == 'per_truck' ) {
                             $tarifTruck = $tarif;
-
-                            if( !empty($dataRevenue['Revenue']['additional_charge']) ) {
-                                $tarifTruck['addCharge'] = $dataRevenue['Revenue']['additional_charge'];
-                            }
                         }
                     }
 
@@ -272,14 +267,7 @@ class SpkController extends AppController {
                         }
                     }
 
-                    if( !empty($dataRevenue['Revenue']['revenue_tarif_type']) && $dataRevenue['Revenue']['revenue_tarif_type'] == 'per_truck' ) {
-                        $total_revenue = $dataRevenue['Revenue']['tarif_per_truck'];
-                    }
-
                     $totalWithoutTax = $total_revenue;
-                    if( !empty($dataRevenue['Revenue']['additional_charge']) && $dataRevenue['Revenue']['additional_charge'] > 0 ){
-                        $total_revenue += $dataRevenue['Revenue']['additional_charge'];
-                    }
 
                     if( !empty($dataRevenue['Revenue']['pph']) && $dataRevenue['Revenue']['pph'] > 0 ){
                         $pph = $total_revenue * ($dataRevenue['Revenue']['pph'] / 100);

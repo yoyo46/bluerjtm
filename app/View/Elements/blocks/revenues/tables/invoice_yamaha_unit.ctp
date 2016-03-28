@@ -8,14 +8,16 @@
             $temp = false;
 
             foreach ($invDetails as $key => $value) {
-                $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
-                $capacity = $this->Common->filterEmptyField($value, 'Ttuj', 'truck_capacity');
+                $capacity = $this->Common->filterEmptyField($value, 'Truck', 'capacity');
+                $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
+
+                $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol', $nopol);
+                $capacity = $this->Common->filterEmptyField($value, 'Ttuj', 'truck_capacity', $capacity);
                 $to_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
                 $group_motor = $this->Common->filterEmptyField($value, 'GroupMotor', 'name');
 
                 $revenue_id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
                 $date = $this->Common->filterEmptyField($value, 'Revenue', 'date_revenue');
-                $price_truck = $this->Common->filterEmptyField($value, 'Revenue', 'tarif_per_truck');
                 $revenue_tarif_type = $this->Common->filterEmptyField($value, 'Revenue', 'revenue_tarif_type');
 
                 $unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'qty_unit');
@@ -24,25 +26,19 @@
                 $no_sj = $this->Common->filterEmptyField($value, 'RevenueDetail', 'no_sj', '&nbsp;');
                 $is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
                 $total_price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'total_price_unit');
+                $totalPriceFormat = '';
+
+                if( !empty($is_charge) ) {
+                    $totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
+                } else {
+                    $total_price_unit = 0;
+                }
 
                 $customDate = $this->Common->formatDate($date, 'd-M-y');
                 $customRate = $this->Common->getFormatPrice($rate, false);
 
-                if( $revenue_tarif_type == 'per_truck' ) {
-                    if( !empty($is_charge) ) {
-                        $price = $total_price_unit;
-                    } else if( $temp != $revenue_id ) {
-                        $price = $price_truck;
-                    } else {
-                        $price = false;
-                    }
-                } else {
-                    $price = $rate * $unit;
-                }
-
-                $customPrice = $this->Common->getFormatPrice($price, false);
                 $totalUnit += $unit;
-                $totalPrice += $price;
+                $totalPrice += $total_price_unit;
 ?>
 <tr>
     <?php
@@ -64,7 +60,7 @@
             echo $this->Html->tag('td', $customRate, array(
                 'style' => 'text-align:center;border-left: 1px solid #000;'
             ));
-            echo $this->Html->tag('td', $customPrice, array(
+            echo $this->Html->tag('td', $totalPriceFormat, array(
                 'style' => 'text-align:right;border-left: 1px solid #000;'
             ));
             echo $this->Html->tag('td', $to_city_name, array(

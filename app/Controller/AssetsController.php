@@ -187,4 +187,61 @@ class AssetsController extends AppController {
         $this->layout = false;
         $this->render('/Elements/blocks/assets/group');
     }
+
+    function purchase_order_add(){
+        $this->set('sub_module_title', __('Tambah PO Asset'));
+
+        $data = $this->request->data;
+        $data = $this->RjAsset->_callBeforeSavePO($data);
+        $result = $this->Asset->Truck->PurchaseOrderDetail->PurchaseOrder->doSave($data);
+        $this->MkCommon->setProcessParams($result, array(
+            'controller' => 'purchases',
+            'action' => 'purchase_orders',
+            'admin' => false,
+        ));
+        $this->request->data = $this->RjAsset->_callBeforeRenderPO($this->request->data);
+
+        $this->set('active_menu', 'Purchase Order');
+        $this->set(compact(
+            'vendors'
+        ));
+    }
+
+    public function purchase_order_edit( $id = false ) {
+        $this->set('sub_module_title', __('Edit PO'));
+
+        $value = $this->PurchaseOrder->getData('first', array(
+            'conditions' => array(
+                'PurchaseOrder.id' => $id,
+            ),
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->PurchaseOrder->PurchaseOrderDetail->getMerge($value, $id);
+
+            $data = $this->request->data;
+            $data = $this->RjPurchase->_callBeforeSavePO($data);
+            $result = $this->PurchaseOrder->doSave($data, $value, $id);
+            $this->MkCommon->setProcessParams($result, array(
+                'controller' => 'purchases',
+                'action' => 'purchase_orders',
+                'admin' => false,
+            ));
+            $this->request->data = $this->RjPurchase->_callBeforeRenderPO($this->request->data);
+
+            $vendors = $this->PurchaseOrder->Vendor->getData('list');
+            $this->set('active_menu', 'Purchase Order');
+            $this->set(compact(
+                'vendors', 'value'
+            ));
+            $this->render('purchase_order_add');
+        } else {
+            $this->MkCommon->setCustomFlash(__('PO tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function purchase_order_toggle( $id ) {
+        $result = $this->PurchaseOrder->doDelete( $id );
+        $this->MkCommon->setProcessParams($result);
+    }
 }

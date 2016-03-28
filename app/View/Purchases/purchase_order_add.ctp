@@ -96,10 +96,12 @@
 		    <div class="box-body">
 		    	<?php 
 						echo $this->Common->buildInputForm('etd', __('E.T.D'), array(
+							'type' => 'text',
 							'textGroup' => __('Hari'),
 							'column' => 'col-sm-6',
 						));
 						echo $this->Common->buildInputForm('etd', __('T.O.P'), array(
+							'type' => 'text',
 							'textGroup' => __('Hari'),
 							'column' => 'col-sm-6',
 						));

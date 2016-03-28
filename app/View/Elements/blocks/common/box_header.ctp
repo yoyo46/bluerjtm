@@ -1,6 +1,8 @@
 <?php 
         $title = !empty($title)?$title:false;
         $_add = !empty($_add)?$_add:false;
+        $_add_multiple = !empty($_add_multiple)?$_add_multiple:false;
+        $_label_multiple = !empty($_label_multiple)?$_label_multiple:false;
 ?>
 <div class="box-header">
     <?php 
@@ -16,6 +18,39 @@
                 )), array(
                     'class' => 'box-tools'
                 ));
+            } else if( !empty($_add_multiple) ) {
+    ?>
+    <div class="box-tools">
+        <div class="btn-group pull-right">
+            <?php 
+                    echo $this->Html->tag('button', sprintf('%s %s', $this->Common->icon('plus'), $_label_multiple), array(
+                        'data-toggle' => 'dropdown',
+                        'class' => 'btn btn-app btn-success dropdown-toggle'
+                    ));
+            ?>
+            <ul class="dropdown-menu" role="menu">
+                <?php 
+                        $menus = array();
+
+                        foreach ($_add_multiple as $key => $val) {
+                            $label = $this->Common->filterEmptyField($val, 'label');
+                            $url = $this->Common->filterEmptyField($val, 'url');
+                            $menus[] = $this->Html->tag('li', $this->Html->link($label, $url, array(
+                                'escape' => false,
+                            )));
+                        }
+
+                        if( !empty($menus) ) {
+                            echo implode($this->Html->tag('li', '', array(
+                                'class' => 'divider',
+                            )), $menus);
+                        }
+                ?>
+            </ul>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <?php
             }
     ?>
 </div>

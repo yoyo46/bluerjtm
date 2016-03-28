@@ -81,18 +81,15 @@
 						$payment_type = $this->Common->filterEmptyField($revenueDetail, 'payment_type');
 						$total_price_unit = $this->Common->filterEmptyField($revenueDetail, 'total_price_unit');
 						$revenue_temp = sprintf('%s-%s', $id, $is_charge);
+						$totalPriceFormat = '';
 
-						if( $payment_type == 'per_truck' ){
-							if( !empty($total_price_unit) ) {
-								$amount = $total_price_unit;
-							} else {
-								$amount = !empty($revenue['Revenue']['tarif_per_truck'])?$revenue['Revenue']['tarif_per_truck']:0;
-							}
-						}else{
-							$amount = $price_unit * $revenueDetail['qty_unit'];
-						}
+						if( !empty($is_charge) ) {
+			                $totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
+			            } else {
+			                $total_price_unit = 0;
+			            }
 
-						$grandTotalTarif += $amount;
+						$grandTotalTarif += $total_price_unit;
 
 						if( $tempRate != $price_unit ) {
 							$tempRate = $price_unit;
@@ -123,17 +120,15 @@
 						
 							$payment_type = $this->Common->filterEmptyField($revenueDetail, 'payment_type');
 							$total_price_unit = $this->Common->filterEmptyField($revenueDetail, 'total_price_unit');
-							$amount = 0;
+							$totalPriceFormat = '';
 
-							if( $payment_type == 'per_truck' ){
-								if( !empty($is_charge) ) {
-									$amount = $total_price_unit;
-								}
-							}else{
-								$amount = $price_unit * $revenueDetail['qty_unit'];
-							}
+							if( !empty($is_charge) ) {
+				                $totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
+				            } else {
+				                $total_price_unit = 0;
+				            }
 
-							$grandTotalTarif += $amount;
+							$grandTotalTarif += $total_price_unit;
 
 							if( $tempRate != $price_unit ) {
 								$tempRate = $price_unit;

@@ -241,6 +241,13 @@ ul.list-calendar {
 .setting-link {
   padding: 15px;
 }
+
+tr.list-revenue:first-child .delete-custom-field {
+	display: none;
+}
+#muatan-revenue-detail tr.list-revenue:first-child .delete-custom-field {
+	display: inline-block;
+}
 /*
 **	END Revenue
 */

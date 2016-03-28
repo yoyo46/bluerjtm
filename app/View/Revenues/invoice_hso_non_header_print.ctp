@@ -37,6 +37,7 @@ if($action_print == 'pdf'){
     if(!empty($revenue_detail)){
 		foreach ($revenue_detail as $key => $val_detail) {
 			$data_print = !empty($data_print)?$data_print:'invoice';
+			$action = !empty($val_detail[0]['Invoice']['type_invoice'])?$val_detail[0]['Invoice']['type_invoice']:false;
 			
 			if($action == 'tarif' && $data_print == 'invoice'){
 				$cityName = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], '', array('places' => 0)) );
@@ -76,10 +77,13 @@ if($action_print == 'pdf'){
 				$totalFlag = true;
 
 				foreach ($val_detail as $key => $value) {
-					$nopol = !empty($value['Revenue']['Ttuj']['nopol'])?$value['Revenue']['Ttuj']['nopol']:false;
+                	$is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
+                	$total_price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'total_price_unit');
+                	$nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
+
+					$nopol = !empty($value['Revenue']['Ttuj']['nopol'])?$value['Revenue']['Ttuj']['nopol']:$nopol;
 					$grandTotalUnit += $qty = $value['RevenueDetail']['qty_unit'];
 					$price = $value['RevenueDetail']['price_unit'];
-					$total = 0;
 					$date_revenue = '-';
 
 					$colom = $this->Html->tag('td', $no++);
@@ -105,35 +109,21 @@ if($action_print == 'pdf'){
 						'align' => 'right'
 					));
 
-					if(!empty($value['RevenueDetail']['payment_type']) && $value['RevenueDetail']['payment_type'] == 'per_truck'){
-						if( !empty($value['RevenueDetail']['total_price_unit']) ) {
-							$total = $value['RevenueDetail']['total_price_unit'];
+	                $totalPriceFormat = '';
 
-							$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
-								'align' => 'right'
-							));
-						} else {
-							if( empty($rowSpan) ) {
-								$total = !empty($value['Revenue']['tarif_per_truck'])?$value['Revenue']['tarif_per_truck']:0;
-								$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
-									'align' => 'right',
-									'data-rowspan' => 'data-value'
-								));
-							}
+	                if( !empty($is_charge) ) {
+	                    $totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
+	                } else {
+	                    $total_price_unit = 0;
+	                }
 
-							$rowSpan++;
-						}
-					}else{
-						$total = $price * $qty;
+					$colom .= $this->Html->tag('td', $totalPriceFormat, array(
+						'align' => 'right'
+					));
 
-						$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
-							'align' => 'right'
-						));
-					}
-
-					$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_reference']);
+					$colom .= $this->Html->tag('td', $this->Common->getNoRef($value['Revenue']['id']));
 					$trData .= $this->Html->tag('tr', $colom);
-					$grandTotal += $total;
+					$grandTotal += $total_price_unit;
 				}
 
 				if( !empty($rowSpan) ) {

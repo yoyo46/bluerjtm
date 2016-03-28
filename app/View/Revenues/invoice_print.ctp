@@ -106,20 +106,15 @@ if($action_print == 'pdf'){
 				}
 
 				foreach ($val_detail as $key => $value) {
+                	$nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
 					$revenue_id = !empty($value['Revenue']['id'])?$value['Revenue']['id']:false;
-					$nopol = !empty($value['Revenue']['Ttuj']['nopol'])?$value['Revenue']['Ttuj']['nopol']:false;
+					$nopol = !empty($value['Revenue']['Ttuj']['nopol'])?$value['Revenue']['Ttuj']['nopol']:$nopol;
 					$grandTotalUnit += $qty = $value['RevenueDetail']['qty_unit'];
-					$price = 0;
-					$total = 0;
 					$date_revenue = '-';
 					$payment_type = !empty($value['RevenueDetail']['payment_type'])?$value['RevenueDetail']['payment_type']:false;
-
-					if( $payment_type == 'per_truck' ){
-						$priceFormat = '-';
-					} else {
-						$price = $value['RevenueDetail']['price_unit'];
-						$priceFormat = $this->Number->currency($price, '', array('places' => 0));
-					}
+                	$is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
+                	$rate = $this->Common->filterEmptyField($value, 'RevenueDetail', 'price_unit');
+                	$priceFormat = $this->Common->getFormatPrice($rate, false);
 
 					$colom = $this->Html->tag('td', $no++);
 
@@ -149,33 +144,22 @@ if($action_print == 'pdf'){
 						'style' => 'text-align:right;',
 					));
 
-					if($payment_type == 'per_truck'){
-						if( !empty($value['RevenueDetail']['total_price_unit']) ) {
-							$total = $value['RevenueDetail']['total_price_unit'];
+                	$total_price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'total_price_unit');
+	                $totalPriceFormat = '';
 
-							$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
-								'style' => 'text-align:right;',
-							));
-						} else {
-							if( $revenue_id != $old_revenue_id ) {
-								$total = !empty($value['Revenue']['tarif_per_truck'])?$value['Revenue']['tarif_per_truck']:0;
-								$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
-									'style' => 'text-align:right;',
-									'rowspan' => !empty($recenueCnt[$revenue_id])?$recenueCnt[$revenue_id]:false,
-								));
-							}
-						}
-					}else{
-						$total = $price * $qty;
+	                if( !empty($is_charge) ) {
+	                    $totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
+	                } else {
+	                    $total_price_unit = 0;
+	                }
 
-						$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
-							'style' => 'text-align:right;',
-						));
-					}
+					$colom .= $this->Html->tag('td', $totalPriceFormat, array(
+						'style' => 'text-align:right;',
+					));
 
 					$colom .= $this->Html->tag('td', $this->Common->getNoRef($value['Revenue']['id']));
 					$trData .= $this->Html->tag('tr', $colom);
-					$grandTotal += $total;
+					$grandTotal += $total_price_unit;
 					$old_revenue_id = $revenue_id;
 				}
 

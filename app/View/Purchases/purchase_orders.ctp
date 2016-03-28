@@ -32,10 +32,24 @@
     <?php 
             echo $this->element('blocks/common/box_header', array(
                 'title' => $sub_module_title,
-                '_add' => array(
-                    'controller' => 'purchases',
-                    'action' => 'purchase_order_add',
-                    'admin' => false,
+                '_label_multiple' => __('Tambah'),
+                '_add_multiple' => array(
+                    array(
+                        'label' => __('Barang'),
+                        'url' => array(
+                            'controller' => 'purchases',
+                            'action' => 'purchase_order_add',
+                            'admin' => false,
+                        ),
+                    ),
+                    array(
+                        'label' => __('Asset'),
+                        'url' => array(
+                            'controller' => 'assets',
+                            'action' => 'purchase_order_add',
+                            'admin' => false,
+                        ),
+                    ),
                 ),
             ));
     ?>

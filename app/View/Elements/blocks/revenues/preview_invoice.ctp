@@ -38,12 +38,8 @@
 			                if( in_array($data_print, array( 'date' )) && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
 								echo $this->Common->customDate($val_detail[0]['Revenue']['date_revenue'], 'd/m/Y');
 			                } else {
-			      //           	if( $val_detail[0]['Revenue']['revenue_tarif_type'] == 'per_truck' && !empty($val_detail[0]['Revenue']['no_doc']) ) {
-									// echo $val_detail[0]['Revenue']['no_doc'];
-			      //           	} else {
-			                		$no_doc = !empty($val_detail[0]['Revenue']['no_doc'])?$val_detail[0]['Revenue']['no_doc']:false;
-									echo !empty($val_detail[0]['City']['name'])?$val_detail[0]['City']['name']:$no_doc;
-								// }
+		                		$no_doc = !empty($val_detail[0]['Revenue']['no_doc'])?$val_detail[0]['Revenue']['no_doc']:false;
+								echo !empty($val_detail[0]['City']['name'])?$val_detail[0]['City']['name']:$no_doc;
 			                }
 						}
 				?>
@@ -108,41 +104,52 @@
 					$trData = '';
 					$totalFlag = true;
 					$old_revenue_id = false;
+					$old_detail_id = false;
 					$recenueCnt = array();
 
 					foreach ($val_detail as $key => $value) {
-						$revenue_id = !empty($value['Revenue']['id'])?$value['Revenue']['id']:false;
+						$is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
+						$detail_id = $this->Common->filterEmptyField($value, 'RevenueDetail', 'id');
 
-						if( empty($value['RevenueDetail']['total_price_unit']) ) {
-							if( !empty($recenueCnt[$revenue_id]) ) {
-								$recenueCnt[$revenue_id]++;
+						if( empty($is_charge) ) {
+							if( !empty($recenueCnt[$old_detail_id]) ) {
+								$recenueCnt[$old_detail_id]++;
 							} else {
-								$recenueCnt[$revenue_id] = 1;
+								$recenueCnt[$old_detail_id] = 1;
 							}
-						}
+						} else {
+							$old_detail_id = $detail_id;
+						}						
 					}
 
 					foreach ($val_detail as $key => $value) {
-						$revenue_id = !empty($value['Revenue']['id'])?$value['Revenue']['id']:false;
-						$is_charge = !empty($value['RevenueDetail']['is_charge'])?$value['RevenueDetail']['is_charge']:false;
-						$revenue_temp = sprintf('%s-%s', $revenue_id, $is_charge);
-
-						$grandTotalUnit += $qty = $value['RevenueDetail']['qty_unit'];
-						$price = 0;
-						$total = 0;
-						$payment_type = !empty($value['RevenueDetail']['payment_type'])?$value['RevenueDetail']['payment_type']:false;
-						$jenis_tarif = !empty($value['Revenue']['revenue_tarif_type'])?$value['Revenue']['revenue_tarif_type']:false;
-
+						$detail_id = $this->Common->filterEmptyField($value, 'RevenueDetail', 'id');
+						$is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
+						$revenue_jenis_tarif = $this->Common->filterEmptyField($value, 'Revenue', 'revenue_tarif_type');
+						$jenis_tarif = $this->Common->filterEmptyField($value, 'RevenueDetail', 'payment_type');
 						$tarif_angkutan_type = $this->Common->filterEmptyField($value, 'RevenueDetail', 'tarif_angkutan_type');
+						$price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'price_unit');
 						$total_price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'total_price_unit');
+						$no_do = $this->Common->filterEmptyField($value, 'RevenueDetail', 'no_do');
+						$no_sj = $this->Common->filterEmptyField($value, 'RevenueDetail', 'no_sj');
+						$date_revenue = $this->Common->filterEmptyField($value, 'Revenue', 'date_revenue');
 
-						if( $payment_type == 'per_truck' ){
-							$priceFormat = '-';
-						} else if( !empty($value['RevenueDetail']['total_price_unit']) ) {
-							$price = $value['RevenueDetail']['price_unit'];
-							$priceFormat = $this->Common->getFormatPrice($price);
+						$revenue_id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
+						$city_name = $this->Common->filterEmptyField($value, 'City', 'name');
+
+						$revenue_temp = sprintf('%s-%s', $revenue_id, $is_charge);
+						$qty = $value['RevenueDetail']['qty_unit'];
+						$grandTotalUnit += $qty;
+
+						$price = 0;
+						$totalPriceFormat = '';
+						$priceFormat = $this->Common->getFormatPrice($price_unit, 0);
+						$date_revenue = $this->Common->formatDate($date_revenue, 'd/m/Y');
+
+						if( !empty($is_charge) ) {
+							$totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
 						} else {
-							$priceFormat = '-';
+							$total_price_unit = 0;
 						}
 
 						if( !empty($value['Revenue']['Ttuj']['nopol']) ) {
@@ -158,22 +165,20 @@
 						));
 
 						if( $data_print == 'date' ) {
-							$city_name = !empty($value['City']['name'])?$value['City']['name']:false;
-							$colom .= $this->Html->tag('td', $value['City']['name']);
+							$colom .= $this->Html->tag('td', $city_name);
 						}
 
 						$colom .= $this->Html->tag('td', $nopol);
-						$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
+						$colom .= $this->Html->tag('td', $no_do);
 
 						if( $data_print != 'hso-smg' ) {
-							$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_sj']);
+							$colom .= $this->Html->tag('td', $no_sj);
 						}
 
-						$colom .= $this->Html->tag('td', $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y'));
+						$colom .= $this->Html->tag('td', $date_revenue);
 
 						if( $data_print == 'hso-smg' ) {
-							$city_name = !empty($value['City']['name'])?$value['City']['name']:false;
-							$colom .= $this->Html->tag('td', $value['City']['name']);
+							$colom .= $this->Html->tag('td', $city_name);
 						}
 
 						$colom .= $this->Html->tag('td', $qty, array(
@@ -183,43 +188,28 @@
 							'align' => 'right'
 						));
 
-						if( $tarif_angkutan_type != 'angkut' && $payment_type == 'per_truck' ) {
-							$total = $total_price_unit;
-							$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($total), array(
-								'align' => 'right'
-							));
-						} else if( $jenis_tarif == 'per_truck' ){
-							if( !empty($total_price_unit) ) {
-								$total = $total_price_unit;
-								$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($total), array(
+						if( $revenue_jenis_tarif == 'per_truck' ){
+							if( !empty($recenueCnt[$detail_id]) ) {
+								$colom .= $this->Html->tag('td', $totalPriceFormat, array(
+									'align' => 'right',
+									'rowspan' => $recenueCnt[$detail_id] + 1,
+								));
+							} else if( !empty($is_charge) ) {
+								$colom .= $this->Html->tag('td', $totalPriceFormat, array(
 									'align' => 'right'
 								));
-							} else {
-								if( $revenue_temp != $old_revenue_id ) {
-									$total = !empty($value['Revenue']['tarif_per_truck'])?$value['Revenue']['tarif_per_truck']:0;
-									$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($total), array(
-										'align' => 'right',
-										'rowspan' => !empty($recenueCnt[$revenue_id])?$recenueCnt[$revenue_id]:false,
-									));
-								}
 							}
-						} else if( !empty($value['RevenueDetail']['total_price_unit']) ) {
-							$total = $price * $qty;
-
-							$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($total), array(
-								'align' => 'right'
-							));
 						} else {
-							$colom .= $this->Html->tag('td', '-', array(
+							$colom .= $this->Html->tag('td', $totalPriceFormat, array(
 								'align' => 'right'
 							));
 						}
 
-						$colom .= $this->Html->tag('td', $this->Common->getNoRef($value['Revenue']['id']), array(
+						$colom .= $this->Html->tag('td', $this->Common->getNoRef($revenue_id), array(
 			                'class' => 'string',
 			            ));
 						$trData .= $this->Html->tag('tr', $colom);
-						$grandTotal += $total;
+						$grandTotal += $total_price_unit;
 						$old_revenue_id = sprintf('%s-%s', $revenue_id, $is_charge);
 					}
 
@@ -246,38 +236,15 @@
 						'class' => 'total-row'
 					));
 
-					// $pph = !empty($totalPPh[0]['pph'])?$totalPPh[0]['pph']:0;
-					// $ppn = !empty($totalPPN[0]['ppn'])?$totalPPN[0]['ppn']:0;
-					$ppn = 0;
-
-					if( !empty($ppn) ) {
-						$colom = $this->Html->tag('td', '&nbsp;', array(
-							'colspan' => $totalMergeTotal+1,
-						));
-						$colom .= $this->Html->tag('td', __('PPN '), array(
-							'align' => 'right',
-							'style' => 'font-weight: bold;',
-						));
-						$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($ppn), array(
-							'align' => 'right',
-							'style' => 'font-weight: bold;',
-						));
-						$colom .= $this->Html->tag('td', '&nbsp;');
-
-						echo $this->Html->tag('tr', $colom, array(
-							'class' => 'total-row'
-						));
-					}
-
-					// if( !empty($pph) ) {
+					// if( !empty($ppn) ) {
 					// 	$colom = $this->Html->tag('td', '&nbsp;', array(
 					// 		'colspan' => $totalMergeTotal+1,
 					// 	));
-					// 	$colom .= $this->Html->tag('td', __('PPh '), array(
+					// 	$colom .= $this->Html->tag('td', __('PPN '), array(
 					// 		'align' => 'right',
 					// 		'style' => 'font-weight: bold;',
 					// 	));
-					// 	$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($pph), array(
+					// 	$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($ppn), array(
 					// 		'align' => 'right',
 					// 		'style' => 'font-weight: bold;',
 					// 	));
@@ -288,27 +255,25 @@
 					// 	));
 					// }
 
-					$grandTotalInvoice = $grandTotal + $ppn;
+					// if( !empty($ppn) || !empty($pph) ) {
+					// 	// $grandTotalInvoice = $grandTotal + $ppn - $pph;
+					// 	$colom = $this->Html->tag('td', '&nbsp;', array(
+					// 		'colspan' => $totalMergeTotal+1,
+					// 	));
+					// 	$colom .= $this->Html->tag('td', __('Grantotal '), array(
+					// 		'align' => 'right',
+					// 		'style' => 'font-weight: bold;',
+					// 	));
+					// 	$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($grandTotalInvoice), array(
+					// 		'align' => 'right',
+					// 		'style' => 'font-weight: bold;',
+					// 	));
+					// 	$colom .= $this->Html->tag('td', '&nbsp;');
 
-					if( !empty($ppn) || !empty($pph) ) {
-						// $grandTotalInvoice = $grandTotal + $ppn - $pph;
-						$colom = $this->Html->tag('td', '&nbsp;', array(
-							'colspan' => $totalMergeTotal+1,
-						));
-						$colom .= $this->Html->tag('td', __('Grantotal '), array(
-							'align' => 'right',
-							'style' => 'font-weight: bold;',
-						));
-						$colom .= $this->Html->tag('td', $this->Common->getFormatPrice($grandTotalInvoice), array(
-							'align' => 'right',
-							'style' => 'font-weight: bold;',
-						));
-						$colom .= $this->Html->tag('td', '&nbsp;');
-
-						echo $this->Html->tag('tr', $colom, array(
-							'class' => 'total-row'
-						));
-					}
+					// 	echo $this->Html->tag('tr', $colom, array(
+					// 		'class' => 'total-row'
+					// 	));
+					// }
 				}else{
 					$colom = $this->Html->tag('td', __('Data tidak ditemukan.'), array(
 						'colspan' => $totalMerge,
@@ -317,7 +282,7 @@
 					echo $this->Html->tag('tr', $colom);
 				}
 
-				$footerGrandTotal += $grandTotalInvoice;
+				$footerGrandTotal += $grandTotal;
 				$footerGrandTotalUnit += $grandTotalUnit;
 
 				if( $idx == count($revenue_detail) && in_array($data_print, array( 'hso-smg', 'invoice' )) ) {

@@ -184,43 +184,43 @@
 					?>
 		        </div>
 		        <?php
-							if( !empty($id) && !empty($asset_id) ) {
-								echo $this->Html->tag('div', $this->Html->link(__('Lihat Detail Asset'), array(
-                                    'controller' => 'assets',
-                                    'action' => 'edit',
-                                    $asset_id,
-                                ), array(
-                                    'escape' => false,
-                                    'target' => '_blank',
-                                )), array(
-                                    'class' => 'form-group',
-                                ));
-							} else if( empty($id) ) {
-								echo $this->Common->buildInputForm('purchase_date', __('Tanggal pembelian *'), array(
-									'type' => 'text',
-									'class' => 'custom-date form-control neraca-form',
-									'fieldError' => 'Asset.purchase_date',
-									'disabled' => $assetDisabled,
-								));
-	 							echo $this->Common->buildInputForm('asset_group_id', __('Group Asset *'), array(
-									'empty' => __('Pilih Group Asset'),
-									'disabled' => $assetDisabled,
-									'class'=>'form-control neraca-form',
-									'fieldError' => 'Asset.asset_group_id',
-								));
-								echo $this->Common->buildInputForm('nilai_perolehan', __('Nilai perolehan *'), array(
-									'type' => 'text',
-									'class' => 'input_price_coma form-control neraca-form',
-									'fieldError' => 'Asset.nilai_perolehan',
-									'disabled' => $assetDisabled,
-								));
-								echo $this->Common->buildInputForm('ak_penyusutan', __('Ak. Penyusutan *'), array(
-									'type' => 'text',
-									'class' => 'input_price_coma form-control neraca-form',
-									'fieldError' => 'Asset.ak_penyusutan',
-									'disabled' => $assetDisabled,
-								));
-							}
+							// if( !empty($id) && !empty($asset_id) ) {
+							// 	echo $this->Html->tag('div', $this->Html->link(__('Lihat Detail Asset'), array(
+       //                              'controller' => 'assets',
+       //                              'action' => 'edit',
+       //                              $asset_id,
+       //                          ), array(
+       //                              'escape' => false,
+       //                              'target' => '_blank',
+       //                          )), array(
+       //                              'class' => 'form-group',
+       //                          ));
+							// } else if( empty($id) ) {
+							// 	echo $this->Common->buildInputForm('purchase_date', __('Tanggal pembelian *'), array(
+							// 		'type' => 'text',
+							// 		'class' => 'custom-date form-control neraca-form',
+							// 		'fieldError' => 'Asset.purchase_date',
+							// 		'disabled' => $assetDisabled,
+							// 	));
+	 					// 		echo $this->Common->buildInputForm('asset_group_id', __('Group Asset *'), array(
+							// 		'empty' => __('Pilih Group Asset'),
+							// 		'disabled' => $assetDisabled,
+							// 		'class'=>'form-control neraca-form',
+							// 		'fieldError' => 'Asset.asset_group_id',
+							// 	));
+							// 	echo $this->Common->buildInputForm('nilai_perolehan', __('Nilai perolehan *'), array(
+							// 		'type' => 'text',
+							// 		'class' => 'input_price_coma form-control neraca-form',
+							// 		'fieldError' => 'Asset.nilai_perolehan',
+							// 		'disabled' => $assetDisabled,
+							// 	));
+							// 	echo $this->Common->buildInputForm('ak_penyusutan', __('Ak. Penyusutan *'), array(
+							// 		'type' => 'text',
+							// 		'class' => 'input_price_coma form-control neraca-form',
+							// 		'fieldError' => 'Asset.ak_penyusutan',
+							// 		'disabled' => $assetDisabled,
+							// 	));
+							// }
 		        		}
 		        ?>
 		        <div class="form-group">

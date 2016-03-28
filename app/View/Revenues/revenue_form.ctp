@@ -4,7 +4,10 @@
 			'action' => 'index'
 		));
 		$this->Html->addCrumb($sub_module_title);
+		
+        $data = $this->request->data;
 		$data_local = !empty($data_local)?$data_local:false;
+        $revenueDetail = $this->Common->filterEmptyField($data, 'RevenueDetail');
 
 		echo $this->Form->create('Revenue', array(
 			'url'=> $this->Html->url( null, true ), 
@@ -126,37 +129,13 @@
 			        			echo $this->element('blocks/revenues/revenue_info');
 			        	?>
 			        </div>
-			        <?php 
-			        /*
-			        <div class="checkbox">
-		                <label>
-		                    <?php 
-								echo $this->Form->checkbox('Revenue.getting_sj',array(
-									'label'=> false, 
-									'required' => false,
-									'id' => 'sj-handle',
-								)).__('SJ sudah diterima??');
-							?>
-		                </label>
-		            </div>
-					<div class="form-group sj-date <?php echo (!empty($this->request->data['Revenue']['getting_sj'])) ? '' : 'hide'; ?>">
-						<?php 
-								echo $this->Form->input('Revenue.date_sj',array(
-									'label'=> __('Tgl SJ diterima'), 
-									'class'=>'form-control custom-date',
-									'type' => 'text'
-								));
-						?>
-					</div>
-		            */
-		            ?>
 			    </div>
 			</div>
 		</div>
 		<div class="col-sm-12" id="detail-tipe-motor">
 			<?php 
-					if(!empty($data_revenue_detail)){
-						echo $this->element('blocks/revenues/revenues_info_detail', array('data' => $data_revenue_detail)); 
+					if(!empty($revenueDetail)){
+						echo $this->element('blocks/revenues/revenues_info_detail', array('revenueDetail' => $revenueDetail)); 
 					}
 			?>
 		</div>

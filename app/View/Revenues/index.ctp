@@ -137,8 +137,12 @@
                     if(!empty($revenues)){
                         foreach ($revenues as $key => $value) {
                             $id = $value['Revenue']['id'];
-                            $from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
-                            $to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
+                            
+                            $from_city = $this->Common->filterEmptyField($value, 'FromCity', 'name');
+                            $to_city = $this->Common->filterEmptyField($value, 'ToCity', 'name');
+
+                            $from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name', $from_city);
+                            $to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name', $to_city);
             ?>
             <tr>
                 <td>

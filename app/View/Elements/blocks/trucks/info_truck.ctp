@@ -58,17 +58,17 @@
                     <dt><?php echo __('Tahun Neraca')?></dt>
                     <dd><?php echo !empty($truck['Truck']['tahun_neraca'])?$truck['Truck']['tahun_neraca']:'-';?></dd>
                     <?php 
-                            if( !empty($is_asset) && !empty($asset_id) ) {
-                                echo $this->Html->tag('dt', '&nbsp;');
-                                echo $this->Html->tag('dd', $this->Html->link(__('Lihat Detail Asset'), array(
-                                    'controller' => 'assets',
-                                    'action' => 'edit',
-                                    $asset_id,
-                                ), array(
-                                    'escape' => false,
-                                    'target' => '_blank',
-                                )));
-                            }
+                            // if( !empty($is_asset) && !empty($asset_id) ) {
+                            //     echo $this->Html->tag('dt', '&nbsp;');
+                            //     echo $this->Html->tag('dd', $this->Html->link(__('Lihat Detail Asset'), array(
+                            //         'controller' => 'assets',
+                            //         'action' => 'edit',
+                            //         $asset_id,
+                            //     ), array(
+                            //         'escape' => false,
+                            //         'target' => '_blank',
+                            //     )));
+                            // }
                     ?>
                 </dl>
             </div>

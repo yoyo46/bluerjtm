@@ -74,21 +74,28 @@ if($action_print == 'pdf'){
 				$recenueCnt = array();
 
 				foreach ($val_detail as $key => $value) {
-    				$revenue_id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
-    				$is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
+					$is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
+					$detail_id = $this->Common->filterEmptyField($value, 'RevenueDetail', 'id');
 
-    				if( empty($is_charge) ) {
-						if( !empty($recenueCnt[$revenue_id]) ) {
-							$recenueCnt[$revenue_id]++;
+					if( empty($is_charge) ) {
+						if( !empty($recenueCnt[$old_detail_id]) ) {
+							$recenueCnt[$old_detail_id]++;
 						} else {
-							$recenueCnt[$revenue_id] = 1;
+							$recenueCnt[$old_detail_id] = 1;
 						}
-					}
+					} else {
+						$old_detail_id = $detail_id;
+					}						
 				}
 
 				foreach ($val_detail as $key => $value) {
     				$revenue_id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
     				$date_revenue = $this->Common->filterEmptyField($value, 'Revenue', 'date_revenue');
+					$revenue_jenis_tarif = $this->Common->filterEmptyField($value, 'Revenue', 'revenue_tarif_type');
+
+					$detail_id = $this->Common->filterEmptyField($value, 'RevenueDetail', 'id');
+    				$total_price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'total_price_unit');
+    				$price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'price_unit');
 
     				$no_do = $this->Common->filterEmptyField($value, 'RevenueDetail', 'no_do');
     				$sj = $this->Common->filterEmptyField($value, 'RevenueDetail', 'no_sj');
@@ -108,13 +115,14 @@ if($action_print == 'pdf'){
 
 					$price = 0;
 					$total = 0;
+					$totalPriceFormat = '';
+					$priceFormat = $this->Common->getFormatPrice($price_unit, 0);
 					$date_revenue = $this->Common->formatDate($date_revenue, 'd/m/Y');
 
-					if( $payment_type == 'per_truck' ){
-						$priceFormat = '-';
+					if( !empty($is_charge) ) {
+						$totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
 					} else {
-						$price = $value['RevenueDetail']['price_unit'];
-						$priceFormat = $this->Number->currency($price, '', array('places' => 0));
+						$total_price_unit = 0;
 					}
 
 					$colom = $this->Html->tag('td', $no++);
@@ -137,33 +145,26 @@ if($action_print == 'pdf'){
 						'style' => 'text-align:right;',
 					));
 
-					if($payment_type == 'per_truck'){
-						if( !empty($value['RevenueDetail']['total_price_unit']) ) {
-							$total = $value['RevenueDetail']['total_price_unit'];
-
-							$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
-								'style' => 'text-align:right;',
+					if( $revenue_jenis_tarif == 'per_truck' ){
+						if( !empty($recenueCnt[$detail_id]) ) {
+							$colom .= $this->Html->tag('td', $totalPriceFormat, array(
+								'align' => 'right',
+								'rowspan' => $recenueCnt[$detail_id] + 1,
 							));
-						} else {
-							if( $revenue_id != $old_revenue_id ) {
-								$total = !empty($value['Revenue']['tarif_per_truck'])?$value['Revenue']['tarif_per_truck']:0;
-								$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
-									'style' => 'text-align:right;',
-									'rowspan' => !empty($recenueCnt[$revenue_id])?$recenueCnt[$revenue_id]:false,
-								));
-							}
+						} else if( !empty($is_charge) ) {
+							$colom .= $this->Html->tag('td', $totalPriceFormat, array(
+								'align' => 'right'
+							));
 						}
-					}else{
-						$total = $price * $qty;
-
-						$colom .= $this->Html->tag('td', $this->Number->currency($total, '', array('places' => 0)), array(
-							'style' => 'text-align:right;',
+					} else {
+						$colom .= $this->Html->tag('td', $totalPriceFormat, array(
+							'align' => 'right'
 						));
 					}
 
 					$colom .= $this->Html->tag('td', $this->Common->getNoRef($value['Revenue']['id']));
 					$trData .= $this->Html->tag('tr', $colom);
-					$grandTotal += $total;
+					$grandTotal += $total_price_unit;
 					$old_revenue_id = $revenue_id;
 				}
 

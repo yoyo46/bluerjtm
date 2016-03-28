@@ -4,7 +4,10 @@
 			$revenue_temp = !empty($revenue_temp)?$revenue_temp:false;
 			$old_revenue_id = Configure::read('Revenue.temp');
 			$noDoc = !empty($revenue['Revenue']['no_doc'])?$revenue['Revenue']['no_doc']:'-';
-			$nopol = !empty($revenue['Ttuj']['nopol'])?$revenue['Ttuj']['nopol']:'-';
+
+            $nopol = $this->Common->filterEmptyField($revenue, 'Truck', 'nopol');
+
+            $nopol = $this->Common->filterEmptyField($revenue, 'Ttuj', 'nopol', $nopol);
 			// $total_price = !empty($revenue['total_price'])?$revenue['total_price']:0;
 			$price = 0;
 
@@ -14,30 +17,14 @@
 			$total_price_unit = $this->Common->filterEmptyField($revenueDetail, 'total_price_unit');
 			$payment_type = $this->Common->filterEmptyField($revenueDetail, 'payment_type');
 			$is_charge = $this->Common->filterEmptyField($revenueDetail, 'is_charge');
+			$priceFormat = $this->Common->getFormatPrice($price_unit, 0);
+			$totalPriceFormat = '';
 
-			if( $payment_type == 'per_truck' ){
-				$priceFormat = '-';
-			} else {
-				$price = $price_unit;
-				$priceFormat = $this->Common->getFormatPrice($price);
-			}
-
-			if( $payment_type == 'per_truck' ){
-				if( !empty($total_price_unit) ) {
-					$total = $total_price_unit;
-					$total_price = $this->Common->getFormatPrice($total);
-				} else {
-					if( $revenue_temp != $old_revenue_id ) {
-						$total = !empty($revenue['Revenue']['tarif_per_truck'])?$revenue['Revenue']['tarif_per_truck']:0;
-						$total_price = $this->Common->getFormatPrice($total);
-					} else {
-						$total_price = '';
-					}
-				}
-			}else{
-				$total = $price * $totalUnit;
-				$total_price = $this->Common->getFormatPrice($total);
-			}
+			if( !empty($is_charge) ) {
+                $totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
+            } else {
+                $total_price_unit = 0;
+            }
 
 			if( !empty($no) ) {
 				echo $this->Html->tag('td', $no);
@@ -89,7 +76,7 @@
 			}	
 
 			if( !empty($no) || !empty($is_charge) ) {
-				echo $this->Html->tag('td', $total_price, array(
+				echo $this->Html->tag('td', $totalPriceFormat, array(
 					'style' => 'text-align: right;'
 				));
 			} else {

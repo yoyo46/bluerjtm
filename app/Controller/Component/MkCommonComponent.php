@@ -488,21 +488,16 @@ class MkCommonComponent extends Component {
 
     function getChargeTotal ( $total, $tarif_per_truck, $jenis_tarif, $is_charge ) {
         $totalResult = 0;
-        $additionalCharge = 0;
 
         if( $jenis_tarif == 'per_truck' ) {
             if( !empty($is_charge) ) {
                 $totalResult = $tarif_per_truck;
-                $additionalCharge = $tarif_per_truck;
             }
         } else {
             $totalResult = $total;
         }
 
-        return array(
-            'total_tarif' => $totalResult,
-            'additional_charge' => $additionalCharge,
-        );
+        return $totalResult;
     }
 
     /**

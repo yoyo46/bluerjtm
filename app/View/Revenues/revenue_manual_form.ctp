@@ -5,6 +5,56 @@
 		));
 		$this->Html->addCrumb($sub_module_title);
 
+        $data = $this->request->data;
+        $revenueDetail = $this->Common->filterEmptyField($data, 'RevenueDetail');
+		$dataColumns = array(
+            'tujuan' => array(
+                'name' => __('Tujuan'),
+                'class' => 'text-top',
+                'style' => 'width:15%;',
+            ),
+            'do' => array(
+                'name' => __('No. DO'),
+                'class' => 'text-top',
+                'style' => 'width:13%;',
+            ),
+            'sj' => array(
+                'name' => __('No. SJ'),
+                'class' => 'text-top',
+                'style' => 'width:13%;',
+            ),
+            'group' => array(
+                'name' => __('Group Motor'),
+                'class' => 'text-top',
+                'style' => 'width:15%;',
+            ),
+            'qty' => array(
+                'name' => __('Qty'),
+                'class' => 'text-top text-center',
+                'style' => 'width:7%;',
+            ),
+            'price' => array(
+                'name' => __('Tarif'),
+                'class' => 'text-top text-center',
+                'style' => 'width:12%;',
+            ),
+            'charge' => array(
+                'name' => __('Charge'),
+                'class' => 'text-top text-center',
+                'style' => 'width:5%;',
+            ),
+            'total' => array(
+                'name' => __('Total'),
+                'class' => 'text-top text-center',
+                'style' => 'width:12%;',
+            ),
+            'action' => array(
+                'name' => '&nbsp;',
+                'style' => 'width:7%;',
+            ),
+        );
+        $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
+
 		echo $this->Form->create('Revenue', array(
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
@@ -180,10 +230,9 @@
 	</div>
 	<div id="muatan-revenue-detail">
 		<?php 
-				if(!empty($data_revenue_detail)){
+				if(!empty($revenueDetail)){
 					echo $this->element('blocks/revenues/revenues_info_detail', array(
-						'data' => $data_revenue_detail,
-						'data_type' => 'revenue-manual',
+						'revenueDetail' => $revenueDetail,
 					)); 
 				} else {
 		?>
@@ -193,18 +242,11 @@
 		    </div>
 		    <div class="box-body table-responsive">
 		        <table class="table table-hover">
-		            <thead>
-		                <tr>
-		                    <th width="15%" class="text-top"><?php echo __('Tujuan');?></th>
-		                    <th width="13%" class="text-top"><?php echo __('No. DO');?></th>
-		                    <th width="13%" class="text-top"><?php echo __('No. SJ');?></th>
-		                    <th width="15%" class="text-top"><?php echo __('Group Motor');?></th>
-		                    <th width="7%" class="text-top"><?php echo __('Jumlah Unit');?></th>
-		                    <th width="5%" class="text-top text-center"><?php echo __('Charge');?></th>
-		                    <th width="15%" class="text-top text-center"><?php printf(__('Harga Unit'), Configure::read('__Site.config_currency_code'));?></th>
-		                    <th width="15%" class="text-top text-center"><?php  printf(__('Total (%s)'), Configure::read('__Site.config_currency_code')) ;?></th>
-		                </tr>
-		            </thead>
+		            <?php
+		                    if( !empty($fieldColumn) ) {
+		                        echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));
+		                    }
+		            ?>
 		            <tbody class="tipe-motor-table">
 		            </tbody>
 		            <tbody>
@@ -232,14 +274,7 @@
 		                            echo $this->Form->hidden('total_temp', array(
 		                                'id' => 'total_retail_revenue',
 		                            ));
-		                            echo $this->Form->hidden('Revenue.tarif_per_truck', array(
-		                                'class' => 'tarif_per_truck',
-		                            ));
 		                    ?>
-		                </tr>
-		                <tr id="field-additional-total-revenue">
-		                    <td align="right" colspan="7"><?php echo __('Additional Charge')?></td>
-		                    <td align="right" id="additional-total-revenue"></td>
 		                </tr>
 		                <tr class="additional-input-revenue" id="ppn-grand-total-revenue">
 		                    <td align="right" colspan="7" class="relative">
@@ -284,9 +319,6 @@
 			        echo $this->Form->hidden('Revenue.revenue_tarif_type', array(
 			            'class' => 'revenue_tarif_type',
 			        ));
-			        echo $this->Form->hidden('Revenue.additional_charge', array(
-			            'class' => 'additional_charge',
-			        ));
 		    	}
 		?>
 	</div>
@@ -323,5 +355,9 @@
 	?>
 </div>
 <?php
+        echo $this->Form->hidden('action_type', array(
+            'class' => 'revenue-data-type',
+            'value' => 'manual',
+        ));
 		echo $this->Form->end();
 ?>
