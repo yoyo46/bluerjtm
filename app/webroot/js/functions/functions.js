@@ -1240,7 +1240,7 @@ var city_revenue_change = function( obj_city, obj_tipe_motor ){
         var group_motor_id = parent.find('.revenue-group-motor').val();
         var qty = parent.find('.revenue-qty').val();
 
-        changeDetailRevenue( parent, val, group_motor_id, 0, qty );
+        changeDetailRevenue( parent, val, group_motor_id, 1, qty );
     });
 
     obj_tipe_motor.off('change');
@@ -1251,7 +1251,7 @@ var city_revenue_change = function( obj_city, obj_tipe_motor ){
         var city_id = parent.find('.city-revenue-change').val();
         var qty = parent.find('.revenue-qty').val();
 
-        changeDetailRevenue( parent, city_id, val, 0, qty );
+        changeDetailRevenue( parent, city_id, val, 1, qty );
         return false;
     });
 }

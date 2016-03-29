@@ -106,6 +106,8 @@
                                         'target' => 'blank'
                                     ));
                                     $price_msg = sprintf(__('Tarif tidak ditemukan, silahkan buat tarif angkutan %s'), $link);
+                                } else {
+                                    $price_msg = false;
                                 }
                 ?>
                 <tr rel="<?php echo $key; ?>" class="list-revenue">

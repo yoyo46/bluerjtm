@@ -197,6 +197,7 @@ class RevenuesController extends AppController {
 
         $flagTarif = false;
         $revenue_tarif_type = $this->MkCommon->filterEmptyField($dataRevenue, 'Revenue', 'revenue_tarif_type');
+        $to_city_id = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'to_city_id');
 
         if( !empty($dataTtujTipeMotor) ) {
             if( !empty($ttuj_id) ) {
@@ -212,9 +213,10 @@ class RevenuesController extends AppController {
                 $dataValidate['TtujTipeMotor']['tipe_motor_id'] = $tipe_motor_id;
                 $dataValidate['TtujTipeMotor']['color_motor_id'] = !empty($data['TtujTipeMotor']['color_motor_id'][$key])?$data['TtujTipeMotor']['color_motor_id'][$key]:false;
                 $dataValidate['TtujTipeMotor']['qty'] = !empty($data['TtujTipeMotor']['qty'][$key])?trim($data['TtujTipeMotor']['qty'][$key]):false;
+                $city_id = !empty($data['TtujTipeMotor']['city_id'][$key])?$data['TtujTipeMotor']['city_id'][$key]:false;
 
                 if( in_array($data_action, array( 'retail', 'demo' )) ) {
-                    $dataValidate['TtujTipeMotor']['city_id'] = !empty($data['TtujTipeMotor']['city_id'][$key])?$data['TtujTipeMotor']['city_id'][$key]:false;
+                    $dataValidate['TtujTipeMotor']['city_id'] = $city_id;
                 }
 
                 $this->Ttuj->TtujTipeMotor->set($dataValidate);
@@ -258,7 +260,7 @@ class RevenuesController extends AppController {
                     $qtyMuatan = !empty($dataValidate['TtujTipeMotor']['qty'])?trim($dataValidate['TtujTipeMotor']['qty']):0;
 
                     if( $revenue_tarif_type == 'per_truck' ) {
-                        if( empty($flagTarif) ) {
+                        if( empty($flagTarif) && $to_city_id == $city_id ) {
                             $flagTarif = true;
                             $is_charge = 1;
                             $total_price_unit = $priceUnit;
