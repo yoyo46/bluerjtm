@@ -78,7 +78,7 @@
                                 $city_id = $this->Common->filterEmptyField($detail, 'RevenueDetail', 'city_id');
                                 $tarif_angkutan_id = $this->Common->filterEmptyField($detail, 'RevenueDetail', 'tarif_angkutan_id');
                                 $jenis_unit = $this->Common->filterEmptyField($detail, 'RevenueDetail', 'payment_type', 'per_unit');
-                                $type = $this->Common->filterEmptyField($detail, 'RevenueDetail', 'type', 'angkut');
+                                $type = $this->Common->filterEmptyField($detail, 'RevenueDetail', 'tarif_angkutan_type', 'angkut');
                                 $price = 0;
 
                                 if( !empty($is_charge) ) {

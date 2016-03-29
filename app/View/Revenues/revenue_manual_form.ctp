@@ -233,6 +233,7 @@
 				if(!empty($revenueDetail)){
 					echo $this->element('blocks/revenues/revenues_info_detail', array(
 						'revenueDetail' => $revenueDetail,
+						'action_type' => 'manual',
 					)); 
 				} else {
 		?>
