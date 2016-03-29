@@ -1,4 +1,6 @@
 <?php
+        $is_charge = !empty($is_charge)?$is_charge:false;
+        $action_type = !empty($action_type)?$action_type:false;
         $tarif_angkutan_type = $this->Common->filterEmptyField($tarif, 'tarif_angkutan_type', false, 'angkut');
         $jenis_unit = $this->Common->filterEmptyField($tarif, 'jenis_unit', false, 'per_unit');
         $price = $this->Common->filterEmptyField($tarif, 'tarif', false, 0);
@@ -65,11 +67,11 @@
             if( !empty($price_msg) ) {
                 echo $this->Html->tag('span', $price_msg);
             } else {
-                if( $jenis_unit == 'per_truck' ) {
-                    echo $this->Html->tag('span', $this->Common->getFormatPrice($price));
-                } else {
+                if( $action_type == 'manual' && $jenis_unit == 'per_unit' && $is_charge ) {
                     $inputType = 'text';
                     $inputClass = 'input_price text-right';
+                } else {
+                    echo $this->Html->tag('span', $this->Common->getFormatPrice($price));
                 }
             }
 
@@ -84,7 +86,7 @@
 </div>
 <div id="total-price-revenue">
     <?php   
-            if( $jenis_unit == 'per_truck' ) {
+            if( $action_type == 'manual' && $jenis_unit == 'per_truck' && $is_charge ) {
                 echo $this->Form->input('RevenueDetail.total_price_unit.', array(
                     'type' => 'text',
                     'label' => false,
@@ -93,12 +95,12 @@
                     'value' => $totalPriceCustom,
                 ));
             } else {
-                echo $this->Html->tag('span', $totalPrice, array(
+                echo $this->Html->tag('span', $totalPriceCustom, array(
                     'class' => 'total-revenue-perunit-text'
                 ));
                 echo $this->Form->hidden('RevenueDetail.total_price_unit.', array(
                     'class' => 'total-revenue-perunit',
-                    'value' => $totalPriceCustom,
+                    'value' => $totalPrice,
                 ));
             }
     ?>

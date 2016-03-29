@@ -1169,7 +1169,7 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge,
     var ttuj_id = $('#getTtujInfoRevenue').val();
     var customer_id = $('.change-customer-revenue').val();
     var to_city_id = $('#toCityId').val();
-    var data_type = $('.revenue-data-type').val();
+    var data_type = $.checkUndefined($('.revenue-data-type').val(), 0);
 
     if( typeof customer_id == 'undefined' || isNaN(customer_id) || customer_id == '' ){
         customer_id = 0;
@@ -1192,7 +1192,7 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge,
         from_city_id = $('#from-city-revenue-id').val();
         to_city_id = $('#to-city-revenue-id').val();
 
-        url = '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+from_city_id+'/'+truck_id+'/';
+        url = '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+from_city_id+'/'+truck_id+'/manual';
     }
 
     $.ajax({
@@ -4186,10 +4186,11 @@ $(function() {
         var truck_id = $('.truck-revenue-id').val();
         var from_city_id = $('#from-city-revenue-id').val();
         var to_city_id = $('#to-city-revenue-id').val();
+        var revenue_data_type = $.checkUndefined($('.revenue-data-type').val(), 0);
 
         if( customer_id != '' && truck_id != '' && from_city_id != '' && to_city_id != '' ) {
             $.ajax({
-                url: '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+to_city_id+'/0/0/'+to_city_id+'/0/'+from_city_id+'/'+truck_id+'/',
+                url: '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+to_city_id+'/0/0/'+to_city_id+'/0/'+from_city_id+'/'+truck_id+'/'+revenue_data_type+'/',
                 type: 'POST',
                 success: function(response, status) {
                     var jenis_unit = $(response).find('.jenis_unit').val();

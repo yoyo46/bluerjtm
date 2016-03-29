@@ -784,7 +784,7 @@ class AjaxController extends AppController {
         $this->redirect($this->referer());
     }
 
-	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $detail_city_id = false, $group_motor_id = false, $is_charge = false, $main_city_id = false, $qty = 0, $from_city_id = false, $truck_id = false, $from_ttuj = false ){
+	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $detail_city_id = false, $group_motor_id = false, $is_charge = false, $main_city_id = false, $qty = 0, $from_city_id = false, $truck_id = false, $action_type = false ){
 		$this->loadModel('Ttuj');
 
 		$data_ttuj = $this->Ttuj->getData('first', array(
@@ -828,7 +828,7 @@ class AjaxController extends AppController {
 		$this->set(compact(
 			'is_charge', 'tarif',
 			'qty', 'truck',
-			'ttuj_id', 'from_ttuj'
+			'ttuj_id', 'action_type'
 		));
 	}
 

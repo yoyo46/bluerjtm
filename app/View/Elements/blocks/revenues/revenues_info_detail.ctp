@@ -1,6 +1,7 @@
 <?php 
         $data = $this->request->data;
         $currency = Configure::read('__Site.config_currency_code');
+        $action_type = !empty($action_type)?$action_type:false;
 
         $dataColumns = array(
             'tujuan' => array(
@@ -200,11 +201,11 @@
                                 if( !empty($price_msg) ) {
                                     echo $this->Html->tag('span', $price_msg);
                                 } else {
-                                    if( $jenis_unit == 'per_truck' ) {
-                                        echo $this->Html->tag('span', $this->Common->getFormatPrice($price_unit));
-                                    } else {
+                                    if( $action_type == 'manual' && $jenis_unit == 'per_unit' && $is_charge ) {
                                         $inputType = 'text';
                                         $inputClass = 'input_price text-right';
+                                    } else {
+                                        echo $this->Html->tag('span', $this->Common->getFormatPrice($price_unit));
                                     }
                                 }
 
@@ -236,7 +237,7 @@
                     </td>
                     <td class="total-price-revenue text-right">
                         <?php 
-                                if( $jenis_unit == 'per_truck' && !empty($is_charge) ) {
+                                if( $action_type == 'manual' && $jenis_unit == 'per_truck' && $is_charge ) {
                                     echo $this->Form->input('RevenueDetail.total_price_unit.', array(
                                         'type' => 'text',
                                         'label' => false,
