@@ -13,10 +13,6 @@ class RevenueDetail extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Qty harap diisi'
             ),
-            'validNumber' => array(
-                'rule' => array('validNumber', 'qty_unit'),
-                'message' => 'Qty harap diisi'
-            ),
         ),
         'price_unit' => array(
             'notempty' => array(

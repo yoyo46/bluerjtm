@@ -11,7 +11,7 @@
 			foreach ($revenue_detail as $key => $val_detail) {
 				$idx++;
 
-				if( in_array($data_print, array( 'date', 'hso-smg' )) ) {
+				if( in_array($data_print, array( 'date', 'hso-smg', 'preview' )) ) {
 					$totalMerge = 10;
 					
 					if( $data_print == 'hso-smg' ) {
@@ -51,7 +51,7 @@
 		<tr>
 			<th class="text-center" style="width: 5%;"><?php echo __('No.');?></th>
 			<?php 
-					if( $data_print == 'date' ) {
+					if( in_array($data_print, array( 'date' )) ) {
 						echo $this->Html->tag('th', __('Kota'), array(
 							'class' => 'text-center',
 							'width' => '13%'
@@ -82,7 +82,7 @@
 			?>
 			<th class="text-center" style="width: 10%;"><?php echo __('Tanggal');?></th>
 			<?php 
-					if( $data_print == 'hso-smg' ) {
+					if( in_array($data_print, array( 'hso-smg', 'preview' )) ) {
 						echo $this->Html->tag('th', __('Kota'), array(
 							'class' => 'text-center',
 							'width' => '13%'
@@ -164,7 +164,7 @@
 							'style' => 'text-align: center;'
 						));
 
-						if( $data_print == 'date' ) {
+						if( in_array($data_print, array( 'date' )) ) {
 							$colom .= $this->Html->tag('td', $city_name);
 						}
 
@@ -177,7 +177,7 @@
 
 						$colom .= $this->Html->tag('td', $date_revenue);
 
-						if( $data_print == 'hso-smg' ) {
+						if( in_array($data_print, array( 'hso-smg', 'preview' )) ) {
 							$colom .= $this->Html->tag('td', $city_name);
 						}
 

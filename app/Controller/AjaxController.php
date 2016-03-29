@@ -1001,6 +1001,7 @@ class AjaxController extends AppController {
 			'print',
 		);
 
+		$this->set('data_print', 'preview');
 		$this->set(compact(
 			'revenue_detail', 'action', 'layout_css',
 			'invoice_type'

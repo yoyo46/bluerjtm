@@ -550,7 +550,7 @@ class Revenue extends AppModel {
             foreach ($revenuDetail['city_id'] as $keyDetail => $detail) {
                 $payment_type = isset($data['RevenueDetail']['payment_type'][$keyDetail])?$data['RevenueDetail']['payment_type'][$keyDetail]:0;
                 $price_unit = isset($data['RevenueDetail']['price_unit'][$keyDetail])?$this->convertPriceToString($data['RevenueDetail']['price_unit'][$keyDetail], 0):0;
-                $qty_unit = isset($data['RevenueDetail']['qty_unit'][$keyDetail])?$data['RevenueDetail']['qty_unit'][$keyDetail]:0;
+                $qty_unit = !empty($data['RevenueDetail']['qty_unit'][$keyDetail])?$data['RevenueDetail']['qty_unit'][$keyDetail]:0;
                 $is_charge = isset($data['RevenueDetail']['is_charge'][$keyDetail])?$data['RevenueDetail']['is_charge'][$keyDetail]:false;
                 $type = isset($data['RevenueDetail']['type'][$keyDetail])?$data['RevenueDetail']['type'][$keyDetail]:false;
                 $total_price_unit = isset($data['RevenueDetail']['total_price_unit'][$keyDetail])?$this->convertPriceToString($data['RevenueDetail']['total_price_unit'][$keyDetail], 0):0;
@@ -563,7 +563,7 @@ class Revenue extends AppModel {
                         'no_do' => isset($data['RevenueDetail']['no_do'][$keyDetail])?$data['RevenueDetail']['no_do'][$keyDetail]:false,
                         'no_sj' => isset($data['RevenueDetail']['no_sj'][$keyDetail])?$data['RevenueDetail']['no_sj'][$keyDetail]:false,
                         'group_motor_id' => isset($data['RevenueDetail']['group_motor_id'][$keyDetail])?$data['RevenueDetail']['group_motor_id'][$keyDetail]:false,
-                        'qty_unit' => isset($data['RevenueDetail']['qty_unit'][$keyDetail])?$data['RevenueDetail']['qty_unit'][$keyDetail]:false,
+                        'qty_unit' => $qty_unit,
                         'payment_type' => $payment_type,
                         'is_charge' => $is_charge,
                         'price_unit' => isset($data['RevenueDetail']['price_unit'][$keyDetail])?$this->convertPriceToString($data['RevenueDetail']['price_unit'][$keyDetail], 0):0,
