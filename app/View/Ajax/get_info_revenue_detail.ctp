@@ -66,8 +66,8 @@
 
             if( !empty($price_msg) ) {
                 echo $this->Html->tag('span', $price_msg);
-            } else {
-                if( $action_type == 'manual' && $jenis_unit == 'per_unit' && $is_charge ) {
+            } else if( !empty($is_charge) ) {
+                if( $action_type == 'manual' && $jenis_unit == 'per_unit' ) {
                     $inputType = 'text';
                     $inputClass = 'input_price text-right';
                 } else {
@@ -86,7 +86,7 @@
 </div>
 <div id="total-price-revenue">
     <?php   
-            if( $action_type == 'manual' && $jenis_unit == 'per_truck' && $is_charge ) {
+            if( $action_type == 'manual' && $jenis_unit == 'per_truck' && !empty($is_charge) ) {
                 echo $this->Form->input('RevenueDetail.total_price_unit.', array(
                     'type' => 'text',
                     'label' => false,
@@ -95,9 +95,12 @@
                     'value' => $totalPriceCustom,
                 ));
             } else {
-                echo $this->Html->tag('span', $totalPriceCustom, array(
-                    'class' => 'total-revenue-perunit-text'
-                ));
+                if( !empty($is_charge) ) {
+                    echo $this->Html->tag('span', $totalPriceCustom, array(
+                        'class' => 'total-revenue-perunit-text'
+                    ));
+                }
+
                 echo $this->Form->hidden('RevenueDetail.total_price_unit.', array(
                     'class' => 'total-revenue-perunit',
                     'value' => $totalPrice,

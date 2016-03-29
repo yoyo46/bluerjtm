@@ -1206,12 +1206,7 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge,
             parent.find('td.price-data').html($(response).filter('#price-data').html());
             parent.find('td.qty-tipe-motor-data .jenis_unit').val(jenis_unit_angkutan);
             parent.find('td.additional-charge-data').html($(response).filter('#additional-charge-data').html());
-
-            if( is_charge == 1 ) {
-                parent.find('td.total-price-revenue').html($(response).filter('#total-price-revenue').html());
-            } else {
-                parent.find('td.total-price-revenue').html('0');
-            }
+            parent.find('td.total-price-revenue').html($(response).filter('#total-price-revenue').html());
 
             revenue_detail();
             grandTotalRevenue();
