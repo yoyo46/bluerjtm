@@ -13,7 +13,7 @@
 
                 $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol', $nopol);
                 $capacity = $this->Common->filterEmptyField($value, 'Ttuj', 'truck_capacity', $capacity);
-                $to_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
+                $to_city_name = $this->Common->filterEmptyField($value, 'City', 'name');
                 $group_motor = $this->Common->filterEmptyField($value, 'GroupMotor', 'name');
 
                 $revenue_id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
@@ -30,12 +30,13 @@
 
                 if( !empty($is_charge) ) {
                     $totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
+                    $customRate = $this->Common->getFormatPrice($rate, false);
                 } else {
                     $total_price_unit = 0;
+                    $customRate = '';
                 }
 
                 $customDate = $this->Common->formatDate($date, 'd-M-y');
-                $customRate = $this->Common->getFormatPrice($rate, false);
 
                 $totalUnit += $unit;
                 $totalPrice += $total_price_unit;

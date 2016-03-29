@@ -8613,6 +8613,7 @@ class RevenuesController extends AppController {
 
     function invoice_yamaha_unit($id = false, $action_print = false){
         $this->loadModel('Invoice');
+        $this->loadModel('City');
 
         $module_title = __('Print Yamaha Per Unit');
         $this->set('sub_module_title', trim($module_title));
@@ -8647,10 +8648,12 @@ class RevenuesController extends AppController {
                     $detail = $this->Invoice->InvoiceDetail->RevenueDetail->getMerge($detail, $revenue_detail_id);
                     $detail = $this->Invoice->InvoiceDetail->Revenue->getMerge($detail, false, $revenue_id);
 
+                    $city_id = $this->MkCommon->filterEmptyField($detail, 'RevenueDetail', 'city_id');
                     $group_motor_id = $this->MkCommon->filterEmptyField($detail, 'RevenueDetail', 'group_motor_id');
                     $ttuj_id = $this->MkCommon->filterEmptyField($detail, 'Revenue', 'ttuj_id');
                     $truck_id = $this->MkCommon->filterEmptyField($detail, 'Revenue', 'truck_id');
 
+                    $detail = $this->City->getMerge($detail, $city_id);
                     $detail = $this->Ttuj->Truck->getMerge($detail, $truck_id);
                     $detail = $this->Ttuj->getMerge($detail, $ttuj_id);
                     $detail = $this->Ttuj->Revenue->RevenueDetail->GroupMotor->getMerge( $detail, $group_motor_id );
@@ -8680,6 +8683,7 @@ class RevenuesController extends AppController {
 
     function invoice_nozomi_unit($id = false, $action_print = false){
         $this->loadModel('Invoice');
+        $this->loadModel('City');
 
         $module_title = __('Print Nozomi Per Unit');
         $this->set('sub_module_title', trim($module_title));
@@ -8713,9 +8717,11 @@ class RevenuesController extends AppController {
                     
                     $detail = $this->Invoice->InvoiceDetail->RevenueDetail->getMerge($detail, $revenue_detail_id);
                     $detail = $this->Invoice->InvoiceDetail->Revenue->getMerge($detail, false, $revenue_id);
+                    $city_id = $this->MkCommon->filterEmptyField($detail, 'RevenueDetail', 'city_id');
 
                     $ttuj_id = $this->MkCommon->filterEmptyField($detail, 'Revenue', 'ttuj_id');
                     $detail = $this->Ttuj->getMerge($detail, $ttuj_id);
+                    $detail = $this->City->getMerge($detail, $city_id);
 
                     $truck_id = $this->MkCommon->filterEmptyField($detail, 'Revenue', 'truck_id');
                     $detail = $this->Ttuj->Truck->getMerge($detail, $truck_id);
@@ -8726,6 +8732,7 @@ class RevenuesController extends AppController {
                     $invDetails[$idx] = $detail;
                 }
             }
+            // debug($invDetails);die();
 
             $this->loadModel('Setting');
             $setting = $this->Setting->find('first');

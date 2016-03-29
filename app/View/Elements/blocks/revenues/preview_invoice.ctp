@@ -143,13 +143,14 @@
 
 						$price = 0;
 						$totalPriceFormat = '';
-						$priceFormat = $this->Common->getFormatPrice($price_unit, 0);
 						$date_revenue = $this->Common->formatDate($date_revenue, 'd/m/Y');
 
 						if( !empty($is_charge) ) {
 							$totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
+							$priceFormat = $this->Common->getFormatPrice($price_unit, 0);
 						} else {
 							$total_price_unit = 0;
+							$priceFormat = '';
 						}
 
 						if( !empty($value['Revenue']['Ttuj']['nopol']) ) {

@@ -101,12 +101,13 @@
 
 						$price = 0;
 						$totalPriceFormat = '';
-						$priceFormat = $this->Common->getFormatPrice($price_unit, 0);
 
 						if( !empty($is_charge) ) {
 							$totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
+							$priceFormat = $this->Common->getFormatPrice($price_unit, 0);
 						} else {
 							$total_price_unit = 0;
+							$priceFormat = '';
 						}
 
 						if( !empty($value['Revenue']['Ttuj']['nopol']) ) {

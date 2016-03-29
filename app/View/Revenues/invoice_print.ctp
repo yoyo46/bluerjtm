@@ -114,7 +114,16 @@ if($action_print == 'pdf'){
 					$payment_type = !empty($value['RevenueDetail']['payment_type'])?$value['RevenueDetail']['payment_type']:false;
                 	$is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
                 	$rate = $this->Common->filterEmptyField($value, 'RevenueDetail', 'price_unit');
-                	$priceFormat = $this->Common->getFormatPrice($rate, false);
+                	$total_price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'total_price_unit');
+	                $totalPriceFormat = '';
+
+	                if( !empty($is_charge) ) {
+	                    $totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
+                		$priceFormat = $this->Common->getFormatPrice($rate, false);
+	                } else {
+	                    $total_price_unit = 0;
+                		$priceFormat = '';
+	                }
 
 					$colom = $this->Html->tag('td', $no++);
 
@@ -143,15 +152,6 @@ if($action_print == 'pdf'){
 					$colom .= $this->Html->tag('td', $priceFormat, array(
 						'style' => 'text-align:right;',
 					));
-
-                	$total_price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'total_price_unit');
-	                $totalPriceFormat = '';
-
-	                if( !empty($is_charge) ) {
-	                    $totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
-	                } else {
-	                    $total_price_unit = 0;
-	                }
 
 					$colom .= $this->Html->tag('td', $totalPriceFormat, array(
 						'style' => 'text-align:right;',

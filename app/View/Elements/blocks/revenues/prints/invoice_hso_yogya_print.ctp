@@ -90,15 +90,16 @@
 
 				    				if( !empty($is_charge) ) {
 										$totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
+										$customPrice = $this->Common->getFormatPrice($price_unit);
 									} else {
 										$total_price_unit = 0;
+										$customPrice = '';
 									}
 
 									$grandTotalUnit += $totalUnit;
 									$grandTotalTarif += $total_price_unit;
 
 									$date_revenue = $this->Common->formatDate($date_revenue, 'd/m/Y');
-									$customPrice = $this->Common->getFormatPrice($price_unit);
 					?>
 					<tr>
 						<?php 
