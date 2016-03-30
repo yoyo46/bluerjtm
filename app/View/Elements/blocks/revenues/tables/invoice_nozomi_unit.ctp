@@ -94,7 +94,7 @@
             if( $revenue_tarif_type == 'per_truck' ){
                 if( !empty($recenueCnt[$revenue_id][$detail_id]) ) {
                     echo $this->Html->tag('td', $totalPriceFormat, array(
-                        'style' => 'text-align:right;border-left: 1px solid #000;',
+                        'style' => 'text-align:right;border-left: 1px solid #000;vertical-align: middle;',
                         'rowspan' => $recenueCnt[$revenue_id][$detail_id] + 1,
                     ));
                 } else if( !empty($is_charge) ) {
