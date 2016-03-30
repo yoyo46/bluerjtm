@@ -201,7 +201,7 @@
                                 if( !empty($price_msg) ) {
                                     echo $this->Html->tag('span', $price_msg);
                                 } else if( !empty($is_charge) ) {
-                                    if( $action_type == 'manual' && $jenis_unit == 'per_unit' ) {
+                                    if( $action_type == 'manual' ) {
                                         $inputType = 'text';
                                         $inputClass = 'input_price text-right';
                                     } else {

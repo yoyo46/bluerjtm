@@ -76,8 +76,8 @@ class InvoiceDetail extends AppModel {
                 'InvoiceDetail.status' => 1,
             ),
             'order' => array(
-                'InvoiceDetail.revenue_id' => 'ASC',
-                'InvoiceDetail.revenue_detail_id' => 'ASC',
+                // 'InvoiceDetail.revenue_id' => 'ASC',
+                // 'InvoiceDetail.revenue_detail_id' => 'ASC',
                 'InvoiceDetail.id' => 'ASC',
             ),
         ));
