@@ -8685,10 +8685,6 @@ class RevenuesController extends AppController {
         $this->loadModel('Invoice');
         $this->loadModel('City');
 
-        $module_title = __('Print Nozomi Per Unit');
-        $this->set('sub_module_title', trim($module_title));
-        $this->set('active_menu', 'invoices');
-
         $data_print = $this->MkCommon->filterEmptyField($this->params, 'named', 'print', 'default');
 
         $value = $this->Invoice->getData('first', array(
@@ -8732,10 +8728,13 @@ class RevenuesController extends AppController {
                     $invDetails[$idx] = $detail;
                 }
             }
-            // debug($invDetails);die();
 
             $this->loadModel('Setting');
             $setting = $this->Setting->find('first');
+
+            $module_title = __('Print Others');
+            $this->set('sub_module_title', trim($module_title));
+            $this->set('active_menu', 'invoices');
 
             $this->set(compact(
                 'value', 'action_print', 'invDetails',
