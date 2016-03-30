@@ -1150,6 +1150,8 @@ var duplicate_row = function(){
         $('tr[rel="'+uniqid+'"] .city-revenue-change').val(parent.find('.city-revenue-change').val());
         $('tr[rel="'+uniqid+'"] .revenue-qty').val('');
         $('tr[rel="'+uniqid+'"] .from-ttuj').val('');
+        $('tr[rel="'+uniqid+'"] .no-do-data input').val('');
+        $('tr[rel="'+uniqid+'"] .no-sj-data input').val('');
 
         revenue_detail();
         grandTotalRevenue();
