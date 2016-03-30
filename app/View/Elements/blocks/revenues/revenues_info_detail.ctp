@@ -201,12 +201,12 @@
                                 if( !empty($price_msg) ) {
                                     echo $this->Html->tag('span', $price_msg);
                                 } else if( !empty($is_charge) ) {
-                                    if( $action_type == 'manual' && $jenis_unit == 'per_unit' ) {
+                                    // if( $action_type == 'manual' && $jenis_unit == 'per_unit' ) {
                                         $inputType = 'text';
                                         $inputClass = 'input_price text-right';
-                                    } else {
-                                        echo $this->Html->tag('span', $this->Common->getFormatPrice($price_unit));
-                                    }
+                                    // } else {
+                                    //     echo $this->Html->tag('span', $this->Common->getFormatPrice($price_unit));
+                                    // }
                                 }
 
                                 echo $this->Form->input('RevenueDetail.price_unit.', array(
@@ -237,16 +237,16 @@
                     </td>
                     <td class="total-price-revenue text-right">
                         <?php 
-                                if( $action_type == 'manual' && $jenis_unit == 'per_truck' && !empty($is_charge) ) {
-                                    echo $this->Form->input('RevenueDetail.total_price_unit.', array(
-                                        'type' => 'text',
-                                        'label' => false,
-                                        'class' => 'form-control total-revenue-perunit input_price text-right',
-                                        'required' => false,
-                                        'value' => $price,
-                                    ));
-                                    echo $this->Form->error('RevenueDetail.'.$key.'.total_price_unit');
-                                } else {
+                                // if( $action_type == 'manual' && $jenis_unit == 'per_truck' && !empty($is_charge) ) {
+                                //     echo $this->Form->input('RevenueDetail.total_price_unit.', array(
+                                //         'type' => 'text',
+                                //         'label' => false,
+                                //         'class' => 'form-control total-revenue-perunit input_price text-right',
+                                //         'required' => false,
+                                //         'value' => $price,
+                                //     ));
+                                //     echo $this->Form->error('RevenueDetail.'.$key.'.total_price_unit');
+                                // } else {
                                     if( !empty($is_charge) ) {
                                         echo $this->Html->tag('span', $priceCustom, array(
                                             'class' => 'total-revenue-perunit-text'
@@ -257,7 +257,7 @@
                                         'class' => 'total-revenue-perunit',
                                         'value' => $price,
                                     ));
-                                }
+                                // }
                         ?>
                     </td>
                     <td class="handle-row action text-center">

@@ -1268,7 +1268,7 @@ function grandTotalRevenue(){
     for (var i = 0; i < length; i++) {
         var rel = listRevenue[i].getAttribute('rel');
         var msg = '';
-        var totalPriceUnit = 0;
+        // var totalPriceUnit = 0;
 
         if( typeof price[i] != 'undefined' && price[i].value != '' ) {
             priceUnit = $.convertNumber(price[i].value, 'int');
@@ -1278,9 +1278,9 @@ function grandTotalRevenue(){
                 msg = price[i].value;
             }
 
-            if( typeof totalPrices[i] != 'undefined' ) {
-                totalPriceUnit = $.convertNumber(totalPrices[i].value, 'int');
-            }
+            // if( typeof totalPrices[i] != 'undefined' ) {
+            //     totalPriceUnit = $.convertNumber(totalPrices[i].value, 'int');
+            // }
         } else {
             priceUnit = 0;
         }
@@ -1294,7 +1294,7 @@ function grandTotalRevenue(){
         totalQty += qtyUnit;
 
         if( jenis_unit[i].value == 'per_truck'){
-            totalPrice = totalPriceUnit;
+            totalPrice = priceUnit;
         } else {
             totalPrice = priceUnit * qtyUnit;
         }
@@ -1302,10 +1302,10 @@ function grandTotalRevenue(){
         if( is_additional_charge[i].checked == true ) {
             total += totalPrice;
 
-            if( jenis_unit[i].value != 'per_truck'){
+            // if( jenis_unit[i].value != 'per_truck'){
                 $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-revenue-perunit').val(formatNumber(totalPrice));
                 $('.tipe-motor-table tr.list-revenue[rel="'+rel+'"]').find('.total-revenue-perunit-text').html(formatNumber(totalPrice));
-            }
+            // }
         }
 
         if( msg != '' ) {

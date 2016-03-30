@@ -67,12 +67,12 @@
             if( !empty($price_msg) ) {
                 echo $this->Html->tag('span', $price_msg);
             } else if( !empty($is_charge) ) {
-                if( $action_type == 'manual' && $jenis_unit == 'per_unit' ) {
+                // if( $action_type == 'manual' && $jenis_unit == 'per_unit' ) {
                     $inputType = 'text';
                     $inputClass = 'input_price text-right';
-                } else {
-                    echo $this->Html->tag('span', $this->Common->getFormatPrice($price));
-                }
+                // } else {
+                //     echo $this->Html->tag('span', $this->Common->getFormatPrice($price));
+                // }
             }
 
             echo $this->Form->input('RevenueDetail.price_unit.', array(
@@ -86,15 +86,15 @@
 </div>
 <div id="total-price-revenue">
     <?php   
-            if( $action_type == 'manual' && $jenis_unit == 'per_truck' && !empty($is_charge) ) {
-                echo $this->Form->input('RevenueDetail.total_price_unit.', array(
-                    'type' => 'text',
-                    'label' => false,
-                    'class' => 'form-control total-revenue-perunit input_price text-right',
-                    'required' => false,
-                    'value' => $totalPriceCustom,
-                ));
-            } else {
+            // if( $action_type == 'manual' && $jenis_unit == 'per_truck' && !empty($is_charge) ) {
+            //     echo $this->Form->input('RevenueDetail.total_price_unit.', array(
+            //         'type' => 'text',
+            //         'label' => false,
+            //         'class' => 'form-control total-revenue-perunit input_price text-right',
+            //         'required' => false,
+            //         'value' => $totalPriceCustom,
+            //     ));
+            // } else {
                 if( !empty($is_charge) ) {
                     echo $this->Html->tag('span', $totalPriceCustom, array(
                         'class' => 'total-revenue-perunit-text'
@@ -105,7 +105,7 @@
                     'class' => 'total-revenue-perunit',
                     'value' => $totalPrice,
                 ));
-            }
+            // }
     ?>
 </div>
 <div id="additional-charge-data">
