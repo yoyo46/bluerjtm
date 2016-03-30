@@ -240,7 +240,6 @@ class RevenueDetail extends AppModel {
             $options['order'] = array(
                 'Revenue.date_revenue' => 'ASC',
                 'Revenue.id' => 'ASC',
-                'RevenueDetail.is_charge' => 'DESC',
                 'RevenueDetail.id' => 'ASC',
             );
         }

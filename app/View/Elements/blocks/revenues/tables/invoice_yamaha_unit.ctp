@@ -6,6 +6,34 @@
             $totalUnit = 0;
             $totalPrice = 0;
             $temp = false;
+            $old_detail_id = false;
+            $recenueCnt = array();
+            $recenueCharge = array();
+            $recenueCol = array();
+
+            // foreach ($invDetails as $key => $value) {
+            //     $id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
+            //     $is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
+            //     $detail_id = $this->Common->filterEmptyField($value, 'RevenueDetail', 'id');
+            //     $city_name = $this->Common->filterEmptyField($value, 'City', 'name');
+
+            //     if( empty($is_charge) ) {
+            //         if( empty($recenueCharge[$id]) ) {
+            //             $recenueCol[$detail_id] = true;
+            //         } else if( !empty($recenueCharge[$id]) ) {
+            //             $invDetails[$key]['City']['name'] = $recenueCharge[$id];
+            //         }
+
+            //         if( !empty($recenueCnt[$id][$old_detail_id]) ) {
+            //             $recenueCnt[$id][$old_detail_id]++;
+            //         } else if( !empty($recenueCharge[$id]) ) {
+            //             $recenueCnt[$id][$old_detail_id] = 1;
+            //         }
+            //     } else {
+            //         $old_detail_id = $detail_id;
+            //         $recenueCharge[$id] = $city_name;
+            //     }                       
+            // }
 
             foreach ($invDetails as $key => $value) {
                 $capacity = $this->Common->filterEmptyField($value, 'Truck', 'capacity');
@@ -20,6 +48,7 @@
                 $date = $this->Common->filterEmptyField($value, 'Revenue', 'date_revenue');
                 $revenue_tarif_type = $this->Common->filterEmptyField($value, 'Revenue', 'revenue_tarif_type');
 
+                $detail_id = $this->Common->filterEmptyField($value, 'RevenueDetail', 'id');
                 $unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'qty_unit');
                 $rate = $this->Common->filterEmptyField($value, 'RevenueDetail', 'price_unit');
                 $no_do = $this->Common->filterEmptyField($value, 'RevenueDetail', 'no_do', '&nbsp;');
@@ -61,9 +90,31 @@
             echo $this->Html->tag('td', $customRate, array(
                 'style' => 'text-align:center;border-left: 1px solid #000;'
             ));
+
+            // if( $revenue_tarif_type == 'per_truck' ){
+            //     if( !empty($recenueCnt[$revenue_id][$detail_id]) ) {
+            //         echo $this->Html->tag('td', $totalPriceFormat, array(
+            //             'style' => 'text-align:right;border-left: 1px solid #000;',
+            //             'rowspan' => $recenueCnt[$revenue_id][$detail_id] + 1,
+            //         ));
+            //     } else if( !empty($is_charge) ) {
+            //         echo $this->Html->tag('td', $totalPriceFormat, array(
+            //             'style' => 'text-align:right;border-left: 1px solid #000;'
+            //         ));
+            //     } else if( !empty($recenueCol[$detail_id]) ) {
+            //         echo $this->Html->tag('td', '', array(
+            //             'style' => 'text-align:right;border-left: 1px solid #000;'
+            //         ));
+            //     }
+            // } else {
+            //     echo $this->Html->tag('td', $totalPriceFormat, array(
+            //         'style' => 'text-align:right;border-left: 1px solid #000;'
+            //     ));
+            // }
             echo $this->Html->tag('td', $totalPriceFormat, array(
                 'style' => 'text-align:right;border-left: 1px solid #000;'
             ));
+
             echo $this->Html->tag('td', $to_city_name, array(
                 'style' => 'text-align:center;border-left: 1px solid #000;'
             ));

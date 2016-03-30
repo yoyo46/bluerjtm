@@ -115,19 +115,30 @@
 					$old_revenue_id = false;
 					$old_detail_id = false;
 					$recenueCnt = array();
+					$recenueCharge = array();
+					$recenueCol = array();
 
 					foreach ($val_detail as $key => $value) {
+						$id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
 						$is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
 						$detail_id = $this->Common->filterEmptyField($value, 'RevenueDetail', 'id');
+						$city_name = $this->Common->filterEmptyField($value, 'City', 'name');
 
 						if( empty($is_charge) ) {
-							if( !empty($recenueCnt[$old_detail_id]) ) {
-								$recenueCnt[$old_detail_id]++;
-							} else {
-								$recenueCnt[$old_detail_id] = 1;
+							if( empty($recenueCharge[$id]) ) {
+								$recenueCol[$detail_id] = true;
+							} else if( !empty($recenueCharge[$id]) ) {
+								$val_detail[$key]['City']['name'] = $recenueCharge[$id];
+							}
+
+							if( !empty($recenueCnt[$id][$old_detail_id]) ) {
+								$recenueCnt[$id][$old_detail_id]++;
+							} else if( !empty($recenueCharge[$id]) ) {
+								$recenueCnt[$id][$old_detail_id] = 1;
 							}
 						} else {
 							$old_detail_id = $detail_id;
+							$recenueCharge[$id] = $city_name;
 						}						
 					}
 
@@ -143,6 +154,7 @@
 						$no_sj = $this->Common->filterEmptyField($value, 'RevenueDetail', 'no_sj');
 						$date_revenue = $this->Common->filterEmptyField($value, 'Revenue', 'date_revenue');
 
+						$id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
 						$no_doc = $this->Common->filterEmptyField($value, 'Revenue', 'no_doc');
 						$revenue_id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
 						$city_name = $this->Common->filterEmptyField($value, 'City', 'name');
@@ -222,15 +234,17 @@
 						));
 
 						if( $revenue_jenis_tarif == 'per_truck' ){
-							if( !empty($recenueCnt[$detail_id]) ) {
+							if( !empty($recenueCnt[$id][$detail_id]) ) {
 								$colom .= $this->Html->tag('td', $totalPriceFormat, array(
 									'align' => 'right',
-									'rowspan' => $recenueCnt[$detail_id] + 1,
+									'rowspan' => $recenueCnt[$id][$detail_id] + 1,
 								));
 							} else if( !empty($is_charge) ) {
 								$colom .= $this->Html->tag('td', $totalPriceFormat, array(
 									'align' => 'right'
 								));
+							} else if( !empty($recenueCol[$detail_id]) ) {
+								$colom .= $this->Html->tag('td', '');
 							}
 						} else {
 							$colom .= $this->Html->tag('td', $totalPriceFormat, array(
