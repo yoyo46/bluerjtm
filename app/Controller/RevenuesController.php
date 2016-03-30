@@ -3540,13 +3540,17 @@ class RevenuesController extends AppController {
 
         if( $action_type == 'manual' ) {
             $plantCityId = Configure::read('__Site.Branch.Plant.id');
-            $ttujs = $this->Ttuj->_callTtujOngoing();
+            $conditions = array();
+
+            if( !empty($plantCityId) ) {
+                $conditions['Truck.branch_id'] = $plantCityId;
+            }
+
+            $addConditions = $this->Ttuj->Truck->getListTruck( $id, true, false, $plantCityId );
+            $conditions = array_merge($conditions, $addConditions);
 
             $trucks = $this->Ttuj->Truck->getData('list', array(
-                'conditions' => array(
-                    'Truck.id NOT' => $ttujs,
-                    'Truck.branch_id' => $plantCityId,
-                ),
+                'conditions' => $conditions,
                 'fields' => array(
                     'Truck.id', 'Truck.nopol'
                 ),
