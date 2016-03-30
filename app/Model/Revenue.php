@@ -438,6 +438,11 @@ class Revenue extends AppModel {
                     'fields' => array(
                         'RevenueDetail.id', 'Revenue.id'
                     ),
+                    'order' => array(
+                        'Revenue.date_revenue' => 'ASC',
+                        'Revenue.id' => 'ASC',
+                        'RevenueDetail.id' => 'ASC',
+                    ),
                 ), $elementRevenue);
 
                 if(!empty($revenueDetails)){

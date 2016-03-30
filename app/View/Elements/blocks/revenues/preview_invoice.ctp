@@ -128,7 +128,7 @@
 							if( empty($recenueCharge[$id]) ) {
 								$recenueCol[$detail_id] = true;
 							} else if( !empty($recenueCharge[$id]) ) {
-								$val_detail[$key]['City']['name'] = $recenueCharge[$id];
+								// $val_detail[$key]['City']['name'] = $recenueCharge[$id];
 							}
 
 							if( !empty($recenueCnt[$id][$old_detail_id]) ) {

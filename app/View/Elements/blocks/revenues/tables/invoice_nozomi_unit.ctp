@@ -20,7 +20,7 @@
                     if( empty($recenueCharge[$id]) ) {
                         $recenueCol[$detail_id] = true;
                     } else if( !empty($recenueCharge[$id]) ) {
-                        $invDetails[$key]['City']['name'] = $recenueCharge[$id];
+                        // $invDetails[$key]['City']['name'] = $recenueCharge[$id];
                     }
 
                     if( !empty($recenueCnt[$id][$old_detail_id]) ) {
