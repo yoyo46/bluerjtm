@@ -21,7 +21,7 @@
             $checkedCharge = false;
         }
 
-        echo $this->Form->hidden('RevenueDetail.[].type', array(
+        echo $this->Form->hidden('RevenueDetail.tarif_angkutan_type.', array(
             'id' => 'tarif_angkutan_type',
             'required' => false,
             'value' => $tarif_angkutan_type,

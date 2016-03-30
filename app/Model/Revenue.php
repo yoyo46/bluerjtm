@@ -557,14 +557,14 @@ class Revenue extends AppModel {
                 $price_unit = isset($data['RevenueDetail']['price_unit'][$keyDetail])?$this->convertPriceToString($data['RevenueDetail']['price_unit'][$keyDetail], 0):0;
                 $qty_unit = !empty($data['RevenueDetail']['qty_unit'][$keyDetail])?$data['RevenueDetail']['qty_unit'][$keyDetail]:0;
                 $is_charge = isset($data['RevenueDetail']['is_charge'][$keyDetail])?$data['RevenueDetail']['is_charge'][$keyDetail]:false;
-                $type = isset($data['RevenueDetail']['type'][$keyDetail])?$data['RevenueDetail']['type'][$keyDetail]:false;
+                $tarif_angkutan_type = isset($data['RevenueDetail']['tarif_angkutan_type'][$keyDetail])?$data['RevenueDetail']['tarif_angkutan_type'][$keyDetail]:false;
                 $total_price_unit = isset($data['RevenueDetail']['total_price_unit'][$keyDetail])?$this->convertPriceToString($data['RevenueDetail']['total_price_unit'][$keyDetail], 0):0;
 
                 $dataRevenue['RevenueDetail'][] = array(
                     'RevenueDetail' => array(
                         'city_id' => isset($data['RevenueDetail']['city_id'][$keyDetail])?$data['RevenueDetail']['city_id'][$keyDetail]:false,
                         'tarif_angkutan_id' => isset($data['RevenueDetail']['tarif_angkutan_id'][$keyDetail])?$data['RevenueDetail']['tarif_angkutan_id'][$keyDetail]:false,
-                        'tarif_angkutan_type' => $type,
+                        'tarif_angkutan_type' => $tarif_angkutan_type,
                         'no_do' => isset($data['RevenueDetail']['no_do'][$keyDetail])?$data['RevenueDetail']['no_do'][$keyDetail]:false,
                         'no_sj' => isset($data['RevenueDetail']['no_sj'][$keyDetail])?$data['RevenueDetail']['no_sj'][$keyDetail]:false,
                         'group_motor_id' => isset($data['RevenueDetail']['group_motor_id'][$keyDetail])?$data['RevenueDetail']['group_motor_id'][$keyDetail]:false,
@@ -577,7 +577,7 @@ class Revenue extends AppModel {
                 );
                 $total_revenue += $total_price_unit;
 
-                if( $type == 'angkut' ) {
+                if( $tarif_angkutan_type == 'angkut' ) {
                     $total_qty += $qty_unit;
                 }
 

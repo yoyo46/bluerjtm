@@ -3483,6 +3483,8 @@ class RevenuesController extends AppController {
                     'controller' => 'revenues',
                     'action' => 'index'
                 ));
+            } else {
+                $this->request->data['Revenue']['date_revenue'] = $this->MkCommon->getDate($data['Revenue']['date_revenue'], 'd/m/Y');
             }
         }else if($id && $data_local){
             $this->request->data = $data_local;
