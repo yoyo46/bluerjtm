@@ -198,7 +198,7 @@ class RevenueDetail extends AppModel {
         $head_office = Configure::read('__Site.config_branch_head_office');
         $elementRevenue = false;
         
-        if( in_array($data_action, array( 'date', 'hso-smg' )) ) {
+        if( in_array($data_action, array( 'date', 'hso-smg', 'sa' )) ) {
             $options['contain'][] = 'Invoice';
         }
         if( !empty($head_office) ) {
@@ -213,7 +213,7 @@ class RevenueDetail extends AppModel {
                 'Revenue.status' => 1,
             );
             $elementRevenue['active'] = false;
-        } else if( in_array($data_action, array( 'invoice', 'date', 'hso-smg' )) ) {
+        } else if( in_array($data_action, array( 'invoice', 'date', 'hso-smg', 'sa' )) ) {
             $options['conditions'] = array(
                 'RevenueDetail.invoice_id' => $id,
             );
@@ -254,14 +254,18 @@ class RevenueDetail extends AppModel {
                 if(!empty($value['RevenueDetail'])){
                     $date_revenue = !empty($value['Revenue']['date_revenue'])?$value['Revenue']['date_revenue']:false;
                     $from_city_id = !empty($value['Revenue']['Ttuj']['from_city_id'])?$value['Revenue']['Ttuj']['from_city_id']:false;
+                    $truck_id = !empty($value['Revenue']['truck_id'])?$value['Revenue']['truck_id']:false;
+
                     $fromCity = $this->City->getMerge($value, $from_city_id);
                     $value['FromCity'] = !empty($fromCity['City'])?$fromCity['City']:false;
                     
                     $value = $this->Revenue->Ttuj->TtujTipeMotor->TipeMotor->getMerge($value, $value['RevenueDetail']['group_motor_id']);
                     $value = $this->City->getMerge($value, $value['RevenueDetail']['city_id']);
                     $value = $this->TarifAngkutan->getMerge($value, $value['RevenueDetail']['tarif_angkutan_id']);
+                    $value = $this->Revenue->Truck->getMerge($value, $truck_id);
 
                     $ttuj = $this->Revenue->Ttuj->getMerge($value, $value['Revenue']['ttuj_id']);
+
                     if( !empty($ttuj['Ttuj']) ) {
                         $value['Revenue']['Ttuj'] = $ttuj['Ttuj'];
                     } else {
@@ -274,7 +278,7 @@ class RevenueDetail extends AppModel {
 
                     if($action == 'tarif' && in_array($data_action, array( 'invoice', 'preview' ))){
                         $result[$value['RevenueDetail']['price_unit']][] = $value;
-                    } else if( $data_action == 'date' && !empty($value['Revenue']['date_revenue']) ) {
+                    } else if( in_array($data_action, array( 'date', 'sa' )) && !empty($value['Revenue']['date_revenue']) ) {
                         $result[0][] = $value;
                     } else {
                         if( $value['Revenue']['revenue_tarif_type'] == 'per_truck' ) {

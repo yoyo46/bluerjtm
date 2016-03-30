@@ -11,7 +11,7 @@
 			foreach ($revenue_detail as $key => $val_detail) {
 				$idx++;
 
-				if( in_array($data_print, array( 'date', 'hso-smg', 'preview' )) ) {
+				if( in_array($data_print, array( 'date', 'hso-smg', 'preview', 'sa' )) ) {
 					$totalMerge = 10;
 					
 					if( $data_print == 'hso-smg' ) {
@@ -27,7 +27,7 @@
 <table border="1" width="100%" style="margin-top: 20px;">
 	<thead class="header-invoice-print">
 		<?php 
-				if( !in_array($data_print, array( 'date', 'hso-smg' )) ) {
+				if( !in_array($data_print, array( 'date', 'hso-smg', 'sa' )) ) {
 		?>
 		<tr>
 			<th colspan="<?php echo $totalMerge; ?>" class="text-center" style="text-transform:uppercase;">
@@ -35,7 +35,7 @@
 						if($action == 'tarif' && $data_print == 'invoice'){
 							printf('Tarif Angkutan : %s', $this->Common->getFormatPrice($val_detail[0]['RevenueDetail']['price_unit']) );
 						}else{
-			                if( in_array($data_print, array( 'date' )) && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
+			                if( in_array($data_print, array( 'date', 'sa' )) && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
 								echo $this->Common->customDate($val_detail[0]['Revenue']['date_revenue'], 'd/m/Y');
 			                } else {
 		                		$no_doc = !empty($val_detail[0]['Revenue']['no_doc'])?$val_detail[0]['Revenue']['no_doc']:false;
@@ -51,7 +51,7 @@
 		<tr>
 			<th class="text-center" style="width: 5%;"><?php echo __('No.');?></th>
 			<?php 
-					if( in_array($data_print, array( 'date' )) ) {
+					if( in_array($data_print, array( 'date', 'sa' )) ) {
 						echo $this->Html->tag('th', __('Kota'), array(
 							'class' => 'text-center',
 							'width' => '13%'
@@ -61,8 +61,12 @@
 			<th class="text-center" style="width: 10%;"><?php echo __('No. Truk');?></th>
 			<th class="text-center" style="width: 12%;">
 				<?php
-						if( $data_print == 'date' ) {
-							echo __('Keterangan');
+						if( in_array($data_print, array( 'date', 'sa' )) ) {
+							if( in_array($data_print, array( 'sa' )) ) {
+								echo __('No.Do / No.SJ');
+							} else {
+								echo __('Keterangan');
+							}
 						} else {
 							if( $data_print != 'hso-smg' ) {
 								echo __('No.DO');
@@ -73,7 +77,12 @@
 				?>
 			</th>
 			<?php 
-					if( $data_print != 'hso-smg' ) {
+					if( in_array($data_print, array( 'sa' )) ) {
+						echo $this->Html->tag('th', __('No. SA'), array(
+							'class' => 'text-center',
+							'width' => '15%'
+						));
+					} else if( !in_array($data_print, array( 'hso-smg', 'sa' )) ) {
 						echo $this->Html->tag('th', __('No. SJ'), array(
 							'class' => 'text-center',
 							'width' => '15%'
@@ -134,6 +143,7 @@
 						$no_sj = $this->Common->filterEmptyField($value, 'RevenueDetail', 'no_sj');
 						$date_revenue = $this->Common->filterEmptyField($value, 'Revenue', 'date_revenue');
 
+						$no_doc = $this->Common->filterEmptyField($value, 'Revenue', 'no_doc');
 						$revenue_id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
 						$city_name = $this->Common->filterEmptyField($value, 'City', 'name');
 
@@ -165,15 +175,37 @@
 							'style' => 'text-align: center;'
 						));
 
-						if( in_array($data_print, array( 'date' )) ) {
+						if( in_array($data_print, array( 'date', 'sa' )) ) {
 							$colom .= $this->Html->tag('td', $city_name);
 						}
 
 						$colom .= $this->Html->tag('td', $nopol);
-						$colom .= $this->Html->tag('td', $no_do);
+						
+						if( in_array($data_print, array( 'sa' )) ) {
+							$no_do_sj = array();
 
-						if( $data_print != 'hso-smg' ) {
-							$colom .= $this->Html->tag('td', $no_sj);
+							if( !empty($no_do) ) {
+								$no_do_sj[] = $no_do;
+							}
+							if( !empty($no_sj) ) {
+								$no_do_sj[] = $no_sj;
+							}
+
+							if( !empty($no_do_sj) ) {
+								$colom .= $this->Html->tag('td', implode(' / ', $no_do_sj), array(
+									'class' => 'string'
+								));
+							} else {
+								$colom .= $this->Html->tag('td', '');
+							}
+
+							$colom .= $this->Html->tag('td', $no_doc);
+						} else {
+							$colom .= $this->Html->tag('td', $no_do);
+
+							if( !in_array($data_print, array( 'hso-smg' )) ) {
+								$colom .= $this->Html->tag('td', $no_sj);
+							}
 						}
 
 						$colom .= $this->Html->tag('td', $date_revenue);
@@ -322,7 +354,7 @@
             )));
         }
 
-        if( empty($preview) ) {
+        if( empty($preview) && empty($action_print) ) {
 ?>
 <div class="box-footer text-center action hidden-print">
 	<?php

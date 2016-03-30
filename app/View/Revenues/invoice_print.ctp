@@ -29,11 +29,11 @@ if($action_print == 'pdf'){
 		foreach ($revenue_detail as $key => $val_detail) {			
 			$cityName = false;
 
-			if( !in_array($data_print, array( 'date', 'hso-smg' )) ) {
+			if( !in_array($data_print, array( 'date', 'hso-smg', 'sa' )) ) {
 				if($action == 'tarif' && $data_print == 'invoice'){
 					$cityName = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], Configure::read('__Site.config_currency_second_code'), array('places' => 0)) );
 				}else{
-	                if( in_array($data_print, array( 'date', 'hso-smg' )) && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
+	                if( in_array($data_print, array( 'date', 'sa' )) && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
 						$cityName = $this->Common->customDate($val_detail[0]['Revenue']['date_revenue'], 'd/m/Y');
 	                } else {
 	                	if( $val_detail[0]['Revenue']['revenue_tarif_type'] == 'per_truck' && !empty($val_detail[0]['Revenue']['no_doc']) ) {
@@ -47,14 +47,21 @@ if($action_print == 'pdf'){
 
 			$colName = '';
 			$colNameCity = '';
+			$colNameDo = '';
+			$colNameSj = '';
 
-			if( in_array($data_print, array( 'date', 'hso-smg' )) ) {
+			if( in_array($data_print, array( 'date', 'hso-smg', 'preview', 'sa' )) ) {
 				$totalMerge = 10;
-				$totalMergeTotal = 6;
+					
+				if( $data_print == 'hso-smg' ) {
+					$totalMergeTotal = 5;
+				} else {
+					$totalMergeTotal = 6;
+				}
 
-				if( $data_print == 'date' ) {
+				if( in_array($data_print, array( 'date', 'sa' )) ) {
 					$colName = '<th class="text-center">Kota</th>';
-				} else if( $data_print == 'hso-smg' ) {
+				} else if( in_array($data_print, array( 'hso-smg', 'preview' )) ) {
 					$colNameCity = '<th class="text-center">Kota</th>';
 				}
 			} else {
@@ -68,6 +75,30 @@ if($action_print == 'pdf'){
 				</tr>';
 			}
 
+			if( in_array($data_print, array( 'date', 'sa' )) ) {
+				if( in_array($data_print, array( 'sa' )) ) {
+					$colNameDo = __('No.Do / No.SJ');
+				} else {
+					$colNameDo = __('Keterangan');
+				}
+			} else {
+				if( $data_print != 'hso-smg' ) {
+					$colNameDo = __('No.DO');
+				} else {
+					$colNameDo = __('No.DO - Nama Dealer');
+				}
+			}
+
+			if( in_array($data_print, array( 'sa' )) ) {
+				$colNameSj = $this->Html->tag('th', __('No. SA'), array(
+					'class' => 'text-center',
+				));
+			} else if( !in_array($data_print, array( 'hso-smg', 'sa' )) ) {
+				$colNameSj = $this->Html->tag('th', __('No. SJ'), array(
+					'class' => 'text-center',
+				));
+			}
+
 			$content .= '<table border="1" width="100%" style="padding: 5px; font-size: 25px;">
 				<thead class="header-invoice-print">
 					'.$cityName.'
@@ -75,8 +106,8 @@ if($action_print == 'pdf'){
 						<th class="text-center">No.</th>
 						'.$colName.'
 						<th class="text-center">No. Truk</th>
-						<th class="text-center">No.DO</th>
-						<th class="text-center">No.SJ</th>
+						<th class="text-center">'.$colNameDo.'</th>
+						'.$colNameSj.'
 						<th class="text-center">Tanggal</th>
 						'.$colNameCity.'
 						<th class="text-center">Total Unit</th>
@@ -109,6 +140,7 @@ if($action_print == 'pdf'){
                 	$nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
 					$revenue_id = !empty($value['Revenue']['id'])?$value['Revenue']['id']:false;
 					$nopol = !empty($value['Revenue']['Ttuj']['nopol'])?$value['Revenue']['Ttuj']['nopol']:$nopol;
+
 					$grandTotalUnit += $qty = $value['RevenueDetail']['qty_unit'];
 					$date_revenue = '-';
 					$payment_type = !empty($value['RevenueDetail']['payment_type'])?$value['RevenueDetail']['payment_type']:false;
@@ -116,6 +148,10 @@ if($action_print == 'pdf'){
                 	$rate = $this->Common->filterEmptyField($value, 'RevenueDetail', 'price_unit');
                 	$total_price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'total_price_unit');
 	                $totalPriceFormat = '';
+
+					$no_doc = $this->Common->filterEmptyField($value, 'Revenue', 'no_doc');
+					$no_do = $this->Common->filterEmptyField($value, 'RevenueDetail', 'no_do');
+					$no_sj = $this->Common->filterEmptyField($value, 'RevenueDetail', 'no_sj');
 
 	                if( !empty($is_charge) ) {
 	                    $totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
@@ -127,14 +163,38 @@ if($action_print == 'pdf'){
 
 					$colom = $this->Html->tag('td', $no++);
 
-					if( $data_print == 'date' ) {
+					if( in_array($data_print, array( 'date', 'sa' )) ) {
 						$city_name = !empty($value['City']['name'])?$value['City']['name']:false;
 						$colom .= $this->Html->tag('td', $value['City']['name']);
 					}
 
 					$colom .= $this->Html->tag('td', $nopol);
-					$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_do']);
-					$colom .= $this->Html->tag('td', $value['RevenueDetail']['no_sj']);
+
+					if( in_array($data_print, array( 'sa' )) ) {
+						$no_do_sj = array();
+
+						if( !empty($no_do) ) {
+							$no_do_sj[] = $no_do;
+						}
+						if( !empty($no_sj) ) {
+							$no_do_sj[] = $no_sj;
+						}
+
+						if( !empty($no_do_sj) ) {
+							$colom .= $this->Html->tag('td', implode(' / ', $no_do_sj));
+						} else {
+							$colom .= $this->Html->tag('td', '');
+						}
+
+						$colom .= $this->Html->tag('td', $no_doc);
+					} else {
+						$colom .= $this->Html->tag('td', $no_do);
+
+						if( !in_array($data_print, array( 'hso-smg' )) ) {
+							$colom .= $this->Html->tag('td', $no_sj);
+						}
+					}
+
 
 					if(!empty($value['Revenue']['date_revenue'])){
 						$date_revenue = $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y');
