@@ -70,7 +70,11 @@ class RevenuesController extends AppController {
         if( !empty($ttujs) ) {
             foreach ($ttujs as $key => $ttuj) {
                 $id = $this->MkCommon->filterEmptyField( $ttuj, 'Ttuj', 'id' );
-                $ttujs[$key] = $this->Ttuj->SuratJalan->SuratJalanDetail->getMergeFirst( $ttuj, $id, 'SuratJalanDetail.ttuj_id', array(
+                $ttujs[$key] = $this->Ttuj->SuratJalanDetail->getMergeFirst( $ttuj, $id, 'SuratJalanDetail.ttuj_id', array(
+                    'conditions' => array(
+                        'SuratJalan.status' => 1,
+                        'SuratJalan.is_canceled' => 0,
+                    ),
                     'contain' => array(
                         'SuratJalan',
                     ),
@@ -5926,17 +5930,17 @@ class RevenuesController extends AppController {
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
         ));
-        $options =  $this->Ttuj->SuratJalan->_callRefineParams($params);
+        $options =  $this->SuratJalan->_callRefineParams($params);
 
-        $this->paginate = $this->Ttuj->SuratJalan->getData('paginate', $options);
+        $this->paginate = $this->SuratJalan->getData('paginate', $options);
         $values = $this->paginate('SuratJalan');
 
         if( !empty($values) ) {
             foreach ($values as $key => $value) {
                 $id = $this->MkCommon->filterEmptyField($value, 'SuratJalan', 'id');
 
-                $value['SuratJalan']['cnt_ttuj'] = $this->Ttuj->SuratJalan->SuratJalanDetail->_callTotalTtujDiterima( $id );
-                $value['SuratJalan']['qty_unit'] = $this->Ttuj->SuratJalan->SuratJalanDetail->_callQtyDetail( $id, 'SuratJalanDetail.surat_jalan_id' );
+                $value['SuratJalan']['cnt_ttuj'] = $this->SuratJalan->SuratJalanDetail->_callTotalTtujDiterima( $id );
+                $value['SuratJalan']['qty_unit'] = $this->SuratJalan->SuratJalanDetail->_callQtyDetail( $id, 'SuratJalanDetail.surat_jalan_id' );
 
                 $values[$key] = $value;
             }
@@ -5967,12 +5971,12 @@ class RevenuesController extends AppController {
             );
         }
 
-        $value = $this->Ttuj->SuratJalan->getData('first', array(
+        $value = $this->Ttuj->SuratJalanDetail->SuratJalan->getData('first', array(
             'conditions' => array(
                 'SuratJalan.id' => $id
             ),
         ), $elementRevenue);
-        $value = $this->Ttuj->SuratJalan->SuratJalanDetail->getMerge($value, $id);
+        $value = $this->Ttuj->SuratJalanDetail->getMerge($value, $id);
 
         $this->doSuratJalan( $id, $value, $disabled_edit );
     }
@@ -5989,7 +5993,7 @@ class RevenuesController extends AppController {
         $msgError = array();
 
         if( !empty($surat_jalan_id) ) {
-            $this->Ttuj->SuratJalan->SuratJalanDetail->updateAll( array(
+            $this->Ttuj->SuratJalanDetail->updateAll( array(
                 'SuratJalanDetail.status' => 0,
             ), array(
                 'SuratJalanDetail.surat_jalan_id' => $surat_jalan_id,
@@ -6021,14 +6025,14 @@ class RevenuesController extends AppController {
                     $dataSjDetail['SuratJalanDetail']['surat_jalan_id'] = $surat_jalan_id;
                 }
 
-                $this->Ttuj->SuratJalan->SuratJalanDetail->create();
-                $this->Ttuj->SuratJalan->SuratJalanDetail->set($dataSjDetail);
+                $this->Ttuj->SuratJalanDetail->create();
+                $this->Ttuj->SuratJalanDetail->set($dataSjDetail);
 
                 if( !empty($surat_jalan_id) ) {
-                    if( !$this->Ttuj->SuratJalan->SuratJalanDetail->save() ) {
+                    if( !$this->Ttuj->SuratJalanDetail->save() ) {
                         $status = false;
                     } else {
-                        $qtyDiterima = $this->Ttuj->SuratJalan->SuratJalanDetail->_callTotalQtyDiterima( $ttuj_id );
+                        $qtyDiterima = $this->Ttuj->SuratJalanDetail->_callTotalQtyDiterima( $ttuj_id );
 
                         if( $qtyDiterima >= $muatan ) {
                             $this->Ttuj->set('is_sj_completed', 1);
@@ -6040,8 +6044,8 @@ class RevenuesController extends AppController {
                         $this->Ttuj->save();
                     }
                 } else {
-                    if( !$this->Ttuj->SuratJalan->SuratJalanDetail->validates() ) {
-                        $errorValidations = $this->Ttuj->SuratJalan->SuratJalanDetail->validationErrors;
+                    if( !$this->Ttuj->SuratJalanDetail->validates() ) {
+                        $errorValidations = $this->Ttuj->SuratJalanDetail->validationErrors;
 
                         if( !empty($errorValidations) ) {
                             foreach ($errorValidations as $key => $error) {
@@ -6092,16 +6096,16 @@ class RevenuesController extends AppController {
             $errorDetail = $this->MkCommon->filterEmptyField($resutlDetail, 'msgError');
 
             if( !empty($id) ) {
-                $this->Ttuj->SuratJalan->id = $id;
+                $this->Ttuj->SuratJalanDetail->SuratJalan->id = $id;
             } else {
-                $this->Ttuj->SuratJalan->create();
+                $this->Ttuj->SuratJalanDetail->SuratJalan->create();
             }
 
-            $this->Ttuj->SuratJalan->set($data);
+            $this->Ttuj->SuratJalanDetail->SuratJalan->set($data);
 
-            if( $this->Ttuj->SuratJalan->validates() && !empty($flagDetail) ){
-                if($this->Ttuj->SuratJalan->save()){
-                    $document_id = $this->Ttuj->SuratJalan->id;
+            if( $this->Ttuj->SuratJalanDetail->SuratJalan->validates() && !empty($flagDetail) ){
+                if($this->Ttuj->SuratJalanDetail->SuratJalan->save()){
+                    $document_id = $this->Ttuj->SuratJalanDetail->SuratJalan->id;
                     $this->doSjDetail($dataDetail, $data, $document_id);
 
                     $this->params['old_data'] = $value;
@@ -6166,7 +6170,7 @@ class RevenuesController extends AppController {
             'msg' => '',
             'type' => 'error'
         );
-        $value = $this->Ttuj->SuratJalan->getData('first', array(
+        $value = $this->Ttuj->SuratJalanDetail->SuratJalan->getData('first', array(
             'conditions' => array(
                 'SuratJalan.id' => $id,
             ),
@@ -6183,22 +6187,22 @@ class RevenuesController extends AppController {
                     )
                 ));
 
-                $value = $this->Ttuj->SuratJalan->SuratJalanDetail->getMerge($value, $id);
+                $value = $this->Ttuj->SuratJalanDetail->getMerge($value, $id);
                 $dataDetail = $this->MkCommon->filterEmptyField($value, 'SuratJalanDetail');
 
                 if(!empty($data['SuratJalan']['canceled_date'])){
                     $data['SuratJalan']['canceled_date'] = $this->MkCommon->filterEmptyField($data, 'SuratJalan', 'canceled_date');
                     $data['SuratJalan']['is_canceled'] = 1;
 
-                    $this->Ttuj->SuratJalan->id = $id;
-                    $this->Ttuj->SuratJalan->set($data);
+                    $this->Ttuj->SuratJalanDetail->SuratJalan->id = $id;
+                    $this->Ttuj->SuratJalanDetail->SuratJalan->set($data);
 
-                    if($this->Ttuj->SuratJalan->save()){
+                    if($this->Ttuj->SuratJalanDetail->SuratJalan->save()){
                         if( !empty($dataDetail) ) {
                             foreach ($dataDetail as $key => $detail) {
                                 $ttuj_id = $this->MkCommon->filterEmptyField($detail, 'SuratJalanDetail', 'ttuj_id');
                                 $muatan = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
-                                $qtyDiterima = $this->Ttuj->SuratJalan->SuratJalanDetail->_callTotalQtyDiterima( $ttuj_id );
+                                $qtyDiterima = $this->Ttuj->SuratJalanDetail->_callTotalQtyDiterima( $ttuj_id );
 
                                 if( $qtyDiterima >= $muatan ) {
                                     $this->Ttuj->set('is_sj_completed', 1);
@@ -6277,7 +6281,7 @@ class RevenuesController extends AppController {
 
             if( !empty($ttujs) ) {
                 foreach ($ttujs as $key => $ttuj) {
-                    $ttuj['SjKembali'] = $this->Ttuj->SuratJalan->getSJKembali( $ttuj['Ttuj']['id'] );
+                    $ttuj['SjKembali'] = $this->Ttuj->SuratJalanDetail->_callTotalQtyDiterima( $ttuj['Ttuj']['id'] );
                     $ttuj['TotalMuatan'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj['Ttuj']['id'] );
                     $ttujs[$key] = $ttuj;
                 }
@@ -6320,7 +6324,7 @@ class RevenuesController extends AppController {
 
                 $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
                 $value['Ttuj']['qty'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
-                $value['Ttuj']['qty_diterima'] = $this->Ttuj->SuratJalan->SuratJalanDetail->_callTotalQtyDiterima( $ttuj_id );
+                $value['Ttuj']['qty_diterima'] = $this->Ttuj->SuratJalanDetail->_callTotalQtyDiterima( $ttuj_id );
 
                 $values[$key] = $value;
             }
@@ -6568,17 +6572,32 @@ class RevenuesController extends AppController {
             if(!empty($refine['status'])){
                 $status = urldecode($refine['status']);
                 $this->request->data['Ttuj']['status'] = $status;
+                $options['contain'][] = 'SuratJalanDetail';
                 $options['contain'][] = 'SuratJalan';
+
+                $this->Ttuj->unBindModel(array(
+                    'hasMany' => array(
+                        'SuratJalanDetail'
+                    )
+                ));
 
                 $this->Ttuj->bindModel(array(
                     'hasOne' => array(
+                        'SuratJalanDetail' => array(
+                            'className' => 'SuratJalanDetail',
+                            'conditions' => array(
+                                'SuratJalanDetail.status' => 1,
+                            ),
+                        ),
                         'SuratJalan' => array(
                             'className' => 'SuratJalan',
-                            'foreignKey' => 'ttuj_id',
+                            'foreignKey' => false,
                             'conditions' => array(
+                                'SuratJalan.id = SuratJalanDetail.surat_jalan_id',
                                 'SuratJalan.status' => 1,
+                                'SuratJalan.is_canceled' => 0,
                             ),
-                        )
+                        ),
                     )
                 ), false);
 

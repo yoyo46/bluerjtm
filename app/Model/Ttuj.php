@@ -148,11 +148,11 @@ class Ttuj extends AppModel {
                 'TtujPerlengkapan.status' => 1,
             ),
         ),
-        'SuratJalan' => array(
-            'className' => 'SuratJalan',
+        'SuratJalanDetail' => array(
+            'className' => 'SuratJalanDetail',
             'foreignKey' => 'ttuj_id',
             'conditions' => array(
-                'SuratJalan.status' => 1,
+                'SuratJalanDetail.status' => 1,
             ),
         ),
         'Revenue' => array(
@@ -268,6 +268,7 @@ class Ttuj extends AppModel {
         if( empty($data['Qty']) ){
             $this->TtujTipeMotor = ClassRegistry::init('TtujTipeMotor');
             
+            $this->TtujTipeMotor->virtualFields['qty'] = 'SUM(TtujTipeMotor.qty)';
             $data_merge = $this->TtujTipeMotor->find('first', array(
                 'conditions' => array(
                     'TtujTipeMotor.status' => 1,
@@ -276,48 +277,49 @@ class Ttuj extends AppModel {
                 'group' => array(
                     'TtujTipeMotor.ttuj_id',
                 ),
-                'fields' => array(
-                    'SUM(TtujTipeMotor.qty) AS qty',
-                ),
             ));
 
-            if(!empty($data_merge[0])){
-                $data['Qty'] = $data_merge[0]['qty'];
+            if(!empty($data_merge)){
+                $data['Qty'] = !empty($data_merge['TtujTipeMotor']['qty'])?$data_merge['TtujTipeMotor']['qty']:0;
             }
 
             $conditions = array(
+                'SuratJalanDetail.status' => 1,
                 'SuratJalan.status' => 1,
-                'SuratJalan.ttuj_id' => $ttuj_id,
-                'SuratJalan.id <>' => $surat_jalan_id,
+                'SuratJalan.is_canceled' => 0,
+                'SuratJalanDetail.ttuj_id' => $ttuj_id,
+                'SuratJalanDetail.surat_jalan_id <>' => $surat_jalan_id,
             );
-            $data_merge = $this->SuratJalan->find('first', array(
+
+            $this->SuratJalanDetail->virtualFields['qty'] = 'SUM(SuratJalanDetail.qty)';
+            $data_merge = $this->SuratJalanDetail->getData('first', array(
                 'conditions' => $conditions,
                 'group' => array(
-                    'SuratJalan.ttuj_id',
+                    'SuratJalanDetail.ttuj_id',
                 ),
-                'fields' => array(
-                    'SUM(SuratJalan.qty) AS qty',
+                'contain' => array(
+                    'SuratJalan',
                 ),
             ));
 
-            if(!empty($data_merge[0])){
-                $data['QtySJ'] = $data_merge[0]['qty'];
+            if(!empty($data_merge)){
+                $data['QtySJ'] = !empty($data_merge['SuratJalanDetail']['qty'])?$data_merge['SuratJalanDetail']['qty']:0;
             }
 
             switch ($data_action) {
                 case 'tgl_surat_jalan':
-                    $data_merge = $this->SuratJalan->find('first', array(
+                    $data_merge = $this->SuratJalanDetail->find('first', array(
                         'conditions' => $conditions,
-                        'fields' => array(
-                            'SuratJalan.tgl_surat_jalan',
-                        ),
                         'order' => array(
                             'SuratJalan.tgl_surat_jalan' => 'DESC',
                             'SuratJalan.id' => 'DESC',
                         ),
+                        'contain' => array(
+                            'SuratJalan',
+                        ),
                     ));
 
-                    if(!empty($data_merge)){
+                    if(!empty($data_merge['SuratJalan'])){
                         $data['SuratJalan']['tgl_surat_jalan'] = $data_merge['SuratJalan']['tgl_surat_jalan'];
                     }
                     break;
