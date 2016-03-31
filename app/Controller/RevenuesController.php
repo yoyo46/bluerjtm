@@ -6701,6 +6701,7 @@ class RevenuesController extends AppController {
 
     function invoice_hso_print($id, $action_print = false){
         $this->loadModel('Invoice');
+        $this->loadModel('City');
 
         $module_title = __('Print Invoice HSO');
         $this->set('sub_module_title', trim($module_title));
@@ -6741,9 +6742,12 @@ class RevenuesController extends AppController {
 
                                     $detail = $this->Invoice->InvoiceDetail->RevenueDetail->getMerge($detail, $revenue_detail_id);
                                     $detail = $this->Invoice->InvoiceDetail->Revenue->getMerge($detail, false, $revenue_id);
+
+                                    $city_id = $this->MkCommon->filterEmptyField($detail, 'RevenueDetail', 'city_id');
                                     $ttuj_id = $this->MkCommon->filterEmptyField($detail, 'Revenue', 'ttuj_id');
                                     $truck_id = $this->MkCommon->filterEmptyField($detail, 'Revenue', 'truck_id');
                                    
+                                    $detail = $this->City->getMerge($detail, $city_id);
                                     $detail = $this->Ttuj->getMerge($detail, $ttuj_id);
                                     $detail = $this->Ttuj->Truck->getMerge($detail, $truck_id);
                                     $invoice['InvoiceDetail'][$key] = $detail;

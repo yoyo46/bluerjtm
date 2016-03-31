@@ -73,6 +73,7 @@
 					                $is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
 					                $total_price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'total_price_unit');
 
+				    				$city = $this->Common->filterEmptyField($value, 'City', 'code');
 				    				$nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol', '-');
 				    				$noref = $this->Common->getNoRef($revenue_id);
 
@@ -87,6 +88,9 @@
 				    				$price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'price_unit', 0);
 				    				$totalUnit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'qty_unit', 0);
 									$totalPriceFormat = '';
+									$doArr = array(
+										$no_do,
+									);
 
 				    				if( !empty($is_charge) ) {
 										$totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
@@ -94,6 +98,15 @@
 									} else {
 										$total_price_unit = 0;
 										$customPrice = '';
+									}
+
+									if( !empty($city) ) {
+										$doArr[] = $city;
+									}
+
+									if( !empty($doArr) ) {
+										$doArr = array_filter($doArr);
+										$no_do = implode(' - ', $doArr);
 									}
 
 									$grandTotalUnit += $totalUnit;
