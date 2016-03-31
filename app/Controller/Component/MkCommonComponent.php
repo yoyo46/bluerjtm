@@ -1659,9 +1659,19 @@ class MkCommonComponent extends Component {
 
         if( !empty($date) ) {
             $result = $this->_callDateRangeFormat($result, $date);
+        } else if( !empty($dateFrom) && !empty($dateTo) ) {
+            $this->controller->request->data['Search']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
+
+            $result['named']['DateFrom'] = $dateFrom;
+            $result['named']['DateTo'] = $dateTo;
         }
         if( !empty($datettuj) ) {
             $result = $this->_callDateRangeFormat($result, $datettuj, 'datettuj', 'DateFromTtuj', 'DateToTtuj');
+        } else if( !empty($dateFromTtuj) && !empty($dateToTtuj) ) {
+            $this->controller->request->data['Search']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFromTtuj)), date('d/m/Y', strtotime($dateToTtuj)));
+
+            $result['named']['DateFromTtuj'] = $dateFromTtuj;
+            $result['named']['DateToTtuj'] = $dateToTtuj;
         }
         if( !empty($daterange) ) {
             $result = $this->_callDateRangeFormat($result, $daterange, 'daterange', 'DateFromRange', 'DateToRange');

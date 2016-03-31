@@ -7,7 +7,8 @@
                 $date = $this->Common->filterEmptyField($value, 'Revenue', 'date_revenue');
                 $unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'qty_unit');
                 $price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'price_unit');
-                $total = $price_unit * $unit;
+                $is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
+                $total_price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'total_price_unit');
 
                 $customer = $this->Common->filterEmptyField($value, 'Customer', 'code');
                 $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
@@ -17,12 +18,19 @@
                 $no_invoice = $this->Common->filterEmptyField($value, 'Invoice', 'no_invoice');
 
                 $status = $this->Revenue->_callStatus($value, 'Ttuj', 'nodoc');
-                $customTotal = $this->Common->getFormatPrice($total);
-                $customPrice = $this->Common->getFormatPrice($price_unit);
                 $customDate = $this->Common->formatDate($date, 'd/m/Y');
+                $totalPriceFormat = '';
+
+                if( !empty($is_charge) ) {
+                    $totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
+                    $customPrice = $this->Common->getFormatPrice($price_unit, false);
+                } else {
+                    $total_price_unit = 0;
+                    $customPrice = '';
+                }
 
                 $totalUnit += $unit;
-                $totalInvoice += $total;
+                $totalInvoice += $total_price_unit;
 ?>
 <tr>
     <?php 
@@ -40,7 +48,7 @@
             echo $this->Html->tag('td', $customPrice, array(
                 'style' => 'text-align: right;'
             ));
-            echo $this->Html->tag('td', $customTotal, array(
+            echo $this->Html->tag('td', $totalPriceFormat, array(
                 'style' => 'text-align: right;'
             ));
             echo $this->Html->tag('td', $no_invoice);

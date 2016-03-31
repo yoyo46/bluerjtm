@@ -21,9 +21,11 @@
     <h2 class="page-header" style="<?php echo $tdStyle; ?>">
         <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
         <?php
-                echo $this->Html->tag('div', $periode, array(
-                    'class' => 'pull-right',
-                ));
+                if( !empty($periode) ) {
+                    echo $this->Html->tag('div', $periode, array(
+                        'class' => 'pull-right',
+                    ));
+                }
         ?>
         <div class="clear"></div>
     </h2>
