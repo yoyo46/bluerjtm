@@ -1,8 +1,8 @@
 <?php 
         $data = $this->request->data;
-        $dataDetail = $this->Common->filterEmptyField($data, 'PurchaseOrderDetail');
+        $dataDetail = $this->Common->filterEmptyField($data, 'PurchaseOrderAsset');
 
-		$dataColumns = array(
+        $dataColumns = array(
             'name' => array(
                 'name' => __('Nama Asset'),
                 'style' => 'width:15%;',
@@ -22,93 +22,88 @@
                 'class' => 'text-center',
                 'style' => 'width:15%;',
             ),
-            'action' => array(
-                'name' => __('Action'),
-                'class' => 'text-center',
-                'style' => 'width:5%;',
-            ),
         );
+
+        if( empty($view) ) {
+            $dataColumns = array_merge($dataColumns, array(
+                'action' => array(
+                    'name' => __('Action'),
+                    'class' => 'text-center',
+                    'style' => 'width:5%;',
+                ),
+            ));
+        }
+
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
-
-        echo $this->Html->tag('div', $this->Html->link($this->Common->icon('plus-square').__(' Tambah Barang'), $this->Html->url( array(
-                'controller'=> 'ajax', 
-                'action' => 'products',
-                'po',
-                'admin' => false,
-            )), array(
-                'escape' => false,
-                'title' => __('Daftar Barang'),
-                'class' => 'btn bg-maroon ajaxCustomModal',
-                'class' => 'btn btn-success add-custom-field btn-xs',
-                'action_type' => 'revenue-detail'
-            )), array(
-            'class' => "form-group",
-        ));
 ?>
-<div class="temp-document-picker document-calc">
-	<div class="box box-success">
-	    <?php 
-	            echo $this->element('blocks/common/box_header', array(
-	                'title' => __('Informasi Asset'),
-	            ));
-	    ?>
-	    <div class="box-body table-responsive">
-	        <table class="table table-hover" id="wrapper-write">
-		        <?php
-	                    if( !empty($fieldColumn) ) {
-	                        echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));
-	                    }
-	            ?>
-	        	<tbody>
-                    <?php
-                            $grandtotal = 0;
+<div class="form-added temp-document-picker">
+    <?php 
+            if( empty($view) ) {
+                echo $this->Html->tag('div', $this->Html->link($this->Common->icon('plus-square').__(' Tambah Barang'), '#', array(
+                    'escape' => false,
+                    'class' => 'btn btn-success field-added btn-xs',
+                )), array(
+                    'class' => "form-group",
+                ));
+            }
+    ?>
+    <div class="temp-document-picker document-calc">
+    	<div class="box box-success">
+    	    <?php 
+    	            echo $this->element('blocks/common/box_header', array(
+    	                'title' => __('Informasi Asset'),
+    	            ));
+    	    ?>
+    	    <div class="box-body table-responsive">
+    	        <table class="table table-hover form-added" id="wrapper-write">
+    		        <?php
+    	                    if( !empty($fieldColumn) ) {
+    	                        echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));
+    	                    }
+    	            ?>
+    	        	<tbody class="field-content">
+                        <?php
+                                $grandtotal = 0;
 
-                            if(!empty($dataDetail)){
-                                foreach ($dataDetail as $key => $value) {
-                                    $supplier_quotation_detail_id = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'supplier_quotation_detail_id');
+                                if(!empty($dataDetail)){
+                                    foreach ($dataDetail as $key => $value) {
+                                        $price = $this->Common->filterEmptyField($value, 'PurchaseOrderAsset', 'price');
 
-                                    $total = $this->Purchase->calculate($value, $ppn_include);
-                                    $grandtotal += $total;
+                                        $grandtotal += $price;
+                                        $customTotal = $this->Common->getFormatPrice($price);
 
-                                    $customTotal = $this->Common->getFormatPrice($total);
-                                    $disabled = false;
-
-                                    if( !empty($supplier_quotation_detail_id) ) {
-                                        $disabled = true;
+                                        echo $this->element('blocks/assets/tables/purchase_orders/items', array(
+                                            'modelName' => 'PurchaseOrderDetail',
+                                            'value' => $value,
+                                            'total' => $customTotal,
+                                            'idx' => $key,
+                                        ));
                                     }
-
-                                    echo $this->element('blocks/purchases/purchase_orders/tables/detail_items', array(
-                                        'modelName' => 'PurchaseOrderDetail',
-                                        'sq_detail_id' => $supplier_quotation_detail_id,
-                                        'value' => $value,
-                                        'total' => $customTotal,
-                                        'disabled' => $disabled,
-                                        'id' => $key,
+                                } else {
+                                    echo $this->element('blocks/assets/tables/purchase_orders/items', array(
+                                        'idx' => 0,
                                     ));
                                 }
-                            } else {
-                                echo $this->element('blocks/assets/tables/purchase_orders/items', array(
-                                    'id' => 0,
-                                ));
-                            }
-                    ?>
-                </tbody>
-                <tfoot>
-                    <tr class="grandtotal">
-                        <?php
-                                $customGrandtotal = $this->Common->getFormatPrice($grandtotal);
-
-                                echo $this->Html->tag('td', __('Grand Total'), array(
-                                    'colspan' => 3,
-                                    'class' => 'text-right',
-                                ));
-                                echo $this->Html->tag('td', $customGrandtotal, array(
-                                    'class' => 'text-right total',
-                                ));
                         ?>
-                    </tr>
-                </tfoot>
-	    	</table>
-	    </div>
-	</div>
+                    </tbody>
+                    <tfoot>
+                        <tr class="grandtotal">
+                            <?php
+                                    $customGrandtotal = $this->Common->getFormatPrice($grandtotal, 0, 2);
+
+                                    echo $this->Html->tag('td', __('Grand Total'), array(
+                                        'colspan' => 3,
+                                        'class' => 'text-right',
+                                    ));
+                                    echo $this->Html->tag('td', $customGrandtotal, array(
+                                        'class' => 'text-right total',
+                                        'data-decimal' => 2,
+                                    ));
+                            ?>
+                        </tr>
+                    </tfoot>
+    	    	</table>
+    	    </div>
+    	</div>
+    </div>
 </div>

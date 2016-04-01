@@ -135,73 +135,86 @@ class RjAssetComponent extends Component {
             if( !empty($truck_id) ) {
                 $data['Asset']['truck_id'] = $truck_id;
             }
+
+            $data['Asset']['branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
         return $data;
     }
 
-    function _callBeforeSavePO ( $data ) {
+    function _callBeforeSavePO ( $data, $id = false ) {
+        $dataSave = array();
+
         if( !empty($data) ) {
-            $dataSave = array();
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'PurchaseOrder' => array(
+                        'transaction_date',
+                    ),
+                ),
+            ));
+
+            $values = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderAsset', 'name');
             $transaction_date = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'transaction_date');
-            $dataDetail = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderDetail');
-            $dataDetailProduct = $this->MkCommon->filterEmptyField($dataDetail, 'product_id');
 
-            $transaction_date = $this->MkCommon->getDate($transaction_date);
+            $dataSave['PurchaseOrder'] = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder');
+            $dataSave['PurchaseOrder']['id'] = $id;
+            $dataSave['PurchaseOrder']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $dataSave['PurchaseOrder']['user_id'] = Configure::read('__Site.config_user_id');
+            $dataSave['PurchaseOrder']['is_asset'] = 1;
 
-            $data['PurchaseOrder']['user_id'] = Configure::read('__Site.config_user_id');
-            $data['PurchaseOrder']['transaction_date'] = $transaction_date;
+            if( !empty($values) ) {
+                $grandtotal = 0;
 
-            if( !empty($dataDetailProduct) ) {
-                $values = array_filter($dataDetailProduct);
-                unset($data['PurchaseOrderDetail']);
+                foreach ($values as $key => $name) {
+                    $truckArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderAsset', 'truck_id');
+                    $noteArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderAsset', 'note');
+                    $assetArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderAsset', 'asset_group_id');
+                    $priceArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderAsset', 'price');
 
-                foreach ($values as $key => $product_id) {
-                    $dataPODetail = array();
-                    $supplier_quotation_detail_id = $this->MkCommon->filterEmptyField($dataDetail, 'supplier_quotation_detail_id', $key);
-                    $qty = $this->MkCommon->filterEmptyField($dataDetail, 'qty', $key);
+                    $truck_id = !empty($truckArr[$key])?$truckArr[$key]:false;
+                    $note = !empty($noteArr[$key])?$noteArr[$key]:false;
+                    $asset_group_id = !empty($assetArr[$key])?$assetArr[$key]:false;
+                    $price = !empty($priceArr[$key])?$this->MkCommon->_callPriceConverter($priceArr[$key]):false;
+                    $grandtotal += $price;
 
-                    if( !empty($supplier_quotation_detail_id) ) {
-                        $sqDetail = $this->controller->User->SupplierQuotation->SupplierQuotationDetail->getData('first', array(
+                    $assetGroup = $this->controller->Asset->AssetGroup->getMerge(array(), $asset_group_id);
+                    $is_truck = $this->MkCommon->filterEmptyField($assetGroup, 'AssetGroup', 'is_truck');
+
+                    if( !empty($is_truck) ) {
+                        $company = $this->controller->Asset->AssetGroup->PurchaseOrderAsset->Truck->Company->getData('first', array(
                             'conditions' => array(
-                                'SupplierQuotationDetail.id' => $supplier_quotation_detail_id
+                                'Company.name LIKE' => '%RJTM%'
                             ),
-                        ), array(
-                            'status' => 'all',
                         ));
+                        $company_id = $this->MkCommon->filterEmptyField($company, 'Company', 'id', 0);
+                        $thn = $this->MkCommon->customDate($transaction_date, 'Y');
 
-                        $price = $this->MkCommon->filterEmptyField($sqDetail, 'SupplierQuotationDetail', 'price');
-                        $disc = $this->MkCommon->filterEmptyField($sqDetail, 'SupplierQuotationDetail', 'disc');
-                        $ppn = $this->MkCommon->filterEmptyField($sqDetail, 'SupplierQuotationDetail', 'ppn');
-                    } else {
-                        $price = $this->MkCommon->filterEmptyField($dataDetail, 'price', $key);
-                        $disc = $this->MkCommon->filterEmptyField($dataDetail, 'disc', $key);
-                        $ppn = $this->MkCommon->filterEmptyField($dataDetail, 'ppn', $key);
+                        $dataSave['PurchaseOrderAsset'][$key]['Truck'] = array(
+                            'id' => $truck_id,
+                            'branch_id' => Configure::read('__Site.config_branch_id'),
+                            'company_id' => $company_id,
+                            'nopol' => $name,
+                            'tahun' => $thn,
+                            'tahun_neraca' => $thn,
+                            'purchase_date' => $transaction_date,
+                            'is_asset' => 1,
+                        );
                     }
 
-                    $ppn = $this->MkCommon->_callPriceConverter($ppn);
-                    $disc = $this->MkCommon->_callPriceConverter($disc);
-                    $price = $this->MkCommon->_callPriceConverter($price);
-
-                    $dataPODetail['PurchaseOrderDetail'] = array(
-                        'product_id' => $product_id,
-                        'supplier_quotation_detail_id' => $supplier_quotation_detail_id,
+                    $dataSave['PurchaseOrderAsset'][$key]['PurchaseOrderAsset'] = array(
+                        'name' => $name,
+                        'note' => $note,
+                        'asset_group_id' => $asset_group_id,
                         'price' => $price,
-                        'ppn' => $ppn,
-                        'disc' => $disc,
-                        'qty' => $qty,
                     );
-                    $dataPODetail = $this->controller->PurchaseOrder->PurchaseOrderDetail->Product->getMerge($dataPODetail, $product_id);
-                    $dataSave[] = $dataPODetail;
                 }
-            }
 
-            if( !empty($dataSave) ) {
-                $data['PurchaseOrderDetail'] = $dataSave;
+                $dataSave['PurchaseOrder']['grandtotal'] = $grandtotal;
             }
         }
 
-        return $data;
+        return $dataSave;
     }
 
     function _callBeforeRenderPO ( $data ) {
@@ -222,7 +235,7 @@ class RjAssetComponent extends Component {
                 'AssetGroup.id', 'AssetGroup.group_name',
             ),
         ));
-        $vendors = $this->controller->Asset->Truck->PurchaseOrderDetail->PurchaseOrder->Vendor->getData('list');
+        $vendors = $this->controller->Asset->Truck->PurchaseOrderAsset->PurchaseOrder->Vendor->getData('list');
 
         $this->controller->set(compact(
             'assetGroups', 'vendors'

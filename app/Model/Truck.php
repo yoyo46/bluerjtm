@@ -195,6 +195,10 @@ class Truck extends AppModel {
             'className' => 'Asset',
             'foreignKey' => 'asset_id',
         ),
+        'PurchaseOrderAsset' => array(
+            'className' => 'PurchaseOrderAsset',
+            'foreignKey' => 'truck_id',
+        ),
     );
 
     var $belongsTo = array(
@@ -263,10 +267,6 @@ class Truck extends AppModel {
         ),
         'DocumentPaymentDetail' => array(
             'className' => 'DocumentPaymentDetail',
-            'foreignKey' => 'truck_id',
-        ),
-        'PurchaseOrderDetail' => array(
-            'className' => 'PurchaseOrderDetail',
             'foreignKey' => 'truck_id',
         ),
     );
@@ -443,6 +443,19 @@ class Truck extends AppModel {
 
             if(!empty($data_merge)){
                 $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
+    }
+
+    function getMergeAll($data, $modelName = false){
+        if( !empty($data) ){
+            foreach ($data as $key => $value) {
+                $truck_id = !empty($value[$modelName]['truck_id'])?$value[$modelName]['truck_id']:false;
+
+                $value = $this->getMerge($value, $truck_id);
+                $data[$key] = $value;
             }
         }
 

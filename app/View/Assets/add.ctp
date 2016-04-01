@@ -54,13 +54,13 @@
 		<div class="box">
 		    <div class="box-body">
 		    	<?php 
-						echo $this->Common->buildInputForm('status_document', __('Status *'), array(
-							'empty' => __('Status'),
-							'options' => array(
-								'sold' => __('Sold'),
-								'available' => __('Available'),
-							),
-						));
+						// echo $this->Common->buildInputForm('status_document', __('Status *'), array(
+						// 	'empty' => __('Status'),
+						// 	'options' => array(
+						// 		'sold' => __('Sold'),
+						// 		'available' => __('Available'),
+						// 	),
+						// ));
 						echo $this->Common->buildInputForm('lokasi', __('Lokasi'));
 						echo $this->Common->buildInputForm('nilai_perolehan', __('Nilai perolehan *'), array(
 							'type' => 'text',

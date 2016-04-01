@@ -14,6 +14,10 @@
                 'name' => __('Nilai Sisa'),
                 'class' => 'text-center',
             ),
+            'truck' => array(
+                'name' => __('Asset Truk?'),
+                'class' => 'text-center',
+            ),
             'created' => array(
                 'name' => __('Dibuat'),
                 'class' => 'text-center',
@@ -54,9 +58,11 @@
                             $umur_ekonomis = $this->Common->filterEmptyField($value, 'AssetGroup', 'umur_ekonomis');
                             $nilai_sisa = $this->Common->filterEmptyField($value, 'AssetGroup', 'nilai_sisa');
                             $created = $this->Common->filterEmptyField($value, 'AssetGroup', 'created');
+                            $is_truck = $this->Common->filterEmptyField($value, 'AssetGroup', 'is_truck');
 
                             $created = $this->Common->formatDate($created);
                             $nilai_sisa = $this->Common->getFormatPrice($nilai_sisa);
+                            $is_truck = $this->Common->getCheckStatus( $is_truck );
 
                             $action = $this->Html->link(__('Edit'), array(
                                 'action' => 'group_edit',
@@ -80,19 +86,25 @@
                                     array(
                                         $umur_ekonomis,
                                         array(
-                                            'class' => 'actions text-center',
+                                            'class' => 'text-center',
                                         ),
                                     ),
                                     array(
                                         $nilai_sisa,
                                         array(
-                                            'class' => 'actions text-right',
+                                            'class' => 'text-right',
+                                        ),
+                                    ),
+                                    array(
+                                        $is_truck,
+                                        array(
+                                            'class' => 'text-center',
                                         ),
                                     ),
                                     array(
                                         $created,
                                         array(
-                                            'class' => 'actions text-center',
+                                            'class' => 'text-center',
                                         ),
                                     ),
                                     array(

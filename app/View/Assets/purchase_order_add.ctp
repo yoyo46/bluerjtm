@@ -6,6 +6,7 @@
 			'admin' => false,
 		);
 		$value = !empty($value)?$value:false;
+		$view = !empty($view)?$view:false;
 
 		$this->Html->addCrumb($title, $urlRoot);
 		$this->Html->addCrumb($sub_module_title);
@@ -20,7 +21,7 @@
     ?>
     <div class="box-body">
     	<?php 
-				echo $this->Common->buildInputForm('nodoc', __('No Dokumen *'));
+				// echo $this->Common->buildInputForm('nodoc', __('No Dokumen *'));
 				echo $this->Common->buildInputForm('transaction_date', __('Tgl PO *'), array(
 					'type' => 'text',
                     'textGroup' => $this->Common->icon('calendar'),
@@ -42,7 +43,7 @@
 ?>
 <div class="box-footer text-center action">
 	<?php
-			if( !empty($status) || empty($value) ) {
+			if( empty($view) ) {
 	    		echo $this->Form->button(__('Simpan'), array(
 					'div' => false, 
 					'class'=> 'btn btn-success',

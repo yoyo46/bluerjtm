@@ -13,6 +13,10 @@
             'note' => array(
                 'name' => __('Keterangan'),
             ),
+            'grandtotal' => array(
+                'name' => __('Grandtotal'),
+                'class' => 'text-center',
+            ),
             'status' => array(
                 'name' => __('Status'),
                 'field_model' => 'PurchaseOrder.status',
@@ -68,15 +72,32 @@
                             $nodoc = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'nodoc');
                             $transactionDate = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'transaction_date');
                             $note = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'note');
+                            $grandtotal = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'grandtotal');
                             $status = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'status');
+                            $is_asset = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'is_asset');
 
                             $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
 
                             $customStatus = $this->Purchase->_callStatus($value, 'PurchaseOrder');
                             $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
+                            $grandtotal = $this->Common->getFormatPrice($grandtotal, 0, 2);
+
+                            if( !empty($is_asset) ) {
+                                $controller = 'assets';
+                            } else {
+                                $controller = 'purchases';
+                            }
 
                             $customAction = $this->Html->link(__('Detail'), array(
-                                'controller' => 'purchases',
+                                'controller' => $controller,
+                                'action' => 'purchase_order_detail',
+                                $id,
+                                'admin' => false,
+                            ), array(
+                                'class' => 'btn btn-info btn-xs'
+                            ));
+                            $customAction .= $this->Html->link(__('Edit'), array(
+                                'controller' => $controller,
                                 'action' => 'purchase_order_edit',
                                 $id,
                                 'admin' => false,
@@ -98,6 +119,9 @@
                         echo $this->Html->tag('td', $nodoc);
                         echo $this->Html->tag('td', $vendor);
                         echo $this->Html->tag('td', $note);
+                        echo $this->Html->tag('td', $grandtotal, array(
+                            'class' => 'text-right',
+                        ));
                         echo $this->Html->tag('td', $customStatus, array(
                             'class' => 'text-center',
                         ));

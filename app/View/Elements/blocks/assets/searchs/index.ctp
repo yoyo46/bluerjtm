@@ -29,7 +29,7 @@
                 <?php 
                         echo $this->Common->buildInputForm('asset_group_id', __('Group Asset'), array(
                             'empty' => __('Pilih Group Asset'),
-                            'class' => 'chosen-select form-control',
+                            'class' => 'form-control',
                         ));
                         echo $this->Common->buildInputForm('name', __('Nama Asset'));
                         echo $this->element('blocks/common/forms/submit_action', array(

@@ -34,6 +34,10 @@
 		                    'positionGroup' => 'left',
 							'class' => 'form-control input_price pull-left',
 						));
+						echo $this->element('blocks/common/forms/input_checkbox', array(
+							'label' => __('Ini adalah Group Asset Truk?'),
+							'fieldName' => 'AssetGroup.is_truck',
+						));
 			    ?>
 		    </div>
 		</div>

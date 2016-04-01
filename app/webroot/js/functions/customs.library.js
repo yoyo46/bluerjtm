@@ -42,27 +42,37 @@
                 var content = parentAdded.find('.field-content');
                 var temp = parentAdded.find('.field-copy');
                 var value = temp.html();
+                var tag = temp.attr('data-tag');
+
+                if( tag == 'tr' ) {
+                    value = '<tr class="pick-document item">'+value+'</tr>';
+                }
 
                 content.append( value );
 
-                $('.field-content > div.item:last-child input,.field-content > div.item:last-child select').val('');
+                $('.field-content > .item:last-child input,.field-content > .item:last-child select').val('');
 
-                if( $('.field-content > div.item:last-child .tipe_motor_id').length > 0 ) {
-                    $('.field-content > div.item:last-child .tipe_motor_id').change(function() {
+                if( $('.field-content > .item:last-child .tipe_motor_id').length > 0 ) {
+                    $('.field-content > .item:last-child .tipe_motor_id').change(function() {
                         $.getNopol();
                     });
                 }
 
-                if( $('.field-content > div.item:last-child .city-retail-id').length > 0 && $('#getTruck').length > 0 ) {
-                   $('.field-content > div.item:last-child .city-retail-id').val( $('#getTruck').val() );
+                if( $('.field-content > .item:last-child .city-retail-id').length > 0 && $('#getTruck').length > 0 ) {
+                   $('.field-content > .item:last-child .city-retail-id').val( $('#getTruck').val() );
                 }
 
+                $.calcTotal();
                 $.rowRemoved();
                 $.callChoosen({
                     obj: $('.form-added .chosen-select'),
                 });
                 $.qtyMuatanPress({
                     obj: $('.form-added .qty-muatan'),
+                });
+                $.inputPrice({
+                    obj: $('.field-content > div.item:last-child .input_price'),
+                    objComa: $('.field-content > div.item:last-child .input_price_coma'),
                 });
 
                 return false;
@@ -527,6 +537,13 @@
         // getTotal( settings.obj.parents('tr') );
     }
 
+    $.convertDecimal = function(self, decimal){
+        var val = $.convertNumber(self.val(), 'string');
+        var decimal = $.checkUndefined(decimal, 0);
+        
+        return $.formatDecimal(val, decimal);
+    }
+
     $.inputPrice = function(options){
         var settings = $.extend({
             obj: $('.input_price'),
@@ -547,10 +564,9 @@
             settings.objComa.off('blur');
             settings.objComa.blur(function(){
                 var self = $(this);
-                var val = $.convertNumber(self.val(), 'string');
                 var func = $.checkUndefined(self.attr('data-function'), false);
 
-                self.val( $.formatDecimal(val, 2) );
+                self.val( $.convertDecimal(self, 2) );
 
                 if( func != false ) {
                     eval(func + '();');
@@ -558,10 +574,7 @@
             });
 
             jQuery.each( settings.objComa, function( i, val ) {
-                var self = $(this);
-                var val = $.convertNumber(self.val(), 'string');
-                
-                self.val( $.formatDecimal(val, 2) );
+                self.val( $.convertDecimal(self, 2) );
             });
         }
     }
@@ -834,42 +847,54 @@
         }
     }
 
+    function calcGrandTotal () {
+        var objGrandTotal = $('.temp-document-picker .grandtotal .total');
+        var grandtotal = 0;
+        var decimal = $.checkUndefined(objGrandTotal.attr('data-decimal'), 0);
+
+        $.each( $('.pick-document'), function( i, val ) {
+            var self = $(this);
+            grandtotal += calculate(self);
+        });
+
+        if( objGrandTotal.length > 0 ) {
+            objGrandTotal.html( $.formatDecimal(grandtotal, decimal) );
+        }
+    }
+
+    function calculate(parent){
+        var type = parent.attr('data-type');
+        var objPrice = parent.find('.price');
+        var price = $.convertNumber(objPrice.val());
+        var disc = $.convertNumber(parent.find('.disc').val());
+        var ppn = $.convertNumber(parent.find('.ppn').val());
+        var qty = $.convertNumber(parent.find('.qty').val(), 'int', 1);
+        var ppn_include = $('.ppn_include:checked').val();
+        var price_type = objPrice.attr('data-type');
+
+        if( type == 'single-total' ) {
+            total = price;
+        } else {
+            total = ( ( price * qty ) - disc );
+
+            if( ppn_include != 1 ) {
+                total += ppn;
+            }
+        }
+
+        if( price_type == 'input_price_coma' ) {
+            objPrice.val( $.convertDecimal(objPrice, 2) );
+        }
+
+        return total;
+    }
+
     $.calcTotal = function(options){
         var settings = $.extend({
             obj: $('.document-calc .price,.document-calc .disc,.document-calc .ppn,.document-calc .total,.document-calc .qty'),
             objClick: $('.ppn_include'),
             objDelete: $('.delete-document'),
         }, options );
-
-        function calcGrandTotal () {
-            var objGrandTotal = $('.temp-document-picker .grandtotal .total');
-            var grandtotal = 0;
-
-            $.each( $('.pick-document'), function( i, val ) {
-                var self = $(this);
-                grandtotal += calculate(self);
-            });
-
-            if( objGrandTotal.length > 0 ) {
-                objGrandTotal.html( $.formatDecimal(grandtotal) );
-            }
-        }
-
-        function calculate(parent){
-            var price = $.convertNumber(parent.find('.price').val());
-            var disc = $.convertNumber(parent.find('.disc').val());
-            var ppn = $.convertNumber(parent.find('.ppn').val());
-            var qty = $.convertNumber(parent.find('.qty').val(), 'int', 1);
-            var ppn_include = $('.ppn_include:checked').val();
-
-            total = ( ( price * qty ) - disc );
-
-            if( ppn_include != 1 ) {
-                total += ppn;
-            }
-
-            return total;
-        }
 
         if( settings.obj.length > 0 ) {
             settings.obj.off('blur');

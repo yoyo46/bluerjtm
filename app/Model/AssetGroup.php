@@ -45,6 +45,10 @@ class AssetGroup extends AppModel {
             'className' => 'AssetGroupCoa',
             'foreignKey' => 'asset_group_id',
         ),
+        'PurchaseOrderAsset' => array(
+            'className' => 'PurchaseOrderAsset',
+            'foreignKey' => 'asset_group_id',
+        ),
     );
     
     function __construct($id = false, $table = null, $ds = null) {

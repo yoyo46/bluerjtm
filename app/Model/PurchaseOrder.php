@@ -22,6 +22,10 @@ class PurchaseOrder extends AppModel {
             'className' => 'PurchaseOrderDetail',
             'foreignKey' => 'purchase_order_id',
         ),
+        'PurchaseOrderAsset' => array(
+            'className' => 'PurchaseOrderAsset',
+            'foreignKey' => 'purchase_order_id',
+        ),
     );
 
 	var $validate = array(
@@ -55,6 +59,7 @@ class PurchaseOrder extends AppModel {
 
 	function getData( $find, $options = false, $elements = false ){
         $branch = isset($elements['branch'])?$elements['branch']:true;
+        $status = isset($elements['status'])?$elements['status']:'active';
 
         $default_options = array(
             'conditions'=> array(),
@@ -65,6 +70,20 @@ class PurchaseOrder extends AppModel {
             ),
             'fields' => array(),
         );
+
+        switch ($status) {
+            case 'active':
+                $default_options['conditions']['PurchaseOrder.status'] = 1;
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['PurchaseOrder.status'] = 0;
+                break;
+            
+            default:
+                $default_options['conditions']['PurchaseOrder.status'] = array( 0, 1 );
+                break;
+        }
 
         if( !empty($branch) ) {
             $default_options['conditions']['PurchaseOrder.branch_id'] = Configure::read('__Site.config_branch_id');
@@ -270,6 +289,97 @@ class PurchaseOrder extends AppModel {
                 'msg' => __('Gagal menghapus PO. Data tidak ditemukan'),
                 'status' => 'error',
             );
+        }
+
+        return $result;
+    }
+
+    function generateNoId(){
+        $default_id = 1;
+        $branch_code = Configure::read('__Site.Branch.code');
+        $format_id = sprintf('PO-%s-%s-', $branch_code, date('y'));
+
+        $last_data = $this->getData('first', array(
+            'order' => array(
+                'PurchaseOrder.nodoc' => 'DESC'
+            ),
+            'fields' => array(
+                'PurchaseOrder.nodoc'
+            ),
+            'conditions' => array(
+                'PurchaseOrder.nodoc LIKE' => '%'.$format_id.'%',
+            ),
+        ), array(
+            'status' => 'all',
+            'branch' => false,
+        ));
+
+        if(!empty($last_data['PurchaseOrder']['nodoc'])){
+            $str_arr = explode('-', $last_data['PurchaseOrder']['nodoc']);
+            $last_arr = count($str_arr)-1;
+            $default_id = intval($str_arr[$last_arr]+1);
+        }
+        $id = str_pad($default_id, 6,'0',STR_PAD_LEFT);
+        $format_id .= $id;
+        
+        return $format_id;
+    }
+
+    function doSaveAsset( $data, $value = false, $id = false ) {
+        $msg = __('Gagal menyimpan PO');
+
+        if( !empty($data) ) {            
+            $flag = $this->saveAll($data, array(
+                'validate' => 'only',
+                'deep' => true,
+            ));
+
+            if( !empty($flag) ) {
+                if( empty($id) ){
+                    $data['PurchaseOrder']['nodoc'] = $this->generateNoId();
+                }
+
+                $flag = $this->PurchaseOrderAsset->updateAll(array(
+                    'PurchaseOrderAsset.status' => 0,
+                ), array(
+                    'PurchaseOrderAsset.purchase_order_id' => $id,
+                ));
+
+                if( !empty($flag) ) {
+                    $msg = __('Berhasil menyimpan PO');
+                    $this->saveAll($data, array(
+                        'deep' => true,
+                    ));
+                    $result = array(
+                        'msg' => $msg,
+                        'status' => 'success',
+                        'Log' => array(
+                            'activity' => $msg,
+                            'old_data' => $value,
+                        ),
+                        'data' => $data,
+                    );
+                } else {
+                    $result = array(
+                        'msg' => $msg,
+                        'status' => 'error',
+                        'Log' => array(
+                            'activity' => $msg,
+                            'old_data' => $value,
+                            'error' => 1,
+                        ),
+                        'data' => $data,
+                    );
+                }
+            } else {
+                $result = array(
+                    'msg' => $msg,
+                    'status' => 'error',
+                    'data' => $data,
+                );
+            }
+        } else {
+            $result['data'] = $value;
         }
 
         return $result;

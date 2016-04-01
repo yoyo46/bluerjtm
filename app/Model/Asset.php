@@ -97,6 +97,7 @@ class Asset extends AppModel {
     );
 
     public function getData( $find = 'all', $options = array(), $elements = array()  ) {
+        $branch = isset($elements['branch'])?$elements['branch']:true;
         $status = isset($elements['status']) ? $elements['status']:'active';
 
         $default_options = array(
@@ -121,6 +122,10 @@ class Asset extends AppModel {
                     'Asset.status' => 1,
                 ));
                 break;
+        }
+
+        if( !empty($branch) ) {
+            $default_options['conditions']['Asset.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
         if( !empty($options) ) {

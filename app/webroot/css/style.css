@@ -123,7 +123,9 @@ body > .header {
 .form-added .tbody .item {
   margin-bottom: 10px;
 }
-
+.form-added .item:first-child .removed {
+  display: none;
+}
 .form-added .tbody .field-copy .item .removed {
   display: none;
 }
