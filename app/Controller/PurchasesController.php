@@ -140,7 +140,7 @@ class PurchasesController extends AppController {
             ));
             $this->render('supplier_quotation_add');
         } else {
-            $this->MkCommon->setCustomFlash(__('Quotation tidak ditemukan.'), 'error');
+            $this->MkCommon->redirectReferer(__('Quotation tidak ditemukan.'), 'error');
         }
     }
 
@@ -166,6 +166,7 @@ class PurchasesController extends AppController {
 
         $vendors = $this->PurchaseOrder->Vendor->getData('list');
 
+        $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'Purchase Order');
         $this->set(compact(
             'values', 'vendors'
@@ -221,7 +222,7 @@ class PurchasesController extends AppController {
             ));
             $this->render('purchase_order_add');
         } else {
-            $this->MkCommon->setCustomFlash(__('PO tidak ditemukan.'), 'error');
+            $this->MkCommon->redirectReferer(__('PO tidak ditemukan.'), 'error');
         }
     }
 
@@ -306,5 +307,190 @@ class PurchasesController extends AppController {
             $this->MkCommon->setCustomFlash(__('Supplier Quotation tidak ditemukan.'), 'error');
             $this->redirect($this->referer());
         }
+    }
+
+    public function payments() {
+        $this->loadModel('PurchaseOrderPayment');
+        $this->set('sub_module_title', __('Pembayaran PO'));
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->PurchaseOrderPayment->_callRefineParams($params);
+        $this->paginate = $this->PurchaseOrderPayment->getData('paginate', $options, array(
+            'status' => 'void-active',
+        ));
+        $values = $this->paginate('PurchaseOrderPayment');
+        $values = $this->PurchaseOrder->Vendor->getMerge($values, false, 'PurchaseOrderPayment');
+
+        $vendors = $this->PurchaseOrder->Vendor->getData('list');
+
+        $this->MkCommon->_layout_file('select');
+        $this->set('active_menu', 'Pembayaran PO');
+        $this->set(compact(
+            'values', 'vendors'
+        ));
+    }
+
+    function payment_add(){
+        $this->set('sub_module_title', __('Pembayaran PO'));
+
+        $data = $this->request->data;
+        $dataSave = $this->RjPurchase->_callBeforeSavePayment($data);
+        $result = $this->PurchaseOrder->PurchaseOrderPaymentDetail->PurchaseOrderPayment->doSave($dataSave);
+        $this->MkCommon->setProcessParams($result, array(
+            'controller' => 'purchases',
+            'action' => 'payments',
+            'admin' => false,
+        ));
+        $this->request->data = $this->RjPurchase->_callBeforeRenderPayment($this->request->data);
+
+        $this->set('active_menu', 'Purchase Order');
+    }
+
+    public function payment_edit( $id = false ) {
+        $this->set('sub_module_title', __('Edit Pembayaran PO'));
+
+        $value = $this->PurchaseOrder->PurchaseOrderPaymentDetail->PurchaseOrderPayment->getData('first', array(
+            'conditions' => array(
+                'PurchaseOrderPayment.id' => $id,
+            ),
+        ), array(
+            'status' => 'unposting',
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->PurchaseOrder->PurchaseOrderPaymentDetail->getMerge($value, $id);
+            $purchase_order_id = Set::extract('/PurchaseOrderPaymentDetail/PurchaseOrderPaymentDetail/purchase_order_id', $value);
+
+            $data = $this->request->data;
+            $dataSave = $this->RjPurchase->_callBeforeSavePayment($data, $id);
+            $result = $this->PurchaseOrder->PurchaseOrderPaymentDetail->PurchaseOrderPayment->doSave($dataSave, $value, $id);
+            $this->MkCommon->setProcessParams($result, array(
+                'controller' => 'purchases',
+                'action' => 'payments',
+                'admin' => false,
+            ));
+            $this->request->data = $this->RjPurchase->_callBeforeRenderPayment($this->request->data, $purchase_order_id);
+
+            $this->set('active_menu', 'Pembayaran PO');
+            $this->set(compact(
+                'value'
+            ));
+            $this->render('payment_add');
+        } else {
+            $this->MkCommon->redirectReferer(__('Pembayaran PO tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function payment_detail( $id ) {
+        $this->set('sub_module_title', __('Detail Pembayaran PO'));
+
+        $value = $this->PurchaseOrder->PurchaseOrderPaymentDetail->PurchaseOrderPayment->getData('first', array(
+            'conditions' => array(
+                'PurchaseOrderPayment.id' => $id,
+            ),
+        ), array(
+            'status' => 'void-active',
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->PurchaseOrder->PurchaseOrderPaymentDetail->PurchaseOrderPayment->PurchaseOrderPaymentDetail->getMerge($value, $id);
+            $this->request->data = $this->RjPurchase->_callBeforeRenderPayment($value);
+
+            $this->set('view', 'detail');
+            $this->set('active_menu', 'Purchase Order');
+            $this->set(compact(
+                'value'
+            ));
+            $this->render('payment_add');
+        } else {
+            $this->MkCommon->redirectReferer(__('Pembayaran PO tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function payment_toggle( $id ) {
+        $is_ajax = $this->RequestHandler->isAjax();
+        $action_type = 'purchase_payments';
+        $msg = array(
+            'msg' => '',
+            'type' => 'error'
+        );
+        $value = $this->PurchaseOrder->PurchaseOrderPaymentDetail->PurchaseOrderPayment->getData('first', array(
+            'conditions' => array(
+                'PurchaseOrderPayment.id' => $id,
+            ),
+        ));
+        $data = $this->request->data;
+
+        if( !empty($value) ) {
+            if(!empty($data)){
+                $result = $this->PurchaseOrder->PurchaseOrderPaymentDetail->PurchaseOrderPayment->doDelete( $id, $value, $data );
+                $msg = array(
+                    'msg' => $this->MkCommon->filterEmptyField($result, 'msg'),
+                    'type' => $this->MkCommon->filterEmptyField($result, 'status'),
+                );
+                $this->MkCommon->setProcessParams($result, false, array(
+                    'ajaxFlash' => true,
+                    'noRedirect' => true,
+                ));
+            }
+        } else {
+            $msg = array(
+                'msg' => __('Pembayaran leasing tidak ditemukan'),
+                'type' => 'error'
+            );
+        }
+
+        $modelName = 'PurchaseOrderPayment';
+        $canceled_date = $this->MkCommon->filterEmptyField($data, 'LeasingPayment', 'canceled_date');
+        $this->set(compact(
+            'msg', 'is_ajax', 'action_type',
+            'canceled_date', 'modelName', 'value'
+        ));
+        $this->render('/Elements/blocks/common/form_delete');
+    }
+
+    function po_documents () {
+        $payment_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'payment_id');
+        $vendor_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'vendor_id');
+        
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->PurchaseOrder->_callRefineParams($params, array(
+            'conditions' => array(
+                'PurchaseOrder.vendor_id' => $vendor_id,
+            ),
+            'limit' => 10,
+        ));
+
+        $this->paginate = $this->PurchaseOrder->getData('paginate', $options, array(
+            'status' => 'unpaid',
+        ));
+        $values = $this->paginate('PurchaseOrder');
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'id');
+                $vendor_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'vendor_id');
+                $grandtotal = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'grandtotal');
+
+                $paid = $this->PurchaseOrder->PurchaseOrderPaymentDetail->_callPaidPO($id, $payment_id);
+                $total_remain = $grandtotal - $paid;
+                $value['PurchaseOrder']['total_paid'] = ($paid <= 0)?0:$paid;
+                $value['PurchaseOrder']['total_remain'] = ($total_remain <= 0)?0:$total_remain;
+
+                $value = $this->PurchaseOrder->Vendor->getMerge($value, $vendor_id);
+                $values[$key] = $value;
+            }
+        }
+
+        $this->set('module_title', __('Purchase Order'));
+        $this->set(compact(
+            'values', 'payment_id', 'vendor_id'
+        ));
     }
 }

@@ -1818,18 +1818,6 @@ var timepicker = function( obj ){
     }
 }
 
-var daterangepicker = function( obj ){
-    if( typeof obj == 'undefined' ) {
-        obj = $('.date-range');
-    }
-
-    if( obj.length > 0 ) {
-        obj.daterangepicker({
-            format: 'DD/MM/YYYY',
-        });
-    }
-}
-
 var pickIcon = function(){
     $('.pick-icon select').change(function(){
         var self = $(this);
@@ -2029,13 +2017,17 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                     } else if( type_action == 'browse-form' ) {
                         ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
                         pickData();
-                        daterangepicker( $('#myModal .modal-body .date-range') );
+                        $.daterangepicker({
+                            obj: $('#myModal .modal-body .date-range'),
+                        });
                         $.rebuildFunction();
                     } else if( type_action == 'browse-invoice' || type_action == 'getTtujCustomerInfo' || type_action == 'getTtujCustomerInfoKsu' ) {
                         ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
                         pickData();
                         datepicker($('#myModal .modal-body .custom-date'));
-                        daterangepicker( $('#myModal .modal-body .date-range') );
+                        $.daterangepicker({
+                            obj: $('#myModal .modal-body .date-range'),
+                        });
                         check_all_checkbox();
                     } else if( type_action == 'browse-cash-banks' || type_action == 'browse-check-docs' ) {
                         ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
@@ -2047,7 +2039,9 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                             input_price_min($('#myModal .modal-body .input_price_min'));
                             sisa_amount($('#myModal .modal-body .sisa-amount'));
                             popup_checkbox();
-                            daterangepicker( $('#myModal .modal-body .date-range') );
+                            $.daterangepicker({
+                                obj: $('#myModal .modal-body .date-range'),
+                            });
                         } else {
                             check_all_checkbox();
                         }
@@ -2133,6 +2127,7 @@ var closeModal = function () {
 }
 
 var formInput = function( obj ) {
+    obj.off('click');
     obj.click(function(){
         var self = $(this);
         var type_action = self.attr('data-action');
@@ -4009,7 +4004,7 @@ $(function() {
     });
 
     timepicker();
-    daterangepicker();
+    $.daterangepicker();
 
     $('.date-resign-handle').click(function(){
         if($('.date-resign-handle input').is(':checked')) {

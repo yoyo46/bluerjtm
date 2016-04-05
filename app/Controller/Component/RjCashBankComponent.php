@@ -192,5 +192,67 @@ class RjCashBankComponent extends Component {
 
         return $values;
 	}
+
+    function _callBeforeSaveCoaSetting ( $data, $id = false ) {
+        if( !empty($data) ) {
+            $dataSave = array();
+            $dataDetail = $this->MkCommon->filterEmptyField($data, 'CoaSettingDetail');
+
+            if( !empty($dataDetail) ) {
+                $values = array_filter($dataDetail);
+                unset($data['CoaSettingDetail']);
+
+                foreach ($values as $type => $coas) {
+                    $coa_id = !empty($coas['coa_id'])?$coas['coa_id']:false;
+                    $coa_setting_id = !empty($coas['id'])?$coas['id']:false;
+
+                    $detail['CoaSettingDetail'] = array(
+                        'id' => $coa_setting_id,
+                        'user_id' => Configure::read('__Site.config_user_id'),
+                        'coa_id' => $coa_id,
+                        'label' => $type,
+                    );
+                    $dataSave[] = $detail;
+                }
+            }
+
+            if( !empty($dataSave) ) {
+                $data['CoaSettingDetail'] = $dataSave;
+            }
+        }
+
+        return $data;
+    }
+
+    function _callBeforeRenderCoaSetting ( $data, $values ) {
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'CoaSettingDetail', 'id');
+                $label = $this->MkCommon->filterEmptyField($value, 'CoaSettingDetail', 'label');
+                $coa_id = $this->MkCommon->filterEmptyField($value, 'CoaSettingDetail', 'coa_id');
+
+                $data['CoaSettingDetail'][$label]['id'] = $id;
+                $data['CoaSettingDetail'][$label]['label'] = $label;
+                $data['CoaSettingDetail'][$label]['coa_id'] = $coa_id;
+            }
+        }
+
+        $coas = $this->controller->User->Coa->getData('list', array(
+            'conditions' => array(
+                'Coa.level' => 4,
+                'Coa.status' => 1
+            ),
+            'fields' => array(
+                'Coa.id', 'Coa.coa_name'
+            ),
+        ));
+        $this->MkCommon->_layout_file('select');
+
+        $this->controller->set(compact(
+            'coas'
+        ));
+
+        return $data;
+    }
 }
 ?>

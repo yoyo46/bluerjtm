@@ -8,7 +8,7 @@
                     'url'=> $this->Html->url( array(
                         'controller' => 'purchases',
                         'action' => 'search',
-                        'purchase_orders',
+                        'payments',
                     )), 
                 ));
         ?>
@@ -29,24 +29,16 @@
                             'positionGroup' => 'positionGroup',
                             'class' => 'form-control pull-right date-range',
                         ));
-                        echo $this->Common->buildInputForm('status', __('Status'), array(
-                            'empty' => __('Pilih Status'),
-                            'options' => array(
-                                'unpaid' => __('Belum dibayar'),
-                                'half_paid' => __('Dibayar sebagian'),
-                                'paid' => __('Sudah dibayar'),
-                            ),
-                        ));
-                        echo $this->element('blocks/common/searchs/box_action', array(
-                            '_url' => array(
-                                'controller' => 'purchases', 
-                                'action' => 'purchase_orders', 
-                            ),
-                        ));
                 ?>
             </div>
         </div>
         <?php 
+                echo $this->element('blocks/common/searchs/box_action', array(
+                    '_url' => array(
+                        'controller' => 'purchases', 
+                        'action' => 'payments', 
+                    ),
+                ));
                 echo $this->Form->end();
         ?>
     </div>

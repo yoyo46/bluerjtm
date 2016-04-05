@@ -2333,4 +2333,48 @@ class CommonHelper extends AppHelper {
 
         return $actionDoc;
     }
+
+    function _callTransactionStatus ( $data, $modelName = false ) {
+        $transaction_status = $this->filterEmptyField($data, $modelName, 'transaction_status');
+
+        switch ($transaction_status) {
+            case 'paid':
+                $customStatus = $this->Html->tag('span', __('Sudah Dibayar'), array(
+                    'class' => 'label label-success',
+                ));
+                break;
+
+            case 'half_paid':
+                $customStatus = $this->Html->tag('span', __('Dibayar Sebagian'), array(
+                    'class' => 'label label-primary',
+                ));
+                break;
+
+            case 'void':
+                $customStatus = $this->Html->tag('span', __('Void'), array(
+                    'class' => 'label label-danger',
+                ));
+                break;
+
+            case 'posting':
+                $customStatus = $this->Html->tag('span', __('Commit'), array(
+                    'class' => 'label label-success',
+                ));
+                break;
+
+            case 'unposting':
+                $customStatus = $this->Html->tag('span', __('Draft'), array(
+                    'class' => 'label label-default',
+                ));
+                break;
+            
+            default:
+                $customStatus = $this->Html->tag('span', __('Belum Dibayar'), array(
+                    'class' => 'label label-default',
+                ));
+                break;
+        }
+
+        return $customStatus;
+    }
 }

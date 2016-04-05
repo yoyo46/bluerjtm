@@ -686,6 +686,9 @@
         </div>
     </div>
 </div>
+<?php 
+		echo $this->element('blocks/cashbanks/coas/asset_setting');
+?>
 
 <div class="box-footer text-center action">
 	<?php

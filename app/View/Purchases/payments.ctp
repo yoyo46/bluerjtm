@@ -1,7 +1,7 @@
 <?php 
         $dataColumns = array(
             'transaction_date' => array(
-                'name' => __('Tgl PO'),
+                'name' => __('Tgl Pembayaran'),
             ),
             'code' => array(
                 'name' => __('No Dokumen'),
@@ -13,7 +13,7 @@
                 'name' => __('Keterangan'),
             ),
             'grandtotal' => array(
-                'name' => __('Grandtotal'),
+                'name' => __('Total Dibayar'),
                 'class' => 'text-center',
             ),
             'status' => array(
@@ -28,30 +28,17 @@
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
         $this->Html->addCrumb($sub_module_title);
-        echo $this->element('blocks/purchases/purchase_orders/forms/search');
+        echo $this->element('blocks/purchases/payments/forms/search');
 ?>
 <div class="box">
     <?php 
             echo $this->element('blocks/common/box_header', array(
                 'title' => $sub_module_title,
                 '_label_multiple' => __('Tambah'),
-                '_add_multiple' => array(
-                    array(
-                        'label' => __('Barang'),
-                        'url' => array(
-                            'controller' => 'purchases',
-                            'action' => 'purchase_order_add',
-                            'admin' => false,
-                        ),
-                    ),
-                    array(
-                        'label' => __('Asset'),
-                        'url' => array(
-                            'controller' => 'assets',
-                            'action' => 'purchase_order_add',
-                            'admin' => false,
-                        ),
-                    ),
+                '_add' => array(
+                    'controller' => 'purchases',
+                    'action' => 'payment_add',
+                    'admin' => false,
                 ),
             ));
     ?>
@@ -66,52 +53,48 @@
             <?php
                     if(!empty($values)){
                         foreach ($values as $key => $value) {
-                            $id = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'id');
-                            $nodoc = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'nodoc');
-                            $transactionDate = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'transaction_date');
-                            $note = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'note');
-                            $grandtotal = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'grandtotal');
-                            $is_asset = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'is_asset');
-                            $transaction_status = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'transaction_status');
+                            $id = $this->Common->filterEmptyField($value, 'PurchaseOrderPayment', 'id');
+                            $nodoc = $this->Common->filterEmptyField($value, 'PurchaseOrderPayment', 'nodoc');
+                            $transactionDate = $this->Common->filterEmptyField($value, 'PurchaseOrderPayment', 'transaction_date');
+                            $note = $this->Common->filterEmptyField($value, 'PurchaseOrderPayment', 'note');
+                            $grandtotal = $this->Common->filterEmptyField($value, 'PurchaseOrderPayment', 'grandtotal');
+                            $transaction_status = $this->Common->filterEmptyField($value, 'PurchaseOrderPayment', 'transaction_status');
 
                             $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
 
-                            $customStatus = $this->Common->_callTransactionStatus($value, 'PurchaseOrder');
                             $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
                             $grandtotal = $this->Common->getFormatPrice($grandtotal, 0, 2);
-
-                            if( !empty($is_asset) ) {
-                                $controller = 'assets';
-                            } else {
-                                $controller = 'purchases';
-                            }
+                            $customStatus = $this->Common->_callTransactionStatus($value, 'PurchaseOrderPayment');
 
                             $customAction = $this->Html->link(__('Detail'), array(
-                                'controller' => $controller,
-                                'action' => 'purchase_order_detail',
+                                'controller' => 'purchases',
+                                'action' => 'payment_detail',
                                 $id,
                                 'admin' => false,
                             ), array(
                                 'class' => 'btn btn-info btn-xs'
                             ));
 
-                            if( in_array($transaction_status, array( 'pending' )) ) {
+                            if( in_array($transaction_status, array( 'unposting' )) ) {
                                 $customAction .= $this->Html->link(__('Edit'), array(
-                                    'controller' => $controller,
-                                    'action' => 'purchase_order_edit',
+                                    'controller' => 'purchases',
+                                    'action' => 'payment_edit',
                                     $id,
                                     'admin' => false,
                                 ), array(
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
-                                $customAction .= $this->Html->link(__('Hapus'), array(
+                            }
+                            if( !in_array($transaction_status, array( 'void' )) ) {
+                                $customAction .= $this->Html->link('Void', array(
                                     'controller' => 'purchases',
-                                    'action' => 'purchase_order_toggle',
-                                    $id,
-                                    'admin' => false,
+                                    'action' => 'payment_toggle',
+                                    $id
                                 ), array(
-                                    'class' => 'btn btn-danger btn-xs',
-                                ), __('Anda yakin ingin menghapus PO ini?'));
+                                    'class' => 'btn btn-danger btn-xs ajaxModal',
+                                    'data-action' => 'submit_form',
+                                    'title' => __('Void Pembayaran PO')
+                                ));
                             }
             ?>
             <tr>
@@ -127,7 +110,7 @@
                             'class' => 'text-center',
                         ));
                         echo $this->Html->tag('td', $customAction, array(
-                            'class' => 'action text-center',
+                            'class' => 'action text-right',
                         ));
                 ?>
             </tr>

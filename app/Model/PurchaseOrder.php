@@ -26,6 +26,10 @@ class PurchaseOrder extends AppModel {
             'className' => 'PurchaseOrderAsset',
             'foreignKey' => 'purchase_order_id',
         ),
+        'PurchaseOrderPaymentDetail' => array(
+            'className' => 'PurchaseOrderPaymentDetail',
+            'foreignKey' => 'purchase_order_id',
+        ),
     );
 
 	var $validate = array(
@@ -60,6 +64,7 @@ class PurchaseOrder extends AppModel {
 	function getData( $find, $options = false, $elements = false ){
         $branch = isset($elements['branch'])?$elements['branch']:true;
         $status = isset($elements['status'])?$elements['status']:'active';
+        $special_id = isset($elements['special_id'])?$elements['special_id']:false;
 
         $default_options = array(
             'conditions'=> array(),
@@ -69,17 +74,35 @@ class PurchaseOrder extends AppModel {
                 'PurchaseOrder.id' => 'DESC',
             ),
             'fields' => array(),
+            'contain' => array(),
+            'group' => array(),
         );
 
         switch ($status) {
             case 'active':
                 $default_options['conditions']['PurchaseOrder.status'] = 1;
                 break;
+            case 'unpaid':
+                $default_options['conditions']['PurchaseOrder.status'] = 1;
 
+                if( !empty($special_id) ) {
+                    $default_options['conditions']['OR']['PurchaseOrder.id'] = $special_id;
+                    $default_options['conditions']['OR']['PurchaseOrder.transaction_status'] = array(
+                        'pending', 'half_paid',
+                    );
+                } else {
+                    $default_options['conditions']['PurchaseOrder.transaction_status'] = array(
+                        'pending', 'half_paid',
+                    );
+                }
+                break;
+            case 'pending':
+                $default_options['conditions']['PurchaseOrder.transaction_status'] = 'pending';
+                $default_options['conditions']['PurchaseOrder.status'] = 1;
+                break;
             case 'non-active':
                 $default_options['conditions']['PurchaseOrder.status'] = 0;
                 break;
-            
             default:
                 $default_options['conditions']['PurchaseOrder.status'] = array( 0, 1 );
                 break;
@@ -89,17 +112,27 @@ class PurchaseOrder extends AppModel {
             $default_options['conditions']['PurchaseOrder.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
-        if(!empty($options['conditions'])){
-            $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
-        }
-        if(!empty($options['order'])){
-            $default_options['order'] = array_merge($default_options['order'], $options['order']);
-        }
-        if(!empty($options['fields'])){
-            $default_options['fields'] = $options['fields'];
-        }
-        if(!empty($options['limit'])){
-            $default_options['limit'] = $options['limit'];
+        if( !empty($options) ) {
+            if(!empty($options['conditions'])){
+                $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
+            }
+            if(!empty($options['order'])){
+                $default_options['order'] = $options['order'];
+            }
+            if( isset($options['contain']) && empty($options['contain']) ) {
+                $default_options['contain'] = false;
+            } else if(!empty($options['contain'])){
+                $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
+            }
+            if(!empty($options['fields'])){
+                $default_options['fields'] = $options['fields'];
+            }
+            if(!empty($options['limit'])){
+                $default_options['limit'] = $options['limit'];
+            }
+            if(!empty($options['group'])){
+                $default_options['group'] = $options['group'];
+            }
         }
 
         if( $find == 'paginate' ) {
@@ -110,11 +143,13 @@ class PurchaseOrder extends AppModel {
         return $result;
     }
 
-    function getMerge( $data, $id ){
+    function getMerge( $data, $id, $status = 'active' ){
         $data_merge = $this->getData('first', array(
             'conditions' => array(
                 'PurchaseOrder.id' => $id
             ),
+        ), array(
+            'status' => $status,
         ));
 
         if(!empty($data_merge)){
@@ -208,6 +243,7 @@ class PurchaseOrder extends AppModel {
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $vendor_id = !empty($data['named']['vendor_id'])?$data['named']['vendor_id']:false;
+        $status = !empty($data['named']['status'])?$data['named']['status']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -223,6 +259,19 @@ class PurchaseOrder extends AppModel {
         }
         if( !empty($vendor_id) ) {
             $default_options['conditions']['PurchaseOrder.vendor_id'] = $vendor_id;
+        }
+        if( !empty($status) ) {
+            switch ($status) {
+                case 'unpaid':
+                    $default_options['conditions']['PurchaseOrder.transaction_status'] = 'pending';
+                    break;
+                case 'half_paid':
+                    $default_options['conditions']['PurchaseOrder.transaction_status'] = 'half_paid';
+                    break;
+                case 'paid':
+                    $default_options['conditions']['PurchaseOrder.transaction_status'] = 'paid';
+                    break;
+            }
         }
         
         return $default_options;
@@ -325,6 +374,47 @@ class PurchaseOrder extends AppModel {
         return $format_id;
     }
 
+    function _callSetJournalAsset ( $id, $data ) {
+        $vendor_id = !empty($data['PurchaseOrder']['vendor_id'])?$data['PurchaseOrder']['vendor_id']:false;
+        $grandtotal = !empty($data['PurchaseOrder']['grandtotal'])?$data['PurchaseOrder']['grandtotal']:0;
+        $transaction_date = !empty($data['PurchaseOrder']['transaction_date'])?$data['PurchaseOrder']['transaction_date']:false;
+        $nodoc = !empty($data['PurchaseOrder']['nodoc'])?$data['PurchaseOrder']['nodoc']:false;
+        
+        $details = !empty($data['PurchaseOrderAsset'])?$data['PurchaseOrderAsset']:false;
+
+        $vendor = $this->Vendor->getMerge(array(), $vendor_id);
+        $vendor_name = !empty($vendor['Vendor']['name'])?$vendor['Vendor']['name']:false;
+
+        $coaHutangUsaha = $this->User->Coa->CoaSettingDetail->getMerge(array(), 'HutangUsaha', 'CoaSettingDetail.label');
+        $hutang_usaha_coa_id = !empty($coaHutangUsaha['CoaSettingDetail']['coa_id'])?$coaHutangUsaha['CoaSettingDetail']['coa_id']:false;
+
+        $this->User->Journal->deleteJournal($id, array(
+            'po_asset',
+        ));
+
+        if( !empty($details) ) {
+            foreach ($details as $key => $value) {
+                $price = !empty($value['PurchaseOrderAsset']['price'])?$value['PurchaseOrderAsset']['price']:false;
+                $coa_id = !empty($value['PurchaseOrderAsset']['coa_id'])?$value['PurchaseOrderAsset']['coa_id']:false;
+                $name = !empty($value['PurchaseOrderAsset']['name'])?$value['PurchaseOrderAsset']['name']:false;
+
+                $titleJournal = sprintf(__('Pembelian Asset %s dari vendor %s '), $name, $vendor_name);
+                $titleJournal = $this->filterEmptyField($data, 'PurchaseOrder', 'note', $titleJournal);
+
+                $this->User->Journal->setJournal($price, array(
+                    'credit' => $hutang_usaha_coa_id,
+                    'debit' => $coa_id,
+                ), array(
+                    'date' => $transaction_date,
+                    'document_id' => $id,
+                    'title' => $titleJournal,
+                    'document_no' => $nodoc,
+                    'type' => 'po_asset',
+                ));
+            }
+        }
+    }
+
     function doSaveAsset( $data, $value = false, $id = false ) {
         $msg = __('Gagal menyimpan PO');
 
@@ -350,6 +440,8 @@ class PurchaseOrder extends AppModel {
                     $this->saveAll($data, array(
                         'deep' => true,
                     ));
+                    $this->_callSetJournalAsset($id, $data);
+
                     $result = array(
                         'msg' => $msg,
                         'status' => 'success',

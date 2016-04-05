@@ -154,5 +154,121 @@ class RjPurchaseComponent extends Component {
 
         return $data;
     }
+
+    function _callBeforeSavePayment ( $data, $id = false ) {
+        $dataSave = array();
+
+        if( !empty($data) ) {
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'PurchaseOrderPayment' => array(
+                        'transaction_date',
+                    ),
+                ),
+            ));
+
+            $values = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPaymentDetail', 'purchase_order_id');
+            $transaction_date = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPayment', 'transaction_date');
+            $transaction_status = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPayment', 'transaction_status');
+
+            $dataSave['PurchaseOrderPayment'] = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPayment');
+            $dataSave['PurchaseOrderPayment']['id'] = $id;
+            $dataSave['PurchaseOrderPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $dataSave['PurchaseOrderPayment']['user_id'] = Configure::read('__Site.config_user_id');
+
+            if( !empty($values) ) {
+                $grandtotal = 0;
+
+                foreach ($values as $key => $purchase_order_id) {
+                    $idArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPaymentDetail', 'id');
+                    $priceArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPaymentDetail', 'price');
+                    $totalRemainArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'total_remain');
+                    
+                    $purchaseOrder = $this->controller->PurchaseOrder->getMerge(array(), $purchase_order_id, 'unpaid');
+                    $nodoc = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'nodoc');
+                    $transaction_date = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'transaction_date');
+                    $note = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'note');
+                    $total_po = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'grandtotal');
+
+                    $idDetail = !empty($idArr[$key])?$idArr[$key]:false;
+                    $price = !empty($priceArr[$key])?$this->MkCommon->_callPriceConverter($priceArr[$key]):false;
+                    $grandtotal += $price;
+                    
+                    $paid = $this->controller->PurchaseOrder->PurchaseOrderPaymentDetail->_callPaidPO($purchase_order_id, $id);
+                    $total_remain = $total_po - $paid;
+
+                    $dataSave['PurchaseOrderPaymentDetail'][$key] = array(
+                        'PurchaseOrderPaymentDetail' => array(
+                            'id' => $idDetail,
+                            'purchase_order_id' => $purchase_order_id,
+                            'price' => $price,
+                        ),
+                        'PurchaseOrder' => array(
+                            'id' => $purchase_order_id,
+                            'total_remain' => $total_remain,
+                            'nodoc' => $nodoc,
+                            'transaction_date' => $transaction_date,
+                            'note' => $note,
+                        ),
+                    );
+
+                    if( $transaction_status == 'posting' ) {
+                        $paid += $price;
+
+                        if( $paid >= $total_po ) {
+                            $transaction_status = 'paid';
+                        } else {
+                            $transaction_status = 'half_paid';
+                        }
+
+                        $dataSave['PurchaseOrderPaymentDetail'][$key]['PurchaseOrder']['transaction_status'] = $transaction_status;
+                    }
+                }
+
+                $dataSave['PurchaseOrderPayment']['grandtotal'] = $grandtotal;
+            }
+        }
+
+        return $dataSave;
+    }
+
+    function _callBeforeRenderPayment ( $data, $purchase_order_id = false ) {
+        if( !empty($data) ) {
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'PurchaseOrderPayment' => array(
+                        'transaction_date',
+                    ),
+                ),
+            ), true);
+        } else {
+            $data['PurchaseOrderPayment']['transaction_date'] = date('d/m/Y');
+        }
+
+        $vendors = $this->controller->PurchaseOrder->getData('list', array(
+            'contain' => array(
+                'Vendor',
+            ),
+            'fields' => array(
+                'Vendor.id', 'Vendor.name',
+            ),
+            'group' => array(
+                'PurchaseOrder.vendor_id',
+            ),
+        ), array(
+            'status' => 'unpaid',
+            'special_id' => $purchase_order_id
+        ));
+        $coas = $this->controller->GroupBranch->Branch->BranchCoa->getCoas();
+        $this->MkCommon->_layout_file(array(
+            'select',
+        ));
+
+        $this->controller->set(compact(
+            'vendors', 'coas'
+        ));
+
+        return $data;
+    }
 }
 ?>

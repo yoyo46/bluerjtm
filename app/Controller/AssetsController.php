@@ -94,7 +94,7 @@ class AssetsController extends AppController {
             ));
             $this->render('group_add');
         } else {
-            $this->MkCommon->setCustomFlash(__('Group tidak ditemukan.'), 'error');
+            $this->MkCommon->redirectReferer(__('Group tidak ditemukan.'), 'error');
         }
     }
 
@@ -164,7 +164,7 @@ class AssetsController extends AppController {
             ));
             $this->render('add');
         } else {
-            $this->MkCommon->setCustomFlash(__('Group tidak ditemukan.'), 'error');
+            $this->MkCommon->redirectReferer(__('Group tidak ditemukan.'), 'error');
         }
     }
 
@@ -211,6 +211,8 @@ class AssetsController extends AppController {
             'conditions' => array(
                 'PurchaseOrder.id' => $id,
             ),
+        ), array(
+            'status' => 'pending',
         ));
 
         if( !empty($value) ) {
@@ -232,7 +234,7 @@ class AssetsController extends AppController {
             ));
             $this->render('purchase_order_add');
         } else {
-            $this->MkCommon->setCustomFlash(__('PO tidak ditemukan.'), 'error');
+            $this->MkCommon->redirectReferer(__('PO tidak ditemukan.'), 'error');
         }
     }
 
@@ -256,7 +258,7 @@ class AssetsController extends AppController {
             ));
             $this->render('purchase_order_add');
         } else {
-            $this->MkCommon->setCustomFlash(__('PO tidak ditemukan.'), 'error');
+            $this->MkCommon->redirectReferer(__('PO tidak ditemukan.'), 'error');
         }
     }
 

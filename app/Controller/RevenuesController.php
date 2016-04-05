@@ -8575,6 +8575,84 @@ class RevenuesController extends AppController {
         die();
     }
 
+    function generate_revenue_tarif_ankut () {
+        $this->loadModel('City');
+        $this->Ttuj->Revenue->RevenueDetail->virtualFields['min_id'] = 'MIN(RevenueDetail.id)';
+        $revenues = $this->Ttuj->Revenue->RevenueDetail->find('all', array(
+            'conditions' => array(
+                'Revenue.revenue_tarif_type' => 'per_truck',
+                'RevenueDetail.payment_type' => 'per_truck',
+                'RevenueDetail.is_charge' => 0,
+                'RevenueDetail.status' => 1,
+                'Revenue.status' => 1,
+                // 'Revenue.id >' => 560,
+            ),
+            'contain' => array(
+                'Revenue',
+            ),
+            'group' => array(
+                'Revenue.id',
+            ),
+            'order' => array(
+                'Revenue.id' => 'ASC',
+            ),
+            'limit' => 5,
+        ));
+        // debug($revenues);die();
+
+        if( !empty($revenues) ) {
+            foreach ($revenues as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField( $value, 'RevenueDetail', 'id' );
+                $city_id = $this->MkCommon->filterEmptyField( $value, 'RevenueDetail', 'city_id' );
+                $group_motor_id = $this->MkCommon->filterEmptyField( $value, 'RevenueDetail', 'group_motor_id' );
+
+                $revenue_id = $this->MkCommon->filterEmptyField( $value, 'Revenue', 'id' );
+                $truck_id = $this->MkCommon->filterEmptyField( $value, 'Revenue', 'truck_id' );
+                $branch_id = $this->MkCommon->filterEmptyField( $value, 'Revenue', 'branch_id' );
+                $ttuj_id = $this->MkCommon->filterEmptyField( $value, 'Revenue', 'ttuj_id' );
+                $tarif_per_truck = $this->MkCommon->filterEmptyField( $value, 'Revenue', 'tarif_per_truck' );
+                
+                $value = $this->Ttuj->getMerge($value, $ttuj_id);
+                $value = $this->City->getMerge($value, $city_id);
+
+                $from_city_id = $this->MkCommon->filterEmptyField( $value, 'Ttuj', 'from_city_id' );
+                $to_city_id = $this->MkCommon->filterEmptyField( $value, 'Ttuj', 'to_city_id' );
+                $customer_id = $this->MkCommon->filterEmptyField( $value, 'Ttuj', 'customer_id' );
+                
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                $branch = $this->MkCommon->filterEmptyField( $value, 'Branch', 'name' );
+
+                if( !empty($truck_id) ) {
+                    $value = $this->Ttuj->Truck->getMerge($value, $truck_id);
+                    $truck_capacity = $this->MkCommon->filterEmptyField($value, 'Truck', 'capacity');
+                } else {
+                    $truck_capacity = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_capacity');
+                }
+                
+                $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, $city_id, $customer_id, $truck_capacity, $group_motor_id );
+                $tarif_angkutan_id = $this->MkCommon->filterEmptyField( $tarif, 'tarif_angkutan_id' );
+
+                $this->Ttuj->Revenue->RevenueDetail->validator()->remove('price_unit');
+                $this->Ttuj->Revenue->RevenueDetail->validator()->remove('total_price_unit');
+                $this->Ttuj->Revenue->RevenueDetail->validator()->remove('tarif_angkutan_id');
+
+                $this->Ttuj->Revenue->RevenueDetail->id = $id;
+                $this->Ttuj->Revenue->RevenueDetail->set('is_charge', 1);
+                $this->Ttuj->Revenue->RevenueDetail->set('price_unit', $tarif_per_truck);
+                $this->Ttuj->Revenue->RevenueDetail->set('total_price_unit', $tarif_per_truck);
+                $this->Ttuj->Revenue->RevenueDetail->set('tarif_angkutan_id', $tarif_angkutan_id);
+                $this->Ttuj->Revenue->RevenueDetail->save();
+
+                echo sprintf('Tarif Per Truk: %s <br>', $tarif_per_truck);
+                echo sprintf('Branch: %s <br>', $branch);
+                echo sprintf('Rev ID: %s <br>', $revenue_id);
+                echo sprintf('Rev Detail ID: %s  <br> <br>', $id);
+            }
+        }
+
+        die();
+    }
+
     function invoice_yamaha_rit($id = false, $action_print = false){
         $this->loadModel('Invoice');
 

@@ -574,6 +574,7 @@
             });
 
             jQuery.each( settings.objComa, function( i, val ) {
+                var self = $(this);
                 self.val( $.convertDecimal(self, 2) );
             });
         }
@@ -743,7 +744,25 @@
         var url = vthis.attr('href');
         var alert_msg = vthis.attr('alert');
         var title = vthis.attr('title');
+        var data_check = $.checkUndefined(vthis.attr('data-check'), false);
+        var data_check_named = $.checkUndefined(vthis.attr('data-check-named'), false);
+        var data_check_alert = $.checkUndefined(vthis.attr('data-check-alert'), false);
         var modalSize = $.checkUndefined(vthis.attr('data-size'), '');
+
+        if( data_check != false ) {
+            dataUrl = $(data_check).val();
+
+            if( dataUrl == '' ) {
+                alert(data_check_alert);
+                return false;
+            } else {
+                if( data_check_named != false ) {
+                    dataUrl = data_check_named + ':' + dataUrl;
+                }
+                
+                url += '/' + dataUrl + '/';
+            }
+        }
 
         $('.modal-body').html('');
 
@@ -902,8 +921,25 @@
                 var self = $(this);
                 var parent = self.parents('.pick-document');
                 var objTotal = parent.find('.total');
+                var objPrice = parent.find('.price');
+                var price = $.convertNumber(objPrice.val());
 
-                total = calculate(parent);
+                var data_max = $.convertNumber(objPrice.attr('data-max'), 'float', false);
+                var data_max_alert = $.checkUndefined(objPrice.attr('data-max-alert'), false);
+
+                if( data_max != false ) {
+                    if( price > data_max ) {
+                        alert(data_max_alert);
+                        total = data_max;
+
+                        objPrice.val( $.formatDecimal(total) );
+                    } else {
+                        total = calculate(parent);
+                    }
+                } else {
+                    total = calculate(parent);
+                }
+
                 objTotal.html( $.formatDecimal(total) );
                 calcGrandTotal();
             });
@@ -1074,6 +1110,9 @@
 
         datepicker(obj.find('.custom-date'));
         timepicker(obj.find('.timepicker'));
+        $.daterangepicker({
+            obj: obj.find('.date-range'),
+        })
 
         $.rebuildFunction();
     }
@@ -1357,6 +1396,18 @@
             settings_depr_bulan.val( $.formatDecimal(depr_bulan, 2) );
             settings_ak_penyusutan.val( $.formatDecimal(ak_penyusutan, 2) );
             settings_nilai_buku.val( $.formatDecimal(nilai_buku, 2) );
+        }
+    }
+
+    $.daterangepicker = function( options ) {
+        var settings = $.extend({
+            obj: $('.date-range'),
+        }, options );
+
+        if( settings.obj.length > 0 ) {
+            settings.obj.daterangepicker({
+                format: 'DD/MM/YYYY',
+            });
         }
     }
 }( jQuery ));

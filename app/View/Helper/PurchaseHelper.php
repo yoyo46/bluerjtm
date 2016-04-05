@@ -43,6 +43,50 @@ class PurchaseHelper extends AppHelper {
         return $customStatus;
     }
 
+    function _callStatusDocument ( $data, $modelName = 'SupplierQuotation' ) {
+        $status_document = $this->Common->filterEmptyField($data, $modelName, 'status_document');
+
+        switch ($status_document) {
+            case 'paid':
+                $customStatus = $this->Html->tag('span', __('Sudah Dibayar'), array(
+                    'class' => 'label label-success',
+                ));
+                break;
+
+            case 'half_paid':
+                $customStatus = $this->Html->tag('span', __('Dibayar Sebagian'), array(
+                    'class' => 'label label-primary',
+                ));
+                break;
+
+            case 'void':
+                $customStatus = $this->Html->tag('span', __('Void'), array(
+                    'class' => 'label label-danger',
+                ));
+                break;
+
+            case 'posting':
+                $customStatus = $this->Html->tag('span', __('Commit'), array(
+                    'class' => 'label label-success',
+                ));
+                break;
+
+            case 'unposting':
+                $customStatus = $this->Html->tag('span', __('Draft'), array(
+                    'class' => 'label label-default',
+                ));
+                break;
+            
+            default:
+                $customStatus = $this->Html->tag('span', __('Belum Dibayar'), array(
+                    'class' => 'label label-default',
+                ));
+                break;
+        }
+
+        return $customStatus;
+    }
+
     function calculate ( $value, $ppn_include = false, $modelName = 'PurchaseOrderDetail' ) {
         $price = $this->Common->filterEmptyField($value, $modelName, 'price');
         $qty = $this->Common->filterEmptyField($value, $modelName, 'qty');

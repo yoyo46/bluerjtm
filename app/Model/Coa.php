@@ -64,6 +64,10 @@ class Coa extends AppModel {
             'className' => 'BranchCoa',
             'foreignKey' => 'coa_id',
         ),
+        'CoaSettingDetail' => array(
+            'className' => 'CoaSettingDetail',
+            'foreignKey' => 'coa_id',
+        ),
     );
 
     function __construct($id = false, $table = null, $ds = null) {

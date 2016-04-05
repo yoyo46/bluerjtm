@@ -73,16 +73,26 @@ class AssetGroupCoa extends AppModel {
         return $result;
     }
 
-    function getMerge($data, $id){
+    function getMerge($data, $id, $list = 'all', $document_type = false){
         if(empty($data['AssetGroupCoa'])){
-            $values = $this->getData('all', array(
-                'conditions' => array(
-                    'AssetGroupCoa.asset_group_id' => $id
-                )
+            $conditions = array(
+                'AssetGroupCoa.asset_group_id' => $id
+            );
+
+            if( !empty($document_type) ) {
+                $conditions['AssetGroupCoa.document_type'] = $document_type;
+            }
+
+            $values = $this->getData($list, array(
+                'conditions' => $conditions,
             ));
 
             if(!empty($values)){
-                $data['AssetGroupCoa'] = $values;
+                if( $list == 'first' ) {
+                    $data = array_merge($data, $values);
+                } else {
+                    $data['AssetGroupCoa'] = $values;
+                }
             }
         }
 

@@ -1015,11 +1015,14 @@ class CashbanksController extends AppController {
                 'CoaSetting.status' => 1
             ),
         ));
+        $coaSettingDetails = $this->User->Coa->CoaSettingDetail->getData('all');
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
             $data['CoaSetting']['user_id'] = Configure::read('__Site.config_user_id');
-            
+            $data = $this->RjCashBank->_callBeforeSaveCoaSetting($data);
+            $dataDetail = $this->MkCommon->filterEmptyField($data, 'CoaSettingDetail');
+
             if( !empty($coaSetting['CoaSetting']['id']) ){
                 $this->User->CoaSetting->id = $coaSetting['CoaSetting']['id'];
             }else{
@@ -1029,7 +1032,9 @@ class CashbanksController extends AppController {
             $this->User->CoaSetting->set($data);
 
             if($this->User->CoaSetting->validates($data)){
-                if($this->User->CoaSetting->save($data)){
+                $flag = $this->User->Coa->CoaSettingDetail->saveAll($dataDetail);
+
+                if(!empty($flag) && $this->User->CoaSetting->save($data)){
                     $transaction_id = $this->User->CoaSetting->id;
                     $this->MkCommon->setCustomFlash(__('Sukses menyimpan pengaturan COA'), 'success');
                     $this->Log->logActivity( sprintf(__('Sukses menyimpan pengaturan COA #%s'), $transaction_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $transaction_id );
@@ -1047,20 +1052,9 @@ class CashbanksController extends AppController {
         } else if( !empty($coaSetting) ) {
             $this->request->data = $coaSetting;
         }
-
-        $coas = $this->User->Coa->getData('list', array(
-            'conditions' => array(
-                'Coa.level' => 4,
-                'Coa.status' => 1
-            ),
-            'fields' => array(
-                'Coa.id', 'Coa.coa_name'
-            ),
-        ));
         
-        $this->MkCommon->_layout_file('select');
+        $this->request->data = $this->RjCashBank->_callBeforeRenderCoaSetting($this->request->data, $coaSettingDetails);
         $this->set('active_menu', 'coa_setting');
-        $this->set(compact('coas'));
     }
 
     public function journal_report( $data_action = false ) {

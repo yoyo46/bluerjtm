@@ -179,7 +179,9 @@ class RjAssetComponent extends Component {
                     $grandtotal += $price;
 
                     $assetGroup = $this->controller->Asset->AssetGroup->getMerge(array(), $asset_group_id);
+                    $assetGroup = $this->controller->Asset->AssetGroup->AssetGroupCoa->getMerge($assetGroup, $asset_group_id, 'first', 'Asset');
                     $is_truck = $this->MkCommon->filterEmptyField($assetGroup, 'AssetGroup', 'is_truck');
+                    $coa_id = $this->MkCommon->filterEmptyField($assetGroup, 'AssetGroupCoa', 'coa_id');
 
                     if( !empty($is_truck) ) {
                         $company = $this->controller->Asset->AssetGroup->PurchaseOrderAsset->Truck->Company->getData('first', array(
@@ -206,6 +208,7 @@ class RjAssetComponent extends Component {
                         'name' => $name,
                         'note' => $note,
                         'asset_group_id' => $asset_group_id,
+                        'coa_id' => $coa_id,
                         'price' => $price,
                     );
                 }
