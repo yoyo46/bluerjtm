@@ -398,7 +398,7 @@ class PurchaseOrder extends AppModel {
                 $coa_id = !empty($value['PurchaseOrderAsset']['coa_id'])?$value['PurchaseOrderAsset']['coa_id']:false;
                 $name = !empty($value['PurchaseOrderAsset']['name'])?$value['PurchaseOrderAsset']['name']:false;
 
-                $titleJournal = sprintf(__('Pembelian Asset %s dari vendor %s '), $name, $vendor_name);
+                $titleJournal = sprintf(__('Pembelian Asset dari vendor %s '), $vendor_name);
                 $titleJournal = $this->filterEmptyField($data, 'PurchaseOrder', 'note', $titleJournal);
 
                 $this->User->Journal->setJournal($price, array(
