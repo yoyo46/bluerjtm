@@ -395,10 +395,6 @@ class LeasingsController extends AppController {
         }
         $vendors = $this->Leasing->Vendor->getData('list');
 
-        if( !empty($dateFrom) && !empty($dateTo) ) {
-            $this->request->data['LeasingPayment']['date'] = $this->MkCommon->_callDateView($dateFrom, $dateTo);
-        }
-
         $this->set(compact(
             'payments', 'vendors'
         ));

@@ -42,6 +42,7 @@ class LakasController extends AppController {
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
         ));
+
         $options =  $this->Laka->_callRefineParams($params, array(
             'contain' => array(
                 'Ttuj',
@@ -49,10 +50,6 @@ class LakasController extends AppController {
         ));
         $this->paginate = $this->Laka->getData('paginate', $options);
         $Lakas = $this->paginate('Laka');
-
-        if( !empty($dateFrom) && !empty($dateTo) ) {
-            $this->request->data['Laka']['date'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateFrom)), date('d/m/Y', strtotime($dateTo)));
-        }
 
         $this->set('Lakas', $Lakas);
 	}
@@ -453,6 +450,10 @@ class LakasController extends AppController {
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
         ));
+
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+        
         $options =  $this->Laka->_callRefineParams($params, array(
             'conditions' => array(
                 'Laka.branch_id' => $allow_branch_id,

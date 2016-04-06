@@ -8338,6 +8338,9 @@ class RevenuesController extends AppController {
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
         ));
+
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
         $options =  $this->Truck->_callRefineParams($params, $options);
 
         if( !empty($data_action) ){

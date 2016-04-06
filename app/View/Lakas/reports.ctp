@@ -72,8 +72,10 @@
             $border = 0;
 
             if( $data_action == 'excel' ) {
+                $filename = $this->Common->toSlug($sub_module_title);
+                
                 header('Content-type: application/ms-excel');
-                header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
+                header('Content-Disposition: attachment; filename='.$filename.'.xls');
                 $border = 1;
             }
 

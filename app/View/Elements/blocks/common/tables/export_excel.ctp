@@ -4,6 +4,8 @@
 <?php 
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $filename = !empty($filename)?$filename:$sub_module_title;
+        $filename = $this->Common->toSlug($filename);
+        
         $contentHeader = !empty($contentHeader)?$contentHeader:false;
         $topHeader = !empty($topHeader)?$topHeader:false;
         $noHeader = !empty($noHeader)?$noHeader:false;

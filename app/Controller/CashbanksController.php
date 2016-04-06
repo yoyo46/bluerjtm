@@ -1084,6 +1084,10 @@ class CashbanksController extends AppController {
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
         ));
+
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+
         $options =  $this->User->Journal->_callRefineParams($params, $options);
 
         if(!empty($this->params['named'])){
@@ -1290,6 +1294,10 @@ class CashbanksController extends AppController {
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
         ));
+
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+
         $options =  $this->CashBank->_callRefineParams($params, $options);
 
         if(!empty($this->params['named'])){
@@ -1309,12 +1317,18 @@ class CashbanksController extends AppController {
             }
         }
 
-        $this->set('sub_module_title', __('Laporan Prepayment'));
+        $module_title = $sub_module_title = __('Laporan Prepayment');
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+
         $this->set('active_menu', 'prepayment_report');
         $this->set('period_label', sprintf(__('Periode : %s'), $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'long', 's/d')));
 
         $this->set(compact(
-            'prepayments', 'data_action'
+            'prepayments', 'data_action', 'sub_module_title',
+            'module_title'
         ));
 
         if($data_action == 'pdf'){

@@ -74,8 +74,10 @@
             $border = 0;
 
             if( $data_action == 'excel' ) {
+                $filename = $this->Common->toSlug($module_title);
+
                 header('Content-type: application/ms-excel');
-                header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
+                header('Content-Disposition: attachment; filename='.$filename.'.xls');
                 $border = 1;
                 $tdStyle = 'text-align: center;';
             }
@@ -235,7 +237,8 @@ EOD;
         $tcpdf->SetFont($textfont,'B',10);
 
         $path = $this->Common->pathDirTcpdf();
-        $filename = 'Laporan_Truk_'.$date_title.'.pdf';
+        $filename = $this->Common->toSlug($module_title);
+        $filename .= '.pdf';
         $tcpdf->Output($path.'/'.$filename, 'F'); 
 
         header('Content-type: application/pdf');
