@@ -49,6 +49,7 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Invoice.invoice_date', __('Tgl Invoice'), array(
                             'escape' => false
                         )));
+                        echo $this->Html->tag('th', __('Company'));
                         echo $this->Html->tag('th', __('Customer'));
                         echo $this->Html->tag('th', $this->Paginator->sort('Invoice.period_from', __('Periode Invoice'), array(
                             'escape' => false
@@ -70,11 +71,13 @@
                     if(!empty($invoices)){
                         foreach ($invoices as $key => $value) {
                             $id = $value['Invoice']['id'];
+                            $company = $this->Common->filterEmptyField($value, 'Company', 'name', 'RJTM');
             ?>
             <tr>
                 <td><?php echo $value['Invoice']['no_invoice'];?></td>
                 <td><?php echo ucfirst($value['Invoice']['tarif_type']);?></td>
                 <td><?php echo $this->Common->customDate($value['Invoice']['invoice_date'], 'd/m/Y');?></td>
+                <td><?php echo $company;?></td>
                 <td><?php echo $value['Customer']['customer_name_code'];?></td>
                 <td>
                     <?php 

@@ -42,6 +42,17 @@
 	    	?>
 	        <div class="form-group">
 	        	<?php 
+						echo $this->Form->input('company_id',array(
+							'label'=> __('Company *'), 
+							'class'=>'form-control',
+							'required' => false,
+							'empty' => __('Pilih Company'),
+							'options' => $companies
+						));
+				?>
+	        </div>
+	        <div class="form-group">
+	        	<?php 
 						echo $this->Form->input('customer_id',array(
 							'label'=> __('Customer *'), 
 							'class'=>'form-control custom-find-invoice',

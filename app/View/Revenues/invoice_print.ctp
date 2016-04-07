@@ -357,24 +357,12 @@ $tcpdf->Output($path.'/'.$filename, 'F');
                 header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
                 $border = 1;
                 $tdStyle = 'text-align: center;';
-
-				echo $this->Html->tag('h1', $sub_module_title, array(
-					'style' => 'font-size: 18px;font-weight: bold;text-align:center;',
-				));
             } else {
         		$this->Html->addCrumb(__('Invoice'), array(
         			'controller' => 'revenues',
         			'action' => 'invoices'
     			));
         		$this->Html->addCrumb($sub_module_title);
-
-				echo $this->Html->tag('span', 'RJTM Invoice', array(
-					'class' => 'header-invoice hidden-print',
-				));
-				echo $this->Html->tag('span', $sub_module_title, array(
-					'style' => 'display: block;text-align:center;font-size:14px;font-weight:bold;',
-					'class' => 'visible-print',
-				));
             }
 
             if( empty($action_print) ) {
@@ -397,11 +385,20 @@ $tcpdf->Output($path.'/'.$filename, 'F');
 			));
 	?>
 </div>
+<div class="clear"></div>
 <?php 
 		}
+
+     //    echo $this->element('blocks/common/tables/logo', array(
+     //    	'value' => $invoice,
+    	// ));
 ?>
 <div class="invoice-print">
 	<?php
+			echo $this->Html->tag('h2', $module_title, array(
+                'style' => 'text-align: center;font-size: 24px;margin: 20px 0 25px;',
+            ));
+
             echo $this->element('blocks/revenues/preview_invoice');
 	?>
 </div>

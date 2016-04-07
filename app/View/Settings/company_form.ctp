@@ -7,6 +7,7 @@
 
 		$data = $this->request->data;
 		$is_rjtm = isset($data['Company']['is_rjtm'])?$data['Company']['is_rjtm']:true;
+		$is_invoice = isset($data['Company']['is_invoice'])?$data['Company']['is_invoice']:true;
 ?>
 <div class="box box-primary">
     <div class="box-header">
@@ -21,6 +22,31 @@
 		));
 	?>
     <div class="box-body">
+    	<?php
+    			if(!empty($this->request->data['Company']['logo']) && !is_array($this->request->data['Company']['logo'])){
+    				$logo = $this->Common->photo_thumbnail(array(
+						'save_path' => Configure::read('__Site.general_photo_folder'), 
+						'src' => $this->request->data['Company']['logo'], 
+						'thumb'=>true,
+						'size' => 'pm',
+						'thumb' => true,
+					));
+
+					echo $this->Html->tag('div', $logo, array(
+						'class' => 'form-group',
+					));
+    			}
+    	?>
+        <div class="form-group">
+        	<?php 
+					echo $this->Form->input('logo',array(
+						'type' => 'file',
+						'label'=> __('Logo Company'), 
+						'class'=>'form-control',
+						'required' => false
+					));
+			?>
+        </div>
     	<?php 
 				echo $this->Html->tag('div', $this->Form->input('name',array(
 					'label'=> __('Nama Company *'), 
@@ -42,7 +68,15 @@
 					'label'=> __('Telepon *'), 
 					'class'=>'form-control',
 					'required' => false,
-					'placeholder' => __('phone')
+					'placeholder' => __('Nomor Telepon')
+				)), array(
+					'class' => 'form-group'
+				));
+				echo $this->Html->tag('div', $this->Form->input('fax',array(
+					'label'=> __('Fax *'), 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('Nomor Fax')
 				)), array(
 					'class' => 'form-group'
 				));
@@ -64,6 +98,19 @@
 	                			echo $this->Form->checkbox('is_rjtm', array(
 	                				'checked' => $is_rjtm,
                 				)).__(' Uang Jalan via RJTM?');
+            			?>
+	                </label>
+	            </div>
+	        </div>
+	    </div>
+	    <div class="form-group">
+	        <div class="checkbox-options">
+	        	<div class="checkbox">
+	                <label>
+	                	<?php
+	                			echo $this->Form->checkbox('is_invoice', array(
+	                				'checked' => $is_invoice,
+                				)).__(' Tampil dipilihan Invoice?');
             			?>
 	                </label>
 	            </div>

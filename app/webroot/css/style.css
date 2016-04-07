@@ -4261,6 +4261,9 @@ table.sorting thead th a {
   #invoice-header-preview table.text {
     width: 100%;
   }
+  /*.print-width-70 {
+    width: 70% !important;
+  }*/
 }
 
 #modal-report .small-box {

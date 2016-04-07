@@ -18,6 +18,12 @@ class Invoice extends AppModel {
                 'message' => 'Tgl Invoice harap dipilih'
             ),
         ),
+        'company_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Company harap dipilih'
+            ),
+        ),
         'customer_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -58,6 +64,10 @@ class Invoice extends AppModel {
         'CustomerNoType' => array(
             'className' => 'CustomerNoType',
             'foreignKey' => 'customer_id',
+        ),
+        'Company' => array(
+            'className' => 'Company',
+            'foreignKey' => 'company_id',
         ),
 	);
 

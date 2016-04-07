@@ -1,6 +1,28 @@
 <?php
 		$qty_unit = !empty($invoice['qty_unit'])?$invoice['qty_unit']:0;
         $full_name = $this->Common->filterEmptyField($invoice, 'Employe', 'full_name');
+        $logo = $this->Common->filterEmptyField($invoice, 'Company', 'logo');
+
+        if( !empty($logo) ) {
+			$company_name = $this->Common->filterEmptyField( $invoice, 'Company', 'name' );
+	        $logo = $this->Common->photo_thumbnail(array(
+	            'save_path' => Configure::read('__Site.general_photo_folder'), 
+	            'src' => $logo, 
+	            'thumb'=>true,
+	            'size' => 'pm',
+	            'thumb' => true,
+	            'fullpath' => true,
+	        ), array(
+	        	'width' => '75',
+				'height' => '75',
+	        ));
+	    } else {
+			$company_name = $this->Common->getDataSetting( $setting, 'company_name' );
+	    	$logo = $this->Common->getDataSetting( $setting, 'logo', array(
+				'width' => '75',
+				'height' => '75',
+			));
+	    }
 
 if($action_print == 'pdf'){
 	App::import('Vendor','xtcpdf');
@@ -17,7 +39,6 @@ if($action_print == 'pdf'){
     $tcpdf->setHeaderFont(array($textfont,'',10));
     $tcpdf->xheadercolor = array(255,255,255);
     $tcpdf->AddPage('L');
-	$company_name = $this->Common->getDataSetting( $setting, 'company_name' );
 	$company_name = sprintf('%s%s', $company_name, $this->Html->tag('div', __('KWITANSI')));
 	$no_invoice = sprintf(': %s', $this->Html->tag('strong', $invoice['Invoice']['no_invoice']));
 	$customer_name = sprintf(': %s', $invoice['Customer']['name']);
@@ -37,6 +58,10 @@ if($action_print == 'pdf'){
 		$bank_name = $this->Html->tag('p', sprintf(__('Pembayaran mohon ditransfer ke:<br><br>&nbsp;<b>%s</b><br>%s<br>&nbsp;A/C <b>%s</b><br>&nbsp;A/N <b>%s</b>'), $invoice['Bank']['name'], $bank_branch, $account_number, $account_name));
 	}
 
+	$company_name = $this->Html->tag('div', $company_name, array(
+		'style' => 'font-size: 48px;',
+	));
+
 $tbl = <<<EOD
 	<table class="text" style="padding: 5px;">
 		<tbody>
@@ -45,6 +70,7 @@ $tbl = <<<EOD
 					<table width="100%">
 						<tbody>
 							<tr>
+								<td width="90px">$logo</td>
 								<td>$company_name</td>
 							</tr>
 						</tbody>
@@ -146,30 +172,47 @@ readfile($path.'/'.$filename);
 		}
 ?>
 <div align="center" id="invoice-header-preview">
-	<table class="text">
+	<table class="text print-width-70">
 		<tbody>
 			<tr align="center">
 				<td colspan="3" style="font-size:24px">
 					<table width="100%">
 						<tbody>
+							<?php 
+    								if( $action_print == 'excel' ) {
+							?>
 							<tr>
-								<?php 
-        								if( $action_print != 'excel' ) {
-											echo $this->Html->tag('td', $this->Common->getDataSetting( $setting, 'logo', array(
-												'width' => '75',
-												'height' => '75',
-											)));
-										}
-								?>
-								<td>
+								<td style="vertical-align: top;margin: 0;">
 									<?php 
-											$company_name = $this->Common->getDataSetting( $setting, 'company_name' );
-											printf('%s%s', $company_name, $this->Html->tag('div', __('KWITANSI'), array(
+											echo $logo;
+											echo $this->Html->tag('div', sprintf('%s<br>%s', $company_name, $this->Html->tag('span', __('KWITANSI'), array(
 												'class' => 'lbl-kwitansi',
-											)));
+											))), array(
+												'style' => 'margin-left: 90px;',
+											));
 									?>
 								</td>
 							</tr>
+							<?php
+    								} else {
+							?>
+							<tr>
+								<?php 
+										echo $this->Html->tag('td', $logo, array(
+											'width' => '108px',
+										));
+								?>
+								<td style="vertical-align: top;">
+									<?php 
+											echo $this->Html->tag('div', sprintf('%s<br>%s', $company_name, $this->Html->tag('span', __('KWITANSI'), array(
+												'class' => 'lbl-kwitansi',
+											))));
+									?>
+								</td>
+							</tr>
+							<?php 
+									}
+							?>
 						</tbody>
 					</table>
 				</td>

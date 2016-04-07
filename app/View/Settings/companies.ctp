@@ -35,6 +35,11 @@
                         )), array(
                             'class' => 'text-center',
                         ));
+                        echo $this->Html->tag('th', $this->Paginator->sort('Company.is_invoice', __('Invoice'), array(
+                            'escape' => false
+                        )), array(
+                            'class' => 'text-center',
+                        ));
                         echo $this->Html->tag('th', $this->Paginator->sort('Company.created', __('Dibuat'), array(
                             'escape' => false
                         )));
@@ -48,10 +53,13 @@
                             $value_data = $value['Company'];
                             $id = $value_data['id'];
                             $is_rjtm = $this->Common->filterEmptyField($value, 'Company', 'is_rjtm');
+                            $is_invoice = $this->Common->filterEmptyField($value, 'Company', 'is_invoice');
+
+                            $address = $this->Common->getFormatDesc($value_data['address']);
             ?>
             <tr>
                 <td><?php echo $value_data['name'];?></td>
-                <td><?php echo $value_data['address'];?></td>
+                <td><?php echo $address;?></td>
                 <td>
                     <?php 
                         echo $value_data['phone_number'];
@@ -60,6 +68,11 @@
                 <td class="text-center">
                     <?php 
                             echo $this->Common->getCheckStatus($is_rjtm);
+                    ?>
+                </td>
+                <td class="text-center">
+                    <?php 
+                            echo $this->Common->getCheckStatus($is_invoice);
                     ?>
                 </td>
                 <td><?php echo $this->Common->customDate($value_data['created']);?></td>

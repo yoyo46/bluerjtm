@@ -22,7 +22,9 @@ class Company extends AppModel {
         )
 	);
 
-	function getData($find, $options = false){
+	function getData($find, $options = false, $elements = array()){
+        $status = isset($elements['status'])?$elements['status']:'active';
+
         $default_options = array(
             'conditions'=> array(
                 'Company.status' => 1,
@@ -31,6 +33,25 @@ class Company extends AppModel {
                 'Company.name' => 'ASC'
             ),
         );
+
+        switch ($status) {
+            case 'all':
+                $default_options['conditions']['Company.status'] = array( 0, 1 );
+                break;
+
+            case 'non-active':
+                $default_options['conditions']['Company.status'] = 0;
+                break;
+
+            case 'invoice':
+                $default_options['conditions']['Company.status'] = 1;
+                $default_options['conditions']['Company.is_invoice'] = 1;
+                break;
+            
+            default:
+                $default_options['conditions']['Company.status'] = 1;
+                break;
+        }
 
         if(!empty($options)){
             if(!empty($options['conditions'])){

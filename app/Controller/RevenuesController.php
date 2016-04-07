@@ -3914,7 +3914,9 @@ class RevenuesController extends AppController {
 
         if(!empty($invoices)){
             foreach ($invoices as $key => $value) {
-                $invoices[$key] = $this->Invoice->Customer->getMerge($value, $value['Invoice']['customer_id']);
+                $value = $this->Invoice->Customer->getMerge($value, $value['Invoice']['customer_id']);
+                $value = $this->Invoice->Company->getMerge($value, $value['Invoice']['company_id']);
+                $invoices[$key] = $value;
             }
         }
         $this->set('invoices', $invoices); 
@@ -4175,10 +4177,14 @@ class RevenuesController extends AppController {
                 }
             }
         }
-        
+
+        $companies = $this->Ttuj->Truck->Company->getData('list', false, array(
+            'status' => 'invoice',
+        ));
+
         $this->set(compact(
             'customers', 'id', 'action',
-            'banks'
+            'banks', 'companies'
         ));
         $this->set('active_menu', 'invoices');
         $this->render('invoice_form');
@@ -4212,7 +4218,11 @@ class RevenuesController extends AppController {
             $this->loadModel('Bank');
 
             $no_invoice = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'no_invoice');
+            $company_id = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'company_id');
+
             $invoice = $this->Invoice->Customer->getMerge($invoice, $invoice['Invoice']['customer_id']);
+            $invoice = $this->Invoice->Company->getMerge($invoice, $company_id);
+
             $invoice = $this->User->getMerge($invoice, $invoice['Invoice']['billing_id']);
             $invoice = $this->Bank->getMerge($invoice, $invoice['Invoice']['bank_id']);
             $revenueDetailId = Set::extract('/InvoiceDetail/revenue_detail_id', $invoice);

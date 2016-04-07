@@ -866,6 +866,19 @@ class SettingsController extends AppController {
     function doCompany($id = false, $data_local = false){
         if(!empty($this->request->data)){
             $data = $this->request->data;
+
+            if(!empty($data['Company']['logo']['name']) && is_array($data['Company']['logo'])){
+                $temp_image = $data['Company']['logo'];
+                $data['Company']['logo'] = $data['Company']['logo']['name'];
+            }else{
+                if($id && $data_local){
+                    unset($data['Company']['logo']);
+                    $data['Company']['id'] = $id;
+                }else{
+                    $data['Company']['logo'] = '';
+                }
+            }
+
             if($id && $data_local){
                 $this->Company->id = $id;
                 $msg = 'merubah';
@@ -877,6 +890,18 @@ class SettingsController extends AppController {
             $this->Company->set($data);
 
             if($this->Company->validates($data)){
+                if(!empty($temp_image) && is_array($temp_image)){
+                    $uploaded = $this->RjImage->upload($temp_image, '/'.Configure::read('__Site.general_photo_folder').'/', String::uuid());
+
+                    if(!empty($uploaded)) {
+                        if($uploaded['error']) {
+                            $this->MkCommon->setCustomFlash($uploaded['message'], 'error');
+                        } else {
+                            $data['Company']['logo'] = $uploaded['imageName'];
+                        }
+                    }
+                }
+
                 if($this->Company->save($data)){
                     $id  =$this->Company->id;
 
