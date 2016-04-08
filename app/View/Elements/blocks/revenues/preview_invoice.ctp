@@ -193,7 +193,7 @@
 
 						$colom .= $this->Html->tag('td', $nopol);
 						
-						if( in_array($data_print, array( 'sa' )) ) {
+						if( in_array($data_print, array( 'sa', 'hso-smg' )) ) {
 							$no_do_sj = array();
 
 							if( !empty($no_do) ) {
@@ -211,7 +211,9 @@
 								$colom .= $this->Html->tag('td', '');
 							}
 
-							$colom .= $this->Html->tag('td', $no_doc);
+							if( in_array($data_print, array( 'sa' )) ) {
+								$colom .= $this->Html->tag('td', $no_doc);
+							}
 						} else {
 							$colom .= $this->Html->tag('td', $no_do);
 
