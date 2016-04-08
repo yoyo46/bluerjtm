@@ -266,4 +266,167 @@ class AssetsController extends AppController {
         $result = $this->PurchaseOrder->doDelete( $id );
         $this->MkCommon->setProcessParams($result);
     }
+
+    public function sells() {
+        $this->loadModel('AssetSell');
+        $this->set('sub_module_title', 'Penjualan Asset');
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->AssetSell->_callRefineParams($params);
+        $this->paginate = $this->AssetSell->getData('paginate', $options, array(
+            'status' => 'void-active',
+        ));
+        $values = $this->paginate('AssetSell');
+        $values = $this->AssetSell->Coa->getMergeAll($values, 'AssetSell');
+
+        $this->set('active_menu', 'asset_sells');
+        $this->set(compact(
+            'values'
+        ));
+    }
+
+    function sell_add(){
+        $this->set('sub_module_title', __('Penjualan Asset'));
+
+        $data = $this->request->data;
+        $dataSave = $this->RjAsset->_callBeforeSaveSell($data);
+        $result = $this->Asset->AssetSellDetail->AssetSell->doSave($dataSave);
+        $this->MkCommon->setProcessParams($result, array(
+            'controller' => 'assets',
+            'action' => 'sells',
+            'admin' => false,
+        ));
+        $this->request->data = $this->RjAsset->_callBeforeRenderSell($this->request->data);
+
+        $this->set('active_menu', 'asset_sells');
+    }
+
+    public function sell_edit( $id = false ) {
+        $this->set('sub_module_title', __('Edit Penjualan Asset'));
+
+        $value = $this->Asset->AssetSellDetail->AssetSell->getData('first', array(
+            'conditions' => array(
+                'AssetSell.id' => $id,
+            ),
+        ), array(
+            'status' => 'unposting',
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->Asset->AssetSellDetail->getMerge($value, $id);
+            $asset_id = Set::extract('/AssetSellDetail/AssetSellDetail/asset_id', $value);
+
+            $data = $this->request->data;
+            $dataSave = $this->RjAsset->_callBeforeSaveSell($data, $id);
+            $result = $this->Asset->AssetSellDetail->AssetSell->doSave($dataSave, $value, $id);
+            $this->MkCommon->setProcessParams($result, array(
+                'controller' => 'assets',
+                'action' => 'sells',
+                'admin' => false,
+            ));
+            $this->request->data = $this->RjAsset->_callBeforeRenderSell($this->request->data, $asset_id);
+
+            $this->set('active_menu', 'asset_sells');
+            $this->set(compact(
+                'value'
+            ));
+            $this->render('sell_add');
+        } else {
+            $this->MkCommon->redirectReferer(__('Penjualan asset tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function sell_detail( $id ) {
+        $this->set('sub_module_title', __('Detail Penjualan Asset'));
+
+        $value = $this->Asset->AssetSellDetail->AssetSell->getData('first', array(
+            'conditions' => array(
+                'AssetSell.id' => $id,
+            ),
+        ), array(
+            'status' => 'void-active',
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->Asset->AssetSellDetail->getMerge($value, $id);
+            $this->request->data = $this->RjAsset->_callBeforeRenderSell($value);
+
+            $this->set('view', 'detail');
+            $this->set('active_menu', 'asset_sells');
+            $this->set(compact(
+                'value'
+            ));
+            $this->render('sell_add');
+        } else {
+            $this->MkCommon->redirectReferer(__('Penjualan asset tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function sell_toggle( $id ) {
+        $is_ajax = $this->RequestHandler->isAjax();
+        $action_type = 'asset_sells';
+        $msg = array(
+            'msg' => '',
+            'type' => 'error'
+        );
+        $value = $this->Asset->AssetSellDetail->AssetSell->getData('first', array(
+            'conditions' => array(
+                'AssetSell.id' => $id,
+            ),
+        ));
+        $data = $this->request->data;
+
+        if( !empty($value) ) {
+            if(!empty($data)){
+                $result = $this->Asset->AssetSellDetail->AssetSell->doDelete( $id, $value, $data );
+                $msg = array(
+                    'msg' => $this->MkCommon->filterEmptyField($result, 'msg'),
+                    'type' => $this->MkCommon->filterEmptyField($result, 'status'),
+                );
+                $this->MkCommon->setProcessParams($result, false, array(
+                    'ajaxFlash' => true,
+                    'noRedirect' => true,
+                ));
+            }
+        } else {
+            $msg = array(
+                'msg' => __('Penjualan asset tidak ditemukan'),
+                'type' => 'error'
+            );
+        }
+
+        $modelName = 'AssetSell';
+        $canceled_date = $this->MkCommon->filterEmptyField($data, 'AssetSell', 'canceled_date');
+        $this->set(compact(
+            'msg', 'is_ajax', 'action_type',
+            'canceled_date', 'modelName', 'value'
+        ));
+        $this->render('/Elements/blocks/common/form_delete');
+    }
+
+    function asset_documents () {
+        $payment_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'payment_id');
+        
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Asset->_callRefineParams($params, array(
+            'limit' => 10,
+        ));
+
+        $this->paginate = $this->Asset->getData('paginate', $options, array(
+            'status' => 'available',
+        ));
+        $values = $this->paginate('Asset');
+        $values = $this->Asset->AssetGroup->getMergeAll($values, 'Asset');
+
+        $this->set('module_title', __('Asset'));
+        $this->set(compact(
+            'values', 'payment_id'
+        ));
+    }
 }

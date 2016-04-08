@@ -2,6 +2,7 @@
         $name = $this->Common->filterEmptyField($User, 'Employe', 'full_name');;
         $current_branch_id = !empty($current_branch_id)?$current_branch_id:false;
         $list_branches = !empty($list_branches)?$list_branches:false;
+        $active_menu = !empty($active_menu)?$active_menu:false;
 ?>
 <!-- Left side column. contains the logo and sidebar -->
 <aside class="left-side sidebar-offcanvas hidden-print">
@@ -970,7 +971,7 @@
                         'journal_report', 'prepayment_report', 'ledger_report',
                         'report_ttuj_payment', 'report_ttuj_outstanding',
                         'document_payments', 'laka_payments',
-                        'profit_loss', 'balance_sheets',
+                        'profit_loss', 'balance_sheets', 'asset_sells',
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
@@ -994,6 +995,9 @@
                         'lakas' => array(
                             'laka_payments',
                         ),
+                        'assets' => array(
+                            'sells',
+                        ),
                     );
 
                     if( $this->Common->allowMenu( $dataMenu  ) ) {
@@ -1008,7 +1012,7 @@
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
-                    <?php                            
+                    <?php
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kas/Bank', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'index'
@@ -1016,6 +1020,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'cash_bank' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Penjualan Asset', array(
+                                'controller' => 'assets',
+                                'action' => 'sells'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'asset_sells' )?'active':'',
                             ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Uang Jalan/Komisi', array(

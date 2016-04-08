@@ -246,5 +246,125 @@ class RjAssetComponent extends Component {
 
         return $data;
     }
+
+    function _callBeforeSaveSell ( $data, $id = false ) {
+        $dataSave = array();
+
+        if( !empty($data) ) {
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'AssetSell' => array(
+                        'transaction_date',
+                        'transfer_date',
+                    ),
+                ),
+            ));
+
+            $values = $this->MkCommon->filterEmptyField($data, 'AssetSellDetail', 'asset_id');
+            $transaction_status = $this->MkCommon->filterEmptyField($data, 'AssetSell', 'transaction_status');
+
+            $dataSave['AssetSell'] = $this->MkCommon->filterEmptyField($data, 'AssetSell');
+            $dataSave['AssetSell']['id'] = $id;
+            $dataSave['AssetSell']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $dataSave['AssetSell']['user_id'] = Configure::read('__Site.config_user_id');
+
+            if( !empty($values) ) {
+                $grandtotal = 0;
+                $grandtotal_nilai_perolehan = 0;
+                $grandtotal_ak_penyusutan = 0;
+
+                foreach ($values as $key => $asset_id) {
+                    $idArr = $this->MkCommon->filterEmptyField($data, 'AssetSellDetail', 'id');
+                    $priceArr = $this->MkCommon->filterEmptyField($data, 'AssetSellDetail', 'price');
+                    
+                    $asset = $this->controller->Asset->getMerge(array(), $asset_id, 'Asset.id', 'available');
+                    
+                    $asset_group_id = $this->MkCommon->filterEmptyField($asset, 'Asset', 'asset_group_id');
+                    $assetCoa = $this->controller->Asset->AssetGroup->AssetGroupCoa->getMerge($asset, $asset_group_id, 'first', 'Asset');
+                    $accumulationDepr = $this->controller->Asset->AssetGroup->AssetGroupCoa->getMerge($asset, $asset_group_id, 'first', 'AccumulationDepr');
+                    $profitAsset = $this->controller->Asset->AssetGroup->AssetGroupCoa->getMerge($asset, $asset_group_id, 'first', 'ProfitAsset');
+
+                    $name = $this->MkCommon->filterEmptyField($asset, 'Asset', 'name');
+                    $transaction_date = $this->MkCommon->filterEmptyField($asset, 'Asset', 'transaction_date');
+                    $note = $this->MkCommon->filterEmptyField($asset, 'Asset', 'note');
+                    $nilai_perolehan = $this->MkCommon->filterEmptyField($asset, 'Asset', 'nilai_perolehan');
+                    $ak_penyusutan = $this->MkCommon->filterEmptyField($asset, 'Asset', 'ak_penyusutan');
+                    $truck_id = $this->MkCommon->filterEmptyField($asset, 'Asset', 'truck_id');
+
+                    $nilai_perolehan_coa_id = $this->MkCommon->filterEmptyField($assetCoa, 'AssetGroupCoa', 'coa_id');
+                    $ak_penyusutan_coa_id = $this->MkCommon->filterEmptyField($accumulationDepr, 'AssetGroupCoa', 'coa_id');
+                    $price_coa_id = $this->MkCommon->filterEmptyField($profitAsset, 'AssetGroupCoa', 'coa_id');
+
+                    $idDetail = !empty($idArr[$key])?$idArr[$key]:false;
+                    $price = !empty($priceArr[$key])?$this->MkCommon->_callPriceConverter($priceArr[$key]):false;
+                    
+                    $grandtotal += $price;
+                    $grandtotal_nilai_perolehan += $nilai_perolehan;
+                    $grandtotal_ak_penyusutan += $ak_penyusutan;
+                    
+                    $dataSave['AssetSellDetail'][$key] = array(
+                        'AssetSellDetail' => array(
+                            'asset_id' => $asset_id,
+                            'price' => $price,
+                            'name' => $name,
+                            'note' => $note,
+                            'nilai_perolehan' => $nilai_perolehan,
+                            'ak_penyusutan' => $ak_penyusutan,
+                            'nilai_perolehan_coa_id' => $nilai_perolehan_coa_id,
+                            'ak_penyusutan_coa_id' => $ak_penyusutan_coa_id,
+                            'price_coa_id' => $price_coa_id,
+                        ),
+                    );
+
+                    if( $transaction_status == 'posting' ) {
+                        $dataSave['AssetSellDetail'][$key]['Asset'] = array(
+                            'id' => $asset_id,
+                            'status_document' => 'sold',
+                        );
+
+                        if( !empty($truck_id) ) {
+                            $dataSave['AssetSellDetail'][$key]['Asset']['Truck'] = array(
+                                'id' => $truck_id,
+                                'sold' => 1,
+                            );
+                        }
+                    }
+                }
+
+                $dataSave['AssetSell']['grandtotal'] = $grandtotal;
+                $dataSave['AssetSell']['grandtotal_nilai_perolehan'] = $grandtotal_nilai_perolehan;
+                $dataSave['AssetSell']['grandtotal_ak_penyusutan'] = $grandtotal_ak_penyusutan;
+            }
+        }
+
+        return $dataSave;
+    }
+
+    function _callBeforeRenderSell ( $data, $asset_id = false ) {
+        if( !empty($data) ) {
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'AssetSell' => array(
+                        'transaction_date',
+                        'transfer_date',
+                    ),
+                ),
+            ), true);
+        } else {
+            $data['AssetSell']['transaction_date'] = date('d/m/Y');
+            $data['AssetSell']['transfer_date'] = date('d/m/Y');
+        }
+
+        $coas = $this->controller->GroupBranch->Branch->BranchCoa->getCoas();
+        $this->MkCommon->_layout_file(array(
+            'select',
+        ));
+
+        $this->controller->set(compact(
+            'coas'
+        ));
+
+        return $data;
+    }
 }
 ?>

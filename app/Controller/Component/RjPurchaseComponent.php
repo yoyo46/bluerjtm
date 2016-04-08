@@ -199,7 +199,7 @@ class RjPurchaseComponent extends Component {
 
                     $dataSave['PurchaseOrderPaymentDetail'][$key] = array(
                         'PurchaseOrderPaymentDetail' => array(
-                            'id' => $idDetail,
+                            // 'id' => $idDetail,
                             'purchase_order_id' => $purchase_order_id,
                             'price' => $price,
                         ),

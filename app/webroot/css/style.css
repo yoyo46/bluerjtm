@@ -4311,3 +4311,8 @@ table#yamaha-rit>tbody>tr>td,
 table#yamaha-rit>thead>tr>th {
   border: none;
 }
+
+.modal-body .box {
+  border: none;
+  box-shadow: none;
+}

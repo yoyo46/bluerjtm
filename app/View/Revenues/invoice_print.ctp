@@ -82,19 +82,21 @@ if($action_print == 'pdf'){
 					$colNameDo = __('Keterangan');
 				}
 			} else {
-				if( $data_print != 'hso-smg' ) {
-					$colNameDo = __('No.DO');
-				} else {
-					$colNameDo = __('No.DO - Nama Dealer');
-				}
+				$colNameDo = __('No.DO');
 			}
 
 			if( in_array($data_print, array( 'sa' )) ) {
 				$colNameSj = $this->Html->tag('th', __('No. SA'), array(
 					'class' => 'text-center',
 				));
-			} else if( !in_array($data_print, array( 'hso-smg', 'sa' )) ) {
-				$colNameSj = $this->Html->tag('th', __('No. SJ'), array(
+			} else if( in_array($data_print, array( 'hso-smg', 'sa' )) ) {
+				if( in_array($data_print, array( 'hso-smg' )) ) {
+					$labelNameSj = __('Nama Dealer');
+				} else {
+					$labelNameSj = __('No. SJ');
+				}
+
+				$colNameSj = $this->Html->tag('th', $labelNameSj, array(
 					'class' => 'text-center',
 				));
 			}
@@ -189,10 +191,7 @@ if($action_print == 'pdf'){
 						$colom .= $this->Html->tag('td', $no_doc);
 					} else {
 						$colom .= $this->Html->tag('td', $no_do);
-
-						if( !in_array($data_print, array( 'hso-smg' )) ) {
-							$colom .= $this->Html->tag('td', $no_sj);
-						}
+						$colom .= $this->Html->tag('td', $no_sj);
 					}
 
 

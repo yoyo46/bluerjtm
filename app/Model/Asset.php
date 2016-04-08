@@ -96,6 +96,13 @@ class Asset extends AppModel {
         ),
     );
 
+    var $hasMany = array(
+        'AssetSellDetail' => array(
+            'className' => 'AssetSellDetail',
+            'foreignKey' => 'asset_id',
+        ),
+    );
+
     public function getData( $find = 'all', $options = array(), $elements = array()  ) {
         $branch = isset($elements['branch'])?$elements['branch']:true;
         $status = isset($elements['status']) ? $elements['status']:'active';
@@ -120,6 +127,12 @@ class Asset extends AppModel {
             case 'active':
                 $default_options['conditions'] = array_merge($default_options['conditions'], array(
                     'Asset.status' => 1,
+                ));
+                break;
+            case 'available':
+                $default_options['conditions'] = array_merge($default_options['conditions'], array(
+                    'Asset.status' => 1,
+                    'Asset.status_document' => 'available',
                 ));
                 break;
         }
@@ -159,18 +172,31 @@ class Asset extends AppModel {
         return $result;
     }
 
-    function getMerge( $data, $id, $fieldName = 'Asset.id' ){
+    function getMerge( $data, $id, $fieldName = 'Asset.id', $status = 'active' ){
         if(empty($data['Asset'])){
             $data_merge = $this->getData('first', array(
                 'conditions' => array(
                     $fieldName => $id
                 )
             ), array(
-                'status' => 'all',
+                'status' => $status,
             ));
 
             if(!empty($data_merge)){
                 $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
+    }
+
+    function getMergeAll($data, $modelName = false){
+        if( !empty($data) ){
+            foreach ($data as $key => $value) {
+                $id = !empty($value[$modelName]['asset_id'])?$value[$modelName]['asset_id']:false;
+
+                $value = $this->getMerge($value, $id);
+                $data[$key] = $value;
             }
         }
 
@@ -185,6 +211,7 @@ class Asset extends AppModel {
         $asset_group_id = !empty($data['named']['asset_group_id'])?$data['named']['asset_group_id']:false;
         $name = !empty($data['named']['name'])?$data['named']['name']:false;
         $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
+        $status = !empty($data['named']['status'])?$data['named']['status']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -212,6 +239,9 @@ class Asset extends AppModel {
         }
         if(!empty($noref)){
             $default_options['conditions']['LPAD(Asset.id, 6, 0) LIKE'] = '%'.$noref.'%';
+        }
+        if(!empty($status)){
+            $default_options['conditions']['Asset.status_document'] = $status;
         }
         
         return $default_options;

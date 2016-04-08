@@ -1134,7 +1134,7 @@ class CommonHelper extends AppHelper {
             'id' => 'transaction_status'
         ));
         
-        if( !$invoiced && $_status ) {
+        if( !$invoiced && $_status && empty($posting) ) {
             echo $this->Form->button(!empty($lblArr[0])?$lblArr[0]:__('Posting'), array(
                 'type' => 'submit',
                 'class'=> 'btn btn-success submit-form btn-lg',
@@ -1887,9 +1887,9 @@ class CommonHelper extends AppHelper {
 
     function getFormatPrice ($price, $empty = 0, $places = 0) {
         if( !empty($price) ) {
-            if( strpos($price,'.') == false ) {
-                $places = 0;
-            }
+            // if( strpos($price,'.') == false ) {
+            //     $places = 0;
+            // }
 
             return $this->Number->currency($price, '', array('places' => $places));
         } else {
@@ -2334,8 +2334,8 @@ class CommonHelper extends AppHelper {
         return $actionDoc;
     }
 
-    function _callTransactionStatus ( $data, $modelName = false ) {
-        $transaction_status = $this->filterEmptyField($data, $modelName, 'transaction_status');
+    function _callTransactionStatus ( $data, $modelName = false, $fieldName = 'transaction_status' ) {
+        $transaction_status = $this->filterEmptyField($data, $modelName, $fieldName);
 
         switch ($transaction_status) {
             case 'paid':
@@ -2356,8 +2356,20 @@ class CommonHelper extends AppHelper {
                 ));
                 break;
 
+            case 'sold':
+                $customStatus = $this->Html->tag('span', __('Sold'), array(
+                    'class' => 'label label-danger',
+                ));
+                break;
+
             case 'posting':
                 $customStatus = $this->Html->tag('span', __('Commit'), array(
+                    'class' => 'label label-success',
+                ));
+                break;
+
+            case 'available':
+                $customStatus = $this->Html->tag('span', __('Available'), array(
                     'class' => 'label label-success',
                 ));
                 break;

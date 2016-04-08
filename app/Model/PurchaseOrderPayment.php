@@ -195,22 +195,45 @@ class PurchaseOrderPayment extends AppModel {
             }
 
             $flag = $this->saveAll($data, array(
+                'validate' => 'only',
                 'deep' => true,
             ));
 
             if( !empty($flag) ) {
-                $msg = __('Berhasil melakukan pembayaran PO');
-                $this->_callSetJournalPayment($id, $data);
+                $flag = $this->PurchaseOrderPaymentDetail->updateAll(array(
+                    'PurchaseOrderPaymentDetail.status' => 0,
+                ), array(
+                    'PurchaseOrderPaymentDetail.purchase_order_payment_id' => $id,
+                ));
 
-                $result = array(
-                    'msg' => $msg,
-                    'status' => 'success',
-                    'Log' => array(
-                        'activity' => $msg,
-                        'old_data' => $value,
-                    ),
-                    'data' => $data,
-                );
+                if( !empty($flag) ) {
+                    $msg = __('Berhasil melakukan pembayaran PO');
+                    $this->saveAll($data, array(
+                        'deep' => true,
+                    ));
+                    $this->_callSetJournalPayment($id, $data);
+
+                    $result = array(
+                        'msg' => $msg,
+                        'status' => 'success',
+                        'Log' => array(
+                            'activity' => $msg,
+                            'old_data' => $value,
+                        ),
+                        'data' => $data,
+                    );
+                } else {
+                    $result = array(
+                        'msg' => $msg,
+                        'status' => 'error',
+                        'Log' => array(
+                            'activity' => $msg,
+                            'old_data' => $value,
+                            'error' => 1,
+                        ),
+                        'data' => $data,
+                    );
+                }
             } else {
                 $result = array(
                     'msg' => $msg,

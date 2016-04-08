@@ -13,12 +13,7 @@
 
 				if( in_array($data_print, array( 'date', 'hso-smg', 'preview', 'sa' )) ) {
 					$totalMerge = 10;
-					
-					if( $data_print == 'hso-smg' ) {
-						$totalMergeTotal = 5;
-					} else {
-						$totalMergeTotal = 6;
-					}
+					$totalMergeTotal = 6;
 				} else {
 					$totalMerge = 9;
 					$totalMergeTotal = 5;
@@ -68,11 +63,7 @@
 								echo __('Keterangan');
 							}
 						} else {
-							if( $data_print != 'hso-smg' ) {
-								echo __('No.DO');
-							} else {
-								echo __('No.DO - Nama Dealer');
-							}
+							echo __('No.DO');
 						}
 				?>
 			</th>
@@ -82,8 +73,13 @@
 							'class' => 'text-center',
 							'width' => '15%'
 						));
-					} else if( !in_array($data_print, array( 'hso-smg', 'sa' )) ) {
-						echo $this->Html->tag('th', __('No. SJ'), array(
+					} else if( in_array($data_print, array( 'hso-smg', 'sa' )) ) {
+						if( in_array($data_print, array( 'hso-smg', 'sa' )) ) {
+							$labelNameSj = __('Nama Dealer');
+						} else {
+							$labelNameSj = __('No. SJ');
+						}
+						echo $this->Html->tag('th', $labelNameSj, array(
 							'class' => 'text-center',
 							'width' => '15%'
 						));
@@ -193,7 +189,7 @@
 
 						$colom .= $this->Html->tag('td', $nopol);
 						
-						if( in_array($data_print, array( 'sa', 'hso-smg' )) ) {
+						if( in_array($data_print, array( 'sa' )) ) {
 							$no_do_sj = array();
 
 							if( !empty($no_do) ) {
@@ -216,10 +212,7 @@
 							}
 						} else {
 							$colom .= $this->Html->tag('td', $no_do);
-
-							if( !in_array($data_print, array( 'hso-smg' )) ) {
-								$colom .= $this->Html->tag('td', $no_sj);
-							}
+							$colom .= $this->Html->tag('td', $no_sj);
 						}
 
 						$colom .= $this->Html->tag('td', $date_revenue);

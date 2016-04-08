@@ -132,6 +132,19 @@ class AssetGroup extends AppModel {
         return $data;
     }
 
+    function getMergeAll($data, $modelName = false){
+        if( !empty($data) ){
+            foreach ($data as $key => $value) {
+                $id = !empty($value[$modelName]['asset_group_id'])?$value[$modelName]['asset_group_id']:false;
+
+                $value = $this->getMerge($value, $id);
+                $data[$key] = $value;
+            }
+        }
+
+        return $data;
+    }
+
     public function _callRefineParams( $data = '', $default_options = false ) {
         $code = !empty($data['named']['code'])?$data['named']['code']:false;
         $name = !empty($data['named']['name'])?$data['named']['name']:false;

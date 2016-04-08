@@ -34,6 +34,10 @@
                 'name' => __('Nilai Buku'),
                 'class' => 'text-center',
             ),
+            'status' => array(
+                'name' => __('Status'),
+                'class' => 'text-center',
+            ),
             'created' => array(
                 'name' => __('Dibuat'),
                 'class' => 'text-center',
@@ -79,6 +83,7 @@
                             $created = $this->Common->filterEmptyField($value, 'Asset', 'created');
 
                             $group = $this->Common->filterEmptyField($value, 'AssetGroup', 'group_name');
+                            $customStatus = $this->Common->_callTransactionStatus($value, 'Asset', 'status_document');
 
                             $purchase_date = $this->Common->formatDate($purchase_date, 'd/m/Y');
                             $neraca_date = $this->Common->formatDate($neraca_date, 'd/m/Y');
@@ -146,6 +151,12 @@
                                         ),
                                     ),
                                     array(
+                                        $customStatus,
+                                        array(
+                                            'class' => 'text-center',
+                                        ),
+                                    ),
+                                    array(
                                         $created,
                                         array(
                                             'class' => 'text-center',
@@ -163,7 +174,7 @@
                     } else {
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '11'
+                            'colspan' => '12'
                         )));
                     }
             ?>

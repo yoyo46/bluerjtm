@@ -854,6 +854,8 @@
                         temp_picker.find('td.hide').removeClass('hide');
                         temp_picker.find('td.removed').remove();
 
+                        calcItemTotal(temp_picker);
+
                         temp_picker.removeClass('hide');
                         $.rebuildFunction();
                         $.inputPrice({
@@ -863,6 +865,24 @@
                     }
                 }
             }
+        }
+    }
+
+    function calcItemTotal ( obj ) {
+        if( obj.find('tbody .calc-item').length > 0 ) {
+            var itemTotal = [];
+
+            $.each( obj.find('tbody .calc-item'), function( i, val ) {
+                var self = $(this);
+                var rel = self.attr('rel');
+                var total = $.checkUndefined(itemTotal[rel], 0);
+                
+                itemTotal[rel] = total + $.convertNumber(self.html());
+            });
+
+            $.each( itemTotal, function( i, val ) {
+                obj.find('tfoot .calc-total[rel="'+i+'"]').html($.formatDecimal(val, 2));
+            });
         }
     }
 
@@ -965,10 +985,12 @@
             settings.objDelete.click(function(){
                 var self = $(this);
                 var parent = self.parents('.pick-document');
+                var table = self.parents('table.form-added');
 
                 if ( confirm('Hapus dokumen ini?') ) { 
                     parent.remove();
                     calcGrandTotal();
+                    calcItemTotal(table);
                 }
 
                 return false;

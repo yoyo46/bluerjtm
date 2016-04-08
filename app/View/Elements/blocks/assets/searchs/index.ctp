@@ -32,6 +32,14 @@
                             'class' => 'form-control',
                         ));
                         echo $this->Common->buildInputForm('name', __('Nama Asset'));
+                        echo $this->Common->buildInputForm('status', __('Status'), array(
+                            'empty' => __('Pilih Status'),
+                            'class' => 'form-control',
+                            'options' => array(
+                                'available' => __('Available'),
+                                'sold' => __('Sold'),
+                            ),
+                        ));
                         echo $this->element('blocks/common/forms/submit_action', array(
                             'frameClass' => 'form-group action',
                             'btnClass' => 'btn-sm',

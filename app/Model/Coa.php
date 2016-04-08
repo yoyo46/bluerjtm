@@ -201,6 +201,19 @@ class Coa extends AppModel {
         return $data;
     }
 
+    function getMergeAll($data, $modelName = false){
+        if( !empty($data) ){
+            foreach ($data as $key => $value) {
+                $id = !empty($value[$modelName]['coa_id'])?$value[$modelName]['coa_id']:false;
+
+                $value = $this->getMerge($value, $id);
+                $data[$key] = $value;
+            }
+        }
+
+        return $data;
+    }
+
     function getListParent ( $id = false, $categories = false, $idx = 0 ) {
         $result = array();
         $separator = str_pad('', $idx, '-', STR_PAD_LEFT);

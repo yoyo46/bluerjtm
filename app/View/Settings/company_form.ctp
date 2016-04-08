@@ -73,7 +73,7 @@
 					'class' => 'form-group'
 				));
 				echo $this->Html->tag('div', $this->Form->input('fax',array(
-					'label'=> __('Fax *'), 
+					'label'=> __('Fax'), 
 					'class'=>'form-control',
 					'required' => false,
 					'placeholder' => __('Nomor Fax')
