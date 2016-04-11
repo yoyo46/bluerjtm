@@ -206,7 +206,10 @@ readfile($path.'/'.$filename);
 									<?php 
 											echo $this->Html->tag('div', sprintf('%s<br>%s', $company_name, $this->Html->tag('span', __('KWITANSI'), array(
 												'class' => 'lbl-kwitansi',
-											))));
+												'style' => 'font-size: 20px !important;',
+											))), array(
+												'style' => 'font-size: 24px;line-height: 25px;',
+											));
 									?>
 								</td>
 							</tr>
