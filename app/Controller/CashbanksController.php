@@ -429,6 +429,7 @@ class CashbanksController extends AppController {
 
                 if( !empty($lastCashBank) ) {
                     $this->request->data['CashBank']['coa_id'] = $this->MkCommon->filterEmptyField($lastCashBank, 'CashBank', 'coa_id');
+                    $this->request->data['CashBank']['receiving_cash_type'] = $this->MkCommon->filterEmptyField($lastCashBank, 'CashBank', 'receiving_cash_type');
                     $this->request->data['CashBank']['receiver_type'] = $this->MkCommon->filterEmptyField($lastCashBank, 'CashBank', 'receiver_type');
                     $this->request->data['CashBank']['receiver_id'] = $this->MkCommon->filterEmptyField($lastCashBank, 'CashBank', 'receiver_id');
                 }

@@ -1823,7 +1823,8 @@ class AjaxController extends AppController {
 	        ),
             'limit' => 10,
 			'order' => array(
-				'CashBank.id' => 'ASC'
+				'CashBank.tgl_cash_bank' => 'DESC',
+				'CashBank.id' => 'ASC',
 			),
         );
 
