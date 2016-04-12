@@ -73,7 +73,7 @@
 							'class' => 'text-center',
 							'width' => '15%'
 						));
-					} else if( in_array($data_print, array( 'hso-smg', 'sa' )) ) {
+					} else {
 						if( in_array($data_print, array( 'hso-smg', 'sa' )) ) {
 							$labelNameSj = __('Nama Dealer');
 						} else {

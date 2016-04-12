@@ -2,22 +2,32 @@
 class Company extends AppModel {
 	var $name = 'Company';
 	var $validate = array(
+        'code' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Kode company harap diisi'
+            ),
+            'unique' => array(
+                'rule' => 'isUnique',
+                'message' => 'Kode sudah terdatar, mohon masukkan kode lain.'
+            ),
+        ),
         'name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Customer name harap diisi'
+                'message' => 'Nama harap diisi'
             ),
         ),
         'address' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Address harap diisi'
+                'message' => 'Alamat harap diisi'
             ),
         ),
         'phone_number' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Phone harap diisi'
+                'message' => 'Telepon harap diisi'
             ),
         )
 	);

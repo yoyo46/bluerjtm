@@ -807,6 +807,11 @@ class SettingsController extends AppController {
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
 
+            if(!empty($refine['code'])){
+                $code = urldecode($refine['code']);
+                $this->request->data['Company']['code'] = $code;
+                $options['conditions']['Company.code LIKE '] = '%'.$code.'%';
+            }
             if(!empty($refine['name'])){
                 $name = urldecode($refine['name']);
                 $this->request->data['Company']['name'] = $name;

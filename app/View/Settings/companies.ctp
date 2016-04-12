@@ -21,6 +21,9 @@
         <table class="table table-hover">
             <tr>
                 <?php
+                        echo $this->Html->tag('th', $this->Paginator->sort('Company.code', __('Kode'), array(
+                            'escape' => false
+                        )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Company.name', __('Company'), array(
                             'escape' => false
                         )));
@@ -54,10 +57,12 @@
                             $id = $value_data['id'];
                             $is_rjtm = $this->Common->filterEmptyField($value, 'Company', 'is_rjtm');
                             $is_invoice = $this->Common->filterEmptyField($value, 'Company', 'is_invoice');
+                            $code = $this->Common->filterEmptyField($value, 'Company', 'code');
 
                             $address = $this->Common->getFormatDesc($value_data['address']);
             ?>
             <tr>
+                <td><?php echo $code;?></td>
                 <td><?php echo $value_data['name'];?></td>
                 <td><?php echo $address;?></td>
                 <td>

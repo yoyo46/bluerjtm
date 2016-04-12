@@ -21,16 +21,14 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('name',array(
-                                'label'=> __('Nama Company'),
+                            echo $this->Form->input('code',array(
+                                'label'=> __('Kode'),
                                 'class'=>'form-control',
                                 'required' => false,
-                                'placeholder' => __('Nama Company')
+                                'placeholder' => __('Kode Company')
                             ));
                     ?>
                 </div>
-            </div>
-            <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('is_rjtm',array(
@@ -46,22 +44,34 @@
                     ?>
                 </div>
             </div>
-        </div>
-        <div class="form-group action">
-            <?php
-                    echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
-                        'div' => false, 
-                        'class'=> 'btn btn-success btn-sm',
-                        'type' => 'submit',
-                    ));
-                    echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                        'controller' => 'settings', 
-                        'action' => 'companies', 
-                    ), array(
-                        'escape' => false, 
-                        'class'=> 'btn btn-default btn-sm',
-                    ));
-            ?>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('name',array(
+                                'label'=> __('Nama Company'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Nama Company')
+                            ));
+                    ?>
+                </div>
+                <div class="form-group action">
+                    <?php
+                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
+                                'div' => false, 
+                                'class'=> 'btn btn-success btn-sm',
+                                'type' => 'submit',
+                            ));
+                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'controller' => 'settings', 
+                                'action' => 'companies', 
+                            ), array(
+                                'escape' => false, 
+                                'class'=> 'btn btn-default btn-sm',
+                            ));
+                    ?>
+                </div>
+            </div>
         </div>
         <?php 
             echo $this->Form->end();

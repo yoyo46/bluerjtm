@@ -19,6 +19,7 @@
                         'action' => 'invoice_print',
                         $id
                     ), array(
+                        'allow' => true,
                         'escape' => false,
                         'class' => 'small-box-footer',
                     ));
@@ -40,6 +41,7 @@
                         $id,
                         'print' => 'date',
                     ), array(
+                        'allow' => true,
                         'escape' => false,
                         'class' => 'small-box-footer',
                     ));
@@ -64,6 +66,7 @@
                         $id,
                         'print' => 'header',
                     ), array(
+                        'allow' => true,
                         'escape' => false,
                         'class' => 'small-box-footer',
                     ));
@@ -88,6 +91,7 @@
                         'print' => 'mpm',
                         $id,
                     ), array(
+                        'allow' => true,
                         'escape' => false,
                         'class' => 'small-box-footer',
                     ));
@@ -109,6 +113,7 @@
                         'print' => 'hso-yogya',
                         $id,
                     ), array(
+                        'allow' => true,
                         'escape' => false,
                         'class' => 'small-box-footer',
                     ));
@@ -130,6 +135,7 @@
                         $id,
                         'print' => 'hso-smg',
                     ), array(
+                        'allow' => true,
                         'escape' => false,
                         'class' => 'small-box-footer',
                     ));
@@ -150,6 +156,7 @@
                         'action' => 'invoice_yamaha_rit',
                         $id,
                     ), array(
+                        'allow' => true,
                         'escape' => false,
                         'class' => 'small-box-footer',
                     ));
@@ -170,6 +177,7 @@
                         'action' => 'invoice_yamaha_unit',
                         $id,
                     ), array(
+                        'allow' => true,
                         'escape' => false,
                         'class' => 'small-box-footer',
                     ));
@@ -190,6 +198,7 @@
                         'action' => 'invoice_nozomi_unit',
                         $id,
                     ), array(
+                        'allow' => true,
                         'escape' => false,
                         'class' => 'small-box-footer',
                     ));
@@ -211,6 +220,7 @@
                         $id,
                         'print' => 'sa',
                     ), array(
+                        'allow' => true,
                         'escape' => false,
                         'class' => 'small-box-footer',
                     ));
@@ -235,6 +245,7 @@
                         $id,
                         'print' => 'header',
                     ), array(
+                        'allow' => true,
                         'escape' => false,
                         'class' => 'small-box-footer',
                     ));

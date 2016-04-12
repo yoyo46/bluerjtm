@@ -5444,8 +5444,11 @@ class RevenuesController extends AppController {
 
         if( !empty($invoices) ) {
             foreach ($invoices as $key => $invoice) {
+                $company_id = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'company_id');
+
                 $invoice = $this->Revenue->RevenueDetail->getSumUnit($invoice, $invoice['Invoice']['id']);
                 $invoice = $this->Invoice->getMergePayment($invoice, $invoice['Invoice']['id'] );
+                $invoice = $this->Invoice->Company->getMerge($invoice, $company_id );
 
                 $invoices[$key] = $invoice;
             }

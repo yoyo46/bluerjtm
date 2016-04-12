@@ -194,6 +194,12 @@
                     <?php 
                             }
 
+                            echo $this->Html->tag('th', __('Company'), array(
+                                'style' => 'text-align: center;width: 120px;vertical-align: middle;',
+                                'data-options' => 'field:\'company\',width:150,',
+                                'align' => 'center',
+                                'mainalign' => 'center',
+                            ));
                             echo $this->Html->tag('th', $this->Common->getSorting('Invoice.total', __('Total Tagihan')), array(
                                 'style' => 'text-align: center;width: 150px;vertical-align: middle;',
                                 'data-options' => 'field:\'total\',width:150,',
@@ -268,6 +274,8 @@
                                 $totalPPH = $this->Common->filterEmptyField($invoice, 'Invoice', 'total_pph', 0);
                                 $totalPPH = !empty($invoice[0]['total_pph'])?$invoice[0]['total_pph']:$totalPPH;
                                 // $totalPPH = !empty($invoice['total_pph'])?$invoice['total_pph']:0;
+
+                                $company = $this->Common->filterEmptyField($invoice, 'Company', 'code');
                                 
                                 $dateTOP = !empty($invoice['Invoice']['term_of_payment'])?date('d/m/Y', strtotime(sprintf('+%s day', $invoice['Invoice']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']))):'-';
                                 $datePayment = array();
@@ -314,6 +322,9 @@
                                 )), array(
                                 'style' => 'text-align: left;vertical-align: middle;',
                             ));
+                            echo $this->Html->tag('td', $company, array(
+                                'style' => 'text-align: center;vertical-align: middle;',
+                            ));
                             echo $this->Html->tag('td', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
@@ -355,6 +366,7 @@
                             $tdContent = $this->Html->tag('td', '');
                             $tdContent .= $this->Html->tag('td', '');
                             $tdContent .= $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', '');
                             $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', __('Total'), array(
                                 'style' => 'text-align: right;display: block'
                             )), array(
@@ -385,6 +397,7 @@
                             echo $this->Html->tag('tr', $tdContent);
 
                             $tdContent = $this->Html->tag('td', '');
+                            $tdContent .= $this->Html->tag('td', '');
                             $tdContent .= $this->Html->tag('td', '');
                             $tdContent .= $this->Html->tag('td', '');
                             $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', __('Total Void'), array(
@@ -479,6 +492,8 @@
                     $totalQty += $totalUnit;
                     $grandtotalPPH += $totalPPH;
 
+                    $company = $this->Common->filterEmptyField($invoice, 'Company', 'code');
+
                     if( !empty($invoice['InvoicePaymentDate']) ) {
                         foreach ($invoice['InvoicePaymentDate'] as $key => $dtPaid) {
                             $datePayment[] = $this->Common->customDate($dtPaid, 'd/m/Y');
@@ -507,6 +522,9 @@
                     ));
                     $content .= $this->Html->tag('td', $invoice['Invoice']['no_invoice'], array(
                         'style' => 'text-align: left;vertical-align: middle;',
+                    ));
+                    $content .= $this->Html->tag('td', $company, array(
+                        'style' => 'text-align: center;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
                         'style' => 'text-align: right;vertical-align: middle;',
@@ -547,7 +565,7 @@
                     'style' => 'text-align: right;display: block'
                 )), array(
                     'style' => 'text-align: right;vertical-align: middle;',
-                    'colspan' => 4,
+                    'colspan' => 5,
                 ));
                 $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalTagihan, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
                     'style' => 'text-align: right;vertical-align: middle;',
@@ -572,7 +590,7 @@
                     'style' => 'text-align: right;display: block'
                 )), array(
                     'style' => 'text-align: right;vertical-align: middle;',
-                    'colspan' => 4,
+                    'colspan' => 5,
                 ));
                 $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalVoid, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
                     'style' => 'text-align: right;vertical-align: middle;',
@@ -601,6 +619,7 @@ $tbl = <<<EOD
                     <th style="text-align: center;vertical-align: middle;">Tgl Kwitansi</th>
                     <th style="text-align: center;vertical-align: middle;">Customer</th>
                     <th style="text-align: center;vertical-align: middle;">No. Invoice</th>
+                    <th style="text-align: center;vertical-align: middle;">Company</th>
                     <th style="text-align: center;vertical-align: middle;">Total Tagihan</th>
                     <th style="text-align: center;vertical-align: middle;">Total PPH</th>
                     <th style="text-align: center;vertical-align: middle;">Periode Tanggal</th>

@@ -48,6 +48,18 @@
 			?>
         </div>
     	<?php 
+				echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('div', $this->Form->input('code',array(
+					'label'=> __('Code *'), 
+					'class'=>'form-control',
+					'required' => false,
+					'placeholder' => __('Kode')
+				)), array(
+					'class' => 'form-group'
+				)), array(
+					'class' => 'col-sm-3',
+				)), array(
+					'class' => 'row',
+				));
 				echo $this->Html->tag('div', $this->Form->input('name',array(
 					'label'=> __('Nama Company *'), 
 					'class'=>'form-control',
