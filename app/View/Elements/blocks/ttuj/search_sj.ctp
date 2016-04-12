@@ -21,7 +21,7 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->label('date', __('Tgl Bayar'));
+                            echo $this->Form->label('date', __('Tgl Diterima'));
                     ?>
                     <div class="input-group">
                         <div class="input-group-addon">
@@ -51,7 +51,7 @@
                 <div class="form-group">
                     <?php 
                         echo $this->Form->input('nodoc',array(
-                            'label'=> __('No. Dokumen'),
+                            'label'=> __('No. TTUJ'),
                             'class'=>'form-control',
                             'required' => false,
                             'placeholder' => __('No. Dokumen')

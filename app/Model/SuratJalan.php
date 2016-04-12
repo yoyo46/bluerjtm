@@ -103,30 +103,58 @@ class SuratJalan extends AppModel {
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
 
+        $dateFromTtuj = !empty($data['named']['DateFromTtuj'])?$data['named']['DateFromTtuj']:false;
+        $dateToTtuj = !empty($data['named']['DateToTtuj'])?$data['named']['DateToTtuj']:false;
+        
+        $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
+        $type = !empty($data['named']['type'])?$data['named']['type']:1;
+
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
-        $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
-        $name = !empty($data['named']['name'])?$data['named']['name']:false;
-        $note = !empty($data['named']['note'])?$data['named']['note']:false;
+        $customer = !empty($data['named']['customer'])?$data['named']['customer']:false;
 
         $status = !empty($data['named']['status'])?$data['named']['status']:false;
 
+        if( !empty($dateFromTtuj) || !empty($dateToTtuj) ) {
+            if( !empty($dateFromTtuj) ) {
+                $default_options['conditions']['DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') >='] = $dateFromTtuj;
+            }
+
+            if( !empty($dateToTtuj) ) {
+                $default_options['conditions']['DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') <='] = $dateToTtuj;
+            }
+        }
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
-                $default_options['conditions']['DATE_FORMAT(SuratJalan.tgl_surat_jalan, \'%Y-%m-%d\') >='] = $dateFrom;
+                $default_options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $dateFrom;
             }
 
             if( !empty($dateTo) ) {
-                $default_options['conditions']['DATE_FORMAT(SuratJalan.tgl_surat_jalan, \'%Y-%m-%d\') <='] = $dateTo;
+                $default_options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $dateTo;
             }
         }
         if(!empty($nodoc)){
-            $default_options['conditions']['SuratJalan.nodoc LIKE'] = '%'.$nodoc.'%';
+            $default_options['conditions']['Ttuj.no_ttuj LIKE'] = '%'.$nodoc.'%';
         }
-        if(!empty($noref)){
-            $default_options['conditions']['LPAD(SuratJalan.id, 6, 0) LIKE'] = '%'.$noref.'%';
+        if(!empty($nopol)){
+            if( $type == 2 ) {
+                $default_options['conditions']['Ttuj.truck_id'] = $nopol;
+            } else {
+                $default_options['conditions']['Ttuj.nopol LIKE'] = '%'.$nopol.'%';
+            }
         }
-        if(!empty($note)){
-            $default_options['conditions']['SuratJalan.note LIKE'] = '%'.$note.'%';
+        if(!empty($customer)){
+            $customers = $this->Ttuj->Customer->getData('list', array(
+                'conditions' => array(
+                    'Customer.customer_name_code LIKE' => '%'.$customer.'%',
+                ),
+                'fields' => array(
+                    'Customer.id', 'Customer.id'
+                ),
+            ), true, array(
+                'status' => 'all',
+                'branch' => false,
+            ));
+            $default_options['conditions']['Ttuj.customer_id'] = $customers;
         }
 
         return $default_options;

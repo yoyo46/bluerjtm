@@ -5947,14 +5947,44 @@ class RevenuesController extends AppController {
         $this->set('active_menu', 'surat_jalan');
         $this->set('sub_module_title', __('Surat Jalan'));
         
-        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
-        $dateTo = date('Y-m-d');
+        // $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        // $dateTo = date('Y-m-d');
+
+        $this->SuratJalan->unBindModel(array(
+            'hasMany' => array(
+                'SuratJalanDetail'
+            )
+        ));
+
+        $this->SuratJalan->bindModel(array(
+            'hasOne' => array(
+                'SuratJalanDetail' => array(
+                    'className' => 'SuratJalanDetail',
+                    'foreignKey' => 'surat_jalan_id',
+                ),
+                'Ttuj' => array(
+                    'className' => 'Ttuj',
+                    'foreignKey' => false,
+                    'conditions' => array(
+                        'Ttuj.id = SuratJalanDetail.ttuj_id',
+                    ),
+                ),
+            )
+        ), false);
 
         $params = $this->MkCommon->_callRefineParams($this->params, array(
-            'dateFrom' => $dateFrom,
-            'dateTo' => $dateTo,
+            // 'dateFrom' => $dateFrom,
+            // 'dateTo' => $dateTo,
         ));
-        $options =  $this->SuratJalan->_callRefineParams($params);
+        $options =  $this->SuratJalan->_callRefineParams($params, array(
+            'contain' => array(
+                'SuratJalanDetail',
+                'Ttuj',
+            ),
+            'group' => array(
+                'SuratJalan.id',
+            ),
+        ));
 
         $this->paginate = $this->SuratJalan->getData('paginate', $options);
         $values = $this->paginate('SuratJalan');
@@ -5970,8 +6000,15 @@ class RevenuesController extends AppController {
             }
         }
 
+        $customers = $this->Ttuj->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+        $this->MkCommon->_layout_file('select');
+
         $this->set(compact(
-            'values'
+            'values', 'customers'
         ));
     }
     

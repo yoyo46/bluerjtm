@@ -1,3 +1,6 @@
+<?php 
+        $status = isset($status)?$status:true;
+?>
 <div class="box collapsed-box">
     <div class="box-header">
         <h3 class="box-title">Pencarian</h3>
@@ -124,6 +127,9 @@
                             ));
                     ?>
                 </div>
+                <?php 
+                        if( !empty($status) ) {
+                ?>
                 <div class="row">
                     <div class="col-sm-6 col-md-4">
                         <?php 
@@ -269,6 +275,9 @@
                         ?>
                     </div>
                 </div>
+                <?php 
+                        }
+                ?>
             </div>
         </div>
         <?php 
