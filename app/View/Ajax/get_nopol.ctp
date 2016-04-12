@@ -99,6 +99,9 @@
 		echo $this->Html->tag('div', !empty($uangJalan['UangJalan']['min_capacity'])?$uangJalan['UangJalan']['min_capacity']:0, array(
 			'id' => 'min_capacity',
 		));
+		echo $this->Html->tag('div', !empty($uangJalan['UangJalan']['commission_min_qty'])?$uangJalan['UangJalan']['commission_min_qty']:0, array(
+			'id' => 'commission_min_qty',
+		));
 
 		echo $this->Html->tag('div', !empty($uangJalan['UangJalan']['is_unit'])?$uangJalan['UangJalan']['is_unit']:0, array(
 			'id' => 'is_unit',

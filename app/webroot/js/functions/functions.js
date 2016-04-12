@@ -90,6 +90,7 @@ var getUangjalan = function ( response ) {
         var uang_jalan_extra = $(response).filter('#uang_jalan_extra').html().replace(/,/gi, "");
         var uang_jalan_extra_ori = uang_jalan_extra;
         var min_capacity = $(response).filter('#min_capacity').html();
+        var commission_min_qty = $(response).filter('#commission_min_qty').html();
         var uang_jalan_extra_per_unit = $(response).filter('#uang_jalan_extra_per_unit').html();
         $('.list-tipe-motor').html( $(response).filter('#list-tipe-motor').html() );
     // } else {
@@ -149,6 +150,7 @@ var getUangjalan = function ( response ) {
     $('.uang_jalan_extra_ori').val( uang_jalan_extra_ori );
     $('.uang_jalan_extra_per_unit').val( uang_jalan_extra_per_unit );
     $('.min_capacity').val( min_capacity );
+    $('.commission_min_qty').val( commission_min_qty );
     $('.commission_ori').val( commission_ori );
     $('.commission_extra').val( commission_extra );
     $('.commission_extra_ori').val( commission_extra_ori );

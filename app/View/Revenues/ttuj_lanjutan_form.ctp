@@ -698,6 +698,9 @@
 			<?php 
 					}
 
+					echo $this->element('blocks/revenues/biaya_ttuj');
+
+					/*
 					switch ($action_type) {
 						case 'bongkaran':
 			?>
@@ -761,6 +764,7 @@
 			<?php
 							break;
 					}
+					*/
 			?>
 		</div>
 		<div class="box-footer text-center action">
