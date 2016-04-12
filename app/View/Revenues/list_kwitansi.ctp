@@ -57,6 +57,16 @@
                 </div>
                 <div class="form-group">
                     <?php 
+                            echo $this->Form->input('Invoice.company_id',array(
+                                'label'=> __('Company'),
+                                'class'=>'form-control chosen-select',
+                                'required' => false,
+                                'empty' => __('Pilih Company'),
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
                             echo $this->Form->input('date',array(
                                 'label'=> __('Periode Tanggal'),
                                 'class'=>'form-control date-range',

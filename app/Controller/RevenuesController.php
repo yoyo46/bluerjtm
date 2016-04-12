@@ -5358,6 +5358,12 @@ class RevenuesController extends AppController {
                 $invoice_conditions['CustomerNoType.id'] = $customer;
             }
 
+            if(!empty($refine['company_id'])){
+                $company_id = urldecode($refine['company_id']);
+                $this->request->data['Invoice']['company_id'] = $company_id;
+                $invoice_conditions['Invoice.company_id'] = $company_id;
+            }
+
             if(!empty($refine['no_invoice'])){
                 $no_invoice = urldecode($refine['no_invoice']);
                 $this->request->data['Invoice']['no_invoice'] = $no_invoice;
@@ -5463,6 +5469,11 @@ class RevenuesController extends AppController {
             'branch' => false,
             'plant' => false,
         ));
+        $companies = $this->Invoice->Company->getData('list', array(
+            'fields' => array(
+                'Company.id', 'Company.code'
+            ),
+        ));
         $this->set('customers', $customers);
         $this->set('sub_module_title', __('List Kwitansi'));
         $this->set('active_menu', 'list_kwitansi');
@@ -5484,7 +5495,7 @@ class RevenuesController extends AppController {
 
         $this->set(compact(
             'invoices', 'data_action', 'start',
-            'dataStatus'
+            'dataStatus', 'companies'
         ));
     }
 
