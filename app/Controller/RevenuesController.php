@@ -8224,6 +8224,8 @@ class RevenuesController extends AppController {
                 $id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'id');
                 $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'ttuj_id');
                 $value = $this->Ttuj->getMerge($value, $ttuj_id);
+                
+                $value['Ttuj']['total_qty'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
 
                 $invoice_id = $this->Ttuj->Revenue->RevenueDetail->getData('list', array(
                     'conditions' => array(

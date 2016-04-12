@@ -32,6 +32,11 @@
                 'style' => 'text-align: left;vertical-align: middle;',
                 'data-options' => 'field:\'to\',width:100',
             ),
+            'qty' => array(
+                'name' => __('Qty TTUJ'),
+                'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'qty\',width:100',
+            ),
             'unit' => array(
                 'name' => __('Jumlah Unit'),
                 'style' => 'text-align: center;vertical-align: middle;',
