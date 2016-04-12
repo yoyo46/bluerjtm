@@ -425,6 +425,8 @@ class CashbanksController extends AppController {
                         'CashBank.id' => 'DESC',
                         'CashBank.created' => 'DESC',
                     ),
+                ), array(
+                    'branch' => false,
                 ));
 
                 if( !empty($lastCashBank) ) {
