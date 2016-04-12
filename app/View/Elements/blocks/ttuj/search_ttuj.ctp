@@ -59,10 +59,10 @@
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('nodoc',array(
-                                'label'=> __('No. Doc'),
+                                'label'=> __('No. TTUJ'),
                                 'class'=>'form-control',
                                 'required' => false,
-                                'placeholder' => __('No. Doc')
+                                'placeholder' => __('No. TTUJ')
                             ));
                     ?>
                 </div>
