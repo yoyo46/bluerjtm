@@ -198,15 +198,13 @@
                                 $inputType = 'hidden';
                                 $inputClass = '';
 
-                                if( !empty($price_msg) ) {
+                                if( $action_type == 'manual' ) {
+                                    $inputType = 'text';
+                                    $inputClass = 'input_price text-right';
+                                } else if( !empty($price_msg) ) {
                                     echo $this->Html->tag('span', $price_msg);
                                 } else if( !empty($is_charge) ) {
-                                    if( $action_type == 'manual' ) {
-                                        $inputType = 'text';
-                                        $inputClass = 'input_price text-right';
-                                    } else {
-                                        echo $this->Html->tag('span', $this->Common->getFormatPrice($price_unit));
-                                    }
+                                    echo $this->Html->tag('span', $this->Common->getFormatPrice($price_unit));
                                 }
 
                                 echo $this->Form->input('RevenueDetail.price_unit.', array(

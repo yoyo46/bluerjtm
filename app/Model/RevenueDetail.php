@@ -31,9 +31,9 @@ class RevenueDetail extends AppModel {
             ),
         ),
         'tarif_angkutan_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'tarif angkutan tidak ditemukan'
+            'checkTarif' => array(
+                'rule' => array('checkTarif'),
+                'message' => 'Tarif angkutan tidak ditemukan'
             ),
         ),
         'tarif_angkutan_type' => array(
@@ -66,6 +66,17 @@ class RevenueDetail extends AppModel {
             'foreignKey' => 'tarif_angkutan_id',
         ),
     );
+
+    function checkTarif( $data ) {
+        $action_type = $this->filterEmptyField($this->Revenue->data, 'Revenue', 'action_type');
+        $tarif_angkutan_id = $this->filterEmptyField($this->data, 'RevenueDetail', 'tarif_angkutan_id');
+        
+        if( $action_type != 'manual' && empty($tarif_angkutan_id) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     function validNumber( $data, $field ) {
         if( !empty($data[$field]) ) {
