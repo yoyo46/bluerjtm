@@ -802,8 +802,8 @@ class Revenue extends AppModel {
                 $default_options['conditions'][1]['OR']['Revenue.from_city_id'] = $fromcity;
             }
             if(!empty($tocity)){
-                $default_options['conditions'][1]['OR']['Ttuj.to_city_id'] = $tocity;
-                $default_options['conditions'][1]['OR']['Revenue.to_city_id'] = $tocity;
+                $default_options['conditions'][2]['OR']['Ttuj.to_city_id'] = $tocity;
+                $default_options['conditions'][2]['OR']['Revenue.to_city_id'] = $tocity;
             }
             
             $default_options['contain'][] = 'Ttuj';
