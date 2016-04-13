@@ -446,10 +446,27 @@ class RevenueDetail extends AppModel {
         }
         if(!empty($nopol)){
             if( $type == 2 ) {
-                $default_options['conditions']['Ttuj.truck_id'] = $nopol;
+                $conditionsNopol = array(
+                    'Truck.id' => $nopol,
+                );
             } else {
-                $default_options['conditions']['Ttuj.nopol LIKE'] = '%'.$nopol.'%';
+                $conditionsNopol = array(
+                    'Truck.nopol LIKE' => '%'.$nopol.'%',
+                );
             }
+
+            $truckSearch = $this->Revenue->Truck->getData('list', array(
+                'conditions' => $conditionsNopol,
+                'fields' => array(
+                    'Truck.id', 'Truck.id',
+                ),
+            ), true, array(
+                'status' => 'all',
+                'branch' => false,
+            ));
+
+            $default_options['conditions'][0]['OR']['Ttuj.truck_id'] = $truckSearch;
+            $default_options['conditions'][0]['OR']['Revenue.truck_id'] = $truckSearch;
         }
         if(!empty($customer)){
             $default_options['conditions']['Revenue.customer_id'] = $customer;
@@ -475,10 +492,12 @@ class RevenueDetail extends AppModel {
         }
             
         if(!empty($fromcity)){
-            $default_options['conditions']['Ttuj.from_city_id'] = $fromcity;
+            $default_options['conditions'][1]['OR']['Ttuj.from_city_id'] = $fromcity;
+            $default_options['conditions'][1]['OR']['Revenue.from_city_id'] = $fromcity;
         }
         if(!empty($tocity)){
-            $default_options['conditions']['Ttuj.to_city_id'] = $tocity;
+            $default_options['conditions'][2]['OR']['Ttuj.to_city_id'] = $tocity;
+            $default_options['conditions'][2]['OR']['Revenue.to_city_id'] = $tocity;
         }
         if(!empty($tocityDetail)){
             $default_options['conditions']['RevenueDetail.city_id'] = $tocityDetail;
