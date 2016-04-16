@@ -43,7 +43,7 @@
             ),
             'jenis_truck' => array(
                 'name' => __('Jenis Truk'),
-                'style' => 'text-align: center;vertical-align: middle;border-bottom: 1px solid #000;border-left: 1px solid #000;'.$widthColumn15.$background,
+                'style' => 'text-align: center;vertical-align: middle;border-bottom: 1px solid #000;border-left: 1px solid #000;width: 20%;'.$background,
             ),
             'date' => array(
                 'name' => __('Tanggal'),
@@ -55,11 +55,11 @@
             ),
             'rate' => array(
                 'name' => __('Tarif'),
-                'style' => 'text-align: center;vertical-align: middle;border-bottom: 1px solid #000;border-left: 1px solid #000;'.$background,
+                'style' => 'text-align: center;vertical-align: middle;border-bottom: 1px solid #000;border-left: 1px solid #000;width: 12%;'.$background,
             ),
             'amount' => array(
                 'name' => __('Jumlah<br>(Rp.)'),
-                'style' => 'text-align: center;vertical-align: middle;border-bottom: 1px solid #000;border-left: 1px solid #000;'.$background,
+                'style' => 'text-align: center;vertical-align: middle;border-bottom: 1px solid #000;border-left: 1px solid #000;width: 12%;'.$background,
             ),
             'note' => array(
                 'name' => __('Tujuan'),

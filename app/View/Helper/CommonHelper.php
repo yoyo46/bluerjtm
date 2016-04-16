@@ -950,6 +950,7 @@ class CommonHelper extends AppHelper {
                 $fix_column = !empty($dataColumn['fix_column'])?$dataColumn['fix_column']:false;
                 $data_options = !empty($dataColumn['data-options'])?$dataColumn['data-options']:false;
                 $align = !empty($dataColumn['align'])?$dataColumn['align']:false;
+                $mainalign = !empty($dataColumn['mainalign'])?$dataColumn['mainalign']:false;
                 $content = false;
                 $addClass = '';
 
@@ -996,6 +997,7 @@ class CommonHelper extends AppHelper {
                                 'rowspan' => $rowspan,
                                 'data-options' => $data_options,
                                 'align' => $align,
+                                'mainalign' => $mainalign,
                                 'width' => $width,
                             ));
 
