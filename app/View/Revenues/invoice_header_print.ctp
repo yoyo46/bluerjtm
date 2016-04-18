@@ -148,29 +148,16 @@ readfile($path.'/'.$filename);
 	        }
 
 	        if( empty($action_print) ) {
+                echo $this->Html->tag('div', $this->Html->link('<i class="fa fa-print"></i> print', 'javascript:', array(
+                    'class' => 'btn btn-default hidden-print print-window',
+                    'escape' => false
+                )), array(
+                    'class' => 'action-print pull-right',
+                ));
+                echo $this->Common->_getPrint();
+            }
 ?>
-<div class="action-print pull-right">
-	<?php
-			echo $this->Html->link('<i class="fa fa-print"></i> print', 'javascript:', array(
-				'class' => 'btn btn-primary hidden-print print-window',
-				'escape' => false
-			));
-
-			echo $this->Html->link('<i class="fa fa-download"></i> download Excel', $this->here.'/excel', array(
-				'class' => 'btn btn-success hidden-print',
-				'escape' => false
-			));
-
-			echo $this->Html->link('<i class="fa fa-download"></i> download PDF', $this->here.'/pdf', array(
-				'class' => 'btn btn-danger hidden-print',
-				'escape' => false
-			));
-	?>
-</div>
 <div class="clear"></div>
-<?php 
-		}
-?>
 <div align="center" id="invoice-header-preview">
 	<table class="text print-width-70">
 		<tbody>

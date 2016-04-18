@@ -280,7 +280,7 @@ if($action_print == 'pdf'){
 	}
 
 $tbl = <<<EOD
-	<h2 class="grid_8" style="text-align: center;">Laporan $date_title</h2>
+	<h2 class="grid_8" style="text-align: center;">Laporan $sub_module_title</h2>
 	$content
 EOD;
 // echo $tbl;
@@ -336,7 +336,7 @@ $tcpdf->Output($path.'/'.$filename, 'F');
 			}
 		}
 
-        if( empty($preview) ) {
+        if( empty($preview) && empty($action_print) ) {
 ?>
 <div class="box-footer text-center action hidden-print">
 	<?php

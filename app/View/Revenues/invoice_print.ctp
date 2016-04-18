@@ -53,10 +53,12 @@ if($action_print == 'pdf'){
 			if( in_array($data_print, array( 'date', 'hso-smg', 'preview', 'sa' )) ) {
 				$totalMerge = 10;
 					
-				if( $data_print == 'hso-smg' ) {
-					$totalMergeTotal = 5;
-				} else {
+				if( in_array($data_print, array( 'date', 'hso-smg', 'preview', 'sa' )) ) {
+					$totalMerge = 10;
 					$totalMergeTotal = 6;
+				} else {
+					$totalMerge = 9;
+					$totalMergeTotal = 5;
 				}
 
 				if( in_array($data_print, array( 'date', 'sa' )) ) {
@@ -89,8 +91,8 @@ if($action_print == 'pdf'){
 				$colNameSj = $this->Html->tag('th', __('No. SA'), array(
 					'class' => 'text-center',
 				));
-			} else if( in_array($data_print, array( 'hso-smg', 'sa' )) ) {
-				if( in_array($data_print, array( 'hso-smg' )) ) {
+			} else {
+				if( in_array($data_print, array( 'hso-smg', 'sa' )) ) {
 					$labelNameSj = __('Nama Dealer');
 				} else {
 					$labelNameSj = __('No. SJ');
@@ -365,33 +367,20 @@ $tcpdf->Output($path.'/'.$filename, 'F');
             }
 
             if( empty($action_print) ) {
-?>
-<div class="action-print pull-right">
-	<?php
-			echo $this->Html->link('<i class="fa fa-print"></i> print', 'javascript:', array(
-				'class' => 'btn btn-primary hidden-print print-window',
-				'escape' => false
-			));
-
-			echo $this->Html->link('<i class="fa fa-download"></i> download Excel', $this->here.'/excel', array(
-				'class' => 'btn btn-success hidden-print',
-				'escape' => false
-			));
-
-			echo $this->Html->link('<i class="fa fa-download"></i> download PDF', $this->here.'/pdf', array(
-				'class' => 'btn btn-danger hidden-print',
-				'escape' => false
-			));
-	?>
-</div>
-<div class="clear"></div>
-<?php 
-		}
+                echo $this->Html->tag('div', $this->Html->link('<i class="fa fa-print"></i> print', 'javascript:', array(
+                    'class' => 'btn btn-default hidden-print print-window',
+                    'escape' => false
+                )), array(
+                    'class' => 'action-print pull-right',
+                ));
+                echo $this->Common->_getPrint();
+            }
 
      //    echo $this->element('blocks/common/tables/logo', array(
      //    	'value' => $invoice,
     	// ));
 ?>
+<div class="clear"></div>
 <div class="invoice-print">
 	<?php
 			echo $this->Html->tag('h2', $module_title, array(
