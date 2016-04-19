@@ -175,7 +175,7 @@ class Customer extends AppModel {
         return $result;
     }
 
-    function getMerge( $data, $id, $with_contain = false ){
+    function getMerge( $data, $id, $with_contain = false, $fieldName = 'Customer.id' ){
         if(empty($data['Customer'])){
             $this->bindModel(array(
                 'belongsTo' => array(
@@ -196,7 +196,7 @@ class Customer extends AppModel {
 
             $data_merge = $this->getData('first', array(
                 'conditions' => array(
-                    'Customer.id' => $id
+                    $fieldName => $id
                 ),
                 'contain' => $contain,
             ), true, array(

@@ -106,11 +106,11 @@ class Branch extends AppModel {
         return $result;
     }
 
-    function getMerge($data, $id){
+    function getMerge($data, $id, $fieldName = 'Branch.id'){
         if(empty($data['Branch'])){
             $data_merge = $this->getData('first', array(
                 'conditions' => array(
-                    'Branch.id' => $id
+                    $fieldName => $id
                 )
             ));
 

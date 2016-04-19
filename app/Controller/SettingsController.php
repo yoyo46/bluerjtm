@@ -5773,4 +5773,187 @@ class SettingsController extends AppController {
             }
         }
     }
+
+    public function customer_import( $download = false ) {
+        if(!empty($download)){
+            $link_url = FULL_BASE_URL . '/files/customers.xls';
+            $this->redirect($link_url);
+            exit;
+        } else {
+            App::import('Vendor', 'excelreader'.DS.'excel_reader2');
+            $this->loadModel('Customer');
+            $this->loadModel('Branch');
+
+            $this->set('module_title', __('Customer'));
+            $this->set('active_menu', 'customers');
+            $this->set('sub_module_title', __('Import Excel'));
+
+            if(!empty($this->request->data)) { 
+                $Zipped = $this->request->data['Import']['importdata'];
+
+                if($Zipped["name"]) {
+                    $filename = $Zipped["name"];
+                    $source = $Zipped["tmp_name"];
+                    $type = $Zipped["type"];
+                    $name = explode(".", $filename);
+                    $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
+
+                    if(!empty($accepted_types)) {
+                        foreach($accepted_types as $mime_type) {
+                            if($mime_type == $type) {
+                                $okay = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+
+                    if(!$continue) {
+                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
+                        $this->redirect(array('action'=>'customers'));
+                    } else {
+                        $path = APP.'webroot'.DS.'files'.DS.date('Y').DS.date('m').DS;
+                        $filenoext = basename ($filename, '.xls');
+                        $filenoext = basename ($filenoext, '.XLS');
+                        $fileunique = uniqid() . '_' . $filenoext;
+
+                        if( !file_exists($path) ) {
+                            mkdir($path, 0755, true);
+                        }
+
+                        $targetdir = $path . $fileunique . $filename;
+                         
+                        ini_set('memory_limit', '96M');
+                        ini_set('post_max_size', '64M');
+                        ini_set('upload_max_filesize', '64M');
+
+                        if(!move_uploaded_file($source, $targetdir)) {
+                            $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                            $this->redirect(array('action'=>'customer_import'));
+                        }
+                    }
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                    $this->redirect(array('action'=>'customer_import'));
+                }
+
+                $xls_files = glob( $targetdir );
+
+                if(empty($xls_files)) {
+                    $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
+                    $this->redirect(array('action'=>'customer_import'));
+                } else {
+                    $uploadedXls = $this->MkCommon->addToFiles('xls', $xls_files[0]);
+                    $uploaded_file = $uploadedXls['xls'];
+                    $file = explode(".", $uploaded_file['name']);
+                    $extension = array_pop($file);
+                    
+                    if($extension == 'xls') {
+                        $dataimport = new Spreadsheet_Excel_Reader();
+                        $dataimport->setUTFEncoder('iconv');
+                        $dataimport->setOutputEncoding('UTF-8');
+                        $dataimport->read($uploaded_file['tmp_name']);
+                        
+                        if(!empty($dataimport)) {
+                            $data = $dataimport;
+                            $row_submitted = 1;
+                            $successfull_row = 0;
+                            $failed_row = 0;
+                            $error_message = '';
+                            $cnt = 0;
+
+                            for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
+                                $datavar = array();
+                                $flag = true;
+                                $i = 1;
+
+                                while ($flag) {
+                                    if( !empty($data->sheets[0]["cells"][1][$i]) ) {
+                                        $variable = $this->MkCommon->toSlug($data->sheets[0]["cells"][1][$i], '_');
+                                        $thedata = !empty($data->sheets[0]["cells"][$x][$i])?$data->sheets[0]["cells"][$x][$i]:NULL;
+                                        $$variable = $thedata;
+                                        $datavar[] = $thedata;
+                                    } else {
+                                        $flag = false;
+                                    }
+                                    $i++;
+                                }
+
+                                if(array_filter($datavar)) {
+                                    $cabang = !empty($cabang)?$cabang:false;
+                                    $kode_customer = !empty($kode_customer)?$kode_customer:false;
+                                    $alamat = !empty($alamat)?$alamat:false;
+                                    $telepon = !empty($telepon)?$telepon:false;
+                                    $target_rit = !empty($target_rit)?$target_rit:false;
+                                    $top = !empty($top)?$top:false;
+                                    $bank = !empty($bank)?$bank:false;
+                                    $billing = !empty($billing)?$billing:false;
+                                    $order = !empty($order)?$order:false;
+                                    $order_baru = !empty($order_baru)?$order_baru:false;
+
+                                    if( !empty($kode_customer) ) {
+                                        $customer = $this->Customer->getMerge(array(), $kode_customer, false, 'Customer.code');
+                                        $customer = $this->Branch->getMerge($customer, $cabang, 'Branch.code');
+                                        
+                                        $id = $this->MkCommon->filterEmptyField($customer, 'Customer', 'id');
+                                        $branch_id = $this->MkCommon->filterEmptyField($customer, 'Branch', 'id');
+
+                                        $dataSave = array(
+                                            'Customer' => array(
+                                                'order' => $order_baru,
+                                            ),
+                                        );
+
+                                        $this->Customer->id = $id;
+                                        $this->Customer->set($dataSave);
+                                        
+                                        if( $this->Customer->save($dataSave) ){                                        
+                                            $this->Log->logActivity( __('Sukses upload Customer by Import Excel'), $this->user_data, $this->RequestHandler, $this->params );
+                                            $successfull_row++;
+                                        } else {
+                                            $validationErrors = $this->Customer->validationErrors;
+                                            $textError = array();
+
+                                            if( !empty($validationErrors) ) {
+                                                foreach ($validationErrors as $key => $validationError) {
+                                                    if( !empty($validationError) ) {
+                                                        foreach ($validationError as $key => $error) {
+                                                            $textError[] = $error;
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            if( !empty($textError) ) {
+                                                $textError = implode(', ', $textError);
+                                            } else {
+                                                $textError = '';
+                                            }
+
+                                            $failed_row++;
+                                            $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data. %s'), $row_submitted, $textError) . '<br>';
+                                        }
+
+                                        $row_submitted++;
+                                        $cnt++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(!empty($successfull_row)) {
+                    $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, $cnt);
+                    $this->MkCommon->setCustomFlash(__($message_import1), 'success');
+                }
+                
+                if(!empty($error_message)) {
+                    $this->MkCommon->setCustomFlash(__($error_message), 'error');
+                }
+                $this->redirect(array('action'=>'customer_import'));
+            }
+        }
+    }
 }
