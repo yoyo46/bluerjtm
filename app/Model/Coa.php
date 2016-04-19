@@ -52,8 +52,8 @@ class Coa extends AppModel {
                 'ChildCoa.order' => 'ASC'
             ),
         ),
-        'CoaHistory' => array(
-            'className' => 'CoaHistory',
+        'CoaClosing' => array(
+            'className' => 'CoaClosing',
             'foreignKey' => 'coa_id',
         ),
         'CashBankDetail' => array(

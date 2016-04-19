@@ -1151,6 +1151,24 @@ class CommonHelper extends AppHelper {
         }
     }
 
+    function _callUnset( $fieldArr, $data ) {
+        if( !empty($fieldArr) ) {
+            foreach ($fieldArr as $key => $value) {
+                if( is_array($value) ) {
+                    foreach ($value as $idx => $fieldName) {
+                        if( !empty($data[$key][$fieldName]) ) {
+                            unset($data[$key][$fieldName]);
+                        }
+                    }
+                } else {
+                    unset($data[$value]);
+                }
+            }
+        }
+
+        return $data;
+    }
+
     function _getPrint ( $options = false, $showHideColumn = false ) {
         $_excel = isset($options['_excel'])?$options['_excel']:true;
         $_pdf = isset($options['_pdf'])?$options['_pdf']:true;
@@ -1166,6 +1184,11 @@ class CommonHelper extends AppHelper {
 
         $pass = !empty($this->params['pass'])?$this->params['pass']:array();
         $named = !empty($this->params['named'])?$this->params['named']:array();
+
+        $named = $this->_callUnset(array(
+            'page',
+        ), $named);
+        
         $urlDefault = array_merge($urlDefault, $pass);
         $urlDefault = array_merge($urlDefault, $named);
 
@@ -2381,6 +2404,30 @@ class CommonHelper extends AppHelper {
                     'class' => 'label label-default',
                 ));
                 break;
+
+            case 'completed':
+                $customStatus = $this->Html->tag('span', __('Complete'), array(
+                    'class' => 'label label-success',
+                ));
+                break;
+
+            case 'progress':
+                $customStatus = $this->Html->tag('span', __('Pending'), array(
+                    'class' => 'label label-warning',
+                ));
+                break;
+
+            case 'pending':
+                $customStatus = $this->Html->tag('span', __('Pending'), array(
+                    'class' => 'label label-default',
+                ));
+                break;
+
+            case 'canceled':
+                $customStatus = $this->Html->tag('span', __('Batal'), array(
+                    'class' => 'label label-danger',
+                ));
+                break;
             
             default:
                 $customStatus = $this->Html->tag('span', __('Belum Dibayar'), array(
@@ -2390,5 +2437,36 @@ class CommonHelper extends AppHelper {
         }
 
         return $customStatus;
+    }
+
+    function _callProgressBar ( $status, $progress ) {
+        $color = '';
+
+        if($status == 'canceled'){
+            $color = ' red';
+        }
+
+        $contentProgress = $this->Html->tag('div', sprintf(__('Progress : %s%%'), $progress), array(
+            'class' => 'lbl-meter',
+        ));
+        $contentProgress .= $this->Html->div('meter nostripes'.$color, $this->Html->tag('span', '', array(
+            'style' => 'width:'.$progress.'%;'
+        )));
+
+        return $this->Html->tag('div', $contentProgress, array(
+            'class' => 'relative',
+        ));
+    }
+
+    function _callPeriodeYear ( $minPeriode = 20 ) {
+        $year = array();
+        $nowYear = date('Y');
+
+        for ($i=0; $i < $minPeriode; $i++) {
+            $value = $nowYear-$i;
+            $year[$value] = $value;
+        }
+
+        return $year;
     }
 }

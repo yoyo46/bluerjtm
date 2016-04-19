@@ -15,6 +15,10 @@ class PurchaseOrderAsset extends AppModel {
             'className' => 'AssetGroup',
             'foreignKey' => 'asset_group_id',
         ),
+        'Asset' => array(
+            'className' => 'Asset',
+            'foreignKey' => 'asset_id',
+        ),
     );
 
 	var $validate = array(

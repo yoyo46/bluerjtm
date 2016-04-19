@@ -168,20 +168,27 @@ class RjAssetComponent extends Component {
 
                 foreach ($values as $key => $name) {
                     $truckArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderAsset', 'truck_id');
+                    $assetArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderAsset', 'asset_id');
                     $noteArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderAsset', 'note');
-                    $assetArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderAsset', 'asset_group_id');
+                    $assetGroupArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderAsset', 'asset_group_id');
                     $priceArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderAsset', 'price');
 
                     $truck_id = !empty($truckArr[$key])?$truckArr[$key]:false;
+                    $asset_id = !empty($assetArr[$key])?$assetArr[$key]:false;
                     $note = !empty($noteArr[$key])?$noteArr[$key]:false;
-                    $asset_group_id = !empty($assetArr[$key])?$assetArr[$key]:false;
+                    $asset_group_id = !empty($assetGroupArr[$key])?$assetGroupArr[$key]:false;
                     $price = !empty($priceArr[$key])?$this->MkCommon->_callPriceConverter($priceArr[$key]):false;
                     $grandtotal += $price;
 
-                    $assetGroup = $this->controller->Asset->AssetGroup->getMerge(array(), $asset_group_id);
-                    $assetGroup = $this->controller->Asset->AssetGroup->AssetGroupCoa->getMerge($assetGroup, $asset_group_id, 'first', 'Asset');
-                    $is_truck = $this->MkCommon->filterEmptyField($assetGroup, 'AssetGroup', 'is_truck');
-                    $coa_id = $this->MkCommon->filterEmptyField($assetGroup, 'AssetGroupCoa', 'coa_id');
+                    $asset = $this->controller->Asset->getMerge(array(), $asset_id);
+                    $asset = $this->controller->Asset->AssetGroup->getMerge($asset, $asset_group_id);
+                    $asset = $this->controller->Asset->AssetGroup->AssetGroupCoa->getMerge($asset, $asset_group_id, 'first', 'Asset');
+
+                    $ak_penyusutan = $this->MkCommon->filterEmptyField($asset, 'Asset', 'ak_penyusutan', 0);
+                    $is_truck = $this->MkCommon->filterEmptyField($asset, 'AssetGroup', 'is_truck');
+                    $nilai_sisa = $this->MkCommon->filterEmptyField($asset, 'AssetGroup', 'nilai_sisa');
+                    $umur_ekonomis = $this->MkCommon->filterEmptyField($asset, 'AssetGroup', 'umur_ekonomis');
+                    $coa_id = $this->MkCommon->filterEmptyField($asset, 'AssetGroupCoa', 'coa_id');
 
                     if( !empty($is_truck) ) {
                         $company = $this->controller->Asset->AssetGroup->PurchaseOrderAsset->Truck->Company->getData('first', array(
@@ -192,6 +199,13 @@ class RjAssetComponent extends Component {
                         $company_id = $this->MkCommon->filterEmptyField($company, 'Company', 'id', 0);
                         $thn = $this->MkCommon->customDate($transaction_date, 'Y');
 
+                        $nilai_buku = $price - $ak_penyusutan;
+                        $depr_bulan = ( ( $price - $nilai_sisa ) / $umur_ekonomis );
+
+                        if( !empty($depr_bulan) ) {
+                            $depr_bulan = $depr_bulan / 12;
+                        }
+
                         $dataSave['PurchaseOrderAsset'][$key]['Truck'] = array(
                             'id' => $truck_id,
                             'branch_id' => Configure::read('__Site.config_branch_id'),
@@ -200,7 +214,21 @@ class RjAssetComponent extends Component {
                             'tahun' => $thn,
                             'tahun_neraca' => $thn,
                             'purchase_date' => $transaction_date,
+                            'description' => $note,
                             'is_asset' => 1,
+                        );
+                        $dataSave['PurchaseOrderAsset'][$key]['Asset'] = array(
+                            'id' => $asset_id,
+                            'branch_id' => Configure::read('__Site.config_branch_id'),
+                            'truck_id' => $truck_id,
+                            'asset_group_id' => $asset_group_id,
+                            'name' => $name,
+                            'purchase_date' => $transaction_date,
+                            'neraca_date' => $transaction_date,
+                            'nilai_perolehan' => $price,
+                            'depr_bulan' => $depr_bulan,
+                            'nilai_buku' => $nilai_buku,
+                            'note' => $note,
                         );
                     }
 
@@ -365,6 +393,111 @@ class RjAssetComponent extends Component {
         ));
 
         return $data;
+    }
+
+    function _callBeforeSaveDepreciation ( $value, $periode, $branch_id, $user_id ) {
+        $dataSave = false;
+
+        if( !empty($value) ) {
+            $periode_short = $this->MkCommon->customDate($periode, 'F Y');
+            // $old_depr_id = $this->MkCommon->filterEmptyField($old_date, 'AssetDepreciation', 'id', 0);
+            // $old_depr_bulan = $this->MkCommon->filterEmptyField($old_date, 'AssetDepreciation', 'depr_bulan', 0);
+
+            $asset_group_id = $this->MkCommon->filterEmptyField($value, 'Asset', 'asset_group_id');
+            $accumulationDeprAcc = $this->controller->Asset->AssetGroup->AssetGroupCoa->getMerge($value, $asset_group_id, 'first', 'AccumulationDepr');
+            $depresiasiAcc = $this->controller->Asset->AssetGroup->AssetGroupCoa->getMerge($value, $asset_group_id, 'first', 'Depresiasi');
+
+            $accumulationDeprAccId = $this->MkCommon->filterEmptyField($accumulationDeprAcc, 'AssetGroupCoa', 'coa_id');
+            $depresiasiAccId = $this->MkCommon->filterEmptyField($depresiasiAcc, 'AssetGroupCoa', 'coa_id');
+
+            $id = $this->MkCommon->filterEmptyField($value, 'Asset', 'id');
+            $name = $this->MkCommon->filterEmptyField($value, 'Asset', 'name');
+            $depr_bulan = $this->MkCommon->filterEmptyField($value, 'Asset', 'depr_bulan');
+            $ak_penyusutan = $this->MkCommon->filterEmptyField($value, 'Asset', 'ak_penyusutan');
+            $nilai_buku = $this->MkCommon->filterEmptyField($value, 'Asset', 'nilai_buku');
+
+            // $ak_penyusutan = $ak_penyusutan - $old_depr_bulan + $depr_bulan;
+            // $nilai_buku = $nilai_buku + $old_depr_bulan - $depr_bulan;
+            $ak_penyusutan = $ak_penyusutan + $depr_bulan;
+            $nilai_buku = $nilai_buku - $depr_bulan;
+
+            $journal_title = sprintf(__('Depresiasi Asset %s - %s'), $name, $periode_short);
+            $journal_options = array(
+                'branch_id' => $branch_id,
+                'user_id' => $user_id,
+                'title' => $journal_title,
+                'type' => 'depr_asset',
+                'date' => date('Y-m-d'),
+            );
+
+            if( $nilai_buku < 0 ) {
+                $nilai_buku = 0;
+            }
+
+            $dataSave = array(
+                'Asset' => array(
+                    'id' => $id,
+                    'ak_penyusutan' => $ak_penyusutan,
+                    'nilai_buku' => $nilai_buku,
+                ),
+                'AssetDepreciation' => array(
+                    array(
+                        'AssetDepreciation' => array(
+                            'user_id' => $user_id,
+                            'asset_id' => $id,
+                            'depr_bulan' => $depr_bulan,
+                            'ak_penyusutan' => $ak_penyusutan,
+                            'periode' => $periode,
+                        ),
+                        'Journal' => array(
+                            array(
+                                'Journal' => array_merge($journal_options, array(
+                                    'coa_id' => $depresiasiAccId,
+                                    'debit' => $depr_bulan,
+                                )),
+                            ),
+                            array(
+                                'Journal' => array_merge($journal_options, array(
+                                    'coa_id' => $accumulationDeprAccId,
+                                    'credit' => $depr_bulan,
+                                )),
+                            ),
+                        ),
+                    ),
+                ),
+            );
+
+            // if( !empty($old_depr_id) ) {
+            //     $dataSave['AssetDepreciation'][] = array(
+            //         'AssetDepreciation' => array(
+            //             'id' => $old_depr_id,
+            //             'status' => 0,
+            //         ),
+            //         'Journal' => array(
+            //             array(
+            //                 'Journal' => array_merge($journal_options, array(
+            //                     'document_id' => $old_depr_id,
+            //                     'title' => __('<i>Pembatalan</i> ').$journal_title,
+            //                     'coa_id' => $accumulationDeprAccId,
+            //                     'debit' => $depr_bulan,
+            //                     'type' => 'void_depr_asset',
+            //                 )),
+            //             ),
+            //             array(
+            //                 'Journal' => array_merge($journal_options, array(
+            //                     'document_id' => $old_depr_id,
+            //                     'title' => __('<i>Pembatalan</i> ').$journal_title,
+            //                     'coa_id' => $depresiasiAccId,
+            //                     'credit' => $depr_bulan,
+            //                     'type' => 'void_depr_asset',
+            //                 )),
+            //             ),
+            //         ),
+            //     );
+            // }
+        }
+
+        return $dataSave;
     }
 }
 ?>

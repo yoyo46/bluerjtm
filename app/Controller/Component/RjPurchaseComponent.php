@@ -188,6 +188,7 @@ class RjPurchaseComponent extends Component {
                     $nodoc = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'nodoc');
                     $transaction_date = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'transaction_date');
                     $note = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'note');
+                    $is_asset = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'is_asset');
                     $total_po = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'grandtotal');
 
                     $idDetail = !empty($idArr[$key])?$idArr[$key]:false;

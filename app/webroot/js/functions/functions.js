@@ -2762,98 +2762,102 @@ var set_auth_cash_bank = function(obj){
 }
 
 var get_document_cashbank = function(){
-    $('#document-id').change(function(){
-        var self = $(this);
-        var val = self.val();
-        var doc_type = $('.cash-bank-handle').val();
-        var cash_bank_id = $('#cash-bank-id').val();
-        var url = '/ajax/getCustomer/revenue_id:'+val+'/';
+    var dataChange = $('#document-id').attr('data-change');
 
-        if(doc_type == 'prepayment_in'){
-            url = '/ajax/getCustomer/prepayment_id:'+val+'/';
-        }
+    if( dataChange != 'false' ) {
+        $('#document-id').change(function(){
+            var self = $(this);
+            var val = self.val();
+            var doc_type = $('.cash-bank-handle').val();
+            var cash_bank_id = $('#cash-bank-id').val();
+            var url = '/ajax/getCustomer/revenue_id:'+val+'/';
 
-        if( cash_bank_id != '' ) {
-            url = cash_bank_id+'/';
-        }
+            if(doc_type == 'prepayment_in'){
+                url = '/ajax/getCustomer/prepayment_id:'+val+'/';
+            }
 
-        if(val != ''){
-            $.ajax({
-                url: url,
-                type: 'POST',
-                success: function(response, status) {
-                    var customer_id = $(response).filter('#customer-id').html();
-                    var customer_name = $(response).filter('#customer-name').html();
-                    var receiver_type = $(response).filter('#receiver-type').html();
-                    var coa_code = $(response).filter('#coa_code').html();
-                    var coa_id = $(response).filter('#coa_id').html();
-                    var coa_name = $(response).filter('#coa_name').html();
-                    var truck_options = $(response).filter('#truck-options').html();
-                    var ppn = $(response).filter('#ppn').html();
-                    var content_table = $(response).filter('#content-table').html();
+            if( cash_bank_id != '' ) {
+                url = cash_bank_id+'/';
+            }
 
-                    if( customer_id != '' && typeof customer_id != 'undefined' ) {
-                        $('#receiver-type').val(receiver_type);
-                        $('#receiver-id').val(customer_id);
-                        $('#cash-bank-user').val(customer_name);
-                        $('.cashbank-info-detail').removeClass('hide');
+            if(val != ''){
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    success: function(response, status) {
+                        var customer_id = $(response).filter('#customer-id').html();
+                        var customer_name = $(response).filter('#customer-name').html();
+                        var receiver_type = $(response).filter('#receiver-type').html();
+                        var coa_code = $(response).filter('#coa_code').html();
+                        var coa_id = $(response).filter('#coa_id').html();
+                        var coa_name = $(response).filter('#coa_name').html();
+                        var truck_options = $(response).filter('#truck-options').html();
+                        var ppn = $(response).filter('#ppn').html();
+                        var content_table = $(response).filter('#content-table').html();
 
-                        if(doc_type == 'prepayment_in'){
-                            content_table = content_table.replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/opentd/gi, "td").replace(/closetd/gi, "/td").replace(/opentr/gi, "tr").replace(/closetr/gi, "/tr");
+                        if( customer_id != '' && typeof customer_id != 'undefined' ) {
+                            $('#receiver-type').val(receiver_type);
+                            $('#receiver-id').val(customer_id);
+                            $('#cash-bank-user').val(customer_name);
+                            $('.cashbank-info-detail').removeClass('hide');
 
-                            $('.cashbanks-info-table > tbody').empty();
-                            $('.cashbanks-info-table > tbody').html(content_table);
-                            $.inputPrice({
-                                obj: $('.cashbanks-info-table > tbody .child .input_price'),
-                            });
-                            delete_custom_field();
-                            ajaxModal($('.cashbanks-info-table > tbody .child .ajaxModal'));
+                            if(doc_type == 'prepayment_in'){
+                                content_table = content_table.replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/opentd/gi, "td").replace(/closetd/gi, "/td").replace(/opentr/gi, "tr").replace(/closetr/gi, "/tr");
+
+                                $('.cashbanks-info-table > tbody').empty();
+                                $('.cashbanks-info-table > tbody').html(content_table);
+                                $.inputPrice({
+                                    obj: $('.cashbanks-info-table > tbody .child .input_price'),
+                                });
+                                delete_custom_field();
+                                ajaxModal($('.cashbanks-info-table > tbody .child .ajaxModal'));
+                            } else {
+                                var html_content = '<tr class="child child-'+coa_id+'" rel="'+coa_id+'"> \
+                                    <td>\
+                                        '+coa_code+' \
+                                        <input type="hidden" name="data[CashBankDetail][coa_id][]" value="'+coa_id+'" id="CashBankDetailCoaId"> \
+                                    </td> \
+                                    <td> \
+                                        '+coa_name+' \
+                                    </td> \
+                                    <td class="action-search pick-truck"> \
+                                        '+truck_options+' \
+                                    </td> \
+                                    <td class="action-search"> \
+                                        <input name="data[CashBankDetail][total][]" class="form-control input_price_coma sisa-amount text-right" type="text" id="CashBankDetailTotal" value="'+ppn+'"> \
+                                    </td> \
+                                    <td class="action-search"> \
+                                        <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="cashbank_first"><i class="fa fa-times"></i> Hapus</a> \
+                                    </td> \
+                                </tr>';
+                                $('.cashbanks-info-table > tbody').append(html_content);
+                                $.inputPrice({
+                                    objComa: $('.cashbanks-info-table > tbody .child:last-child .input_price_coma'),
+                                });
+                                $.inputNumber({
+                                    obj: $('.cashbanks-info-table > tbody .child:last-child .input_number'),
+                                });
+                                ajaxModal($('.cashbanks-info-table > tbody .child .ajaxModal'));
+                                sisa_amount($('.cashbanks-info-table > tbody .child .sisa-amount'));
+                            }
                         } else {
-                            var html_content = '<tr class="child child-'+coa_id+'" rel="'+coa_id+'"> \
-                                <td>\
-                                    '+coa_code+' \
-                                    <input type="hidden" name="data[CashBankDetail][coa_id][]" value="'+coa_id+'" id="CashBankDetailCoaId"> \
-                                </td> \
-                                <td> \
-                                    '+coa_name+' \
-                                </td> \
-                                <td class="action-search pick-truck"> \
-                                    '+truck_options+' \
-                                </td> \
-                                <td class="action-search"> \
-                                    <input name="data[CashBankDetail][total][]" class="form-control input_price_coma sisa-amount text-right" type="text" id="CashBankDetailTotal" value="'+ppn+'"> \
-                                </td> \
-                                <td class="action-search"> \
-                                    <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="cashbank_first"><i class="fa fa-times"></i> Hapus</a> \
-                                </td> \
-                            </tr>';
-                            $('.cashbanks-info-table > tbody').append(html_content);
-                            $.inputPrice({
-                                objComa: $('.cashbanks-info-table > tbody .child:last-child .input_price_coma'),
-                            });
-                            $.inputNumber({
-                                obj: $('.cashbanks-info-table > tbody .child:last-child .input_number'),
-                            });
-                            ajaxModal($('.cashbanks-info-table > tbody .child .ajaxModal'));
-                            sisa_amount($('.cashbanks-info-table > tbody .child .sisa-amount'));
+                            $('#receiver-type').val('');
+                            $('#receiver-id').val('');
+                            $('#cash-bank-user').val('');
                         }
-                    } else {
-                        $('#receiver-type').val('');
-                        $('#receiver-id').val('');
-                        $('#cash-bank-user').val('');
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                        return false;
                     }
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                    return false;
-                }
-            });
-        } else {
-            $('#receiver-type').val('');
-            $('#receiver-id').val('');
-            $('#cash-bank-user').val('');
-        }
-    });
+                });
+            } else {
+                $('#receiver-type').val('');
+                $('#receiver-id').val('');
+                $('#cash-bank-user').val('');
+            }
+        });
+    }
 }
 
 var convert_number = function ( num, type ) {
@@ -4318,11 +4322,12 @@ $(function() {
         var form = self.parents('form');
         var url = form.attr('action');
         var data = form.serialize();
+        
         var progress = $(".loading-progress").progressTimer({
             timeLimit: 10,
             onFinish: function () {
                 alert('Proses closing telah selesai');
-                window.location.reload();
+                // window.location.reload();
             }
         });
 

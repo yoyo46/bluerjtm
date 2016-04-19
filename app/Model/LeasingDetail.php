@@ -33,7 +33,9 @@ class LeasingDetail extends AppModel {
 
 	function getData($find, $options = false){
         $default_options = array(
-            'conditions'=> array(),
+            'conditions'=> array(
+                'LeasingDetail.status' => 1,
+            ),
             'order'=> array(
                 'LeasingDetail.status' => 'DESC'
             ),
@@ -61,6 +63,22 @@ class LeasingDetail extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
+    }
+
+    function getMerge( $data, $id, $field = 'LeasingDetail.truck_id' ){
+        if( empty($data['LeasingDetail']) ) {
+            $value = $this->getData('first', array(
+                'conditions' => array(
+                    $field => $id,
+                ),
+            ));
+
+            if( !empty($value) ) {
+                $data = array_merge($data, $value);
+            }
+        }
+
+        return $data;
     }
 }
 ?>

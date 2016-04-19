@@ -3,6 +3,7 @@
         $assetGroups = !empty($assetGroups)?$assetGroups:false;
         $id = $this->Common->filterEmptyField($value, 'PurchaseOrderAsset', 'id');
         $truck_id = $this->Common->filterEmptyField($value, 'PurchaseOrderAsset', 'truck_id');
+        $asset_id = $this->Common->filterEmptyField($value, 'PurchaseOrderAsset', 'asset_id');
         $price = $this->Common->filterEmptyField($value, 'PurchaseOrderAsset', 'price');
         $name = $this->Common->filterEmptyField($value, 'PurchaseOrderAsset', 'name');
         $note = $this->Common->filterEmptyField($value, 'PurchaseOrderAsset', 'note');
@@ -15,6 +16,9 @@
         ));
         $hiddenContent .= $this->Form->hidden('PurchaseOrderAsset.truck_id.', array(
             'value' => $truck_id,
+        ));
+        $hiddenContent .= $this->Form->hidden('PurchaseOrderAsset.asset_id.', array(
+            'value' => $asset_id,
         ));
 
         if( empty($idx) ) {

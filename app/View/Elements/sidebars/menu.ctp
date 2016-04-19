@@ -1207,10 +1207,12 @@
                     $activeSetting = false;
                     $settingMenu = array(
                         'asset_groups', 'assets',
+                        'asset_reports'
                     );
                     $dataMenu = array(
                         'assets' => array(
                             'groups', 'index',
+                            'reports',
                         ),
                     );
 
@@ -1246,6 +1248,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'assets' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link(sprintf(__('%s Laporan Asset'), $this->Common->icon('double-right')), array(
+                                'controller' => 'assets',
+                                'action' => 'reports'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'asset_reports' )?'active':'',
                             ));
                     ?>
                 </ul>

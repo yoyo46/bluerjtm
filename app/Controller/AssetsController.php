@@ -151,7 +151,6 @@ class AssetsController extends AppController {
 
             $data = $this->request->data;
             $data = $this->RjAsset->_callBeforeSave($data, $id);
-
             $result = $this->Asset->doSave($data, $value, $id);
             $this->MkCommon->setProcessParams($result, array(
                 'action' => 'index',
@@ -428,5 +427,128 @@ class AssetsController extends AppController {
         $this->set(compact(
             'values', 'payment_id'
         ));
+    }
+
+    public function reports( $data_action = false ) {
+        $this->loadModel('Asset');
+        $values = array();
+        $year = date('Y');
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+
+        $this->Asset->virtualFields['month_use'] = 'TIMESTAMPDIFF(MONTH, Asset.purchase_date, DATE_FORMAT(NOW(), \'%Y-%m-%d\'))';
+        $options =  $this->Asset->getData('paginate', array(
+            'conditions' => array(
+                'Asset.branch_id' => $allow_branch_id,
+            ),
+            'order' => array(
+                'Asset.created' => 'DESC',
+                'Asset.id' => 'DESC',
+            ),
+        ), array(
+            'branch' => false,
+        ));
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'param_year' => $year,
+        ));
+        $year = $this->MkCommon->filterEmptyField($params, 'named', 'year');
+        $options =  $this->Asset->_callRefineParams($params, $options);
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            // Custom Otorisasi
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Asset', $options );
+        }
+
+        if( !empty($data_action) ){
+            $values = $this->Asset->find('all', $options);
+        } else {
+            $options['limit'] = Configure::read('__Site.config_pagination');
+            $this->paginate = $options;
+            $values = $this->paginate('Asset');
+        }
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'Asset', 'id');
+                $truck_id = $this->MkCommon->filterEmptyField($value, 'Asset', 'truck_id');
+                $asset_group_id = $this->MkCommon->filterEmptyField($value, 'Asset', 'asset_group_id');
+                $status_document = $this->MkCommon->filterEmptyField($value, 'Asset', 'status_document');
+
+                $value = $this->Asset->AssetGroup->getMerge($value, $asset_group_id);
+                $value = $this->Asset->Truck->getMerge($value, $truck_id);
+                $value = $this->Asset->Truck->LeasingDetail->getMerge($value, $truck_id);
+                $leasing_id = $this->MkCommon->filterEmptyField($value, 'LeasingDetail', 'leasing_id');
+                $value = $this->Asset->Truck->LeasingDetail->Leasing->getMerge($value, $leasing_id);
+
+                $this->Asset->AssetDepreciation->virtualFields['month'] = 'DATE_FORMAT(AssetDepreciation.periode, \'%m\')';
+
+                $last_depr = $this->Asset->AssetDepreciation->getData('first', array(
+                    'conditions' => array(
+                        'DATE_FORMAT(AssetDepreciation.periode, \'%Y\')' => $year-1,
+                        'AssetDepreciation.asset_id' => $id,
+                    ),
+                ));
+
+                $value['Asset']['last_ak_penyusutan'] = $this->MkCommon->filterEmptyField($last_depr, 'AssetDepreciation', 'ak_penyusutan');
+                $value['AssetDepr'] = $this->Asset->AssetDepreciation->getData('list', array(
+                    'conditions' => array(
+                        'DATE_FORMAT(AssetDepreciation.periode, \'%Y\')' => $year,
+                        'AssetDepreciation.asset_id' => $id,
+                    ),
+                    'fields' => array(
+                        'AssetDepreciation.month', 'AssetDepreciation.depr_bulan',
+                    ),
+                    'order' => array(
+                        'AssetDepreciation.periode' => 'ASC',
+                        'AssetDepreciation.id' => 'ASC',
+                    ),
+                ));
+
+                if( $status_document == 'sold' ) {
+                    $assetSell = $this->Asset->AssetSellDetail->getData('first', array(
+                        'conditions' => array(
+                            'AssetSell.transaction_status' => 'posting',
+                            'AssetSellDetail.asset_id' => $id,
+                        ),
+                        'contain' => array(
+                            'AssetSell',
+                        ),
+                        'order' => array(
+                            'AssetSellDetail.id' => 'DESC',
+                        ),
+                    ));
+                    $value['Asset']['price_sold'] = $this->MkCommon->filterEmptyField($assetSell, 'AssetSellDetail', 'price');
+                }
+                
+                $values[$key] = $value;
+            }
+        }
+
+        $assetGroups = $this->Asset->AssetGroup->getData('list', array(
+            'fields' => array(
+                'AssetGroup.id', 'AssetGroup.group_name',
+            ),
+        ));
+
+        $module_title = sprintf(__('Laporan Asset %s'), $year);
+        $this->set('sub_module_title', $module_title);
+        $this->set('active_menu', 'asset_reports');
+        $this->set(compact(
+            'values', 'module_title', 'data_action',
+            'year', 'assetGroups'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $this->MkCommon->_layout_file(array(
+                'select',
+                'freeze',
+            ));
+        }
     }
 }

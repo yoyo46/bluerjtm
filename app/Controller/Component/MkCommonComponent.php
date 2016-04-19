@@ -566,7 +566,7 @@ class MkCommonComponent extends Component {
         Configure::write('__Site.config_currency_code', 'IDR ');
         Configure::write('__Site.config_currency_second_code', 'Rp ');
         Configure::write('__Site.config_pagination', 20);
-        Configure::write('__Site.config_pagination_unlimited', 1000);
+        Configure::write('__Site.config_pagination_unlimited', 10000000);
         Configure::write('__Site.cache_view_path', '/images/view');
         Configure::write('__Site.upload_path', APP.'Uploads');
 
@@ -878,6 +878,25 @@ class MkCommonComponent extends Component {
                     $msg = $data['msg'];
                 }
                 $this->setCustomFlash($msg, $data['status'], $paramFlash, $flash);
+            }
+        }
+
+        if ( !empty( $data['data'] ) ) {
+            $this->controller->request->data = $data['data'];
+        }
+    }
+
+    function setProcessSave ( $data, $options = array() ) {
+        $this->_saveNotification($data);
+
+        if ( !empty($data['msg']) && !empty($data['status']) ) {
+            if ( !empty( $data['Log'] ) ) {
+                $this->_saveLog( $data['Log'] );
+            }
+
+            if ( !empty( $data['RefreshAuth'] ) ) {
+                $user_id = $this->filterEmptyField($data, 'RefreshAuth', 'id');
+                $this->RmUser->refreshAuth($user_id);
             }
         }
 
@@ -1639,6 +1658,9 @@ class MkCommonComponent extends Component {
         $paramMonthFrom = $this->filterEmptyField($result, 'named', 'monthFrom');
         $paramYearFrom = $this->filterEmptyField($result, 'named', 'yearFrom');
 
+        $paramYear = $this->filterEmptyField($options, 'param_year');
+        $year = $this->filterEmptyField($result, 'named', 'year');
+
         $date = $this->filterEmptyField($result, 'named', 'date');
         $datettuj = $this->filterEmptyField($result, 'named', 'datettuj');
         $daterange = $this->filterEmptyField($result, 'named', 'daterange');
@@ -1690,6 +1712,14 @@ class MkCommonComponent extends Component {
 
             $result['named']['MonthFrom'] = $monthFrom;
             $result['named']['MonthTo'] = $monthTo;
+        }
+        if( !empty($year) ) {
+            $paramYear = $year;
+        }
+        if( !empty($paramYear) ) {
+            $this->controller->request->data['Search']['year'] = $paramYear;
+
+            $result['named']['year'] = $paramYear;
         }
 
         return $result;

@@ -2,13 +2,6 @@
 class Asset extends AppModel {
 	var $name = 'Asset';
 	var $validate = array(
-        'truck_id' => array(
-            'isUnique' => array(
-                'rule' => array('isUnique'),
-                'allowEmpty' => true,
-                'message' => 'Truk telah terdaftar',
-            ),
-        ),
         'name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -17,6 +10,14 @@ class Asset extends AppModel {
             'isUnique' => array(
                 'rule' => array('isUnique'),
                 'message' => 'Asset telah terdaftar',
+            ),
+            'checkTruck' => array(
+                'rule' => array('checkTruck'),
+                'message' => 'Mohon masukan nama asset melalui pilih Truk'
+            ),
+            'uniqueTruck' => array(
+                'rule' => array('uniqueTruck'),
+                'message' => 'Truk telah terdaftar',
             ),
         ),
         'asset_group_id' => array(
@@ -101,7 +102,36 @@ class Asset extends AppModel {
             'className' => 'AssetSellDetail',
             'foreignKey' => 'asset_id',
         ),
+        'AssetDepreciation' => array(
+            'className' => 'AssetDepreciation',
+            'foreignKey' => 'asset_id',
+        ),
     );
+
+    function checkTruck () {
+        $truck_id = $this->filterEmptyField($this->data, 'Asset', 'truck_id');
+        $asset_group_id = $this->filterEmptyField($this->data, 'Asset', 'asset_group_id');
+
+        $assetGroup = $this->AssetGroup->getMerge(array(), $asset_group_id);
+        $is_truck = $this->filterEmptyField($assetGroup, 'AssetGroup', 'is_truck');
+        
+        if( !empty($is_truck) && empty($truck_id) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function uniqueTruck () {
+        $truck_id = $this->filterEmptyField($this->data, 'Asset', 'truck_id');
+        $asset = $this->getMerge(array(), $truck_id, 'Asset.truck_id');
+        
+        if( !empty($asset) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     public function getData( $find = 'all', $options = array(), $elements = array()  ) {
         $branch = isset($elements['branch'])?$elements['branch']:true;
@@ -252,7 +282,7 @@ class Asset extends AppModel {
 
         if( !empty($data) ) {
             $flag = $this->saveAll($data);
-            
+
             if( !empty($flag) ) {
                 $msg = __('Berhasil menyimpan asset');
                 $result = array(
@@ -378,6 +408,38 @@ class Asset extends AppModel {
                 $result = $this->validates();
             } else {
                 $result = $this->save();
+            }
+        }
+
+        return $result;
+    }
+
+    function doDepreciation ( $data ) {
+        $msg = __('Gagal melakukan depresiasi asset');
+        $result = array(
+            'msg' => $msg,
+            'data' => $data,
+            'status' => 'error',
+            'Log' => array(
+                'activity' => $msg,
+                'error' => 1,
+            ),
+        );
+
+        if( !empty($data) ) {
+            $flag = $this->saveAll($data, array(
+                'deep' => true,
+            ));
+            
+            if( !empty($flag) ) {
+                $msg = __('Berhasil melakukan depresiasi asset');
+                $result = array(
+                    'msg' => $msg,
+                    'status' => 'success',
+                    'Log' => array(
+                        'activity' => $msg,
+                    ),
+                );
             }
         }
 

@@ -418,7 +418,7 @@ class PurchaseOrder extends AppModel {
     function doSaveAsset( $data, $value = false, $id = false ) {
         $msg = __('Gagal menyimpan PO');
 
-        if( !empty($data) ) {            
+        if( !empty($data) ) {
             $flag = $this->saveAll($data, array(
                 'validate' => 'only',
                 'deep' => true,

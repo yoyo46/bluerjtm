@@ -24,6 +24,7 @@
 								'return_value' => 'nopol',
 							),
 							'readonly' => false,
+							'onchange' => 'false',
 						));
 						echo $this->Common->buildInputForm('asset_group_id', __('Group Asset *'), array(
 							'empty' => __('Pilih Group Asset'),
@@ -74,6 +75,7 @@
 							'class' => 'input_price_coma form-control depr_bulan',
 							'attributes' => array(
 								'data-function' => 'calcDeprBulan',
+								'data-function-type' => 'depr_bulan',
 							),
 						));
 						echo $this->Common->buildInputForm('ak_penyusutan', __('Ak. Penyusutan *'), array(
@@ -81,6 +83,7 @@
 							'class' => 'input_price_coma form-control ak_penyusutan',
 							'attributes' => array(
 								'data-function' => 'calcDeprBulan',
+								'data-function-type' => 'ak_penyusutan',
 							),
 						));
 						echo $this->Common->buildInputForm('nilai_buku', __('Nilai Buku *'), array(

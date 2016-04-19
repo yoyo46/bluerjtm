@@ -254,5 +254,22 @@ class RjCashBankComponent extends Component {
 
         return $data;
     }
+
+    function _callBeforeSaveClosing ( $data ) {
+        $value = $this->MkCommon->filterEmptyField($data, 'Journal');
+        $closingMonth = $this->MkCommon->filterEmptyField($value, 'periode', 'month');
+        $closingYear = $this->MkCommon->filterEmptyField($value, 'periode', 'year');
+        $closingPeriod = sprintf('%s-%s-01', $closingYear, $closingMonth);
+
+        $data = array(
+        	'CoaClosingQueue' => array(
+        		'branch_id' => Configure::read('__Site.config_branch_id'),
+        		'user_id' => $this->controller->user_id,
+        		'periode' => $closingPeriod,
+    		),
+    	);
+
+        return $data;
+    }
 }
 ?>

@@ -86,7 +86,7 @@ class PaginatorComponent extends Component {
 	public $settings = array(
 		'page' => 1,
 		'limit' => 20,
-		'maxLimit' => 100,
+		'maxLimit' => 10000000,
 		'paramType' => 'named'
 	);
 
@@ -338,7 +338,7 @@ class PaginatorComponent extends Component {
 		$defaults += array(
 			'page' => 1,
 			'limit' => 20,
-			'maxLimit' => 100,
+			'maxLimit' => 10000000,
 			'paramType' => 'named'
 		);
 		return $defaults;

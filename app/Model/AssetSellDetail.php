@@ -44,6 +44,7 @@ class AssetSellDetail extends AppModel {
             ),
             'fields' => array(),
             'group' => array(),
+            'contain' => array(),
         );
 
         switch ($status) {
@@ -57,6 +58,11 @@ class AssetSellDetail extends AppModel {
         }
         if(!empty($options['order'])){
             $default_options['order'] = $options['order'];
+        }
+        if( isset($options['contain']) && empty($options['contain']) ) {
+            $default_options['contain'] = false;
+        } else if(!empty($options['contain'])){
+            $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
         }
         if(!empty($options['fields'])){
             $default_options['fields'] = $options['fields'];

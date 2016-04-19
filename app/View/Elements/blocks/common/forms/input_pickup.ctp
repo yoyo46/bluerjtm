@@ -1,5 +1,6 @@
 <?php
 		$readonly = isset($readonly)?$readonly:true;
+		$onchange = !empty($onchange)?$onchange:false;
 ?>
 <div class="form-group">
 	<?php
@@ -14,6 +15,9 @@
 						'placeholder' => $label,
 						'readonly' => $readonly,
 						'frameClass' => false,
+						'attributes' => array(
+							'data-change' => $onchange,
+						),
 					));
 			?>
 		</div>
