@@ -6870,7 +6870,7 @@ class RevenuesController extends AppController {
 
             $this->set(compact(
                 'invoice', 'action_print', 'revenue_detail',
-                'tarif_name'
+                'tarif_name', 'id'
             ));
 
             if($action_print == 'pdf'){

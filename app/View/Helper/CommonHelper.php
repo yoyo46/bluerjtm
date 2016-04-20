@@ -1173,6 +1173,7 @@ class CommonHelper extends AppHelper {
         $_excel = isset($options['_excel'])?$options['_excel']:true;
         $_pdf = isset($options['_pdf'])?$options['_pdf']:true;
         $_attr = isset($options['_attr'])?$options['_attr']:array();
+        $_excel_url = isset($options['url_excel'])?$options['url_excel']:false;
         $result = false;
         $resultContent = '';
         $default_attr = array(
@@ -1197,8 +1198,13 @@ class CommonHelper extends AppHelper {
         }
 
         if( !empty($_excel) ) {
-            $urlExcel = $urlDefault;
-            $urlExcel[] = 'excel';
+            if( !empty($_excel_url) ) {
+                $urlExcel = $_excel_url;
+            } else {
+                $urlExcel = $urlDefault;
+                $urlExcel[] = 'excel';
+            }
+            
             $_excel_attr = $default_attr;
             $_excel_attr['class'] = $default_attr['class'].' btn btn-success pull-right';
             $result .= $this->Html->link('<i class="fa fa-download"></i> Download Excel', $urlExcel, $_excel_attr);

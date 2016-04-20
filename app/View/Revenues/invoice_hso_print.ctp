@@ -1,4 +1,5 @@
 <?php
+		$id = !empty($id)?$id:false;
 if($action_print == 'pdf'){
 	App::import('Vendor','xtcpdf');
     ob_end_clean();
@@ -104,7 +105,14 @@ $tcpdf->Output($path.'/'.$filename, 'F');
 	?>
 </div>
 <?php 
-            echo $this->Common->_getPrint();
+            echo $this->Common->_getPrint(array(
+            	'url_excel' => array(
+            		'controller' => 'revenues',
+            		'action' => 'invoice_hso_print',
+            		$id,
+            		'excel',
+        		),
+        	));
 		}
 ?>
 <div class="clear"></div>
