@@ -199,6 +199,10 @@ class Truck extends AppModel {
             'className' => 'PurchaseOrderAsset',
             'foreignKey' => 'truck_id',
         ),
+        'LeasingDetail' => array(
+            'className' => 'LeasingDetail',
+            'foreignKey' => 'truck_id',
+        ),
     );
 
     var $belongsTo = array(
@@ -267,10 +271,6 @@ class Truck extends AppModel {
         ),
         'DocumentPaymentDetail' => array(
             'className' => 'DocumentPaymentDetail',
-            'foreignKey' => 'truck_id',
-        ),
-        'LeasingDetail' => array(
-            'className' => 'LeasingDetail',
             'foreignKey' => 'truck_id',
         ),
     );

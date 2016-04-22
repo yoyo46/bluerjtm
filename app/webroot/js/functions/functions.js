@@ -702,8 +702,15 @@ var add_custom_field = function( obj ){
                 var rel = $('.leasing-body tr.child').length;
                 var length = rel + 1;
                 var option_form = $('#form-truck-id').html();
+                var asset_groups = $('#form-asset-groups').html();
                 var content_clone = '<tr class="child child-'+length+'" rel="'+length+'">'+
-                    '<td>'+option_form+'</td>'+
+                    '<td>'+
+                        '<input name="data[LeasingDetail][nopol][]" class="form-control" value="" type="text" id="LeasingDetailNopol">'+
+                    '</td>'+
+                    '<td>'+
+                        '<input name="data[LeasingDetail][note][]" class="form-control" value="" type="text" id="LeasingDetailNote">'+
+                    '</td>'+
+                    '<td>'+asset_groups+'</td>'+
                     '<td align="right box-price">'+
                         '<input name="data[LeasingDetail][price][]" class="form-control price-leasing-truck input_price input_number text-right" value="0" type="text" id="LeasingDetailPrice">'+
                     '</td>'+
@@ -711,8 +718,7 @@ var add_custom_field = function( obj ){
                         '<a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="leasing_first"><i class="fa fa-times"></i> Hapus</a>'+
                     '</td>'+
                 '</tr>';
-
-                $('.leasing-body #field-grand-total-leasing').before(content_clone);
+                $('.leasing-body').append(content_clone);
 
                 $.inputPrice({
                     obj: $('#table-leasing tbody.leasing-body tr.child-'+length+' .input_price'),
@@ -1584,7 +1590,7 @@ function grandTotalLeasing(){
         }
     };
 
-    $('#grand-total-leasing').text('IDR '+formatNumber(total_price));
+    $('#grand-total-leasing').text(formatNumber(total_price));
     $('#hid-total-leasing').val(total_price);
 }
 

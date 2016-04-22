@@ -74,21 +74,20 @@ class LeasingsController extends AppController {
                 'conditions' => array(
                     'Leasing.id' => $id
                 ),
-                'contain' => array(
-                    'LeasingDetail'
-                ),
             ), array(
                 'status' => 'all',
             ));
 
             if(!empty($value)){
                 $sub_module_title = __('Detail Leasing');
+
                 $vendor_id = $this->MkCommon->filterEmptyField($value, 'Leasing', 'vendor_id');
                 $paid_date = $this->MkCommon->filterEmptyField($value, 'Leasing', 'paid_date');
                 $date_first_installment = $this->MkCommon->filterEmptyField($value, 'Leasing', 'date_first_installment');
                 $date_last_installment = $this->MkCommon->filterEmptyField($value, 'Leasing', 'date_last_installment');
 
                 $value = $this->Leasing->Vendor->getMerge($value, $vendor_id);
+                $value = $this->Leasing->LeasingDetail->getMergeAll($value, $id, 'LeasingDetail.leasing_id');
 
                 if(!empty($paid_date)){
                     $value['Leasing']['paid_date'] = $this->MkCommon->getDate($paid_date, true);
@@ -100,18 +99,24 @@ class LeasingsController extends AppController {
                     $value['Leasing']['date_last_installment'] = $this->MkCommon->getDate($date_last_installment, true);
                 }
 
-                if( !empty($value['LeasingDetail']) ) {
-                    foreach ($value['LeasingDetail'] as $key => $detail) {
-                        $truck_id = $this->MkCommon->filterEmptyField($detail, 'truck_id');
-
-                        $detail = $this->Leasing->LeasingDetail->Truck->getMerge($detail, $truck_id);
-                        $value['LeasingDetail'][$key] = $detail;
-                    }
-                }
-
                 $this->request->data = $value;
+                $this->request->data = $this->MkCommon->mergeDate($this->request->data, 'Leasing', 'date_last_installment', 'tgl_last_installment');
+        
+                $leasing_companies = $this->Leasing->Vendor->getData('list', array(
+                    'fields' => array(
+                        'Vendor.id', 'Vendor.name'
+                    )
+                ));
+                $assetGroups = $this->Leasing->LeasingDetail->AssetGroup->getData('list', array(
+                    'fields' => array(
+                        'AssetGroup.id', 'AssetGroup.group_name',
+                    ),
+                ));
+
+                $this->set('view', 'detail');
                 $this->set(compact(
-                    'value', 'sub_module_title'
+                    'value', 'sub_module_title',
+                    'leasing_companies', 'assetGroups'
                 ));
                 $this->render('leasing_form');
             }else{
@@ -135,9 +140,6 @@ class LeasingsController extends AppController {
             'conditions' => array(
                 'Leasing.id' => $id
             ),
-            'contain' => array(
-                'LeasingDetail'
-            ),
         ), array(
             'status' => 'all',
         ));
@@ -146,6 +148,7 @@ class LeasingsController extends AppController {
             // Custom Otorisasi
             // $branch_id = $this->MkCommon->filterEmptyField($value, 'Leasing', 'branch_id');
             // $this->MkCommon->allowPage($branch_id);
+            $value = $this->Leasing->LeasingDetail->getMergeAll($value, $id, 'LeasingDetail.leasing_id');
 
             $this->doLeasing($id, $value);
         }else{
@@ -187,6 +190,7 @@ class LeasingsController extends AppController {
                 $msg = 'menambah';
             }
 
+            $data['Leasing']['id'] = $id;
             $data['Leasing']['paid_date'] = (!empty($data['Leasing']['paid_date'])) ? $this->MkCommon->getDate($data['Leasing']['paid_date']) : '';
             $data['Leasing']['date_first_installment'] = (!empty($data['Leasing']['date_first_installment'])) ? $this->MkCommon->getDate($data['Leasing']['date_first_installment']) : '';
             $data['Leasing']['date_last_installment'] = !empty($data['Leasing']['tgl_last_installment'])?$this->MkCommon->getDateSelectbox($data['Leasing']['tgl_last_installment']):false;
@@ -200,66 +204,101 @@ class LeasingsController extends AppController {
             $data['Leasing']['total_biaya'] = $data['Leasing']['installment'] + $data['Leasing']['denda'];
             $data['Leasing']['branch_id'] = Configure::read('__Site.config_branch_id');
 
+            $dataSave['Leasing'] = $data['Leasing'];
+
             $validate_leasing_detail = true;
             $temp_detail = array();
             $total_price = 0;
             $truck_collect = array();
             $truck_same = true;
+            $thn = $this->MkCommon->customDate($data['Leasing']['paid_date'], 'Y');
 
-            if(!empty($data['LeasingDetail']['truck_id'])){
-                foreach ($data['LeasingDetail']['truck_id'] as $key => $value) {
-                    if( !empty($value) && !in_array($value, $truck_collect)){
-                        $truck_collect[] = $value;
-                        $data_detail['LeasingDetail'] = array(
-                            'truck_id' => $value,
-                            'price' => (!empty($data['LeasingDetail']['price'][$key])) ? $this->MkCommon->convertPriceToString($data['LeasingDetail']['price'][$key], 0) : 0,
-                        );
-                        
-                        $temp_detail[] = $data_detail;
-                        $this->Leasing->LeasingDetail->set($data_detail);
+            if(!empty($data['LeasingDetail']['nopol'])){
+                foreach ($data['LeasingDetail']['nopol'] as $key => $nopol) {
+                    $truckArr = $this->MkCommon->filterEmptyField($data, 'LeasingDetail', 'truck_id');
+                    $priceArr = $this->MkCommon->filterEmptyField($data, 'LeasingDetail', 'price');
+                    $assetGroupArr = $this->MkCommon->filterEmptyField($data, 'LeasingDetail', 'asset_group_id');
+                    $noteArr = $this->MkCommon->filterEmptyField($data, 'LeasingDetail', 'note');
 
-                        if( !$this->Leasing->LeasingDetail->validates() ){
-                            $validate_leasing_detail = false;
-                            break;
-                        }else{
-                            $total_price += $data_detail['LeasingDetail']['price'];
-                        }
-                    }else{
-                        if(in_array($value, $truck_collect)){
-                            $truck_same = false;
-                        }
-                    }
+                    $truck_id = !empty($truckArr[$key])?$truckArr[$key]:false;
+                    $price = !empty($priceArr[$key])?$this->MkCommon->_callPriceConverter($priceArr[$key]):false;
+                    $asset_group_id = !empty($assetGroupArr[$key])?$assetGroupArr[$key]:false;
+                    $note = !empty($noteArr[$key])?$noteArr[$key]:false;
+
+                    $company = $this->Leasing->LeasingDetail->Truck->Company->getData('first', array(
+                        'conditions' => array(
+                            'Company.code LIKE' => '%RJTM%'
+                        ),
+                    ));
+                    $company_id = $this->MkCommon->filterEmptyField($company, 'Company', 'id', 0);
+
+                    $dataSave['LeasingDetail'][] = array(
+                        'Truck' => array(
+                            'id' => $truck_id,
+                            'branch_id' => Configure::read('__Site.config_branch_id'),
+                            'company_id' => $company_id,
+                            'nopol' => $nopol,
+                            'tahun' => $thn,
+                            'tahun_neraca' => $thn,
+                            'description' => $note,
+                            'is_asset' => 1,
+                        ),
+                        'LeasingDetail' => array(
+                            'leasing_id' => $id,
+                            'truck_id' => $truck_id,
+                            'nopol' => $nopol,
+                            'asset_group_id' => $asset_group_id,
+                            'note' => $note,
+                            'price' => $price,
+                        ),
+                    );
+
+                    $total_price += $price;
                 }
-            }else{
-                $validate_leasing_detail = false;
             }
 
-            $this->Leasing->set($data);
+            $leasing_month = $this->MkCommon->filterEmptyField($data, 'Leasing', 'leasing_month');
+            $date_first_installment = $this->MkCommon->filterEmptyField($data, 'Leasing', 'date_first_installment');
+            $installment = $this->MkCommon->filterEmptyField($data, 'Leasing', 'installment');
 
-            if($this->Leasing->validates($data) && $validate_leasing_detail && $truck_same){
-                if($this->Leasing->save($data)){
-                    $leasing_id = $this->Leasing->id;
-                    $this->Leasing->LeasingInstallment->doSave($leasing_id, $data);
+            if ( !empty($leasing_month) ) {
+                for ($i=0; $i < $leasing_month; $i++) { 
+                    $paid_date = date ("Y-m-d", strtotime("+$i month", strtotime($date_first_installment)));
+                    $dataSave['LeasingInstallment'][] = array(
+                        'LeasingInstallment' => array(
+                            'paid_date' => $paid_date,
+                            'installment' => $installment,
+                        ),
+                    );
+                }
+            }
 
-                    if($id && $data_local){
-                        $this->Leasing->LeasingDetail->deleteAll(array(
-                            'LeasingDetail.leasing_id' => $leasing_id
-                        ));
-                    }
+            $flag = $this->Leasing->saveAll($dataSave, array(
+                'validate' => 'only',
+                'deep' => true,
+            ));
 
-                    if(!empty($temp_detail)){
-                        foreach ($temp_detail as $key => $value) {
-                            $temp_detail[$key]['LeasingDetail']['leasing_id'] = $leasing_id;
-                        }
+            if( !empty($flag) ){
+                $flag = $this->Leasing->LeasingDetail->updateAll(array(
+                    'LeasingDetail.status' => 0,
+                ), array(
+                    'LeasingDetail.leasing_id' => $id,
+                ));
 
-                        $this->Leasing->LeasingDetail->saveMany($temp_detail);
-                    }
+                if( !empty($flag) ){
+                    $this->Leasing->LeasingInstallment->deleteAll(array( 
+                        'LeasingInstallment.leasing_id' => $id,
+                    ));
+                    $flag = $this->Leasing->saveAll($dataSave, array(
+                        'deep' => true,
+                    ));
+                    $id = $this->Leasing->id;
 
                     $this->params['old_data'] = $data_local;
                     $this->params['data'] = $data;
 
                     $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s leasing'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s leasing #%s'), $msg, $leasing_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $leasing_id );
+                    $this->Log->logActivity( sprintf(__('Sukses %s leasing #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
                     $this->redirect(array(
                         'controller' => 'leasings',
                         'action' => 'index'
@@ -270,32 +309,14 @@ class LeasingsController extends AppController {
                 }
             }else{
                 $text = sprintf(__('Gagal %s leasing'), $msg);
-                if(!$validate_leasing_detail){
-                    $text .= '<br>* harap isi semua field yang terdapat di leasing detail.';
-                }
-                if(!$truck_same){
-                    $text .= '<br>* Tidak boleh terdapat truk yang sama dalam 1 kontrak leasing.';
-                }
                 $this->MkCommon->setCustomFlash($text, 'error');
             }
+
+            $this->request->data = $dataSave;
         }else{
             if($id && $data_local){
                 $this->request->data = $data_local;
                 $this->request->data = $this->MkCommon->mergeDate($this->request->data, 'Leasing', 'date_last_installment', 'tgl_last_installment');
-
-                if(!empty($data_local['LeasingDetail'])){
-                    foreach ($data_local['LeasingDetail'] as $key => $value) {
-                        $truck = $this->Leasing->LeasingDetail->Truck->getData('first', array(
-                            'conditions' => array(
-                                'Truck.id' => $value['truck_id']
-                            )
-                        ));
-
-                        if(!empty($truck)){
-                            $trucks[$value['truck_id']] = $truck['Truck']['nopol'];
-                        }
-                    }
-                }
 
                 if(!empty($this->request->data['Leasing']['paid_date'])){
                     $this->request->data['Leasing']['paid_date'] = $this->MkCommon->getDate($this->request->data['Leasing']['paid_date'], true);
@@ -309,28 +330,22 @@ class LeasingsController extends AppController {
             }
         
         }
-
-        if(!empty($this->request->data['LeasingDetail']['truck_id'])){
-            $temp_arr = array();
-            foreach ($this->request->data['LeasingDetail']['truck_id'] as $key => $value) {
-                $temp_arr[$key] = array(
-                    'truck_id' => $value,
-                    'price' => $this->request->data['LeasingDetail']['price'][$key]
-                );
-            }
-            unset($this->request->data['LeasingDetail']);
-            $this->request->data['LeasingDetail'] = $temp_arr;
-        }
         
         $leasing_companies = $this->Leasing->Vendor->getData('list', array(
             'fields' => array(
                 'Vendor.id', 'Vendor.name'
             )
         ));
+        $assetGroups = $this->Leasing->LeasingDetail->AssetGroup->getData('list', array(
+            'fields' => array(
+                'AssetGroup.id', 'AssetGroup.group_name',
+            ),
+        ));
 
         $this->set('active_menu', 'view_leasing');
         $this->set(compact(
-            'leasing_companies', 'trucks', 'data_local'
+            'leasing_companies', 'trucks', 'data_local',
+            'assetGroups'
         ));
         $this->render('leasing_form');
     }

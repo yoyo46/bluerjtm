@@ -1,10 +1,7 @@
 <?php 
-        $data = $this->request->data;
         $count = 1;
-
-        if(!empty($data['LeasingDetail'])){
-            $count = count($data['LeasingDetail']);
-        }
+        $data = $this->request->data;
+        $dataDetail = $this->Common->filterEmptyField($data, 'LeasingDetail');
 ?>
 <div class="box">
     <div class="box-header">
@@ -23,75 +20,45 @@
         <table class="table table-hover" id="table-leasing">
             <thead>
                 <tr>
-                    <th><?php echo __('Truk');?></th>
+                    <th width="15%"><?php echo __('Truk');?></th>
+                    <th width="20%"><?php echo __('Note');?></th>
+                    <th width="15%"><?php echo __('Group Asset');?></th>
                     <th width="20%"><?php echo __('Harga');?></th>
-                    <th><?php echo __('Action');?></th>
+                    <th width="5%"><?php echo __('Action');?></th>
                 </tr>
             </thead>
             <tbody class="leasing-body">
-                <?php                        
+                <?php
                         $total = 0;
 
-                        for ($i = 0; $i < $count; $i++) { 
-                            $detail = !empty($data['LeasingDetail'][$i])?$data['LeasingDetail'][$i]:false;
-                            $price = $this->Common->filterEmptyField($detail, 'price');
-                            $truck_id = $this->Common->filterEmptyField($detail, 'truck_id');
-                            $nopol = $this->Common->filterEmptyField($detail, 'Truck', 'nopol');
+                        if(!empty($dataDetail)){
+                            foreach ($dataDetail as $key => $value) {
+                                $price = $this->Common->filterEmptyField($value, 'LeasingDetail', 'price');
 
-                            $customPrice = $this->Common->convertPriceToString($price, 0);
+                                $total += $price;
+                                $customTotal = $this->Common->getFormatPrice($price);
 
-                            if(!empty($customPrice)){
-                                $total += $customPrice;
+                                echo $this->element('blocks/leasings/tables/items', array(
+                                    'value' => $value,
+                                    'total' => $customTotal,
+                                    'idx' => $key,
+                                ));
                             }
-                ?>
-                <tr classs="child child-<?php echo $i; ?>" rel="<?php echo $i; ?>">
-                    <td>
-                        <?php
-                                if( !empty($value) && !empty($nopol) ) {
-                                    echo $nopol;
-                                } else {
-                                    echo $this->Form->input('LeasingDetail.truck_id.', array(
-                                        'options' => !empty($trucks)?$trucks:false,
-                                        'label' => false,
-                                        'empty' => __('Pilih Truk'),
-                                        'class' => 'form-control',
-                                        'required' => false,
-                                        'value' => $truck_id,
-                                    ));
-                                }
-                        ?>
-                    </td>
-                    <td align="right box-price">
-                        <?php 
-                            echo $this->Form->input('LeasingDetail.price.', array(
-                                'type' => 'text',
-                                'label' => false,
-                                'class' => 'form-control price-leasing-truck input_price input_number text-right',
-                                'required' => false,
-                                'value' => $customPrice
+                        } else {
+                            echo $this->element('blocks/leasings/tables/items', array(
+                                'idx' => 0,
                             ));
-                        ?>
-                    </td>
-                    <td class="action-table">
-                        <?php
-                            echo $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
-                                'class' => 'delete-custom-field btn btn-danger btn-xs',
-                                'escape' => false,
-                                'action_type' => 'leasing_first'
-                            ));
-                        ?>
-                    </td>
-                </tr>
-                <?php
                         }
-                        
+
                         echo $this->Form->hidden('total_leasing',array(
                             'id'=>'hid-total-leasing',
                             'value' => $total,
                         ));
                 ?>
+            </tbody>
+            <tfoot>
                 <tr id="field-grand-total-leasing">
-                    <td align="right" colspan="1"><?php echo __('Total')?></td>
+                    <td align="right" colspan="3"><?php echo __('Total')?></td>
                     <td align="right" id="grand-total-leasing">
                         <?php 
                                 echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
@@ -100,7 +67,7 @@
                     <td>&nbsp;</td>
                 </tr>
                 <tr>
-                    <td align="right" colspan="1"><?php echo __('Pokok Angsuran *')?></td>
+                    <td align="right" colspan="3"><?php echo __('Pokok Angsuran *')?></td>
                     <td align="right">
                         <?php 
                                 echo $this->Form->input('installment',array(
@@ -114,7 +81,7 @@
                     <td>&nbsp;</td>
                 </tr>
                 <tr>
-                    <td align="right" colspan="1"><?php echo __('Bunga *')?></td>
+                    <td align="right" colspan="3"><?php echo __('Bunga *')?></td>
                     <td align="right">
                         <div class="input-group">
                             <?php 
@@ -137,7 +104,7 @@
                     <td>&nbsp;</td>
                 </tr>
                 <tr>
-                    <td align="right" colspan="1"><?php echo __('Denda')?></td>
+                    <td align="right" colspan="3"><?php echo __('Denda')?></td>
                     <td align="right">
                         <div class="input-group">
                             <?php 
@@ -156,7 +123,7 @@
                     </td>
                     <td>&nbsp;</td>
                 </tr>
-            </tbody>
+            </tfoot>
         </table>
     </div>
 </div>

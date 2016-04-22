@@ -193,7 +193,7 @@ class RjAssetComponent extends Component {
                     if( !empty($is_truck) ) {
                         $company = $this->controller->Asset->AssetGroup->PurchaseOrderAsset->Truck->Company->getData('first', array(
                             'conditions' => array(
-                                'Company.name LIKE' => '%RJTM%'
+                                'Company.name LIKE' => '%code%'
                             ),
                         ));
                         $company_id = $this->MkCommon->filterEmptyField($company, 'Company', 'id', 0);
