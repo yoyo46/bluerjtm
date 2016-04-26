@@ -8228,8 +8228,10 @@ class RevenuesController extends AppController {
         if( !empty($values) ) {
             foreach ($values as $key => $value) {
                 $id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'id');
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'branch_id');
                 $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'ttuj_id');
                 $value = $this->Ttuj->getMerge($value, $ttuj_id);
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
                 
                 $value['Ttuj']['total_qty'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
 
