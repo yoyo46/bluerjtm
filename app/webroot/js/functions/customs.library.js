@@ -51,6 +51,7 @@
                 content.append( value );
 
                 $('.field-content > .item:last-child input,.field-content > .item:last-child select').val('');
+                $('.field-content > .item:last-child .error-message').remove();
 
                 if( $('.field-content > .item:last-child .tipe_motor_id').length > 0 ) {
                     $('.field-content > .item:last-child .tipe_motor_id').change(function() {
@@ -579,7 +580,7 @@
                 self.val( $.convertDecimal(self, 2) );
 
                 if( func != false ) {
-                    eval(func + '('+func_type+');');
+                    eval(func + '(\''+func_type+'\');');
                 }
             });
 
@@ -1423,15 +1424,17 @@
             nilai_sisa = $.convertNumber(settings_nilai_sisa.val(), 'float', 0);
             umur_ekonomis = $.convertNumber(settings_umur_ekonomis.val(), 'float', 0);
 
-            if( type != 'depr_bulan' ) {
-                depr_bulan = ( ( nilai_perolehan - nilai_sisa ) / settings_umur_ekonomis.val() ) / 12;
-                settings_depr_bulan.val( $.formatDecimal(depr_bulan, 2) );
-            }
+            if( nilai_perolehan != 0 ) {
+                if( type != 'depr_bulan' ) {
+                    depr_bulan = ( ( nilai_perolehan - nilai_sisa ) / settings_umur_ekonomis.val() ) / 12;
+                    settings_depr_bulan.val( $.formatDecimal(depr_bulan, 2) );
+                }
 
-            nilai_buku = nilai_perolehan - ak_penyusutan;
-            
-            settings_ak_penyusutan.val( $.formatDecimal(ak_penyusutan, 2) );
-            settings_nilai_buku.val( $.formatDecimal(nilai_buku, 2) );
+                nilai_buku = nilai_perolehan - ak_penyusutan;
+                
+                settings_ak_penyusutan.val( $.formatDecimal(ak_penyusutan, 2) );
+                settings_nilai_buku.val( $.formatDecimal(nilai_buku, 2) );
+            }
         }
     }
 

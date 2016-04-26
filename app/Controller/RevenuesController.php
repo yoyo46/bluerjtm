@@ -483,8 +483,6 @@ class RevenuesController extends AppController {
                     'UangJalan.to_city_id' => $to_city_id,
                     'UangJalan.capacity' => $capacity,
                 ),
-            ), true, array(
-                'branch' => false,
             ));
 
             if( !empty($uangJalan) ) {

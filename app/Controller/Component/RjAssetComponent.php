@@ -76,6 +76,9 @@ class RjAssetComponent extends Component {
 
     function _callBeforeRender ( $data = false ) {
         if( !empty($data) ) {
+            $asset_group_id = $this->MkCommon->filterEmptyField($data, 'Asset', 'asset_group_id');
+            $data = $this->controller->Asset->AssetGroup->getMerge($data, $asset_group_id);
+
             $data = $this->MkCommon->dataConverter($data, array(
                 'date' => array(
                     'Asset' => array(
@@ -229,6 +232,7 @@ class RjAssetComponent extends Component {
                             'depr_bulan' => $depr_bulan,
                             'nilai_buku' => $nilai_buku,
                             'note' => $note,
+                            'is_po' => true,
                         );
                     }
 

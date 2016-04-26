@@ -4,6 +4,7 @@
 			'action' => 'index',
 		);
 		$value = !empty($value)?$value:false;
+		$data = $this->request->data;
 
 		$this->Html->addCrumb($title, $urlRoot);
 		$this->Html->addCrumb($sub_module_title);
@@ -46,7 +47,9 @@
 							'class' => 'custom-date form-control',
 						));
 						echo $this->Common->buildInputForm('note', __('Keterangan'));
-						echo $this->element('blocks/assets/group');
+						echo $this->element('blocks/assets/group', array(
+							'value' => $data,
+						));
 			    ?>
 		    </div>
 		</div>
@@ -55,13 +58,6 @@
 		<div class="box">
 		    <div class="box-body">
 		    	<?php 
-						// echo $this->Common->buildInputForm('status_document', __('Status *'), array(
-						// 	'empty' => __('Status'),
-						// 	'options' => array(
-						// 		'sold' => __('Sold'),
-						// 		'available' => __('Available'),
-						// 	),
-						// ));
 						echo $this->Common->buildInputForm('lokasi', __('Lokasi'));
 						echo $this->Common->buildInputForm('nilai_perolehan', __('Nilai perolehan *'), array(
 							'type' => 'text',

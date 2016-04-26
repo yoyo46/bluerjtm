@@ -15,10 +15,10 @@ class Asset extends AppModel {
                 'rule' => array('checkTruck'),
                 'message' => 'Mohon masukan nama asset melalui pilih Truk'
             ),
-            'uniqueTruck' => array(
-                'rule' => array('uniqueTruck'),
-                'message' => 'Truk telah terdaftar',
-            ),
+            // 'uniqueTruck' => array(
+            //     'rule' => array('uniqueTruck'),
+            //     'message' => 'Truk telah terdaftar',
+            // ),
         ),
         'asset_group_id' => array(
             'notempty' => array(
@@ -109,29 +109,30 @@ class Asset extends AppModel {
     );
 
     function checkTruck () {
+        $is_po = $this->filterEmptyField($this->data, 'Asset', 'is_po');
         $truck_id = $this->filterEmptyField($this->data, 'Asset', 'truck_id');
         $asset_group_id = $this->filterEmptyField($this->data, 'Asset', 'asset_group_id');
 
         $assetGroup = $this->AssetGroup->getMerge(array(), $asset_group_id);
         $is_truck = $this->filterEmptyField($assetGroup, 'AssetGroup', 'is_truck');
         
-        if( !empty($is_truck) && empty($truck_id) ) {
+        if( empty($is_po) && !empty($is_truck) && empty($truck_id) ) {
             return false;
         } else {
             return true;
         }
     }
 
-    function uniqueTruck () {
-        $truck_id = $this->filterEmptyField($this->data, 'Asset', 'truck_id');
-        $asset = $this->getMerge(array(), $truck_id, 'Asset.truck_id');
+    // function uniqueTruck () {
+    //     $truck_id = $this->filterEmptyField($this->data, 'Asset', 'truck_id');
+    //     $asset = $this->getMerge(array(), $truck_id, 'Asset.truck_id');
         
-        if( !empty($asset) ) {
-            return false;
-        } else {
-            return true;
-        }
-    }
+    //     if( !empty($asset) ) {
+    //         return false;
+    //     } else {
+    //         return true;
+    //     }
+    // }
 
     public function getData( $find = 'all', $options = array(), $elements = array()  ) {
         $branch = isset($elements['branch'])?$elements['branch']:true;

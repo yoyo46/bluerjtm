@@ -146,9 +146,6 @@ class AssetsController extends AppController {
         ));
 
         if( !empty($value) ) {
-            $asset_group_id = $this->MkCommon->filterEmptyField($value, 'Asset', 'asset_group_id');
-            $value = $this->Asset->AssetGroup->getMerge($value, $asset_group_id);
-
             $data = $this->request->data;
             $data = $this->RjAsset->_callBeforeSave($data, $id);
             $result = $this->Asset->doSave($data, $value, $id);
@@ -201,6 +198,9 @@ class AssetsController extends AppController {
         $this->request->data = $this->RjAsset->_callBeforeRenderPO($this->request->data);
 
         $this->set('active_menu', 'Purchase Order');
+        $this->MkCommon->_layout_file(array(
+            'select',
+        ));
     }
 
     public function purchase_order_edit( $id = false ) {
