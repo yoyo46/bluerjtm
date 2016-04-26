@@ -32,11 +32,11 @@
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
         $this->Html->addCrumb($sub_module_title);
-        echo $this->element('blocks/ttuj/search_ttuj', array(
-            'status' => false,
-            'label_tgl' => __('Tgl Berangkat'),
-        ));
-        // echo $this->element('blocks/ttuj/search_sj');
+        // echo $this->element('blocks/ttuj/search_ttuj', array(
+        //     'status' => false,
+        //     'label_tgl' => __('Tgl Berangkat'),
+        // ));
+        echo $this->element('blocks/ttuj/search_sj');
 ?>
 <div class="box">
     <?php 

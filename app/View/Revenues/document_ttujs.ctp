@@ -22,6 +22,10 @@
                 'name' => __('Tgl Ttuj'),
                 'class' => 'text-center',
             ),
+            'date_beragkat' => array(
+                'name' => __('Tgl Berangkat'),
+                'class' => 'text-center',
+            ),
             'from' => array(
                 'name' => __('Dari'),
                 'class' => 'text-center',
@@ -48,7 +52,12 @@
             ),
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
-        echo $this->element('blocks/ttuj/search_document_ttujs');
+        // echo $this->element('blocks/ttuj/search_document_ttujs');
+        echo $this->element('blocks/ttuj/search_ttuj', array(
+            'ajax' => true,
+            'status' => false,
+            'label_tgl' => __('Tgl Berangkat'),
+        ));
 ?>
 <div class="box-body table-responsive browse-form document-ttuj">
     <table class="table table-hover">
@@ -67,6 +76,7 @@
                         $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
                         $note = $this->Common->filterEmptyField($value, 'Ttuj', 'note');
                         $ttuj_date = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date');
+                        $tgljam_berangkat = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_berangkat');
                         $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
 
                         $qty = $this->Common->filterEmptyField($value, 'Ttuj', 'qty');
@@ -75,6 +85,7 @@
 
                         $customer = $this->Common->filterEmptyField($value, 'Customer', 'code');
                         $ttuj_date = $this->Common->formatDate($ttuj_date, 'd/m/Y');
+                        $tgljam_berangkat = $this->Common->formatDate($tgljam_berangkat, 'd/m/Y H:i:s');
 
                         $checkbox = isset($checkbox)?$checkbox:true;
                         $alias = sprintf('child-%s', $id);
@@ -116,6 +127,9 @@
                             'class' => 'text-center',
                         ));
                         echo $this->Html->tag('td', $ttuj_date, array(
+                            'class' => 'text-center',
+                        ));
+                        echo $this->Html->tag('td', $tgljam_berangkat, array(
                             'class' => 'text-center',
                         ));
                         echo $this->Html->tag('td', $from_city_name);
@@ -162,6 +176,7 @@
             'options' => array(
                 'data-action' => $data_action,
                 'class' => 'ajaxModal',
+                'title' => $title,
             ),
         ));
 ?>

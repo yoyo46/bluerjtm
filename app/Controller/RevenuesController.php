@@ -5998,11 +5998,11 @@ class RevenuesController extends AppController {
             }
         }
 
-        $customers = $this->Ttuj->Customer->getData('list', array(
-            'fields' => array(
-                'Customer.id', 'Customer.customer_name_code'
-            ),
-        ));
+        // $customers = $this->Ttuj->Customer->getData('list', array(
+        //     'fields' => array(
+        //         'Customer.id', 'Customer.customer_name_code'
+        //     ),
+        // ));
         $this->MkCommon->_layout_file('select');
 
         $this->set(compact(
@@ -6389,9 +6389,17 @@ class RevenuesController extends AppController {
             }
         }
 
+        $customers = $this->Ttuj->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+
         $data_action = 'browse-check-docs';
+        $this->MkCommon->_layout_file('select');
         $this->set(compact(
-            'data_action', 'title', 'values'
+            'data_action', 'title', 'values',
+            'customers'
         ));
     }
 

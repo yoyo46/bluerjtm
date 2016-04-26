@@ -1,5 +1,14 @@
 <?php 
         $status = isset($status)?$status:true;
+        $ajax = isset($ajax)?$ajax:false;
+
+        if( empty($ajax) ) {
+            $style = 'display: none;';
+            $class = '';
+        } else {
+            $style = '';
+            $class = 'ajaxModal';
+        }
 ?>
 <div class="box collapsed-box">
     <div class="box-header">
@@ -8,7 +17,7 @@
             <button class="btn btn-default btn-sm" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
         </div>
     </div>
-    <div class="box-body" style="display: none;">
+    <div class="box-body" style="<?php echo $style; ?>">
         <?php 
                 echo $this->Form->create('Search', array(
                     'url'=> $this->Html->url( array(
@@ -70,14 +79,19 @@
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
                                 'div' => false, 
-                                'class'=> 'btn btn-success btn-sm',
+                                'class'=> 'btn btn-success btn-sm '.$class,
                                 'type' => 'submit',
+                                'data-action' => $data_action,
+                                'data-parent' => true,
+                                'title' => $title,
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
                                 'action' => $this->action, 
                             ), array(
                                 'escape' => false, 
-                                'class'=> 'btn btn-default btn-sm',
+                                'class'=> 'btn btn-default btn-sm '.$class,
+                                'data-action' => $data_action,
+                                'title' => $title,
                             ));
                     ?>
                 </div>
