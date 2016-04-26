@@ -423,7 +423,6 @@ class PurchaseOrder extends AppModel {
                 'validate' => 'only',
                 'deep' => true,
             ));
-            debug($this->PurchaseOrderAsset->validationErrors);die();
 
             if( !empty($flag) ) {
                 if( empty($id) ){

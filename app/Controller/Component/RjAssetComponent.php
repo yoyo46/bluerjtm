@@ -193,6 +193,13 @@ class RjAssetComponent extends Component {
                     $umur_ekonomis = $this->MkCommon->filterEmptyField($asset, 'AssetGroup', 'umur_ekonomis');
                     $coa_id = $this->MkCommon->filterEmptyField($asset, 'AssetGroupCoa', 'coa_id');
 
+                    $nilai_buku = $price - $ak_penyusutan;
+                    $depr_bulan = ( ( $price - $nilai_sisa ) / $umur_ekonomis );
+
+                    if( !empty($depr_bulan) ) {
+                        $depr_bulan = $depr_bulan / 12;
+                    }
+
                     if( !empty($is_truck) ) {
                         $company = $this->controller->Asset->AssetGroup->PurchaseOrderAsset->Truck->Company->getData('first', array(
                             'conditions' => array(
@@ -201,13 +208,6 @@ class RjAssetComponent extends Component {
                         ));
                         $company_id = $this->MkCommon->filterEmptyField($company, 'Company', 'id', 0);
                         $thn = $this->MkCommon->customDate($transaction_date, 'Y');
-
-                        $nilai_buku = $price - $ak_penyusutan;
-                        $depr_bulan = ( ( $price - $nilai_sisa ) / $umur_ekonomis );
-
-                        if( !empty($depr_bulan) ) {
-                            $depr_bulan = $depr_bulan / 12;
-                        }
 
                         $dataSave['PurchaseOrderAsset'][$key]['Truck'] = array(
                             'id' => $truck_id,
@@ -220,21 +220,22 @@ class RjAssetComponent extends Component {
                             'description' => $note,
                             'is_asset' => 1,
                         );
-                        $dataSave['PurchaseOrderAsset'][$key]['Asset'] = array(
-                            'id' => $asset_id,
-                            'branch_id' => Configure::read('__Site.config_branch_id'),
-                            'truck_id' => $truck_id,
-                            'asset_group_id' => $asset_group_id,
-                            'name' => $name,
-                            'purchase_date' => $transaction_date,
-                            'neraca_date' => $transaction_date,
-                            'nilai_perolehan' => $price,
-                            'depr_bulan' => $depr_bulan,
-                            'nilai_buku' => $nilai_buku,
-                            'note' => $note,
-                            'is_po' => true,
-                        );
                     }
+
+                    $dataSave['PurchaseOrderAsset'][$key]['Asset'] = array(
+                        'id' => $asset_id,
+                        'branch_id' => Configure::read('__Site.config_branch_id'),
+                        'truck_id' => $truck_id,
+                        'asset_group_id' => $asset_group_id,
+                        'name' => $name,
+                        'purchase_date' => $transaction_date,
+                        'neraca_date' => $transaction_date,
+                        'nilai_perolehan' => $price,
+                        'depr_bulan' => $depr_bulan,
+                        'nilai_buku' => $nilai_buku,
+                        'note' => $note,
+                        'is_po' => true,
+                    );
 
                     $dataSave['PurchaseOrderAsset'][$key]['PurchaseOrderAsset'] = array(
                         'name' => $name,
