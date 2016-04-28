@@ -292,7 +292,7 @@ readfile($path.'/'.$filename);
 					<?php 
 							echo $this->Html->tag('p', sprintf('%s, %s', $this->Common->getDataSetting( $setting, 'pusat' ), date('d F Y')));
 							echo $this->Html->tag('p', $full_name, array(
-								'style' => 'margin: 70px 0 0;border-bottom: 1px solid #000;display: inline-block;'
+								'style' => 'margin: 90px 0 0;border-bottom: 1px solid #000;display: inline-block;'
 							));
 							echo $this->Html->tag('p', __('Billing'));
 					?>
