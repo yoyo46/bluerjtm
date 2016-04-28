@@ -17,10 +17,21 @@
 
         $fieldError = isset($fieldError)?$fieldError:false;
 
-        if( !empty($fieldError) && $this->Form->isFieldError($fieldError) ) {
-            $errorMsg = $this->Form->error($fieldError, null, array(
-                'class' => 'error-message'
-            ));
+        if( !empty($fieldError) ) {
+            if( !is_array($fieldError) ) {
+                $fieldError = array(
+                    $fieldError,
+                );
+            }
+
+            foreach ($fieldError as $key => $error) {
+                if( $this->Form->isFieldError($error) ) {
+                    $errorMsg = $this->Form->error($error, null, array(
+                        'class' => 'error-message'
+                    ));
+                    break;
+                }
+            }
         }
 ?>
 <div class="<?php echo $frameClass; ?>">

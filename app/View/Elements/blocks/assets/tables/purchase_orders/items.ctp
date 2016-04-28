@@ -32,7 +32,10 @@
             echo $this->Html->tag('td', $this->Common->buildInputForm('PurchaseOrderAsset.name.', false, array(
                 'type' => 'text',
                 'frameClass' => false,
-                'fieldError' => 'PurchaseOrderAsset.'.$idx.'.name',
+                'fieldError' => array(
+                    'PurchaseOrderAsset.'.$idx.'.name',
+                    'PurchaseOrderAsset.'.$idx.'.Asset.name',
+                ),
                 'attributes' => array(
                     'value' => $name,
                 ),
