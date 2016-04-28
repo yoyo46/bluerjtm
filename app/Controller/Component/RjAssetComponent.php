@@ -194,7 +194,11 @@ class RjAssetComponent extends Component {
                     $coa_id = $this->MkCommon->filterEmptyField($asset, 'AssetGroupCoa', 'coa_id');
 
                     $nilai_buku = $price - $ak_penyusutan;
-                    $depr_bulan = ( ( $price - $nilai_sisa ) / $umur_ekonomis );
+                    $depr_bulan = 0;
+
+                    if( !empty($umur_ekonomis) ) {
+                        $depr_bulan = ( ( $price - $nilai_sisa ) / $umur_ekonomis );
+                    }
 
                     if( !empty($depr_bulan) ) {
                         $depr_bulan = $depr_bulan / 12;
