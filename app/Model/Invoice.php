@@ -5,7 +5,7 @@ class Invoice extends AppModel {
         'no_invoice' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Kode Invoice harap diisi'
+                'message' => 'Kode Invoice harap diisi, atau masukan kode pattern pada group customer'
             ),
             // 'isUnique' => array(
             //     'rule' => array('isUnique'),

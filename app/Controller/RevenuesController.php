@@ -4002,10 +4002,16 @@ class RevenuesController extends AppController {
                                 'Revenue.status' => 1,
                             ),
                             'order' => array(
-                                'RevenueDetail.price_unit' => 'DESC'
+                                'RevenueDetail.price_unit' => 'ASC',
+                                'Revenue.date_revenue' => 'ASC',
+                                'Revenue.id' => 'ASC',
+                                'RevenueDetail.id' => 'ASC',
                             )
                         ), $elementRevenue);
+
                         $result = array();
+                        $flag = true;
+                        $errorMsg = array();
 
                         if(!empty($revenue_detail)){
                             foreach ($revenue_detail as $key => $value) {
@@ -4017,51 +4023,76 @@ class RevenuesController extends AppController {
                             $invoice_number = $this->MkCommon->getNoInvoice( $customer );
 
                             foreach ($result as $key => $value) {
-                                $this->Invoice->create();
                                 $data['Invoice']['no_invoice'] = $invoice_number;
                                 $data['Invoice']['type_invoice'] = 'tarif';
                                 $data['Invoice']['due_invoice'] = $customer['Customer']['term_of_payment'];
+                                
+                                $this->Invoice->create();
                                 $this->Invoice->set($data);
 
-                                if($this->Invoice->save()){
-                                    $invoice_id = $this->Invoice->id;
-                                    $invoice_number = $this->CustomerGroupPattern->addPattern($customer, $data);
-                                    $this->CustomerGroupPattern->addPattern($customer, $data);
-
-                                    $titleJournalInv = sprintf(__('Invoice customer: %s, No: %s'), $customer_name_code, $invoice_number);
-                                    $journalData = array(
-                                        'date' => $invoice_date,
-                                        'document_id' => $invoice_id,
-                                        'title' => $titleJournalInv,
-                                        'document_no' => $invoice_number,
-                                        'type' => 'invoice',
-                                    );
-
-                                    if( !empty($data['Invoice']['total']) ) {
-                                        $total = $this->MkCommon->filterEmptyField($data, 'Invoice', 'total');
-                                        $total_pph = $this->MkCommon->filterEmptyField($data, 'Invoice', 'total_pph');
-
-                                        $this->User->Journal->setJournal($total_pph, array(
-                                            'credit' => 'pph_coa_credit_id',
-                                            'debit' => 'pph_coa_debit_id',
-                                        ), $journalData);
-                                    }
-
-                                    $this->params['old_data'] = $data_local;
-                                    $this->params['data'] = $data;
-
-                                    $this->Ttuj->Revenue->getProsesInvoice( $customer_id, $invoice_id, $action, $tarif_type, $value, $journalData );
-                                    $this->Log->logActivity( sprintf(__('Berhasil %s Invoice #%s'), $msg, $invoice_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $invoice_id );
-                                } else {
-                                    $this->Log->logActivity( sprintf(__('Gagal %s Invoice #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
+                                if(!$this->Invoice->validates()){
+                                    $errorValidations = $this->Invoice->validationErrors;
+                                    $errorMsg = array_merge($errorMsg, $this->MkCommon->_callMsgValidationErrors($errorValidations));
                                 }
                             }
+                        }
 
-                            $this->MkCommon->setCustomFlash(sprintf(__('Berhasil %s Invoice'), $msg), 'success'); 
-                            $this->redirect(array(
-                                'controller' => 'revenues',
-                                'action' => 'invoices'
-                            ));
+                        if( !empty($errorMsg) ) {
+                            $msg = array_unique($errorMsg);
+                            $msg = implode('</li><li>', $msg);
+                            $msg = '<ul><li>'.$msg.'</li></ul>';
+                            $this->MkCommon->setCustomFlash($msg, 'error');
+                        } else {
+                            if(!empty($result)){
+                                $invoice_number = $this->MkCommon->getNoInvoice( $customer );
+
+                                foreach ($result as $key => $value) {
+                                    $this->Invoice->create();
+                                    $data['Invoice']['no_invoice'] = $invoice_number;
+                                    $data['Invoice']['type_invoice'] = 'tarif';
+                                    $data['Invoice']['due_invoice'] = $customer['Customer']['term_of_payment'];
+                                    $this->Invoice->set($data);
+
+                                    if($this->Invoice->save()){
+                                        $invoice_id = $this->Invoice->id;
+                                        $invoice_number = $this->CustomerGroupPattern->addPattern($customer, $data);
+                                        $this->CustomerGroupPattern->addPattern($customer, $data);
+
+                                        $titleJournalInv = sprintf(__('Invoice customer: %s, No: %s'), $customer_name_code, $invoice_number);
+                                        $journalData = array(
+                                            'date' => $invoice_date,
+                                            'document_id' => $invoice_id,
+                                            'title' => $titleJournalInv,
+                                            'document_no' => $invoice_number,
+                                            'type' => 'invoice',
+                                        );
+
+                                        if( !empty($data['Invoice']['total']) ) {
+                                            $total = $this->MkCommon->filterEmptyField($data, 'Invoice', 'total');
+                                            $total_pph = $this->MkCommon->filterEmptyField($data, 'Invoice', 'total_pph');
+
+                                            $this->User->Journal->setJournal($total_pph, array(
+                                                'credit' => 'pph_coa_credit_id',
+                                                'debit' => 'pph_coa_debit_id',
+                                            ), $journalData);
+                                        }
+
+                                        $this->params['old_data'] = $data_local;
+                                        $this->params['data'] = $data;
+
+                                        $this->Ttuj->Revenue->getProsesInvoice( $customer_id, $invoice_id, $action, $tarif_type, $value, $journalData );
+                                        $this->Log->logActivity( sprintf(__('Berhasil %s Invoice #%s'), $msg, $invoice_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $invoice_id );
+                                    } else {
+                                        $this->Log->logActivity( sprintf(__('Gagal %s Invoice #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
+                                    }
+                                }
+
+                                $this->MkCommon->setCustomFlash(sprintf(__('Berhasil %s Invoice'), $msg), 'success'); 
+                                $this->redirect(array(
+                                    'controller' => 'revenues',
+                                    'action' => 'invoices'
+                                ));
+                            }
                         }
                     }
                 }else{
