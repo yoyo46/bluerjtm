@@ -316,6 +316,7 @@ class CashBank extends AppModel {
         $description = !empty($data['named']['description'])?$data['named']['description']:false;
         $documenttype = !empty($data['CashBank']['documenttype'])?urldecode($data['CashBank']['documenttype']):false;
         $transaction_status = !empty($data['named']['transaction_status'])?urldecode($data['named']['transaction_status']):false;
+        $coa = !empty($data['named']['coa'])?urldecode($data['named']['coa']):false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -438,6 +439,9 @@ class CashBank extends AppModel {
                     $default_options['conditions']['CashBank.is_rejected'] = 1;
                     break;
             }
+        }
+        if( !empty($coa) ) {
+            $default_options['conditions']['CashBank.coa_id'] = $coa;
         }
         
         return $default_options;

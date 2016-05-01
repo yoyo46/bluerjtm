@@ -256,6 +256,7 @@ class RevenueDetail extends AppModel {
         }
 
         $revenue_detail = $this->getData('all', $options, $elementRevenue);
+        debug($revenue_detail);die();
 
         if( !empty($revenue_detail) ) {
             $this->City = ClassRegistry::init('City');

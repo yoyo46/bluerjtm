@@ -337,6 +337,9 @@ class LeasingsController extends AppController {
             )
         ));
         $assetGroups = $this->Leasing->LeasingDetail->AssetGroup->getData('list', array(
+            'conditions' => array(
+                'AssetGroup.is_truck' => 1,
+            ),
             'fields' => array(
                 'AssetGroup.id', 'AssetGroup.group_name',
             ),

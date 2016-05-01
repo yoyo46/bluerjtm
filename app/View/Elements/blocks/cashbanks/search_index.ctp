@@ -18,7 +18,7 @@
                 ));
         ?>
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
                             echo $this->Form->label('date', __('Tanggal'));
@@ -61,7 +61,7 @@
                     ?>
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('nodoc',array(
@@ -72,6 +72,35 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('coa',array(
+                                'label'=> __('COA'),
+                                'class'=>'form-control chosen-select',
+                                'required' => false,
+                                'empty' => __('Pilih COA'),
+                                'options' => !empty($coas)?$coas:false,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group action">
+                    <?php
+                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
+                                'div' => false, 
+                                'class'=> 'btn btn-success btn-sm',
+                                'type' => 'submit',
+                            ));
+                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'controller' => 'cashbanks', 
+                                'action' => 'index', 
+                            ), array(
+                                'escape' => false, 
+                                'class'=> 'btn btn-default btn-sm',
+                            ));
+                    ?>
+                </div>
+            </div>
+            <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('transaction_status',array(
@@ -95,22 +124,6 @@
                                 'label'=> __('Keterangan'),
                                 'class'=>'form-control',
                                 'required' => false,
-                            ));
-                    ?>
-                </div>
-                <div class="form-group action">
-                    <?php
-                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
-                                'div' => false, 
-                                'class'=> 'btn btn-success btn-sm',
-                                'type' => 'submit',
-                            ));
-                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'controller' => 'cashbanks', 
-                                'action' => 'index', 
-                            ), array(
-                                'escape' => false, 
-                                'class'=> 'btn btn-default btn-sm',
                             ));
                     ?>
                 </div>

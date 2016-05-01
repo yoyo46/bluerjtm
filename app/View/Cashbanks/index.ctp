@@ -1,17 +1,19 @@
 <?php 
         $dataColumns = array(
             'noref' => array(
-                'name' => __('No Referensi'),
+                'name' => __('No. Ref'),
                 'field_model' => 'CashBank.id',
                 'class' => 'text-center',
+                'style' => 'width: 10%;'
             ),
             'nodoc' => array(
-                'name' => __('No Dokumen'),
+                'name' => __('No. Doc'),
                 'field_model' => 'CashBank.nodoc',
                 'class' => 'text-center',
+                'style' => 'width: 10%;'
             ),
             'receiver' => array(
-                'name' => __('Diterima/Dibayar kepada'),
+                'name' => __('Diterima/Dibayar Kpd'),
                 'style' => 'width: 20%;'
             ),
             'tgl_cash_bank' => array(
@@ -23,9 +25,11 @@
                 'name' => __('Tipe Kas'),
                 'field_model' => 'CashBank.receiving_cash_type',
                 'class' => 'text-center',
+                'style' => 'width: 8%;'
             ),
             'description' => array(
                 'name' => __('Keterangan'),
+                'style' => 'width: 20%;'
             ),
             'grand_total' => array(
                 'name' => __('Total'),
