@@ -140,20 +140,33 @@ class Revenue extends AppModel {
         return $result;
     }
 
-    function getMerge ($data, $invoice_id, $id, $data_type = 'first') {
+    function getMerge ($data, $invoice_id, $id, $data_type = 'first', $revenue_detail_id = false) {
         if(empty($data['Revenue'])){
             switch ($data_type) {
                 case 'all':
+                    if( !empty($revenue_detail_id) ) {
+                        $conditions = array(
+                            'RevenueDetail.id' => $revenue_detail_id,
+                        );
+                    } else {
+                        $conditions = false;
+                    }
+
                     $data_merge = $this->getData('all', array(
                         'conditions' => array(
                             'Revenue.id' => $id,
                         ),
                         'contain' => array(
                             'RevenueDetail' => array(
-                                'conditions' => array(
-                                    'RevenueDetail.invoice_id' => $invoice_id,
+                                'conditions' => $conditions,
+                                'order' => array(
+                                    'RevenueDetail.id' => 'ASC',
                                 ),
                             ),
+                        ),
+                        'order' => array(
+                            'Revenue.date_revenue' => 'ASC',
+                            'Revenue.id' => 'ASC',
                         ),
                     ), true, array(
                         'branch' => false,

@@ -241,12 +241,20 @@ class RevenueDetail extends AppModel {
         }
 
         if( $action == 'tarif' && in_array($data_action, array( 'invoice', 'preview' )) ){
-            $options['order'] = array(
-                'RevenueDetail.price_unit' => 'ASC',
-                'Revenue.date_revenue' => 'ASC',
-                'Revenue.id' => 'ASC',
-                'RevenueDetail.id' => 'ASC',
-            );
+            if( $action == 'tarif' ) {
+                $options['order'] = array(
+                    'RevenueDetail.price_unit' => 'ASC',
+                    'Revenue.date_revenue' => 'ASC',
+                    'Revenue.id' => 'ASC',
+                    'RevenueDetail.id' => 'ASC',
+                );
+            } else {
+                $options['order'] = array(
+                    'Revenue.date_revenue' => 'ASC',
+                    'Revenue.id' => 'ASC',
+                    'RevenueDetail.id' => 'ASC',
+                );
+            }
         }else{
             $options['order'] = array(
                 'Revenue.date_revenue' => 'ASC',
@@ -256,7 +264,6 @@ class RevenueDetail extends AppModel {
         }
 
         $revenue_detail = $this->getData('all', $options, $elementRevenue);
-        debug($revenue_detail);die();
 
         if( !empty($revenue_detail) ) {
             $this->City = ClassRegistry::init('City');

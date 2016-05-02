@@ -6874,7 +6874,8 @@ class RevenuesController extends AppController {
                         
                         default:
                             $revenue_id = Set::extract('/InvoiceDetail/revenue_id', $invoice['InvoiceDetail']);
-                            $invoice = $this->Invoice->InvoiceDetail->Revenue->getMerge($invoice, $id, $revenue_id, 'all');
+                            $revenue_detail_id = Set::extract('/InvoiceDetail/revenue_detail_id', $invoice['InvoiceDetail']);
+                            $invoice = $this->Invoice->InvoiceDetail->Revenue->getMerge($invoice, $id, $revenue_id, 'all', $revenue_detail_id);
 
                             if( !empty($invoice['Revenue']) ) {
                                 foreach ($invoice['Revenue'] as $key => $revenue) {

@@ -71,6 +71,7 @@
 					$totalUnit = !empty($revenue['qty_unit'])?$revenue['qty_unit']:0;
 					$grandTotalMainUnit += $totalUnit;
 					$is_charge = false;
+					$revenue_temp = sprintf('%s-%s', $id, $is_charge);
 
 					if( !empty($revenue['RevenueDetail'][0]) ) {
 						$revenueDetail = $revenue['RevenueDetail'][0];
@@ -80,7 +81,6 @@
 
 						$payment_type = $this->Common->filterEmptyField($revenueDetail, 'payment_type');
 						$total_price_unit = $this->Common->filterEmptyField($revenueDetail, 'total_price_unit');
-						$revenue_temp = sprintf('%s-%s', $id, $is_charge);
 						$totalPriceFormat = '';
 
 						if( !empty($is_charge) ) {
