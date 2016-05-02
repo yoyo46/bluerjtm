@@ -2050,6 +2050,10 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                         check_all_checkbox();
                     } else if( type_action == 'browse-cash-banks' || type_action == 'browse-check-docs' ) {
                         ajaxModal( $('#myModal .modal-body .pagination li a, #myModal .modal-body .ajaxModal') );
+                        $.checkAll();
+                        $.callChoosen({
+                            obj: $('#myModal .modal-body .chosen-select'),
+                        });
 
                         if( type_action == 'browse-check-docs' ) {
                             $.inputPrice({

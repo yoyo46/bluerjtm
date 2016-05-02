@@ -46,7 +46,9 @@ class SuratJalanDetail extends AppModel {
             'conditions'=> array(
                 'SuratJalanDetail.status' => 1,
             ),
-            'order'=> array(),
+            'order'=> array(
+                'SuratJalanDetail.id' => 'ASC',
+            ),
             'contain' => array(),
             'fields' => array(),
         );

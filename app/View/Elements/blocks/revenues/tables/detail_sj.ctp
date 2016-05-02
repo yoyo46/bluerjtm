@@ -22,10 +22,10 @@
 			                    echo $this->Html->tag('th', __('Tgl Ttuj'), array(
 			                        'class' => 'text-center',
 			                    ));
-			                    echo $this->Html->tag('th', __('Dari'), array(
+			                    echo $this->Html->tag('th', __('Tujuan'), array(
 			                        'class' => 'text-center',
 			                    ));
-			                    echo $this->Html->tag('th', __('Tujuan'), array(
+			                    echo $this->Html->tag('th', __('Keterangan'), array(
 			                        'class' => 'text-center',
 			                    ));
 			                    echo $this->Html->tag('th', __('Muatan'), array(
@@ -60,8 +60,10 @@
 					                $from_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
 					                $to_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
 					                $qty = $this->Common->filterEmptyField($value, 'Ttuj', 'qty');
+                        			$note = $this->Common->filterEmptyField($value, 'Ttuj', 'note');
 
 					                $unit = $this->Common->filterEmptyField($value, 'SuratJalanDetail', 'qty');
+                        			$tujuan = sprintf('%s - %s', $from_city_name, $to_city_name);
 
 									$totalUnit += $unit;
 
@@ -92,8 +94,10 @@
 				    			echo $this->Html->tag('td', $ttuj_date, array(
 				    				'class' => 'text-center',
 			    				));
-				    			echo $this->Html->tag('td', $from_city_name);
-				    			echo $this->Html->tag('td', $to_city_name);
+				    			echo $this->Html->tag('td', $tujuan, array(
+				    				'class' => 'text-center',
+			    				));
+				    			echo $this->Html->tag('td', $note);
 				    			echo $this->Html->tag('td', $qty, array(
 				    				'class' => 'text-center',
 			    				));

@@ -27,10 +27,6 @@
                 'class' => 'text-center',
             ),
             'from' => array(
-                'name' => __('Dari'),
-                'class' => 'text-center',
-            ),
-            'to' => array(
                 'name' => __('Tujuan'),
                 'class' => 'text-center',
             ),
@@ -52,12 +48,12 @@
             ),
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
-        // echo $this->element('blocks/ttuj/search_document_ttujs');
-        echo $this->element('blocks/ttuj/search_ttuj', array(
-            'ajax' => true,
-            'status' => false,
-            'label_tgl' => __('Tgl Berangkat'),
-        ));
+        echo $this->element('blocks/ttuj/search_document_ttujs');
+        // echo $this->element('blocks/ttuj/search_ttuj', array(
+        //     'ajax' => true,
+        //     'status' => false,
+        //     'label_tgl' => __('Tgl Berangkat'),
+        // ));
 ?>
 <div class="box-body table-responsive browse-form document-ttuj">
     <table class="table table-hover">
@@ -78,6 +74,7 @@
                         $ttuj_date = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date');
                         $tgljam_berangkat = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_berangkat');
                         $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
+                        $tujuan = sprintf('%s - %s', $from_city_name, $to_city_name);
 
                         $qty = $this->Common->filterEmptyField($value, 'Ttuj', 'qty');
                         $qty_diterima = $this->Common->filterEmptyField($value, 'Ttuj', 'qty_diterima', 0);
@@ -130,10 +127,14 @@
                             'class' => 'text-center',
                         ));
                         echo $this->Html->tag('td', $tgljam_berangkat, array(
+                            'class' => 'text-center on-remove',
+                        ));
+                        echo $this->Html->tag('td', $tujuan, array(
                             'class' => 'text-center',
                         ));
-                        echo $this->Html->tag('td', $from_city_name);
-                        echo $this->Html->tag('td', $to_city_name);
+                        echo $this->Html->tag('td', $note, array(
+                            'class' => 'hide on-show',
+                        ));
                         echo $this->Html->tag('td', $qty, array(
                             'class' => 'text-center on-remove',
                         ));

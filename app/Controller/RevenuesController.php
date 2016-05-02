@@ -6248,6 +6248,7 @@ class RevenuesController extends AppController {
             $this->request->data['SuratJalan']['tgl_surat_jalan'] = date('d/m/Y');
         }
 
+        $this->MkCommon->_layout_file('select');
         $this->set(compact(
             'id', 'disabled_edit'
         ));
@@ -6391,6 +6392,7 @@ class RevenuesController extends AppController {
     }
 
     function document_ttujs(  ){
+        $this->loadModel('City');
         $named = $this->MkCommon->filterEmptyField($this->params, 'named');
         $title = __('Dokumen TTUJ');
 
@@ -6402,6 +6404,14 @@ class RevenuesController extends AppController {
             ),
             'limit' => Configure::read('__Site.config_pagination'),
         ));
+
+
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $options );
+        }
+
         $this->paginate = $this->Ttuj->getData('paginate', $options, true, array(
             'plant' => true,
         ));
@@ -6425,12 +6435,12 @@ class RevenuesController extends AppController {
                 'Customer.id', 'Customer.customer_name_code'
             ),
         ));
+        $cities = $this->City->getListCities();
 
         $data_action = 'browse-check-docs';
-        $this->MkCommon->_layout_file('select');
         $this->set(compact(
             'data_action', 'title', 'values',
-            'customers'
+            'customers', 'cities'
         ));
     }
 

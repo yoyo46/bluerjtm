@@ -1115,18 +1115,20 @@
     }
 
     $.checkAll = function() {
-        $('.check-all').off('click');
-        $('.check-all').click(function(){
-            var self = $(this);
-            var parent = self.parents('.parent-check-branch');
-            var target = parent.find('.check-branch');
+        if( $('.check-all').length > 0 ) {
+            $('.check-all').off('click');
+            $('.check-all').click(function(){
+                var self = $(this);
+                var parent = self.parents('.parent-check-branch');
+                var target = parent.find('.check-branch');
 
-            if(self.is(':checked')){
-                target.prop('checked', true);
-            } else {
-                target.prop('checked', false);
-            }
-        });
+                if(self.is(':checked')){
+                    target.prop('checked', true);
+                } else {
+                    target.prop('checked', false);
+                }
+            });
+        }
     }
 
     $.rebuildFunctionAjax = function( obj ) {

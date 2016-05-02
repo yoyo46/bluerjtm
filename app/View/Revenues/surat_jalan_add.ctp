@@ -47,7 +47,7 @@
 				));
 
                 echo $this->Form->input('tgl_surat_jalan', array(
-                    'label'=> __('Tgl Dibayar *'), 
+                    'label'=> __('Tgl Penerimaan *'), 
                     'class'=>'form-control custom-date',
                     'type' => 'text',
                     'required' => false,
