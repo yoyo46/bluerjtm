@@ -152,7 +152,7 @@
 				echo $this->Html->tag('div', $this->Form->input('description',array(
 					'type' => 'textarea',
 					'label'=> __('Keterangan'), 
-					'class'=>'form-control',
+					'class'=>'form-control cashbank-note',
 					'required' => false,
 					'placeholder' => __('Keterangan'),
 					'id' => 'autocomplete',

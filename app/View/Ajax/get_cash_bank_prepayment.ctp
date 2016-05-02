@@ -117,7 +117,10 @@
                         $content = $this->Html->tag('td', $nodoc);
                         $content .= $this->Html->tag('td', $name);
                         $content .= $this->Html->tag('td', $customDate);
-                        $content .= $this->Html->tag('td', $description);
+                        $content .= $this->Html->tag('td', $description, array(
+                            'class' => 'document-note',
+                            'data-target-note' => '.cashbank-note',
+                        ));
                         $content .= $this->Html->tag('td', $customGrandTotal);
 
                         echo $this->Html->tag('tr', $content, array(

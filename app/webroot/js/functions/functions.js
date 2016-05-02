@@ -1855,6 +1855,9 @@ var pickData = function () {
         var data_change_extra = vthis.attr('data-change-extra');
         var data_extra_text = $.filterEmptyField(vthis.attr('data-extra-text'));
         var type = $(data_change).attr('type');
+        var obj_note = $.checkUndefined(vthis.find('.document-note'), false);
+        var data_note_target = $.checkUndefined(obj_note.attr('data-target-note'), false);
+        var data_note_value = $.checkUndefined(obj_note.html(), false);
 
         if(data_change == '.cash-bank-auth-user'){
             data_change = vthis.attr('data-rel')+' '+data_change;
@@ -1882,6 +1885,14 @@ var pickData = function () {
             
             $('#tag-receiver-type').html('('+receiver_type+')');
             $('#hid-receiver-type').val(vthis.attr('data-type'));
+        }
+
+        if( data_note_target != false ){
+            var note = $.checkUndefined($(data_note_target).val(), '');
+
+            if( note == '' ) {
+                $(data_note_target).val(data_note_value);
+            }
         }
 
         if( typeof data_ajax != 'undefined' ) {
