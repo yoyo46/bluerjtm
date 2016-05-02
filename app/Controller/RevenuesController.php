@@ -8381,7 +8381,10 @@ class RevenuesController extends AppController {
                 $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'ttuj_id');
                 $invoice_id = $this->MkCommon->filterEmptyField($value, 'RevenueDetail', 'invoice_id');
                 $city_id = $this->MkCommon->filterEmptyField($value, 'RevenueDetail', 'city_id');
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'branch_id');
+                
                 $value = $this->Ttuj->getMerge($value, $ttuj_id);
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
 
                 $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
                 $customer_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'customer_id', $customer_id);

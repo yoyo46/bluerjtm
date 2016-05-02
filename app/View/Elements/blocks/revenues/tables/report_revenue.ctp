@@ -16,6 +16,7 @@
                 $from_city_name = $this->Common->filterEmptyField($value, 'FromCity', 'name');
                 $to_city_name = $this->Common->filterEmptyField($value, 'City', 'name');
                 $no_invoice = $this->Common->filterEmptyField($value, 'Invoice', 'no_invoice');
+                $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
 
                 $status = $this->Revenue->_callStatus($value, 'Ttuj', 'nodoc');
                 $customDate = $this->Common->formatDate($date, 'd/m/Y');
@@ -37,6 +38,7 @@
             echo $this->Html->tag('td', $customDate, array(
                 'style' => 'text-align: center;'
             ));
+            echo $this->Html->tag('td', $branch);
             echo $this->Html->tag('td', $customer);
             echo $this->Html->tag('td', $no_ttuj);
             echo $this->Html->tag('td', $nopol);
@@ -64,7 +66,7 @@
 <tr style="font-weight: bold;">
     <?php 
             echo $this->Html->tag('td', __('Total'), array(
-                'colspan' => 6,
+                'colspan' => 7,
                 'style' => 'text-align: right;'
             ));
             echo $this->Html->tag('td', $totalUnit, array(

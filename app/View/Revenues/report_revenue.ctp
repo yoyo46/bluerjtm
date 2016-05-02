@@ -7,6 +7,11 @@
                 'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'date\',width:100',
             ),
+            'branch' => array(
+                'name' => __('Cabang'),
+                'style' => 'text-align: left;vertical-align: middle;',
+                'data-options' => 'field:\'branch\',width:50',
+            ),
             'customer' => array(
                 'name' => __('Customer'),
                 'style' => 'text-align: left;vertical-align: middle;',
