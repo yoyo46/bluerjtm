@@ -149,7 +149,9 @@ class Revenue extends AppModel {
                             'RevenueDetail.id' => $revenue_detail_id,
                         );
                     } else {
-                        $conditions = false;
+                        $conditions = array(
+                            'RevenueDetail.invoice_id' => $invoice_id,
+                        );
                     }
 
                     $data_merge = $this->getData('all', array(

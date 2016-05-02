@@ -1,6 +1,8 @@
 <?php 
         $status = isset($status)?$status:true;
         $ajax = isset($ajax)?$ajax:false;
+        $data_action = !empty($data_action)?$data_action:false;
+        $title = !empty($title)?$title:false;
 
         if( empty($ajax) ) {
             $style = 'display: none;';
