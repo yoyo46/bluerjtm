@@ -16,8 +16,13 @@ class ProductsController extends AppController {
     function search( $index = 'index' ){
         $refine = array();
         if(!empty($this->request->data)) {
+            $data = $this->request->data;
             $refine = $this->RjProduct->processRefine($this->request->data);
             $params = $this->RjProduct->generateSearchURL($refine);
+            $params = $this->MkCommon->getRefineGroupBranch($params, $data);
+            $result = $this->MkCommon->processFilter($data);
+            
+            $params = array_merge($params, $result);
             $params['action'] = $index;
 
             $this->redirect($params);
@@ -310,8 +315,9 @@ class ProductsController extends AppController {
 
     function index(){
         $this->loadModel('Product');
-        $options =  $this->Product->_callRefineParams($this->params);
-        $this->RjProduct->_callRefineParams($this->params);
+
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Product->_callRefineParams($params);
 
         $this->paginate = $this->Product->getData('paginate', $options);
         $values = $this->paginate('Product');
@@ -327,18 +333,29 @@ class ProductsController extends AppController {
             }
         }
 
+        $productCategories = $this->Product->ProductCategory->getData('list');
+        $this->MkCommon->_layout_file('select');
+
         $this->set('active_menu', 'products');
         $this->set('sub_module_title', __('Barang'));
-        $this->set('values', $values);
+        $this->set(compact(
+            'values', 'productCategories'
+        ));
     }
 
     function _callGeneralProduct () {
         $productUnits = $this->Product->ProductUnit->getData('list');
         $productCategories = $this->Product->ProductCategory->getData('list');
+        $truck_categories = $this->Product->TruckCategory->getData('list', array(
+            'fields' => array(
+                'TruckCategory.id', 'TruckCategory.name'
+            )
+        ));
 
         $this->set('active_menu', 'products');
         $this->set(compact(
-            'productUnits', 'productCategories'
+            'productUnits', 'productCategories',
+            'truck_categories'
         ));
         $this->render('add');
     }

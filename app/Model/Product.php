@@ -10,7 +10,11 @@ class Product extends AppModel {
         'SupplierQuotationDetail' => array(
             'className' => 'SupplierQuotationDetail',
             'foreignKey' => 'product_id',
-        )
+        ),
+        'TruckCategory' => array(
+            'className' => 'TruckCategory',
+            'foreignKey' => 'truck_category_id',
+        ),
     );
 
     var $hasMany = array(
@@ -226,12 +230,13 @@ class Product extends AppModel {
         $name = !empty($data['named']['name'])?$data['named']['name']:false;
         $group = !empty($data['named']['group'])?$data['named']['group']:false;
 
-        if( !empty($keyword) ) {
-            $default_options['conditions']['OR'] = array(
-                'Product.code LIKE' => '%'.$keyword.'%',
-                'Product.name LIKE' => '%'.$keyword.'%',
-            );
-        }
+        // if( !empty($keyword) ) {
+        //     $default_options['conditions']['OR'] = array(
+        //         'Product.code LIKE' => '%'.$keyword.'%',
+        //         'Product.name LIKE' => '%'.$keyword.'%',
+        //     );
+        // }
+        
         if( !empty($code) ) {
             $default_options['conditions']['Product.code LIKE'] = '%'.$code.'%';
         }

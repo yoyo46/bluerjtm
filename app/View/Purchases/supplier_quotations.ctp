@@ -82,14 +82,14 @@
                             ), array(
                                 'class' => 'btn btn-primary btn-xs'
                             ));
-                            $customAction .= $this->Html->link(__('Approval'), array(
-                                'controller' => 'purchases',
-                                'action' => 'supplier_quotation_approval',
-                                $id,
-                                'admin' => false,
-                            ), array(
-                                'class' => 'btn btn-success btn-xs',
-                            ));
+                            // $customAction .= $this->Html->link(__('Approval'), array(
+                            //     'controller' => 'purchases',
+                            //     'action' => 'supplier_quotation_approval',
+                            //     $id,
+                            //     'admin' => false,
+                            // ), array(
+                            //     'class' => 'btn btn-success btn-xs',
+                            // ));
                             $customAction .= $this->Html->link(__('Hapus'), array(
                                 'controller' => 'purchases',
                                 'action' => 'supplier_quotation_toggle',

@@ -5,6 +5,8 @@
 		));
 		$this->Html->addCrumb($sub_module_title);
 
+		$truck_categories = !empty($truck_categories)?$truck_categories:false;
+
 		echo $this->Form->create('Product');
 ?>
 <div class="row">
@@ -34,7 +36,10 @@
 		    </div>
 		    <div class="box-body">
 		    	<?php 
-						echo $this->Common->buildForm('type_struck', __('Tipe Truk'));
+						echo $this->Common->buildForm('truck_category_id', __('Tipe Truk'), array(
+							'empty' => __('Pilih Tipe Truk'),
+							'options' => $truck_categories,
+						));
 				?>
 				<div class="form-group">
 					<?php 
@@ -45,8 +50,9 @@
 							<div class="input-group">
 								<?php 
 										echo $this->Form->input('life_time',array(
+											'type' => 'text',
 											'label'=> false, 
-											'class'=>'form-control',
+											'class'=>'form-control input_number',
 											'required' => false,
 											'div' => false,
 										));
@@ -66,8 +72,9 @@
 						<div class="col-sm-6">
 							<?php 
 									echo $this->Form->input('size',array(
+										'type' => 'text',
 										'label'=> false, 
-										'class'=>'form-control',
+										'class'=>'form-control input_number',
 										'required' => false,
 										'div' => false,
 									));
@@ -83,8 +90,9 @@
 						<div class="col-sm-6">
 							<?php 
 									echo $this->Form->input('volume',array(
+										'type' => 'text',
 										'label'=> false, 
-										'class'=>'form-control',
+										'class'=>'form-control input_number',
 										'required' => false,
 										'div' => false,
 									));
@@ -100,8 +108,9 @@
 						<div class="col-sm-6">
 							<?php 
 									echo $this->Form->input('weight',array(
+										'type' => 'text',
 										'label'=> false, 
-										'class'=>'form-control',
+										'class'=>'form-control input_number',
 										'required' => false,
 										'div' => false,
 									));
