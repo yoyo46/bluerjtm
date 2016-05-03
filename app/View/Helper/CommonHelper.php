@@ -1120,6 +1120,7 @@ class CommonHelper extends AppHelper {
         $posting = false;
         $invoiced = false;
         $_status = true;
+        $group_id = Configure::read('__Site.config_group_id');
 
         if( !empty($value[$modelName]['transaction_status']) && $value[$modelName]['transaction_status'] == 'posting' ) {
             $posting = true;
@@ -1136,18 +1137,19 @@ class CommonHelper extends AppHelper {
             'id' => 'transaction_status'
         ));
         
-        if( !$invoiced && $_status && empty($posting) ) {
-            echo $this->Form->button(!empty($lblArr[0])?$lblArr[0]:__('Posting'), array(
-                'type' => 'submit',
-                'class'=> 'btn btn-success submit-form btn-lg',
-                'action_type' => 'posting'
-            ));
-            
-            echo $this->Form->button(!empty($lblArr[1])?$lblArr[1]:__('Unposting'), array(
-                'type' => 'submit',
-                'class'=> 'btn btn-primary submit-form',
-                'action_type' => 'unposting'
-            ));
+        if( !$invoiced && $_status ) {
+            if( empty($posting) || $group_id == 1 ) {
+                echo $this->Form->button(!empty($lblArr[0])?$lblArr[0]:__('Posting'), array(
+                    'type' => 'submit',
+                    'class'=> 'btn btn-success submit-form btn-lg',
+                    'action_type' => 'posting'
+                ));
+                echo $this->Form->button(!empty($lblArr[1])?$lblArr[1]:__('Unposting'), array(
+                    'type' => 'submit',
+                    'class'=> 'btn btn-primary submit-form',
+                    'action_type' => 'unposting'
+                ));
+            }
         }
     }
 
