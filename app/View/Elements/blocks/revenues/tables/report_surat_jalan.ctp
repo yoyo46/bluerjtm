@@ -33,7 +33,9 @@
 ?>
 <tr>
     <?php 
-            echo $this->Html->tag('td', $noref);
+            echo $this->Html->tag('td', $noref, array(
+                'class' => 'string',
+            ));
             echo $this->Html->tag('td', $nodoc);
             echo $this->Html->tag('td', $customDate);
             echo $this->Html->tag('td', $note);
