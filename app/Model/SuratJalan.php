@@ -115,21 +115,23 @@ class SuratJalan extends AppModel {
         $status = !empty($data['named']['status'])?$data['named']['status']:false;
 
         if( !empty($dateFromTtuj) || !empty($dateToTtuj) ) {
+            $default_options['contain'][] = 'Ttuj';
+
             if( !empty($dateFromTtuj) ) {
-                $default_options['conditions']['DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') >='] = $dateFromTtuj;
+                $default_options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $dateFromTtuj;
             }
 
             if( !empty($dateToTtuj) ) {
-                $default_options['conditions']['DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') <='] = $dateToTtuj;
+                $default_options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $dateToTtuj;
             }
         }
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
-                $default_options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $dateFrom;
+                $default_options['conditions']['DATE_FORMAT(SuratJalan.tgl_surat_jalan, \'%Y-%m-%d\') >='] = $dateFrom;
             }
 
             if( !empty($dateTo) ) {
-                $default_options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $dateTo;
+                $default_options['conditions']['DATE_FORMAT(SuratJalan.tgl_surat_jalan, \'%Y-%m-%d\') <='] = $dateTo;
             }
         }
         if(!empty($nodoc)){
