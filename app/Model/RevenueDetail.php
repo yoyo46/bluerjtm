@@ -221,7 +221,6 @@ class RevenueDetail extends AppModel {
         if( !empty($revenue_detail_id) ) {
             $options['conditions'] = array(
                 'RevenueDetail.id' => $revenue_detail_id,
-                'Revenue.status' => 1,
             );
             $elementRevenue['active'] = false;
         } else if( in_array($data_action, array( 'invoice', 'date', 'hso-smg', 'sa' )) ) {

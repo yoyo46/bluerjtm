@@ -172,6 +172,7 @@ class Revenue extends AppModel {
                         ),
                     ), true, array(
                         'branch' => false,
+                        'status' => 'all',
                     ));
 
                     if( !empty($data_merge) ) {
@@ -305,6 +306,7 @@ class Revenue extends AppModel {
                         'conditions' => array(
                             'InvoiceDetail.revenue_id' => $revenues,
                             'InvoiceDetail.status' => 1,
+                            'Invoice.status' => 1,
                         ),
                         'contain' => array(
                             'Invoice'
