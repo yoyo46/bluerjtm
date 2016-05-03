@@ -64,7 +64,7 @@ class RjAssetComponent extends Component {
             }
         }
 
-        $coas = $this->controller->GroupBranch->Branch->BranchCoa->getCoas();
+        $coas = $this->controller->GroupBranch->Branch->BranchCoa->getCoas(false, false);
         $this->MkCommon->_layout_file('select');
 
         $this->controller->set(compact(
