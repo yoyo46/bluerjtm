@@ -4000,6 +4000,7 @@ class RevenuesController extends AppController {
                                 'RevenueDetail.tarif_angkutan_type' => $tarif_type,
                                 'RevenueDetail.invoice_id' => NULL,
                                 'Revenue.status' => 1,
+                                'RevenueDetail.status' => 1,
                             ),
                             'order' => array(
                                 'RevenueDetail.price_unit' => 'ASC',
@@ -4239,7 +4240,11 @@ class RevenuesController extends AppController {
                 'Invoice.id' => $id,
             ),
             'contain' => array(
-                'InvoiceDetail',
+                'InvoiceDetail' => array(
+                    'conditions' => array(
+                        'InvoiceDetail.status' => 1,
+                    ),
+                ),
             )
         ), true, $elementRevenue);
 
@@ -5242,7 +5247,7 @@ class RevenuesController extends AppController {
                 'group' => array(
                     'RevenueDetail.revenue_id'
                 ),
-            ), true, array(
+            ), array(
                 'branch' => false,
             ));
 
@@ -5541,7 +5546,11 @@ class RevenuesController extends AppController {
                 'Invoice.id' => $id
             ),
             'contain' => array(
-                'InvoiceDetail'
+                'InvoiceDetail' => array(
+                    'conditions' => array(
+                        'InvoiceDetail.status' => 1,
+                    ),
+                ),
             )
         ));
 
@@ -9232,5 +9241,82 @@ class RevenuesController extends AppController {
         }
 
         die();
+    }
+
+    public function report_surat_jalan( $data_action = false ) {
+        $this->loadModel('SuratJalanDetail');
+        $module_title = __('Laporan Surat Jalan');
+        $values = array();
+        $dateFrom = date('Y-m-d', strtotime('-2 Month'));
+        $dateTo = date('Y-m-d');
+
+        $this->set('sub_module_title', $module_title);
+        $options =  $this->SuratJalanDetail->SuratJalan->getData('paginate', array(
+            'contain' => array(
+                'SuratJalan',
+            ),
+            'order' => array(
+                'SuratJalanDetail.ttuj_id' => 'ASC',
+                'SuratJalan.tgl_surat_jalan' => 'ASC',
+                'SuratJalan.id' => 'ASC',
+            ),
+        ), array(
+            'branch' => false,
+        ));
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+        $options =  $this->SuratJalanDetail->SuratJalan->_callRefineParams($params, $options);
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            // Custom Otorisasi
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'SuratJalan', $options );
+        }
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+
+        if( !empty($data_action) ){
+            $values = $this->SuratJalanDetail->find('all', $options);
+        } else {
+            $options['limit'] = Configure::read('__Site.config_pagination');
+            $this->paginate = $options;
+            $values = $this->paginate('SuratJalanDetail');
+        }
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $ttuj_id = $this->MkCommon->filterEmptyField($value, 'SuratJalanDetail', 'ttuj_id');
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'SuratJalan', 'branch_id');
+                
+                $value = $this->Ttuj->getMerge($value, $ttuj_id);
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+
+                $muatan = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
+                $value['Ttuj']['qty'] = $muatan;
+
+                $values[$key] = $value;
+            }
+        }
+
+        $this->set('active_menu', 'report_surat_jalan');
+        $this->set(compact(
+            'values', 'module_title', 'data_action'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $this->MkCommon->_layout_file('select');
+        }
     }
 }

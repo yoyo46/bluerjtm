@@ -442,6 +442,8 @@ class Revenue extends AppModel {
             default:
                 $revenueDetails = $this->RevenueDetail->getData('list', array(
                     'conditions' => array(
+                        'Revenue.status' => 1,
+                        'RevenueDetail.status' => 1,
                         'Revenue.customer_id' => $customer_id,
                         'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
                         'RevenueDetail.tarif_angkutan_type' => $tarif_type,
@@ -632,7 +634,15 @@ class Revenue extends AppModel {
             $validate_qty = false;
         }
 
-        if( $flag && $validate_qty ){
+        if( empty($dataRevenue['RevenueDetail']) ) {
+            $checkQty = false;
+            $text = __('Mohon masukan informasi muatan truk');
+            $result = array(
+                'status' => 'error',
+                'msg' => $text,
+                'data' => $dataRevenue,
+            );
+        } else if( $flag && $validate_qty ){
             if( $qtyUse >= $qtyTtuj ) {
                 $dataTtuj['Ttuj']['is_revenue'] = 1;
             } else {
