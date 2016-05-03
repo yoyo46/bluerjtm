@@ -48,9 +48,8 @@
                                 'required' => false,
                                 'empty' => __('Pilih Status'),
                                 'options' => array(
-                                    'pending' => __('Belum kembali'),
-                                    'hal_receipt' => __('Kembali sebagian'),
-                                    'receipt' => __('Sudah Kembali'),
+                                    'half_receipt' => __('Kembali sebagian'),
+                                    'receipt' => __('Kembali Semua'),
                                 ),
                             ));
                     ?>

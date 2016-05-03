@@ -9,7 +9,7 @@
                 $nodoc = $this->Common->filterEmptyField($value, 'SuratJalan', 'nodoc');
                 $note = $this->Common->filterEmptyField($value, 'SuratJalan', 'note');
                 $ttuj_id = $this->Common->filterEmptyField($value, 'SuratJalanDetail', 'ttuj_id');
-                $tgl_surat_jalan = $this->Common->filterEmptyField($value, 'SuratJalanDetail', 'tgl_surat_jalan');
+                $tgl_surat_jalan = $this->Common->filterEmptyField($value, 'SuratJalan', 'tgl_surat_jalan');
                 $qty = $this->Common->filterEmptyField($value, 'SuratJalanDetail', 'qty');
 
                 $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
@@ -35,6 +35,7 @@
     <?php 
             echo $this->Html->tag('td', $noref);
             echo $this->Html->tag('td', $nodoc);
+            echo $this->Html->tag('td', $customDate);
             echo $this->Html->tag('td', $note);
 
             echo $this->Html->tag('td', $no_ttuj);
@@ -61,13 +62,23 @@
 ?>
 <tr style="font-weight: bold;">
     <?php 
+            echo $this->Html->tag('td', '&nbsp;');
+            echo $this->Html->tag('td', '&nbsp;');
+            echo $this->Html->tag('td', '&nbsp;');
+            echo $this->Html->tag('td', '&nbsp;');
+            echo $this->Html->tag('td', '&nbsp;');
+            echo $this->Html->tag('td', '&nbsp;');
+            echo $this->Html->tag('td', '&nbsp;');
+            echo $this->Html->tag('td', '&nbsp;');
+            echo $this->Html->tag('td', '&nbsp;');
+            echo $this->Html->tag('td', '&nbsp;');
+            echo $this->Html->tag('td', '&nbsp;');
             echo $this->Html->tag('td', __('Total'), array(
-                'colspan' => 10,
                 'style' => 'text-align: right;'
             ));
-            echo $this->Html->tag('td', $totalUnit, array(
-                'style' => 'text-align: center;'
-            ));
+            // echo $this->Html->tag('td', $totalUnit, array(
+            //     'style' => 'text-align: center;'
+            // ));
             echo $this->Html->tag('td', $totalSj, array(
                 'style' => 'text-align: center;'
             ));

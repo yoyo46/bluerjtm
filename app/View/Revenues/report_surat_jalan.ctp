@@ -5,50 +5,89 @@
             'noref' => array(
                 'name' => __('No. Ref'),
                 'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'noref\',width:80',
+                'align' => 'left',
+                'mainalign' => 'center',
             ),
             'nodoc' => array(
                 'name' => __('No. Doc'),
                 'style' => 'text-align: left;vertical-align: middle;',
+                'data-options' => 'field:\'nodoc\',width:120',
+                'align' => 'left',
+                'mainalign' => 'center',
+            ),
+            'date' => array(
+                'name' => __('Tgl Diterima'),
+                'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'date\',width:80',
+                'align' => 'center',
             ),
             'note' => array(
                 'name' => __('Keterangan'),
                 'style' => 'text-align: left;vertical-align: middle;',
+                'data-options' => 'field:\'note\',width:200',
+                'fix_column' => true,
+                'align' => 'left',
+                'mainalign' => 'center',
             ),
             'nottuj' => array(
                 'name' => __('No. TTUJ'),
                 'style' => 'text-align: left;vertical-align: middle;',
+                'data-options' => 'field:\'nottuj\',width:120',
+                'align' => 'left',
+                'mainalign' => 'center',
             ),
             'date_ttuj' => array(
                 'name' => __('Tgl TTUJ'),
                 'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'date_ttuj\',width:80',
+                'align' => 'center',
             ),
-            'Nopol' => array(
+            'nopol' => array(
                 'name' => __('Nopol'),
                 'style' => 'text-align: left;vertical-align: middle;',
+                'data-options' => 'field:\'nopol\',width:80',
+                'align' => 'center',
             ),
             'driver' => array(
                 'name' => __('Supir'),
                 'style' => 'text-align: left;vertical-align: middle;',
+                'data-options' => 'field:\'driver\',width:120',
+                'align' => 'left',
+                'mainalign' => 'center',
             ),
             'to' => array(
                 'name' => __('Tujuan'),
                 'style' => 'text-align: left;vertical-align: middle;',
+                'data-options' => 'field:\'to\',width:200',
+                'align' => 'left',
+                'mainalign' => 'center',
             ),
             'customer' => array(
                 'name' => __('Customer'),
                 'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'customer\',width:150',
+                'align' => 'left',
+                'mainalign' => 'center',
             ),
             'note_ttuj' => array(
                 'name' => __('Keterangan TTUJ'),
                 'style' => 'text-align: left;vertical-align: middle;',
+                'data-options' => 'field:\'note_ttuj\',width:200',
+                'align' => 'left',
+                'mainalign' => 'center',
             ),
             'qty_ttuj' => array(
                 'name' => __('Qty TTUJ'),
                 'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'qty_ttuj\',width:80',
+                'align' => 'center',
             ),
             'qty_sj' => array(
                 'name' => __('Qty Diterima'),
                 'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'qty_sj\',width:80',
+                'align' => 'center',
             ),
         );
 
@@ -83,7 +122,7 @@
         <?php 
                 if(!empty($values)){
         ?>
-        <table id="tt" class="table table-bordered" singleSelect="true">
+        <table id="tt" class="table table-bordered easyui-datagrid" singleSelect="true">
             <thead frozen="true">
                 <tr>
                     <?php

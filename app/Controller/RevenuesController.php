@@ -9316,7 +9316,10 @@ class RevenuesController extends AppController {
         }else if($data_action == 'excel'){
             $this->layout = 'ajax';
         } else {
-            $this->MkCommon->_layout_file('select');
+            $this->MkCommon->_layout_file(array(
+                'freeze',
+                'select',
+            ));
         }
     }
 }
