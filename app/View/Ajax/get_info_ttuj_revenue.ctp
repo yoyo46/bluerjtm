@@ -21,7 +21,7 @@
 	<?php 
 			echo $this->Form->input('Revenue.customer_id',array(
 				'label'=> __('Customer'), 
-				'class'=>'form-control chosen-select',
+				'class'=>'form-control change-customer-revenue chosen-select',
 				'required' => false,
 				'options' => $customers,
 				'empty' => __('Pilih Customer'),
