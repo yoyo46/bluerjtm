@@ -117,7 +117,7 @@
                                     'revenues',
                                     $ttuj_id,
 	                            );
-                            	echo $this->Form->label('ttuj_id', __('No. TTUJ * ' ).$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
+                            	echo $this->Form->label('ttuj_id', __('No. TTUJ ' ).$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
 	                    ?>
 	                    <div class="row">
 	                        <div class="col-sm-10">

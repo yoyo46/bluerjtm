@@ -3468,11 +3468,17 @@ class RevenuesController extends AppController {
         if(!empty($this->request->data)){
             $data = $this->request->data;
             $dataTtuj = $this->MkCommon->filterEmptyField($data, 'Ttuj');
+            $ttuj_id = $this->MkCommon->filterEmptyField($data, 'Revenue', 'ttuj_id');
+
             $data['Revenue']['date_revenue'] = $this->MkCommon->getDate($data['Revenue']['date_revenue']);
             $data['Revenue']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             if( $action_type == 'manual' ) {
                 $data['Revenue']['is_manual'] = 1;
+
+                if( empty($ttuj_id) ) {
+                    $data['Revenue']['ttuj_id'] = 0;
+                }
             }
 
             $resultSave = $this->Ttuj->Revenue->saveRevenue($id, $data_local, $data, $this);

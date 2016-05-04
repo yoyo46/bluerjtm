@@ -1500,7 +1500,7 @@ class MkCommonComponent extends Component {
             foreach ($fieldArr as $key => $value) {
                 if( is_array($value) ) {
                     foreach ($value as $idx => $fieldName) {
-                        if( !empty($data[$key][$fieldName]) ) {
+                        if( isset($data[$key][$fieldName]) ) {
                             unset($data[$key][$fieldName]);
                         }
                     }
