@@ -2065,6 +2065,9 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                             $.daterangepicker({
                                 obj: $('#myModal .modal-body .date-range'),
                             });
+                            $.dropdownFix({
+                                obj: $('#myModal .modal-body .columnDropdown'),
+                            });
                         } else {
                             check_all_checkbox();
                         }
