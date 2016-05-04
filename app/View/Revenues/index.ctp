@@ -136,7 +136,8 @@
             <?php
                     if(!empty($revenues)){
                         foreach ($revenues as $key => $value) {
-                            $id = $value['Revenue']['id'];
+                            $id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
+                            $is_manual = $this->Common->filterEmptyField($value, 'Revenue', 'is_manual');
                             
                             $from_city = $this->Common->filterEmptyField($value, 'FromCity', 'name');
                             $to_city = $this->Common->filterEmptyField($value, 'ToCity', 'name');
@@ -216,7 +217,7 @@
                                 $id
                             );
 
-                            if( empty($value['Ttuj']['id']) ) {
+                            if( !empty($is_manual) ) {
                                 $urlEdit[] = 'manual';
                             }
 

@@ -75,7 +75,7 @@
 					        	<?php 
 										echo $this->Form->input('ttuj_id',array(
 											'label'=> false, 
-											'class'=>'form-control',
+											'class'=>'form-control chosen-select',
 											'required' => false,
 											'options' => $ttujs,
 											'empty' => __('Pilih TTUJ'),
@@ -108,7 +108,7 @@
 						<?php 
 								echo $this->Form->input('Revenue.customer_id',array(
 									'label'=> __('Customer'), 
-									'class'=>'form-control change-customer-revenue',
+									'class'=>'form-control change-customer-revenue chosen-select',
 									'required' => false,
 									'options' => $customers,
 									'empty' => __('Pilih Customer')

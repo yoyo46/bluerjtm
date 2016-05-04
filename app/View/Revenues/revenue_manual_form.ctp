@@ -6,7 +6,10 @@
 		$this->Html->addCrumb($sub_module_title);
 
         $data = $this->request->data;
+        $ttujs = !empty($ttujs)?$ttujs:false;
         $revenueDetail = $this->Common->filterEmptyField($data, 'RevenueDetail');
+        $ttuj_id = $this->Common->filterEmptyField($data_local, 'Revenue', 'ttuj_id');
+
 		$dataColumns = array(
             'tujuan' => array(
                 'name' => __('Tujuan'),
@@ -100,6 +103,45 @@
 						?>
 			        </div>
 			        <div class="form-group">
+			        	<?php 
+	        					$attrBrowse = array(
+                                    'class' => 'ajaxModal visible-xs browse-docs',
+                                    'escape' => false,
+                                    'title' => __('Data TTUJ'),
+                                    'data-action' => 'browse-form',
+                                    'data-change' => 'getTtujInfoRevenue',
+	                            );
+	        					$urlBrowse = array(
+	                                'controller'=> 'ajax', 
+                                    'action' => 'getTtujs',
+                                    'revenues',
+                                    $ttuj_id,
+	                            );
+                            	echo $this->Form->label('ttuj_id', __('No. TTUJ * ' ).$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
+	                    ?>
+	                    <div class="row">
+	                        <div class="col-sm-10">
+					        	<?php 
+										echo $this->Form->input('ttuj_id',array(
+											'label'=> false, 
+											'class'=>'form-control chosen-select',
+											'required' => false,
+											'options' => $ttujs,
+											'empty' => __('Pilih TTUJ'),
+											'id' => 'getTtujInfoRevenue',
+											'data-action' => 'manual',
+										));
+								?>
+	                        </div>
+	        				<div class="col-sm-2 hidden-xs">
+		                        <?php 
+	        							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
+		                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
+		                        ?>
+		                    </div>
+	                    </div>
+			        </div>
+			        <div class="form-group">
 						<?php 
 								echo $this->Form->input('Revenue.date_revenue',array(
 									'type' => 'text',
@@ -112,7 +154,7 @@
 								));
 						?>
 					</div>
-					<div class="form-group">
+					<div class="form-group" id="customer-form">
 						<?php 
 								echo $this->Form->input('Revenue.customer_id',array(
 									'label'=> __('Customer'), 
@@ -142,88 +184,11 @@
 			        <h3 class="box-title"><?php echo __('Informasi Truk'); ?></h3>
 			    </div>
 			    <div class="box-body">
-			        <div id="ttuj-info">
-						
-				        <div class="form-group">
-		                    <?php 
-		        					$attrBrowse = array(
-	                                    'class' => 'ajaxModal visible-xs browse-docs',
-                                        'escape' => false,
-                                        'title' => __('Data Truk'),
-                                        'data-action' => 'browse-form',
-                                        'data-change' => 'truckID',
-                                        'id' => 'truckBrowse',
-	                                );
-		        					$urlBrowse = array(
-	                                    'controller'=> 'ajax', 
-                                        'action' => 'getTrucks',
-                                        'revenue',
-	                                );
-		                            echo $this->Form->label('truck_id', __('No. Pol * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
-		                    ?>
-		                    <div class="row">
-		                        <div class="col-sm-10">
-						        	<?php 
-											echo $this->Form->input('truck_id',array(
-												'label'=> false, 
-												'class'=>'form-control truck-revenue-id chosen-select',
-												'required' => false,
-												'empty' => __('Pilih No. Pol --'),
-												'id' => 'truckID',
-											));
-									?>
-		                        </div>
-		        				<div class="col-sm-2 hidden-xs">
-			                        <?php 
-		        							$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-			                                echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
-			                        ?>
-			                    </div>
-		                    </div>
-				        </div>
-						<div class="form-group">
-							<?php 
-									echo $this->Form->input('truck_capacity',array(
-										'label'=> __('Kapasitas'), 
-										'class'=>'form-control',
-										'required' => false,
-										'readonly' => true,
-										'id' => 'revenue-truck-capacity',
-									));
-							?>
-						</div>
-				        <div class="form-group">
-				        	<?php 
-									echo $this->Form->label('from_city_id', __('Tujuan Dari'));
-							?>
-							<div class="row">
-								<div class="col-sm-6">
-									<?php 
-											echo $this->Form->input('from_city_id',array(
-												'label'=> false, 
-												'class'=>'form-control chosen-select',
-												'required' => false,
-												'empty' => __('Dari Kota --'),
-												'options' => !empty($toCities)?$toCities:false,
-												'id' => 'from-city-revenue-id',
-											));
-									?>
-								</div>
-								<div class="col-sm-6">
-									<?php 
-											echo $this->Form->input('to_city_id',array(
-												'label'=> false, 
-												'class'=>'form-control chosen-select',
-												'required' => false,
-												'empty' => __('Kota Tujuan --'),
-												'options' => !empty($toCities)?$toCities:false,
-												'id' => 'to-city-revenue-id',
-											));
-									?>
-								</div>
-							</div>
-				        </div>
-			        </div>
+					<div id="ttuj-info">
+						<?php
+								echo $this->element('blocks/revenues/revenue_info_manual');
+						?>
+					</div>
 			    </div>
 			</div>
 		</div>

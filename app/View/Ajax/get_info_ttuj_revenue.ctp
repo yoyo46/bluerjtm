@@ -5,7 +5,11 @@
 ?>
 <div id="form-ttuj-main">
 	<?php
-			echo $this->element('blocks/revenues/revenue_info');
+			if( !empty($data_action) && $data_action == 'manual' ) {
+				echo $this->element('blocks/revenues/revenue_info_manual');
+			} else {
+				echo $this->element('blocks/revenues/revenue_info');
+			}
 	?>
 </div>
 <div id="form-ttuj-detail">
@@ -17,10 +21,11 @@
 	<?php 
 			echo $this->Form->input('Revenue.customer_id',array(
 				'label'=> __('Customer'), 
-				'class'=>'form-control change-customer-revenue',
+				'class'=>'form-control chosen-select',
 				'required' => false,
 				'options' => $customers,
 				'empty' => __('Pilih Customer'),
+				'id' => 'customer-revenue-manual',
 			));
 	?>
 </div>

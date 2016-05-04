@@ -3470,6 +3470,10 @@ class RevenuesController extends AppController {
             $data['Revenue']['date_revenue'] = $this->MkCommon->getDate($data['Revenue']['date_revenue']);
             $data['Revenue']['branch_id'] = Configure::read('__Site.config_branch_id');
 
+            if( $action_type == 'manual' ) {
+                $data['Revenue']['is_manual'] = 1;
+            }
+
             $resultSave = $this->Ttuj->Revenue->saveRevenue($id, $data_local, $data, $this);
             $statusSave = !empty($resultSave['status'])?$resultSave['status']:false;
             $msgSave = !empty($resultSave['msg'])?$resultSave['msg']:false;
@@ -3534,6 +3538,7 @@ class RevenuesController extends AppController {
         $toCities = $this->City->getListCities();
         $groupMotors = $this->Ttuj->Revenue->RevenueDetail->GroupMotor->getData('list');
 
+        $this->MkCommon->_layout_file('select');
         $this->set(compact(
             'toCities', 'groupMotors', 'tarifTruck',
             'id', 'data_local', 'trucks', 'tarif'
@@ -3541,27 +3546,8 @@ class RevenuesController extends AppController {
         $this->set('active_menu', 'revenues');
 
         if( $action_type == 'manual' ) {
-            $plantCityId = Configure::read('__Site.Branch.Plant.id');
-            $conditions = array();
+            $trucks = $this->Ttuj->Truck->_callListTruck($id);
 
-            if( !empty($plantCityId) ) {
-                $conditions['Truck.branch_id'] = $plantCityId;
-            }
-
-            $addConditions = $this->Ttuj->Truck->getListTruck( $id, true, false, $plantCityId );
-            $conditions = array_merge($conditions, $addConditions);
-
-            $trucks = $this->Ttuj->Truck->getData('list', array(
-                'conditions' => $conditions,
-                'fields' => array(
-                    'Truck.id', 'Truck.nopol'
-                ),
-                'order' => array(
-                    'Truck.nopol'
-                ),
-            ));
-
-            $this->MkCommon->_layout_file('select');
             $this->set(compact(
                 'trucks'
             ));

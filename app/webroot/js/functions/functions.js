@@ -1199,8 +1199,8 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge,
     if( data_type == 'manual' ) {
         customer_id = $('#customer-revenue-manual').val();
         truck_id = $('.truck-revenue-id').val();
-        from_city_id = $('#from-city-revenue-id').val();
-        to_city_id = $('#to-city-revenue-id').val();
+        from_city_id = $.checkUndefined($('#from-city-revenue-id').val(), 0);
+        to_city_id = $.checkUndefined($('#to-city-revenue-id').val(), 0);
 
         url = '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+from_city_id+'/'+truck_id+'/manual';
     }
@@ -2246,6 +2246,63 @@ var submitForm = function ( obj ) {
     formInput( obj );
     closeModal();
 }
+    
+var _callRevManualChange = function () {
+    $('#customer-revenue-manual,.truck-revenue-id,#from-city-revenue-id,#to-city-revenue-id').off('change');
+    $('#customer-revenue-manual,.truck-revenue-id,#from-city-revenue-id,#to-city-revenue-id').change(function(){
+        var customer_id = $('#customer-revenue-manual').val();
+        var truck_id = $('.truck-revenue-id').val();
+        var from_city_id = $('#from-city-revenue-id').val();
+        var to_city_id = $('#to-city-revenue-id').val();
+        var revenue_data_type = $.checkUndefined($('.revenue-data-type').val(), 0);
+
+        if( customer_id != '' && truck_id != '' && from_city_id != '' && to_city_id != '' ) {
+            $.ajax({
+                url: '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+to_city_id+'/0/0/'+to_city_id+'/0/'+from_city_id+'/'+truck_id+'/'+revenue_data_type+'/',
+                type: 'POST',
+                success: function(response, status) {
+                    var jenis_unit = $(response).find('.jenis_unit').val();
+                    $('.revenue_tarif_type').val( jenis_unit );
+
+                    if( jenis_unit == 'per_truck' ) {
+                        var totalPriceFormat = $(response).find('.total-revenue-perunit').val();
+
+                        $('#grand-total-revenue').html( totalPriceFormat );
+                    }
+                    
+                    grandTotalRevenue();
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        }
+    });
+
+    $('.truck-revenue-id').off('change');
+    $('.truck-revenue-id').change(function(){
+        var truck_id = $(this).val();
+
+        $.ajax({
+            url: '/ajax/getDataTruck/'+truck_id+'/',
+            type: 'POST',
+            success: function(response, status) {
+                $('#revenue-truck-capacity').val( $(response).filter('#truck_capacity').html() );
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                return false;
+            }
+        });
+    });
+
+    $('#truckID,.tipe_motor_id,#getKotaAsal').off('change');
+    $('#truckID,.tipe_motor_id,#getKotaAsal').change(function() {
+        $.getNopol();
+    });
+}
+_callRevManualChange();
 
 function findInfoTTujRevenue(url){
     $.ajax({
@@ -2254,16 +2311,24 @@ function findInfoTTujRevenue(url){
         success: function(response, status) {
             $('#date_revenue').val($(response).filter('#date_revenue').val());
             $('#ttuj-info').html($(response).filter('#form-ttuj-main').html());
-            $('#detail-tipe-motor').html($(response).filter('#form-ttuj-detail').html());
+            $('#detail-tipe-motor,#muatan-revenue-detail').html($(response).filter('#form-ttuj-detail').html());
             $('#customer-form').html($(response).filter('#form-customer').html());
             $('.revenue_tarif_type').val($(response).filter('#revenue_tarif_type').val());
 
             revenue_detail();
             duplicate_row();
+            delete_custom_field();
             datepicker();
             city_revenue_change();
-            // change_customer_revenue();
             checkCharge( $('.additional-charge') );
+            _callRevManualChange();
+            ajaxModal( $('#ttuj-info .ajaxModal') );
+
+            if( $('#customer-form .chosen-select').length > 0 ) {
+                $.callChoosen({
+                    obj: $('#customer-form .chosen-select,#ttuj-info .chosen-select'),
+                });
+            }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
@@ -2313,18 +2378,6 @@ var input_price_min = function ( obj ) {
             }
         });
     }
-}
-
-var change_customer_revenue = function(){
-    $('.change-customer-revenue').change(function(){
-        var self = $(this);
-        var ttuj_id = $('#getTtujInfoRevenue').val();
-        var val_id = self.val();
-
-        if( ttuj_id != '' && self.val() != '' ) {
-            findInfoTTujRevenue('/ajax/getInfoTtujRevenue/'+ttuj_id+'/'+val_id+'/');
-        }
-    });
 }
 
 var checkCharge = function ( obj ) {
@@ -3458,39 +3511,11 @@ $(function() {
         }
     });
 
-    // $('#getKotaAsal').change(function() {
-    //     var self = $(this);
-
-    //     if( self.val() != '' ) {
-    //         $.ajax({
-    //             url: '/ajax/getKotaAsal/'+self.val()+'/',
-    //             type: 'POST',
-    //             success: function(response, status) {
-    //                 $('.from_city #getKotaTujuan').attr('readonly', false).html($(response).filter('#from_city_id').html());
-    //             },
-    //             error: function(XMLHttpRequest, textStatus, errorThrown) {
-    //                 alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-    //                 return false;
-    //             }
-    //         });
-    //     } else {
-    //         $('#getKotaTujuan').val('').attr('readonly', true);
-    //         $('#getTruck').val('').attr('readonly', true);
-    //         $('#truckID').val('').attr('readonly', true);
-            // $('#truckBrowse').attr('disabled', true);
-    //         $('.driver_name').val('');
-    //         $('.truck_capacity').val('');
-    //         $('#biaya-uang-jalan input').val('');
-    //     }
-    // });
-
     $('#getKotaTujuan').change(function() {
         var self = $(this);
-        // var customer_id = $('.customer').val();
 
         if( self.val() != '' ) {
             $.ajax({
-                // url: '/ajax/getKotaTujuan/'+self.val()+'/'+customer_id+'/',
                 url: '/ajax/getKotaTujuan/'+self.val()+'/',
                 type: 'POST',
                 success: function(response, status) {
@@ -3566,10 +3591,6 @@ $(function() {
                 $('#biaya-uang-jalan input').val('');
             }
         }
-    });
-
-    $('#truckID,.tipe_motor_id,#getKotaAsal').change(function() {
-        $.getNopol();
     });
 
     if( $('.ttuj-form, .laka-form').length > 0 && window.location.hash == '#step2' ) {
@@ -3751,21 +3772,18 @@ $(function() {
 
     $('#getTtujInfoRevenue').change(function() {
         var self = $(this);
+        var action = $.checkUndefined(self.attr('data-action'), false);
+        var url = '/ajax/getInfoTtujRevenue/'+self.val()+'/';
+
+        if( action != false ) {
+            url += action+'/';
+        }
+
 
         if( self.val() != '' ) {
-            findInfoTTujRevenue('/ajax/getInfoTtujRevenue/'+self.val()+'/');
+            findInfoTTujRevenue(url);
         }
     });
-    // change_customer_revenue();
-
-    // $('.ttuj-invoice-ajax').change(function() {
-    //     var self = $(this);
-    //     var data_action = $(this).attr('data-action');
-
-    //     if( self.val() != '' ) {
-    //         findInfoTTujPayment('/ajax/getInfoTtujPayment/'+self.val()+'/'+data_action+'/');
-    //     }
-    // });
 
     $('#laka-driver-change').change(function(){
         var self = $(this);
@@ -4201,53 +4219,6 @@ $(function() {
                 }
             });
         }
-    });
-    
-    $('#customer-revenue-manual,.truck-revenue-id,#from-city-revenue-id,#to-city-revenue-id').change(function(){
-        var customer_id = $('#customer-revenue-manual').val();
-        var truck_id = $('.truck-revenue-id').val();
-        var from_city_id = $('#from-city-revenue-id').val();
-        var to_city_id = $('#to-city-revenue-id').val();
-        var revenue_data_type = $.checkUndefined($('.revenue-data-type').val(), 0);
-
-        if( customer_id != '' && truck_id != '' && from_city_id != '' && to_city_id != '' ) {
-            $.ajax({
-                url: '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+to_city_id+'/0/0/'+to_city_id+'/0/'+from_city_id+'/'+truck_id+'/'+revenue_data_type+'/',
-                type: 'POST',
-                success: function(response, status) {
-                    var jenis_unit = $(response).find('.jenis_unit').val();
-                    $('.revenue_tarif_type').val( jenis_unit );
-
-                    if( jenis_unit == 'per_truck' ) {
-                        var totalPriceFormat = $(response).find('.total-revenue-perunit').val();
-
-                        $('#grand-total-revenue').html( totalPriceFormat );
-                    }
-                    
-                    grandTotalRevenue();
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                    return false;
-                }
-            });
-        }
-    });
-
-    $('.truck-revenue-id').change(function(){
-        var truck_id = $(this).val();
-
-        $.ajax({
-            url: '/ajax/getDataTruck/'+truck_id+'/',
-            type: 'POST',
-            success: function(response, status) {
-                $('#revenue-truck-capacity').val( $(response).filter('#truck_capacity').html() );
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown) {
-                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                return false;
-            }
-        });
     });
 
     $(document).click(function(e){

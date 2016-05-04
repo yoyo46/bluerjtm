@@ -713,5 +713,27 @@ class Truck extends AppModel {
 
         return $data;
     }
+
+    function _callListTruck ( $id = false ) {
+        $plantCityId = Configure::read('__Site.Branch.Plant.id');
+        $conditions = array();
+
+        if( !empty($plantCityId) ) {
+            $conditions['Truck.branch_id'] = $plantCityId;
+        }
+
+        $addConditions = $this->getListTruck( $id, true, false, $plantCityId );
+        $conditions = array_merge($conditions, $addConditions);
+
+        return $this->getData('list', array(
+            'conditions' => $conditions,
+            'fields' => array(
+                'Truck.id', 'Truck.nopol'
+            ),
+            'order' => array(
+                'Truck.nopol'
+            ),
+        ));
+    }
 }
 ?>

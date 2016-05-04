@@ -481,7 +481,7 @@ class AjaxController extends AppController {
 		$this->set('Ksu', $Ksu);
 	}
 
-	function getInfoTtujRevenue( $ttuj_id = false, $customer_id = false ){
+	function getInfoTtujRevenue( $ttuj_id = false, $data_action = false ){
 		$this->loadModel('Ttuj');
 		$this->loadModel('TarifAngkutan');
 		$this->loadModel('City');
@@ -506,14 +506,19 @@ class AjaxController extends AppController {
                 $tarifTruck = $tarif;
             }
 
-			if(!empty($customer_id)){
-				$data_ttuj['Ttuj']['customer_id'] = $customer_id;
-			}
-
 			$data_ttuj = $this->Ttuj->Customer->getMerge($data_ttuj, $data_ttuj['Ttuj']['customer_id']);
+			$truck_id = $this->MkCommon->filterEmptyField($data_ttuj, 'Ttuj', 'truck_id');
+			$truck_capacity = $this->MkCommon->filterEmptyField($data_ttuj, 'Ttuj', 'truck_capacity');
+			$from_city_id = $this->MkCommon->filterEmptyField($data_ttuj, 'Ttuj', 'from_city_id');
+			$to_city_id = $this->MkCommon->filterEmptyField($data_ttuj, 'Ttuj', 'to_city_id');
+
 			$this->request->data = $data_ttuj;
 			$this->request->data['Revenue']['customer_id'] = $data_ttuj['Ttuj']['customer_id'];
             $this->request->data['Revenue']['date_revenue'] = $this->MkCommon->customDate($data_ttuj['Ttuj']['ttuj_date'], 'd/m/Y');
+            $this->request->data['Revenue']['truck_id'] = $truck_id;
+            $this->request->data['Revenue']['truck_capacity'] = $truck_capacity;
+            $this->request->data['Revenue']['from_city_id'] = $from_city_id;
+            $this->request->data['Revenue']['to_city_id'] = $to_city_id;
 			$toCities = array();
 
 			if(!empty($data_ttuj['TtujTipeMotor'])){
@@ -590,9 +595,13 @@ class AjaxController extends AppController {
 		$groupMotors = $this->GroupMotor->getData('list');
         $this->MkCommon->_callSettingGeneral('Revenue', array( 'pph', 'ppn' ));
 
+        if( $data_action == 'manual' ) {
+            $trucks = $this->Ttuj->Truck->_callListTruck();
+        }
+
 		$this->set(compact(
 			'data_revenue_detail', 'customers', 'toCities', 'groupMotors',
-			'tarifTruck'
+			'tarifTruck', 'data_action', 'trucks'
 		));
 	}
 
