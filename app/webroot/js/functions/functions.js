@@ -2248,37 +2248,37 @@ var submitForm = function ( obj ) {
 }
     
 var _callRevManualChange = function () {
-    $('#customer-revenue-manual,.truck-revenue-id,#from-city-revenue-id,#to-city-revenue-id').off('change');
-    $('#customer-revenue-manual,.truck-revenue-id,#from-city-revenue-id,#to-city-revenue-id').change(function(){
-        var customer_id = $('#customer-revenue-manual').val();
-        var truck_id = $('.truck-revenue-id').val();
-        var from_city_id = $('#from-city-revenue-id').val();
-        var to_city_id = $('#to-city-revenue-id').val();
-        var revenue_data_type = $.checkUndefined($('.revenue-data-type').val(), 0);
+    // $('#customer-revenue-manual,.truck-revenue-id,#from-city-revenue-id,#to-city-revenue-id').off('change');
+    // $('#customer-revenue-manual,.truck-revenue-id,#from-city-revenue-id,#to-city-revenue-id').change(function(){
+    //     var customer_id = $('#customer-revenue-manual').val();
+    //     var truck_id = $('.truck-revenue-id').val();
+    //     var from_city_id = $('#from-city-revenue-id').val();
+    //     var to_city_id = $('#to-city-revenue-id').val();
+    //     var revenue_data_type = $.checkUndefined($('.revenue-data-type').val(), 0);
 
-        if( customer_id != '' && truck_id != '' && from_city_id != '' && to_city_id != '' ) {
-            $.ajax({
-                url: '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+to_city_id+'/0/0/'+to_city_id+'/0/'+from_city_id+'/'+truck_id+'/'+revenue_data_type+'/',
-                type: 'POST',
-                success: function(response, status) {
-                    var jenis_unit = $(response).find('.jenis_unit').val();
-                    $('.revenue_tarif_type').val( jenis_unit );
+    //     if( customer_id != '' && truck_id != '' && from_city_id != '' && to_city_id != '' ) {
+    //         $.ajax({
+    //             url: '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+to_city_id+'/0/0/'+to_city_id+'/0/'+from_city_id+'/'+truck_id+'/'+revenue_data_type+'/',
+    //             type: 'POST',
+    //             success: function(response, status) {
+    //                 var jenis_unit = $(response).find('.jenis_unit').val();
+    //                 $('.revenue_tarif_type').val( jenis_unit );
 
-                    if( jenis_unit == 'per_truck' ) {
-                        var totalPriceFormat = $(response).find('.total-revenue-perunit').val();
+    //                 if( jenis_unit == 'per_truck' ) {
+    //                     var totalPriceFormat = $(response).find('.total-revenue-perunit').val();
 
-                        $('#grand-total-revenue').html( totalPriceFormat );
-                    }
+    //                     $('#grand-total-revenue').html( totalPriceFormat );
+    //                 }
                     
-                    grandTotalRevenue();
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
-                    return false;
-                }
-            });
-        }
-    });
+    //                 grandTotalRevenue();
+    //             },
+    //             error: function(XMLHttpRequest, textStatus, errorThrown) {
+    //                 alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+    //                 return false;
+    //             }
+    //         });
+    //     }
+    // });
 
     $('.truck-revenue-id').off('change');
     $('.truck-revenue-id').change(function(){
