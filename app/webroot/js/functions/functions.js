@@ -902,12 +902,12 @@ var add_custom_field = function( obj ){
                     $.inputPrice({
                         obj: $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .input_price'),
                     });
-                    $.callChoosen({
-                        obj: $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .chosen-select'),
-                    });
                     duplicate_row();
 
                     $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .city-revenue-change').val( to_city_id );
+                    $.callChoosen({
+                        obj: $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .chosen-select'),
+                    });
                 } else {
                     alert('Mohon pilih Customer, No. Pol dan Tujuan');
                 }
