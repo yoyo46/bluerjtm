@@ -563,6 +563,12 @@ class AjaxController extends AppController {
 	                    $tarif_angkutan_type = $this->MkCommon->filterEmptyField( $tarif, 'tarif_angkutan_type' );
 	                    $tarif_angkutan_id = $this->MkCommon->filterEmptyField( $tarif, 'tarif_angkutan_id' );
 
+	                    if( $jenis_unit == 'per_truck' ) {
+	                    	$total_price_unit = $tarif_angkutan;
+	                    } else {
+	                    	$total_price_unit = $tarif_angkutan * $qtyUnit;
+	                    }
+
 						$data_revenue_detail[$key] = array(
 							'TtujTipeMotor' => array(
 								'qty' => $qtyTtuj,
@@ -572,6 +578,7 @@ class AjaxController extends AppController {
 								'tarif_angkutan_id' => $tarif_angkutan_id,
 								'to_city_name' => $to_city_name,
 								'price_unit' => $tarif_angkutan,
+								'total_price_unit' => $total_price_unit,
 								'payment_type' => $jenis_unit,
 								'tarif_angkutan_type' => $tarif_angkutan_type,
 								'qty_unit' => $qtyUnit,
