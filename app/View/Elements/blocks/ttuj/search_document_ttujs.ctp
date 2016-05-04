@@ -120,7 +120,7 @@
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('note',array(
-                                'label'=> __('Keteragan'),
+                                'label'=> __('Keterangan'),
                                 'class'=>'form-control',
                                 'required' => false,
                             ));

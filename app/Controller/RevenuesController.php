@@ -8399,7 +8399,6 @@ class RevenuesController extends AppController {
                 $id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'id');
                 $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'ttuj_id');
                 $invoice_id = $this->MkCommon->filterEmptyField($value, 'RevenueDetail', 'invoice_id');
-                $city_id = $this->MkCommon->filterEmptyField($value, 'RevenueDetail', 'city_id');
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'branch_id');
                 
                 $value = $this->Ttuj->getMerge($value, $ttuj_id);
@@ -8410,10 +8409,13 @@ class RevenuesController extends AppController {
 
                 $from_city_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'from_city_id');
                 $from_city_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'from_city_id', $from_city_id);
+                
+                $to_city_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'to_city_id');
+                $city_id = $this->MkCommon->filterEmptyField($value, 'RevenueDetail', 'city_id', $to_city_id);
 
                 $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
                 $value = $this->Ttuj->Revenue->RevenueDetail->Invoice->getMerge($value, $invoice_id);
-                $value = $this->Ttuj->Revenue->RevenueDetail->City->getMerge($value, $city_id);
+                $value = $this->Ttuj->Revenue->RevenueDetail->City->getMerge($value, $city_id, 'ToCity');
                 $value = $this->City->getMerge($value, $from_city_id, 'FromCity');
 
                 $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
@@ -8431,7 +8433,7 @@ class RevenuesController extends AppController {
             ),
         ));
 
-        $this->set('active_menu', 'report_revenue_period');
+        $this->set('active_menu', 'report_revenue');
         $this->set(compact(
             'values', 'module_title', 'data_action',
             'cities', 'customers'
