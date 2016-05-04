@@ -856,7 +856,7 @@ var add_custom_field = function( obj ){
                     $('#muatan-revenue-detail tbody.tipe-motor-table').append(' \
                     <tr rel="'+count_next+'" class="list-revenue"> \
                         <td class="city-data"> \
-                            <select name="data[RevenueDetail][city_id][]" class="form-control city-revenue-change" id="RevenueDetailCityId">'+optionCity+'</select> \
+                            <select name="data[RevenueDetail][city_id][]" class="form-control city-revenue-change chosen-select" id="RevenueDetailCityId">'+optionCity+'</select> \
                             <input type="hidden" name="data[RevenueDetail][tarif_angkutan_id][]" class="tarif_angkutan_id" id="RevenueDetailTarifAngkutanId"> \
                             <input type="hidden" name="data[RevenueDetail][tarif_angkutan_type][]" class="tarif_angkutan_type" id="RevenueDetailTarifAngkutanType"> \
                         </td> \
@@ -870,7 +870,7 @@ var add_custom_field = function( obj ){
                             <select name="data[RevenueDetail][group_motor_id][]" class="form-control revenue-group-motor" id="RevenueDetailGroupMotorId">'+groupMotorRevenue+'</select> \
                         </td> \
                         <td class="qty-tipe-motor-data" align="center"> \
-                            <input name="data[RevenueDetail][qty_unit][]" class="form-control revenue-qty input_number" type="text" id="RevenueDetailQtyUnit"> \
+                            <input name="data[RevenueDetail][qty_unit][]" class="form-control revenue-qty text-center input_number" type="text" id="RevenueDetailQtyUnit"> \
                             <input type="hidden" name="data[RevenueDetail][payment_type][]" class="jenis_unit" id="RevenueDetailPaymentType"> \
                         </td> \
                         <td class="price-data text-right"> \
@@ -901,6 +901,9 @@ var add_custom_field = function( obj ){
                     revenue_detail( objQty, objPrice, objPPhPPn, objTotalPrice );
                     $.inputPrice({
                         obj: $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .input_price'),
+                    });
+                    $.callChoosen({
+                        obj: $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .chosen-select'),
                     });
                     duplicate_row();
 
@@ -1138,9 +1141,16 @@ var duplicate_row = function(){
     $('.duplicate-row').click(function(){
         var self = $(this);
         var parent = self.parents('tr');
+        
+        $.callChoosen({
+            obj: parent.find('.chosen-select'),
+            init: 'destroy',
+        });
+
         var tag_element = parent.html();
         var uniqid = Date.now();
         var jenis_unit = $('.jenis_unit').val();
+
         var html = '<tr rel="'+uniqid+'" class="list-revenue">'+
             '<td class="city-data">'+$(tag_element).filter('.city-data').html()+'</td>'+
             '<td class="no-do-data" align="center">'+$(tag_element).filter('.no-do-data').html()+'</td>'+
@@ -1169,6 +1179,12 @@ var duplicate_row = function(){
 
         $.inputPrice({
             obj: $('tr[rel="'+uniqid+'"] .input_price'),
+        });
+        $.callChoosen({
+            obj: parent.find('.chosen-select'),
+        });
+        $.callChoosen({
+            obj: $('tr[rel="'+uniqid+'"] .chosen-select'),
         });
 
         return false;
@@ -2326,7 +2342,7 @@ function findInfoTTujRevenue(url){
 
             if( $('#customer-form .chosen-select').length > 0 ) {
                 $.callChoosen({
-                    obj: $('#customer-form .chosen-select,#ttuj-info .chosen-select'),
+                    obj: $('#customer-form .chosen-select,#ttuj-info .chosen-select,.city-revenue-change.chosen-select'),
                 });
             }
         },

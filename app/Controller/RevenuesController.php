@@ -3467,6 +3467,7 @@ class RevenuesController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            $dataTtuj = $this->MkCommon->filterEmptyField($data, 'Ttuj');
             $data['Revenue']['date_revenue'] = $this->MkCommon->getDate($data['Revenue']['date_revenue']);
             $data['Revenue']['branch_id'] = Configure::read('__Site.config_branch_id');
 
@@ -3482,6 +3483,7 @@ class RevenuesController extends AppController {
 
             if( !empty($resultSave['data']) ) {
                 $this->request->data = $resultSave['data'];
+                $this->request->data['Ttuj'] = $dataTtuj;
             }
 
             if( $statusSave == 'success' ) {

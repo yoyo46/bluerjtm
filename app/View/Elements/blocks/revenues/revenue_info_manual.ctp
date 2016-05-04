@@ -23,7 +23,6 @@
 						'class'=>'form-control truck-revenue-id chosen-select',
 						'required' => false,
 						'empty' => __('Pilih No. Pol --'),
-						'id' => 'truckID',
 					));
 			?>
         </div>

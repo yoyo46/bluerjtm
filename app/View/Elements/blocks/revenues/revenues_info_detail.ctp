@@ -119,7 +119,7 @@
                                     'options' => $toCities,
                                     'required' => false,
                                     'label' => false,
-                                    'class' => 'form-control city-revenue-change',
+                                    'class' => 'form-control city-revenue-change chosen-select',
                                     'value' => $city_id,
                                 ));
                                 echo $this->Form->error('RevenueDetail.'.$key.'.city_id');

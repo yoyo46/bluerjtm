@@ -16,6 +16,7 @@
 	<?php
 			echo $this->element('blocks/revenues/revenues_info_detail', array(
 				'revenueDetail' => $data_revenue_detail,
+				'action_type' => $data_action,
 			));
 	?>
 </div>
