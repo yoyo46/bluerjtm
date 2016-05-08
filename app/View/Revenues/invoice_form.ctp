@@ -23,7 +23,7 @@
 	    </div>
 	    <div class="box-body">
 	    	<?php
-	    			if($action != 'tarif'){
+        			if( !in_array($action, array( 'tarif', 'tarif_name' )) ){
 	    	?>
 	        <div class="form-group">
 	        	<?php 
@@ -63,7 +63,7 @@
 				?>
 	        </div>
 	    	<?php
-	    			if($action != 'tarif'){
+        			if( !in_array($action, array( 'tarif', 'tarif_name' )) ){
 	    	?>
 	        <div class="form-group">
 	        	<?php 

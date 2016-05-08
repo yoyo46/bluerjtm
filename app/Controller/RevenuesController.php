@@ -3985,9 +3985,9 @@ class RevenuesController extends AppController {
 
                 $tarif_type = !empty($data['Invoice']['tarif_type'])?$data['Invoice']['tarif_type']:false;
                 
-                if($action == 'tarif'){
+                if( in_array($action, array( 'tarif', 'tarif_name' )) ){
                     if(!empty($customer)){
-                        $revenue_detail = $this->Ttuj->Revenue->RevenueDetail->getData('all', array(
+                        $options = array(
                             'conditions' => array(
                                 'Revenue.customer_id' => $customer_id,
                                 'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
@@ -3997,12 +3997,24 @@ class RevenuesController extends AppController {
                                 'RevenueDetail.status' => 1,
                             ),
                             'order' => array(
-                                'RevenueDetail.price_unit' => 'ASC',
                                 'Revenue.date_revenue' => 'ASC',
                                 'Revenue.id' => 'ASC',
                                 'RevenueDetail.id' => 'ASC',
                             )
-                        ), $elementRevenue);
+                        );
+
+                        if( $action == 'tarif_name' ) {
+                            $options['contain'][] = 'TarifAngkutan';
+                            $options['order'] = array_merge(array(
+                                'TarifAngkutan.name_tarif' => 'ASC',
+                            ), $options['order']);
+                        } else {
+                            $options['order'] = array_merge(array(
+                                'RevenueDetail.price_unit' => 'ASC',
+                            ), $options['order']);
+                        }
+
+                        $revenue_detail = $this->Ttuj->Revenue->RevenueDetail->getData('all', $options, $elementRevenue);
 
                         $result = array();
                         $flag = true;
@@ -4010,7 +4022,13 @@ class RevenuesController extends AppController {
 
                         if(!empty($revenue_detail)){
                             foreach ($revenue_detail as $key => $value) {
-                                $result[$value['RevenueDetail']['price_unit']][] = $value;
+                                if( $action == 'tarif_name' ) {
+                                    $grouping = $this->MkCommon->filterEmptyField($value, 'TarifAngkutan', 'name_tarif');
+                                } else {
+                                    $grouping = $this->MkCommon->filterEmptyField($value, 'RevenueDetail', 'price_unit');
+                                }
+
+                                $result[$grouping][] = $value;
                             }
                         }
 
@@ -4019,7 +4037,7 @@ class RevenuesController extends AppController {
 
                             foreach ($result as $key => $value) {
                                 $data['Invoice']['no_invoice'] = $invoice_number;
-                                $data['Invoice']['type_invoice'] = 'tarif';
+                                $data['Invoice']['type_invoice'] = $action;
                                 $data['Invoice']['due_invoice'] = $customer['Customer']['term_of_payment'];
                                 
                                 $this->Invoice->create();
@@ -4044,7 +4062,7 @@ class RevenuesController extends AppController {
                                 foreach ($result as $key => $value) {
                                     $this->Invoice->create();
                                     $data['Invoice']['no_invoice'] = $invoice_number;
-                                    $data['Invoice']['type_invoice'] = 'tarif';
+                                    $data['Invoice']['type_invoice'] = $action;
                                     $data['Invoice']['due_invoice'] = $customer['Customer']['term_of_payment'];
                                     $this->Invoice->set($data);
 
@@ -4173,7 +4191,7 @@ class RevenuesController extends AppController {
             ),
         ));
 
-        if($action == 'tarif'){
+        if( in_array($action, array( 'tarif', 'tarif_name' )) ){
             $conditionsRevenue['revenue_tarif_type'] = 'per_unit';
         }
 

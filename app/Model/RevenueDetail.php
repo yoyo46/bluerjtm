@@ -239,20 +239,22 @@ class RevenueDetail extends AppModel {
             $options['conditions']['RevenueDetail.tarif_angkutan_type'] = $invoice_type;
         }
 
-        if( $action == 'tarif' && in_array($data_action, array( 'invoice', 'preview' )) ){
-            if( $action == 'tarif' ) {
+        if( in_array($action, array( 'tarif', 'tarif_name' )) && in_array($data_action, array( 'invoice', 'preview' )) ){
                 $options['order'] = array(
-                    'RevenueDetail.price_unit' => 'ASC',
                     'Revenue.date_revenue' => 'ASC',
                     'Revenue.id' => 'ASC',
                     'RevenueDetail.id' => 'ASC',
                 );
+
+            if( $action == 'tarif_name' ) {
+                $options['contain'][] = 'TarifAngkutan';
+                $options['order'] = array_merge(array(
+                    'TarifAngkutan.name_tarif' => 'ASC',
+                ), $options['order']);
             } else {
-                $options['order'] = array(
-                    'Revenue.date_revenue' => 'ASC',
-                    'Revenue.id' => 'ASC',
-                    'RevenueDetail.id' => 'ASC',
-                );
+                $options['order'] = array_merge(array(
+                    'RevenueDetail.price_unit' => 'ASC',
+                ), $options['order']);
             }
         }else{
             $options['order'] = array(
@@ -293,8 +295,12 @@ class RevenueDetail extends AppModel {
                         $value = $this->Revenue->Ttuj->Truck->getMerge($value, $value['Revenue']['truck_id']);
                     }
 
-                    if($action == 'tarif' && in_array($data_action, array( 'invoice', 'preview' ))){
-                        $result[$value['RevenueDetail']['price_unit']][] = $value;
+                    if(in_array($action, array( 'tarif', 'tarif_name' )) && in_array($data_action, array( 'invoice', 'preview' ))){
+                        if( $action == 'tarif_name' ) {
+                            $result[$value['TarifAngkutan']['name_tarif']][] = $value;
+                        } else {
+                            $result[$value['RevenueDetail']['price_unit']][] = $value;
+                        }
                     } else if( in_array($data_action, array( 'date', 'sa' )) && !empty($value['Revenue']['date_revenue']) ) {
                         $result[0][] = $value;
                     } else {

@@ -31,6 +31,16 @@
                             ), array(
                                 'escape' => false,
                             )));
+                            echo $this->Html->tag('li', '', array(
+                                'class' => 'divider',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link(__('Invoice Per Nama Tarif'), array(
+                                'controller' => 'revenues',
+                                'action' => 'invoice_add',
+                                'tarif_name',
+                            ), array(
+                                'escape' => false,
+                            )));
                     ?>
                 </ul>
             </div>

@@ -394,78 +394,16 @@ class Revenue extends AppModel {
             );
         }
 
-        switch ($action) {
-            case 'tarif':
-                if( !empty($data) ) {
-                    $total_price = 0;
+        if( in_array($action, array( 'tarif', 'tarif_name' )) ){
+            if( !empty($data) ) {
+                $total_price = 0;
 
-                    foreach ($data as $key => $value_detail) {
-                        if( !empty($value_detail['RevenueDetail']['id']) ) {
-                            $revenue_id = !empty($value_detail['Revenue']['id'])?$value_detail['Revenue']['id']:false;
-                            $revenue_detail_id = !empty($value_detail['RevenueDetail']['id'])?$value_detail['RevenueDetail']['id']:false;
-                            $total_price_unit = !empty($value_detail['RevenueDetail']['total_price_unit'])?$value_detail['RevenueDetail']['total_price_unit']:0;
-                            
-                            $this->InvoiceDetail->create();
-                            $this->InvoiceDetail->set(array(
-                                'invoice_id' => $invoice_id,
-                                'revenue_id' => $revenue_id,
-                                'revenue_detail_id' => $revenue_detail_id,
-                            ));
-                            $this->InvoiceDetail->save();
-
-                            $this->RevenueDetail->id = $revenue_detail_id;
-                            $this->RevenueDetail->set('invoice_id', $invoice_id);
-                            $this->RevenueDetail->save();
-                            $revenueId[] = $revenue_id;
-                            $total_price += $total_price_unit;
-                        }
-                    }
-
-                    $this->InvoiceDetail->Invoice->updateAll(array(
-                        'Invoice.total' => $total_price,
-                    ), array(
-                        'Invoice.id' => $invoice_id,
-                    ));
-
-                    if( !empty($journalData) ) {
-                        $this->Journal = ClassRegistry::init('Journal');
-                        $this->Journal->setJournal($total_price, array(
-                            'credit' => 'invoice_coa_credit_id',
-                            'debit' => 'invoice_coa_debit_id',
-                        ), $journalData);
-                        $this->Journal->setJournal($total_price, array(
-                            'credit' => 'invoice_coa_2_credit_id',
-                            'debit' => 'invoice_coa_2_debit_id',
-                        ), $journalData);
-                    }
-                }
-                break;
-            
-            default:
-                $revenueDetails = $this->RevenueDetail->getData('list', array(
-                    'conditions' => array(
-                        'Revenue.status' => 1,
-                        'RevenueDetail.status' => 1,
-                        'Revenue.customer_id' => $customer_id,
-                        'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
-                        'RevenueDetail.tarif_angkutan_type' => $tarif_type,
-                        'RevenueDetail.invoice_id' => NULL,
-                    ),
-                    'contain' => array(
-                        'Revenue'
-                    ),
-                    'fields' => array(
-                        'RevenueDetail.id', 'Revenue.id'
-                    ),
-                    'order' => array(
-                        'Revenue.date_revenue' => 'ASC',
-                        'Revenue.id' => 'ASC',
-                        'RevenueDetail.id' => 'ASC',
-                    ),
-                ), $elementRevenue);
-
-                if(!empty($revenueDetails)){
-                    foreach ($revenueDetails as $revenue_detail_id => $revenue_id) {
+                foreach ($data as $key => $value_detail) {
+                    if( !empty($value_detail['RevenueDetail']['id']) ) {
+                        $revenue_id = !empty($value_detail['Revenue']['id'])?$value_detail['Revenue']['id']:false;
+                        $revenue_detail_id = !empty($value_detail['RevenueDetail']['id'])?$value_detail['RevenueDetail']['id']:false;
+                        $total_price_unit = !empty($value_detail['RevenueDetail']['total_price_unit'])?$value_detail['RevenueDetail']['total_price_unit']:0;
+                        
                         $this->InvoiceDetail->create();
                         $this->InvoiceDetail->set(array(
                             'invoice_id' => $invoice_id,
@@ -478,9 +416,67 @@ class Revenue extends AppModel {
                         $this->RevenueDetail->set('invoice_id', $invoice_id);
                         $this->RevenueDetail->save();
                         $revenueId[] = $revenue_id;
+                        $total_price += $total_price_unit;
                     }
                 }
-                break;
+
+                $this->InvoiceDetail->Invoice->updateAll(array(
+                    'Invoice.total' => $total_price,
+                ), array(
+                    'Invoice.id' => $invoice_id,
+                ));
+
+                if( !empty($journalData) ) {
+                    $this->Journal = ClassRegistry::init('Journal');
+                    $this->Journal->setJournal($total_price, array(
+                        'credit' => 'invoice_coa_credit_id',
+                        'debit' => 'invoice_coa_debit_id',
+                    ), $journalData);
+                    $this->Journal->setJournal($total_price, array(
+                        'credit' => 'invoice_coa_2_credit_id',
+                        'debit' => 'invoice_coa_2_debit_id',
+                    ), $journalData);
+                }
+            }
+        } else {
+            $revenueDetails = $this->RevenueDetail->getData('list', array(
+                'conditions' => array(
+                    'Revenue.status' => 1,
+                    'RevenueDetail.status' => 1,
+                    'Revenue.customer_id' => $customer_id,
+                    'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
+                    'RevenueDetail.tarif_angkutan_type' => $tarif_type,
+                    'RevenueDetail.invoice_id' => NULL,
+                ),
+                'contain' => array(
+                    'Revenue'
+                ),
+                'fields' => array(
+                    'RevenueDetail.id', 'Revenue.id'
+                ),
+                'order' => array(
+                    'Revenue.date_revenue' => 'ASC',
+                    'Revenue.id' => 'ASC',
+                    'RevenueDetail.id' => 'ASC',
+                ),
+            ), $elementRevenue);
+
+            if(!empty($revenueDetails)){
+                foreach ($revenueDetails as $revenue_detail_id => $revenue_id) {
+                    $this->InvoiceDetail->create();
+                    $this->InvoiceDetail->set(array(
+                        'invoice_id' => $invoice_id,
+                        'revenue_id' => $revenue_id,
+                        'revenue_detail_id' => $revenue_detail_id,
+                    ));
+                    $this->InvoiceDetail->save();
+
+                    $this->RevenueDetail->id = $revenue_detail_id;
+                    $this->RevenueDetail->set('invoice_id', $invoice_id);
+                    $this->RevenueDetail->save();
+                    $revenueId[] = $revenue_id;
+                }
+            }
         }
 
         $revenueId = array_unique($revenueId);

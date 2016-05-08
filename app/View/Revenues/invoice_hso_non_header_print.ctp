@@ -39,8 +39,13 @@ if($action_print == 'pdf'){
 			$data_print = !empty($data_print)?$data_print:'invoice';
 			$action = !empty($val_detail[0]['Invoice']['type_invoice'])?$val_detail[0]['Invoice']['type_invoice']:false;
 			
-			if($action == 'tarif' && $data_print == 'invoice'){
-				$cityName = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], '', array('places' => 0)) );
+			if(in_array($action, array( 'tarif', 'tarif_name' )) && $data_print == 'invoice'){
+            	if( $action == 'tarif_name' ) {
+            		$name_tarif = !empty($val_detail[0]['TarifAngkutan']['name_tarif'])?$val_detail[0]['TarifAngkutan']['name_tarif']:__('[Tidak ada Tarif]');
+					$cityName = $name_tarif;
+            	} else {
+					$cityName = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], '', array('places' => 0)) );
+				}
 			}else{
                 if( $data_print == 'date' && !empty($val_detail[0]['Invoice']['invoice_date']) ) {
 					$cityName = $this->Common->customDate($val_detail[0]['Invoice']['invoice_date'], 'd/m/Y');
@@ -166,7 +171,10 @@ if($action_print == 'pdf'){
     // $masa_berlaku = $invoice['Invoice']['due_invoice'];
 
     $title_tipe_invoice = '';
-    if($action == 'tarif'){
+    if( $action == 'tarif_name' ) {
+		$name_tarif = !empty($val_detail[0]['TarifAngkutan']['name_tarif'])?$val_detail[0]['TarifAngkutan']['name_tarif']:__('[Tidak ada Tarif]');
+		$title_tipe_invoice = $name_tarif;
+	} else if($action == 'tarif'){
 		$title_tipe_invoice = sprintf('Tarif Angkutan : %s', $this->Number->currency($val_detail[0]['RevenueDetail']['price_unit'], '', array('places' => 0)) );
 	}else{
 		$title_tipe_invoice = $val_detail[0]['City']['name'];

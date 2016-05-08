@@ -27,8 +27,13 @@
 		<tr>
 			<th colspan="<?php echo $totalMerge; ?>" class="text-center" style="text-transform:uppercase;">
 				<?php 
-						if($action == 'tarif' && $data_print == 'invoice'){
-							printf('Tarif Angkutan : %s', $this->Common->getFormatPrice($val_detail[0]['RevenueDetail']['price_unit']) );
+						if( in_array($action, array( 'tarif', 'tarif_name' )) ){
+                        	if( $action == 'tarif_name' ) {
+                        		$name_tarif = !empty($val_detail[0]['TarifAngkutan']['name_tarif'])?$val_detail[0]['TarifAngkutan']['name_tarif']:__('[Tidak ada Tarif]');
+								echo $name_tarif;
+                        	} else {
+								printf('Tarif Angkutan : %s', $this->Common->getFormatPrice($val_detail[0]['RevenueDetail']['price_unit']) );
+							}
 						}else{
 			                if( in_array($data_print, array( 'date', 'sa' )) && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
 								echo $this->Common->customDate($val_detail[0]['Revenue']['date_revenue'], 'd/m/Y');
