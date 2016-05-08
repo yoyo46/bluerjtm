@@ -29,6 +29,7 @@
                                 'posting' => 'Posting',
                                 'invoiced' => 'Invoiced',
                                 'paid' => 'Paid',
+                                'void' => __('Non-Aktif'),
                             ),
                         ));
                         echo $this->element('blocks/common/searchs/forms/input_truck');

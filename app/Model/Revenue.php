@@ -802,6 +802,8 @@ class Revenue extends AppModel {
                 ));
                 $paidList = $this->InvoiceDetail->getInvoicedRevenueList($revenueList);
                 $default_options['conditions']['Revenue.id'] = $paidList;
+            } else if( $status == 'void' ) {
+                $default_options['conditions']['Revenue.status'] = 0;
             } else {
                 $default_options['conditions']['Revenue.transaction_status'] = $status;
                 $default_options['conditions']['Revenue.status'] = 1;
