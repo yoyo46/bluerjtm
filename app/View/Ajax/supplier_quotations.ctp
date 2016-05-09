@@ -1,7 +1,7 @@
 <?php 
         $dataColumns = array(
             'nodoc' => array(
-                'name' => __('No. SQ'),
+                'name' => __('No. Dokumen'),
             ),
             'transaction_date' => array(
                 'name' => __('Tgl SQ'),

@@ -165,9 +165,7 @@ class PurchaseOrder extends AppModel {
 
         if ( !empty($data) ) {
             $nodoc = !empty($data['PurchaseOrder']['nodoc'])?$data['PurchaseOrder']['nodoc']:false;
-            $no_sq = !empty($data['PurchaseOrder']['no_sq'])?$data['PurchaseOrder']['no_sq']:false;
 
-            $data['PurchaseOrder']['supplier_quotation_id'] = $this->SupplierQuotation->getDataCustom('SupplierQuotation.nodoc', $no_sq, 'id');
             $data['PurchaseOrder']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             if( !empty($nodoc) ) {
@@ -208,6 +206,7 @@ class PurchaseOrder extends AppModel {
                             'old_data' => $value,
                             'document_id' => $id,
                         ),
+                        'data' => $data,
                     );
                 } else {
                     $defaul_msg = sprintf(__('Gagal %s'), $defaul_msg);
@@ -306,6 +305,7 @@ class PurchaseOrder extends AppModel {
 
             $this->id = $id;
             $this->set('status', 0);
+            $this->set('transaction_status', 'void');
 
             if( $this->save() ) {
                 $this->SupplierQuotation->id = $sq_id;

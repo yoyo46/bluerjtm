@@ -84,10 +84,30 @@ class RjPurchaseComponent extends Component {
         return $data;
     }
 
+    function calculate ( $value, $ppn_include = false, $modelName = 'PurchaseOrderDetail' ) {
+        $price = $this->MkCommon->filterEmptyField($value, $modelName, 'price');
+        $qty = $this->MkCommon->filterEmptyField($value, $modelName, 'qty');
+        $disc = $this->MkCommon->filterEmptyField($value, $modelName, 'disc');
+        $ppn = $this->MkCommon->filterEmptyField($value, $modelName, 'ppn');
+
+        $total = ( $price * $qty ) - $disc;
+
+        if( empty($ppn_include) ) {
+            $total += $ppn;
+        }
+
+        return $total;
+    }
+
     function _callBeforeSavePO ( $data ) {
         if( !empty($data) ) {
             $dataSave = array();
+            $ppn_include = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'ppn_include');
             $transaction_date = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'transaction_date');
+            $no_sq = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'no_sq');
+
+            $data = $this->controller->PurchaseOrder->SupplierQuotation->getMerge($data, $no_sq, 'SupplierQuotation.nodoc');
+
             $dataDetail = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderDetail');
             $dataDetailProduct = $this->MkCommon->filterEmptyField($dataDetail, 'product_id');
 
@@ -95,8 +115,10 @@ class RjPurchaseComponent extends Component {
 
             $data['PurchaseOrder']['user_id'] = Configure::read('__Site.config_user_id');
             $data['PurchaseOrder']['transaction_date'] = $transaction_date;
+            $data['PurchaseOrder']['supplier_quotation_id'] = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'id');
 
             if( !empty($dataDetailProduct) ) {
+                $grandtotal = 0;
                 $values = array_filter($dataDetailProduct);
                 unset($data['PurchaseOrderDetail']);
 
@@ -136,8 +158,15 @@ class RjPurchaseComponent extends Component {
                         'qty' => $qty,
                     );
                     $dataPODetail = $this->controller->PurchaseOrder->PurchaseOrderDetail->Product->getMerge($dataPODetail, $product_id);
+
+                    $total = $this->calculate($dataPODetail, $ppn_include);
+                    $dataPODetail['PurchaseOrderDetail']['total'] = $total;
+
                     $dataSave[] = $dataPODetail;
+                    $grandtotal += $total;
                 }
+
+                $data['PurchaseOrder']['grandtotal'] = $grandtotal;
             }
 
             if( !empty($dataSave) ) {
@@ -150,7 +179,14 @@ class RjPurchaseComponent extends Component {
 
     function _callBeforeRenderPO ( $data ) {
         $transaction_date = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'transaction_date', date('Y-m-d'));
+        $supplier_quotation_id = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'supplier_quotation_id');
+        $data = $this->controller->PurchaseOrder->SupplierQuotation->getMerge($data, $supplier_quotation_id);
+
         $data['PurchaseOrder']['transaction_date'] = $this->MkCommon->getDate($transaction_date, true);
+
+        if( empty($data['PurchaseOrder']['no_sq']) ) {
+            $data['PurchaseOrder']['no_sq'] = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'nodoc');
+        }
 
         return $data;
     }

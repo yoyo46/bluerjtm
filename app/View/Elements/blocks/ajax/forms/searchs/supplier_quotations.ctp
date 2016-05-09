@@ -13,18 +13,27 @@
 <div class="row">
     <div class="col-sm-6">
         <?php 
-                echo $this->Common->buildInputForm('code', __('Kode Barang'));
-                echo $this->Common->buildInputForm('group', __('Grup Barang'), array(
-                    'empty' => __('- Pilih Grup -'),
-                ));
+                echo $this->Common->buildInputForm('nodoc', __('No Dokumen'));
         ?>
     </div>
     <div class="col-sm-6">
-        <?php 
-                echo $this->Common->buildInputForm('name', __('Nama Barang'), array(
-                    'class' => 'form-control on-focus'
-                ));
-        ?>
+        <div class="form-group">
+            <?php 
+                    echo $this->Form->label('datettuj', __('Tgl SQ'));
+            ?>
+            <div class="input-group">
+                <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                </div>
+                <?php 
+                        echo $this->Form->input('date',array(
+                            'label'=> false,
+                            'class'=>'form-control pull-right date-range',
+                            'required' => false,
+                        ));
+                ?>
+            </div>
+        </div>
     </div>
 </div>
 <?php 
@@ -37,7 +46,7 @@
             'linkOptions' => array(
                 'escape' => false, 
                 'class'=> 'btn btn-default btn-sm ajaxCustomModal',
-                'title' => __('Daftar Barang'),
+                'title' => __('Data Supplier Quotation'),
             ),
         ));
         echo $this->Form->end();

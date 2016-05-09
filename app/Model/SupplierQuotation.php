@@ -69,6 +69,7 @@ class SupplierQuotation extends AppModel {
 
 	function getData( $find, $options = false, $elements = false ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $vendor = isset($elements['vendor'])?$elements['vendor']:false;
         $branch = isset($elements['branch'])?$elements['branch']:true;
 
         $default_options = array(
@@ -87,6 +88,7 @@ class SupplierQuotation extends AppModel {
                 $default_options['conditions']['SupplierQuotation.status'] = 1;
                 break;
             case 'available':
+                $default_options['conditions']['SupplierQuotation.is_po'] = 0;
                 $default_options['conditions']['SupplierQuotation.status'] = 1;
                 $default_options['conditions']['DATE_FORMAT(SupplierQuotation.available_from, \'%Y-%m-%d\') <='] = date('Y-m-d');
                 $default_options['conditions']['DATE_FORMAT(SupplierQuotation.available_to, \'%Y-%m-%d\') >='] = date('Y-m-d');
@@ -99,6 +101,10 @@ class SupplierQuotation extends AppModel {
                 $default_options['conditions']['SupplierQuotation.status'] = 1;
                 $default_options['conditions']['SupplierQuotation.is_po'] = 0;
                 break;
+        }
+
+        if( !empty($vendor) ) {
+            $default_options['conditions']['SupplierQuotation.vendor_id'] = $vendor;
         }
 
         if( !empty($branch) ) {
@@ -126,10 +132,10 @@ class SupplierQuotation extends AppModel {
         return $result;
     }
 
-    function getMerge( $data, $id ){
+    function getMerge( $data, $id, $fieldName = 'SupplierQuotation.id' ){
         $data_merge = $this->getData('first', array(
             'conditions' => array(
-                'SupplierQuotation.id' => $id
+                $fieldName => $id,
             ),
         ), array(
             'status' => 'all',

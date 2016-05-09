@@ -160,7 +160,9 @@ class PurchasesController extends AppController {
             'dateTo' => $dateTo,
         ));
         $options =  $this->PurchaseOrder->_callRefineParams($params);
-        $this->paginate = $this->PurchaseOrder->getData('paginate', $options);
+        $this->paginate = $this->PurchaseOrder->getData('paginate', $options, array(
+            'status' => 'all',
+        ));
         $values = $this->paginate('PurchaseOrder');
         $values = $this->PurchaseOrder->Vendor->getMerge($values, false, 'PurchaseOrder');
 

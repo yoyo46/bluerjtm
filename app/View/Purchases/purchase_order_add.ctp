@@ -6,6 +6,7 @@
 			'admin' => false,
 		);
 		$value = !empty($value)?$value:false;
+		$status = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'status');
 
 		$this->Html->addCrumb($title, $urlRoot);
 		$this->Html->addCrumb($sub_module_title);

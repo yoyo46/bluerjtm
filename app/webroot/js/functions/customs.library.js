@@ -630,6 +630,71 @@
         }
     }
 
+    $.pickData = function() {
+        $('.browse-form table tr').off('click');
+        $('.browse-form table tr').click(function(){
+            var vthis = $(this);
+            var data_value = vthis.attr('data-value');
+            var data_change = vthis.attr('data-change');
+            var data_ajax = vthis.attr('href');
+            var data_change_extra = vthis.attr('data-change-extra');
+            var data_extra_text = $.filterEmptyField(vthis.attr('data-extra-text'));
+            var type = $(data_change).attr('type');
+            var obj_note = $.checkUndefined(vthis.find('.document-note'), false);
+            var data_note_target = $.checkUndefined(obj_note.attr('data-target-note'), false);
+            var data_note_value = $.checkUndefined(obj_note.html(), false);
+
+            if(data_change == '.cash-bank-auth-user'){
+                data_change = vthis.attr('data-rel')+' '+data_change;
+            }
+
+            $(data_change).val(data_value);
+
+            if( type != 'text' ) {
+                $(data_change).trigger('change');
+            }
+            
+            if(data_change == '#receiver-id'){
+                var receiver_type = '';
+
+                $('#receiver-type').val(vthis.attr('data-type'));
+                $('#cash-bank-user,#ttuj-receiver').val(vthis.attr('data-text'));
+
+                if( vthis.attr('data-type') == 'Driver' ) {
+                    receiver_type = 'Supir';
+                } else if( vthis.attr('data-type') == 'Empoye' ) {
+                    receiver_type = 'Karyawan';
+                } else {
+                    receiver_type = vthis.attr('data-type');
+                }
+                
+                $('#tag-receiver-type').html('('+receiver_type+')');
+                $('#hid-receiver-type').val(vthis.attr('data-type'));
+            }
+
+            if( data_note_target != false ){
+                var note = $.checkUndefined($(data_note_target).val(), '');
+
+                if( note == '' ) {
+                    $(data_note_target).val(data_note_value);
+                }
+            }
+
+            if( typeof data_ajax != 'undefined' ) {
+                $.directAjaxLink({
+                    obj: vthis,
+                });
+            }
+
+            if( typeof data_change_extra != 'undefined' ) {
+                $(data_change_extra).html(data_extra_text);
+            }
+
+            $('#myModal').modal('hide');
+            return false;
+        });
+    }
+
     $.ajaxForm = function( options ) {
         var settings = $.extend({
             obj: $('.ajax-form'),
@@ -1150,6 +1215,7 @@
         })
 
         $.rebuildFunction();
+        $.pickData();
     }
 
     $.ajaxLink = function( options ) {

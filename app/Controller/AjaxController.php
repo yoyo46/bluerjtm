@@ -2468,7 +2468,7 @@ class AjaxController extends AppController {
     	));
 	}
 
-	function supplier_quotations () {
+	function supplier_quotations ( $vendor_id = false ) {
         $this->loadModel('SupplierQuotation');
         $params = $this->MkCommon->_callRefineParams($this->params);
         $options =  $this->SupplierQuotation->_callRefineParams($params, array(
@@ -2477,6 +2477,7 @@ class AjaxController extends AppController {
 
         $this->paginate = $this->SupplierQuotation->getData('paginate', $options, array(
         	'status' => 'available',
+        	'vendor' => $vendor_id,
     	));
         $values = $this->paginate('SupplierQuotation');
 
