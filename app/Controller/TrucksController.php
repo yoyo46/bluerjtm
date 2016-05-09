@@ -3286,6 +3286,12 @@ class TrucksController extends AppController {
             ),
         );
 
+        if(!empty($refine['sort'])){
+            if( $refine['sort'] == 'TruckBrand.name' ) {
+                $options['contain'][] = 'TruckBrand';
+            }
+        }
+
         if( !empty($data_action) ) {
             $trucks = $this->Truck->getData('all', $options, true, array(
                 'branch' => false,
