@@ -542,8 +542,24 @@ class Revenue extends AppModel {
             $data['Revenue']['from_city_id'] = !empty($data['Ttuj']['from_city_id'])?$data['Ttuj']['from_city_id']:0;
             $data['Revenue']['to_city_id'] = !empty($data['Ttuj']['to_city_id'])?$data['Ttuj']['to_city_id']:0;
         }
+        if( !empty($data['Ttuj']['truck_id']) ) {
+            $data['Revenue']['truck_id'] = $data['Ttuj']['truck_id'];
+        }
+
+        $from_city_id = $this->filterEmptyField($data, 'Revenue', 'from_city_id');
+        $to_city_id = $this->filterEmptyField($data, 'Revenue', 'to_city_id');
+        $customer_id = $this->filterEmptyField($data, 'Revenue', 'customer_id');
+        $truck_id = $this->filterEmptyField($data, 'Revenue', 'truck_id');
+
+        $truck = $this->Ttuj->Truck->getMerge(array(), $truck_id);
+        $capacity = $this->filterEmptyField($truck, 'Truck', 'capacity');
 
         $ttuj_id = !empty($data['Revenue']['ttuj_id'])?$data['Revenue']['ttuj_id']:false;
+        $tarif = $this->RevenueDetail->TarifAngkutan->findTarif($from_city_id, $to_city_id, $customer_id, $capacity);
+        $tarif_angkutan_type = $this->filterEmptyField($tarif, 'tarif_angkutan_type');
+
+        $data['Revenue']['revenue_tarif_type'] = $tarif_angkutan_type;
+
         $dataRevenues = array();
         $dataTtuj = array();
         $checkQty = true;
