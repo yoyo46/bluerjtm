@@ -777,7 +777,7 @@ class Revenue extends AppModel {
             $default_options['conditions']['Revenue.no_doc LIKE'] = '%'.$nodoc.'%';
         }
         if(!empty($nottuj)){
-            $ttuj = $this->Ttuj->getData('paginate', array(
+            $ttuj = $this->Ttuj->getData('list', array(
                 'conditions' => array(
                     'Ttuj.no_ttuj LIKE' => '%'.$nottuj.'%',
                 ),
