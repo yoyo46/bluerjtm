@@ -109,6 +109,7 @@ class SuratJalan extends AppModel {
         $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
         $type = !empty($data['named']['type'])?$data['named']['type']:1;
 
+        $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
         $customer = !empty($data['named']['customer'])?$data['named']['customer']:false;
 
@@ -135,7 +136,10 @@ class SuratJalan extends AppModel {
             }
         }
         if(!empty($nodoc)){
-            $default_options['conditions']['Ttuj.no_ttuj LIKE'] = '%'.$nodoc.'%';
+            $default_options['conditions']['SuratJalan.nodoc LIKE'] = '%'.$nodoc.'%';
+        }
+        if(!empty($noref)){
+            $default_options['conditions']['LPAD(SuratJalan.id, 6, 0) LIKE'] = '%'.$noref.'%';
         }
         if(!empty($nopol)){
             if( $type == 2 ) {
