@@ -323,6 +323,7 @@ class RevenuesController extends AppController {
 
                 $this->Ttuj->Revenue->RevenueDetail->validator()->remove('price_unit');
                 $this->Ttuj->Revenue->RevenueDetail->validator()->remove('tarif_angkutan_type');
+                $this->Ttuj->Revenue->RevenueDetail->validator()->remove('tarif_angkutan_id');
                 $flag = $this->Ttuj->Revenue->saveAll($dataRevenue, array(
                     'validate' => 'only',
                 ));
@@ -339,6 +340,14 @@ class RevenuesController extends AppController {
 
                     $this->Ttuj->Revenue->saveAll($dataRevenue);
                     $revenue_id = $this->Ttuj->Revenue->id;
+                    
+                    if( !empty($ttuj_id) ) {
+                        $this->Ttuj->updateAll( array(
+                            'Ttuj.is_revenue' => 1,
+                        ), array(
+                            'Ttuj.id' => $ttuj_id,
+                        ));
+                    }
 
                     $this->Ttuj->Revenue->_callSetJournal($revenue_id, $dataRevenue);
                     $this->Log->logActivity( sprintf(__('Berhasil mengubah Revenue #%s dari TTUJ #%s'), $revenue_id, $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $revenue_id, 'revenue_ttuj_edit' );
@@ -604,9 +613,9 @@ class RevenuesController extends AppController {
                         }
                         
                         if( !empty($validates) && !empty($validates_perlengkapan) ) {
-                            if( empty($is_draft) && empty($data_local['Ttuj']['is_revenue']) ) {
-                                $data['Ttuj']['is_revenue'] = 1;
-                            }
+                            // if( empty($is_draft) && empty($data_local['Ttuj']['is_revenue']) ) {
+                            //     $data['Ttuj']['is_revenue'] = 1;
+                            // }
 
                             if($this->Ttuj->save($data)){
                                 $tarifDefault = false;

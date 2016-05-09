@@ -638,38 +638,46 @@ class CashbanksController extends AppController {
                                 $no_ref = intval($no_ref);
 
                                 if( !empty($note) ) {
-                                    $this->CashBank->id = $no_ref;
-                                    $this->CashBank->set('description', $note);
-                                    
-                                    if( $this->CashBank->save() ){                                        
-                                        $this->Log->logActivity( __('Sukses upload by Import Excel'), $this->user_data, $this->RequestHandler, $this->params );
-                                        $successfull_row++;
-                                    } else {
-                                        $validationErrors = $this->CashBank->validationErrors;
-                                        $textError = array();
+                                    $flag = $this->CashBank->find('first', array(
+                                        'conditions' => array(
+                                            'CashBank.id' => $no_ref,
+                                        ),
+                                    ));
 
-                                        if( !empty($validationErrors) ) {
-                                            foreach ($validationErrors as $key => $validationError) {
-                                                if( !empty($validationError) ) {
-                                                    foreach ($validationError as $key => $error) {
-                                                        $textError[] = $error;
+                                    if( !empty($flag) ) {
+                                        $this->CashBank->id = $no_ref;
+                                        $this->CashBank->set('description', $note);
+                                        
+                                        if( $this->CashBank->save() ){                                        
+                                            $this->Log->logActivity( __('Sukses upload by Import Excel'), $this->user_data, $this->RequestHandler, $this->params );
+                                            $successfull_row++;
+                                        } else {
+                                            $validationErrors = $this->CashBank->validationErrors;
+                                            $textError = array();
+
+                                            if( !empty($validationErrors) ) {
+                                                foreach ($validationErrors as $key => $validationError) {
+                                                    if( !empty($validationError) ) {
+                                                        foreach ($validationError as $key => $error) {
+                                                            $textError[] = $error;
+                                                        }
                                                     }
                                                 }
                                             }
+
+                                            if( !empty($textError) ) {
+                                                $textError = implode(', ', $textError);
+                                            } else {
+                                                $textError = '';
+                                            }
+
+                                            $failed_row++;
+                                            $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data. %s'), $row_submitted, $textError) . '<br>';
                                         }
 
-                                        if( !empty($textError) ) {
-                                            $textError = implode(', ', $textError);
-                                        } else {
-                                            $textError = '';
-                                        }
-
-                                        $failed_row++;
-                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data. %s'), $row_submitted, $textError) . '<br>';
+                                        $row_submitted++;
+                                        $cnt++;
                                     }
-
-                                    $row_submitted++;
-                                    $cnt++;
                                 }
                             }
                         }
