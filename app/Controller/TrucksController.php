@@ -3291,6 +3291,9 @@ class TrucksController extends AppController {
                 $options['contain'][] = 'TruckBrand';
             }
         }
+        if(!empty($refine['name'])){
+            $options['contain'][] = 'Driver';
+        }
 
         if( !empty($data_action) ) {
             $trucks = $this->Truck->getData('all', $options, true, array(
