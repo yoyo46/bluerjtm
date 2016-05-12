@@ -525,6 +525,8 @@ class AjaxController extends AppController {
 			if(!empty($data_ttuj['TtujTipeMotor'])){
 				$this->loadModel('Revenue');
 
+				$group_motors = Set::extract('/TtujTipeMotor/TipeMotor/group_motor_id', $data_ttuj);
+
 				foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
 					$group_motor_name = false;
 					$qtyTtuj = !empty($value['TtujTipeMotor']['qty'])?$value['TtujTipeMotor']['qty']:0;
@@ -559,6 +561,7 @@ class AjaxController extends AppController {
 					}
 
 					if( !empty($qtyUnit) ) {
+						$tmpKey = $key;
 	                    $tarif_angkutan = $this->MkCommon->filterEmptyField( $tarif, 'tarif' );
 	                    $jenis_unit = $this->MkCommon->filterEmptyField( $tarif, 'jenis_unit' );
 	                    $tarif_angkutan_type = $this->MkCommon->filterEmptyField( $tarif, 'tarif_angkutan_type' );
@@ -592,6 +595,12 @@ class AjaxController extends AppController {
 						);
 					}
 				}
+
+				if( isset($tmpKey) && !empty($data_revenue_detail[$tmpKey]) ) {
+	    			$qtyUsedNonGroup = $this->Revenue->checkQtyUsedNonGroup( $ttuj_id, $group_motors );
+	    			$qtyTtuj = $this->MkCommon->filterEmptyField($data_revenue_detail[$tmpKey], 'RevenueDetail', 'qty_unit');
+	    			$data_revenue_detail[$tmpKey]['RevenueDetail']['qty_unit'] = $qtyTtuj - $qtyUsedNonGroup;
+	    		}
 			}
 		}
 

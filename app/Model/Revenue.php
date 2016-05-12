@@ -263,6 +263,21 @@ class Revenue extends AppModel {
         );
     }
 
+    function checkQtyUsedNonGroup ( $ttuj_id = false, $group_motor_id = false ) {
+        $conditions = array(
+            'Revenue.ttuj_id' => $ttuj_id,
+            'RevenueDetail.tarif_angkutan_type' => 'angkut',
+            'RevenueDetail.group_motor_id NOT' => $group_motor_id,
+        );
+
+        $this->RevenueDetail->virtualFields['count_qty'] = 'SUM(RevenueDetail.qty_unit)';
+        $qtyUsed = $this->RevenueDetail->getData('first', array(
+            'conditions' => $conditions,
+        ));
+
+        return $this->filterEmptyField($qtyUsed, 'RevenueDetail', 'count_qty');
+    }
+
     function getPaid ( $data, $ttuj_id, $data_type = false ) {
         $conditions = array(
             'Revenue.ttuj_id' => $ttuj_id,
