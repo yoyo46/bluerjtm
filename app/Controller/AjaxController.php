@@ -71,7 +71,8 @@ class AjaxController extends AppController {
 
         $plantCityId = Configure::read('__Site.Branch.Plant.id');
 		$isAjax = $this->RequestHandler->isAjax();
-		$result = $this->Ttuj->Truck->getInfoTruck($truck_id, $plantCityId);
+		// $result = $this->Ttuj->Truck->getInfoTruck($truck_id, $plantCityId);
+		$result = $this->Ttuj->Truck->getInfoTruck($truck_id);
 
 		if( !empty($result) ) {
 			$this->loadModel('UangKuli');
@@ -1116,15 +1117,18 @@ class AjaxController extends AppController {
             // if( $action_type == 'ttuj' ) {
         		$plantCityId = Configure::read('__Site.Branch.Plant.id');
 
-        		if( !empty($plantCityId) ) {
-            		$options['conditions']['Truck.branch_id'] = $plantCityId;
-            	}
+        		// if( !empty($plantCityId) ) {
+          //   		$options['conditions']['Truck.branch_id'] = $plantCityId;
+          //   	}
             // } else {
             // 	$plantCityId = false;
             // }
 
 			$addConditions = $this->Truck->getListTruck( $ttuj_truck_id, true, false, $plantCityId );
             $options['conditions'] = array_merge($options['conditions'], $addConditions);
+            $element = array(
+        		'branch' => false,
+    		);
 		} else if( $action_type == 'laka' ) {
     		$data_change = 'laka-driver-change';
         	$options['conditions'] = $this->MkCommon->_callConditionPlant($options['conditions'], 'Truck');

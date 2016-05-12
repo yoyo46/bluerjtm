@@ -429,6 +429,8 @@ class Truck extends AppModel {
             'contain' => array(
                 'Driver'
             ),
+        ), true, array(
+            'branch' => false,
         ));
 
         return $result;
@@ -505,9 +507,9 @@ class Truck extends AppModel {
             }
         }
 
-        if( !empty($branch_id) ) {
-            $conditions['Truck.branch_id'] = $branch_id;
-        }
+        // if( !empty($branch_id) ) {
+        //     $conditions['Truck.branch_id'] = $branch_id;
+        // }
 
         if( empty($only_bind) ) {
             $trucks = $this->getData('list', array(

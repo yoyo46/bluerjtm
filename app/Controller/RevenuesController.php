@@ -404,6 +404,7 @@ class RevenuesController extends AppController {
         $paramController = $this->params['controller'];
         $paramAction = $this->params['action'];
         $is_draft = isset($data_local['Ttuj']['is_draft'])?$data_local['Ttuj']['is_draft']:true;
+        $ttuj_truck_id = $this->MkCommon->filterEmptyField($data_local, 'Ttuj', 'truck_id');
 
         $current_branch_id = Configure::read('__Site.config_branch_id');
         $_allowModule = Configure::read('__Site.config_allow_module');
@@ -470,14 +471,21 @@ class RevenuesController extends AppController {
             ));
             $conditionsTruck = array(
                 'Truck.id' => $truck_id,
+                'OR' => array(
+                    'Truck.id' => $ttuj_truck_id,
+                ),
             );
 
             if( !empty($plantCityId) ) {
-                $conditionsTruck['Truck.branch_id'] = $plantCityId;
+                $conditionsTruck['OR']['Truck.branch_id'] = $plantCityId;
+            } else {
+                $conditionsTruck['OR']['Truck.branch_id'] = Configure::read('__Site.config_branch_id');
             }
 
             $truck = $this->Ttuj->Truck->getData('first', array(
                 'conditions' => $conditionsTruck,
+            ), true, array(
+                'branch' => false,
             ));
             $capacity = $this->MkCommon->filterEmptyField($truck, 'Truck', 'capacity', 0);
 
