@@ -533,9 +533,9 @@ class RevenuesController extends AppController {
             $data['Ttuj']['customer_name'] = !empty($customer['Customer']['customer_name_code'])?$customer['Customer']['customer_name_code']:'';
             $data['Ttuj']['uang_jalan_id'] = !empty($uangJalan['UangJalan']['id'])?$uangJalan['UangJalan']['id']:false;
             $data['Ttuj']['ttuj_date'] = $ttuj_date = $this->MkCommon->getDate($data['Ttuj']['ttuj_date']);
-            $data['Ttuj']['commission'] = !empty($uangJalan['UangJalan']['commission'])?$uangJalan['UangJalan']['commission']:0;
+            $data['Ttuj']['commission'] = !empty($data['Ttuj']['commission'])?$this->MkCommon->convertPriceToString($data['Ttuj']['commission'], 0):0;
             $data['Ttuj']['commission_extra'] = $this->MkCommon->convertPriceToString($data['Ttuj']['commission_extra'], 0);
-            $data['Ttuj']['commission_per_unit'] = !empty($uangJalan['UangJalan']['commission_per_unit'])?$uangJalan['UangJalan']['commission_per_unit']:0;
+            $data['Ttuj']['commission_per_unit'] = !empty($data['Ttuj']['commission_per_unit'])?$data['Ttuj']['commission_per_unit']:0;
             $data['Ttuj']['uang_jalan_1'] = $this->MkCommon->convertPriceToString($data['Ttuj']['uang_jalan_1']);
             $data['Ttuj']['uang_jalan_2'] = $this->MkCommon->convertPriceToString($data['Ttuj']['uang_jalan_2'], 0);
             $data['Ttuj']['uang_kuli_muat'] = $this->MkCommon->convertPriceToString($data['Ttuj']['uang_kuli_muat'], 0);
@@ -4974,7 +4974,7 @@ class RevenuesController extends AppController {
                                     'debit_total' => $pph_total,
                                 );
 
-                                $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval(1, $pph_total);
+                                $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval('cash-bank', $pph_total);
 
                                 if( empty($allowApprovals) ) {
                                     $dataPph['CashBank']['completed'] = 1;

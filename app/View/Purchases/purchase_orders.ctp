@@ -22,7 +22,7 @@
             ),
             'action' => array(
                 'name' => __('Action'),
-                'class' => 'text-center',
+                'width' => '15%',
             ),
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
@@ -95,7 +95,7 @@
                                 'class' => 'btn btn-info btn-xs'
                             ));
 
-                            if( in_array($transaction_status, array( 'pending' )) ) {
+                            if( in_array($transaction_status, array( 'unposting', 'revised' )) ){
                                 $customAction .= $this->Html->link(__('Edit'), array(
                                     'controller' => $controller,
                                     'action' => 'purchase_order_edit',
@@ -127,7 +127,7 @@
                             'class' => 'text-center',
                         ));
                         echo $this->Html->tag('td', $customAction, array(
-                            'class' => 'action text-center',
+                            'class' => 'action',
                         ));
                 ?>
             </tr>

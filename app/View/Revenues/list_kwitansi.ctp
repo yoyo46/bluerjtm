@@ -134,14 +134,16 @@
                     $urlExcel[] = 'excel';
                     echo $this->Html->link('<i class="fa fa-download"></i> Download Excel', $urlExcel, array(
                         'escape' => false,
-                        'class' => 'btn btn-success pull-right'
+                        'class' => 'btn btn-success pull-right',
+                        'allow' => true,
                     ));
 
                     $urlPdf = $this->passedArgs;
                     $urlPdf[] = 'pdf';
                     echo $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, array(
                         'escape' => false,
-                        'class' => 'btn btn-primary pull-right'
+                        'class' => 'btn btn-primary pull-right',
+                        'allow' => true,
                     ));
             ?>
         </div>

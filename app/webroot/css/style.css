@@ -2204,7 +2204,6 @@ Component: timeline
 */
 .alert {
   padding-left: 30px;
-  margin-left: 15px;
   position: relative;
 }
 .alert > .fa,
@@ -4052,6 +4051,12 @@ thead th.headcol {
 
 .label-code {
   background-color: #85144b;
+}
+.label-paid {
+  background-color: rgba(6,157,84,1);
+}
+.label-paid.disabled {
+  background-color: rgba(6,157,84, 0.8);
 }
 
 .print-label {

@@ -11,6 +11,11 @@
 		$this->Html->addCrumb($title, $urlRoot);
 		$this->Html->addCrumb($sub_module_title);
 
+        echo $this->element('blocks/cashbanks/tables/list_approvals', array(
+        	'urlBack' => false,
+        	'modelName' => 'PurchaseOrder',
+    	));
+
 		echo $this->Form->create('PurchaseOrder');
 ?>
 <div class="row">
@@ -71,17 +76,13 @@
 ?>
 <div class="box-footer text-center action">
 	<?php
-			if( empty($view) ) {
-	    		echo $this->Form->button(__('Simpan'), array(
-					'div' => false, 
-					'class'=> 'btn btn-success',
-					'type' => 'submit',
-				));
-	    	}
-	    	
     		echo $this->Html->link(__('Kembali'), $urlRoot, array(
 				'class'=> 'btn btn-default',
 			));
+			
+			if( empty($view) ) {
+				$this->Common->_getButtonPostingUnposting( $value, 'PurchaseOrder', array( 'Commit', 'Draft' ) );
+			}
 	?>
 </div>
 <?php

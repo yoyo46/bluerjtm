@@ -50,6 +50,7 @@
                         ));
 
                         if(!empty($url)){
+                            $url = unserialize($url);
                             $link = $this->Common->_callNotificationUrl($value, __('Selengkapnya..'), array(
                                 'escape' => false,
                                 'class' => 'btn btn-primary btn-xs',

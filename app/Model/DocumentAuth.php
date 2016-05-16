@@ -34,6 +34,12 @@ class DocumentAuth extends AppModel {
                 'message' => 'Anda tidak mempunyai hak untuk mengakses kontent tersebut.'
             ),
         ),
+        'status_document' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Mohon pilih status dokumen'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(
@@ -41,6 +47,14 @@ class DocumentAuth extends AppModel {
         //     'className' => 'DocumentAuthMaster',
         //     'foreignKey' => 'document_auth_master_id',
         // ),
+        'Approval' => array(
+            'className' => 'Approval',
+            'foreignKey' => 'approval_id',
+        ),
+        'ApprovalDetail' => array(
+            'className' => 'ApprovalDetail',
+            'foreignKey' => 'approval_detail_id',
+        ),
         'ApprovalDetailPosition' => array(
             'className' => 'ApprovalDetailPosition',
             'foreignKey' => 'approval_detail_position_id',
@@ -81,6 +95,27 @@ class DocumentAuth extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
+    }
+
+    function getMerge( $data, $id, $module = false ){
+        $approval_module = $this->Approval->ApprovalModule->getMerge(array(), $module, 'ApprovalModule.slug');
+        $module_id = $this->filterEmptyField($approval_module, 'ApprovalModule', 'id');
+
+        $data_merge = $this->getData('first', array(
+            'conditions' => array(
+                'DocumentAuth.document_id' => $id,
+                'Approval.approval_module_id' => $module_id,
+            ),
+            'contain' => array(
+                'Approval',
+            ),
+        ));
+
+        if(!empty($data_merge['DocumentAuth'])){
+            $data['DocumentAuthCurrent'] = $data_merge['DocumentAuth'];
+        }
+
+        return $data;
     }
 }
 ?>

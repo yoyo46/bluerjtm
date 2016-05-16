@@ -1,4 +1,5 @@
 <?php 
+        $view = !empty($view)?$view:false;
         $data = $this->request->data;
         $ppn_include = $this->Common->filterEmptyField($data, 'PurchaseOrder', 'ppn_include');
         $dataDetail = $this->Common->filterEmptyField($data, 'PurchaseOrderDetail');
@@ -57,18 +58,20 @@
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
-        echo $this->Html->tag('div', $this->Html->link($this->Common->icon('plus-square').__(' Ambil Barang'), $this->Html->url( array(
-                'controller'=> 'ajax', 
-                'action' => 'products',
-                'po',
-                'admin' => false,
-            )), array(
-                'escape' => false,
-                'title' => __('Daftar Barang'),
-                'class' => 'btn bg-maroon ajaxCustomModal',
-            )), array(
-            'class' => "form-group",
-        ));
+        if( $view != 'detail' ) {
+            echo $this->Html->tag('div', $this->Html->link($this->Common->icon('plus-square').__(' Ambil Barang'), $this->Html->url( array(
+                    'controller'=> 'ajax', 
+                    'action' => 'products',
+                    'po',
+                    'admin' => false,
+                )), array(
+                    'escape' => false,
+                    'title' => __('Daftar Barang'),
+                    'class' => 'btn bg-maroon ajaxCustomModal',
+                )), array(
+                'class' => "form-group",
+            ));
+        }
 ?>
 <div class="temp-document-picker document-calc <?php echo $tableClass; ?>">
 	<div class="box box-success">

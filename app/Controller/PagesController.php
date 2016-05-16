@@ -48,6 +48,7 @@ class PagesController extends AppController {
         $url = $this->MkCommon->filterEmptyField($value, 'Notification', 'url');
 
         if( !empty($url) ) {
+            $url = unserialize($url);
             $this->User->Notification->doRead($id);
             $this->redirect($url);
         } else {

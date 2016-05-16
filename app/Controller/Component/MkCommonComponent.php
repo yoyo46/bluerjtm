@@ -843,7 +843,7 @@ class MkCommonComponent extends Component {
         $ajaxRedirect = $this->filterEmptyField($options, 'ajaxRedirect');
         $paramFlash = $this->filterEmptyField($options, 'paramFlash', false, array());
 
-        $this->_saveNotification($data);
+        $this->_callSaveNotification($data);
 
         if( $this->RequestHandler->isAjax() && !$ajaxFlash ) {
             $flash = false;
@@ -1495,6 +1495,36 @@ class MkCommonComponent extends Component {
         }
     }
 
+    function _callSaveNotification( $data = NULL ){
+        $flag = true;
+
+        if( !empty($data['Notification']) ) {
+            $dataNotif = $this->filterEmptyField($data, 'Notification');
+
+            if( !empty($dataNotif['name']) ) {
+                $notifs = array(
+                    array(
+                        'Notification' => $dataNotif,
+                    ),
+                );
+            } else {
+                $notifs = $dataNotif;
+            }
+
+            if( !empty($notifs) ) {
+                foreach ($notifs as $key => $notif) {
+                    $data['Notification'] = $this->filterEmptyField($notif, 'Notification');
+
+                    if( !$this->controller->User->Notification->doSaveMany($data) ) {
+                        $flag = false;
+                    }
+                }
+            }
+        }
+
+        return $flag;
+    }
+
     function _callUnset( $fieldArr, $data ) {
         if( !empty($fieldArr) ) {
             foreach ($fieldArr as $key => $value) {
@@ -2036,6 +2066,31 @@ class MkCommonComponent extends Component {
         }
 
         return $result;
+    }
+
+    function _callBeforeSaveApproval ( $data, $options ) {
+        if( !empty($data) ) {
+            $user_position_id = $this->filterEmptyField($options, 'user_position_id');
+            $document_id = $this->filterEmptyField($options, 'document_id');
+            $document_type = $this->filterEmptyField($options, 'document_type');
+            $user_id = $this->filterEmptyField($options, 'user_id');
+            $nodoc = $this->filterEmptyField($options, 'nodoc');
+            $document_url = $this->filterEmptyField($options, 'document_url');
+            $document_revised_url = $this->filterEmptyField($options, 'document_revised_url', false, $document_url);
+
+            $dataDocument = $this->controller->User->Employe->EmployePosition->Approval->_callApprovalId($document_type, $user_position_id);
+
+            $data = array_merge_recursive($data, $dataDocument);
+            $data['DocumentAuth']['user_id'] = $user_id;
+            $data['DocumentAuth']['nodoc'] = $nodoc;
+            $data['DocumentAuth']['document_url'] = $document_url;
+            $data['DocumentAuth']['document_revised_url'] = $document_revised_url;
+            $data['DocumentAuth']['document_id'] = $document_id;
+            $data['DocumentAuth']['document_type'] = $document_type;
+            $data['DocumentAuth']['user_position_id'] = $user_position_id;
+        }
+
+        return $data;
     }
 }
 ?>

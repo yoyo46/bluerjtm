@@ -216,6 +216,7 @@ class AssetsController extends AppController {
 
         if( !empty($value) ) {
             $value = $this->Asset->AssetGroup->PurchaseOrderAsset->getMerge($value, $id);
+            $value = $this->Asset->AssetGroup->PurchaseOrderAsset->PurchaseOrder->DocumentAuth->getMerge($value, $id, 'po');
 
             $data = $this->request->data;
             $dataSave = $this->RjAsset->_callBeforeSavePO($data, $id);
@@ -248,12 +249,53 @@ class AssetsController extends AppController {
 
         if( !empty($value) ) {
             $value = $this->Asset->AssetGroup->PurchaseOrderAsset->getMerge($value, $id);
+            $value = $this->Asset->AssetGroup->PurchaseOrderAsset->PurchaseOrder->DocumentAuth->getMerge($value, $id, 'po');
+
+            $user_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'user_id');
+            $grandtotal = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'grandtotal');
+            $nodoc = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'nodoc');
+
+            $value = $this->User->getMerge($value, $user_id);
+            $user_position_id = $this->MkCommon->filterEmptyField($value, 'Employe', 'employe_position_id');
+
+            $user_otorisasi_approvals = $this->User->Employe->EmployePosition->Approval->getUserOtorisasiApproval('po', $user_position_id, $grandtotal, $id);
+            $show_approval = $this->User->Employe->EmployePosition->Approval->_callAuthApproval($user_otorisasi_approvals);
+            $data = $this->request->data;
+
+            if( !empty($show_approval) && !empty($data) ) {
+                $data = $this->MkCommon->_callBeforeSaveApproval($data, array(
+                    'user_id' => $user_id,
+                    'nodoc' => $nodoc,
+                    'user_position_id' => $user_position_id,
+                    'document_id' => $id,
+                    'document_type' => 'po',
+                    'document_url' => array(
+                        'controller' => 'assets',
+                        'action' => 'purchase_order_detail',
+                        $id,
+                        'admin' => false,
+                    ),
+                    'document_revised_url' => array(
+                        'controller' => 'assets',
+                        'action' => 'purchase_order_edit',
+                        $id,
+                        'admin' => false,
+                    ),
+                ));
+                $result = $this->Asset->AssetGroup->PurchaseOrderAsset->PurchaseOrder->doApproval($data, $id);
+                $this->MkCommon->setProcessParams($result, array(
+                    'controller' => 'purchases',
+                    'action' => 'purchase_orders',
+                    'admin' => false,
+                ));
+            }
+
             $this->request->data = $this->RjAsset->_callBeforeRenderPO($value);
 
             $this->set('view', 'detail');
             $this->set('active_menu', 'Purchase Order');
             $this->set(compact(
-                'value'
+                'value', 'user_otorisasi_approvals', 'show_approval'
             ));
             $this->render('purchase_order_add');
         } else {

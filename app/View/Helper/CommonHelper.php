@@ -1125,13 +1125,12 @@ class CommonHelper extends AppHelper {
         if( !empty($value[$modelName]['transaction_status']) && $value[$modelName]['transaction_status'] == 'posting' ) {
             $posting = true;
         }
-        if( !empty($value[$modelName]['transaction_status']) && in_array($value[$modelName]['transaction_status'], array( 'invoiced', 'half_invoiced' )) ) {
+        if( !empty($value[$modelName]['transaction_status']) && in_array($value[$modelName]['transaction_status'], array( 'invoiced', 'half_invoiced', 'paid', 'half_paid' )) ) {
             $invoiced = true;
         }
         if( isset($value[$modelName]['status']) && empty($value[$modelName]['status']) ) {
             $_status = false;
         }
-
 
         echo $this->Form->hidden('transaction_status', array(
             'id' => 'transaction_status'
@@ -1373,12 +1372,15 @@ class CommonHelper extends AppHelper {
         if( !empty($url) && !empty($id) ) {
             if( empty($options) ) {
                 $options = array(
-                    'escape' => false
+                    'escape' => false,
                 );
+            }
+            if( empty($options['class']) ) {
+                $options['class'] = false;
             }
 
             if( !empty($read) ) {
-                $options['class'] = 'read';
+                $options['class'] .= ' read';
             }
 
             return $this->Html->link($title, array(
@@ -2373,13 +2375,13 @@ class CommonHelper extends AppHelper {
         switch ($transaction_status) {
             case 'paid':
                 $customStatus = $this->Html->tag('span', __('Sudah Dibayar'), array(
-                    'class' => 'label label-success',
+                    'class' => 'label label-paid',
                 ));
                 break;
 
             case 'half_paid':
                 $customStatus = $this->Html->tag('span', __('Dibayar Sebagian'), array(
-                    'class' => 'label label-primary',
+                    'class' => 'label label-paid disabled',
                 ));
                 break;
 
@@ -2397,7 +2399,7 @@ class CommonHelper extends AppHelper {
 
             case 'posting':
                 $customStatus = $this->Html->tag('span', __('Commit'), array(
-                    'class' => 'label label-success',
+                    'class' => 'label label-primary',
                 ));
                 break;
 
@@ -2434,6 +2436,24 @@ class CommonHelper extends AppHelper {
             case 'canceled':
                 $customStatus = $this->Html->tag('span', __('Batal'), array(
                     'class' => 'label label-danger',
+                ));
+                break;
+
+            case 'revised':
+                $customStatus = $this->Html->tag('span', __('Direvisi'), array(
+                    'class' => 'label label-warning',
+                ));
+                break;
+
+            case 'rejected':
+                $customStatus = $this->Html->tag('span', __('Ditolak'), array(
+                    'class' => 'label label-danger',
+                ));
+                break;
+
+            case 'approved':
+                $customStatus = $this->Html->tag('span', __('Disetujui'), array(
+                    'class' => 'label label-success',
                 ));
                 break;
             

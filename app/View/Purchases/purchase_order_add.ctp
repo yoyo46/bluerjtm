@@ -5,11 +5,17 @@
 			'action' => 'purchase_orders',
 			'admin' => false,
 		);
+		$view = !empty($view)?$view:false;
 		$value = !empty($value)?$value:false;
 		$status = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'status');
 
 		$this->Html->addCrumb($title, $urlRoot);
 		$this->Html->addCrumb($sub_module_title);
+
+        echo $this->element('blocks/cashbanks/tables/list_approvals', array(
+        	'urlBack' => false,
+        	'modelName' => 'PurchaseOrder',
+    	));
 
 		echo $this->Form->create('PurchaseOrder');
 ?>
@@ -54,6 +60,9 @@
 									));
 							?>
 						</div>
+						<?php 
+								if( $view != 'detail' ) {
+						?>
 						<div class="col-sm-2 hidden-xs">
 							<?php 
 									$attrBrowse = array(
@@ -72,6 +81,9 @@
 		                            echo $this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse);
 		                    ?>
 						</div>
+						<?php
+								}
+						?>
 					</div>
 				</div>
 				<?php 
@@ -117,17 +129,13 @@
 ?>
 <div class="box-footer text-center action">
 	<?php
-			if( !empty($status) || empty($value) ) {
-	    		echo $this->Form->button(__('Simpan'), array(
-					'div' => false, 
-					'class'=> 'btn btn-success',
-					'type' => 'submit',
-				));
-	    	}
-	    	
-    		echo $this->Html->link(__('Kembali'), $urlRoot, array(
+			echo $this->Html->link(__('Kembali'), $urlRoot, array(
 				'class'=> 'btn btn-default',
 			));
+			
+			if( $view != 'detail' ) {
+				$this->Common->_getButtonPostingUnposting( $value, 'PurchaseOrder', array( 'Commit', 'Draft' ) );
+			}
 	?>
 </div>
 <?php

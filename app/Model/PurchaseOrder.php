@@ -30,6 +30,13 @@ class PurchaseOrder extends AppModel {
             'className' => 'PurchaseOrderPaymentDetail',
             'foreignKey' => 'purchase_order_id',
         ),
+        'DocumentAuth' => array(
+            'className' => 'DocumentAuth',
+            'foreignKey' => 'document_id',
+            'conditions' => array(
+                'DocumentAuth.document_type' => 'po',
+            ),
+        ),
     );
 
 	var $validate = array(
@@ -88,16 +95,16 @@ class PurchaseOrder extends AppModel {
                 if( !empty($special_id) ) {
                     $default_options['conditions']['OR']['PurchaseOrder.id'] = $special_id;
                     $default_options['conditions']['OR']['PurchaseOrder.transaction_status'] = array(
-                        'pending', 'half_paid',
+                        'approved', 'half_paid',
                     );
                 } else {
                     $default_options['conditions']['PurchaseOrder.transaction_status'] = array(
-                        'pending', 'half_paid',
+                        'approved', 'half_paid',
                     );
                 }
                 break;
             case 'pending':
-                $default_options['conditions']['PurchaseOrder.transaction_status'] = 'pending';
+                $default_options['conditions']['PurchaseOrder.transaction_status'] = array( 'unposting', 'revised' );
                 $default_options['conditions']['PurchaseOrder.status'] = 1;
                 break;
             case 'non-active':
@@ -164,7 +171,9 @@ class PurchaseOrder extends AppModel {
         $defaul_msg = __('PO');
 
         if ( !empty($data) ) {
-            $nodoc = !empty($data['PurchaseOrder']['nodoc'])?$data['PurchaseOrder']['nodoc']:false;
+            $nodoc = $this->filterEmptyField($data, 'PurchaseOrder', 'nodoc');
+            $transaction_status = $this->filterEmptyField($data, 'PurchaseOrder', 'transaction_status');
+            $grandtotal = $this->filterEmptyField($data, 'PurchaseOrder', 'grandtotal');
 
             $data['PurchaseOrder']['branch_id'] = Configure::read('__Site.config_branch_id');
 
@@ -186,6 +195,11 @@ class PurchaseOrder extends AppModel {
             $detailValidates = $this->PurchaseOrderDetail->doSave($data, false, true);
 
             if( $validates && $detailValidates ) {
+                $this->DocumentAuth->deleteAll(array(
+                    'DocumentAuth.document_id' => $id,
+                    'DocumentAuth.document_type' => 'po',
+                ));
+
                 if( $this->save($data) ) {
                     $id = $this->id;
                     
@@ -208,6 +222,23 @@ class PurchaseOrder extends AppModel {
                         ),
                         'data' => $data,
                     );
+
+                    if( $transaction_status == 'posting' ) {
+                        $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval('po', $grandtotal);
+
+                        if( !empty($allowApprovals) ) {
+                            $result['Notification'] = array(
+                                'user_id' => $allowApprovals,
+                                'name' => sprintf(__('Purchase Order dengan No Dokumen %s memerlukan ijin Approval'), $nodoc),
+                                'link' => array(
+                                    'controller' => 'purchases',
+                                    'action' => 'purchase_order_detail',
+                                    $id,
+                                    'admin' => false,
+                                ),
+                            );
+                        }
+                    }
                 } else {
                     $defaul_msg = sprintf(__('Gagal %s'), $defaul_msg);
                     $result = array(
@@ -262,7 +293,7 @@ class PurchaseOrder extends AppModel {
         if( !empty($status) ) {
             switch ($status) {
                 case 'unpaid':
-                    $default_options['conditions']['PurchaseOrder.transaction_status'] = 'pending';
+                    $default_options['conditions']['PurchaseOrder.transaction_status'] = array( 'posting', 'unposting', 'approved' );
                     break;
                 case 'half_paid':
                     $default_options['conditions']['PurchaseOrder.transaction_status'] = 'half_paid';
@@ -419,6 +450,9 @@ class PurchaseOrder extends AppModel {
         $msg = __('Gagal menyimpan PO');
 
         if( !empty($data) ) {
+            $transaction_status = $this->filterEmptyField($data, 'PurchaseOrder', 'transaction_status');
+            $grandtotal = $this->filterEmptyField($data, 'PurchaseOrder', 'grandtotal');
+
             $flag = $this->saveAll($data, array(
                 'validate' => 'only',
                 'deep' => true,
@@ -441,6 +475,7 @@ class PurchaseOrder extends AppModel {
                         'deep' => true,
                     ));
                     $this->_callSetJournalAsset($id, $data);
+                    $id = $this->id;
 
                     $result = array(
                         'msg' => $msg,
@@ -448,9 +483,28 @@ class PurchaseOrder extends AppModel {
                         'Log' => array(
                             'activity' => $msg,
                             'old_data' => $value,
+                            'document_id' => $id,
                         ),
                         'data' => $data,
                     );
+
+                    if( $transaction_status == 'posting' ) {
+                        $nodoc = $this->filterEmptyField($data, 'PurchaseOrder', 'nodoc');
+                        $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval('po', $grandtotal);
+
+                        if( !empty($allowApprovals) ) {
+                            $result['Notification'] = array(
+                                'user_id' => $allowApprovals,
+                                'name' => sprintf(__('Purchase Order dengan No Dokumen %s memerlukan ijin Approval'), $nodoc),
+                                'link' => array(
+                                    'controller' => 'assets',
+                                    'action' => 'purchase_order_detail',
+                                    $id,
+                                    'admin' => false,
+                                ),
+                            );
+                        }
+                    }
                 } else {
                     $result = array(
                         'msg' => $msg,

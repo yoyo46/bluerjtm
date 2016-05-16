@@ -110,6 +110,37 @@ class Notification extends AppModel {
         }
     }
 
+    function doSaveMany( $data = NULL ){
+        if( !empty($data) ) {
+            $flag = true;
+            $users = !empty($data['Notification']['user_id'])?$data['Notification']['user_id']:false;
+
+            if( !is_array($users) ) {         
+                $users = array(
+                    $users,
+                );
+            }
+
+            if( !empty($data['Notification']['link']) ) {
+                $data['Notification']['link'] = serialize($data['Notification']['link']);
+                $data['Notification']['url'] = $data['Notification']['link'];
+            }
+
+            if( !empty($users) ) {
+                foreach ($users as $key => $user_id) {
+                    $this->create();
+                    $data['Notification']['user_id'] = $user_id;
+
+                    if( !$this->save($data) ) {
+                        $flag = false;
+                    }
+                }
+            }
+
+            return $flag;
+        }
+    }
+
     function doRead ( $id ) {
         $this->set('read', 1);
         $this->id = $id;

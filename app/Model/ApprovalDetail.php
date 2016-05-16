@@ -124,5 +124,21 @@ class ApprovalDetail extends AppModel {
 
         return $data;
     }
+
+    function _callPriorityApproval ( $position_id = false, $approval_detail_id = false ) {
+        $value = $this->ApprovalDetailPosition->getData('first', array(
+            'conditions' => array(
+                'ApprovalDetailPosition.employe_position_id' => $position_id,
+                'ApprovalDetailPosition.approval_detail_id' => $approval_detail_id,
+                'ApprovalDetailPosition.is_priority' => 1,
+            ),
+        ));
+
+        if( !empty($value) ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 ?>

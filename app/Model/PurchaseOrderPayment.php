@@ -309,7 +309,7 @@ class PurchaseOrderPayment extends AppModel {
                     $paid = $this->PurchaseOrderPaymentDetail->_callPaidPO($purchase_order_id, $id);
 
                     if( empty($paid) ) {
-                        $status = 'pending';
+                        $status = 'approved';
                     } else {
                         $status = 'half_paid';
                     }

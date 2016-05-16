@@ -137,6 +137,41 @@ class Approval extends AppModel {
         return $data;
     }
 
+    function _callApprovalId ($modul, $user_position_id) {
+        $userData = Configure::read('__Site.config_user_data');
+        $approval_position_id = $this->filterEmptyField($userData, 'Employe', 'employe_position_id');
+        $data = $this->getData('first', array(
+            'conditions' => array(
+                'ApprovalModule.slug' => $modul,
+                'Approval.employe_position_id' => $user_position_id,
+            ),
+        ));
+
+        $approval_id = $this->filterEmptyField($data, 'Approval', 'id');
+        $approval_name = $this->filterEmptyField($data, 'ApprovalModule', 'name');
+        
+        $data = $this->ApprovalDetail->ApprovalDetailPosition->getData('first', array(
+            'conditions' => array(
+                'ApprovalDetail.approval_id' => $approval_id,
+                'ApprovalDetailPosition.employe_position_id' => $approval_position_id,
+            ),
+            'contain' => array(
+                'ApprovalDetail',
+            ),
+        ));
+        $approval_detail_id = $this->filterEmptyField($data, 'ApprovalDetail', 'id');
+        $approval_detail_position_id = $this->filterEmptyField($data, 'ApprovalDetailPosition', 'id');
+
+        return array(
+            'DocumentAuth' => array(
+                'approval_id' => $approval_id,
+                'approval_detail_id' => $approval_detail_id,
+                'approval_detail_position_id' => $approval_detail_position_id,
+                'approval_name' => $approval_name,
+            ),
+        );
+    }
+
     function getUserOtorisasiApproval ( $modul, $employe_position_id, $grand_total, $document_id = false ) {
         $result = false;
         $data = $this->getData('first', array(
@@ -145,7 +180,7 @@ class Approval extends AppModel {
                 'Approval.employe_position_id' => $employe_position_id,
             ),
         ));
-        
+
         if( !empty($data) ) {
             $approval_id = !empty($data['Approval']['id'])?$data['Approval']['id']:false;
             $conditions = array(
@@ -220,9 +255,11 @@ class Approval extends AppModel {
         return $result;
     }
 
-    function _callNeedApproval ( $module_id, $total ) {
+    function _callNeedApproval ( $module, $total ) {
         $employe_position_id = Configure::read('__Site.User.employe_position_id');
         $users = false;
+        $approval_module = $this->ApprovalModule->getMerge(array(), $module, 'ApprovalModule.slug');
+        $module_id = $this->filterEmptyField($approval_module, 'ApprovalModule', 'id');
 
         $values = $this->ApprovalDetail->getData('all', array(
             'conditions' => array(
@@ -357,6 +394,23 @@ class Approval extends AppModel {
         }
 
         return $conditions;
+    }
+
+    function _callAuthApproval ( $data ) {
+        $userData = Configure::read('__Site.config_user_data');
+        $user_position_id = $this->filterEmptyField($userData, 'Employe', 'employe_position_id');
+
+        if( !empty($data) ) {
+            $approvals = Set::extract('/EmployePosition/id', $data);
+        } else {
+            $approvals = array();
+        }
+
+        if( in_array($user_position_id, $approvals) ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 ?>

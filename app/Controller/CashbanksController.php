@@ -265,7 +265,7 @@ class CashbanksController extends AppController {
                 }
             }
 
-            $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval(1, $total_coa);
+            $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval('cash-bank', $total_coa);
 
             if( $transaction_status == 'posting' && empty($allowApprovals) ) {
                 $data['CashBank']['completed'] = 1;
@@ -290,7 +290,8 @@ class CashbanksController extends AppController {
                         ));
 
                         $this->CashBank->DocumentAuth->deleteAll(array(
-                            'DocumentAuth.document_id' => $cash_bank_id
+                            'DocumentAuth.document_id' => $cash_bank_id,
+                            'DocumentAuth.document_type' => 'cash_bank',
                         ));
                     }
 

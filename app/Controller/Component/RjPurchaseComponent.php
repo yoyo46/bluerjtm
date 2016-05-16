@@ -253,12 +253,12 @@ class RjPurchaseComponent extends Component {
                         $paid += $price;
 
                         if( $paid >= $total_po ) {
-                            $transaction_status = 'paid';
+                            $status = 'paid';
                         } else {
-                            $transaction_status = 'half_paid';
+                            $status = 'half_paid';
                         }
 
-                        $dataSave['PurchaseOrderPaymentDetail'][$key]['PurchaseOrder']['transaction_status'] = $transaction_status;
+                        $dataSave['PurchaseOrderPaymentDetail'][$key]['PurchaseOrder']['transaction_status'] = $status;
                     }
                 }
 

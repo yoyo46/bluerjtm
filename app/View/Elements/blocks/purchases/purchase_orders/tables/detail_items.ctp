@@ -1,5 +1,6 @@
 <?php 
         $product_id = $this->Common->filterEmptyField($value, $modelName, 'product_id');
+        $supplier_quotation_id = $this->Common->filterEmptyField($value, $modelName, 'supplier_quotation_id');
         $price = $this->Common->filterEmptyField($value, $modelName, 'price');
         $disc = $this->Common->filterEmptyField($value, $modelName, 'disc');
         $ppn = $this->Common->filterEmptyField($value, $modelName, 'ppn');
@@ -11,6 +12,12 @@
         $unit = $this->Common->filterEmptyField($value, 'ProductUnit', 'name');
 
         $customTotal = !empty($total)?$total:0;
+
+        if( !empty($supplier_quotation_id) ) {
+            $disabled = true;
+        } else {
+            $disabled = false;
+        }
 ?>
 <tr class="pick-document" rel="<?php echo $product_id; ?>">
     <?php
@@ -33,7 +40,7 @@
                 'type' => 'text',
                 'frameClass' => false,
                 'class' => 'input_price text-right price',
-                'disabled' => true,
+                'disabled' => $disabled,
                 'attributes' => array(
                     'value' => $price,
                 ),
@@ -42,7 +49,7 @@
                 'type' => 'text',
                 'frameClass' => false,
                 'class' => 'disc input_price text-right',
-                'disabled' => true,
+                'disabled' => $disabled,
                 'attributes' => array(
                     'value' => $disc,
                 ),
@@ -51,7 +58,7 @@
                 'type' => 'text',
                 'frameClass' => false,
                 'class' => 'ppn input_price text-right',
-                'disabled' => true,
+                'disabled' => $disabled,
                 'attributes' => array(
                     'value' => $ppn,
                 ),
