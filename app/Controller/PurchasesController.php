@@ -277,7 +277,8 @@ class PurchasesController extends AppController {
                 $result = $this->PurchaseOrder->doApproval($data, $id);
                 $this->MkCommon->setProcessParams($result, array(
                     'controller' => 'purchases',
-                    'action' => 'purchase_orders',
+                    'action' => 'purchase_order_detail',
+                    $id,
                     'admin' => false,
                 ));
             }

@@ -236,6 +236,7 @@ class PurchaseOrder extends AppModel {
                                     $id,
                                     'admin' => false,
                                 ),
+                                'type_notif' => 'warning',
                             );
                         }
                     }

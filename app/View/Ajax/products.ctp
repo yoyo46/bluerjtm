@@ -104,21 +104,30 @@
                             echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.price.%s', $modelName, $id), false, array(
                                 'type' => 'text',
                                 'frameClass' => false,
-                                'class' => 'input_price text-right price',
+                                'class' => 'text-right price',
+                                'attributes' => array(
+                                    'data-type' => 'input_price_coma',
+                                ),
                             )), array(
                                 'class' => 'hide',
                             ));
                             echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.disc.%s', $modelName, $id), false, array(
                                 'type' => 'text',
                                 'frameClass' => false,
-                                'class' => 'disc input_price text-right',
+                                'class' => 'disc text-right',
+                                'attributes' => array(
+                                    'data-type' => 'input_price_coma',
+                                ),
                             )), array(
                                 'class' => 'hide',
                             ));
                             echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.ppn.%s', $modelName, $id), false, array(
                                 'type' => 'text',
                                 'frameClass' => false,
-                                'class' => 'ppn input_price text-right',
+                                'class' => 'ppn text-right',
+                                'attributes' => array(
+                                    'data-type' => 'input_price_coma',
+                                ),
                             )), array(
                                 'class' => 'hide',
                             ));

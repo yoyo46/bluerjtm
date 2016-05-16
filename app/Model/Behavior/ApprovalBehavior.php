@@ -5,18 +5,18 @@ class ApprovalBehavior extends ModelBehavior {
 	function doApproval(Model $model, $data = array(), $id = false){
         $result = false;
         $defaul_msg = __('melakukan proses approval');
+        $employe_position_id = Configure::read('__Site.User.employe_position_id');
 
 		if( !empty($data) ) {
 			$document_id = $model->filterEmptyField($data, 'DocumentAuth', 'document_id');
 			$user_id = $model->filterEmptyField($data, 'DocumentAuth', 'user_id');
 			$nodoc = $model->filterEmptyField($data, 'DocumentAuth', 'nodoc');
-			$user_position_id = $model->filterEmptyField($data, 'DocumentAuth', 'user_position_id');
 			$approval_detail_id = $model->filterEmptyField($data, 'DocumentAuth', 'approval_detail_id');
 			$status_document = $model->filterEmptyField($data, 'DocumentAuth', 'status_document');
 			$approval_name = $model->filterEmptyField($data, 'DocumentAuth', 'approval_name');
 			$document_url = $model->filterEmptyField($data, 'DocumentAuth', 'document_url');
 			$document_revised_url = $model->filterEmptyField($data, 'DocumentAuth', 'document_revised_url');
-			$priority = $model->DocumentAuth->ApprovalDetail->_callPriorityApproval($user_position_id, $approval_detail_id);
+			$priority = $model->DocumentAuth->ApprovalDetail->_callPriorityApproval($employe_position_id, $approval_detail_id);
 
 			$model->DocumentAuth->create();
 			$model->DocumentAuth->set($data);

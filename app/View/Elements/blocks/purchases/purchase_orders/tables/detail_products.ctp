@@ -28,7 +28,7 @@
             'qty' => array(
                 'name' => __('Qty'),
                 'class' => 'text-center',
-                'style' => 'width:15%;',
+                'style' => 'width:10%;',
             ),
             'price' => array(
                 'name' => __('Harga'),
