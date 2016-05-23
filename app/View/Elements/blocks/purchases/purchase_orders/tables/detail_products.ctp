@@ -98,19 +98,21 @@
                                     $total = $this->Purchase->calculate($value, $ppn_include);
                                     $grandtotal += $total;
 
-                                    $customTotal = $this->Common->getFormatPrice($total);
-                                    $disabled = false;
+                                    $customTotal = $this->Common->getFormatPrice($total, '', 2);
 
-                                    if( !empty($supplier_quotation_detail_id) ) {
-                                        $disabled = true;
-                                    }
+                                    $code = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'code');
+                                    $name = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'name');
+                                    $unit = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'unit');
 
                                     echo $this->element('blocks/purchases/purchase_orders/tables/detail_items', array(
                                         'modelName' => 'PurchaseOrderDetail',
-                                        'sq_detail_id' => $supplier_quotation_detail_id,
+                                        'supplier_quotation_detail_id' => $supplier_quotation_detail_id,
                                         'value' => $value,
                                         'total' => $customTotal,
-                                        'disabled' => $disabled,
+                                        'code' => $code,
+                                        'name' => $name,
+                                        'unit' => $unit,
+                                        'idx' => $key,
                                     ));
                                 }
                             }
@@ -119,7 +121,7 @@
                 <tfoot>
                     <tr class="grandtotal">
                         <?php
-                                $customGrandtotal = $this->Common->getFormatPrice($grandtotal);
+                                $customGrandtotal = $this->Common->getFormatPrice($grandtotal, '', 2);
 
                                 echo $this->Html->tag('td', __('Grand Total'), array(
                                     'colspan' => 7,

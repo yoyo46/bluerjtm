@@ -48,6 +48,12 @@ class PurchaseOrderDetail extends AppModel {
                 'message' => 'PPN harga barang harus berupa angka'
             ),
         ),
+        'qty' => array(
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'Qty harap diisi'
+            ),
+        ),
 	);
 
 	function getData( $find, $options = false, $elements = false ){

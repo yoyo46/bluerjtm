@@ -134,11 +134,18 @@ class Product extends AppModel {
                     $product_category_id = !empty($value['Product']['product_category_id'])?$value['Product']['product_category_id']:false;
                     $value = $this->ProductUnit->getMerge($value, $product_unit_id);
 
-                    if( $modelName == 'SupplierQuotationDetail' ) {
-                        $value['Product']['rate'] = $this->SupplierQuotationDetail->SupplierQuotation->_callRatePrice($id, $quotation_id);
-                    }
-
                     $data[$key] = array_merge($data[$key], $value);
+
+                    switch ($modelName) {
+                        case 'SupplierQuotationDetail':
+                            $data[$key]['Product']['rate'] = $this->SupplierQuotationDetail->SupplierQuotation->_callRatePrice($id, $quotation_id);
+                            break;
+                        case 'PurchaseOrderDetail':
+                            $data[$key]['PurchaseOrderDetail']['code'] = $this->filterEmptyField($value, 'Product', 'code');
+                            $data[$key]['PurchaseOrderDetail']['name'] = $this->filterEmptyField($value, 'Product', 'name');
+                            $data[$key]['PurchaseOrderDetail']['unit'] = $this->filterEmptyField($value, 'ProductUnit', 'name');
+                            break;
+                    }
                 }
             }
         } else if( empty($data['Product']) && !empty($id) ) {

@@ -189,28 +189,39 @@ class PurchaseOrder extends AppModel {
                 $defaul_msg = sprintf(__('mengubah %s'), $defaul_msg);
             }
 
-            $this->set($data);
-            $validates = $this->validates();
+            if( $transaction_status == 'posting' ) {
+                $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval('po', $grandtotal);
 
-            $detailValidates = $this->PurchaseOrderDetail->doSave($data, false, true);
+                if( empty($allowApprovals) ) {
+                    $data['PurchaseOrder']['transaction_status'] = 'approved';
+                }
+            }
 
-            if( $validates && $detailValidates ) {
-                $this->DocumentAuth->deleteAll(array(
-                    'DocumentAuth.document_id' => $id,
-                    'DocumentAuth.document_type' => 'po',
+            $flag = $this->saveAll($data, array(
+                'validate' => 'only',
+                'deep' => true,
+            ));
+
+            if( !empty($flag) ) {
+                if( !empty($id) ) {
+                    $this->PurchaseOrderDetail->deleteAll(array(
+                        'PurchaseOrderDetail.purchase_order_id' => $id,
+                    ));
+                }
+
+                $flag = $this->saveAll($data, array(
+                    'deep' => true,
                 ));
 
-                if( $this->save($data) ) {
+                if( !empty($flag) ) {
                     $id = $this->id;
+                    $this->DocumentAuth->deleteAll(array(
+                        'DocumentAuth.document_id' => $id,
+                        'DocumentAuth.document_type' => 'po',
+                    ));
                     
-                    $this->PurchaseOrderDetail->doSave($data, $id);
                     $defaul_msg = sprintf(__('Berhasil %s'), $defaul_msg);
-
                     $sq_id = $data['PurchaseOrder']['supplier_quotation_id'];
-
-                    $this->SupplierQuotation->id = $sq_id;
-                    $this->SupplierQuotation->set('is_po', 1);
-                    $this->SupplierQuotation->save();
 
                     $result = array(
                         'msg' => $defaul_msg,
@@ -224,8 +235,6 @@ class PurchaseOrder extends AppModel {
                     );
 
                     if( $transaction_status == 'posting' ) {
-                        $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval('po', $grandtotal);
-
                         if( !empty($allowApprovals) ) {
                             $result['Notification'] = array(
                                 'user_id' => $allowApprovals,
@@ -237,6 +246,7 @@ class PurchaseOrder extends AppModel {
                                     'admin' => false,
                                 ),
                                 'type_notif' => 'warning',
+                                'type' => 'warning',
                             );
                         }
                     }
@@ -341,7 +351,7 @@ class PurchaseOrder extends AppModel {
 
             if( $this->save() ) {
                 $this->SupplierQuotation->id = $sq_id;
-                $this->SupplierQuotation->set('is_po', 0);
+                $this->SupplierQuotation->set('transaction_status', 'po');
                 $this->SupplierQuotation->save();
 
                 $msg = sprintf(__('Berhasil %s'), $default_msg);

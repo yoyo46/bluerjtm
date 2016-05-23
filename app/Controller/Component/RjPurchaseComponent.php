@@ -99,23 +99,26 @@ class RjPurchaseComponent extends Component {
         return $total;
     }
 
-    function _callBeforeSavePO ( $data ) {
+    function _callBeforeSavePO ( $data, $id = false ) {
         if( !empty($data) ) {
             $dataSave = array();
             $ppn_include = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'ppn_include');
             $transaction_date = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'transaction_date');
             $no_sq = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'no_sq');
+            $transaction_status = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'transaction_status');
 
-            $data = $this->controller->PurchaseOrder->SupplierQuotation->getMerge($data, $no_sq, 'SupplierQuotation.nodoc');
+            $supplierQuotation = $this->controller->PurchaseOrder->SupplierQuotation->getMerge(array(), $no_sq, 'SupplierQuotation.nodoc');
 
             $dataDetail = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderDetail');
             $dataDetailProduct = $this->MkCommon->filterEmptyField($dataDetail, 'product_id');
 
             $transaction_date = $this->MkCommon->getDate($transaction_date);
+            $supplier_quotation_id = $this->MkCommon->filterEmptyField($supplierQuotation, 'SupplierQuotation', 'id');
 
+            $data['PurchaseOrder']['id'] = $id;
             $data['PurchaseOrder']['user_id'] = Configure::read('__Site.config_user_id');
             $data['PurchaseOrder']['transaction_date'] = $transaction_date;
-            $data['PurchaseOrder']['supplier_quotation_id'] = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'id');
+            $data['PurchaseOrder']['supplier_quotation_id'] = $supplier_quotation_id;
 
             if( !empty($dataDetailProduct) ) {
                 $grandtotal = 0;
@@ -149,15 +152,22 @@ class RjPurchaseComponent extends Component {
                     $disc = $this->MkCommon->_callPriceConverter($disc);
                     $price = $this->MkCommon->_callPriceConverter($price);
 
+                    $product = $this->controller->PurchaseOrder->PurchaseOrderDetail->Product->getMerge(array(), $product_id);
+                    $code = $this->MkCommon->filterEmptyField($product, 'Product', 'code');
+                    $name = $this->MkCommon->filterEmptyField($product, 'Product', 'name');
+                    $unit = $this->MkCommon->filterEmptyField($product, 'ProductUnit', 'name');
+
                     $dataPODetail['PurchaseOrderDetail'] = array(
                         'product_id' => $product_id,
+                        'code' => $code,
+                        'name' => $name,
+                        'unit' => $unit,
                         'supplier_quotation_detail_id' => $supplier_quotation_detail_id,
                         'price' => $price,
                         'ppn' => $ppn,
                         'disc' => $disc,
                         'qty' => $qty,
                     );
-                    $dataPODetail = $this->controller->PurchaseOrder->PurchaseOrderDetail->Product->getMerge($dataPODetail, $product_id);
 
                     $total = $this->calculate($dataPODetail, $ppn_include);
                     $dataPODetail['PurchaseOrderDetail']['total'] = $total;

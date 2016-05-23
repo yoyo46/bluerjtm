@@ -48,12 +48,18 @@
                 'class' => 'text-center',
                 'style' => 'width:15%;',
             ),
-            'action' => array(
-                'name' => __('Action'),
-                'class' => 'text-center',
-                'style' => 'width:5%;',
-            ),
         );
+
+        if( empty($view) ) {
+            $dataColumns = array_merge($dataColumns, array(
+                'action' => array(
+                    'name' => __('Action'),
+                    'class' => 'text-center',
+                    'style' => 'width:5%;',
+                ),
+            ));
+        }
+
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 ?>
 <div class="temp-document-picker document-calc <?php echo $tableClass; ?>">
@@ -91,7 +97,7 @@
                                     $total = ( $price - $disc ) + $ppn;
                                     $grandtotal += $total;
 
-                                    $customTotal = $this->Common->getFormatPrice($total);
+                                    $customTotal = $this->Common->getFormatPrice($total, '', 2);
                     ?>
                     <tr class="pick-document" rel="<?php echo $product_id; ?>">
                         <?php
@@ -106,34 +112,40 @@
                                 echo $this->Html->tag('td', $this->Common->buildInputForm('SupplierQuotationDetail.price.'.$product_id, false, array(
                                     'type' => 'text',
                                     'frameClass' => false,
-                                    'class' => 'input_price text-right price',
+                                    'class' => 'text-right price',
                                     'attributes' => array(
-                                        'value' => $price,
+                                        'value' => $this->Common->getFormatPrice($price, '', 2),
+                                        'data-type' => 'input_price_coma',
                                     ),
                                 )));
                                 echo $this->Html->tag('td', $this->Common->buildInputForm('SupplierQuotationDetail.disc.'.$product_id, false, array(
                                     'type' => 'text',
                                     'frameClass' => false,
-                                    'class' => 'disc input_price text-right',
+                                    'class' => 'disc text-right',
                                     'attributes' => array(
-                                        'value' => $disc,
+                                        'value' => $this->Common->getFormatPrice($disc, '', 2),
+                                        'data-type' => 'input_price_coma',
                                     ),
                                 )));
                                 echo $this->Html->tag('td', $this->Common->buildInputForm('SupplierQuotationDetail.ppn.'.$product_id, false, array(
                                     'type' => 'text',
                                     'frameClass' => false,
-                                    'class' => 'ppn input_price text-right',
+                                    'class' => 'ppn text-right',
                                     'attributes' => array(
-                                        'value' => $ppn,
+                                        'value' => $this->Common->getFormatPrice($ppn, '', 2),
+                                        'data-type' => 'input_price_coma',
                                     ),
                                 )));
                                 echo $this->Html->tag('td', $customTotal, array(
                                     'class' => 'total text-right',
                                 ));
-                                echo $this->Html->tag('td', $this->Html->link($this->Common->icon('times'), '#', array(
-                                    'class' => 'delete-document btn btn-danger btn-xs',
-                                    'escape' => false,
-                                )));
+                                
+                                if( empty($view) ) {
+                                    echo $this->Html->tag('td', $this->Html->link($this->Common->icon('times'), '#', array(
+                                        'class' => 'delete-document btn btn-danger btn-xs',
+                                        'escape' => false,
+                                    )));
+                                }
                         ?>
                     </tr>
                     <?php
@@ -144,7 +156,7 @@
                 <tfoot>
                     <tr class="grandtotal">
                         <?php
-                                $customGrandtotal = $this->Common->getFormatPrice($grandtotal);
+                                $customGrandtotal = $this->Common->getFormatPrice($grandtotal, '', 2);
 
                                 echo $this->Html->tag('td', __('Grand Total'), array(
                                     'colspan' => 7,
@@ -152,6 +164,7 @@
                                 ));
                                 echo $this->Html->tag('td', $customGrandtotal, array(
                                     'class' => 'text-right total',
+                                    'data-decimal' => 2,
                                 ));
                         ?>
                     </tr>

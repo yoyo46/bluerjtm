@@ -137,7 +137,18 @@ class ApprovalDetail extends AppModel {
         if( !empty($value) ) {
             return true;
         } else {
-            return false;
+            $value = $this->ApprovalDetailPosition->getData('count', array(
+                'conditions' => array(
+                    'ApprovalDetailPosition.employe_position_id' => $position_id,
+                    'ApprovalDetailPosition.approval_detail_id' => $approval_detail_id,
+                ),
+            ));
+
+            if( $value == 1 ) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 }

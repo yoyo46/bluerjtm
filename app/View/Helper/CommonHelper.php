@@ -2456,6 +2456,12 @@ class CommonHelper extends AppHelper {
                     'class' => 'label label-success',
                 ));
                 break;
+
+            case 'po':
+                $customStatus = $this->Html->tag('span', __('PO'), array(
+                    'class' => 'label label-pink',
+                ));
+                break;
             
             default:
                 $customStatus = $this->Html->tag('span', __('Belum Dibayar'), array(

@@ -4058,6 +4058,9 @@ thead th.headcol {
 .label-paid.disabled {
   background-color: rgba(6,157,84, 0.8);
 }
+.label-pink {
+  background-color: #F3289E;
+}
 
 .print-label {
   font-size: 14px;

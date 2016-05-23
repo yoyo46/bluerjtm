@@ -36,26 +36,25 @@
                 break;
         }
 
-        if( empty($transaction_status) || in_array($transaction_status, array( 'posting' )) ) {
-            if( !empty($user_otorisasi_approvals) ){
-                $dataColumns = array(
-                    'position' => array(
-                        'name' => __('Posisi yang menyetujui'),
-                    ),
-                    'priority' => array(
-                        'name' => __('Prioritas Approval'),
-                        'class' => 'text-center',
-                    ),
-                    'status' => array(
-                        'name' => __('Status'),
-                        'class' => 'text-center',
-                    ),
-                    'note' => array(
-                        'name' => __('Keterangan'),
-                        'class' => 'text-center',
-                    ),
-                );
-                $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
+        if( !empty($user_otorisasi_approvals) ){
+            $dataColumns = array(
+                'position' => array(
+                    'name' => __('Posisi yang menyetujui'),
+                ),
+                'priority' => array(
+                    'name' => __('Prioritas Approval'),
+                    'class' => 'text-center',
+                ),
+                'status' => array(
+                    'name' => __('Status'),
+                    'class' => 'text-center',
+                ),
+                'note' => array(
+                    'name' => __('Keterangan'),
+                    'class' => 'text-center',
+                ),
+            );
+            $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 ?>
 <div id="list-approval">
     <div class="box box-success">
@@ -106,8 +105,6 @@
     </div>
 </div>
 <?php
-        }
-        
         if( !empty($show_approval) && empty($completed) ){
 ?>
 <div class="box box-success">

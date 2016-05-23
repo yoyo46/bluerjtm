@@ -5,7 +5,6 @@
             ),
             'code' => array(
                 'name' => __('No Dokumen'),
-                'field_model' => 'SupplierQuotation.nodoc',
             ),
             'supplier' => array(
                 'name' => __('Supplier'),
@@ -18,7 +17,6 @@
             ),
             'status' => array(
                 'name' => __('Status'),
-                'field_model' => 'SupplierQuotation.status',
                 'class' => 'text-center',
             ),
             'action' => array(
@@ -60,44 +58,41 @@
                             $transactionDate = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'transaction_date');
                             $note = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'note');
                             $status = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'status');
-                            $is_po = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'is_po');
+                            $transaction_status = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'transaction_status');
 
                             $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
 
-                            $customStatus = $this->Purchase->_callStatusSQ($value);
                             $customAvailable = $this->Common->getCombineDate($availableFrom, $availableTo );
                             $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
+                            $customStatus = $this->Common->_callTransactionStatus($value, 'SupplierQuotation');
 
-                            if( !empty($status) && empty($is_po) ) {
-                                $lblEdit = __('Edit');
-                            } else {
-                                $lblEdit = __('Detail');
-                            }
-
-                            $customAction = $this->Html->link($lblEdit, array(
+                            $customAction = $this->Html->link(__('Detail'), array(
                                 'controller' => 'purchases',
-                                'action' => 'supplier_quotation_edit',
+                                'action' => 'supplier_quotation_detail',
                                 $id,
                                 'admin' => false,
                             ), array(
-                                'class' => 'btn btn-primary btn-xs'
+                                'class' => 'btn btn-info btn-xs'
                             ));
-                            // $customAction .= $this->Html->link(__('Approval'), array(
-                            //     'controller' => 'purchases',
-                            //     'action' => 'supplier_quotation_approval',
-                            //     $id,
-                            //     'admin' => false,
-                            // ), array(
-                            //     'class' => 'btn btn-success btn-xs',
-                            // ));
-                            $customAction .= $this->Html->link(__('Hapus'), array(
-                                'controller' => 'purchases',
-                                'action' => 'supplier_quotation_toggle',
-                                $id,
-                                'admin' => false,
-                            ), array(
-                                'class' => 'btn btn-danger btn-xs',
-                            ), __('Anda yakin ingin menghapus quotation ini?'));
+
+                            if( in_array($transaction_status, array( 'unposting', 'revised' )) ){
+                                $customAction .= $this->Html->link(__('Edit'), array(
+                                    'controller' => 'purchases',
+                                    'action' => 'supplier_quotation_edit',
+                                    $id,
+                                    'admin' => false,
+                                ), array(
+                                    'class' => 'btn btn-primary btn-xs'
+                                ));
+                                $customAction .= $this->Html->link(__('Hapus'), array(
+                                    'controller' => 'purchases',
+                                    'action' => 'supplier_quotation_toggle',
+                                    $id,
+                                    'admin' => false,
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs',
+                                ), __('Anda yakin ingin menghapus quotation ini?'));
+                            }
             ?>
             <tr>
                 <?php 

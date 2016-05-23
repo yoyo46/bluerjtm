@@ -7,7 +7,12 @@
 		);
 		$value = !empty($value)?$value:false;
         $status = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'status');
-        $is_po = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'is_po');
+        $transaction_status = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'transaction_status');
+
+        echo $this->element('blocks/cashbanks/tables/list_approvals', array(
+        	'urlBack' => false,
+        	'modelName' => 'SupplierQuotation',
+    	));
 
 		$this->Html->addCrumb($title, $urlRoot);
 		$this->Html->addCrumb($sub_module_title);
@@ -39,17 +44,19 @@
                 ));
 				echo $this->Common->buildInputForm('note', __('Keterangan'));
 
-                echo $this->Html->tag('div', $this->Html->link($this->Common->icon('plus-square').__(' Ambil Barang'), $this->Html->url( array(
-                        'controller'=> 'ajax', 
-                        'action' => 'products',
-                        'admin' => false,
-                    )), array(
-	                    'escape' => false,
-	                    'title' => __('Daftar Barang'),
-						'class' => 'btn bg-maroon ajaxCustomModal',
-	                )), array(
-                	'class' => "form-group",
-            	));
+				if( empty($view) ) {
+	                echo $this->Html->tag('div', $this->Html->link($this->Common->icon('plus-square').__(' Ambil Barang'), $this->Html->url( array(
+	                        'controller'=> 'ajax', 
+	                        'action' => 'products',
+	                        'admin' => false,
+	                    )), array(
+		                    'escape' => false,
+		                    'title' => __('Daftar Barang'),
+							'class' => 'btn bg-maroon ajaxCustomModal',
+		                )), array(
+	                	'class' => "form-group",
+	            	));
+	            }
 	    ?>
     </div>
     <?php 
@@ -57,17 +64,13 @@
     ?>
     <div class="box-footer text-center action">
     	<?php
-    			if( ( !empty($status) && empty($is_po) ) || empty($value) ) {
-		    		echo $this->Form->button(__('Simpan'), array(
-						'div' => false, 
-						'class'=> 'btn btn-success',
-						'type' => 'submit',
-					));
-		    	}
-		    	
 	    		echo $this->Html->link(__('Kembali'), $urlRoot, array(
 					'class'=> 'btn btn-default',
 				));
+			
+				if( empty($view) ) {
+					$this->Common->_getButtonPostingUnposting( $value, 'SupplierQuotation', array( 'Commit', 'Draft' ) );
+				}
     	?>
     </div>
 </div>

@@ -18,6 +18,13 @@ class SupplierQuotation extends AppModel {
             'className' => 'SupplierQuotationDetail',
             'foreignKey' => 'supplier_quotation_id',
         ),
+        'DocumentAuth' => array(
+            'className' => 'DocumentAuth',
+            'foreignKey' => 'document_id',
+            'conditions' => array(
+                'DocumentAuth.document_type' => 'sq',
+            ),
+        ),
     );
 
 	var $validate = array(
@@ -75,7 +82,6 @@ class SupplierQuotation extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'SupplierQuotation.is_po' => 'ASC',
                 'SupplierQuotation.status' => 'DESC',
                 'SupplierQuotation.created' => 'DESC',
                 'SupplierQuotation.id' => 'DESC',
@@ -88,18 +94,21 @@ class SupplierQuotation extends AppModel {
                 $default_options['conditions']['SupplierQuotation.status'] = 1;
                 break;
             case 'available':
-                $default_options['conditions']['SupplierQuotation.is_po'] = 0;
+                $default_options['conditions']['SupplierQuotation.transaction_status'] = 'approved';
                 $default_options['conditions']['SupplierQuotation.status'] = 1;
-                $default_options['conditions']['DATE_FORMAT(SupplierQuotation.available_from, \'%Y-%m-%d\') <='] = date('Y-m-d');
                 $default_options['conditions']['DATE_FORMAT(SupplierQuotation.available_to, \'%Y-%m-%d\') >='] = date('Y-m-d');
                 break;
             case 'po':
                 $default_options['conditions']['SupplierQuotation.status'] = 1;
-                $default_options['conditions']['SupplierQuotation.is_po'] = 1;
+                $default_options['conditions']['SupplierQuotation.transaction_status'] = 'po';
                 break;
             case 'pending-po':
                 $default_options['conditions']['SupplierQuotation.status'] = 1;
-                $default_options['conditions']['SupplierQuotation.is_po'] = 0;
+                $default_options['conditions']['SupplierQuotation.transaction_status'] = array( 'approved' );
+                break;
+            case 'pending':
+                $default_options['conditions']['SupplierQuotation.transaction_status'] = array( 'unposting', 'revised' );
+                $default_options['conditions']['SupplierQuotation.status'] = 1;
                 break;
         }
 
@@ -153,7 +162,9 @@ class SupplierQuotation extends AppModel {
         $defaul_msg = __('supplier quotation');
 
         if ( !empty($data) ) {
-            $nodoc = !empty($data['SupplierQuotation']['nodoc'])?$data['SupplierQuotation']['nodoc']:false;
+            $nodoc = $this->filterEmptyField($data, 'SupplierQuotation', 'nodoc');
+            $transaction_status = $this->filterEmptyField($data, 'SupplierQuotation', 'transaction_status');
+            $grandtotal = $this->filterEmptyField($data, 'SupplierQuotation', 'grandtotal');
             $data['SupplierQuotation']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             if( !empty($nodoc) ) {
@@ -168,6 +179,14 @@ class SupplierQuotation extends AppModel {
                 $defaul_msg = sprintf(__('mengubah %s'), $defaul_msg);
             }
 
+            if( $transaction_status == 'posting' ) {
+                $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval('sq', $grandtotal);
+
+                if( empty($allowApprovals) ) {
+                    $data['SupplierQuotation']['transaction_status'] = 'approved';
+                }
+            }
+
             $this->set($data);
             $validates = $this->validates();
 
@@ -176,6 +195,10 @@ class SupplierQuotation extends AppModel {
             if( $validates && $detailValidates ) {
                 if( $this->save($data) ) {
                     $id = $this->id;
+                    $this->DocumentAuth->deleteAll(array(
+                        'DocumentAuth.document_id' => $id,
+                        'DocumentAuth.document_type' => 'sq',
+                    ));
                     
                     $this->SupplierQuotationDetail->doSave($data, $id);
                     $defaul_msg = sprintf(__('Berhasil %s'), $defaul_msg);
@@ -190,6 +213,23 @@ class SupplierQuotation extends AppModel {
                             'document_id' => $id,
                         ),
                     );
+
+                    if( $transaction_status == 'posting' ) {
+                        if( !empty($allowApprovals) ) {
+                            $result['Notification'] = array(
+                                'user_id' => $allowApprovals,
+                                'name' => sprintf(__('Supplier Quotation dengan No Dokumen %s memerlukan ijin Approval'), $nodoc),
+                                'link' => array(
+                                    'controller' => 'purchases',
+                                    'action' => 'supplier_quotation_detail',
+                                    $id,
+                                    'admin' => false,
+                                ),
+                                'type_notif' => 'approval',
+                                'type' => 'warning',
+                            );
+                        }
+                    }
                 } else {
                     $defaul_msg = sprintf(__('Gagal %s'), $defaul_msg);
                     $result = array(

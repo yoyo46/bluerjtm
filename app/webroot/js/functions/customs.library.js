@@ -903,12 +903,15 @@
         var settings = $.extend({
             obj: $('.document-picker'),
             objCheck: $('.document-picker .check-option'),
+            objCheckAll: $('.checkAll'),
         }, options );
 
         if( settings.obj.length > 0 ) {
-            settings.objCheck.off('click');
-            settings.objCheck.click(function(){
-                if(settings.objCheck.length > 0){
+            settings.objCheckAll.off('click');
+            settings.objCheckAll.click(function(){
+                if(settings.objCheckAll.length > 0){
+                    settings.objCheck.not(this).prop('checked', this.checked);
+                    
                     jQuery.each( settings.objCheck, function( i, val ) {
                         var self = $(this);
                         check_option_coa(self)
@@ -916,11 +919,18 @@
                 }
             });
 
+            settings.objCheck.off('click');
+            settings.objCheck.click(function(){
+                var self = $(this);
+                check_option_coa(self)
+            });
+
             function check_option_coa(self){
                 var parent = self.parents('.pick-document');
                 var rel_id = parent.attr('rel');
                 var temp_picker = $('.temp-document-picker');
-                var pickDocument = $('.pick-document[rel="'+rel_id+'"]');
+                var pickDocumentStr = '.pick-document[rel="'+rel_id+'"]';
+                var pickDocument = $(pickDocumentStr);
 
                 if(self.is(':checked')){
                     if(temp_picker.find('.pick-document[rel="'+rel_id+'"]').length <= 0){
@@ -933,13 +943,17 @@
                         calcItemTotal(temp_picker);
 
                         temp_picker.removeClass('hide');
-                        $.rebuildFunction();
-                        $.inputPrice({
-                            obj: temp_picker.find('.input_price'),
-                        });
-                        $.inputNumber();
                     }
+                } else {
+                    temp_picker.find(pickDocumentStr).remove();
+                    calcItemTotal(temp_picker);
                 }
+
+                $.rebuildFunction();
+                $.inputPrice({
+                    obj: temp_picker.find('.input_price'),
+                });
+                $.inputNumber();
             }
         }
     }
@@ -977,15 +991,17 @@
         }
     }
 
-    function calculate(parent){
+    function calculate(parent, self){
         var type = parent.attr('data-type');
         var objPrice = parent.find('.price');
+        var self = $.checkUndefined(self, objPrice);
+
         var price = $.convertNumber(objPrice.val());
         var disc = $.convertNumber(parent.find('.disc').val());
         var ppn = $.convertNumber(parent.find('.ppn').val());
         var qty = $.convertNumber(parent.find('.qty').val(), 'int', 1);
         var ppn_include = $('.ppn_include:checked').val();
-        var price_type = objPrice.attr('data-type');
+        var format_type = self.attr('data-type');
 
         if( type == 'single-total' ) {
             total = price;
@@ -997,8 +1013,8 @@
             }
         }
 
-        if( price_type == 'input_price_coma' ) {
-            objPrice.val( $.convertDecimal(objPrice, 2) );
+        if( format_type == 'input_price_coma' ) {
+            self.val( $.convertDecimal(self, 2) );
         }
 
         return total;
@@ -1030,13 +1046,13 @@
 
                         objPrice.val( $.formatDecimal(total) );
                     } else {
-                        total = calculate(parent);
+                        total = calculate(parent, self);
                     }
                 } else {
-                    total = calculate(parent);
+                    total = calculate(parent, self);
                 }
 
-                objTotal.html( $.formatDecimal(total) );
+                objTotal.html( $.formatDecimal(total, 2) );
                 calcGrandTotal();
             });
         }

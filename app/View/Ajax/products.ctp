@@ -1,9 +1,11 @@
-<div id="wrapper-modal-write">
+<div id="wrapper-modal-write" class="document-picker">
     <?php 
             $modelName = false;
             $dataColumns = array(
                 'check-box' => array(
-                    'name' => '',
+                    'name' => $this->Form->checkbox('checkbox_all', array(
+                        'class' => 'checkAll'
+                    )),
                     'class' => 'text-center',
                 ),
                 'code' => array(
@@ -42,7 +44,7 @@
             echo $this->element('blocks/ajax/forms/searchs/quotation_products');
     ?>
     <div class="box-body table-responsive">
-        <table class="table table-hover document-picker">
+        <table class="table table-hover">
             <?php
                     if( !empty($fieldColumn) ) {
                         echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));

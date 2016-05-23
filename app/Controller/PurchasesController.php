@@ -112,13 +112,16 @@ class PurchasesController extends AppController {
             'conditions' => array(
                 'SupplierQuotation.id' => $id,
             ),
+        ), array(
+            'status' => 'pending',
         ));
 
         if( !empty($value) ) {
             $value = $this->SupplierQuotation->SupplierQuotationDetail->getMerge($value, $id);
-            $is_po = $this->MkCommon->filterEmptyField($value, 'SupplierQuotation', 'is_po');
+            $value = $this->SupplierQuotation->DocumentAuth->getMerge($value, $id, 'sq');
+            $transaction_status = $this->MkCommon->filterEmptyField($value, 'SupplierQuotation', 'transaction_status');
 
-            if( empty($is_po) ) {
+            if( in_array($transaction_status, array( 'unposting', 'revised' )) ) {
                 $data = $this->request->data;
                 $data = $this->RjPurchase->_callBeforeSaveQuotation($data);
             } else {
@@ -137,6 +140,74 @@ class PurchasesController extends AppController {
             $this->set('active_menu', 'Supplier Quotation');
             $this->set(compact(
                 'vendors', 'value'
+            ));
+            $this->render('supplier_quotation_add');
+        } else {
+            $this->MkCommon->redirectReferer(__('Quotation tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function supplier_quotation_detail( $id = false ) {
+        $this->set('sub_module_title', __('Detail Supplier Quotation'));
+
+        $value = $this->SupplierQuotation->getData('first', array(
+            'conditions' => array(
+                'SupplierQuotation.id' => $id,
+            ),
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->SupplierQuotation->SupplierQuotationDetail->getMerge($value, $id);
+            $value = $this->SupplierQuotation->DocumentAuth->getMerge($value, $id, 'sq');
+
+            $user_id = $this->MkCommon->filterEmptyField($value, 'SupplierQuotation', 'user_id');
+            $grandtotal = $this->MkCommon->filterEmptyField($value, 'SupplierQuotation', 'grandtotal');
+            $nodoc = $this->MkCommon->filterEmptyField($value, 'SupplierQuotation', 'nodoc');
+
+            $value = $this->User->getMerge($value, $user_id);
+            $user_position_id = $this->MkCommon->filterEmptyField($value, 'Employe', 'employe_position_id');
+
+            $user_otorisasi_approvals = $this->User->Employe->EmployePosition->Approval->getUserOtorisasiApproval('sq', $user_position_id, $grandtotal, $id);
+            $show_approval = $this->User->Employe->EmployePosition->Approval->_callAuthApproval($user_otorisasi_approvals);
+            $data = $this->request->data;
+
+            if( !empty($show_approval) && !empty($data) ) {
+                $data = $this->MkCommon->_callBeforeSaveApproval($data, array(
+                    'user_id' => $user_id,
+                    'nodoc' => $nodoc,
+                    'user_position_id' => $user_position_id,
+                    'document_id' => $id,
+                    'document_type' => 'sq',
+                    'document_url' => array(
+                        'controller' => 'purchases',
+                        'action' => 'supplier_quotation_detail',
+                        $id,
+                        'admin' => false,
+                    ),
+                    'document_revised_url' => array(
+                        'controller' => 'purchases',
+                        'action' => 'supplier_quotation_edit',
+                        $id,
+                        'admin' => false,
+                    ),
+                ));
+                $result = $this->SupplierQuotation->doApproval($data, $id);
+                $this->MkCommon->setProcessParams($result, array(
+                    'controller' => 'purchases',
+                    'action' => 'supplier_quotation_detail',
+                    $id,
+                    'admin' => false,
+                ));
+            }
+
+            $this->request->data = $this->RjPurchase->_callBeforeRenderQuotation($value);
+
+            $vendors = $this->SupplierQuotation->Vendor->getData('list');
+            $this->set('active_menu', 'Supplier Quotation');
+            $this->set('view', 'detail');
+            $this->set(compact(
+                'vendors', 'value',
+                'user_otorisasi_approvals', 'show_approval'
             ));
             $this->render('supplier_quotation_add');
         } else {
@@ -211,7 +282,7 @@ class PurchasesController extends AppController {
             $value = $this->PurchaseOrder->DocumentAuth->getMerge($value, $id, 'po');
 
             $data = $this->request->data;
-            $data = $this->RjPurchase->_callBeforeSavePO($data);
+            $data = $this->RjPurchase->_callBeforeSavePO($data, $id);
             $result = $this->PurchaseOrder->doSave($data, $value, $id);
             $this->MkCommon->setProcessParams($result, array(
                 'controller' => 'purchases',

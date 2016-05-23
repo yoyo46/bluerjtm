@@ -66,11 +66,18 @@
                             foreach ($values as $key => $value) {
                                 $id = $this->Common->filterEmptyField($value, 'SupplierQuotationDetail', 'id');
 
+                                $code = $this->Common->filterEmptyField($value, 'Product', 'code');
+                                $name = $this->Common->filterEmptyField($value, 'Product', 'name');
+                                $unit = $this->Common->filterEmptyField($value, 'ProductUnit', 'name');
+
                                 echo $this->element('blocks/purchases/purchase_orders/tables/detail_items', array(
                                     'modelName' => 'SupplierQuotationDetail',
-                                    'sq_detail_id' => $id,
+                                    'supplier_quotation_detail_id' => $id,
                                     'value' => $value,
-                                    'disabled' => true,
+                                    'code' => $code,
+                                    'name' => $name,
+                                    'unit' => $unit,
+                                    'idx' => $key,
                                 ));
                             }
                         }

@@ -152,6 +152,7 @@ class Approval extends AppModel {
         
         $data = $this->ApprovalDetail->ApprovalDetailPosition->getData('first', array(
             'conditions' => array(
+                'ApprovalDetail.status' => 1,
                 'ApprovalDetail.approval_id' => $approval_id,
                 'ApprovalDetailPosition.employe_position_id' => $approval_position_id,
             ),
@@ -406,7 +407,9 @@ class Approval extends AppModel {
             $approvals = array();
         }
 
-        if( in_array($user_position_id, $approvals) ) {
+        $key = array_search($user_position_id, $approvals);
+
+        if( is_numeric($key) && empty($data[$key]['DocumentAuth']) ) {
             return true;
         } else {
             return false;
