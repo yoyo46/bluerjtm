@@ -58,6 +58,7 @@ class SuratJalan extends AppModel {
             
             default:
                 $default_options['conditions']['SuratJalan.status'] = 1;
+                $default_options['conditions']['SuratJalan.is_canceled'] = 0;
                 break;
         }
 

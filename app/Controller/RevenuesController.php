@@ -6053,7 +6053,9 @@ class RevenuesController extends AppController {
             ),
         ));
 
-        $this->paginate = $this->SuratJalan->getData('paginate', $options);
+        $this->paginate = $this->SuratJalan->getData('paginate', $options, array(
+            'status' => 'all',
+        ));
         $values = $this->paginate('SuratJalan');
 
         if( !empty($values) ) {
@@ -6097,6 +6099,9 @@ class RevenuesController extends AppController {
             $elementRevenue = array(
                 'branch' => false,
             );
+        }
+        if( !empty($disabled_edit) ) {
+            $elementRevenue['status'] = 'all';
         }
 
         $value = $this->Ttuj->SuratJalanDetail->SuratJalan->getData('first', array(
