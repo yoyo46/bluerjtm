@@ -720,12 +720,12 @@ class Truck extends AppModel {
         $plantCityId = Configure::read('__Site.Branch.Plant.id');
         $conditions = array();
 
-        if( !empty($plantCityId) ) {
-            $conditions['Truck.branch_id'] = $plantCityId;
-        }
+        // if( !empty($plantCityId) ) {
+        //     $conditions['Truck.branch_id'] = $plantCityId;
+        // }
 
-        $addConditions = $this->getListTruck( $id, true, false, $plantCityId );
-        $conditions = array_merge($conditions, $addConditions);
+        // $addConditions = $this->getListTruck( $id, true, false, $plantCityId );
+        // $conditions = array_merge($conditions, $addConditions);
 
         return $this->getData('list', array(
             'conditions' => $conditions,
@@ -735,6 +735,8 @@ class Truck extends AppModel {
             'order' => array(
                 'Truck.nopol'
             ),
+        ), false, array(
+            'branch' => false,
         ));
     }
 }

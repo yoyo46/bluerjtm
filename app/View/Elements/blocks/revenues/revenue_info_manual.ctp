@@ -11,7 +11,7 @@
 			$urlBrowse = array(
                 'controller'=> 'ajax', 
                 'action' => 'getTrucks',
-                'revenue',
+                'revenue_manual',
             );
             echo $this->Form->label('Revenue.truck_id', __('No. Pol * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
     ?>

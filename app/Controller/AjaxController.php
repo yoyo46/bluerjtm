@@ -1099,7 +1099,7 @@ class AjaxController extends AppController {
 
 		$title = __('Data Truk');
 		$data_action = 'browse-form';
-		$data_change = 'truckID';
+		$data_change = '#truckID';
 
 		$options = array(
             'conditions' => array(),
@@ -1113,7 +1113,7 @@ class AjaxController extends AppController {
         );
         $element = array();
 
-        if( in_array($action_type, array( 'ttuj', 'revenue' )) ) {
+        if( in_array($action_type, array( 'ttuj', 'revenue', 'revenue_manual' )) ) {
     		$ttuj = $this->Truck->Ttuj->getData('first', array(
                 'conditions' => array(
                     'Ttuj.id' => $action_id,
@@ -1125,23 +1125,28 @@ class AjaxController extends AppController {
 
             $options['contain'][] = 'Ttuj';
 
-            // if( $action_type == 'ttuj' ) {
-        		$plantCityId = Configure::read('__Site.Branch.Plant.id');
+            if( $action_type == 'revenue_manual' ) {
+				$data_change = '.truck-revenue-id';
+	        } else {
+	            // if( $action_type == 'ttuj' ) {
+	        		$plantCityId = Configure::read('__Site.Branch.Plant.id');
 
-        		// if( !empty($plantCityId) ) {
-          //   		$options['conditions']['Truck.branch_id'] = $plantCityId;
-          //   	}
-            // } else {
-            // 	$plantCityId = false;
-            // }
+	        		// if( !empty($plantCityId) ) {
+	          //   		$options['conditions']['Truck.branch_id'] = $plantCityId;
+	          //   	}
+	            // } else {
+	            // 	$plantCityId = false;
+	            // }
 
-			$addConditions = $this->Truck->getListTruck( $ttuj_truck_id, true, false, $plantCityId );
-            $options['conditions'] = array_merge($options['conditions'], $addConditions);
+				$addConditions = $this->Truck->getListTruck( $ttuj_truck_id, true, false, $plantCityId );
+	            $options['conditions'] = array_merge($options['conditions'], $addConditions);
+	        }
+	        
             $element = array(
         		'branch' => false,
     		);
 		} else if( $action_type == 'laka' ) {
-    		$data_change = 'laka-driver-change';
+    		$data_change = '#laka-driver-change';
         	$options['conditions'] = $this->MkCommon->_callConditionPlant($options['conditions'], 'Truck');
             $options['conditions']['OR'] = array(
                 array(
@@ -1153,7 +1158,7 @@ class AjaxController extends AppController {
             );
             $options['contain'][] = 'Laka';
         } else if( $action_type == 'cashbank' ) {
-    		$data_change = $action_id;
+    		$data_change = sprintf('#%s', $action_id);
         	$element = array(
         		'branch' => false,
     		);

@@ -32,7 +32,7 @@
                                 break;
                         }
         ?>
-        <tr data-value="<?php echo $result;?>" data-change="#<?php echo $data_change;?>">
+        <tr data-value="<?php echo $result;?>" data-change="<?php echo $data_change;?>">
             <td><?php echo $id;?></td>
             <td><?php echo $branch;?></td>
             <td><?php echo $nopol;?></td>
