@@ -59,10 +59,18 @@
 				        	<?php 
 									echo $this->Form->input('ttuj_date',array(
 										'label'=> __('Tgl TTUJ *'), 
-										'class'=>'form-control custom-date',
+										'class'=>'form-control custom-date ajax-change',
 										'required' => false,
 										'type' => 'text',
 										'value' => $ttujDate,
+										'href' => $this->Html->url(array(
+											'controller' => 'ajax',
+											'action' => 'change_lead_time',
+											'ttuj_date',
+											'admin' => false,
+										)),
+										'data-form' => '#ttuj-form',
+										'data-wrapper-write' => '#ttuj-lanjutan-lead-time',
 									));
 							?>
 				        </div>

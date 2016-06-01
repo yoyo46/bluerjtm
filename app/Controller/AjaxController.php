@@ -2521,20 +2521,37 @@ class AjaxController extends AppController {
     	$this->render('/Elements/blocks/ajax/purchases/purchase_orders/tables/detail_products');
 	}
 
-	function change_lead_time () {
+	function change_lead_time ( $type = 'tgl_berangkat' ) {
 		$isAjax = $this->RequestHandler->isAjax();
 		$data = $this->request->data;
-		$data = $this->MkCommon->dataConverter($data, array(
-            'date' => array(
-                'Ttuj' => array(
-                    'tgl_berangkat',
-                ),
-            )
-        ));
 
-		$tgl_berangkat = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'tgl_berangkat');
+		switch ($type) {
+			case 'ttuj_date':
+				$data = $this->MkCommon->dataConverter($data, array(
+		            'date' => array(
+		                'Ttuj' => array(
+		                    'ttuj_date',
+		                ),
+		            )
+		        ));
+
+				$tgl_berangkat = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'ttuj_date');
+				break;
+			
+			default:
+				$data = $this->MkCommon->dataConverter($data, array(
+		            'date' => array(
+		                'Ttuj' => array(
+		                    'tgl_berangkat',
+		                ),
+		            )
+		        ));
+
+				$tgl_berangkat = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'tgl_berangkat');
+				break;
+		}
+
 		$jam_berangkat = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'jam_berangkat');
-
         $tgl_jam_berangkat = sprintf('%s %s', $tgl_berangkat, $jam_berangkat);
 		$this->request->data['Ttuj']['tgl_berangkat'] = false;
 
