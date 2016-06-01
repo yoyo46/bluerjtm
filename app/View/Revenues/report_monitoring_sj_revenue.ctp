@@ -579,6 +579,10 @@
                         echo $this->Html->tag('p', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
                         ));
+                    } else {
+                        echo $this->Html->tag('div', $this->element('pagination'), array(
+                            'class' => 'pagination-report'
+                        ));
                     }
         ?>
     </div><!-- /.box-body -->
