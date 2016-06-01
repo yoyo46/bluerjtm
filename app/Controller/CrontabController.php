@@ -9,7 +9,7 @@ class CrontabController extends AppController {
 	function beforeFilter() {
 		parent::beforeFilter();
 		$this->Auth->allow(array(
-			'closing_bank',
+			'closing_bank', 'generate_sj',
 		));
 
 		$this->autoLayout = false;
@@ -249,4 +249,84 @@ class CrontabController extends AppController {
 
     	die();
 	}
+
+    function generate_sj () {
+        $this->loadModel('Ttuj');
+        $values = $this->Ttuj->getData('all', array(
+            'conditions' => array(
+                'Ttuj.is_draft' => 0,
+                // 'Ttuj.is_sj_completed' => 0,
+                'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') <=' => '2016-05',
+            ),
+            'group' => array(
+                'Ttuj.ttuj_date',
+            ),
+            // 'limit' => Configure::read('__Site.config_pagination'),
+            'order' => array(
+                'Ttuj.ttuj_date' => 'ASC',
+                'Ttuj.id' => 'ASC',
+            ),
+        ), true, array(
+            'plant' => false,
+            'branch' => false,
+        ));
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $ttuj_date = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'ttuj_date');
+
+                $dataSave = array(
+                    'SuratJalan' => array(
+                        'branch_id' => 15,
+                        'nodoc' => '',
+                        'tgl_surat_jalan' => $ttuj_date,
+                    ),
+                );
+
+                $ttujs = $this->Ttuj->getData('all', array(
+                    'conditions' => array(
+                        'Ttuj.is_draft' => 0,
+                        'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\')' => $ttuj_date,
+                    ),
+                    'order' => array(
+                        'Ttuj.ttuj_date' => 'ASC',
+                        'Ttuj.id' => 'ASC',
+                    ),
+                ), true, array(
+                    'plant' => false,
+                    'branch' => false,
+                ));
+
+                if( !empty($ttujs) ) {
+                    foreach ($ttujs as $key => $ttuj) {
+                        $ttuj_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'id');
+                        $qty = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
+
+                        $dataSave['SuratJalanDetail'][] = array(
+                            'SuratJalanDetail' => array(
+                                'ttuj_id' => $ttuj_id,
+                                'qty' => $qty,
+                            ),
+                            'Ttuj' => array(
+                                'id' => $ttuj_id,
+                                'is_sj_completed' => 1,
+                            ),
+                        );
+                    }
+
+                    if($this->Ttuj->SuratJalanDetail->SuratJalan->saveAll($dataSave, array(
+                        'deep' => true,
+                    ))) {
+                        printf(__('Berhasil generate surat jalan utk tgl ttuj %s<br><br>'), $ttuj_date);
+                    } else {
+                        printf(__('Gagal generate surat jalan utk tgl ttuj %s<br><br>'), $ttuj_date);
+                    }
+                } else {
+                    printf(__('Ttuj tidak ditemukan utk tgl %s<br><br>'), $ttuj_date);
+                }
+            }
+        } else {
+                printf(__('Ttuj tidak ditemukan<br><br>'));
+        }
+    }
 }
