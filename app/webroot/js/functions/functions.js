@@ -2952,6 +2952,7 @@ var sisa_amount = function ( obj ) {
         obj = $('.sisa-amount');
     }
 
+    obj.off('keyup');
     obj.keyup(function(){
         var self = $(this);
         var parent = self.parents('tr');

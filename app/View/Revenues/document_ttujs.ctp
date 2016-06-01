@@ -87,7 +87,7 @@
                         $checkbox = isset($checkbox)?$checkbox:true;
                         $alias = sprintf('child-%s', $id);
 
-                        $contentInput = $this->Form->input('SuratJalanDetail.qty.'.$key,array(
+                        $contentInput = $this->Form->input('SuratJalanDetail.qty.',array(
                             'label'=> false,
                             'required' => false,
                             'error' => false,
@@ -95,7 +95,7 @@
                             'value' => $qty_sisa,
                             'data-alert' => __('Silahkan isi jumlah unit yang diterima'),
                         ));
-                        $contentInput .= $this->Form->hidden('SuratJalanDetail.ttuj_id.'.$key,array(
+                        $contentInput .= $this->Form->hidden('SuratJalanDetail.ttuj_id.',array(
                             'value'=> $id,
                         ));
 
