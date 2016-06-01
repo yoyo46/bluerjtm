@@ -1316,6 +1316,14 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'products' )?'active':'',
                             ));
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Penerimaan Barang', $this->Common->icon('angle-double-right')), array(
+                                'controller' => 'products',
+                                'action' => 'receipts'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'receipts' )?'active':'',
+                            ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> SPK Internal', array(
                                 'controller' => 'spk',

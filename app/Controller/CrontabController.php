@@ -166,7 +166,7 @@ class CrontabController extends AppController {
                                 'CoaClosing' => array(
                                     'user_id' => $user_id,
                                     'coa_id' => $coa_id,
-                                    'periode' => $this->Common->customDate($closingPeriod, 'Y-m-t'),
+                                    'periode' => $this->MkCommon->customDate($closingPeriod, 'Y-m-t'),
                                     'saldo_debit' => $saldo_debit,
                                     'saldo_credit' => $saldo_credit,
                                     'saldo_awal' => $saldo_awal,

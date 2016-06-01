@@ -1,7 +1,9 @@
 <?php
 App::uses('AppController', 'Controller');
 class ProductsController extends AppController {
-	public $uses = array();
+	public $uses = array(
+        'Product',
+    );
 
     public $components = array(
         'RjProduct'
@@ -314,8 +316,6 @@ class ProductsController extends AppController {
     }
 
     function index(){
-        $this->loadModel('Product');
-
         $params = $this->MkCommon->_callRefineParams($this->params);
         $options =  $this->Product->_callRefineParams($params);
 
@@ -361,7 +361,6 @@ class ProductsController extends AppController {
     }
 
     function add(){
-        $this->loadModel('Product');
         $this->set('sub_module_title', __('Tambah Barang'));
 
         $result = $this->Product->doSave($this->request->data);
@@ -375,7 +374,6 @@ class ProductsController extends AppController {
     }
 
     function edit( $id = false ){
-        $this->loadModel('Product');
         $this->set('sub_module_title', __('Edit Barang'));
 
         $value = $this->Product->getData('first', array(
@@ -396,5 +394,200 @@ class ProductsController extends AppController {
         } else {
             $this->MkCommon->setCustomFlash(__('Barang tidak ditemukan.'), 'error');
         }
+    }
+
+    public function receipts() {
+        $this->loadModel('ProductReceipt');
+        $this->set('sub_module_title', __('Penerimaan Barang'));
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->ProductReceipt->_callRefineParams($params);
+        $this->paginate = $this->ProductReceipt->getData('paginate', $options, array(
+            'status' => 'all',
+        ));
+        $values = $this->paginate('ProductReceipt');
+
+        $this->MkCommon->_layout_file('select');
+        $this->set('active_menu', 'receipts');
+        $this->set(compact(
+            'values'
+        ));
+    }
+
+    function receipt_add(){
+        $this->set('sub_module_title', __('Penerimaan Barang'));
+
+        $data = $this->request->data;
+        $data = $this->RjProduct->_callBeforeSaveReceipt($data);
+        $result = $this->Product->ProductReceiptDetail->ProductReceipt->doSave($data);
+        $this->MkCommon->setProcessParams($result, array(
+            'controller' => 'receipts',
+            'action' => 'receipts',
+            'admin' => false,
+        ));
+        $this->request->data = $this->RjProduct->_callBeforeRenderReceipt($this->request->data);
+
+        $this->set('active_menu', 'receipts');
+        $this->set(compact(
+            'vendors'
+        ));
+    }
+
+    public function receipt_edit( $id = false ) {
+        $this->set('sub_module_title', __('Edit Penerimaan'));
+
+        $value = $this->Product->ProductReceiptDetail->ProductReceipt->getData('first', array(
+            'conditions' => array(
+                'ProductReceipt.id' => $id,
+            ),
+        ), array(
+            'status' => 'pending',
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->Product->ProductReceiptDetail->getMerge($value, $id);
+            $value = $this->Product->ProductReceiptDetail->ProductReceipt->DocumentAuth->getMerge($value, $id, 'po');
+
+            $data = $this->request->data;
+            $data = $this->RjProduct->_callBeforeSaveReceipt($data, $id);
+            $result = $this->Product->ProductReceiptDetail->ProductReceipt->doSave($data, $value, $id);
+            $this->MkCommon->setProcessParams($result, array(
+                'controller' => 'products',
+                'action' => 'receipts',
+                'admin' => false,
+            ));
+            $this->request->data = $this->RjProduct->_callBeforeRenderReceipt($this->request->data);
+
+            $this->set('active_menu', 'receipts');
+            $this->set(compact(
+                'vendors', 'value'
+            ));
+            $this->render('receipt_add');
+        } else {
+            $this->MkCommon->redirectReferer(__('Penerimaan tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function receipt_detail( $id = false ) {
+        $this->set('sub_module_title', __('Detail Penerimaan Barang'));
+        $value = $this->Product->ProductReceiptDetail->ProductReceipt->getData('first', array(
+            'conditions' => array(
+                'ProductReceipt.id' => $id,
+            ),
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->Product->ProductReceiptDetail->getMerge($value, $id);
+            $value = $this->Product->ProductReceiptDetail->ProductReceipt->DocumentAuth->getMerge($value, $id, 'product_receipt');
+
+            $user_id = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'user_id');
+            $grandtotal = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'grandtotal');
+            $nodoc = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'nodoc');
+
+            $value = $this->User->getMerge($value, $user_id);
+            $user_position_id = $this->MkCommon->filterEmptyField($value, 'Employe', 'employe_position_id');
+
+            $user_otorisasi_approvals = $this->User->Employe->EmployePosition->Approval->getUserOtorisasiApproval('product_receipt', $user_position_id, $grandtotal, $id);
+            $show_approval = $this->User->Employe->EmployePosition->Approval->_callAuthApproval($user_otorisasi_approvals);
+            $data = $this->request->data;
+
+            if( !empty($show_approval) && !empty($data) ) {
+                $data = $this->MkCommon->_callBeforeSaveApproval($data, array(
+                    'user_id' => $user_id,
+                    'nodoc' => $nodoc,
+                    'user_position_id' => $user_position_id,
+                    'document_id' => $id,
+                    'document_type' => 'product_receipt',
+                    'document_url' => array(
+                        'controller' => 'products',
+                        'action' => 'receipt_detail',
+                        $id,
+                        'admin' => false,
+                    ),
+                    'document_revised_url' => array(
+                        'controller' => 'products',
+                        'action' => 'receipt_edit',
+                        $id,
+                        'admin' => false,
+                    ),
+                ));
+                $result = $this->Product->ProductReceiptDetail->ProductReceipt->doApproval($data, $id);
+                $this->MkCommon->setProcessParams($result, array(
+                    'controller' => 'products',
+                    'action' => 'receipt_detail',
+                    $id,
+                    'admin' => false,
+                ));
+            }
+
+            $this->request->data = $this->RjProduct->_callBeforeRenderReceipt($value);
+
+            $this->set('active_menu', 'receipts');
+            $this->set('view', 'detail');
+            $this->set(compact(
+                'vendors', 'value',
+                'user_otorisasi_approvals', 'show_approval'
+            ));
+            $this->render('receipt_add');
+        } else {
+            $this->MkCommon->redirectReferer(__('Penerimaan barang tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function receipt_toggle( $id ) {
+        $result = $this->Product->ProductReceiptDetail->ProductReceipt->doDelete( $id );
+        $this->MkCommon->setProcessParams($result);
+    }
+
+    function receipt_choose_documents ( $type = false ) {
+        switch ($type) {
+            case 'po':
+                $vendors = $this->Product->PurchaseOrderDetail->PurchaseOrder->_callVendors('unreceipt');
+                break;
+        }
+
+        $this->set(compact(
+            'vendors', 'type'
+        ));
+        $this->render('/Elements/blocks/products/receipts/forms/receipt_choose_document');
+    }
+
+    function receipt_documents ( $type = false, $vendor_id = false ) {
+        $vendor_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'vendor_id', $vendor_id);
+        $receipt_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'receipt_id');
+        $params = $this->MkCommon->_callRefineParams($this->params);
+
+        switch ($type) {
+            case 'po':
+                $values = $this->RjProduct->_callPurchaseOrders($params, $vendor_id);
+                break;
+        }
+
+        $this->MkCommon->_layout_file('select');
+        $this->set(compact(
+            'values', 'type',
+            'receipt_id', 'vendor_id'
+        ));
+    }
+
+    function receipt_pick_document () {
+        $data = $this->request->data;
+        $type = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_type');
+
+        switch ($type) {
+            case 'po':
+                $value = $this->RjProduct->_callPurchaseOrder($data);
+                break;
+        }
+
+        $this->set(compact(
+            'value', 'type'
+        ));
     }
 }

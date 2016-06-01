@@ -110,6 +110,12 @@ class PurchaseOrder extends AppModel {
             case 'non-active':
                 $default_options['conditions']['PurchaseOrder.status'] = 0;
                 break;
+            case 'unreceipt':
+                $default_options['conditions']['PurchaseOrder.transaction_status'] = array( 'approved', 'paid', 'half_paid' );
+                $default_options['conditions']['PurchaseOrder.receipt_status'] = array( 'none', 'half' );
+                $default_options['conditions']['PurchaseOrder.is_asset'] = 0;
+                $default_options['conditions']['PurchaseOrder.status'] = 1;
+                break;
             default:
                 $default_options['conditions']['PurchaseOrder.status'] = array( 0, 1 );
                 break;
@@ -540,6 +546,23 @@ class PurchaseOrder extends AppModel {
         }
 
         return $result;
+    }
+
+    function _callVendors ( $status = 'unpaid', $id = false ) {
+        return $this->getData('list', array(
+                'contain' => array(
+                    'Vendor',
+                ),
+                'fields' => array(
+                    'Vendor.id', 'Vendor.name',
+                ),
+                'group' => array(
+                    'PurchaseOrder.vendor_id',
+                ),
+            ), array(
+                'status' => $status,
+                'special_id' => $id
+            ));
     }
 }
 ?>

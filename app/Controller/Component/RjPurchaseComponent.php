@@ -292,20 +292,7 @@ class RjPurchaseComponent extends Component {
             $data['PurchaseOrderPayment']['transaction_date'] = date('d/m/Y');
         }
 
-        $vendors = $this->controller->PurchaseOrder->getData('list', array(
-            'contain' => array(
-                'Vendor',
-            ),
-            'fields' => array(
-                'Vendor.id', 'Vendor.name',
-            ),
-            'group' => array(
-                'PurchaseOrder.vendor_id',
-            ),
-        ), array(
-            'status' => 'unpaid',
-            'special_id' => $purchase_order_id
-        ));
+        $vendors = $this->controller->PurchaseOrder->_callVendors('unpaid', $purchase_order_id);
         $coas = $this->controller->GroupBranch->Branch->BranchCoa->getCoas();
         $this->MkCommon->_layout_file(array(
             'select',

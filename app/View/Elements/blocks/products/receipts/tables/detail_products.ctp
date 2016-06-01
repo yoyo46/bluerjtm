@@ -1,54 +1,32 @@
 <?php 
         $view = !empty($view)?$view:false;
         $data = $this->request->data;
-        $ppn_include = $this->Common->filterEmptyField($data, 'PurchaseOrder', 'ppn_include');
-        $dataDetail = $this->Common->filterEmptyField($data, 'PurchaseOrderDetail');
-
-        if( !empty($dataDetail) ) {
-            $tableClass = '';
-        } else {
-            $tableClass = 'hide';
-        }
+        $dataDetail = $this->Common->filterEmptyField($data, 'ProductReceiptDetail');
 
 		$dataColumns = array(
             'code' => array(
                 'name' => __('Kode'),
                 'class' => 'text-center',
-                'style' => 'width:7%;',
+                'style' => 'width:5%;',
             ),
             'name' => array(
                 'name' => __('Nama'),
-                'style' => 'width:15%;',
-            ),
-            'unit' => array(
-                'name' => __('Satuan'),
-                'class' => 'text-center',
-                'style' => 'width:7%;',
+                'style' => 'width:10%;',
             ),
             'qty' => array(
                 'name' => __('Qty'),
                 'class' => 'text-center',
-                'style' => 'width:10%;',
+                'style' => 'width:5%;',
             ),
-            'price' => array(
-                'name' => __('Harga'),
+            'unit' => array(
+                'name' => __('Satuan'),
                 'class' => 'text-center',
-                'style' => 'width:15%;',
+                'style' => 'width:5%;',
             ),
-            'disc' => array(
-                'name' => __('Potongan'),
-                'class' => 'text-center',
-                'style' => 'width:10%;',
-            ),
-            'ppn' => array(
-                'name' => __('Pajak'),
+            'serial_number' => array(
+                'name' => __('No Seri'),
                 'class' => 'text-center',
                 'style' => 'width:10%;',
-            ),
-            'total' => array(
-                'name' => __('Total'),
-                'class' => 'text-center',
-                'style' => 'width:15%;',
             ),
             'action' => array(
                 'name' => __('Action'),
@@ -60,9 +38,8 @@
 
         if( $view != 'detail' ) {
             echo $this->Html->tag('div', $this->Html->link($this->Common->icon('plus-square').__(' Ambil Barang'), $this->Html->url( array(
-                    'controller'=> 'ajax', 
-                    'action' => 'products',
-                    'po',
+                    'controller'=> 'products', 
+                    'action' => 'receipt_document_products',
                     'admin' => false,
                 )), array(
                     'escape' => false,
@@ -73,7 +50,7 @@
             ));
         }
 ?>
-<div class="temp-document-picker document-calc <?php echo $tableClass; ?>">
+<div class="temp-document-picker document-calc">
 	<div class="box box-success">
 	    <?php 
 	            echo $this->element('blocks/common/box_header', array(
@@ -87,28 +64,22 @@
 	                        echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));
 	                    }
 	            ?>
-	        	<tbody>
+	        	<tbody class="wrapper-table-documents">
                     <?php
                             $grandtotal = 0;
 
                             if(!empty($dataDetail)){
                                 foreach ($dataDetail as $key => $value) {
-                                    $supplier_quotation_detail_id = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'supplier_quotation_detail_id');
+                                    $qty = $this->Common->filterEmptyField($value, 'ProductReceiptDetail', 'qty');
+                                    $grandtotal += $qty;
 
-                                    $total = $this->Purchase->calculate($value, $ppn_include);
-                                    $grandtotal += $total;
+                                    $code = $this->Common->filterEmptyField($value, 'ProductReceiptDetail', 'code');
+                                    $name = $this->Common->filterEmptyField($value, 'ProductReceiptDetail', 'name');
+                                    $unit = $this->Common->filterEmptyField($value, 'ProductReceiptDetail', 'unit');
 
-                                    $customTotal = $this->Common->getFormatPrice($total, '', 2);
-
-                                    $code = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'code');
-                                    $name = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'name');
-                                    $unit = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'unit');
-
-                                    echo $this->element('blocks/purchases/purchase_orders/tables/detail_items', array(
-                                        'modelName' => 'PurchaseOrderDetail',
-                                        'supplier_quotation_detail_id' => $supplier_quotation_detail_id,
+                                    echo $this->element('blocks/products/receipts/tables/detail_items', array(
+                                        'modelName' => 'ProductReceiptDetail',
                                         'value' => $value,
-                                        'total' => $customTotal,
                                         'code' => $code,
                                         'name' => $name,
                                         'unit' => $unit,
@@ -121,15 +92,12 @@
                 <tfoot>
                     <tr class="grandtotal">
                         <?php
-                                $customGrandtotal = $this->Common->getFormatPrice($grandtotal, '', 2);
-
-                                echo $this->Html->tag('td', __('Grand Total'), array(
-                                    'colspan' => 7,
+                                echo $this->Html->tag('td', __('Total'), array(
+                                    'colspan' => 2,
                                     'class' => 'text-right',
                                 ));
-                                echo $this->Html->tag('td', $customGrandtotal, array(
+                                echo $this->Html->tag('td', $grandtotal, array(
                                     'class' => 'text-right total',
-                                    'data-decimal' => 2,
                                 ));
                         ?>
                     </tr>

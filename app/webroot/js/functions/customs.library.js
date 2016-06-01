@@ -1232,6 +1232,9 @@
 
         $.rebuildFunction();
         $.pickData();
+        $.callChoosen({
+            obj: obj.find('.chosen-select'),
+        });
     }
 
     $.ajaxLink = function( options ) {

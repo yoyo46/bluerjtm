@@ -25,7 +25,15 @@ class Product extends AppModel {
         'ProductCategory' => array(
             'className' => 'ProductCategory',
             'foreignKey' => 'product_category_id',
-        )
+        ),
+        'ProductReceiptDetail' => array(
+            'className' => 'ProductReceiptDetail',
+            'foreignKey' => 'product_id',
+        ),
+        'PurchaseOrderDetail' => array(
+            'className' => 'PurchaseOrderDetail',
+            'foreignKey' => 'product_id',
+        ),
     );
 
 	var $validate = array(

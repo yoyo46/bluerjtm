@@ -54,8 +54,8 @@
                     'title' => __('Daftar Asset'),
                     'class' => 'btn bg-maroon ajaxCustomModal',
                 )), array(
-                'class' => "form-group",
-            ));
+                    'class' => "form-group",
+                ));
             }
     ?>
     <div class="temp-document-picker document-calc">
