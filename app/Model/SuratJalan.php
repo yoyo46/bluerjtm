@@ -40,6 +40,8 @@ class SuratJalan extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
+                'SuratJalan.status' => 'DESC',
+                'SuratJalan.is_canceled' => 'ASC',
                 'SuratJalan.created' => 'DESC',
                 'SuratJalan.id' => 'DESC',
             ),
