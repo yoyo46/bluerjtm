@@ -495,7 +495,9 @@ class AjaxController extends AppController {
 				'Ttuj.is_draft' => 0,
 			),
 			'contain' => false,
-		));
+		), true, array(
+            'branch' => false,
+        ));
 
 		if(!empty($data_ttuj)){
 			$this->loadModel('TtujTipeMotor');
