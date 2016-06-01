@@ -6755,13 +6755,13 @@ class RevenuesController extends AppController {
                 switch ($status) {
                     case 'pending':
                         $options['conditions']['Ttuj.is_sj_completed'] = 0;
-                        $options['conditions']['SuratJalan.id'] = NULL;
+                        // $options['conditions']['SuratJalan.id'] = NULL;
                         break;
 
-                    case 'hal_receipt':
-                        $options['conditions']['Ttuj.is_sj_completed'] = 0;
-                        $options['conditions']['SuratJalan.id <>'] = NULL;
-                        break;
+                    // case 'hal_receipt':
+                    //     $options['conditions']['Ttuj.is_sj_completed'] = 0;
+                    //     $options['conditions']['SuratJalan.id <>'] = NULL;
+                    //     break;
 
                     case 'receipt':
                         $options['conditions']['Ttuj.is_sj_completed'] = 1;

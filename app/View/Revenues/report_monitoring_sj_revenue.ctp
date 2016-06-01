@@ -93,7 +93,7 @@
                                 'empty' => __('Pilih Status'),
                                 'options' => array(
                                     'pending' => __('Surat jalan Belum Diterima'),
-                                    'hal_receipt' => __('Surat jalan Sebagian Diterima'),
+                                    // 'hal_receipt' => __('Surat jalan Sebagian Diterima'),
                                     'receipt' => __('Surat jalan Diterima'),
                                     'receipt_unpaid' => __('Surat jalan diterima belum ditagih'),
                                     'sj_receipt_paid' => __('Surat jalan Belum Diterima sudah ditagih'),
