@@ -3549,7 +3549,7 @@ class RevenuesController extends AppController {
             ),
             'limit' => 100,
         ), true, array(
-            'branch' => false,
+            'plant' => true,
         ));
         $this->set('ttujs', $ttujs);
 

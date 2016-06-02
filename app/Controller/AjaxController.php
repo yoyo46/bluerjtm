@@ -1127,20 +1127,11 @@ class AjaxController extends AppController {
 
             if( $action_type == 'revenue_manual' ) {
 				$data_change = '.truck-revenue-id';
-	        } else {
-	            // if( $action_type == 'ttuj' ) {
-	        		$plantCityId = Configure::read('__Site.Branch.Plant.id');
-
-	        		// if( !empty($plantCityId) ) {
-	          //   		$options['conditions']['Truck.branch_id'] = $plantCityId;
-	          //   	}
-	            // } else {
-	            // 	$plantCityId = false;
-	            // }
-
-				$addConditions = $this->Truck->getListTruck( $ttuj_truck_id, true, false, $plantCityId );
-	            $options['conditions'] = array_merge($options['conditions'], $addConditions);
 	        }
+	        
+    		$plantCityId = Configure::read('__Site.Branch.Plant.id');
+			$addConditions = $this->Truck->getListTruck( $ttuj_truck_id, true, false, $plantCityId );
+            $options['conditions'] = array_merge($options['conditions'], $addConditions);
 	        
             $element = array(
         		'branch' => false,
@@ -1329,7 +1320,7 @@ class AjaxController extends AppController {
 		$title = __('Data TTUJ');
 		$data_action = 'browse-form';
 		$data_change = 'no_ttuj';
-        $branchFlag = false;
+        $element = array();
         $options = array(
 			'conditions' => array(
 	            'Ttuj.is_draft' => 0,
@@ -1379,18 +1370,20 @@ class AjaxController extends AppController {
 	                'Ttuj.id' => $ttuj_id,
 	            );
 				$data_change = 'getTtujInfoRevenue';
+        		$element['branch'] = true;
+        		$element['plant'] = true;
                 break;
 
             case 'lku':
                 $options['conditions'] = array_merge($options['conditions'], $this->RjLku->getTtujConditions());
 				$data_change = 'getTtujInfo';
-        		$branchFlag = true;
+        		$element['branch'] = true;
                 break;
 
             case 'ksu':
                 $options['conditions'] = array_merge($options['conditions'], $this->RjLku->getTtujConditions());
 				$data_change = 'getTtujInfoKsu';
-        		$branchFlag = true;
+        		$element['branch'] = true;
                 break;
 
             case 'laka':
@@ -1398,7 +1391,7 @@ class AjaxController extends AppController {
                 $options['conditions']['Ttuj.truck_id'] = $ttuj_id;
 				$data_change = 'laka-ttuj-change';
         		// $options['conditions'] = $this->MkCommon->_callConditionPlant($options['conditions'], 'Ttuj');
-        		$branchFlag = true;
+        		$element['branch'] = true;
                 break;
 
             case 'uang_jalan_payment':
@@ -1417,9 +1410,7 @@ class AjaxController extends AppController {
                 break;
         }
 
-        $this->paginate = $this->Ttuj->getData('paginate', $options, true, array(
-        	'branch' => $branchFlag,
-        ));
+        $this->paginate = $this->Ttuj->getData('paginate', $options, true, $element);
         $ttujs = $this->paginate('Ttuj');
 
         if( !empty($ttujs) ) {
