@@ -9294,6 +9294,9 @@ class RevenuesController extends AppController {
 
         $this->set('sub_module_title', $module_title);
         $options =  $this->SuratJalanDetail->SuratJalan->getData('paginate', array(
+            'conditions' => array(
+                'SuratJalanDetail.status' => 1,
+            ),
             'contain' => array(
                 'SuratJalan',
             ),
