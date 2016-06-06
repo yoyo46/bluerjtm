@@ -521,52 +521,12 @@
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
-							echo $this->Form->label('kir_payment_coa_id', __('Pembayaran KIR'));
+							echo $this->Form->label('document_payment_coa_id', __('Pembayaran Surat-surat Truk'));
 					?>
 				</div>
 				<div class="col-sm-4">
 		        	<?php 
-							echo $this->Form->input('kir_payment_coa_id',array(
-								'label'=> false, 
-								'class'=>'form-control chosen-select',
-								'required' => false,
-								'empty' => __('Pilih COA'),
-								'options' => $coas,
-							));
-					?>
-				</div>
-			</div>
-        </div>
-        <div class="form-group">
-			<div class="row">
-				<div class="col-sm-4">
-			    	<?php 
-							echo $this->Form->label('siup_payment_coa_id', __('Pembayaran Ijin Usaha'));
-					?>
-				</div>
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->input('siup_payment_coa_id',array(
-								'label'=> false, 
-								'class'=>'form-control chosen-select',
-								'required' => false,
-								'empty' => __('Pilih COA'),
-								'options' => $coas,
-							));
-					?>
-				</div>
-			</div>
-        </div>
-        <div class="form-group">
-			<div class="row">
-				<div class="col-sm-4">
-			    	<?php 
-							echo $this->Form->label('stnk_payment_coa_id', __('Pembayaran STNK'));
-					?>
-				</div>
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->input('stnk_payment_coa_id',array(
+							echo $this->Form->input('document_payment_coa_id',array(
 								'label'=> false, 
 								'class'=>'form-control chosen-select',
 								'required' => false,
