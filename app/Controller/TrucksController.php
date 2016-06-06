@@ -1229,6 +1229,7 @@ class TrucksController extends AppController {
             ),
         ));
 
+        $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'kir');
         $this->set(compact(
             'trucks', 'truck', 'kir'
@@ -1758,6 +1759,7 @@ class TrucksController extends AppController {
             )
         ));
 
+        $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'siup');
         $this->set(compact(
             'truck_id', 'sub_module_title', 'trucks',
@@ -2786,8 +2788,9 @@ class TrucksController extends AppController {
             )
         ));
 
-        $this->set('active_menu', 'stnk');
         $sub_module_title = __('Perpanjang STNK');
+        $this->MkCommon->_layout_file('select');
+        $this->set('active_menu', 'stnk');
         $this->set(compact(
             'truck_id', 'sub_module_title', 'trucks',
             'stnk'
@@ -5982,7 +5985,7 @@ class TrucksController extends AppController {
                             foreach ($value['DocumentPaymentDetail'] as $key => $detail) {
                                 $document_id = $this->MkCommon->filterEmptyField($detail, 'DocumentPaymentDetail', 'document_id');
                                 $document_type = $this->MkCommon->filterEmptyField($detail, 'DocumentPaymentDetail', 'document_type');
-                                $total_dibayar = $this->DocumentPayment->DocumentPaymentDetail->getTotalPayment($document_id, $document_type);
+                                $total_dibayar = $this->DocumentPayment->DocumentPaymentDetail->getTotalPayment($document_id, $document_type, $id);
                                 $flagPaid = 'none';
                                 $document_type = strtolower($document_type);
 
