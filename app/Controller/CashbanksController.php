@@ -1205,7 +1205,11 @@ class CashbanksController extends AppController {
             $this->User->CoaSetting->set($data);
 
             if($this->User->CoaSetting->validates($data)){
-                $flag = $this->User->Coa->CoaSettingDetail->saveAll($dataDetail);
+                if( !empty($dataDetail) ) {
+                    $flag = $this->User->Coa->CoaSettingDetail->saveAll($dataDetail);
+                } else {
+                    $flag = true;
+                }
 
                 if(!empty($flag) && $this->User->CoaSetting->save($data)){
                     $transaction_id = $this->User->CoaSetting->id;

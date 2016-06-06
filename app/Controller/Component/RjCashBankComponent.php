@@ -206,13 +206,15 @@ class RjCashBankComponent extends Component {
                     $coa_id = !empty($coas['coa_id'])?$coas['coa_id']:false;
                     $coa_setting_id = !empty($coas['id'])?$coas['id']:false;
 
-                    $detail['CoaSettingDetail'] = array(
-                        'id' => $coa_setting_id,
-                        'user_id' => Configure::read('__Site.config_user_id'),
-                        'coa_id' => $coa_id,
-                        'label' => $type,
-                    );
-                    $dataSave[] = $detail;
+                    if( !empty($coa_id) ) {
+	                    $detail['CoaSettingDetail'] = array(
+	                        'id' => $coa_setting_id,
+	                        'user_id' => Configure::read('__Site.config_user_id'),
+	                        'coa_id' => $coa_id,
+	                        'label' => $type,
+	                    );
+                    	$dataSave[] = $detail;
+	                }
                 }
             }
 
