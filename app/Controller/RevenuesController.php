@@ -6768,13 +6768,40 @@ class RevenuesController extends AppController {
                         break;
 
                     case 'receipt_unpaid':
-                        $options['conditions']['Ttuj.is_sj_completed'] = 1;
+                        $this->Ttuj->Revenue->bindModel(array(
+                            'hasOne' => array(
+                                'SuratJalanDetail' => array(
+                                    'className' => 'SuratJalanDetail',
+                                    'foreignKey' => false,
+                                    'conditions' => array(
+                                        'SuratJalanDetail.ttuj_id = Revenue.ttuj_id',
+                                        'SuratJalanDetail.status' => 1,
+                                    ),
+                                ),
+                                'SuratJalan' => array(
+                                    'className' => 'SuratJalan',
+                                    'foreignKey' => false,
+                                    'conditions' => array(
+                                        'SuratJalan.id = SuratJalanDetail.surat_jalan_id',
+                                        'SuratJalan.status' => 1,
+                                        'SuratJalan.is_canceled' => 0,
+                                    ),
+                                ),
+                            )
+                        ), false);
+
+                        $options['conditions']['OR'] = array(
+                            'Ttuj.is_sj_completed' => 1,
+                            'SuratJalan.id <>' => NULL,
+                        );
                         $revenueConditions = !empty($options['conditions'])?$options['conditions']:false;
                         $revenueConditions['Revenue.transaction_status <>'] = 'invoiced';
                         $revenues = $this->Revenue->getData('list', array(
                             'conditions' => $revenueConditions,
                             'contain' => array(
-                                'Ttuj'
+                                'Ttuj',
+                                'SuratJalan',
+                                'SuratJalanDetail',
                             ),
                             'fields' => array(
                                 'Revenue.id', 'Revenue.ttuj_id'
