@@ -1307,7 +1307,7 @@ class MkCommonComponent extends Component {
         return $data;
     }
 
-    function _callMsgValidationErrors ( $validationErrors ) {
+    function _callMsgValidationErrors ( $validationErrors, $type = 'array' ) {
         $textError = array();
 
         if( !empty($validationErrors) ) {
@@ -1317,6 +1317,12 @@ class MkCommonComponent extends Component {
                         $textError[] = $error;
                     }
                 }
+            }
+
+            switch ($type) {
+                case 'string':
+                    $textError = implode(', ', $textError);
+                    break;
             }
         }
 

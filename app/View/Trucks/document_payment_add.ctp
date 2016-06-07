@@ -37,7 +37,7 @@
         <div class="form-group">
         	<?php 
 					echo $this->Form->input('nodoc',array(
-						'label'=> __('No. Dokumen'), 
+						'label'=> __('No. Dokumen *'), 
 						'class'=>'form-control',
 						'required' => false,
 						'placeholder' => __('No. Dokumen'),

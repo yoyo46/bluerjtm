@@ -107,9 +107,7 @@ class AssetsController extends AppController {
         $params = $this->MkCommon->_callRefineParams($this->params);
         $options =  $this->Asset->_callRefineParams($params);
 
-        $this->paginate = $this->Asset->getData('paginate', $options, array(
-            'status' => 'available',
-        ));
+        $this->paginate = $this->Asset->getData('paginate', $options);
         $values = $this->paginate('Asset');
         $values = $this->Asset->getDataList($values);
 

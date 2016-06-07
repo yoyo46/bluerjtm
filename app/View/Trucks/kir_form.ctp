@@ -44,7 +44,7 @@
 		        			<?php 
 									echo $this->Form->input('truck_id', array(
 										'label'=> false, 
-										'class'=>'form-control submit-change',
+										'class'=>'form-control submit-change chosen-select',
 										'required' => false,
 										'empty' => __('Pilih Truk'),
 										'options' => $trucks,

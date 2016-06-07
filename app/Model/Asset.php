@@ -7,10 +7,10 @@ class Asset extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Nama asset harap diisi'
             ),
-            'isUnique' => array(
-                'rule' => array('isUnique'),
-                'message' => 'Asset telah terdaftar',
-            ),
+            // 'isUnique' => array(
+            //     'rule' => array('isUnique'),
+            //     'message' => 'Asset telah terdaftar',
+            // ),
             'checkTruck' => array(
                 'rule' => array('checkTruck'),
                 'message' => 'Mohon masukan nama asset melalui pilih Truk'
@@ -307,6 +307,7 @@ class Asset extends AppModel {
                     	),
                         'error' => 1,
                     ),
+                    'validationErrors' => $this->validationErrors,
                 );
             }
         } else {

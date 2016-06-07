@@ -56,8 +56,24 @@
     <?php 
             echo $this->element('blocks/common/box_header', array(
                 'title' => $sub_module_title,
-                '_add' => array(
-                    'action' => 'add',
+                '_label_multiple' => __('Tambah'),
+                '_add_multiple' => array(
+                    array(
+                        'label' => __('Asset'),
+                        'url' => array(
+                            'controller' => 'assets',
+                            'action' => 'add',
+                            'admin' => false,
+                        ),
+                    ),
+                    array(
+                        'label' => __('Import'),
+                        'url' => array(
+                            'controller' => 'assets',
+                            'action' => 'import',
+                            'admin' => false,
+                        ),
+                    ),
                 ),
             ));
     ?>

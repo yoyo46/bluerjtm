@@ -61,7 +61,7 @@ class CrontabController extends AppController {
     		);
 
         	$cnt_asset = $this->Asset->getData('count', $options, $status);
-        	$limit = 2;
+        	$limit = 200;
 
     		$assets = $this->Asset->getData('all', array_merge($options, array(
         		'conditions' => array(
