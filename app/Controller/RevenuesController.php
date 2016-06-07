@@ -6808,6 +6808,7 @@ class RevenuesController extends AppController {
                             ),
                         ), true, array(
                             'status' => 'all',
+                            'branch' => false,
                         ));
 
                         $options['conditions']['Ttuj.id'] = $revenues;
