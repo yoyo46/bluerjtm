@@ -114,7 +114,9 @@ class SuratJalan extends AppModel {
 
         $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $nottuj = !empty($data['named']['nottuj'])?$data['named']['nottuj']:false;
         $customer = !empty($data['named']['customer'])?$data['named']['customer']:false;
+        $note_ttuj = !empty($data['named']['note_ttuj'])?$data['named']['note_ttuj']:false;
 
         $status = !empty($data['named']['status'])?$data['named']['status']:false;
 
@@ -150,6 +152,7 @@ class SuratJalan extends AppModel {
             } else {
                 $default_options['conditions']['Ttuj.nopol LIKE'] = '%'.$nopol.'%';
             }
+            $default_options['contain'][] = 'Ttuj';
         }
         if(!empty($customer)){
             $customers = $this->Ttuj->Customer->getData('list', array(
@@ -164,6 +167,14 @@ class SuratJalan extends AppModel {
                 'branch' => false,
             ));
             $default_options['conditions']['Ttuj.customer_id'] = $customers;
+        }
+        if(!empty($nottuj)){
+            $default_options['conditions']['Ttuj.no_ttuj LIKE'] = '%'.$nottuj.'%';
+            $default_options['contain'][] = 'Ttuj';
+        }
+        if(!empty($note_ttuj)){
+            $default_options['conditions']['Ttuj.note LIKE'] = '%'.$note_ttuj.'%';
+            $default_options['contain'][] = 'Ttuj';
         }
 
         if( !empty($status) ) {

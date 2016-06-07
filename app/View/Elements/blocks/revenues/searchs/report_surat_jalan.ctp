@@ -21,7 +21,7 @@
                 ));
         ?>
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
                             echo $this->Form->label('date', __('Tgl Penerimaan'));
@@ -42,20 +42,42 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('status',array(
-                                'label'=> __('Status Surat Jalan'),
-                                'class'=>'form-control',
-                                'required' => false,
-                                'empty' => __('Pilih Status'),
-                                'options' => array(
-                                    'half_receipt' => __('Kembali sebagian'),
-                                    'receipt' => __('Kembali Semua'),
-                                ),
-                            ));
+                            echo $this->Form->label('type', __('Truk'));
+                    ?>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <?php 
+                                    echo $this->Form->input('type',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                        'empty' => false,
+                                        'options' => array(
+                                            '1' => __('Nopol'),
+                                            '2' => __('ID Truk'),
+                                        ),
+                                    ));
+                            ?>
+                        </div>
+                        <div class="col-sm-8">
+                            <?php 
+                                    echo $this->Form->input('nopol',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                    ));
+                            ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            // Custom Otorisasi
+                            echo $this->Common->getCheckboxBranch();
                     ?>
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
                             echo $this->Form->label('datettuj', __('Tgl TTUJ'));
@@ -76,8 +98,11 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            // Custom Otorisasi
-                            echo $this->Common->getCheckboxBranch();
+                            echo $this->Form->input('nottuj',array(
+                                'label'=> __('No. TTUJ'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
                     ?>
                 </div>
                 <div class="form-group action">
@@ -92,6 +117,31 @@
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',
+                            ));
+                    ?>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('status',array(
+                                'label'=> __('Status Surat Jalan'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih Status'),
+                                'options' => array(
+                                    'half_receipt' => __('Kembali sebagian'),
+                                    'receipt' => __('Kembali Semua'),
+                                ),
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('note_ttuj',array(
+                                'label'=> __('Keterangan TTUJ'),
+                                'class'=>'form-control',
+                                'required' => false,
                             ));
                     ?>
                 </div>
