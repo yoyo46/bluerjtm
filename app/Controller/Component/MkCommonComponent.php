@@ -1711,8 +1711,8 @@ class MkCommonComponent extends Component {
 
         if( !empty($dataString) ) {
             foreach ($dataString as $fieldName => $value) {
-                $this->controller->request->data['Search'][$fieldName] = rawurldecode(urldecode($value));
-                $result['named'][$fieldName] = rawurldecode(urldecode($value));
+                $this->controller->request->data['Search'][$fieldName] = urldecode(rawurldecode($value));
+                $result['named'][$fieldName] = urldecode(rawurldecode($value));
             }
         }
 

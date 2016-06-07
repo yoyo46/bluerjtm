@@ -167,6 +167,7 @@ class SuratJalan extends AppModel {
                 'branch' => false,
             ));
             $default_options['conditions']['Ttuj.customer_id'] = $customers;
+            $default_options['contain'][] = 'Ttuj';
         }
         if(!empty($nottuj)){
             $default_options['conditions']['Ttuj.no_ttuj LIKE'] = '%'.$nottuj.'%';
