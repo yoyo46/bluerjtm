@@ -23,7 +23,7 @@
                     <dd><?php echo $this->Common->customDate($stnk['Stnk']['tgl_bayar'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Tgl Berakhir STNK')?></dt>
                     <dd><?php echo $this->Common->customDate($stnk['Stnk']['from_date'], 'd/m/Y');?></dd>
-                    <dt><?php echo __('Berlaku Sampai')?></dt>
+                    <dt><?php echo __('Diperpanjang Hingga')?></dt>
                     <dd><?php echo $this->Common->customDate($stnk['Stnk']['to_date'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Estimasi Biaya')?></dt>
                     <dd><?php echo $this->Number->currency($stnk['Stnk']['price_estimate'], Configure::read('__Site.config_currency_code').' ', array('places' => 0));?></dd>
@@ -45,7 +45,7 @@
                     ?>
                     <dt><?php echo __('Tgl Ganti Plat')?></dt>
                     <dd><?php echo $this->Common->customDate($stnk['Stnk']['plat_from_date'], 'd/m/Y');?></dd>
-                    <dt><?php echo __('Plat Berlaku Sampai')?></dt>
+                    <dt><?php echo __('Plat Diperpanjang Hingga')?></dt>
                     <dd><?php echo $this->Common->customDate($stnk['Stnk']['plat_to_date'], 'd/m/Y');?></dd>
                     <?php
                             }

@@ -82,7 +82,7 @@
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('to_date', array(
-                                'label'=> __('Berlaku Sampai'), 
+                                'label'=> __('Diperpanjang Hingga'), 
                                 'class'=>'form-control',
                                 'type' => 'text',
                                 'required' => false,
@@ -118,7 +118,7 @@
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('plat_to_date', array(
-                                'label'=> __('Plat Berlaku Sampai'), 
+                                'label'=> __('Plat Diperpanjang Hingga'), 
                                 'class'=>'form-control',
                                 'type' => 'text',
                                 'required' => false,

@@ -79,7 +79,7 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('to_date', array(
-								'label'=> __('Berlaku Sampai'), 
+								'label'=> __('Diperpanjang Hingga'), 
 								'class'=>'form-control',
 								'type' => 'text',
 								'required' => false,

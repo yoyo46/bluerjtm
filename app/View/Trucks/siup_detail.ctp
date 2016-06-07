@@ -23,7 +23,7 @@
                     <dd><?php echo $this->Common->customDate($siup['Siup']['tgl_siup'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Tgl Berakhir Ijin Usaha')?></dt>
                     <dd><?php echo $this->Common->customDate($siup['Siup']['from_date'], 'd/m/Y');?></dd>
-                    <dt><?php echo __('Berlaku Sampai')?></dt>
+                    <dt><?php echo __('Diperpanjang Hingga')?></dt>
                     <dd><?php echo $this->Common->customDate($siup['Siup']['to_date'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Estimasi Biaya')?></dt>
                     <dd><?php echo $this->Number->currency($siup['Siup']['price_estimate'], Configure::read('__Site.config_currency_code').' ', array('places' => 0));?></dd>

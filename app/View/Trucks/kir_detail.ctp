@@ -23,7 +23,7 @@
                     <dd><?php echo $this->Common->customDate($kir['Kir']['tgl_kir'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Tgl Berakhir KIR')?></dt>
                     <dd><?php echo $this->Common->customDate($kir['Kir']['from_date'], 'd/m/Y');?></dd>
-                    <dt><?php echo __('Berlaku Sampai')?></dt>
+                    <dt><?php echo __('Diperpanjang Hingga')?></dt>
                     <dd><?php echo $this->Common->customDate($kir['Kir']['to_date'], 'd/m/Y');?></dd>
                     <dt><?php echo __('Estimasi Biaya')?></dt>
                     <dd><?php echo $this->Number->currency($kir['Kir']['price_estimate'], Configure::read('__Site.config_currency_code').' ', array('places' => 0));?></dd>
