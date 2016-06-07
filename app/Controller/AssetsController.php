@@ -107,7 +107,9 @@ class AssetsController extends AppController {
         $params = $this->MkCommon->_callRefineParams($this->params);
         $options =  $this->Asset->_callRefineParams($params);
 
-        $this->paginate = $this->Asset->getData('paginate', $options);
+        $this->paginate = $this->Asset->getData('paginate', $options, array(
+            'status' => 'available',
+        ));
         $values = $this->paginate('Asset');
         $values = $this->Asset->getDataList($values);
 
@@ -591,6 +593,205 @@ class AssetsController extends AppController {
                 'select',
                 'freeze',
             ));
+        }
+    }
+
+    public function import( $download = false ) {
+        if(!empty($download)){
+            $link_url = FULL_BASE_URL . '/files/assets.xls';
+            $this->redirect($link_url);
+            exit;
+        } else {
+            App::import('Vendor', 'excelreader'.DS.'excel_reader2');
+
+            $this->set('module_title', __('Asset'));
+            $this->set('active_menu', 'assets');
+            $this->set('sub_module_title', __('Import Asset'));
+
+            if(!empty($this->request->data)) { 
+                $Zipped = $this->request->data['Import']['importdata'];
+
+                if($Zipped["name"]) {
+                    $filename = $Zipped["name"];
+                    $source = $Zipped["tmp_name"];
+                    $type = $Zipped["type"];
+                    $name = explode(".", $filename);
+                    $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
+
+                    if(!empty($accepted_types)) {
+                        foreach($accepted_types as $mime_type) {
+                            if($mime_type == $type) {
+                                $okay = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+
+                    if(!$continue) {
+                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
+                        $this->redirect(array('action'=>'import'));
+                    } else {
+                        $path = APP.'webroot'.DS.'files'.DS.date('Y').DS.date('m').DS;
+                        $filenoext = basename ($filename, '.xls');
+                        $filenoext = basename ($filenoext, '.XLS');
+                        $fileunique = uniqid() . '_' . $filenoext;
+
+                        if( !file_exists($path) ) {
+                            mkdir($path, 0755, true);
+                        }
+
+                        $targetdir = $path . $fileunique . $filename;
+                         
+                        ini_set('memory_limit', '96M');
+                        ini_set('post_max_size', '64M');
+                        ini_set('upload_max_filesize', '64M');
+
+                        if(!move_uploaded_file($source, $targetdir)) {
+                            $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                            $this->redirect(array('action'=>'import'));
+                        }
+                    }
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                    $this->redirect(array('action'=>'import'));
+                }
+
+                $xls_files = glob( $targetdir );
+
+                if(empty($xls_files)) {
+                    $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
+                    $this->redirect(array('action'=>'import'));
+                } else {
+                    $uploadedXls = $this->MkCommon->addToFiles('xls', $xls_files[0]);
+                    $uploaded_file = $uploadedXls['xls'];
+                    $file = explode(".", $uploaded_file['name']);
+                    $extension = array_pop($file);
+                    
+                    if($extension == 'xls') {
+                        $dataimport = new Spreadsheet_Excel_Reader();
+                        $dataimport->setUTFEncoder('iconv');
+                        $dataimport->setOutputEncoding('UTF-8');
+                        $dataimport->read($uploaded_file['tmp_name']);
+                        
+                        if(!empty($dataimport)) {
+                            $successfull_row = 0;
+                            $failed_row = 0;
+                            $row_submitted = 1;
+                            $error_message = '';
+                            $textError = array();
+                            $data = $dataimport;
+
+                            for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
+                                $datavar = array();
+                                $flag = true;
+                                $i = 1;
+
+                                while ($flag) {
+                                    if( !empty($data->sheets[0]["cells"][1][$i]) ) {
+                                        $variable = $this->MkCommon->toSlug($data->sheets[0]["cells"][1][$i], '_');
+                                        $thedata = !empty($data->sheets[0]["cells"][$x][$i])?$data->sheets[0]["cells"][$x][$i]:NULL;
+                                        $$variable = trim($thedata);
+                                        $datavar[] = trim($thedata);
+                                    } else {
+                                        $flag = false;
+                                    }
+                                    $i++;
+                                }
+
+                                if(array_filter($datavar)) {
+                                    $no_kontrak = !empty($no_kontrak)?$no_kontrak:false;
+                                    $kendaraan_truk_merk = !empty($kendaraan_truk_merk)?$kendaraan_truk_merk:false;
+                                    $nama_asset_nopol = !empty($nama_asset_nopol)?$nama_asset_nopol:false;
+                                    $tahun_perolehan = !empty($tahun_perolehan)?$tahun_perolehan:false;
+                                    $bln = !empty($bln)?$bln:false;
+                                    $thn = !empty($thn)?$thn:false;
+                                    $tgl_perolehan = !empty($tgl_perolehan)?$tgl_perolehan:false;
+                                    $tgl_neraca = !empty($tgl_neraca)?$tgl_neraca:false;
+                                    $perolehan_nilai = !empty($perolehan_nilai)?$perolehan_nilai:false;
+                                    $dep_mth = !empty($dep_mth)?$dep_mth:false;
+                                    $terjual = !empty($terjual)?$terjual:false;
+                                    $note  = array();
+
+                                    if( !empty($no_kontrak) ) {
+                                        $note[]  = sprintf(__('No Kontrak: %s'), $no_kontrak);
+                                    }
+                                    if( !empty($kendaraan_truk_merk) ) {
+                                        $note[]  = sprintf(__('Merk Kendaraan / Truk: %s'), $kendaraan_truk_merk);
+                                    }
+                                    if( !empty($note) ) {
+                                        $note = implode(PHP_EOL, $note);
+                                    } else {
+                                        $note = false;
+                                    }
+                                    if( !empty($terjual) ) {
+                                        $status_document = 'sold';
+                                    } else {
+                                        $status_document = 'available';
+                                    }
+                                    if( !empty($tgl_perolehan) ) {
+                                        $tgl_perolehan = $this->MkCommon->customDate($tgl_perolehan, 'd/m/Y');
+                                    } else {
+                                        $tgl_perolehan = sprintf('01/%s/%s', $bln, $tahun_perolehan);
+                                    }
+                                    if( !empty($tgl_neraca) ) {
+                                        $tgl_neraca = $this->MkCommon->customDate($tgl_neraca, 'd/m/Y');
+                                    } else {
+                                        $tgl_neraca = sprintf('01/%s/%s', $bln, $thn);
+                                    }
+
+                                    $dataArr = array(
+                                        'Asset' => array(
+                                            'name' => $nama_asset_nopol,
+                                            'asset_group_id' => 2,
+                                            'purchase_date' => $tgl_perolehan,
+                                            'neraca_date' => $tgl_neraca,
+                                            'nilai_perolehan' => $perolehan_nilai,
+                                            'depr_bulan' => $dep_mth,
+                                            'nilai_buku' => $perolehan_nilai,
+                                            'note' => $note,
+                                            'status_document' => $status_document,
+                                        ),
+                                    );
+
+                                    $dataArr = $this->RjAsset->_callBeforeSave($dataArr);
+
+                                    $result = $this->Asset->doSave($dataArr);
+                                    $status = $this->MkCommon->filterEmptyField($result, 'status');
+                                    $validationErrors = $this->MkCommon->filterEmptyField($result, 'validationErrors');
+                                    $textError = $this->MkCommon->_callMsgValidationErrors($validationErrors, 'string');
+
+                                    $this->MkCommon->setProcessParams($result, false, array(
+                                        'flash' => false,
+                                        'noRedirect' => true,
+                                    ));
+
+                                    if( $status == 'error' ) {
+                                        $failed_row++;
+                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data. %s'), $row_submitted, $textError) . '<br>';
+                                    } else {
+                                        $successfull_row++;
+                                    }
+                                    
+                                    $row_submitted++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(!empty($successfull_row)) {
+                    $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, $row_submitted-1);
+                    $this->MkCommon->setCustomFlash($message_import1, 'success');
+                }
+                
+                if(!empty($error_message)) {
+                    $this->MkCommon->setCustomFlash($error_message, 'error');
+                }
+
+                $this->redirect(array('action'=>'import'));
+            }
         }
     }
 }
