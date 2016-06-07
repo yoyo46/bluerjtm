@@ -19,7 +19,7 @@
                 $from_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
                 $to_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
                 $customer_name = $this->Common->filterEmptyField($value, 'Ttuj', 'customer_name');
-                $note_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'note');
+                $note_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'note', false, false, 'EOL');
                 $qtyTtuj = $this->Common->filterEmptyField($value, 'Ttuj', 'qty');
 
                 $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
