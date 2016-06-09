@@ -4642,6 +4642,7 @@ class TrucksController extends AppController {
 
     function daily_report($data_action = false) {
         $this->loadModel('Ttuj');
+        $this->loadModel('City');
 
         $dateFrom = date('Y-m-d');
         $dateTo = date('Y-m-d');
@@ -4704,6 +4705,9 @@ class TrucksController extends AppController {
             $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $options );
             // $allow_branch = $this->MkCommon->getBranchNameFilter( $refine );
         }
+
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Ttuj->_callRefineParams($params, $options);
 
         $options['conditions'] = array_merge($options['conditions'], array(
             'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='=> $dateFrom,
@@ -4768,6 +4772,7 @@ class TrucksController extends AppController {
         }
 
         $companies = $this->Truck->Company->getData('list');
+        $cities = $this->City->getListCities();
 
         $this->set('active_menu', 'daily_report');
         $this->set('sub_module_title', $sub_module_title);
@@ -4775,7 +4780,8 @@ class TrucksController extends AppController {
         $this->set(compact(
             'ttujs', 'from_date', 'to_date', 
             'data_action', 'header_module_title',
-            'periode', 'allow_branch', 'companies'
+            'periode', 'allow_branch', 'companies',
+            'cities'
         ));
 
         if($data_action == 'pdf'){
@@ -4785,6 +4791,7 @@ class TrucksController extends AppController {
         } else {
             $this->MkCommon->_layout_file(array(
                 'freeze',
+                'select',
             ));
         }
     }

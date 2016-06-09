@@ -103,6 +103,24 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <?php 
+                            echo $this->Html->tag('div', $this->Common->buildInputForm('Search.fromcity', __('Dari'), array(
+                                'empty' => __('Pilih Kota'),
+                                'options' => $cities,
+                                'class' => 'chosen-select form-control',
+                            )), array(
+                                'class' => 'col-sm-6',
+                            ));
+                            echo $this->Html->tag('div', $this->Common->buildInputForm('Search.tocity', __('Tujuan'), array(
+                                'empty' => __('Pilih Kota'),
+                                'options' => $cities,
+                                'class' => 'chosen-select form-control',
+                            )), array(
+                                'class' => 'col-sm-6',
+                            ));
+                    ?>
+                </div>
                 <?php 
                         // Custom Otorisasi
                         echo $this->Common->getCheckboxBranch();
