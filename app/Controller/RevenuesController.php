@@ -6651,13 +6651,15 @@ class RevenuesController extends AppController {
     }
 
     public function report_monitoring_sj_revenue( $data_action = false ) {
-        $this->loadModel('Customer');
-        $this->loadModel('Revenue');
-
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $dateFrom = date('Y-m-01');
         $dateTo = date('Y-m-t');
 
+        $this->Ttuj->unBindModel(array(
+            'hasMany' => array(
+                'Revenue',
+            )
+        ));
         $this->Ttuj->bindModel(array(
             'hasOne' => array(
                 'Revenue' => array(
@@ -6673,10 +6675,6 @@ class RevenuesController extends AppController {
         $options = array(
             'conditions' => array(
                 'Revenue.id NOT' => NULL,
-                'Ttuj.status' => 1,
-                'Ttuj.is_draft' => 0,
-                'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >=' => $dateFrom,
-                'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <=' => $dateTo,
                 'Ttuj.branch_id' => $allow_branch_id,
             ),
             'contain' => array(
@@ -6690,218 +6688,298 @@ class RevenuesController extends AppController {
                 'Ttuj.id'
             ),
         );
-        $optionConditions = array(
-            'Customer.branch_id' => $allow_branch_id,
-        );
-        $this->request->data['Ttuj']['date'] = sprintf('%s - %s', date('d/m/Y',strtotime($dateFrom)), date('d/m/Y',strtotime($dateTo)));
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
 
-            if(!empty($refine['customer'])){
-                $customer = urldecode($refine['customer']);
-                $this->request->data['Ttuj']['customer'] = $customer;
-                $options['conditions']['Ttuj.customer_id '] = $customer;
-            }
-
-            if(!empty($refine['date'])){
-                $dateStr = urldecode($refine['date']);
-                $date = explode('-', $dateStr);
-
-                if( !empty($date) ) {
-                    $date[0] = urldecode($date[0]);
-                    $date[1] = urldecode($date[1]);
-                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                    $dateFrom = $this->MkCommon->getDate($date[0]);
-                    $dateTo = $this->MkCommon->getDate($date[1]);
-                    $options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $dateFrom;
-                    $options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $dateTo;
-                }
-                $this->request->data['Ttuj']['date'] = $dateStr;
-            }
-
-            if(!empty($refine['status'])){
-                $status = urldecode($refine['status']);
-                $this->request->data['Ttuj']['status'] = $status;
-                $options['contain'][] = 'SuratJalanDetail';
-                $options['contain'][] = 'SuratJalan';
-
-                $this->Ttuj->unBindModel(array(
-                    'hasMany' => array(
-                        'SuratJalanDetail'
-                    )
-                ));
-
-                $this->Ttuj->bindModel(array(
-                    'hasOne' => array(
-                        'SuratJalanDetail' => array(
-                            'className' => 'SuratJalanDetail',
-                            'conditions' => array(
-                                'SuratJalanDetail.status' => 1,
-                            ),
-                        ),
-                        'SuratJalan' => array(
-                            'className' => 'SuratJalan',
-                            'foreignKey' => false,
-                            'conditions' => array(
-                                'SuratJalan.id = SuratJalanDetail.surat_jalan_id',
-                                'SuratJalan.status' => 1,
-                                'SuratJalan.is_canceled' => 0,
-                            ),
-                        ),
-                    )
-                ), false);
-
-                switch ($status) {
-                    case 'pending':
-                        $options['conditions']['Ttuj.is_sj_completed'] = 0;
-                        // $options['conditions']['SuratJalan.id'] = NULL;
-                        break;
-
-                    // case 'hal_receipt':
-                    //     $options['conditions']['Ttuj.is_sj_completed'] = 0;
-                    //     $options['conditions']['SuratJalan.id <>'] = NULL;
-                    //     break;
-
-                    case 'receipt':
-                        $options['conditions']['Ttuj.is_sj_completed'] = 1;
-                        break;
-
-                    case 'receipt_unpaid':
-                        $this->Ttuj->Revenue->bindModel(array(
-                            'hasOne' => array(
-                                'SuratJalanDetail' => array(
-                                    'className' => 'SuratJalanDetail',
-                                    'foreignKey' => false,
-                                    'conditions' => array(
-                                        'SuratJalanDetail.ttuj_id = Revenue.ttuj_id',
-                                        'SuratJalanDetail.status' => 1,
-                                    ),
-                                ),
-                                'SuratJalan' => array(
-                                    'className' => 'SuratJalan',
-                                    'foreignKey' => false,
-                                    'conditions' => array(
-                                        'SuratJalan.id = SuratJalanDetail.surat_jalan_id',
-                                        'SuratJalan.status' => 1,
-                                        'SuratJalan.is_canceled' => 0,
-                                    ),
-                                ),
-                            )
-                        ), false);
-
-                        $options['conditions']['OR'] = array(
-                            'Ttuj.is_sj_completed' => 1,
-                            'SuratJalan.id <>' => NULL,
-                        );
-                        $revenueConditions = !empty($options['conditions'])?$options['conditions']:false;
-                        $revenueConditions['Revenue.transaction_status <>'] = 'invoiced';
-                        $revenues = $this->Revenue->getData('list', array(
-                            'conditions' => $revenueConditions,
-                            'contain' => array(
-                                'Ttuj',
-                                'SuratJalan',
-                                'SuratJalanDetail',
-                            ),
-                            'fields' => array(
-                                'Revenue.id', 'Revenue.ttuj_id'
-                            ),
-                        ), true, array(
-                            'status' => 'all',
-                            'branch' => false,
-                        ));
-
-                        $options['conditions']['Ttuj.id'] = $revenues;
-                        break;
-
-                    case 'sj_receipt_paid':
-                        $options['conditions']['Ttuj.is_sj_completed'] = 0;
-                        $revenueConditions = !empty($options['conditions'])?$options['conditions']:false;
-                        $revenueConditions['Revenue.transaction_status'] = 'invoiced';
-                        $revenues = $this->Revenue->getData('list', array(
-                            'conditions' => $revenueConditions,
-                            'contain' => array(
-                                'Ttuj'
-                            ),
-                            'fields' => array(
-                                'Revenue.id', 'Revenue.ttuj_id'
-                            ),
-                        ), true, array(
-                            'status' => 'all',
-                        ));
-
-                        $options['conditions']['Ttuj.id'] = $revenues;
-                        break;
-                }
-            }
-
-            $options['conditions'] = $this->MkCommon->_callSearchNopol($options['conditions'], $refine, 'Ttuj.truck_id');
-            $options['conditions'] = $this->MkCommon->_callRefineGenerating($options['conditions'], $refine, array(
-                array(
-                    'modelName' => 'Ttuj',
-                    'fieldName' => 'city',
-                    'conditionName' => 'Ttuj.to_city_name',
-                    'operator' => 'LIKE',
-                ),
-            ));
-
-            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $options );
-        }
+        $options =  $this->Ttuj->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'Ttuj', $options );
 
         if( !empty($data_action) ){
-            $ttujs = $this->Ttuj->getData('all', $options);
+            $values = $this->Ttuj->getData('all', $options, array(
+                'status' => 'commit',
+            ));
         } else {
-            $options['limit'] = Configure::read('__Site.config_pagination');
-            $this->paginate = $this->Ttuj->getData('paginate', $options);
-            $ttujs = $this->paginate('Ttuj');
+            $this->paginate = $this->Ttuj->getData('paginate', array_merge($options, array(
+                'limit' => Configure::read('__Site.config_pagination'),
+            )), array(
+                'status' => 'commit',
+            ));
+            $values = $this->paginate('Ttuj');
         }
 
-        if( !empty($ttujs) ) {
-            foreach ($ttujs as $key => $ttuj) {
-                $ttuj = $this->Ttuj->getSumUnit($ttuj, $ttuj['Ttuj']['id'], false, 'tgl_surat_jalan');
-                $ttuj = $this->Revenue->getPaid($ttuj, $ttuj['Ttuj']['id'], 'unit');
-                $ttuj = $this->Revenue->getPaid($ttuj, $ttuj['Ttuj']['id'], 'invoiced');
-                $ttuj = $this->Revenue->RevenueDetail->getToCity($ttuj, $ttuj['Ttuj']['id']);
-                $ttujs[$key] = $ttuj;
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
+
+                $value = $this->Ttuj->getSumUnit($value, $id, false, 'tgl_surat_jalan');
+                $value = $this->Ttuj->Revenue->getPaid($value, $id, 'unit');
+                $value = $this->Ttuj->Revenue->getPaid($value, $id, 'invoiced');
+                $value = $this->Ttuj->Revenue->RevenueDetail->getToCity($value, $id);
+
+                $values[$key] = $value;
             }
         }
 
-        $customerList = $this->Customer->getData('list', array(
-            'fields' => array(
-                'Customer.id', 'Customer.customer_name_code'
+        $this->RjRevenue->_callBeforeViewReportMonitoringSj($params);
+        $this->MkCommon->_callBeforeViewReport($data_action, array(
+            'layout_file' => array(
+                'select',
+                'freeze',
             ),
-            'conditions' => $optionConditions,
-        ), true, array(
-            'branch' => false,
-            'plant' => false,
         ));
-
-        $this->set('sub_module_title', __('Laporan Monitoring Surat Jalan & Revenue'));
-        $this->set('active_menu', 'report_monitoring_sj_revenue');
-        $period_text = sprintf('Periode %s - %s', date('d M Y',strtotime($dateFrom)), date('d M Y',strtotime($dateTo)));
-        $this->set('period_text', $period_text);
-
         $this->set(compact(
-            'ttujs', 'data_action', 'customerList'
+            'values', 'data_action'
         ));
-
-        if($data_action == 'pdf'){
-            $this->layout = 'pdf';
-        }else if($data_action == 'excel'){
-            $this->layout = 'ajax';
-        } else {
-            $layout_js = array(
-                'freeze',
-            );
-            $layout_css = array(
-                'freeze',
-            );
-
-            $this->set(compact(
-                'layout_css', 'layout_js'
-            ));
-        }
     }
+    // public function report_monitoring_sj_revenue( $data_action = false ) {
+    //     $this->loadModel('Customer');
+    //     $this->loadModel('Revenue');
+
+    //     $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+    //     $dateFrom = date('Y-m-01');
+    //     $dateTo = date('Y-m-t');
+
+    //     $this->Ttuj->bindModel(array(
+    //         'hasOne' => array(
+    //             'Revenue' => array(
+    //                 'className' => 'Revenue',
+    //                 'foreignKey' => 'ttuj_id',
+    //                 'conditions' => array(
+    //                     'Revenue.status' => 1,
+    //                 ),
+    //             )
+    //         )
+    //     ), false);
+
+    //     $options = array(
+    //         'conditions' => array(
+    //             'Revenue.id NOT' => NULL,
+    //             'Ttuj.status' => 1,
+    //             'Ttuj.is_draft' => 0,
+    //             'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >=' => $dateFrom,
+    //             'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <=' => $dateTo,
+    //             'Ttuj.branch_id' => $allow_branch_id,
+    //         ),
+    //         'contain' => array(
+    //             'Revenue',
+    //         ),
+    //         'order'=> array(
+    //             'Ttuj.created' => 'DESC',
+    //             'Ttuj.id' => 'DESC',
+    //         ),
+    //         'group' => array(
+    //             'Ttuj.id'
+    //         ),
+    //     );
+    //     $optionConditions = array(
+    //         'Customer.branch_id' => $allow_branch_id,
+    //     );
+    //     $this->request->data['Ttuj']['date'] = sprintf('%s - %s', date('d/m/Y',strtotime($dateFrom)), date('d/m/Y',strtotime($dateTo)));
+
+    //     if(!empty($this->params['named'])){
+    //         $refine = $this->params['named'];
+
+    //         if(!empty($refine['customer'])){
+    //             $customer = urldecode($refine['customer']);
+    //             $this->request->data['Ttuj']['customer'] = $customer;
+    //             $options['conditions']['Ttuj.customer_id '] = $customer;
+    //         }
+
+    //         if(!empty($refine['date'])){
+    //             $dateStr = urldecode($refine['date']);
+    //             $date = explode('-', $dateStr);
+
+    //             if( !empty($date) ) {
+    //                 $date[0] = urldecode($date[0]);
+    //                 $date[1] = urldecode($date[1]);
+    //                 $dateStr = sprintf('%s-%s', $date[0], $date[1]);
+    //                 $dateFrom = $this->MkCommon->getDate($date[0]);
+    //                 $dateTo = $this->MkCommon->getDate($date[1]);
+    //                 $options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $dateFrom;
+    //                 $options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $dateTo;
+    //             }
+    //             $this->request->data['Ttuj']['date'] = $dateStr;
+    //         }
+
+    //         if(!empty($refine['status'])){
+    //             $status = urldecode($refine['status']);
+    //             $this->request->data['Ttuj']['status'] = $status;
+    //             $options['contain'][] = 'SuratJalanDetail';
+    //             $options['contain'][] = 'SuratJalan';
+
+    //             $this->Ttuj->unBindModel(array(
+    //                 'hasMany' => array(
+    //                     'SuratJalanDetail'
+    //                 )
+    //             ));
+
+    //             $this->Ttuj->bindModel(array(
+    //                 'hasOne' => array(
+    //                     'SuratJalanDetail' => array(
+    //                         'className' => 'SuratJalanDetail',
+    //                         'conditions' => array(
+    //                             'SuratJalanDetail.status' => 1,
+    //                         ),
+    //                     ),
+    //                     'SuratJalan' => array(
+    //                         'className' => 'SuratJalan',
+    //                         'foreignKey' => false,
+    //                         'conditions' => array(
+    //                             'SuratJalan.id = SuratJalanDetail.surat_jalan_id',
+    //                             'SuratJalan.status' => 1,
+    //                             'SuratJalan.is_canceled' => 0,
+    //                         ),
+    //                     ),
+    //                 )
+    //             ), false);
+
+    //             switch ($status) {
+    //                 case 'pending':
+    //                     $options['conditions']['Ttuj.is_sj_completed'] = 0;
+    //                     // $options['conditions']['SuratJalan.id'] = NULL;
+    //                     break;
+
+    //                 // case 'hal_receipt':
+    //                 //     $options['conditions']['Ttuj.is_sj_completed'] = 0;
+    //                 //     $options['conditions']['SuratJalan.id <>'] = NULL;
+    //                 //     break;
+
+    //                 case 'receipt':
+    //                     $options['conditions']['Ttuj.is_sj_completed'] = 1;
+    //                     break;
+
+    //                 case 'receipt_unpaid':
+    //                     $this->Ttuj->Revenue->bindModel(array(
+    //                         'hasOne' => array(
+    //                             'SuratJalanDetail' => array(
+    //                                 'className' => 'SuratJalanDetail',
+    //                                 'foreignKey' => false,
+    //                                 'conditions' => array(
+    //                                     'SuratJalanDetail.ttuj_id = Revenue.ttuj_id',
+    //                                     'SuratJalanDetail.status' => 1,
+    //                                 ),
+    //                             ),
+    //                             'SuratJalan' => array(
+    //                                 'className' => 'SuratJalan',
+    //                                 'foreignKey' => false,
+    //                                 'conditions' => array(
+    //                                     'SuratJalan.id = SuratJalanDetail.surat_jalan_id',
+    //                                     'SuratJalan.status' => 1,
+    //                                     'SuratJalan.is_canceled' => 0,
+    //                                 ),
+    //                             ),
+    //                         )
+    //                     ), false);
+
+    //                     $options['conditions']['OR'] = array(
+    //                         'Ttuj.is_sj_completed' => 1,
+    //                         'SuratJalan.id <>' => NULL,
+    //                     );
+    //                     $revenueConditions = !empty($options['conditions'])?$options['conditions']:false;
+    //                     $revenueConditions['Revenue.transaction_status <>'] = 'invoiced';
+    //                     $revenues = $this->Revenue->getData('list', array(
+    //                         'conditions' => $revenueConditions,
+    //                         'contain' => array(
+    //                             'Ttuj',
+    //                             'SuratJalan',
+    //                             'SuratJalanDetail',
+    //                         ),
+    //                         'fields' => array(
+    //                             'Revenue.id', 'Revenue.ttuj_id'
+    //                         ),
+    //                     ), true, array(
+    //                         'status' => 'all',
+    //                         'branch' => false,
+    //                     ));
+
+    //                     $options['conditions']['Ttuj.id'] = $revenues;
+    //                     break;
+
+    //                 case 'sj_receipt_paid':
+    //                     $options['conditions']['Ttuj.is_sj_completed'] = 0;
+    //                     $revenueConditions = !empty($options['conditions'])?$options['conditions']:false;
+    //                     $revenueConditions['Revenue.transaction_status'] = 'invoiced';
+    //                     $revenues = $this->Revenue->getData('list', array(
+    //                         'conditions' => $revenueConditions,
+    //                         'contain' => array(
+    //                             'Ttuj'
+    //                         ),
+    //                         'fields' => array(
+    //                             'Revenue.id', 'Revenue.ttuj_id'
+    //                         ),
+    //                     ), true, array(
+    //                         'status' => 'all',
+    //                     ));
+
+    //                     $options['conditions']['Ttuj.id'] = $revenues;
+    //                     break;
+    //             }
+    //         }
+
+    //         $options['conditions'] = $this->MkCommon->_callSearchNopol($options['conditions'], $refine, 'Ttuj.truck_id');
+    //         $options['conditions'] = $this->MkCommon->_callRefineGenerating($options['conditions'], $refine, array(
+    //             array(
+    //                 'modelName' => 'Ttuj',
+    //                 'fieldName' => 'city',
+    //                 'conditionName' => 'Ttuj.to_city_name',
+    //                 'operator' => 'LIKE',
+    //             ),
+    //         ));
+
+    //         $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $options );
+    //     }
+
+    //     if( !empty($data_action) ){
+    //         $ttujs = $this->Ttuj->getData('all', $options);
+    //     } else {
+    //         $options['limit'] = Configure::read('__Site.config_pagination');
+    //         $this->paginate = $this->Ttuj->getData('paginate', $options);
+    //         $ttujs = $this->paginate('Ttuj');
+    //     }
+
+    //     if( !empty($ttujs) ) {
+    //         foreach ($ttujs as $key => $ttuj) {
+    //             $ttuj = $this->Ttuj->getSumUnit($ttuj, $ttuj['Ttuj']['id'], false, 'tgl_surat_jalan');
+    //             $ttuj = $this->Revenue->getPaid($ttuj, $ttuj['Ttuj']['id'], 'unit');
+    //             $ttuj = $this->Revenue->getPaid($ttuj, $ttuj['Ttuj']['id'], 'invoiced');
+    //             $ttuj = $this->Revenue->RevenueDetail->getToCity($ttuj, $ttuj['Ttuj']['id']);
+    //             $ttujs[$key] = $ttuj;
+    //         }
+    //     }
+
+    //     $customerList = $this->Customer->getData('list', array(
+    //         'fields' => array(
+    //             'Customer.id', 'Customer.customer_name_code'
+    //         ),
+    //         'conditions' => $optionConditions,
+    //     ), true, array(
+    //         'branch' => false,
+    //         'plant' => false,
+    //     ));
+
+    //     $this->set('sub_module_title', __('Laporan Monitoring Surat Jalan & Revenue'));
+    //     $this->set('active_menu', 'report_monitoring_sj_revenue');
+    //     $period_text = sprintf('Periode %s - %s', date('d M Y',strtotime($dateFrom)), date('d M Y',strtotime($dateTo)));
+    //     $this->set('period_text', $period_text);
+
+    //     $this->set(compact(
+    //         'ttujs', 'data_action', 'customerList'
+    //     ));
+
+    //     if($data_action == 'pdf'){
+    //         $this->layout = 'pdf';
+    //     }else if($data_action == 'excel'){
+    //         $this->layout = 'ajax';
+    //     } else {
+    //         $this->MkCommon->_layout_file(array(
+    //             'freeze',
+    //             'select',
+    //         ));
+    //     }
+    // }
 
     function invoice_hso_print($id, $action_print = false){
         $this->loadModel('Invoice');

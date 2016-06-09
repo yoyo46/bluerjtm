@@ -516,6 +516,9 @@
                             'balik', 'pool', 'surat_jalan',
                             'report_surat_jalan',
                         ),
+                        'ttujs' => array(
+                            'report_recap_sj',
+                        ),
                     );
 
                     if( $this->Common->allowMenu( $dataMenu ) ) {
@@ -525,6 +528,7 @@
                             'balik', 'pool', 'uang_jalan',
                             'uang_kuli_muat', 'uang_kuli_bongkar',
                             'surat_jalan', 'report_surat_jalan',
+                            'report_recap_sj',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $ttujMenu) ) {
@@ -629,6 +633,17 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'report_surat_jalan' )?'active':'',
+                            ));
+
+                            echo $this->Common->link(__('Laporan Rekap Penerimaan Surat Jalan') , array(
+                                'controller' => 'ttujs',
+                                'action' => 'report_recap_sj',
+                                'admin' => false,
+                            ), array(
+                                'data-wrapper' => 'li',
+                                'data-icon' => 'angle-double-right',
+                                'data-slug' => 'report_recap_sj',
+                                'data-active' => $active_menu,
                             ));
                     ?>
                 </ul>

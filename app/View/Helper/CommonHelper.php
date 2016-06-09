@@ -1265,10 +1265,17 @@ class CommonHelper extends AppHelper {
             $result = $this->safeTagPrint($result);
         }
 
-        switch ($format) {
-            case 'EOL':
-                $result = $this->getFormatDesc($result);
-                break;
+        if( is_array($format) ) {
+            if( !empty($format['date']) ) {
+                $format = $format['date'];
+                $result = $this->formatDate($result, $format);
+            }
+        } else {
+            switch ($format) {
+                case 'EOL':
+                    $result = $this->getFormatDesc($result);
+                    break;
+            }
         }
 
         return $result;
@@ -2007,9 +2014,10 @@ class CommonHelper extends AppHelper {
         $_wrapper_options = $this->filterEmptyField($options, 'data-wrapper-options');
         $_lbl_active = $this->filterEmptyField($options, 'data-active');
         $_caret = $this->filterEmptyField($options, 'data-caret', false, false, false);
+        $_slug = $this->filterEmptyField($options, 'data-slug', false, $text);
 
         $_add_class = !empty($options['class'])?$options['class']:false;
-        $_tolower_text = strtolower($text);
+        $_tolower_text = strtolower($_slug);
         $options['escape'] = false;
 
         if( !empty($_icon) ) {

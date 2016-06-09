@@ -211,6 +211,11 @@ class Ttuj extends AppModel {
             case 'non-active':
                 $default_options['conditions']['Ttuj.status'] = 0;
                 break;
+
+            case 'commit':
+                $default_options['conditions']['Ttuj.status'] = 1;
+                $default_options['conditions']['Ttuj.is_draft'] = 0;
+                break;
             
             default:
                 $default_options['conditions']['Ttuj.status'] = 1;
@@ -739,6 +744,8 @@ class Ttuj extends AppModel {
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $dateFromTtuj = !empty($data['named']['DateFromTtuj'])?$data['named']['DateFromTtuj']:false;
         $dateToTtuj = !empty($data['named']['DateToTtuj'])?$data['named']['DateToTtuj']:false;
+        $dateFromRange = !empty($data['named']['DateFromRange'])?$data['named']['DateFromRange']:false;
+        $dateToRange = !empty($data['named']['DateToRange'])?$data['named']['DateToRange']:false;
 
         $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
         $type = !empty($data['named']['type'])?$data['named']['type']:1;
@@ -759,7 +766,37 @@ class Ttuj extends AppModel {
         $uje = !empty($data['named']['uje'])?$data['named']['uje']:false;
         $com = !empty($data['named']['com'])?$data['named']['com']:false;
         $come = !empty($data['named']['come'])?$data['named']['come']:false;
-        $status = !empty($data['named']['status'])?$data['named']['status']:false;
+
+
+        if( !empty($dateFromRange) || !empty($dateToRange) || $status == 'sj_receipt_unpaid' ) {
+            $this->unBindModel(array(
+                'hasMany' => array(
+                    'SuratJalanDetail'
+                )
+            ));
+
+            $this->bindModel(array(
+                'hasOne' => array(
+                    'SuratJalanDetail' => array(
+                        'className' => 'SuratJalanDetail',
+                        'conditions' => array(
+                            'SuratJalanDetail.status' => 1,
+                        ),
+                    ),
+                    'SuratJalan' => array(
+                        'className' => 'SuratJalan',
+                        'foreignKey' => false,
+                        'conditions' => array(
+                            'SuratJalan.id = SuratJalanDetail.surat_jalan_id',
+                            'SuratJalan.status' => 1,
+                            'SuratJalan.is_canceled' => 0,
+                        ),
+                    ),
+                )
+            ), false);
+            $default_options['contain'][] = 'SuratJalan';
+            $default_options['contain'][] = 'SuratJalanDetail';
+        }
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -778,6 +815,16 @@ class Ttuj extends AppModel {
             if( !empty($dateToTtuj) ) {
                 $default_options['conditions']['DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') <='] = $dateToTtuj;
             }
+        }
+        if( !empty($dateFromRange) || !empty($dateToRange) ) {
+            if( !empty($dateFromRange) ) {
+                $default_options['conditions']['DATE_FORMAT(SuratJalan.tgl_surat_jalan, \'%Y-%m-%d\') >='] = $dateFromRange;
+            }
+
+            if( !empty($dateToRange) ) {
+                $default_options['conditions']['DATE_FORMAT(SuratJalan.tgl_surat_jalan, \'%Y-%m-%d\') <='] = $dateToRange;
+            }
+            $default_options['contain'][] = 'SuratJalan';
         }
 
         if(!empty($nopol)){
@@ -880,6 +927,76 @@ class Ttuj extends AppModel {
                                 'Ttuj.paid_commission_extra' => 'none',
                             ),
                         );
+                    break;
+                case 'sj_pending':
+                    $default_options['conditions']['Ttuj.is_sj_completed'] = 0;
+                    break;
+                case 'sj_receipt':
+                    $default_options['conditions']['Ttuj.is_sj_completed'] = 1;
+                    break;
+                case 'sj_receipt_unpaid':
+                    $this->Revenue->bindModel(array(
+                        'hasOne' => array(
+                            'SuratJalanDetail' => array(
+                                'className' => 'SuratJalanDetail',
+                                'foreignKey' => false,
+                                'conditions' => array(
+                                    'SuratJalanDetail.ttuj_id = Revenue.ttuj_id',
+                                    'SuratJalanDetail.status' => 1,
+                                ),
+                            ),
+                            'SuratJalan' => array(
+                                'className' => 'SuratJalan',
+                                'foreignKey' => false,
+                                'conditions' => array(
+                                    'SuratJalan.id = SuratJalanDetail.surat_jalan_id',
+                                    'SuratJalan.status' => 1,
+                                    'SuratJalan.is_canceled' => 0,
+                                ),
+                            ),
+                        )
+                    ), false);
+
+                    $default_options['conditions']['OR'] = array(
+                        'Ttuj.is_sj_completed' => 1,
+                        'SuratJalan.id <>' => NULL,
+                    );
+                    $revenueConditions = !empty($default_options['conditions'])?$default_options['conditions']:false;
+                    $revenueConditions['Revenue.transaction_status <>'] = 'invoiced';
+                    $revenues = $this->Revenue->getData('list', array(
+                        'conditions' => $revenueConditions,
+                        'contain' => array(
+                            'Ttuj',
+                            'SuratJalan',
+                            'SuratJalanDetail',
+                        ),
+                        'fields' => array(
+                            'Revenue.id', 'Revenue.ttuj_id'
+                        ),
+                    ), true, array(
+                        'status' => 'all',
+                        'branch' => false,
+                    ));
+
+                    $default_options['conditions']['Ttuj.id'] = $revenues;
+                    break;
+                case 'sj_receipt_paid':
+                    $default_options['conditions']['Ttuj.is_sj_completed'] = 0;
+                    $revenueConditions = !empty($default_options['conditions'])?$default_options['conditions']:false;
+                    $revenueConditions['Revenue.transaction_status'] = 'invoiced';
+                    $revenues = $this->Revenue->getData('list', array(
+                        'conditions' => $revenueConditions,
+                        'contain' => array(
+                            'Ttuj'
+                        ),
+                        'fields' => array(
+                            'Revenue.id', 'Revenue.ttuj_id'
+                        ),
+                    ), true, array(
+                        'status' => 'all',
+                    ));
+
+                    $default_options['conditions']['Ttuj.id'] = $revenues;
                     break;
             }
         }

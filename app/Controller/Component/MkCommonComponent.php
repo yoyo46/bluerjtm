@@ -327,24 +327,32 @@ class MkCommonComponent extends Component {
 
     function filterEmptyField ( $value, $modelName, $fieldName = false, $empty = false, $options = false ) {
         $type = !empty($options['type'])?$options['type']:'empty';
+        $result = $empty;
 
         switch ($type) {
             case 'isset':
                 if( empty($fieldName) && isset($value[$modelName]) ) {
-                    return $value[$modelName];
+                    $result = $value[$modelName];
                 } else {
-                    return isset($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
+                    $result = isset($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
                 }
                 break;
             
             default:
                 if( empty($fieldName) && !empty($value[$modelName]) ) {
-                    return $value[$modelName];
+                    $result = $value[$modelName];
                 } else {
-                    return !empty($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
+                    $result = !empty($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
                 }
                 break;
         }
+
+        if( !empty($options['date']) ) {
+            $format = $options['date'];
+            $result = $this->customDate($result, $format);
+        }
+
+        return $result;
     }
 
     function getMimeType( $filename ) {
@@ -752,6 +760,10 @@ class MkCommonComponent extends Component {
     }
     
     function getConditionGroupBranch ( $refine, $modelName, $options = false, $type = 'options' ) {
+        if( !empty($refine['named']) ) {
+            $refine = $refine['named'];
+        }
+
         if(!empty($refine['group_branch'])){
             if( !is_array($refine['group_branch']) ) {
                 $value = urldecode($refine['group_branch']);
@@ -2097,6 +2109,29 @@ class MkCommonComponent extends Component {
         }
 
         return $data;
+    }
+
+    function _callBeforeViewReport ( $type = false, $options = array() ) {
+        switch ($type) {
+            case 'pdf':
+                $this->controller->layout = 'pdf';
+                break;
+
+            case 'excel':
+                $this->controller->layout = 'ajax';
+                break;
+            
+            default:
+                $layout_file = $this->filterEmptyField($options, 'layout_file');
+
+                if( !empty($layout_file) ) {
+                    $this->_layout_file(array(
+                        'select',
+                        'freeze',
+                    ));
+                }
+                break;
+        }
     }
 }
 ?>
