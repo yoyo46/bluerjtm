@@ -122,7 +122,16 @@
         <?php 
                 if(!empty($values)){
         ?>
-        <table id="tt" class="table table-bordered easyui-datagrid" singleSelect="true">
+        <table id="tt" class="table table-bordered easyui-datagrid" singleSelect="true" data-options="
+            singleSelect: true,
+            rowStyler: function(index,row){
+                if ( index%2 == 0 ){
+                    return 'background-color:#f5f5f5';
+                } else {
+                    return 'background-color:#d9edf7';
+                }
+            }
+        ">
             <thead frozen="true">
                 <tr>
                     <?php

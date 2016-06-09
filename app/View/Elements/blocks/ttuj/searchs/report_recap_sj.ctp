@@ -21,19 +21,14 @@
                             'class'=>'form-control date-range',
                         ));
                         echo $this->Common->buildInputForm('nodoc', __('No. TTUJ'));
-                        echo $this->Common->buildInputForm('customerid', __('Customer'), array(
-                            'empty' => __('Pilih Customer'),
-                            'options' => $customers,
-                            'class' => 'form-control chosen-select',
-                        ));
+                        // echo $this->Common->buildInputForm('customerid', __('Customer'), array(
+                        //     'empty' => __('Pilih Customer'),
+                        //     'options' => $customers,
+                        //     'class' => 'form-control chosen-select',
+                        // ));
                 ?>
                 <?php 
-                        echo $this->element('blocks/common/searchs/box_action', array(
-                            '_url' => array(
-                                'controller' => 'ttujs', 
-                                'action' => 'report_recap_sj', 
-                            ),
-                        ));
+                        echo $this->Common->buildInputForm('driver', __('Nama Supir'));
                 ?>
             </div>
             <div class="col-sm-4">
@@ -72,9 +67,12 @@
                         </div>
                     </div>
                 </div>
-                <?php 
-                        echo $this->Common->buildInputForm('driver', __('Nama Supir'));
-                ?>
+                <div class="form-group">
+                    <?php 
+                            // Custom Otorisasi
+                            echo $this->Common->getCheckboxBranch();
+                    ?>
+                </div>
             </div>
             <div class="col-sm-4">
                 <div class="row">
@@ -109,12 +107,14 @@
                             ));
                     ?>
                 </div>
-                <div class="form-group">
-                    <?php 
-                            // Custom Otorisasi
-                            echo $this->Common->getCheckboxBranch();
-                    ?>
-                </div>
+                <?php 
+                        echo $this->element('blocks/common/searchs/box_action', array(
+                            '_url' => array(
+                                'controller' => 'ttujs', 
+                                'action' => 'report_recap_sj', 
+                            ),
+                        ));
+                ?>
             </div>
         </div>
         <?php 

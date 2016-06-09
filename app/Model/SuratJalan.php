@@ -102,6 +102,22 @@ class SuratJalan extends AppModel {
         return $result;
     }
 
+    function getMerge( $data, $id ){
+        if( empty($data['SuratJalan']) ) {
+            $value = $this->getData('first', array(
+                'conditions' => array(
+                    'SuratJalan.id' => $id,
+                ),
+            ));
+
+            if( !empty($value) ) {
+                $data = array_merge($data, $value);
+            }
+        }
+
+        return $data;
+    }
+
     public function _callRefineParams( $data = '', $default_options = false ) {
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;

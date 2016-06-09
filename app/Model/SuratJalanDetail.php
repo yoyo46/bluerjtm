@@ -100,6 +100,26 @@ class SuratJalanDetail extends AppModel {
         return $data;
     }
 
+    function getMergeList( $data, $id, $fieldName = 'SuratJalanDetail.ttuj_id', $group = 'SuratJalanDetail.surat_jalan_id' ){
+        if( empty($data['SuratJalanDetail']) ) {
+            $values = $this->getData('list', array(
+                'conditions' => array(
+                    $fieldName => $id,
+                ),
+                'fields' => array(
+                    'SuratJalanDetail.id', 'SuratJalanDetail.surat_jalan_id',
+                ),
+                'group' => $group,
+            ));
+
+            if( !empty($values) ) {
+                $data['SuratJalanDetail'] = $values;
+            }
+        }
+
+        return $data;
+    }
+
     function getMergeFirst( $data, $id, $fieldName = 'SuratJalanDetail.surat_jalan_id', $options = array() ){
         if( empty($data['SuratJalanDetail']) ) {
             $options['conditions'][$fieldName] = $id;

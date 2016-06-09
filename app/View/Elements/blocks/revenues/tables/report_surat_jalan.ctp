@@ -22,8 +22,13 @@
                 $note_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'note', false, false, 'EOL');
                 $qtyTtuj = $this->Common->filterEmptyField($value, 'Ttuj', 'qty');
 
-                $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                 $tujuan = sprintf('%s - %s', $from_city_name, $to_city_name);
+
+                if( !empty($id) ) {
+                    $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                } else {
+                    $noref = '';
+                }
                 
                 $customDate = $this->Common->formatDate($tgl_surat_jalan, 'd/m/Y');
                 $customDateTtuj = $this->Common->formatDate($ttuj_date, 'd/m/Y');

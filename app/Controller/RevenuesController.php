@@ -9392,42 +9392,58 @@ class RevenuesController extends AppController {
     }
 
     public function report_surat_jalan( $data_action = false ) {
-        $this->loadModel('SuratJalanDetail');
         $module_title = __('Laporan Surat Jalan');
         $values = array();
-        $dateFrom = date('Y-m-d', strtotime('-2 Month'));
-        $dateTo = date('Y-m-d');
 
         $this->set('sub_module_title', $module_title);
-        $options =  $this->SuratJalanDetail->SuratJalan->getData('paginate', array(
-            'conditions' => array(
-                'SuratJalanDetail.status' => 1,
-            ),
+
+        $this->Ttuj->unBindModel(array(
+            'hasMany' => array(
+                'SuratJalanDetail'
+            )
+        ));
+
+        $this->Ttuj->bindModel(array(
+            'hasOne' => array(
+                'SuratJalanDetail' => array(
+                    'className' => 'SuratJalanDetail',
+                    'conditions' => array(
+                        'SuratJalanDetail.status' => 1,
+                    ),
+                ),
+                'SuratJalan' => array(
+                    'className' => 'SuratJalan',
+                    'foreignKey' => false,
+                    'conditions' => array(
+                        'SuratJalan.id = SuratJalanDetail.surat_jalan_id',
+                        'SuratJalan.status' => 1,
+                        'SuratJalan.is_canceled' => 0,
+                    ),
+                ),
+            )
+        ), false);
+
+        $options =  $this->Ttuj->getData('paginate', array(
             'contain' => array(
                 'SuratJalan',
+                'SuratJalanDetail',
             ),
-            'order' => array(
-                'SuratJalanDetail.ttuj_id' => 'ASC',
-                'SuratJalan.tgl_surat_jalan' => 'ASC',
-                'SuratJalan.id' => 'ASC',
-            ),
-        ), array(
+        ), true, array(
+            'status' => 'commit',
             'branch' => false,
+            'plant' => false,
         ));
 
-        $params = $this->MkCommon->_callRefineParams($this->params, array(
-            'dateFrom' => $dateFrom,
-            'dateTo' => $dateTo,
-        ));
+        $params = $this->MkCommon->_callRefineParams($this->params);
         $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
         $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
-        $options =  $this->SuratJalanDetail->SuratJalan->_callRefineParams($params, $options);
+        $options =  $this->Ttuj->SuratJalanDetail->SuratJalan->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'Ttuj', $options );
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            // Custom Otorisasi
-            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'SuratJalan', $options );
+        if( !empty($options['contain']) ) {
+            foreach (array_keys($options['contain'], 'Ttuj', true) as $key) {
+                unset($options['contain'][$key]);
+            }
         }
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
@@ -9435,19 +9451,18 @@ class RevenuesController extends AppController {
         }
 
         if( !empty($data_action) ){
-            $values = $this->SuratJalanDetail->find('all', $options);
+            $values = $this->Ttuj->find('all', $options);
         } else {
             $options['limit'] = Configure::read('__Site.config_pagination');
             $this->paginate = $options;
-            $values = $this->paginate('SuratJalanDetail');
+            $values = $this->paginate('Ttuj');
         }
 
         if( !empty($values) ) {
             foreach ($values as $key => $value) {
-                $ttuj_id = $this->MkCommon->filterEmptyField($value, 'SuratJalanDetail', 'ttuj_id');
-                $branch_id = $this->MkCommon->filterEmptyField($value, 'SuratJalan', 'branch_id');
+                $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'branch_id');
                 
-                $value = $this->Ttuj->getMerge($value, $ttuj_id);
                 $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
 
                 $muatan = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );

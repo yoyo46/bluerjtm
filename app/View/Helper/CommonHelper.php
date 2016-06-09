@@ -1265,16 +1265,18 @@ class CommonHelper extends AppHelper {
             $result = $this->safeTagPrint($result);
         }
 
-        if( is_array($format) ) {
-            if( !empty($format['date']) ) {
-                $format = $format['date'];
-                $result = $this->formatDate($result, $format);
-            }
-        } else {
-            switch ($format) {
-                case 'EOL':
-                    $result = $this->getFormatDesc($result);
-                    break;
+        if( !empty($result) && $result != $empty ) {
+            if( is_array($format) ) {
+                if( !empty($format['date']) ) {
+                    $format = $format['date'];
+                    $result = $this->formatDate($result, $format);
+                }
+            } else {
+                switch ($format) {
+                    case 'EOL':
+                        $result = $this->getFormatDesc($result);
+                        break;
+                }
             }
         }
 
