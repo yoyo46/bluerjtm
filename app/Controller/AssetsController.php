@@ -707,7 +707,8 @@ class AssetsController extends AppController {
                                     $thn = !empty($thn)?$thn:false;
                                     $tgl_perolehan = !empty($tgl_perolehan)?$tgl_perolehan:false;
                                     $tgl_neraca = !empty($tgl_neraca)?$tgl_neraca:false;
-                                    $perolehan_nilai = !empty($perolehan_nilai)?$perolehan_nilai:false;
+                                    $perolehan_nilai = !empty($perolehan_nilai)?$this->MkCommon->_callPriceConverter($perolehan_nilai):false;
+                                    $akun_penyusutan = !empty($akun_penyusutan)?$this->MkCommon->_callPriceConverter($akun_penyusutan):false;
                                     $dep_mth = !empty($dep_mth)?$dep_mth:false;
                                     $terjual = !empty($terjual)?$terjual:false;
                                     $note  = array();
@@ -747,9 +748,10 @@ class AssetsController extends AppController {
                                             'neraca_date' => $tgl_neraca,
                                             'nilai_perolehan' => $perolehan_nilai,
                                             'depr_bulan' => $dep_mth,
-                                            'nilai_buku' => $perolehan_nilai,
+                                            'nilai_buku' => $perolehan_nilai - $akun_penyusutan,
                                             'note' => $note,
                                             'status_document' => $status_document,
+                                            'ak_penyusutan' => $akun_penyusutan,
                                         ),
                                     );
 
