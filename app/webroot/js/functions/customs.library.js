@@ -23,6 +23,7 @@
         }, options );
 
         if( settings.obj.length > 0 ) {
+            settings.obj.off('click');
             settings.obj.click(function(e){
                 if( $('.field-copy .tipe_motor_id').length > 0 ) {
                     $.callChoosen({
