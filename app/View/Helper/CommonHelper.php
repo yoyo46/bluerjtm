@@ -468,13 +468,17 @@ class CommonHelper extends AppHelper {
         }
     }
 
-    function getSorting ( $model = false,  $label = false, $is_print = false, $sorting = true ) {
+    function getSorting ( $model = false,  $label = false, $is_print = false, $sorting = true, $options = array() ) {
         $named = $this->params['named'];
-        
+
+        if( !is_array($options) ) {
+            $options = array();
+        }
+
         if( !empty($sorting) && !empty($model) && $this->Paginator->hasPage() && empty($is_print) ) {
-            return $this->Paginator->sort($model, $label, array(
+            return $this->Paginator->sort($model, $label, array_merge($options, array(
                 'escape' => false
-            ));
+            )));
         } else {
             return $label;
         }
@@ -930,6 +934,16 @@ class CommonHelper extends AppHelper {
                 $sorting = isset($dataColumn['sorting'])?$dataColumn['sorting']:true;
 
                 // Get Data Model
+                if( is_array($field_model) ) {
+                    $arrModel = $field_model;
+                    $field_model = $this->filterEmptyField($field_model, 'name');
+                    $field_model_options = $this->_callUnset(array(
+                        'name',
+                    ), $arrModel);
+                } else {
+                    $field_model_options = array();
+                }
+
                 $data_model = explode('.', $field_model);
                 $data_model = array_filter($data_model);
                 if( !empty($data_model) ) {
@@ -990,7 +1004,7 @@ class CommonHelper extends AppHelper {
                                 $data_options = false;
                             }
 
-                            $content = $this->Html->tag('th', $this->getSorting($field_model, $name, $is_print, $sorting), array(
+                            $content = $this->Html->tag('th', $this->getSorting($field_model, $name, $is_print, $sorting, $field_model_options), array(
                                 'class' => sprintf('%s %s %s %s', $addClass, $key_field, $class, $_class),
                                 'style' => $style,
                                 'colspan' => $colspan,

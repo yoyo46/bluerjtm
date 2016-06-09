@@ -9,26 +9,56 @@
             'nottuj' => array(
                 'name' => __('No. Ttuj'),
                 'class' => 'text-center',
+                'field_model' => array(
+                    'name' => 'Ttuj.no_ttuj',
+                    'class' => 'ajaxModal',
+                    'title' => $title,
+                ),
             ),
             'driver' => array(
                 'name' => __('Supir'),
                 'class' => 'text-center',
+                'field_model' => array(
+                    'name' => 'Ttuj.driver_name',
+                    'class' => 'ajaxModal',
+                    'title' => $title,
+                ),
             ),
             'nopol' => array(
                 'name' => __('NoPol'),
                 'class' => 'text-center',
+                'field_model' => array(
+                    'name' => 'Ttuj.nopol',
+                    'class' => 'ajaxModal',
+                    'title' => $title,
+                ),
             ),
             'date' => array(
                 'name' => __('Tgl Ttuj'),
                 'class' => 'text-center',
+                'field_model' => array(
+                    'name' => 'Ttuj.ttuj_date',
+                    'class' => 'ajaxModal',
+                    'title' => $title,
+                ),
             ),
             'date_beragkat' => array(
                 'name' => __('Tgl Berangkat'),
                 'class' => 'text-center',
+                'field_model' => array(
+                    'name' => 'Ttuj.tgljam_berangkat',
+                    'class' => 'ajaxModal',
+                    'title' => $title,
+                ),
             ),
             'from' => array(
                 'name' => __('Tujuan'),
                 'class' => 'text-center',
+                'field_model' => array(
+                    'name' => 'Ttuj.from_city_name',
+                    'class' => 'ajaxModal',
+                    'title' => $title,
+                ),
             ),
             'qty' => array(
                 'name' => __('Unit'),
@@ -41,6 +71,11 @@
             'note' => array(
                 'name' => __('Keterangan'),
                 'class' => 'text-center',
+                'field_model' => array(
+                    'name' => 'Ttuj.note',
+                    'class' => 'ajaxModal',
+                    'title' => $title,
+                ),
             ),
             'action' => array(
                 'name' => __('Action'),
@@ -56,7 +91,7 @@
         // ));
 ?>
 <div class="box-body table-responsive browse-form document-ttuj">
-    <table class="table table-hover">
+    <table class="table table-hover sorting">
         <?php
                 if( !empty($fieldColumn) ) {
                     echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));

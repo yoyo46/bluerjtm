@@ -2026,6 +2026,8 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                     } else if(type_action == 'cancel_invoice' || type_action == 'submit_form'){
                         submitForm();
                         datepicker();
+                    } else {
+                        ajaxModal();
                     }
 
                     return false;
