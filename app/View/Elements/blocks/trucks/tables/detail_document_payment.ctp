@@ -17,10 +17,10 @@
 			                    echo $this->Html->tag('th', __('Jenis Surat'), array(
 			                        'class' => 'text-center',
 			                    ));
-			                    echo $this->Html->tag('th', __('Tgl Berakhir'), array(
+			                    echo $this->Html->tag('th', __('Tgl Perpanjang'), array(
 			                        'class' => 'text-center',
 			                    ));
-			                    echo $this->Html->tag('th', __('Tgl Perpanjang'), array(
+			                    echo $this->Html->tag('th', __('Perpanjang Hingga'), array(
 			                        'class' => 'text-center',
 			                    ));
 			                    echo $this->Html->tag('th', __('Estimasi Biaya'), array(
@@ -113,8 +113,8 @@
 				        <td><?php echo $noref;?></td>
 				        <td><?php echo $nopol;?></td>
 				        <td><?php echo $type;?></td>
-				        <td class="text-center"><?php echo $to_date;?></td>
 				        <td class="text-center"><?php echo $document_date;?></td>
+				        <td class="text-center"><?php echo $to_date;?></td>
 				        <td class="text-right"><?php echo $customPriceEstimate;?></td>
 				        <td class="text-right"><?php echo $customPrice;?></td>
 				        <td class="text-right"><?php echo $customDenda;?></td>

@@ -26,6 +26,9 @@
             <thead>
                 <tr>
                     <?php
+                            echo $this->Html->tag('th', $this->Paginator->sort('Siup.id', __('No. Ref'), array(
+                                'escape' => false
+                            )));
                             echo $this->Html->tag('th', $this->Paginator->sort('Siup.no_pol', __('No. Pol'), array(
                                 'escape' => false
                             )));
@@ -52,10 +55,12 @@
                     $i = 1;
                     if(!empty($siup)){
                         foreach ($siup as $key => $value) {
-                            $id = $value['Siup']['id'];
+                            $id = $this->Common->filterEmptyField($value, 'Siup', 'id');
                             $paid = $this->Common->filterEmptyField($value, 'Siup', 'paid', 'none');
+                            $noref = $this->Common->_callGenerateNoRef($id);
             ?>
             <tr>
+                <td><?php echo $noref;?></td>
                 <td><?php echo $value['Truck']['nopol'];?></td>
                 <td><?php echo $this->Common->customDate($value['Siup']['tgl_siup']);?></td>
                 <td><?php echo $this->Common->customDate($value['Siup']['to_date']);?></td>
@@ -113,7 +118,7 @@
                     } else {
                          echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '7'
+                            'colspan' => '8'
                         )));
                     }
             ?>

@@ -26,6 +26,9 @@
             <thead>
                 <tr>
                     <?php
+                            echo $this->Html->tag('th', $this->Paginator->sort('Kir.id', __('No. Ref'), array(
+                                'escape' => false
+                            )));
                             echo $this->Html->tag('th', $this->Paginator->sort('Kir.no_pol', __('No. Pol'), array(
                                 'escape' => false
                             )));
@@ -50,11 +53,13 @@
                     $i = 1;
                     if(!empty($kir)){
                         foreach ($kir as $key => $value) {
-                            $id = $value['Kir']['id'];
+                            $id = $this->Common->filterEmptyField($value, 'Kir', 'id');
                             $branch_id = $this->Common->filterEmptyField($value, 'Kir', 'branch_id');
                             $paid = $this->Common->filterEmptyField($value, 'Kir', 'paid', 'none');
+                            $noref = $this->Common->_callGenerateNoRef($id);
             ?>
             <tr>
+                <td><?php echo $noref;?></td>
                 <td><?php echo $value['Truck']['nopol'];?></td>
                 <td><?php echo $this->Common->customDate($value['Kir']['tgl_kir']);?></td>
                 <td><?php echo $this->Common->customDate($value['Kir']['to_date']);?></td>

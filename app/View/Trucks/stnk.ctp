@@ -26,6 +26,9 @@
             <thead>
                 <tr>
                     <?php
+                            echo $this->Html->tag('th', $this->Paginator->sort('Stnk.id', __('No. Ref'), array(
+                                'escape' => false
+                            )));
                             echo $this->Html->tag('th', $this->Paginator->sort('Stnk.no_pol', __('No. Pol'), array(
                                 'escape' => false
                             )));
@@ -50,13 +53,15 @@
                 </tr>
             </thead>
             <?php
-                $i = 1;
-                if(!empty($stnks)){
-                    foreach ($stnks as $key => $value) {
-                        $id = $value['Stnk']['id'];
-                        $paid = $this->Common->filterEmptyField($value, 'Stnk', 'paid', 'none');
+                    $i = 1;
+                    if(!empty($stnks)){
+                        foreach ($stnks as $key => $value) {
+                            $id = $this->Common->filterEmptyField($value, 'Stnk', 'id');
+                            $paid = $this->Common->filterEmptyField($value, 'Stnk', 'paid', 'none');
+                            $noref = $this->Common->_callGenerateNoRef($id);
             ?>
             <tr>
+                <td><?php echo $noref;?></td>
                 <td><?php echo $value['Stnk']['no_pol'];?></td>
                 <td><?php echo $this->Common->customDate($value['Stnk']['tgl_bayar']);?></td>
                 <td><?php echo $this->Common->customDate($value['Stnk']['to_date']);?></td>
@@ -117,7 +122,7 @@
                     } else {
                          echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '8'
+                            'colspan' => '9'
                         )));
                     }
             ?>

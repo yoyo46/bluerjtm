@@ -13,6 +13,88 @@
 		
         $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
         $datePayment = $this->Common->customDate($date_payment, 'd/m/Y');
+
+        $dataColumns = array(
+            'noref' => array(
+                'name' => __('No. Ref'),
+                'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'noref\',width:80',
+            ),
+            'nopol' => array(
+                'name' => __('NoPol'),
+                'style' => 'text-align: center;left: 80px;vertical-align: middle;',
+                'data-options' => 'field:\'nopol\',width:80',
+            ),
+            'type' => array(
+                'name' => __('Jenis Surat'),
+                'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'type\',width:100',
+            ),
+            'document_date' => array(
+                'name' => __('Tgl Perpanjang'),
+                'style' => 'text-align: left;vertical-align: middle;',
+                'data-options' => 'field:\'document_date\',width:80',
+                'align' => 'center',
+                'mainalign' => 'center',
+            ),
+            'expired_date' => array(
+                'name' => __('Tgl Berakhir'),
+                'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'expired_date\',width:80',
+                'align' => 'center',
+                'mainalign' => 'center',
+            ),
+            'to_date' => array(
+                'name' => __('Perpanjang Hingga'),
+                'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'to_date\',width:80',
+                'align' => 'center',
+                'mainalign' => 'center',
+                'fix_column' => true,
+            ),
+            'price_estimate' => array(
+                'name' => __('Estimasi Biaya'),
+                'style' => 'text-align: left;vertical-align: middle;',
+                'data-options' => 'field:\'price_estimate\',width:120',
+                'align' => 'right',
+                'mainalign' => 'center',
+            ),
+            'price' => array(
+                'name' => __('Biaya Perpanjang'),
+                'style' => 'text-align: left;vertical-align: middle;',
+                'data-options' => 'field:\'price\',width:120',
+                'align' => 'right',
+                'mainalign' => 'center',
+            ),
+            'denda' => array(
+                'name' => __('Denda'),
+                'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'denda\',width:100',
+                'align' => 'right',
+                'mainalign' => 'center',
+            ),
+            'biaya_lain' => array(
+                'name' => __('Biaya Lain2'),
+                'style' => 'text-align: left;vertical-align: middle;',
+                'data-options' => 'field:\'biaya_lain\',width:120',
+                'align' => 'right',
+                'mainalign' => 'center',
+            ),
+            'total' => array(
+                'name' => __('Total'),
+                'style' => 'text-align: left;vertical-align: middle;',
+                'data-options' => 'field:\'total\',width:120',
+                'align' => 'right',
+                'mainalign' => 'center',
+            ),
+            'note' => array(
+                'name' => __('Keterangan'),
+                'style' => 'text-align: left;vertical-align: middle;',
+                'data-options' => 'field:\'note\',width:150',
+                'align' => 'left',
+            ),
+        );
+        $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 ?>
 <div class="box">
     <div class="box-header">
@@ -49,47 +131,16 @@
 	        <h3 class="box-title"><?php echo __('Detail Biaya Dokumen'); ?></h3>
 	    </div>
 	    <div class="box-body table-responsive">
-	        <table class="table table-hover">
-	        	<thead>
-	        		<tr>
-	        			<?php 
-			                    echo $this->Html->tag('th', __('No. Ref'), array(
-			                        'class' => 'text-center',
-			                    ));
-			                    echo $this->Html->tag('th', __('NoPol'), array(
-			                        'class' => 'text-center',
-			                    ));
-			                    echo $this->Html->tag('th', __('Jenis Surat'), array(
-			                        'class' => 'text-center',
-			                    ));
-			                    echo $this->Html->tag('th', __('Tgl Berakhir'), array(
-			                        'class' => 'text-center',
-			                    ));
-			                    echo $this->Html->tag('th', __('Tgl Perpanjang'), array(
-			                        'class' => 'text-center',
-			                    ));
-			                    echo $this->Html->tag('th', __('Estimasi Biaya'), array(
-			                        'class' => 'text-center',
-			                    ));
-			                    echo $this->Html->tag('th', __('Biaya Perpanjang'), array(
-			                        'class' => 'text-center',
-			                    ));
-			                    echo $this->Html->tag('th', __('Denda'), array(
-			                        'class' => 'text-center',
-			                    ));
-			                    echo $this->Html->tag('th', __('Biaya Lain2'), array(
-			                        'class' => 'text-center',
-			                    ));
-			                    echo $this->Html->tag('th', __('Total'), array(
-			                        'class' => 'text-center',
-			                    ));
-			                    echo $this->Html->tag('th', __('Keterangan'), array(
-			                        'class' => 'text-center',
-			                        'width' => '10%',
-			                    ));
-			            ?>
-	        		</tr>
-	        	</thead>
+        	<table id="tt" class="table table-bordered easyui-datagrid" style="width: 100%;height: 550px;" singleSelect="true">
+	        	<thead frozen="true">
+	                <tr>
+	                    <?php
+	                            if( !empty($fieldColumn) ) {
+	                                echo $fieldColumn;
+	                            }
+	                    ?>
+	                </tr>
+	            </thead>
                 <tbody id="checkbox-info-table">
 					<?php
 							$grandTotal = 0;
@@ -115,10 +166,16 @@
 					                    case 'stnk':
 					                        $type = __('STNK 1 Thn');
 					                		$document_date = $this->Common->filterEmptyField($val, $modelName, 'tgl_bayar');
+					                		$expired_date = $this->Common->filterEmptyField($val, $modelName, 'from_date', false, false, array(
+					                			'date' => 'd/m/Y',
+				                			));
 					                        break;
 					                    case 'stnk_5_thn':
 					                        $type = __('STNK 5 Thn');
 					                		$document_date = $this->Common->filterEmptyField($val, $modelName, 'tgl_bayar');
+					                		$expired_date = $this->Common->filterEmptyField($val, $modelName, 'from_date', false, false, array(
+					                			'date' => 'd/m/Y',
+				                			));
 					                        break;
 					                    case 'siup':
 					                        $type = ucwords($document_type);
@@ -148,8 +205,9 @@
 				        <td><?php echo $noref;?></td>
 				        <td><?php echo $nopol;?></td>
 				        <td><?php echo $type;?></td>
-				        <td class="text-center"><?php echo $to_date;?></td>
 				        <td class="text-center"><?php echo $document_date;?></td>
+				        <td class="text-center"><?php echo $expired_date;?></td>
+				        <td class="text-center"><?php echo $to_date;?></td>
 				        <td class="text-right"><?php echo $customPriceEstimate;?></td>
 				        <td class="text-right"><?php echo $customPrice;?></td>
 				        <td class="text-right"><?php echo $customDenda;?></td>
@@ -168,11 +226,19 @@
 				</tbody>
 				<tr>
 					<?php 
-							echo $this->Html->tag('td', __('Total'), array(
-								'colspan' => 9,
+							echo $this->Html->tag('td', '');
+							echo $this->Html->tag('td', '');
+							echo $this->Html->tag('td', '');
+							echo $this->Html->tag('td', '');
+							echo $this->Html->tag('td', '');
+							echo $this->Html->tag('td', '');
+							echo $this->Html->tag('td', '');
+							echo $this->Html->tag('td', '');
+							echo $this->Html->tag('td', '');
+							echo $this->Html->tag('td', $this->Html->tag('strong', __('Total')), array(
 								'class' => 'bold text-right',
 							));
-							echo $this->Html->tag('td', $this->Number->format($grandTotal, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+							echo $this->Html->tag('td', $this->Html->tag('strong', $this->Common->getFormatPrice($grandTotal)), array(
 								'class' => 'text-right',
 								'id' => 'total-biaya',
 							));

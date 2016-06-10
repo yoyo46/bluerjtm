@@ -5940,6 +5940,9 @@ class TrucksController extends AppController {
                 }
             }
 
+            $this->MkCommon->_layout_file(array(
+                'freeze',
+            ));
             $this->set(compact(
                 'value', 'sub_module_title', 'title_for_layout',
                 'module_title'

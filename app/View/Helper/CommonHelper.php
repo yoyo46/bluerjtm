@@ -2527,4 +2527,8 @@ class CommonHelper extends AppHelper {
 
         return $year;
     }
+
+    function _callGenerateNoRef( $id ) {
+        return str_pad($id, 6, '0', STR_PAD_LEFT);
+    }
 }

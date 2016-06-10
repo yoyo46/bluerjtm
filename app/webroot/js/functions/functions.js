@@ -2029,6 +2029,8 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                     } else {
                         ajaxModal();
                     }
+                    
+                    popup_checkbox();
 
                     return false;
                 },
@@ -2665,7 +2667,49 @@ var check_all_checkbox = function(){
     }
 }
 
+function check_option(self){
+    var parent = self.parents('.child');
+    $('.checkbox-info-detail').removeClass('hide');
+    var id = parent.attr('data-value');
+
+    if(self.is(':checked')){
+        if( $('#checkbox-info-table .child-'+id).length <= 0 ) {
+            if($('.child-'+id).length <= 0){
+                var html_content = '<tr class="child child-'+id+'">'+parent.html()+'</tr>';
+                var sisa = convert_number(parent.find('.sisa-amount').val(), 'int');
+
+                $('#checkbox-info-table').append(html_content);
+                $('#checkbox-info-table .child-'+id+' .sisa-amount').val(sisa);
+
+                $('.child-'+id).find('.checkbox-action').remove();
+                $('.child-'+id).find('.on-remove').remove();
+                $('.child-'+id).find('.on-show').removeClass('hide');
+                
+                $('#checkbox-info-table .child-'+id+' .document-table-action').removeClass('hide');
+                $('.action-biaya-ttuj').removeClass('hide');
+
+                $.inputPrice({
+                    obj: $('.child-'+id+' .input_price'),
+                });
+                $.inputNumber({
+                    obj: $('.child-'+id+' .input_number'),
+                });
+                input_price_min( $('.child-'+id+' .input_price_min') );
+                sisa_amount($('#checkbox-info-table .child-'+id+' .sisa-amount'));
+                delete_current_document($('#checkbox-info-table .child-'+id+' .document-table-action a'));
+            }
+        }
+    }else{
+        $('.child-'+id).remove();
+    } 
+
+    if( $('#total-biaya').length > 0 ) {
+        calcTotalBiaya();
+    }
+}
+
 var popup_checkbox = function(){
+    $('.checkAll').off('click');
     $('.checkAll').click(function(){
         $('.check-option').not(this).prop('checked', this.checked);
 
@@ -2677,51 +2721,11 @@ var popup_checkbox = function(){
         }
     });
     
+    $('.child .check-option').off('click');
     $('.child .check-option').click(function(){
         var self = $(this);
         check_option(self)
     });
-
-    function check_option(self){
-        var parent = self.parents('.child');
-        $('.checkbox-info-detail').removeClass('hide');
-        var id = parent.attr('data-value');
-
-        if(self.is(':checked')){
-            if( $('#checkbox-info-table .child-'+id).length <= 0 ) {
-                if($('.child-'+id).length <= 0){
-                    var html_content = '<tr class="child child-'+id+'">'+parent.html()+'</tr>';
-                    var sisa = convert_number(parent.find('.sisa-amount').val(), 'int');
-
-                    $('#checkbox-info-table').append(html_content);
-                    $('#checkbox-info-table .child-'+id+' .sisa-amount').val(sisa);
-
-                    $('.child-'+id).find('.checkbox-action').remove();
-                    $('.child-'+id).find('.on-remove').remove();
-                    $('.child-'+id).find('.on-show').removeClass('hide');
-                    
-                    $('#checkbox-info-table .child-'+id+' .document-table-action').removeClass('hide');
-                    $('.action-biaya-ttuj').removeClass('hide');
-
-                    $.inputPrice({
-                        obj: $('.child-'+id+' .input_price'),
-                    });
-                    $.inputNumber({
-                        obj: $('.child-'+id+' .input_number'),
-                    });
-                    input_price_min( $('.child-'+id+' .input_price_min') );
-                    sisa_amount($('#checkbox-info-table .child-'+id+' .sisa-amount'));
-                    delete_current_document($('#checkbox-info-table .child-'+id+' .document-table-action a'));
-                }
-            }
-        }else{
-            $('.child-'+id).remove();
-        } 
-
-        if( $('#total-biaya').length > 0 ) {
-            calcTotalBiaya();
-        }
-    }
 }
 
 var laka_ttuj_change = function(){
