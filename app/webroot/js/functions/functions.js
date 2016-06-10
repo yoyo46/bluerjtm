@@ -2028,6 +2028,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                         datepicker();
                     } else {
                         ajaxModal();
+                        $.checkAll();
                     }
                     
                     popup_checkbox();
@@ -4183,7 +4184,9 @@ $(function() {
     $(document).click(function(e){
         var target = $(e.target);
         
-        if( target.parents('.columnDropdown').length == 0 ) {
+        if( target.parents('.columnDropdown').length > 0 ) {
+            $('.columnDropdown').addClass('open');
+        } else {
             $('.columnDropdown').removeClass('open');
         }
     });
