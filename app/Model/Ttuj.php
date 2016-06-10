@@ -447,11 +447,11 @@ class Ttuj extends AppModel {
     //     return $this->save();
     // }
 
-    function getMerge($data, $id){
+    function getMerge($data, $id, $fieldName = 'Ttuj.id'){
         if(empty($data['Ttuj'])){
             $data_merge = $this->find('first', array(
                 'conditions' => array(
-                    'Ttuj.id' => $id
+                    $fieldName => $id
                 ),
             ));
 

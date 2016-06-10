@@ -43,18 +43,19 @@
                             'action' => 'getTtujs',
                             'ksu',
                         );
-                    	echo $this->Form->label('ttuj_id', __('No. TTUJ * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
+                    	echo $this->Form->label('no_ttuj', __('No. TTUJ * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
                 ?>
                 <div class="row">
                     <div class="col-sm-10">
 			        	<?php 
-								echo $this->Form->input('ttuj_id',array(
+								echo $this->Form->input('no_ttuj',array(
 									'label'=> false, 
 									'class'=>'form-control',
 									'required' => false,
-									'options' => $ttujs,
-									'empty' => __('Pilih TTUJ'),
-									'id' => 'getTtujInfoKsu'
+									// 'options' => $ttujs,
+									// 'empty' => __('Pilih TTUJ'),
+									'id' => 'getTtujInfoKsu',
+									'readonly' => true,
 								));
 						?>
                     </div>

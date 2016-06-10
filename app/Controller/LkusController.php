@@ -257,9 +257,19 @@ class LkusController extends AppController {
         $this->loadModel('PartsMotor');
         $this->loadModel('TtujTipeMotor');
 
+        $ttuj_id = false;
+
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            $no_ttuj = $this->MkCommon->filterEmptyField($data, 'Lku', 'no_ttuj');
+
+            if( !empty($no_ttuj) ) {
+                $ttuj = $this->Ttuj->getMerge(array(), $no_ttuj, 'Ttuj.no_ttuj');
+                $ttuj_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'id');
+            }
+
             $data['Lku']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['Lku']['ttuj_id'] = $ttuj_id;
             
             if($id && $data_local){
                 $this->Lku->id = $id;
@@ -282,6 +292,10 @@ class LkusController extends AppController {
                 $data['Lku']['completed_date'] = NULL;
             } else {
                 $data['Lku']['completed_date'] = (!empty($data['Lku']['completed_date'])) ? $this->MkCommon->getDate($data['Lku']['completed_date']) : '';
+            }
+
+            if( !empty($data['LkuDetail']['tipe_motor_id']) ) {
+                $data['LkuDetail']['tipe_motor_id'] = array_filter($data['LkuDetail']['tipe_motor_id']);
             }
 
             if(!empty($data['LkuDetail']['tipe_motor_id'])){
@@ -311,6 +325,8 @@ class LkusController extends AppController {
                             $total_price += $data_detail['LkuDetail']['qty'] * $data_detail['LkuDetail']['price'];
                             $total_klaim += $data_detail['LkuDetail']['qty'];
                         }
+                    } else {
+                        $validate_lku_detail = false;
                     }
                 }
             }else{
@@ -357,7 +373,11 @@ class LkusController extends AppController {
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s LKU. Lengkapi field yang dibutuhkan'), $msg), 'error');
             }
         } else if($id && $data_local){
+            $ttuj_id = $this->MkCommon->filterEmptyField($data_local, 'Lku', 'ttuj_id');
             $data_local = $this->Lku->LkuDetail->getMerge($data_local, $id);
+            $ttuj = $this->Ttuj->getMerge(array(), $ttuj_id);
+
+            $data_local['Lku']['no_ttuj'] = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'no_ttuj');
             $this->request->data = $data_local;
 
             if(!empty($this->request->data['LkuDetail'])){
@@ -371,7 +391,7 @@ class LkusController extends AppController {
                     if(!empty($tipe_motor)){
                         $Ttuj_Tipe_Motor = $this->TtujTipeMotor->getData('first', array(
                             'conditions' => array(
-                                'TtujTipeMotor.ttuj_id' => $this->request->data['Lku']['ttuj_id'],
+                                'TtujTipeMotor.ttuj_id' => $ttuj_id,
                                 'TtujTipeMotor.tipe_motor_id' => $value['LkuDetail']['tipe_motor_id']
                             )
                         ));
@@ -410,7 +430,7 @@ class LkusController extends AppController {
                     if(!empty($tipe_motor)){
                         $Ttuj_Tipe_Motor = $this->TtujTipeMotor->getData('first', array(
                             'conditions' => array(
-                                'TtujTipeMotor.ttuj_id' => $this->request->data['Lku']['ttuj_id'],
+                                'TtujTipeMotor.ttuj_id' => $ttuj_id,
                                 'TtujTipeMotor.tipe_motor_id' => $value
                             )
                         ));
@@ -429,57 +449,43 @@ class LkusController extends AppController {
             }
         }
 
-        $ttujs = $this->Ttuj->getData('list', array(
-            'fields' => array(
-                'Ttuj.id', 'Ttuj.no_ttuj'
-            ),
-            'conditions' => array(
-                'Ttuj.is_draft' => 0,
-                'Ttuj.is_laka' => 0,
-                'OR' => array(
-                    'Ttuj.is_bongkaran' => 1,
-                    'Ttuj.id' => !empty($data_local['Lku']['ttuj_id']) ? $data_local['Lku']['ttuj_id'] : false,
-                ),
-            ),
-        ));
+        // $ttujs = $this->Ttuj->getData('paginate', array(
+        //     'fields' => array(
+        //         'Ttuj.id', 'Ttuj.no_ttuj'
+        //     ),
+        //     'conditions' => array(
+        //         'Ttuj.is_draft' => 0,
+        //         'Ttuj.is_laka' => 0,
+        //         'OR' => array(
+        //             'Ttuj.is_bongkaran' => 1,
+        //             'Ttuj.id' => !empty($data_local['Lku']['ttuj_id']) ? $data_local['Lku']['ttuj_id'] : false,
+        //         ),
+        //     ),
+        // ));
 
-        if(!empty($this->request->data['Lku']['ttuj_id'])){
-            $ttuj_id = $this->request->data['Lku']['ttuj_id'];
-            $data_ttuj = $this->Ttuj->getData('first', array(
-                'conditions' => array(
-                    'Ttuj.id' => $this->request->data['Lku']['ttuj_id']
-                ),
-                'contain' => array(
-                    'UangJalan'
-                )
-            ), true, array(
-                'status' => 'all',
-            ));
-            
-            if(!empty($data_ttuj)){
-                $this->loadModel('Driver');
+        if(!empty($ttuj)){
+            $this->loadModel('Driver');
 
-                $tipe_motor_list = array();
-                $driver_penganti_id = !empty($data_ttuj['Ttuj']['driver_penganti_id'])?$data_ttuj['Ttuj']['driver_penganti_id']:false;
-                $data_ttuj = $this->TtujTipeMotor->getMergeTtujTipeMotor( $data_ttuj, $ttuj_id, 'all');
-                $data_ttuj = $this->Driver->getMerge( $data_ttuj, $driver_penganti_id, 'DriverPenganti');
+            $tipe_motor_list = array();
+            $driver_penganti_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'driver_penganti_id');
+            $ttuj = $this->TtujTipeMotor->getMergeTtujTipeMotor( $ttuj, $ttuj_id, 'all');
+            $ttuj = $this->Driver->getMerge( $ttuj, $driver_penganti_id, 'DriverPenganti');
 
-                if(!empty($data_ttuj['TtujTipeMotor'])){
-                    foreach ($data_ttuj['TtujTipeMotor'] as $key => $value) {
-                        $group_motor_id = !empty($value['TipeMotor']['group_motor_id'])?$value['TipeMotor']['group_motor_id']:false;
-                        $groupMotor = $this->TipeMotor->GroupMotor->getData('first', array(
-                            'conditions' => array(
-                                'GroupMotor.id' => $group_motor_id,
-                            ),
-                        ), array(
-                            'status' => 'all',
-                        ));
-                        $group_motor_name = !empty($groupMotor['GroupMotor']['name'])?$groupMotor['GroupMotor']['name']:false;
-                        $tipe_motor_list[$value['TipeMotor']['id']] = sprintf('%s (%s)', $value['TipeMotor']['name'], $group_motor_name);
-                    }
+            if(!empty($ttuj['TtujTipeMotor'])){
+                foreach ($ttuj['TtujTipeMotor'] as $key => $value) {
+                    $group_motor_id = !empty($value['TipeMotor']['group_motor_id'])?$value['TipeMotor']['group_motor_id']:false;
+                    $groupMotor = $this->TipeMotor->GroupMotor->getData('first', array(
+                        'conditions' => array(
+                            'GroupMotor.id' => $group_motor_id,
+                        ),
+                    ), array(
+                        'status' => 'all',
+                    ));
+                    $group_motor_name = !empty($groupMotor['GroupMotor']['name'])?$groupMotor['GroupMotor']['name']:false;
+                    $tipe_motor_list[$value['TipeMotor']['id']] = sprintf('%s (%s)', $value['TipeMotor']['name'], $group_motor_name);
                 }
-                $this->request->data = array_merge($this->request->data, $data_ttuj);
             }
+            $this->request->data = array_merge($this->request->data, $ttuj);
         }
 
         $part_motors = $this->PartsMotor->getData('list', array(
@@ -494,7 +500,7 @@ class LkusController extends AppController {
         $this->set('active_menu', 'lkus');
         $this->set(compact(
             'part_motors', 'tipe_motor_list',
-            'ttujs', 'id'
+            'id'
         ));
         $this->render('lku_form');
     }
@@ -1191,9 +1197,19 @@ class LkusController extends AppController {
         $this->loadModel('Ttuj');
         $this->loadModel('TtujPerlengkapan');
 
+        $ttuj_id = false;
+
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            $no_ttuj = $this->MkCommon->filterEmptyField($data, 'Ksu', 'no_ttuj');
+
+            if( !empty($no_ttuj) ) {
+                $ttuj = $this->Ttuj->getMerge(array(), $no_ttuj, 'Ttuj.no_ttuj');
+                $ttuj_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'id');
+            }
+
             $data['Ksu']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['Ksu']['ttuj_id'] = $ttuj_id;
             
             if($id && $data_local){
                 $this->Ksu->id = $id;
@@ -1219,6 +1235,10 @@ class LkusController extends AppController {
                 $data['Ksu']['completed_date'] = NULL;
             } else {
                 $data['Ksu']['completed_date'] = (!empty($data['Ksu']['completed_date'])) ? $this->MkCommon->getDate($data['Ksu']['completed_date']) : '';
+            }
+
+            if( !empty($data['KsuDetail']['perlengkapan_id']) ) {
+                $data['KsuDetail']['perlengkapan_id'] = array_filter($data['KsuDetail']['perlengkapan_id']);
             }
 
             if(!empty($data['KsuDetail']['perlengkapan_id'])){
@@ -1254,6 +1274,8 @@ class LkusController extends AppController {
 
                             unset($data_detail['Ksu']);
                         }
+                    } else {
+                        $validate_ksu_detail = false;
                     }
                 }
             }else{
@@ -1300,7 +1322,11 @@ class LkusController extends AppController {
                 $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s KSU'), $msg), 'error');
             }
         } else if($id && $data_local){
+            $ttuj_id = $this->MkCommon->filterEmptyField($data_local, 'Ksu', 'ttuj_id');
             $data_local = $this->Ksu->KsuDetail->getMerge($data_local, $id);
+            $ttuj = $this->Ttuj->getMerge(array(), $ttuj_id);
+
+            $data_local['Ksu']['no_ttuj'] = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'no_ttuj');
             $this->request->data = $data_local;
 
             if(!empty($this->request->data['KsuDetail'])){
@@ -1313,7 +1339,7 @@ class LkusController extends AppController {
                     if(!empty($perlengkapan)){
                         $Ttuj_perlengkapan = $this->TtujPerlengkapan->getData('first', array(
                             'conditions' => array(
-                                'TtujPerlengkapan.ttuj_id' => $this->request->data['Ksu']['ttuj_id'],
+                                'TtujPerlengkapan.ttuj_id' => $ttuj_id,
                                 'TtujPerlengkapan.perlengkapan_id' => $value['KsuDetail']['perlengkapan_id']
                             )
                         ));
@@ -1351,7 +1377,7 @@ class LkusController extends AppController {
                     if(!empty($perlengkapan)){
                         $Ttuj_perlengkapan = $this->TtujPerlengkapan->getData('first', array(
                             'conditions' => array(
-                                'TtujPerlengkapan.ttuj_id' => $this->request->data['Ksu']['ttuj_id'],
+                                'TtujPerlengkapan.ttuj_id' => $ttuj_id,
                                 'TtujPerlengkapan.perlengkapan_id' => $value
                             )
                         ));
@@ -1369,61 +1395,47 @@ class LkusController extends AppController {
             }
         }
 
-        $ttujs = $this->Ttuj->getData('list', array(
-            'fields' => array(
-                'Ttuj.id', 'Ttuj.no_ttuj'
-            ),
-            'conditions' => array(
-                'OR' => array(
-                    array(
-                        'Ttuj.is_bongkaran' => 1,
-                        'Ttuj.is_draft' => 0,
-                        'Ttuj.status' => 1,
-                    ),
-                    array(
-                        'Ttuj.id' => !empty($data_local['Ksu']['ttuj_id']) ? $data_local['Ksu']['ttuj_id'] : false
-                    )
-                )
-            ),
-        ), true, array(
-            'status' => 'all',
-        ));
+        // $ttujs = $this->Ttuj->getData('list', array(
+        //     'fields' => array(
+        //         'Ttuj.id', 'Ttuj.no_ttuj'
+        //     ),
+        //     'conditions' => array(
+        //         'OR' => array(
+        //             array(
+        //                 'Ttuj.is_bongkaran' => 1,
+        //                 'Ttuj.is_draft' => 0,
+        //                 'Ttuj.status' => 1,
+        //             ),
+        //             array(
+        //                 'Ttuj.id' => !empty($data_local['Ksu']['ttuj_id']) ? $data_local['Ksu']['ttuj_id'] : false
+        //             )
+        //         )
+        //     ),
+        // ), true, array(
+        //     'status' => 'all',
+        // ));
 
-        if(!empty($this->request->data['Ksu']['ttuj_id'])){
-            $ttuj_id = $this->request->data['Ksu']['ttuj_id'];
-            $data_ttuj = $this->Ttuj->getData('first', array(
-                'conditions' => array(
-                    'Ttuj.id' => $ttuj_id,
-                ),
-                'contain' => array(
-                    'UangJalan',
-                )
-            ), true, array(
-                'status' => 'all',
-            ));
+        if(!empty($ttuj)){
+            $perlengkapan_list = array();
+            $driver_penganti_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'driver_penganti_id');
+
+            $ttuj = $this->Ttuj->TtujPerlengkapan->getMerge($ttuj, $ttuj_id);
+            $ttuj = $this->Ttuj->Truck->Driver->getMerge($ttuj, $driver_penganti_id, 'DriverPenganti');
+
+            if(!empty($ttuj['TtujPerlengkapan'])){
+                foreach ($ttuj['TtujPerlengkapan'] as $key => $value) {
+                    $perlengkapan_data = $this->Ksu->KsuDetail->Perlengkapan->getData('first', array(
+                        'conditions' => array(
+                            'Perlengkapan.id' => $value['TtujPerlengkapan']['perlengkapan_id'],
+                        )
+                    ));
             
-            if(!empty($data_ttuj)){
-                $perlengkapan_list = array();
-                $driver_penganti_id = $this->MkCommon->filterEmptyField($data_ttuj, 'Ttuj', 'driver_penganti_id');
-
-                $data_ttuj = $this->Ttuj->TtujPerlengkapan->getMerge($data_ttuj, $ttuj_id);
-                $data_ttuj = $this->Ttuj->Truck->Driver->getMerge($data_ttuj, $driver_penganti_id, 'DriverPenganti');
-
-                if(!empty($data_ttuj['TtujPerlengkapan'])){
-                    foreach ($data_ttuj['TtujPerlengkapan'] as $key => $value) {
-                        $perlengkapan_data = $this->Ksu->KsuDetail->Perlengkapan->getData('first', array(
-                            'conditions' => array(
-                                'Perlengkapan.id' => $value['TtujPerlengkapan']['perlengkapan_id'],
-                            )
-                        ));
-                
-                        if( !empty($perlengkapan_data) ) {
-                            $perlengkapan_list[$perlengkapan_data['Perlengkapan']['id']] = $perlengkapan_data['Perlengkapan']['name'];
-                        }
+                    if( !empty($perlengkapan_data) ) {
+                        $perlengkapan_list[$perlengkapan_data['Perlengkapan']['id']] = $perlengkapan_data['Perlengkapan']['name'];
                     }
                 }
-                $this->request->data = array_merge($this->request->data, $data_ttuj);
             }
+            $this->request->data = array_merge($this->request->data, $ttuj);
         }
 
         $perlengkapans = $this->Ksu->KsuDetail->Perlengkapan->getListPerlengkapan(2);

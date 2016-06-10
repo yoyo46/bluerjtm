@@ -139,8 +139,15 @@
         <?php
                 if(!empty($ttujs)){
                     foreach ($ttujs as $key => $value) {
+                        if( in_array($action_type, array( 'lku', 'ksu' )) ) {
+                            $result = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
+                            $attr = 'data-trigger="change"';
+                        } else {
+                            $result = $this->Common->filterEmptyField($value, 'Ttuj', 'id');
+                            $attr = '';
+                        }
         ?>
-        <tr data-value="<?php echo $value['Ttuj']['id'];?>" data-change="#<?php echo $data_change;?>">
+        <tr data-value="<?php echo $result;?>" data-change="#<?php echo $data_change;?>" <?php echo $attr; ?>>
             <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
             <td><?php echo date('d/m/Y', strtotime($value['Ttuj']['ttuj_date']));?></td>
             <td><?php echo $value['Ttuj']['nopol'];?></td>

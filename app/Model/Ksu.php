@@ -24,6 +24,12 @@ class Ksu extends AppModel {
                 'message' => 'TTUJ harap dipilih'
             ),
         ),
+        'no_ttuj' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'TTUJ harap dipilih'
+            ),
+        ),
         'date_atpm' => array(
             'validateATPM' => array(
                 'rule' => array('validateATPM'),

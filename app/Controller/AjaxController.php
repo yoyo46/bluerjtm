@@ -101,14 +101,10 @@ class AjaxController extends AppController {
 		$this->render('get_nopol');
 	}
 
-	function getInfoTtuj($ttuj_id, $is_payment = false){
+	function getInfoTtuj($ttuj_id = false, $is_payment = false){
 		$this->loadModel('Ttuj');
 		$this->loadModel('PartsMotor');
-
-		$data_ttuj = $this->Ttuj->getData('first', array(
-			'conditions' => array(
-				'Ttuj.id' => $ttuj_id
-			),
+		$options = array(
 			'contain' => array(
 				'UangJalan',
 				'TtujTipeMotor' => array(
@@ -117,7 +113,15 @@ class AjaxController extends AppController {
                     'TipeMotor',
                 ),
 			)
-		));
+		);
+
+		if( is_numeric($ttuj_id) ) {
+			$options['conditions']['Ttuj.id'] = $ttuj_id;
+		} else {
+			$options['conditions']['Ttuj.no_ttuj'] = $ttuj_id;
+		}
+
+		$data_ttuj = $this->Ttuj->getData('first', $options);
 		
 		if(!empty($data_ttuj)){
 			if( !empty($data_ttuj['Ttuj']['driver_penganti_id']) ) {
@@ -159,18 +163,22 @@ class AjaxController extends AppController {
     	));
 	}
 
-	function getInfoTtujKsu($ttuj_id, $atpm = false){
+	function getInfoTtujKsu($ttuj_id = false, $atpm = false){
 		$this->loadModel('Ttuj');
 		$this->loadModel('Perlengkapan');
-
-		$data_ttuj = $this->Ttuj->getData('first', array(
-			'conditions' => array(
-				'Ttuj.id' => $ttuj_id
-			),
+		$options = array(
 			'contain' => array(
 				'UangJalan',
 			)
-		));
+		);
+
+		if( is_numeric($ttuj_id) ) {
+			$options['conditions']['Ttuj.id'] = $ttuj_id;
+		} else {
+			$options['conditions']['Ttuj.no_ttuj'] = $ttuj_id;
+		}
+
+		$data_ttuj = $this->Ttuj->getData('first', $options);
 		
 		if(!empty($data_ttuj)){
 			$this->loadModel('Driver');

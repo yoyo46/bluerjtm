@@ -640,6 +640,7 @@
             var data_ajax = vthis.attr('href');
             var data_change_extra = vthis.attr('data-change-extra');
             var data_extra_text = $.filterEmptyField(vthis.attr('data-extra-text'));
+            var data_trigger = $.filterEmptyField(vthis.attr('data-trigger'));
             var type = $(data_change).attr('type');
             var obj_note = $.checkUndefined(vthis.find('.document-note'), false);
             var data_note_target = $.checkUndefined(obj_note.attr('data-target-note'), false);
@@ -653,6 +654,9 @@
 
             if( type != 'text' ) {
                 $(data_change).trigger('change');
+            }
+            if( data_trigger != false ) {
+                $(data_change).trigger(data_trigger);
             }
             
             if(data_change == '#receiver-id'){

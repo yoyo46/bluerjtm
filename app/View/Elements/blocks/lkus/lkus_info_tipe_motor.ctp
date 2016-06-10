@@ -93,7 +93,7 @@
                                     'div' => false,
                                     'label' => false,
                                     'value' => $qty,
-                                    'readonly' => empty($qty) ? 'readonly' : false
+                                    // 'readonly' => empty($qty) ? 'readonly' : false
                                 ));
                             // }else{
                             //     echo '-';

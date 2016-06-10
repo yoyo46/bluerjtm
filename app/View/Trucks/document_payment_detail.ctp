@@ -181,11 +181,15 @@
 					                        $type = ucwords($document_type);
 					                		$document_date = $this->Common->filterEmptyField($val, $modelName, 'tgl_siup');
 					                		$expired_date = $this->Common->filterEmptyField($val, $modelName, 'from_date', false, false, array(
+					                			'date' => 'd/m/Y',
+				                			));
 					                        break;
 					                    default:
 					                        $type = ucwords($document_type);
 					                		$document_date = $this->Common->filterEmptyField($val, $modelName, 'tgl_kir');
 					                		$expired_date = $this->Common->filterEmptyField($val, $modelName, 'from_date', false, false, array(
+					                			'date' => 'd/m/Y',
+				                			));
 					                        break;
 					                }
 

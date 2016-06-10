@@ -24,6 +24,12 @@ class Lku extends AppModel {
                 'message' => 'TTUJ harap dipilih'
             ),
         ),
+        'no_ttuj' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'TTUJ harap dipilih'
+            ),
+        ),
         'completed_desc' => array(
             'completeValidate' => array(
                 'rule' => array('completeValidate'),
