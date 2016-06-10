@@ -255,7 +255,7 @@ class CrontabController extends AppController {
         $values = $this->Ttuj->getData('all', array(
             'conditions' => array(
                 'Ttuj.is_draft' => 0,
-                // 'Ttuj.is_sj_completed' => 0,
+                // 'Ttuj.status_sj' => 'none',
                 'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') <=' => '2016-05',
             ),
             'group' => array(
@@ -309,7 +309,7 @@ class CrontabController extends AppController {
                             ),
                             'Ttuj' => array(
                                 'id' => $ttuj_id,
-                                'is_sj_completed' => 1,
+                                'status_sj' => 'full',
                             ),
                         );
                     }

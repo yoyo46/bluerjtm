@@ -97,12 +97,12 @@ class SpkController extends AppController {
             }
             if(!empty($refine['is_sj_not_completed'])){
                 $is_sj_not_completed = urldecode($refine['is_sj_not_completed']);
-                $conditions['Ttuj.is_sj_completed'] = 0;
+                $conditions['Ttuj.status_sj'] = array( 'none', 'half' );
                 $this->request->data['Ttuj']['is_sj_not_completed'] = $is_sj_not_completed;
             }
             if(!empty($refine['is_sj_completed'])){
                 $is_sj_completed = urldecode($refine['is_sj_completed']);
-                $conditions['Ttuj.is_sj_completed'] = 1;
+                $conditions['Ttuj.status_sj'] = 'full';
                 $this->request->data['Ttuj']['is_sj_completed'] = $is_sj_completed;
             }
             if(!empty($refine['is_revenue'])){

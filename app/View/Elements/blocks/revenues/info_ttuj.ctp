@@ -1,3 +1,12 @@
+<?php 
+        $status_sj = $this->Common->filterEmptyField($ttuj, 'Ttuj', 'status_sj');
+
+        if( $status_sj == 'full' ) {
+            $status_sj = $this->Html->tag('span', __('Sudah Terima Semua'), array( 'class' => 'label label-success' ));
+        } else {
+            $status_sj = $this->Html->tag('span', __('Belum Terima Semua'), array( 'class' => 'label label-danger' ));
+        }
+?>
 <div class="row">
     <div class="col-sm-6">
         <div class="box">
@@ -21,7 +30,7 @@
                     <dt><?php echo __('Tujuan')?></dt>
                     <dd><?php echo $ttuj['Ttuj']['to_city_name'];?></dd>
                     <dt><?php echo __('Status SJ')?></dt>
-                    <dd><?php echo !empty($ttuj['Ttuj']['is_sj_completed'])?$this->Html->tag('span', __('Sudah Terima Semua'), array( 'class' => 'label label-success' )):$this->Html->tag('span', __('Belum Terima Semua'), array( 'class' => 'label label-danger' ));?></dd>
+                    <dd><?php echo $status_sj;?></dd>
                 </dl>
             </div>
         </div>

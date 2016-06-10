@@ -6168,9 +6168,9 @@ class RevenuesController extends AppController {
                         $qtyDiterima = $this->Ttuj->SuratJalanDetail->_callTotalQtyDiterima( $ttuj_id );
 
                         if( $qtyDiterima >= $muatan ) {
-                            $this->Ttuj->set('is_sj_completed', 1);
+                            $this->Ttuj->set('status_sj', 'full');
                         } else {
-                            $this->Ttuj->set('is_sj_completed', 0);
+                            $this->Ttuj->set('status_sj', 'half');
                         }
 
                         $this->Ttuj->id = $ttuj_id;
@@ -6339,9 +6339,11 @@ class RevenuesController extends AppController {
                                 $qtyDiterima = $this->Ttuj->SuratJalanDetail->_callTotalQtyDiterima( $ttuj_id );
 
                                 if( $qtyDiterima >= $muatan ) {
-                                    $this->Ttuj->set('is_sj_completed', 1);
+                                    $this->Ttuj->set('status_sj', 'full');
+                                } else if( !empty($qtyDiterima) ) {
+                                    $this->Ttuj->set('status_sj', 'half');
                                 } else {
-                                    $this->Ttuj->set('is_sj_completed', 0);
+                                    $this->Ttuj->set('status_sj', 'none');
                                 }
 
                                 $this->Ttuj->id = $ttuj_id;
@@ -6403,7 +6405,7 @@ class RevenuesController extends AppController {
                         'Ttuj.driver_id' => $driver_id,
                         'Ttuj.driver_penganti_id' => $driver_id,
                     ),
-                    'Ttuj.is_sj_completed' => 0,
+                    'Ttuj.status_sj' => 'none',
                 ),
                 'order' => array(
                     'Ttuj.created' => 'DESC',
@@ -6443,11 +6445,10 @@ class RevenuesController extends AppController {
         $options =  $this->Ttuj->_callRefineParams($params, array(
             'conditions' => array(
                 'Ttuj.is_draft' => 0,
-                'Ttuj.is_sj_completed' => 0,
+                'Ttuj.status_sj' => array( 'none', 'half' ),
             ),
             'limit' => Configure::read('__Site.config_pagination'),
         ));
-
 
 
         if(!empty($this->params['named'])){
@@ -6838,17 +6839,16 @@ class RevenuesController extends AppController {
 
     //             switch ($status) {
     //                 case 'pending':
-    //                     $options['conditions']['Ttuj.is_sj_completed'] = 0;
+    //                     $options['conditions']['Ttuj.status_sj'] = 'none';
     //                     // $options['conditions']['SuratJalan.id'] = NULL;
     //                     break;
 
     //                 // case 'hal_receipt':
-    //                 //     $options['conditions']['Ttuj.is_sj_completed'] = 0;
-    //                 //     $options['conditions']['SuratJalan.id <>'] = NULL;
+    //                 //     $options['conditions']['Ttuj.status_sj'] = 'half';
     //                 //     break;
 
     //                 case 'receipt':
-    //                     $options['conditions']['Ttuj.is_sj_completed'] = 1;
+    //                     $options['conditions']['Ttuj.status_sj'] = 'full';
     //                     break;
 
     //                 case 'receipt_unpaid':
@@ -6875,7 +6875,7 @@ class RevenuesController extends AppController {
     //                     ), false);
 
     //                     $options['conditions']['OR'] = array(
-    //                         'Ttuj.is_sj_completed' => 1,
+    //                         'Ttuj.status_sj' => 'full',
     //                         'SuratJalan.id <>' => NULL,
     //                     );
     //                     $revenueConditions = !empty($options['conditions'])?$options['conditions']:false;
@@ -6899,7 +6899,7 @@ class RevenuesController extends AppController {
     //                     break;
 
     //                 case 'sj_receipt_paid':
-    //                     $options['conditions']['Ttuj.is_sj_completed'] = 0;
+    //                     $options['conditions']['Ttuj.status_sj'] = array( 'none', 'half' );
     //                     $revenueConditions = !empty($options['conditions'])?$options['conditions']:false;
     //                     $revenueConditions['Revenue.transaction_status'] = 'invoiced';
     //                     $revenues = $this->Revenue->getData('list', array(

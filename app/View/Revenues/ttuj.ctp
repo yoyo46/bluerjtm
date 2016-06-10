@@ -220,8 +220,14 @@
                             $status = $this->Common->filterEmptyField($value, 'Ttuj', 'status');
                             $completed = $this->Common->filterEmptyField($value, 'Ttuj', 'completed');
                             $completed_date = $this->Common->filterEmptyField($value, 'Ttuj', 'completed_date');
+                            $status_sj = $this->Common->filterEmptyField($value, 'Ttuj', 'status_sj');
 
                             $customComplatedDate = $this->Common->formatDate($completed_date, 'd/m/Y', false);
+                            $allowEdit = true;
+
+                            if( $status_sj != 'none' ) {
+                                $allowEdit = false;
+                            }
             ?>
             <tr>
                 <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
@@ -351,14 +357,16 @@
                             ));
 
                             if( in_array($active_menu, array( 'truk_tiba', 'bongkaran', 'balik', 'pool' )) ) {
-                                echo $this->Html->link(__('Edit'), array(
-                                    'controller' => 'revenues',
-                                    'action' => 'ttuj_lanjutan_edit',
-                                    $active_menu,
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-primary btn-xs'
-                                ));
+                                if( !empty($allowEdit) ) {
+                                    echo $this->Html->link(__('Edit'), array(
+                                        'controller' => 'revenues',
+                                        'action' => 'ttuj_lanjutan_edit',
+                                        $active_menu,
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-primary btn-xs'
+                                    ));
+                                }
 
                                 echo $this->Html->link(__('Hapus'), array(
                                     'controller' => 'revenues',
@@ -370,16 +378,16 @@
                                     'title' => 'disable status brand'
                                 ), __('Apakah Anda yakin akan menghapus data ini?'));
                             } else {
-                                $labelEdit = __('Edit');
-
-                                echo $this->Html->link($labelEdit, array(
-                                    'controller' => 'revenues',
-                                    'action' => 'ttuj_edit',
-                                    $id
-                                ), array(
-                                    'class' => 'btn btn-primary btn-xs',
-                                    'allowed_module' => !empty($is_draft)?true:false,
-                                ));
+                                if( !empty($allowEdit) ) {
+                                    echo $this->Html->link(__('Edit'), array(
+                                        'controller' => 'revenues',
+                                        'action' => 'ttuj_edit',
+                                        $id
+                                    ), array(
+                                        'class' => 'btn btn-primary btn-xs',
+                                        'allowed_module' => !empty($is_draft)?true:false,
+                                    ));
+                                }
 
                                 if( !empty($status) ) {
                                     echo $this->Html->link(__('Void'), array(

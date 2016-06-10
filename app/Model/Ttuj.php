@@ -341,7 +341,7 @@ class Ttuj extends AppModel {
                     'Ttuj.driver_id' => $driver_id,
                     'Ttuj.driver_penganti_id' => $driver_id,
                 ),
-                'Ttuj.is_sj_completed' => 0,
+                'Ttuj.status_sj' => array( 'none', 'half' ),
             ),
             'contain' => false,
         ), true, array(
@@ -929,10 +929,10 @@ class Ttuj extends AppModel {
                         );
                     break;
                 case 'sj_pending':
-                    $default_options['conditions']['Ttuj.is_sj_completed'] = 0;
+                    $default_options['conditions']['Ttuj.status_sj'] = array( 'none', 'half' );
                     break;
                 case 'sj_receipt':
-                    $default_options['conditions']['Ttuj.is_sj_completed'] = 1;
+                    $default_options['conditions']['Ttuj.status_sj'] = 'full';
                     break;
                 case 'sj_receipt_unpaid':
                     $this->Revenue->bindModel(array(
@@ -957,10 +957,7 @@ class Ttuj extends AppModel {
                         )
                     ), false);
 
-                    $default_options['conditions']['OR'] = array(
-                        'Ttuj.is_sj_completed' => 1,
-                        'SuratJalan.id <>' => NULL,
-                    );
+                    $default_options['conditions']['Ttuj.status_sj'] = array( 'full', 'half' );
                     $revenueConditions = !empty($default_options['conditions'])?$default_options['conditions']:false;
                     $revenueConditions['Revenue.transaction_status <>'] = 'invoiced';
                     $revenues = $this->Revenue->getData('list', array(
@@ -981,7 +978,7 @@ class Ttuj extends AppModel {
                     $default_options['conditions']['Ttuj.id'] = $revenues;
                     break;
                 case 'sj_receipt_paid':
-                    $default_options['conditions']['Ttuj.is_sj_completed'] = 0;
+                    $default_options['conditions']['Ttuj.status_sj'] = array( 'none', 'half' );
                     $revenueConditions = !empty($default_options['conditions'])?$default_options['conditions']:false;
                     $revenueConditions['Revenue.transaction_status'] = 'invoiced';
                     $revenues = $this->Revenue->getData('list', array(

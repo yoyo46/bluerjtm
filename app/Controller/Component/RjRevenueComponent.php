@@ -293,14 +293,14 @@ class RjRevenueComponent extends Component {
         if(!empty($refine['is_sj_not_completed'])){
             $is_sj_not_completed = urldecode($refine['is_sj_not_completed']);
             $conditions['AND']['OR'][] = array(
-                'Ttuj.is_sj_completed' => 0,
+                'Ttuj.status_sj' => array( 'none', 'half' ),
             );
             $this->controller->request->data['Ttuj']['is_sj_not_completed'] = $is_sj_not_completed;
         }
         if(!empty($refine['is_sj_completed'])){
             $is_sj_completed = urldecode($refine['is_sj_completed']);
             $conditions['AND']['OR'][] = array(
-                'Ttuj.is_sj_completed' => 1,
+                'Ttuj.status_sj' => 'full',
             );
             $this->controller->request->data['Ttuj']['is_sj_completed'] = $is_sj_completed;
         }

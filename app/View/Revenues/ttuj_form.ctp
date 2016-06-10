@@ -14,6 +14,8 @@
 			'id' => 'ttuj-form',
 		));
 
+        $status_sj = $this->Common->filterEmptyField($data_local, 'Ttuj', 'status_sj', 'none');
+
 		$datForm = !empty($this->request->data)?$this->request->data:false;
 		$ttujDate = (!empty($datForm['Ttuj']['ttuj_date'])) ? $datForm['Ttuj']['ttuj_date'] : date('d/m/Y');
 		$tglBerangkat = (!empty($datForm['Ttuj']['tgl_berangkat'])) ? $datForm['Ttuj']['tgl_berangkat'] : date('d/m/Y');
@@ -510,6 +512,9 @@
 					$allowSave = true;
 
 					if( isset($data_local['Ttuj']['status']) && empty($data_local['Ttuj']['status']) ) {
+						$allowSave = false;
+					}
+                    if( $status_sj != 'none' ) {
 						$allowSave = false;
 					}
 

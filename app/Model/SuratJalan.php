@@ -196,13 +196,14 @@ class SuratJalan extends AppModel {
 
         if( !empty($status) ) {
             $default_options['contain'][] = 'Ttuj';
+                $default_options['conditions']['SuratJalan.id <>'] = NULL;
             
             switch ($status) {
                 case 'half_receipt':
-                    $default_options['conditions']['Ttuj.is_sj_completed'] = 0;
+                    $default_options['conditions']['Ttuj.status_sj'] = 'half';
                     break;
                 case 'receipt':
-                    $default_options['conditions']['Ttuj.is_sj_completed'] = 1;
+                    $default_options['conditions']['Ttuj.status_sj'] = 'full';
                     break;
             }
         }

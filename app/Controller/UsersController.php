@@ -102,7 +102,7 @@ class UsersController extends AppController {
 
         $ttujSJ = $this->Ttuj->getData('count', array(
             'conditions' => array(
-                'Ttuj.is_sj_completed' => 0,
+                'Ttuj.status_sj' => 'none',
             ),
         ));
 
