@@ -1,4 +1,6 @@
 <?php
+        $idx = 1;
+
         if(!empty($values)){
             $totalUnit = 0;
             $totalSj = 0;
@@ -35,59 +37,113 @@
 
                 $totalUnit += $qtyTtuj;
                 $totalSj += $qty;
+
+                if( $idx%2 == 0 ) {
+                    $style = 'background-color: #f5f5f5;';
+                } else {
+                    $style = 'background-color: #d9edf7;';
+                }
 ?>
 <tr>
     <?php 
             echo $this->Html->tag('td', $noref, array(
                 'class' => 'string',
+                'style' => $style,
             ));
-            echo $this->Html->tag('td', $nodoc);
-            echo $this->Html->tag('td', $customDate);
-            echo $this->Html->tag('td', $note);
+            echo $this->Html->tag('td', $nodoc, array(
+                'style' => $style,
+            ));
+            echo $this->Html->tag('td', $customDate, array(
+                'style' => $style,
+            ));
+            echo $this->Html->tag('td', $note, array(
+                'style' => $style,
+            ));
 
-            echo $this->Html->tag('td', $no_ttuj);
-            echo $this->Html->tag('td', $customDateTtuj);
-            echo $this->Html->tag('td', $nopol, array(
-                'style' => 'text-align: center;'
+            echo $this->Html->tag('td', $no_ttuj, array(
+                'style' => $style,
             ));
-            echo $this->Html->tag('td', $driver_name);
-            echo $this->Html->tag('td', $tujuan);
-            echo $this->Html->tag('td', $customer_name);
-            echo $this->Html->tag('td', $note_ttuj);
+            echo $this->Html->tag('td', $customDateTtuj, array(
+                'style' => $style,
+            ));
+            echo $this->Html->tag('td', $nopol, array(
+                'style' => 'text-align: center;'.$style,
+            ));
+            echo $this->Html->tag('td', $driver_name, array(
+                'style' => $style,
+            ));
+            echo $this->Html->tag('td', $tujuan, array(
+                'style' => $style,
+            ));
+            echo $this->Html->tag('td', $customer_name, array(
+                'style' => $style,
+            ));
+            echo $this->Html->tag('td', $note_ttuj, array(
+                'style' => $style,
+            ));
             echo $this->Html->tag('td', $qtyTtuj, array(
-                'style' => 'text-align: center;'
+                'style' => 'text-align: center;'.$style,
             ));
 
             echo $this->Html->tag('td', $qty, array(
-                'style' => 'text-align: center;'
+                'style' => 'text-align: center;'.$style,
             ));
     ?>
 </tr>
 <?php
                 $old_ttuj_id = $ttuj_id;
+                $idx++;
+            }
+
+            if( $idx%2 == 0 ) {
+                $style = 'background-color: #f5f5f5;';
+            } else {
+                $style = 'background-color: #d9edf7;';
             }
 ?>
 <tr style="font-weight: bold;">
     <?php 
-            echo $this->Html->tag('td', '&nbsp;');
-            echo $this->Html->tag('td', '&nbsp;');
-            echo $this->Html->tag('td', '&nbsp;');
-            echo $this->Html->tag('td', '&nbsp;');
-            echo $this->Html->tag('td', '&nbsp;');
-            echo $this->Html->tag('td', '&nbsp;');
-            echo $this->Html->tag('td', '&nbsp;');
-            echo $this->Html->tag('td', '&nbsp;');
-            echo $this->Html->tag('td', '&nbsp;');
-            echo $this->Html->tag('td', '&nbsp;');
-            echo $this->Html->tag('td', '&nbsp;');
+            echo $this->Html->tag('td', '&nbsp;', array(
+                'style' => $style,
+            ));
+            echo $this->Html->tag('td', '&nbsp;', array(
+                'style' => $style,
+            ));
+            echo $this->Html->tag('td', '&nbsp;', array(
+                'style' => $style,
+            ));
+            echo $this->Html->tag('td', '&nbsp;', array(
+                'style' => $style,
+            ));
+            echo $this->Html->tag('td', '&nbsp;', array(
+                'style' => $style,
+            ));
+            echo $this->Html->tag('td', '&nbsp;', array(
+                'style' => $style,
+            ));
+            echo $this->Html->tag('td', '&nbsp;', array(
+                'style' => $style,
+            ));
+            echo $this->Html->tag('td', '&nbsp;', array(
+                'style' => $style,
+            ));
+            echo $this->Html->tag('td', '&nbsp;', array(
+                'style' => $style,
+            ));
+            echo $this->Html->tag('td', '&nbsp;', array(
+                'style' => $style,
+            ));
+            echo $this->Html->tag('td', '&nbsp;', array(
+                'style' => $style,
+            ));
             echo $this->Html->tag('td', __('Total'), array(
-                'style' => 'text-align: right;'
+                'style' => 'text-align: right;'.$style,
             ));
             // echo $this->Html->tag('td', $totalUnit, array(
             //     'style' => 'text-align: center;'
             // ));
             echo $this->Html->tag('td', $totalSj, array(
-                'style' => 'text-align: center;'
+                'style' => 'text-align: center;'.$style,
             ));
     ?>
 </tr>
