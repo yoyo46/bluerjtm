@@ -31,14 +31,14 @@
                 'field_model' => 'Ksu.total_price',
                 'display' => true,
             ),
-            'status' => array(
-                'name' => __('Status'),
-                'field_model' => false,
-                'display' => true,
-            ),
             'kekurangan_atpm' => array(
                 'name' => __('Kekurangan MD?'),
                 'field_model' => 'Ksu.kekurangan_atpm',
+                'display' => true,
+            ),
+            'status' => array(
+                'name' => __('Status'),
+                'field_model' => false,
                 'display' => true,
             ),
             'created' => array(
@@ -123,10 +123,10 @@
                             echo $this->Html->tag('td', $customTotalPrice, array(
                                 'class' => 'text-right',
                             ));
-                            echo $this->Html->tag('td', $customStatus);
                             echo $this->Html->tag('td', $customAtpm, array(
                                 'class' => 'text-center',
                             ));
+                            echo $this->Html->tag('td', $customStatus);
                             echo $this->Html->tag('td', $customCreated);
                     ?>
                     <td class="action">

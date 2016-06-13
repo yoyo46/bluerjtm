@@ -176,7 +176,7 @@ class LkusController extends AppController {
     function detail($id = false){
         if(!empty($id)){
             $this->loadModel('Lku');
-            $Lku = $this->Lku->getLku($id);
+            $Lku = $this->Lku->getLku($id, 'all');
             
             if(!empty($Lku)){
                 $this->loadModel('Customer');
@@ -1129,7 +1129,7 @@ class LkusController extends AppController {
     function detail_ksu($id = false){
         if(!empty($id)){
             $this->loadModel('Ksu');
-            $Ksu = $this->Ksu->getKsu($id);
+            $Ksu = $this->Ksu->getKsu($id, 'all');
 
             if(!empty($Ksu)){
                 $customer_id = $this->MkCommon->filterEmptyField($Ksu, 'Ttuj', 'customer_id');

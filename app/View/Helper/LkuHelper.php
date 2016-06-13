@@ -10,11 +10,16 @@ class LkuHelper extends AppHelper {
         $complete_paid = $this->Common->filterEmptyField($data, $modelName, 'complete_paid');
         $kekurangan_atpm = $this->Common->filterEmptyField($data, $modelName, 'kekurangan_atpm');
         $completed = $this->Common->filterEmptyField($data, $modelName, 'completed');
+        $status = $this->Common->filterEmptyField($data, $modelName, 'status');
         $customStatus = '-';
 
         if( !empty($completed) || !empty($complete_paid) ) {
             $customStatus = $this->Html->tag('span', __('Selesai'), array(
                 'class' => 'label label-success',
+            ));
+        } else if( empty($status) ) {
+            $customStatus = $this->Html->tag('span', __('Void'), array(
+                'class' => 'label label-danger',
             ));
         } else {
             $customStatus = $this->Html->tag('span', __('Belum'), array(

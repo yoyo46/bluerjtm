@@ -113,6 +113,7 @@ class Ksu extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
+                'Ksu.status' => 'DESC',
                 'Ksu.created' => 'DESC',
                 'Ksu.id' => 'DESC',
             ),
@@ -172,7 +173,7 @@ class Ksu extends AppModel {
         return $result;
     }
 
-    function getKsu($id){
+    function getKsu($id, $status = 'active'){
         return $this->getData('first', array(
             'conditions' => array(
                 'Ksu.id' => $id,
@@ -181,6 +182,8 @@ class Ksu extends AppModel {
                 'KsuDetail',
                 'Ttuj'
             )
+        ), true, array(
+            'status' => $status,
         ));
     }
 

@@ -96,6 +96,7 @@ class Lku extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
+                'Lku.status' => 'DESC',
                 'Lku.created' => 'DESC',
                 'Lku.id' => 'DESC',
             ),
@@ -171,7 +172,7 @@ class Lku extends AppModel {
         return $data;
     }
 
-    function getLku($id){
+    function getLku($id, $status = 'active'){
         return $this->getData('first', array(
             'conditions' => array(
                 'Lku.id' => $id,
@@ -180,6 +181,8 @@ class Lku extends AppModel {
                 'LkuDetail',
                 'Ttuj'
             )
+        ), true, array(
+            'status' => $status,
         ));
     }
 
