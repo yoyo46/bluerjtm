@@ -39,15 +39,16 @@
                     $labelClass = 'success';
                 }
 
+                $customLeadTimeArrive = $this->Html->tag('span', $arrive_leadtime, array(
+                    'class' => sprintf('block label label-%s', $labelClass),
+                ));
+
                 if( $back_leadtime_total > $back_orver_time ){
                     $labelClass = 'danger';
                 } else {
                     $labelClass = 'success';
                 }
-
-                $customLeadTimeArrive = $this->Html->tag('span', $arrive_leadtime, array(
-                    'class' => sprintf('block label label-%s', $labelClass),
-                ));
+                
                 $customLeadTimeBack = $this->Html->tag('span', $back_leadtime, array(
                     'class' => sprintf('block label label-%s', $labelClass),
                 ));

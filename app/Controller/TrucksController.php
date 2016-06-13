@@ -5554,7 +5554,7 @@ class TrucksController extends AppController {
                 $id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
                 $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
                 $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
-                $uang_jalan_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
+                $uang_jalan_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'uang_jalan_id');
 
                 $value = $this->Ttuj->Truck->Driver->getMerge($value, $driver_penganti_id, 'DriverPenganti');
                 $value = $this->Ttuj->UangJalan->getMerge($value, $uang_jalan_id);
