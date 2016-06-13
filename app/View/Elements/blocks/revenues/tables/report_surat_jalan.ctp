@@ -39,9 +39,9 @@
                 $totalSj += $qty;
 
                 if( $idx%2 == 0 ) {
-                    $style = 'background-color: #f5f5f5;';
-                } else {
                     $style = 'background-color: #d9edf7;';
+                } else {
+                    $style = 'background-color: #f5f5f5;';
                 }
 ?>
 <tr>
@@ -96,9 +96,9 @@
             }
 
             if( $idx%2 == 0 ) {
-                $style = 'background-color: #f5f5f5;';
-            } else {
                 $style = 'background-color: #d9edf7;';
+            } else {
+                $style = 'background-color: #f5f5f5;';
             }
 ?>
 <tr style="font-weight: bold;">
