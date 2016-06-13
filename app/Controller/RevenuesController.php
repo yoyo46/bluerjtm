@@ -6337,7 +6337,7 @@ class RevenuesController extends AppController {
                         ), array(
                             'SuratJalanDetail.surat_jalan_id' => $id,
                         ));
-                        
+
                         if( !empty($dataDetail) ) {
                             foreach ($dataDetail as $key => $detail) {
                                 $ttuj_id = $this->MkCommon->filterEmptyField($detail, 'SuratJalanDetail', 'ttuj_id');
