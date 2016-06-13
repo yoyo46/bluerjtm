@@ -130,6 +130,7 @@
                                 'required' => false,
                                 'empty' => __('Pilih Status'),
                                 'options' => array(
+                                    'pending' => __('Belum Kembali'),
                                     'half_receipt' => __('Kembali sebagian'),
                                     'receipt' => __('Kembali Semua'),
                                 ),
