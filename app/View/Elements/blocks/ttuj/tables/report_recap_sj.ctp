@@ -1,4 +1,6 @@
 <?php
+        $idx = 1;
+
         if(!empty($values)){
             $totalUnit = 0;
             $totalUnitSj = 0;
@@ -25,47 +27,86 @@
                 $totalUnitSj += $unitSj;
                 $totalUnitSjNotRecipt += $unitSjNotRecipt;
 
+                if( $idx%2 == 0 ) {
+                    $style = 'background-color: #f5f5f5;';
+                } else {
+                    $style = 'background-color: #d9edf7;';
+                }
+
                 echo $this->Html->tableCells(array(
                     array(
-                        $this->Html->link($no_ttuj, array(
-                            'controller' => 'revenues',
-                            'action' => 'info_truk',
-                            'ttuj',
-                            $id,
-                            'full_base' => true,
-                        ), array(
-                            'target' => '_blank',
-                        )),
-                        $this->Common->customDate($ttuj_date, 'd/m/Y'),
-                        $city_name,
-                        $nopol,
-                        $driver_name,
+                        array(
+                            $this->Html->link($no_ttuj, array(
+                                'controller' => 'revenues',
+                                'action' => 'info_truk',
+                                'ttuj',
+                                $id,
+                                'full_base' => true,
+                            ), array(
+                                'target' => '_blank',
+                            )),
+                            array(
+                                'style' => $style,
+                            ),
+                        ),
+                        array(
+                            $this->Common->customDate($ttuj_date, 'd/m/Y'),
+                            array(
+                                'style' => $style,
+                            ),
+                        ),
+                        array(
+                            $city_name,
+                            array(
+                                'style' => $style,
+                            ),
+                        ),
+                        array(
+                            $nopol,
+                            array(
+                                'style' => $style,
+                            ),
+                        ),
+                        array(
+                            $driver_name,
+                            array(
+                                'style' => $style,
+                            ),
+                        ),
                         array(
                             $unit,
                             array(
-                                'style' => 'text-align: center;',
+                                'style' => 'text-align: center;'.$style,
                             ),
                         ),
                         array(
                             $unitSj,
                             array(
-                                'style' => 'text-align: center;',
+                                'style' => 'text-align: center;'.$style,
                             ),
                         ),
                         array(
                             $tglSJ,
                             array(
-                                'style' => 'text-align: center;',
+                                'style' => 'text-align: center;'.$style,
                             ),
                         ),
                         array(
                             $unitSjNotRecipt,
                             array(
-                                'style' => 'text-align: center;',
+                                'style' => 'text-align: center;'.$style,
                             ),
                         ),
                     )
                 ));
+                
+                $idx++;
+            }
+
+            if( $idx%2 == 0 ) {
+                $style = 'background-color: #f5f5f5;';
+            } else {
+                $style = 'background-color: #d9edf7;';
             }
 
             echo $this->Html->tableCells(array(
@@ -73,27 +114,32 @@
                     array(
                         $this->Html->tag('strong', __('Total')),
                         array(
-                            'style' => 'text-align: right;',
+                            'style' => 'text-align: right;'.$style,
                             'colspan' => 5,
                         ),
                     ),
                     array(
                         $this->Html->tag('strong', $totalUnit),
                         array(
-                            'style' => 'text-align: center;',
+                            'style' => 'text-align: center;'.$style,
                         ),
                     ),
                     array(
                         $this->Html->tag('strong', $totalUnitSj),
                         array(
-                            'style' => 'text-align: center;',
+                            'style' => 'text-align: center;'.$style,
                         ),
                     ),
-                    '',
+                    array(
+                        '',
+                        array(
+                            'style' => 'text-align: center;'.$style,
+                        ),
+                    ),
                     array(
                         $this->Html->tag('strong', $totalUnitSjNotRecipt),
                         array(
-                            'style' => 'text-align: center;',
+                            'style' => 'text-align: center;'.$style,
                         ),
                     ),
                 ),

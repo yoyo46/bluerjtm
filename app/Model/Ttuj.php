@@ -313,7 +313,7 @@ class Ttuj extends AppModel {
 
             switch ($data_action) {
                 case 'tgl_surat_jalan':
-                    $data_merge = $this->SuratJalanDetail->find('first', array(
+                    $data_merge = $this->SuratJalanDetail->find('all', array(
                         'conditions' => $conditions,
                         'order' => array(
                             'SuratJalan.tgl_surat_jalan' => 'DESC',
@@ -321,6 +321,9 @@ class Ttuj extends AppModel {
                         ),
                         'contain' => array(
                             'SuratJalan',
+                        ),
+                        'group' => array(
+                            'SuratJalan.id',
                         ),
                     ));
 
@@ -824,7 +827,9 @@ class Ttuj extends AppModel {
             if( !empty($dateToRange) ) {
                 $default_options['conditions']['DATE_FORMAT(SuratJalan.tgl_surat_jalan, \'%Y-%m-%d\') <='] = $dateToRange;
             }
+
             $default_options['contain'][] = 'SuratJalan';
+            $default_options['conditions']['SuratJalan.id <>'] = NULL;
         }
 
         if(!empty($nopol)){
