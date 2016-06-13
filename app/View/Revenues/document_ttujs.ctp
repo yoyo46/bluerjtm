@@ -52,10 +52,19 @@
                 ),
             ),
             'from' => array(
-                'name' => __('Tujuan'),
+                'name' => __('Dari'),
                 'class' => 'text-center',
                 'field_model' => array(
                     'name' => 'Ttuj.from_city_name',
+                    'class' => 'ajaxModal',
+                    'title' => $title,
+                ),
+            ),
+            'to' => array(
+                'name' => __('Tujuan'),
+                'class' => 'text-center',
+                'field_model' => array(
+                    'name' => 'Ttuj.to_city_name',
                     'class' => 'ajaxModal',
                     'title' => $title,
                 ),
@@ -109,7 +118,6 @@
                         $ttuj_date = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date');
                         $tgljam_berangkat = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_berangkat');
                         $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
-                        $tujuan = sprintf('%s - %s', $from_city_name, $to_city_name);
 
                         $qty = $this->Common->filterEmptyField($value, 'Ttuj', 'qty');
                         $qty_diterima = $this->Common->filterEmptyField($value, 'Ttuj', 'qty_diterima', 0);
@@ -164,7 +172,10 @@
                         echo $this->Html->tag('td', $tgljam_berangkat, array(
                             'class' => 'text-center on-remove',
                         ));
-                        echo $this->Html->tag('td', $tujuan, array(
+                        echo $this->Html->tag('td', $from_city_name, array(
+                            'class' => 'text-center',
+                        ));
+                        echo $this->Html->tag('td', $to_city_name, array(
                             'class' => 'text-center',
                         ));
                         echo $this->Html->tag('td', $note, array(

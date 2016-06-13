@@ -2029,6 +2029,9 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                     } else {
                         ajaxModal();
                         $.checkAll();
+                        $.daterangepicker({
+                            obj: $('#myModal .modal-body .date-range'),
+                        });
                     }
                     
                     popup_checkbox();
