@@ -329,7 +329,7 @@ class LkusController extends AppController {
                         $validate_lku_detail = false;
                     }
                 }
-            }else{
+            } else {
                 $validate_lku_detail = false;
             }
             
@@ -1202,6 +1202,7 @@ class LkusController extends AppController {
         if(!empty($this->request->data)){
             $data = $this->request->data;
             $no_ttuj = $this->MkCommon->filterEmptyField($data, 'Ksu', 'no_ttuj');
+            $kekurangan_atpm = $this->MkCommon->filterEmptyField($data, 'Ksu', 'kekurangan_atpm');
 
             if( !empty($no_ttuj) ) {
                 $ttuj = $this->Ttuj->getMerge(array(), $no_ttuj, 'Ttuj.no_ttuj');
@@ -1278,10 +1279,13 @@ class LkusController extends AppController {
                         $validate_ksu_detail = false;
                     }
                 }
-            }else{
+            } else if( !empty($kekurangan_atpm) ) {
+                $validate_ksu_detail = true;
+                $total_choosen = 1;
+            } else {
                 $validate_ksu_detail = false;
             }
-            
+
             $data['Ksu']['total_price'] = $total_price;
             $data['Ksu']['total_klaim'] = $total_klaim;
             $this->Ksu->set($data);
@@ -1296,12 +1300,14 @@ class LkusController extends AppController {
                         ));
                     }
 
-                    foreach ($temp_detail as $key => $value) {
-                        $this->Ksu->KsuDetail->create();
-                        $value['KsuDetail']['ksu_id'] = $ksu_id;
+                    if( !empty($temp_detail) ) {
+                        foreach ($temp_detail as $key => $value) {
+                            $this->Ksu->KsuDetail->create();
+                            $value['KsuDetail']['ksu_id'] = $ksu_id;
 
-                        $this->Ksu->KsuDetail->set($value);
-                        $this->Ksu->KsuDetail->save();
+                            $this->Ksu->KsuDetail->set($value);
+                            $this->Ksu->KsuDetail->save();
+                        }
                     }
 
                     $this->params['old_data'] = $data_local;

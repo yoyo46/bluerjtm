@@ -132,6 +132,9 @@
 	        </div>
         </div>
     </div>
+    <?php 
+    		if( !empty($Ksu['KsuDetail']) ) {
+    ?>
     <div class="col-sm-12">
         <div class="box box-primary">
             <div class="box-header">
@@ -240,6 +243,9 @@
 	        </div>
         </div>
     </div>
+    <?php 
+    		}
+    ?>
 </div>
 <div class="box-footer text-center action">
 	<?php

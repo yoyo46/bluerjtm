@@ -16,6 +16,7 @@
 
                 $from_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
                 $to_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
+                $total_leadtime = $this->Common->filterEmptyField($value, 'Ttuj', 'total_leadtime', '-');
 
                 $customDateBerangkat = $this->Common->formatDate($tgljam_berangkat, 'd/m/Y H:i');
                 $customDateTiba = $this->Common->formatDate($tgljam_tiba, 'd/m/Y H:i');
@@ -23,34 +24,33 @@
                 $customDatePool = $this->Common->formatDate($tgljam_pool, 'd/m/Y H:i');
                 $status = $this->Revenue->_callStatusTTUJ($value, 'sort', true);
 
-                $arrive_lead_time = $this->Common->filterEmptyField($value, 'ArriveLeadTime', 'total_hour', '-');
-                $target_arrive_lead_time = $this->Common->filterEmptyField($value, 'UangJalan', 'arrive_lead_time', '-');
-                
-                $back_lead_time = $this->Common->filterEmptyField($value, 'BackLeadTime', 'total_hour', '-');
-                $target_back_lead_time = $this->Common->filterEmptyField($value, 'UangJalan', 'back_lead_time');
+                $arrive_leadtime = $this->Ttuj->_callLeadTime($value, 'arrive');
+                $back_leadtime = $this->Ttuj->_callLeadTime($value, 'back');
 
-                $totalLeadTime = $arrive_lead_time + $back_lead_time;
+                $arrive_leadtime_total = $this->Common->filterEmptyField($value, 'Ttuj', 'arrive_leadtime_total');
+                $back_leadtime_total = $this->Common->filterEmptyField($value, 'Ttuj', 'back_leadtime_total');
 
-                if( $arrive_lead_time > $target_arrive_lead_time ) {
-                    $arrive_lead_time = $this->Html->tag('div', $arrive_lead_time, array(
-                        'style' => 'color: #ff0000;'
-                    ));
-                }
+                $arrive_over_time = $this->Common->filterEmptyField($value, 'UangJalan', 'arrive_lead_time');
+                $back_orver_time = $this->Common->filterEmptyField($value, 'UangJalan', 'back_lead_time');
 
-                if( !empty($totalLeadTime) ) {
-                    if( $totalLeadTime > $target_back_lead_time ) {
-                        $totalLeadTime = $this->Html->tag('div', $totalLeadTime, array(
-                            'style' => 'color: #ff0000;'
-                        ));
-                    }
+                if( $arrive_leadtime_total > $arrive_over_time ){
+                    $labelClass = 'danger';
                 } else {
-                    $totalLeadTime = '-';
+                    $labelClass = 'success';
                 }
-                // if( $back_lead_time > $target_back_lead_time ) {
-                //     $back_lead_time = $this->Html->tag('div', $back_lead_time, array(
-                //         'style' => 'color: #ff0000;'
-                //     ));
-                // }
+
+                if( $back_leadtime_total > $back_orver_time ){
+                    $labelClass = 'danger';
+                } else {
+                    $labelClass = 'success';
+                }
+
+                $customLeadTimeArrive = $this->Html->tag('span', $arrive_leadtime, array(
+                    'class' => sprintf('block label label-%s', $labelClass),
+                ));
+                $customLeadTimeBack = $this->Html->tag('span', $back_leadtime, array(
+                    'class' => sprintf('block label label-%s', $labelClass),
+                ));
 ?>
 <tr>
     <?php 
@@ -64,13 +64,13 @@
             echo $this->Html->tag('td', $status);
             echo $this->Html->tag('td', $customDateBerangkat);
             echo $this->Html->tag('td', $customDateTiba);
-            echo $this->Html->tag('td', $arrive_lead_time);
-            echo $this->Html->tag('td', $target_arrive_lead_time);
+            echo $this->Html->tag('td', $customLeadTimeArrive);
+            echo $this->Html->tag('td', $arrive_over_time);
             echo $this->Html->tag('td', $customDateBalik);
             echo $this->Html->tag('td', $customDatePool);
-            echo $this->Html->tag('td', $back_lead_time);
-            echo $this->Html->tag('td', $totalLeadTime);
-            echo $this->Html->tag('td', $target_back_lead_time);
+            echo $this->Html->tag('td', $customLeadTimeBack);
+            echo $this->Html->tag('td', $total_leadtime);
+            echo $this->Html->tag('td', $back_orver_time);
     ?>
 </tr>
 <?php

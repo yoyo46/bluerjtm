@@ -93,7 +93,7 @@
                                 $id = $this->Common->filterEmptyField($value, 'Ksu', 'id');
                                 $no_doc = $this->Common->filterEmptyField($value, 'Ksu', 'no_doc');
                                 $tgl_ksu = $this->Common->filterEmptyField($value, 'Ksu', 'tgl_ksu');
-                                $total_klaim = $this->Common->filterEmptyField($value, 'Ksu', 'total_klaim');
+                                $total_klaim = $this->Common->filterEmptyField($value, 'Ksu', 'total_klaim', '-');
                                 $total_price = $this->Common->filterEmptyField($value, 'Ksu', 'total_price');
                                 $status = $this->Common->filterEmptyField($value, 'Ksu', 'status');
                                 $paid = $this->Common->filterEmptyField($value, 'Ksu', 'paid');

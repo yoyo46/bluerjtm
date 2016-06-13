@@ -60,7 +60,7 @@
                 'align' => 'center',
             ),
             'lt' => array(
-                'name' => __('LT Pergi (Jam)'),
+                'name' => __('LT Pergi'),
                 'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'lt\',width:80',
                 'align' => 'center',
@@ -84,7 +84,7 @@
                 'align' => 'center',
             ),
             'ltback' => array(
-                'name' => __('LT Pulang (Jam)'),
+                'name' => __('LT Pulang'),
                 'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'ltback\',width:80',
                 'align' => 'center',

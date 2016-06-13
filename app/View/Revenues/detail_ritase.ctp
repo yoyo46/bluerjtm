@@ -309,8 +309,11 @@
 		        				$tgljam_pool = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_pool');
 		        				$note = $this->Common->filterEmptyField($value, 'Ttuj', 'note', '-');
 
-		        				$arrive_lead_time = $this->Common->filterEmptyField($value, 'ArriveLeadTime', 'total_hour');
-		        				$back_lead_time = $this->Common->filterEmptyField($value, 'BackLeadTime', 'total_hour');
+		        				$arrive_leadtime = $this->Ttuj->_callLeadTime($value, 'arrive');
+		        				$back_leadtime = $this->Ttuj->_callLeadTime($value, 'back');
+
+		        				$arrive_leadtime_total = $this->Common->filterEmptyField($value, 'Ttuj', 'arrive_leadtime_total');
+		        				$back_leadtime_total = $this->Common->filterEmptyField($value, 'Ttuj', 'back_leadtime_total');
 
 		        				$arrive_over_time = $this->Common->filterEmptyField($value, 'UangJalan', 'arrive_lead_time');
 		        				$back_orver_time = $this->Common->filterEmptyField($value, 'UangJalan', 'back_lead_time');
@@ -323,39 +326,25 @@
 		        				$customStatus = $this->Revenue->_callStatusTTUJ($value, 'sort');
 		        				$customTtujDate = $this->Common->formatDate($ttuj_date, 'd/m/Y');
 
-		        				if( $arrive_lead_time > $arrive_over_time ){
+		        				if( $arrive_leadtime_total > $arrive_over_time ){
 		        					$labelClass = 'danger';
 		        				} else {
 		        					$labelClass = 'success';
 		        				}
 
-		        				$arriveLeadTime = $this->Common->filterEmptyField($value, 'ArriveLeadTime', 'FormatArr');
-	        					
-	        					if( !empty($arriveLeadTime) ) {
-			        				$arriveLeadTime = implode('<br>', $arriveLeadTime);
-			        				$customLeadTimeArrive = $this->Html->tag('span', $arriveLeadTime, array(
-			        					'class' => sprintf('block label label-%s', $labelClass),
-			        				));
-			        			} else {
-			        				$customLeadTimeArrive = '-';
-			        			}
+		        				$customLeadTimeArrive = $this->Html->tag('span', $arrive_leadtime, array(
+		        					'class' => sprintf('block label label-%s', $labelClass),
+		        				));
 
-		        				if( $back_lead_time > $back_orver_time ){
+		        				if( $back_leadtime_total > $back_orver_time ){
 		        					$labelClass = 'danger';
 		        				} else {
 		        					$labelClass = 'success';
 		        				}
 
-	        					$backLeadTime = $this->Common->filterEmptyField($value, 'BackLeadTime', 'FormatArr');
-
-	        					if( !empty($backLeadTime) ) {
-		        					$backLeadTime = implode('<br>', $backLeadTime);
-			        				$customLeadTimeBack = $this->Html->tag('span', $backLeadTime, array(
-			        					'class' => sprintf('block label label-%s', $labelClass),
-			        				));
-		        				} else {
-		        					$customLeadTimeBack = '-';
-		        				}
+		        				$customLeadTimeBack = $this->Html->tag('span', $back_leadtime, array(
+		        					'class' => sprintf('block label label-%s', $labelClass),
+		        				));
 
 		        				if( !empty($lku_qty) ) {
 		        					$customLku = $this->Html->link($lku_qty, array(

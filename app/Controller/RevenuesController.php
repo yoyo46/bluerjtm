@@ -10,7 +10,7 @@ class RevenuesController extends AppController {
     );
 
     public $helper = array(
-        'PhpExcel', 'Revenue'
+        'PhpExcel', 'Revenue', 'Ttuj',
     );
 
     function beforeFilter() {
@@ -3764,6 +3764,15 @@ class RevenuesController extends AppController {
                     );
                 }
 
+                $this->Ttuj->virtualFields['arrive_leadtime_day'] = 'FLOOR(HOUR(TIMEDIFF(tgljam_berangkat, tgljam_tiba)) / 24)';
+                $this->Ttuj->virtualFields['arrive_leadtime_hour'] = 'MOD(HOUR(TIMEDIFF(tgljam_berangkat, tgljam_tiba)), 24)';
+                $this->Ttuj->virtualFields['arrive_leadtime_minute'] = 'MINUTE(TIMEDIFF(tgljam_berangkat, tgljam_tiba))';
+                $this->Ttuj->virtualFields['arrive_leadtime_total'] = 'TIMESTAMPDIFF(HOUR, tgljam_berangkat, tgljam_tiba)';
+                $this->Ttuj->virtualFields['back_leadtime_day'] = 'FLOOR(HOUR(TIMEDIFF(tgljam_balik, tgljam_pool)) / 24)';
+                $this->Ttuj->virtualFields['back_leadtime_hour'] = 'MOD(HOUR(TIMEDIFF(tgljam_balik, tgljam_pool)), 24)';
+                $this->Ttuj->virtualFields['back_leadtime_minute'] = 'MINUTE(TIMEDIFF(tgljam_balik, tgljam_pool))';
+                $this->Ttuj->virtualFields['back_leadtime_total'] = 'TIMESTAMPDIFF(HOUR, tgljam_balik, tgljam_pool)';
+
                 $this->paginate = $this->Ttuj->getData('paginate', array(
                     'conditions' => $default_conditions,
                     'order' => array(
@@ -3816,18 +3825,9 @@ class RevenuesController extends AppController {
                         ));
 
                         $uang_jalan_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'uang_jalan_id');
-                        $from_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_berangkat');
-                        $to_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_tiba');
-                        $leadTimeArrive = $this->MkCommon->dateDiff($from_time, $to_time, 'day', true);
-
-                        $from_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_balik');
-                        $to_time = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'tgljam_pool');
-                        $leadTimeBack = $this->MkCommon->dateDiff($from_time, $to_time, 'day', true);
 
                         $truk_ritase[$key] = $value;
                         $truk_ritase[$key] = $this->Ttuj->UangJalan->getMerge($truk_ritase[$key], $uang_jalan_id);
-                        $truk_ritase[$key]['ArriveLeadTime'] = $leadTimeArrive;
-                        $truk_ritase[$key]['BackLeadTime'] = $leadTimeBack;
 
                         $truk_ritase[$key]['qty_ritase'] = $qty_ritase[0]['qty_ritase'];
 
