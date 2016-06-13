@@ -6332,6 +6332,12 @@ class RevenuesController extends AppController {
                     $this->Ttuj->SuratJalanDetail->SuratJalan->set($data);
 
                     if($this->Ttuj->SuratJalanDetail->SuratJalan->save()){
+                        $this->Ttuj->SuratJalanDetail->updateAll(array(
+                            'SuratJalanDetail.status' => 0,
+                        ), array(
+                            'SuratJalanDetail.surat_jalan_id' => $id,
+                        ));
+                        
                         if( !empty($dataDetail) ) {
                             foreach ($dataDetail as $key => $detail) {
                                 $ttuj_id = $this->MkCommon->filterEmptyField($detail, 'SuratJalanDetail', 'ttuj_id');
@@ -9462,17 +9468,8 @@ class RevenuesController extends AppController {
             foreach ($values as $key => $value) {
                 $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'branch_id');
-                $surat_jalan_id = $this->MkCommon->filterEmptyField($value, 'SuratJalan', 'id');
                 
                 $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
-
-                $val = $this->Ttuj->SuratJalanDetail->getData('first', array(
-                    'conditions' => array(
-                        'SuratJalanDetail.surat_jalan_id' => $surat_jalan_id,
-                        'SuratJalanDetail.ttuj_id' => $ttuj_id,
-                    ),
-                ));
-                $value['SuratJalanDetail'] = $this->MkCommon->filterEmptyField($val, 'SuratJalanDetail');
 
                 $muatan = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
                 $value['Ttuj']['qty'] = $muatan;
