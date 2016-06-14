@@ -77,6 +77,16 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('note',array(
+                                'label'=> __('Keterangan Muat'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Keterangan Muat')
+                            ));
+                    ?>
+                </div>
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
