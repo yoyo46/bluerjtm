@@ -156,9 +156,7 @@
                     foreach ($revenues as $key => $value) {
                         $id = $value['Revenue']['id'];
                         $total = $this->Common->filterEmptyField($value, 'Revenue', 'total_without_tax', 0);
-                        $ppn = $this->Common->filterEmptyField($value, 'Revenue', 'ppn', 0);
-                        
-                        $ppn_amount = $this->Common->calcFloat($total, $ppn);
+                        $ppn_total = $this->Common->filterEmptyField($value, 'Revenue', 'ppn_total', 0);
         ?>
         <tr data-value="<?php echo $id;?>" data-change="#<?php echo $data_change;?>">
             <td><?php echo str_pad($value['Revenue']['id'], 5, '0', STR_PAD_LEFT);?></td>
@@ -168,7 +166,7 @@
             <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
             <td><?php echo !empty($value['Ttuj']['nopol'])?$value['Ttuj']['nopol']:'-';?></td>
             <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-';?></td>
-            <td><?php echo $ppn_amount;?></td>
+            <td><?php echo $ppn_total;?></td>
             <td>
                 <?php 
                         $class_status = 'label label-warning';

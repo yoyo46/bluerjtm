@@ -233,7 +233,7 @@
 
 		                            echo $this->Html->tag('td', '', array(
 		                                'align' => 'right',
-		                                'id' => 'grand-total-revenue',
+		                                'id' => 'grand-total-document',
 		                            ));
 		                            echo $this->Html->tag('td', '&nbsp;');
 
@@ -248,13 +248,25 @@
 			                            echo $this->Form->input('Revenue.ppn', array(
 			                                'type' => 'text',
 			                                'label' => __('PPN'),
-			                                'class' => 'input_number revenue-ppn',
+			                                'class' => 'input_number ppn-persen',
 			                                'required' => false,
 			                                'div' => false
 			                            )).$this->Html->tag('span', '%', array('class' => 'notation-input'));
 		                        ?>
 		                    </td>
-		                    <td align="right" id="ppn-total-revenue"></td>
+		                    <td align="right">
+		                        <?php 
+		                                echo $this->Form->input('Revenue.ppn_total', array(
+		                                    'type' => 'text',
+		                                    'id' => 'ppn-total',
+		                                    'label' => false,
+		                                    'class' => 'input_price_coma',
+		                                    'required' => false,
+		                                    'div' => false,
+		                                    'data-decimal' => '0',
+		                                ));
+		                        ?>
+		                    </td>
 		                    <td>&nbsp;</td>
 		                </tr>
 		                <tr class="additional-input-revenue" id="pph-grand-total-revenue">
@@ -263,18 +275,30 @@
 		                                echo $this->Form->input('Revenue.pph', array(
 		                                    'type' => 'text',
 		                                    'label' => __('PPh'),
-		                                    'class' => 'input_number revenue-pph',
+		                                    'class' => 'input_number pph-persen',
 		                                    'required' => false,
 		                                    'div' => false
 		                                )).$this->Html->tag('span', '%', array('class' => 'notation-input'));
 		                        ?>
 		                    </td>
-		                    <td align="right" id="pph-total-revenue"></td>
+		                    <td align="right">
+		                        <?php 
+		                                echo $this->Form->input('Revenue.pph_total', array(
+		                                    'type' => 'text',
+		                                    'id' => 'pph-total',
+		                                    'label' => false,
+		                                    'class' => 'input_price_coma',
+		                                    'required' => false,
+		                                    'div' => false,
+		                                    'data-decimal' => '0',
+		                                ));
+		                        ?>
+		                    </td>
 		                    <td>&nbsp;</td>
 		                </tr>
 		                <tr id="all-grand-total-revenue">
 		                    <td align="right" colspan="7"><?php echo __('Total');?></td>
-		                    <td align="right" id="all-total-revenue"></td>
+		                    <td align="right" id="all-total"></td>
 		                    <td>&nbsp;</td>
 		                </tr>
 		            </tbody>

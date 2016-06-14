@@ -893,7 +893,7 @@ var add_custom_field = function( obj ){
                     objQty = $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .revenue-qty');
                     objPrice = $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .price-unit-revenue');
                     objTotalPrice = $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .total-revenue-perunit');
-                    objPPhPPn = $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .revenue-pph, #muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .revenue-ppn');
+                    objPPhPPn = $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .pph-persen, #muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .ppn-persen');
 
                     delete_custom_field( $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .delete-custom-field') );
                     city_revenue_change( $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .city-revenue-change'), $('#muatan-revenue-detail tbody.tipe-motor-table tr.list-revenue[rel="'+count_next+'"] .revenue-group-motor') );
@@ -1005,6 +1005,7 @@ var delete_custom_field = function( obj ) {
                 grandTotalLku();
                 grandTotalLeasing();
                 getTotalPick();
+                calcPPNPPH();
                 $.getLeasingGrandtotal();
 
                 if( action_type == 'cashbank_first' ) {
@@ -1287,7 +1288,7 @@ function grandTotalRevenue(){
     var listRevenue = $('.tipe-motor-table tr.list-revenue');
     var total = 0;
     var ppn = 0;
-    var revenue_ppn = $('.revenue-ppn').val();
+    var revenue_ppn = $('.ppn-persen').val();
     var formatAdditionalCharge = 0;
     var totalQty = 0;
 
@@ -1342,58 +1343,69 @@ function grandTotalRevenue(){
     };
 
     $('#qty-revenue').html(totalQty);
-    $('#grand-total-revenue').html(formatNumber(total));
+    $('#grand-total-document').html(formatNumber(total));
 
     if(typeof revenue_ppn != 'undefined' && revenue_ppn != ''){
-        ppn = total * (parseInt(revenue_ppn) / 100);
+        ppn = total * (parseFloat(revenue_ppn) / 100);
     }
-    $('#ppn-total-revenue').html(formatNumber(ppn));
+    $('#ppn-total').val(formatNumber(ppn));
 
     var pph = 0;
-    var revenue_pph = $('.revenue-pph').val();
+    var revenue_pph = $('.pph-persen').val();
     if(typeof revenue_pph != 'undefined' && revenue_pph != ''){
-        pph = total * (parseInt(revenue_pph) / 100);
+        pph = total * (parseFloat(revenue_pph) / 100);
     }
-    $('#pph-total-revenue').html(formatNumber(pph));
+    $('#pph-total').val(formatNumber(pph));
     
     if(ppn > 0){
         total += ppn;
     }
 
-    $('#all-total-revenue').html(formatNumber(total));
+    $('#all-total').html(formatNumber(total));
 }
 
 function calcPPNPPH(){
-    var total = parseInt($('#grand-total-revenue').html().replace(/,/gi, "").replace(/IDR/gi, ""));
+    if( $('#grand-total-document').length > 0 ) {
+        var total = parseInt($('#grand-total-document').html().replace(/,/gi, "").replace(/IDR/gi, ""));
+        var ppn = 0;
+        var pph = 0;
+        var revenue_ppn = $.convertNumber($('.ppn-persen').val(), 'float');
+        var revenue_pph = $.convertNumber($('.pph-persen').val(), 'float');
+
+        if( isNaN(total) ) {
+            total = 0;
+        }
+
+        ppn = total * (revenue_ppn / 100);
+        $('#ppn-total').val(formatNumber(ppn));
+
+        pph = total * (revenue_pph / 100);
+        $('#pph-total').val(formatNumber(pph));
+        
+        if(ppn > 0){
+            total += ppn;
+        }
+
+        $('#all-total').html(formatNumber(total));
+    }
+}
+
+function calcPPNPPHNominal(){
+    var total = $.convertNumber($('#grand-total-document').html().replace(/,/gi, "").replace(/IDR/gi, ""), 'int');
     var ppn = 0;
     var pph = 0;
-    var revenue_ppn = $('.revenue-ppn').val();
-    var revenue_pph = $('.revenue-pph').val();
+    var revenue_ppn = $.convertNumber($('#ppn-total').val(), 'float');
+    var revenue_pph = $.convertNumber($('#pph-total').val(), 'float');
 
-    if( isNaN(total) ) {
-        total = 0;
-    }
+    ppn = ( revenue_ppn / total ) * 100;
+    $('.ppn-persen').val(formatNumber(ppn, 2));
 
-    if(typeof revenue_ppn != 'undefined' && revenue_ppn != ''){
-        ppn = total * (parseInt(revenue_ppn) / 100);
-    }
+    pph = ( revenue_pph / total ) * 100;
+    $('.pph-persen').val(formatNumber(pph, 2));
 
-    $('#ppn-total-revenue').html(formatNumber(ppn));
+    total += revenue_ppn;
 
-    if(typeof revenue_pph != 'undefined' && revenue_pph != ''){
-        pph = total * (parseInt(revenue_pph) / 100);
-    }
-    
-    $('#pph-total-revenue').html(formatNumber(pph));
-    
-    // if(pph > 0){
-    //     total -= pph;
-    // }
-    if(ppn > 0){
-        total += ppn;
-    }
-
-    $('#all-total-revenue').html(formatNumber(total));
+    $('#all-total').html(formatNumber(total));
 }
 
 var part_motor_lku = function(){
@@ -1763,7 +1775,7 @@ var revenue_detail = function( objQty, objPrice, objPPhPPn, objTotalPrice ){
         objPrice = $('.price-unit-revenue');
     }
     if( typeof objPPhPPn == 'undefined' ) {
-        objPPhPPn = $('.revenue-pph, .revenue-ppn');
+        objPPhPPn = $('.pph-persen, .ppn-persen');
     }
     if( typeof objTotalPrice == 'undefined' ) {
         objTotalPrice = $('.total-revenue-perunit');
@@ -1797,6 +1809,11 @@ var revenue_detail = function( objQty, objPrice, objPPhPPn, objTotalPrice ){
     objPPhPPn.off('keyup');
     objPPhPPn.keyup(function(){
         calcPPNPPH();
+    });
+
+    $('#pph-total,#ppn-total').off('keyup');
+    $('#pph-total,#ppn-total').keyup(function(){
+        calcPPNPPHNominal();
     });
 }
 
@@ -2227,7 +2244,7 @@ var _callRevManualChange = function () {
     //                 if( jenis_unit == 'per_truck' ) {
     //                     var totalPriceFormat = $(response).find('.total-revenue-perunit').val();
 
-    //                     $('#grand-total-revenue').html( totalPriceFormat );
+    //                     $('#grand-total-document').html( totalPriceFormat );
     //                 }
                     
     //                 grandTotalRevenue();
@@ -2367,6 +2384,7 @@ var leasing_action = function(){
 var invoice_price_payment = function(){
     $('.document-pick-price').keyup(function(){
         getTotalPick();
+        calcPPNPPH();
     });
 }
 
@@ -2398,35 +2416,48 @@ function _callTotalInvoice () {
 }
 
 function getTotalPick(){
-    var total = total_price = _callTotalInvoice();
+    if( $('.document-pick-info-detail .document-pick-price').length > 0 ) {
+        $('.pph-persen, .ppn-persen').off('keyup');
+        $('.pph-persen, .ppn-persen').keyup(function(){
+            calcPPNPPH();
+        });
 
-    var ppn = 0;
-    var pph = 0;
-    var revenue_ppn = $('.invoice-ppn').val();
-    var revenue_pph = $('.invoice-pph').val();
+        $('#pph-total,#ppn-total').off('keyup');
+        $('#pph-total,#ppn-total').keyup(function(){
+            calcPPNPPHNominal();
+        });
 
-    if(typeof revenue_ppn != 'undefined' && revenue_ppn != ''){
-        ppn = total * (parseInt(revenue_ppn) / 100);
+        var total = total_price = _callTotalInvoice();
+        $('#grand-total-document').text(formatNumber(total_price));
     }
 
-    $('#ppn-total-invoice').val(formatNumber(ppn));
+    // var ppn = 0;
+    // var pph = 0;
+    // var revenue_ppn = $('.invoice-ppn').val();
+    // var revenue_pph = $('.invoice-pph').val();
 
-    if(typeof revenue_pph != 'undefined' && revenue_pph != ''){
-        pph = total * (parseInt(revenue_pph) / 100);
-    }
-    
-    $('#pph-total-invoice').val(formatNumber(pph));
-    
-    // if(pph > 0){
-    //     total -= pph;
+    // if(typeof revenue_ppn != 'undefined' && revenue_ppn != ''){
+    //     ppn = total * (parseInt(revenue_ppn) / 100);
     // }
-    if(ppn > 0){
-        total += ppn;
-    }
 
-    $('#all-total-invoice').html('IDR '+formatNumber(total));
+    // $('#ppn-total-invoice').val(formatNumber(ppn));
 
-    $('#grand-total-payment').text('IDR '+formatNumber(total_price));
+    // if(typeof revenue_pph != 'undefined' && revenue_pph != ''){
+    //     pph = total * (parseInt(revenue_pph) / 100);
+    // }
+    
+    // $('#pph-total-invoice').val(formatNumber(pph));
+    
+    // // if(pph > 0){
+    // //     total -= pph;
+    // // }
+    // if(ppn > 0){
+    //     total += ppn;
+    // }
+
+    // $('#all-total').html('IDR '+formatNumber(total));
+
+    // $('#grand-total-document').text('IDR '+formatNumber(total_price));
 }
 
 function getTotalLkuPayment(){
@@ -2477,7 +2508,7 @@ function getTotalLkuPayment(){
         total += ppn;
     }
 
-    $('#all-total-invoice').html('IDR '+formatNumber(total));
+    $('#all-total').html('IDR '+formatNumber(total));
 
     $('#grand-total-payment').text('IDR '+formatNumber(total_price));
 }
@@ -2562,6 +2593,7 @@ var check_all_checkbox = function(){
 
                     invoice_price_payment();
                     getTotalPick();
+                    calcPPNPPH();
                     _callLeasingExpired(rel_id);
 
                     $.getLeasingPayment({
@@ -2574,6 +2606,7 @@ var check_all_checkbox = function(){
             }else{
                 $('.child-'+rel_id).remove();
                 getTotalPick();
+                calcPPNPPH();
                 $.getLeasingGrandtotal();
             } 
         }
@@ -4107,9 +4140,9 @@ $(function() {
     });
     get_document_cashbank();
 
-    $('.invoice-pph, .invoice-ppn').keyup(function(){
-        getTotalPick();
-    });
+    // $('.invoice-pph, .invoice-ppn').keyup(function(){
+    getTotalPick();
+    // });
 
     $(document).ajaxStart(function() {
         if( !disableAjax ) {

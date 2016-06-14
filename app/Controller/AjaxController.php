@@ -621,7 +621,7 @@ class AjaxController extends AppController {
 		));
 		$toCities = $this->City->getListCities();
 		$groupMotors = $this->GroupMotor->getData('list');
-        $this->MkCommon->_callSettingGeneral('Revenue', array( 'pph', 'ppn' ));
+        // $this->MkCommon->_callSettingGeneral('Revenue', array( 'pph', 'ppn' ));
 
         if( $data_action == 'manual' ) {
             $trucks = $this->Ttuj->Truck->_callListTruck();

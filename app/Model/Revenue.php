@@ -550,8 +550,10 @@ class Revenue extends AppModel {
 
     function saveRevenue ( $id, $data_local, $data, $controller ) {
         $data['Revenue']['date_sj'] = !empty($data['Revenue']['date_sj']) ? date('Y-m-d', strtotime($data['Revenue']['date_sj'])) : '';
-        $data['Revenue']['ppn'] = !empty($data['Revenue']['ppn'])?$data['Revenue']['ppn']:0;
-        $data['Revenue']['pph'] = !empty($data['Revenue']['pph'])?$data['Revenue']['pph']:0;
+        $data['Revenue']['ppn'] = $ppn = $this->filterEmptyField($data, 'Revenue', 'ppn', 0);
+        $data['Revenue']['pph'] = $pph = $this->filterEmptyField($data, 'Revenue', 'pph', 0);
+        $data['Revenue']['ppn_total'] = $ppn_total = $this->filterEmptyField($data, 'Revenue', 'ppn_total', 0);
+        $data['Revenue']['pph_total'] = $pph_total = $this->filterEmptyField($data, 'Revenue', 'pph_total', 0);
 
         if( !empty($data['Ttuj']['from_city_id']) ) {
             $data['Revenue']['from_city_id'] = !empty($data['Ttuj']['from_city_id'])?$data['Ttuj']['from_city_id']:0;
@@ -632,17 +634,10 @@ class Revenue extends AppModel {
         }
 
         $totalWithoutTax = $total_revenue;
-        $pph = $this->filterEmptyField($dataRevenue, 'Revenue', 'pph');
-        $ppn = $this->filterEmptyField($dataRevenue, 'Revenue', 'ppn');
-
         $validate_qty = true;
 
-        if( !empty($pph) ){
-            $pph = $total_revenue * ($pph / 100);
-        }
-        if( !empty($ppn) ){
-            $ppn = $total_revenue * ($ppn / 100);
-            $total_revenue += $ppn;
+        if( !empty($ppn_total) ){
+            $total_revenue += $ppn_total;
         }
 
         $dataRevenue['Revenue']['total'] = $total_revenue;

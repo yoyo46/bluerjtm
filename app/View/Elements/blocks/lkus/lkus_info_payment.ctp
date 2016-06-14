@@ -98,7 +98,7 @@
                                 echo  $this->Form->hidden('LkuPaymentDetail.total_biaya_klaim.', array(
                                     'type' => 'text',
                                     'label' => false,
-                                    'class' => 'form-control price-lku input_number',
+                                    'class' => 'form-control price-lku input_number text-right',
                                     'required' => false,
                                     'max_price' => $max_qty,
                                     'placeholder' => sprintf(__('maksimal pembayaran : %s'), $max_qty),
@@ -127,7 +127,7 @@
                 ?>
                 <tr id="field-grand-total-document">
                     <td align="right" colspan="5"><?php echo __('Grand Total')?></td>
-                    <td align="right" id="grand-total-payment"><?php printf('%s %s', Configure::read('__Site.config_currency_code'), $total); ?></td>
+                    <td align="right" id="grand-total-document"><?php printf('%s %s', Configure::read('__Site.config_currency_code'), $total); ?></td>
                     <td>&nbsp;</td>
                 </tr>
         	</tbody>

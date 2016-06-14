@@ -85,7 +85,7 @@
                 'label' => false,
                 'div' => false,
                 'required' => false,
-                'class' => 'form-control input_price document-pick-price',
+                'class' => 'form-control input_price document-pick-price text-right',
                 'value' => (!empty($this->request->data['KsuPaymentDetail'][$Ksu['id']]['total_biaya_klaim'])) ? $this->request->data['KsuPaymentDetail'][$Ksu['id']]['total_biaya_klaim'] : $total_biaya_klaim
             ));
 
@@ -110,7 +110,7 @@
 ?>
 <tr id="field-grand-total-document">
     <td align="right" colspan="8"><?php echo $this->Html->tag('strong', __('Grand Total'));?></td>
-    <td align="right" id="grand-total-payment">
+    <td align="right" id="grand-total-document">
         <?php 
             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
         ?>

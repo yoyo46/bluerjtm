@@ -87,12 +87,11 @@
 								echo $this->Html->tag('tr', $colom);
 							}
 
-							$ppn = !empty($invoice['InvoicePayment']['ppn'])?$invoice['InvoicePayment']['ppn']:0;
-							$pph = !empty($invoice['InvoicePayment']['pph'])?$invoice['InvoicePayment']['pph']:0;
-							$ppn_total = $this->Common->calcFloat($grandTotal, $ppn);
-							$pph_total = $this->Common->calcFloat($grandTotal, $pph)*-1;
+							$ppn = $this->Common->filterEmptyField($invoice, 'InvoicePayment', 'ppn', 0);
+							$pph = $this->Common->filterEmptyField($invoice, 'InvoicePayment', 'pph', 0);
+							$ppn_total = $this->Common->filterEmptyField($invoice, 'InvoicePayment', 'ppn_total', 0);
+							$pph_total = $this->Common->filterEmptyField($invoice, 'InvoicePayment', 'pph_total', 0);
 							$grandTotal += $ppn_total;
-							// $grandTotal -= $pph_total;
 
 							if( !empty($ppn) ) {
 								$colom = $this->Html->tag('td', __('PPN ('.$ppn.'%)'), array(

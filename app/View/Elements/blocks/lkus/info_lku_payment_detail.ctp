@@ -119,7 +119,7 @@
 ?>
 <tr id="field-grand-total-document">
     <td align="right" colspan="9"><?php echo $this->Html->tag('strong', __('Grand Total')); ?></td>
-    <td align="right" id="grand-total-payment">
+    <td align="right" id="grand-total-document">
         <?php 
             echo $this->Number->currency($total, Configure::read('__Site.config_currency_code'), array('places' => 0));
         ?>

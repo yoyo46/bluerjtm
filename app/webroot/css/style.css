@@ -3871,9 +3871,9 @@ table.report th {
   border-width: 10px;
 }
 .notation-input{
-  position: absolute;
-margin-left: 7px;
-font-size: 22px;
+  /*position: absolute;*/
+  margin-left: 7px;
+  font-size: 18px;
 }
 #invoice-payment-form .notation-input {
   position: relative;
@@ -3885,8 +3885,11 @@ font-size: 22px;
   width: 50px;
   text-align: center;
 }
-#pph-total-revenue{
-  border-bottom: 1px solid;
+#pph-total,
+#ppn-total {
+  padding: 2px 5px;
+  width: 80px;
+  text-align: right;
 }
 
 .no-pright {

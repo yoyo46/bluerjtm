@@ -132,9 +132,6 @@
 
     $.convertNumber = function(num, type, empty){
         if( typeof num != 'undefined' ) {
-        }
-
-        if( typeof num != 'undefined' ) {
             num = num.replace(/,/gi, "").replace(/ /gi, "").replace(/IDR/gi, "").replace(/Rp/gi, "");
 
             if( type == 'int' ) {
@@ -575,10 +572,11 @@
             settings.objComa.off('blur');
             settings.objComa.blur(function(){
                 var self = $(this);
+                var dec = $.checkUndefined(self.attr('data-decimal'), 2);
                 var func = $.checkUndefined(self.attr('data-function'), false);
                 var func_type = $.checkUndefined(self.attr('data-function-type'), false);
 
-                self.val( $.convertDecimal(self, 2) );
+                self.val( $.convertDecimal(self, dec) );
 
                 if( func != false ) {
                     eval(func + '(\''+func_type+'\');');
@@ -587,7 +585,8 @@
 
             jQuery.each( settings.objComa, function( i, val ) {
                 var self = $(this);
-                self.val( $.convertDecimal(self, 2) );
+                var dec = $.checkUndefined(self.attr('data-decimal'), 2);
+                self.val( $.convertDecimal(self, dec) );
             });
         }
     }
