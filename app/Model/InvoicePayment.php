@@ -59,7 +59,8 @@ class InvoicePayment extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'InvoicePayment.id' => 'DESC'
+                'InvoicePayment.status' => 'DESC',
+                'InvoicePayment.id' => 'DESC',
             ),
             'contain' => array(),
             'fields' => array(),

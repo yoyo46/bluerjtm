@@ -4698,6 +4698,7 @@ class RevenuesController extends AppController {
                 'Coa'
             ),
             'order' => array(
+                'InvoicePayment.status' => 'DESC',
                 'InvoicePayment.created' => 'DESC',
                 'InvoicePayment.id' => 'DESC',
             ),
@@ -4870,7 +4871,7 @@ class RevenuesController extends AppController {
             $this->InvoicePayment->set($data);
             $validateInv = $this->InvoicePayment->validates();
 
-            // $pph_total = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'pph_total');
+            $pph_total = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'pph_total');
             $document_no = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'nodoc');
 
             if($validateInv && $validate_price_pay){
@@ -4960,70 +4961,70 @@ class RevenuesController extends AppController {
                         }
                     }
 
-                    // if( $transaction_status == 'posting' ) {
-                    //     if( !empty($pph_total) ) {
-                    //         $coaSetting = $this->User->CoaSetting->getData('first', array(
-                    //             'conditions' => array(
-                    //                 'CoaSetting.status' => 1
-                    //             ),
-                    //         ));
-                    //         $pph_debit_id = $this->MkCommon->filterEmptyField($coaSetting, 'CoaSetting', 'pph_coa_debit_id');
-                    //         $pph_credit_id = $this->MkCommon->filterEmptyField($coaSetting, 'CoaSetting', 'pph_coa_credit_id');
+                    if( $transaction_status == 'posting' ) {
+                        if( !empty($pph_total) ) {
+                            $coaSetting = $this->User->CoaSetting->getData('first', array(
+                                'conditions' => array(
+                                    'CoaSetting.status' => 1
+                                ),
+                            ));
+                            $pph_debit_id = $this->MkCommon->filterEmptyField($coaSetting, 'CoaSetting', 'pph_coa_debit_id');
+                            $pph_credit_id = $this->MkCommon->filterEmptyField($coaSetting, 'CoaSetting', 'pph_coa_credit_id');
 
-                    //         if( !empty($pph_debit_id) && !empty($pph_credit_id) ) {
-                    //             $pph_note = sprintf(__('Potongan Pph kwitansi No: %s / %s'), $document_no, $customer_code);
-                    //             $dataPph['CashBank'] = array(
-                    //                 'branch_id' => Configure::read('__Site.config_branch_id'),
-                    //                 'user_id' => $this->user_id,
-                    //                 'coa_id' => $pph_debit_id,
-                    //                 'receiving_cash_type' => 'out',
-                    //                 'receiver_type' => 'Customer',
-                    //                 'receiver_id' => $customer_id,
-                    //                 'tgl_cash_bank' => $date_payment,
-                    //                 'description' => $pph_note,
-                    //                 'debit_total' => $pph_total,
-                    //             );
+                            if( !empty($pph_debit_id) && !empty($pph_credit_id) ) {
+                                $pph_note = sprintf(__('Potongan Pph kwitansi No: %s / %s'), $document_no, $customer_code);
+                                $dataPph['CashBank'] = array(
+                                    'branch_id' => Configure::read('__Site.config_branch_id'),
+                                    'user_id' => $this->user_id,
+                                    'coa_id' => $pph_debit_id,
+                                    'receiving_cash_type' => 'out',
+                                    'receiver_type' => 'Customer',
+                                    'receiver_id' => $customer_id,
+                                    'tgl_cash_bank' => $date_payment,
+                                    'description' => $pph_note,
+                                    'debit_total' => $pph_total,
+                                );
 
-                    //             $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval('cash-bank', $pph_total);
+                                $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval('cash-bank', $pph_total);
 
-                    //             if( empty($allowApprovals) ) {
-                    //                 $dataPph['CashBank']['completed'] = 1;
-                    //             }
+                                if( empty($allowApprovals) ) {
+                                    $dataPph['CashBank']['completed'] = 1;
+                                }
 
-                    //             $this->User->CashBank->create();
-                    //             $this->User->CashBank->set($dataPph);
+                                $this->User->CashBank->create();
+                                $this->User->CashBank->set($dataPph);
 
-                    //             if( $this->User->CashBank->save() ) {
-                    //                 $cash_bank_id = $this->User->CashBank->id;
-                    //                 $noref = str_pad($cash_bank_id, 6, '0', STR_PAD_LEFT);
+                                if( $this->User->CashBank->save() ) {
+                                    $cash_bank_id = $this->User->CashBank->id;
+                                    $noref = str_pad($cash_bank_id, 6, '0', STR_PAD_LEFT);
 
-                    //                 if( empty($allowApprovals) ) {
-                    //                     $this->User->Journal->setJournal($pph_total, array(
-                    //                         'credit' => 'pph_coa_debit_id',
-                    //                         'debit' => 'pph_coa_credit_id',
-                    //                     ), array(
-                    //                         'date' => $date_payment,
-                    //                         'document_id' => $cash_bank_id,
-                    //                         'title' => $pph_note,
-                    //                         'document_no' => $noref,
-                    //                         'type' => 'out',
-                    //                     ));
-                    //                 }
+                                    if( empty($allowApprovals) ) {
+                                        $this->User->Journal->setJournal($pph_total, array(
+                                            'credit' => 'pph_coa_debit_id',
+                                            'debit' => 'pph_coa_credit_id',
+                                        ), array(
+                                            'date' => $date_payment,
+                                            'document_id' => $cash_bank_id,
+                                            'title' => $pph_note,
+                                            'document_no' => $noref,
+                                            'type' => 'out',
+                                        ));
+                                    }
 
-                    //                 $dataPphDetail['CashBankDetail'] = array(
-                    //                     'cash_bank_id' => $cash_bank_id,
-                    //                     'coa_id' => $pph_credit_id,
-                    //                     'total' => $pph_total,
-                    //                 );
+                                    $dataPphDetail['CashBankDetail'] = array(
+                                        'cash_bank_id' => $cash_bank_id,
+                                        'coa_id' => $pph_credit_id,
+                                        'total' => $pph_total,
+                                    );
 
-                    //                 $this->User->CashBank->CashBankDetail->create();
-                    //                 $this->User->CashBank->CashBankDetail->set($dataPphDetail);
+                                    $this->User->CashBank->CashBankDetail->create();
+                                    $this->User->CashBank->CashBankDetail->set($dataPphDetail);
                                 
-                    //                 $this->User->CashBank->CashBankDetail->save();
-                    //             }
-                    //         }
-                    //     }
-                    // }
+                                    $this->User->CashBank->CashBankDetail->save();
+                                }
+                            }
+                        }
+                    }
 
                     $this->params['old_data'] = $data_local;
                     $this->params['data'] = $data;
