@@ -2911,6 +2911,7 @@ var get_document_cashbank = function(){
                                 });
                                 ajaxModal($('.cashbanks-info-table > tbody .child .ajaxModal'));
                                 sisa_amount($('.cashbanks-info-table > tbody .child .sisa-amount'));
+                                delete_custom_field();
                             }
                         } else {
                             $('#receiver-type').val('');

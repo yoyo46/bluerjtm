@@ -58,8 +58,9 @@
                 $coa_name = !empty($coaSetting['Coa']['name'])?$coaSetting['Coa']['name']:false;
                 $ppn_total = $this->Common->filterEmptyField($customer, 'Revenue', 'ppn_total', 0);
                 $ppn_total = $this->Common->getFormatPrice($ppn_total);
-                
+
                 $total = !empty($customer['Revenue']['total_without_tax'])?$customer['Revenue']['total_without_tax']:0;
+                $nopol = $this->Common->filterEmptyField($customer, 'Ttuj', 'nopol');
                 $truck_form = $this->CashBank->getTruckCashbank($nopol);
 
                 echo $this->Html->tag('div', $coa_code, array(

@@ -1959,6 +1959,8 @@ class AjaxController extends AppController {
 			), true, array(
 				'status' => 'all',
 			));
+			$ttuj_id = $this->MkCommon->filterEmptyField($customer, 'Revenue', 'ttuj_id');
+			$customer = $this->Revenue->Ttuj->getMerge($customer, $ttuj_id);
 
 	        $this->CoaSetting->bindModel(array(
 				'belongsTo' => array(
