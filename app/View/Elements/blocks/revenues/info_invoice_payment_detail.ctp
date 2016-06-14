@@ -142,6 +142,7 @@
     <td align="right" id="all-total">
         <?php 
                 $ppn = $this->Common->filterEmptyField($data, 'InvoicePayment', 'ppn_total', 0);
+                $ppn = $this->Common->convertPriceToString($ppn);
                 $total += $ppn;
 
                 echo $this->Common->getFormatPrice($total);

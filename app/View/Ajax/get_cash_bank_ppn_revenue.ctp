@@ -157,6 +157,7 @@
                         $id = $value['Revenue']['id'];
                         $total = $this->Common->filterEmptyField($value, 'Revenue', 'total_without_tax', 0);
                         $ppn_total = $this->Common->filterEmptyField($value, 'Revenue', 'ppn_total', 0);
+                        $ppn_total = $this->Common->getFormatPrice($ppn_total);
         ?>
         <tr data-value="<?php echo $id;?>" data-change="#<?php echo $data_change;?>">
             <td><?php echo str_pad($value['Revenue']['id'], 5, '0', STR_PAD_LEFT);?></td>
