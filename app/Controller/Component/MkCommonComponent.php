@@ -1834,19 +1834,27 @@ class MkCommonComponent extends Component {
             $leasing_expired_day = $this->filterEmptyField($dataSetting, 'SettingGeneral', 'value');
 
             if( !empty($leasing_expired_day) ) {
-                $this->controller->loadModel('PaymentNotification');
-
-                $this->controller->paginate = array(
+                $options = array(
                     'conditions' => array(
-                        'DATEDIFF(PaymentNotification.paid_date, DATE_FORMAT(NOW(), \'%Y-%m-%d\')) <=' => $leasing_expired_day,
+                        'DATEDIFF(LeasingInstallment.paid_date, DATE_FORMAT(NOW(), \'%Y-%m-%d\')) <=' => $leasing_expired_day,
                     ),
-                    'limit' => 10,
+                    'contain' => array(
+                        'Leasing',
+                    ),
+                    'group' => array(
+                        'LeasingInstallment.leasing_id',
+                    ),
                 );
-                $notifications = $this->controller->paginate('PaymentNotification');
+                $elements = array(
+                    'status' => 'unpaid',
+                    'branch' => false,
+                );
 
-                $cnt = $this->controller->PaymentNotification->paginateCount(array(
-                    'DATEDIFF(PaymentNotification.paid_date, DATE_FORMAT(NOW(), \'%Y-%m-%d\')) <=' => $leasing_expired_day,
-                ));
+                $notifications = $this->controller->GroupBranch->Branch->Leasing->LeasingInstallment->getData('all', array_merge($options, array(
+                    'limit' => 10,
+                )), $elements);
+                $notifications = $this->controller->GroupBranch->Branch->Leasing->Vendor->getMerge($notifications, false, 'Leasing');
+                $cnt = $this->controller->GroupBranch->Branch->Leasing->LeasingInstallment->getData('count', $options, $elements);
 
                 return array(
                     'notifications' => $notifications,

@@ -1432,23 +1432,18 @@ class CommonHelper extends AppHelper {
     }
 
     function getPaymentNotif($data, $header = true){
-        $id = $this->filterEmptyField($data, 'PaymentNotification', 'id');
-        $data_type = $this->filterEmptyField($data, 'PaymentNotification', 'data_type');
-        $nodoc = $this->filterEmptyField($data, 'PaymentNotification', 'nodoc');
-        $to_name = $this->filterEmptyField($data, 'PaymentNotification', 'to_name');
-        $paid_date = $this->filterEmptyField($data, 'PaymentNotification', 'paid_date');
+        $id = $this->filterEmptyField($data, 'Leasing', 'id');
+        $nodoc = $this->filterEmptyField($data, 'Leasing', 'no_contract');
+        $to_name = $this->filterEmptyField($data, 'Vendor', 'name');
+        $paid_date = $this->filterEmptyField($data, 'LeasingInstallment', 'paid_date');
         $paid_date = $this->formatDate($paid_date, 'd/m/Y');
 
-        switch ($data_type) {
-            case 'leasings':
-                $content = sprintf(__('Pemberitahuan pembayaran Leasing #%s, jatuh tempo pada tanggal %s'), $nodoc, $paid_date);
-                $content_url = array(
-                    'controller' => 'leasings',
-                    'action' => 'payment_add',
-                    'admin' => false,
-                );
-                break;
-        }
+        $content = sprintf(__('Pemberitahuan pembayaran Leasing #%s, jatuh tempo pada tanggal %s'), $nodoc, $paid_date);
+        $content_url = array(
+            'controller' => 'leasings',
+            'action' => 'payment_add',
+            'admin' => false,
+        );
 
         if( !empty($content) ) {
             if( !empty($content_url) ) {

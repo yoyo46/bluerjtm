@@ -54,7 +54,10 @@ class PaymentNotification extends AppModel {
 					),
 				),
 		        'conditions' => $default_conditions,
-		        'order'      => null,
+		        'order'      => array(
+                    'PaymentNotification.paid_date' => 'ASC',
+                    'PaymentNotification.id' => 'ASC',
+                ),
 		        'group'      => array(
 		        	'document_id',
 	        	),

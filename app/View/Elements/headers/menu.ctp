@@ -54,8 +54,9 @@
                         </li>
                         <?php
                                 echo $this->Html->tag('li', $this->Html->link(__('Selengkapnya'), array(
-                                    'controller' => 'pages',
-                                    'action' => 'approval_notifications',
+                                    'controller' => 'leasings',
+                                    'action' => 'leasing_report',
+                                    'status' => 'unpaid',
                                 )), array(
                                     'class' => 'footer'
                                 ) );
