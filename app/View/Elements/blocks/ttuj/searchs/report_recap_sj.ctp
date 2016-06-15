@@ -101,8 +101,8 @@
                                 'required' => false,
                                 'empty' => __('Pilih Status'),
                                 'options' => array(
-                                    'sj_pending' => __('Surat jalan Belum Diterima'),
-                                    'sj_receipt' => __('Surat jalan Diterima'),
+                                    'sj_pending' => __('Surat jalan Belum Kembali'),
+                                    'sj_receipt' => __('Surat jalan Kembali'),
                                 ),
                             ));
                     ?>

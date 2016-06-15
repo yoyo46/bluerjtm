@@ -59,10 +59,10 @@
                                 'required' => false,
                                 'empty' => __('Pilih Status'),
                                 'options' => array(
-                                    'sj_pending' => __('Surat jalan Belum Diterima'),
-                                    'sj_receipt' => __('Surat jalan Diterima'),
-                                    'sj_receipt_unpaid' => __('Surat jalan diterima belum ditagih'),
-                                    'sj_receipt_paid' => __('Surat jalan Belum Diterima sudah ditagih'),
+                                    'sj_pending' => __('Surat jalan Belum Kembali'),
+                                    'sj_receipt' => __('Surat jalan Kembali'),
+                                    'sj_receipt_unpaid' => __('Surat jalan kembali belum ditagih'),
+                                    'sj_receipt_paid' => __('Surat jalan Belum Kembali sudah ditagih'),
                                 ),
                             ));
                     ?>
