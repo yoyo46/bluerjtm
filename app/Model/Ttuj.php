@@ -1115,7 +1115,7 @@ class Ttuj extends AppModel {
             }
         }
 
-        $this->virtualFields['biaya_uang_jalan'] = 'SUM(uang_jalan_1+uang_jalan_2+uang_kuli_muat+uang_kuli_bongkar+asdp+uang_kawal+uang_keamanan+uang_jalan_extra)';
+        $this->virtualFields['biaya_uang_jalan'] = 'SUM(uang_jalan_1+uang_jalan_2+uang_kuli_muat+uang_kuli_bongkar+asdp+uang_kawal+uang_keamanan+uang_jalan_extra+commission+commission_extra)';
         $value = $this->getData('first', $default_options, true, array(
             'branch' => false,
         ));
