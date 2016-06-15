@@ -15,14 +15,21 @@
                 'field_model' => 'Vendor.name',
                 'display' => true,
             ),
+            'paid_date' => array(
+                'name' => __('Tgl Leasing'),
+                'field_model' => 'Leasing.paid_date',
+                'class' => 'text-center',
+                'display' => true,
+            ),
             'installment' => array(
                 'name' => __('Cicilan PerBln'),
                 'field_model' => 'Leasing.installment',
                 'display' => true,
             ),
-            'paid_date' => array(
-                'name' => __('Tgl Bayar PerBln'),
-                'field_model' => 'Leasing.paid_date',
+            'date_first_installment' => array(
+                'name' => __('Tgl Angsuran Pertama'),
+                'field_model' => 'Leasing.date_first_installment',
+                'class' => 'text-center',
                 'display' => true,
             ),
             'status' => array(
@@ -79,7 +86,12 @@
                             $id = $this->Common->filterEmptyField($value, 'Leasing', 'id');
                             $no_contract = $this->Common->filterEmptyField($value, 'Leasing', 'no_contract');
                             $installment = $this->Common->filterEmptyField($value, 'Leasing', 'installment');
-                            $paid_date = $this->Common->filterEmptyField($value, 'Leasing', 'paid_date');
+                            $paid_date = $this->Common->filterEmptyField($value, 'Leasing', 'paid_date', false, false, array(
+                                'date' => 'd/m/Y',
+                            ));
+                            $date_first_installment = $this->Common->filterEmptyField($value, 'Leasing', 'date_first_installment', false, false, array(
+                                'date' => 'd/m/Y',
+                            ));
                             $status = $this->Common->filterEmptyField($value, 'Leasing', 'status');
                             $payment_status = $this->Common->filterEmptyField($value, 'Leasing', 'payment_status');
                             $branch_id = $this->Common->filterEmptyField($value, 'Leasing', 'branch_id');
@@ -91,8 +103,9 @@
                 <td><?php echo $branch;?></td>
                 <td><?php echo $no_contract;?></td>
                 <td><?php echo $company;?></td>
+                <td class="text-center"><?php echo $paid_date;?></td>
                 <td><?php echo $this->Number->currency($installment, Configure::read('__Site.config_currency_code').' ', array('places' => 0));?></td>
-                <td><?php echo date('d M Y', strtotime($paid_date));?></td>
+                <td class="text-center"><?php echo $date_first_installment;?></td>
                 <td>
                     <?php 
                             if(!empty($status)){
