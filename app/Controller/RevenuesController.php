@@ -3789,7 +3789,6 @@ class RevenuesController extends AppController {
                             'branch' => false,
                         ));
 
-
                         $this->Ttuj->Ksu->virtualFields['qty'] = 'SUM(Ksu.total_klaim)';
                         $ksus = $this->Ttuj->Ksu->getData('first', array(
                             'conditions' => array(

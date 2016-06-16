@@ -298,6 +298,7 @@
 
 		        				$customer = $this->Common->filterEmptyField($value, 'Customer', 'code');
 
+		        				$no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
 		        				$ttuj_date = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date');
 		        				$from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
 		        				$to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
@@ -350,7 +351,7 @@
 		        					$customLku = $this->Html->link($lku_qty, array(
 		        						'controller' => 'lkus',
 		        						'action' => 'index',
-		        						'nopol' => $nopol,
+		        						'no_ttuj' => $no_ttuj,
 	        						), array(
 	        							'class' => 'white',
 	        							'target' => '_blank',
@@ -366,7 +367,7 @@
 		        					$customKsu = $this->Html->link($ksu_qty, array(
 		        						'controller' => 'lkus',
 		        						'action' => 'ksus',
-		        						'nopol' => $nopol,
+		        						'no_ttuj' => $no_ttuj,
 	        						), array(
 	        							'class' => 'white',
 	        							'target' => '_blank',
