@@ -6233,6 +6233,7 @@ class RevenuesController extends AppController {
                 )
             ));
             $data['SuratJalan']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $sjDetails = $this->MkCommon->filterEmptyField($value, 'SuratJalanDetail');
 
             $dataDetail = $this->MkCommon->filterEmptyField($data, 'SuratJalanDetail', 'qty');
             $resutlDetail = $this->doSjDetail($dataDetail, $data);
@@ -6251,6 +6252,7 @@ class RevenuesController extends AppController {
                 if($this->Ttuj->SuratJalanDetail->SuratJalan->save()){
                     $document_id = $this->Ttuj->SuratJalanDetail->SuratJalan->id;
                     $this->doSjDetail($dataDetail, $data, $document_id);
+                    $this->Ttuj->SuratJalanDetail->SuratJalan->recoverTtuj($sjDetails);
 
                     $this->params['old_data'] = $value;
                     $this->params['data'] = $data;
@@ -6349,24 +6351,7 @@ class RevenuesController extends AppController {
                             'SuratJalanDetail.surat_jalan_id' => $id,
                         ));
 
-                        if( !empty($dataDetail) ) {
-                            foreach ($dataDetail as $key => $detail) {
-                                $ttuj_id = $this->MkCommon->filterEmptyField($detail, 'SuratJalanDetail', 'ttuj_id');
-                                $muatan = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
-                                $qtyDiterima = $this->Ttuj->SuratJalanDetail->_callTotalQtyDiterima( $ttuj_id );
-
-                                if( $qtyDiterima >= $muatan ) {
-                                    $this->Ttuj->set('status_sj', 'full');
-                                } else if( !empty($qtyDiterima) ) {
-                                    $this->Ttuj->set('status_sj', 'half');
-                                } else {
-                                    $this->Ttuj->set('status_sj', 'none');
-                                }
-
-                                $this->Ttuj->id = $ttuj_id;
-                                $this->Ttuj->save();
-                            }
-                        }
+                        $this->Ttuj->SuratJalanDetail->SuratJalan->recoverTtuj($dataDetail);
 
                         $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                         $msg = array(

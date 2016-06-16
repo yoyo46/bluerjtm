@@ -59,8 +59,8 @@ $tbl = <<<EOD
         $print_label
       </div>
 EOD;
-echo $tbl;
-die();
+// echo $tbl;
+// die();
 
         // output the HTML content
         $tcpdf->writeHTML($tbl, true, false, false, false, '');

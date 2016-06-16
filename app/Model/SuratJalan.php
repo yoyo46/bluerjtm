@@ -244,5 +244,26 @@ class SuratJalan extends AppModel {
 
         return $data;
     }
+
+    function recoverTtuj ( $details = false ) {
+        if( !empty($details) ) {
+            foreach ($details as $key => $value) {
+                $ttuj_id = $this->filterEmptyField($value, 'SuratJalanDetail', 'ttuj_id');
+                $muatan = $this->SuratJalanDetail->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
+                $qtyDiterima = $this->SuratJalanDetail->_callTotalQtyDiterima( $ttuj_id );
+
+                if( $qtyDiterima >= $muatan ) {
+                    $this->SuratJalanDetail->Ttuj->set('status_sj', 'full');
+                } else if( !empty($qtyDiterima) ) {
+                    $this->SuratJalanDetail->Ttuj->set('status_sj', 'half');
+                } else {
+                    $this->SuratJalanDetail->Ttuj->set('status_sj', 'none');
+                }
+
+                $this->SuratJalanDetail->Ttuj->id = $ttuj_id;
+                $this->SuratJalanDetail->Ttuj->save();
+            }
+        }
+    }
 }
 ?>

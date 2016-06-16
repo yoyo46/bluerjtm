@@ -17,7 +17,7 @@
         <div class="row">
             <div class="col-sm-4">
                 <?php 
-                        echo $this->Common->buildInputForm('date', __('Tgl Laporan'), array(
+                        echo $this->Common->buildInputForm('date', __('Tgl TTUJ'), array(
                             'class'=>'form-control date-range',
                         ));
                         echo $this->Common->buildInputForm('nodoc', __('No. TTUJ'));
