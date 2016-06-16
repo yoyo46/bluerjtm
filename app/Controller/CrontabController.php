@@ -125,7 +125,7 @@ class CrontabController extends AppController {
                             'CoaClosing.status'=> 0,
                         ), array(
                             'CoaClosing.status' => 1,
-                            'DATE_FORMAT(CoaClosing.periode, \'%Y-%m\')'=> $closingPeriod,
+                            'DATE_FORMAT(CoaClosing.periode, \'%Y-%m\') >='=> $closingPeriod,
                         ));
 
                         foreach ($values as $key => $value) {

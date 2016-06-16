@@ -349,6 +349,30 @@
 		    </div>
 		</div>
 	</div>
+	<div class="col-sm-6">
+		<div class="box box-primary">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Informasi Toggle'); ?></h3>
+		    </div>
+		    <div class="box-body">
+		    	<div class="row">
+	    			<?php 
+	    					echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('SettingGeneral.lock_closing_bank', array(
+                                'type' => 'checkbox',
+                                'label'=> false,
+                                'required' => false,
+                                'value' => 1,
+                                'div' => false,
+                            )).__('Kunci semua transaksi setelah Closing Bank')), array(
+                                'class' => 'checkbox',
+                            )), array(
+                                'class' => 'col-sm-12',
+                            ));
+	    			?>
+		    	</div>
+		    </div>
+		</div>
+	</div>
 	<?php
 	/*
 	<div class="col-sm-6">

@@ -118,18 +118,16 @@
                             $contentProgress = $this->Common->_callProgressBar($transaction_status, $progress);
 
                             if( $transaction_status == 'completed' ) {
-                                $lbl = __('Hapus');
+                                $action = false;
                             } else {
-                                $lbl = __('Batalkan');
+                                $action = $this->Html->link(__('Batalkan'), array(
+                                    'action' => 'closing_toggle',
+                                    $id,
+                                    'admin' => false,
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs',
+                                ), __('Anda yakin ingin proses closing ini?'));
                             }
-
-                            $action = $this->Html->link($lbl, array(
-                                'action' => 'closing_toggle',
-                                $id,
-                                'admin' => false,
-                            ), array(
-                                'class' => 'btn btn-danger btn-xs',
-                            ), __('Anda yakin ingin proses closing ini?'));
 
                             echo $this->Html->tableCells(array(
                                 array(

@@ -1549,6 +1549,12 @@ class CashbanksController extends AppController {
         $this->set('values', $values);
     }
 
+    public function closing_toggle( $id ) {
+        $this->loadModel('CoaClosingQueue');
+        $result = $this->CoaClosingQueue->doDelete( $id );
+        $this->MkCommon->setProcessParams($result);
+    }
+
     function balances(){
         $this->loadModel('CoaBalance');
 
