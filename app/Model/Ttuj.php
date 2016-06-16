@@ -749,6 +749,8 @@ class Ttuj extends AppModel {
         $dateToTtuj = !empty($data['named']['DateToTtuj'])?$data['named']['DateToTtuj']:false;
         $dateFromRange = !empty($data['named']['DateFromRange'])?$data['named']['DateFromRange']:false;
         $dateToRange = !empty($data['named']['DateToRange'])?$data['named']['DateToRange']:false;
+        $dateRitaseFrom = !empty($data['named']['DateRitaseFrom'])?$data['named']['DateRitaseFrom']:false;
+        $dateRitaseTo = !empty($data['named']['DateRitaseTo'])?$data['named']['DateRitaseTo']:false;
 
         $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
         $type = !empty($data['named']['type'])?$data['named']['type']:1;
@@ -830,6 +832,34 @@ class Ttuj extends AppModel {
 
             $default_options['contain'][] = 'SuratJalan';
             $default_options['conditions']['SuratJalan.id <>'] = NULL;
+        }
+        if( !empty($dateRitaseFrom) && !empty($dateRitaseTo) ) {
+            $default_options['conditions']['OR'] = array(
+                array(
+                    'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') >='=> $dateRitaseFrom,
+                    'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') <=' => $dateRitaseTo,
+                ),
+                array(
+                    'DATE_FORMAT(Ttuj.tgljam_tiba, \'%Y-%m-%d\') >='=> $dateRitaseFrom,
+                    'DATE_FORMAT(Ttuj.tgljam_tiba, \'%Y-%m-%d\') <=' => $dateRitaseTo,
+                ),
+                array(
+                    'DATE_FORMAT(Ttuj.tgljam_bongkaran, \'%Y-%m-%d\') >='=> $dateRitaseFrom,
+                    'DATE_FORMAT(Ttuj.tgljam_bongkaran, \'%Y-%m-%d\') <=' => $dateRitaseTo,
+                ),
+                array(
+                    'DATE_FORMAT(Ttuj.tgljam_balik, \'%Y-%m-%d\') >='=> $dateRitaseFrom,
+                    'DATE_FORMAT(Ttuj.tgljam_balik, \'%Y-%m-%d\') <=' => $dateRitaseTo,
+                ),
+                array(
+                    'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='=> $dateRitaseFrom,
+                    'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <=' => $dateRitaseTo,
+                ),
+                array(
+                    'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='=> $dateRitaseFrom,
+                    'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <=' => $dateRitaseTo,
+                ),
+            );
         }
 
         if(!empty($nopol)){

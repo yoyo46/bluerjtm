@@ -1703,6 +1703,9 @@ class MkCommonComponent extends Component {
         $dateFromTtuj = $this->filterEmptyField($options, 'dateFromTtuj');
         $dateToTtuj = $this->filterEmptyField($options, 'dateToTtuj');
 
+        $dateRitaseFrom = $this->filterEmptyField($options, 'dateRitaseFrom');
+        $dateRitaseTo = $this->filterEmptyField($options, 'dateRitaseTo');
+
         $paramMonthFrom = $this->filterEmptyField($result, 'named', 'monthFrom');
         $paramYearFrom = $this->filterEmptyField($result, 'named', 'yearFrom');
 
@@ -1712,11 +1715,13 @@ class MkCommonComponent extends Component {
         $date = $this->filterEmptyField($result, 'named', 'date');
         $datettuj = $this->filterEmptyField($result, 'named', 'datettuj');
         $daterange = $this->filterEmptyField($result, 'named', 'daterange');
+        $dateritase = $this->filterEmptyField($result, 'named', 'dateritase');
 
         $dataString = $this->_callUnset(array(
             'date',
             'daterange',
             'datettuj',
+            'dateritase',
             'to',
             'from',
         ), $result['named']);
@@ -1744,6 +1749,15 @@ class MkCommonComponent extends Component {
             $result['named']['DateFromTtuj'] = $dateFromTtuj;
             $result['named']['DateToTtuj'] = $dateToTtuj;
         }
+        if( !empty($dateritase) ) {
+            $result = $this->_callDateRangeFormat($result, $dateritase, 'dateritase', 'DateRitaseFrom', 'DateRitaseTo');
+        } else if( !empty($dateRitaseFrom) && !empty($dateRitaseTo) ) {
+            $this->controller->request->data['Search']['dateritase'] = sprintf('%s - %s', date('d/m/Y', strtotime($dateRitaseFrom)), date('d/m/Y', strtotime($dateRitaseTo)));
+
+            $result['named']['DateRitaseFrom'] = $dateRitaseFrom;
+            $result['named']['DateRitaseTo'] = $dateRitaseTo;
+        }
+
         if( !empty($daterange) ) {
             $result = $this->_callDateRangeFormat($result, $daterange, 'daterange', 'DateFromRange', 'DateToRange');
         }

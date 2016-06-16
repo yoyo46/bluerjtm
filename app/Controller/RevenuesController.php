@@ -3659,14 +3659,10 @@ class RevenuesController extends AppController {
                 )
             ), false);
             $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
-
-            if(!empty($this->params['named'])){
-                $refine = $this->params['named'];
-                if(!empty($refine['date'])){
-                    $date = urldecode(rawurldecode($refine['date']));
-                    $this->request->data['Ttuj']['date'] = $date;
-                }
-            }
+        
+            $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+            $dateTo = date('Y-m-d');
+            $params = $this->MkCommon->_callRefineParams($this->params);
 
             $truk = $this->Ttuj->Truck->getData('first', array(
                 'conditions' => array(
@@ -3742,38 +3738,6 @@ class RevenuesController extends AppController {
                     'Ttuj.is_draft' => 0,
                 );
 
-                if(isset($this->request->data['Ttuj']['date']) && !empty($this->request->data['Ttuj']['date'])){
-                    $date_explode = explode('-', trim($this->request->data['Ttuj']['date']));
-                    $date_from = $this->MkCommon->getDate($date_explode[0]);
-                    $date_to = $this->MkCommon->getDate($date_explode[1]);
-                    $default_conditions['OR'] = array(
-                        array(
-                            'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') >='=> $date_from,
-                            'DATE_FORMAT(Ttuj.tgljam_berangkat, \'%Y-%m-%d\') <=' => $date_to,
-                        ),
-                        array(
-                            'DATE_FORMAT(Ttuj.tgljam_tiba, \'%Y-%m-%d\') >='=> $date_from,
-                            'DATE_FORMAT(Ttuj.tgljam_tiba, \'%Y-%m-%d\') <=' => $date_to,
-                        ),
-                        array(
-                            'DATE_FORMAT(Ttuj.tgljam_bongkaran, \'%Y-%m-%d\') >='=> $date_from,
-                            'DATE_FORMAT(Ttuj.tgljam_bongkaran, \'%Y-%m-%d\') <=' => $date_to,
-                        ),
-                        array(
-                            'DATE_FORMAT(Ttuj.tgljam_balik, \'%Y-%m-%d\') >='=> $date_from,
-                            'DATE_FORMAT(Ttuj.tgljam_balik, \'%Y-%m-%d\') <=' => $date_to,
-                        ),
-                        array(
-                            'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') >='=> $date_from,
-                            'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m-%d\') <=' => $date_to,
-                        ),
-                        array(
-                            'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='=> $date_from,
-                            'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <=' => $date_to,
-                        ),
-                    );
-                }
-
                 $this->Ttuj->virtualFields['arrive_leadtime_day'] = 'FLOOR(HOUR(TIMEDIFF(tgljam_berangkat, tgljam_tiba)) / 24)';
                 $this->Ttuj->virtualFields['arrive_leadtime_hour'] = 'MOD(HOUR(TIMEDIFF(tgljam_berangkat, tgljam_tiba)), 24)';
                 $this->Ttuj->virtualFields['arrive_leadtime_minute'] = 'MINUTE(TIMEDIFF(tgljam_berangkat, tgljam_tiba))';
@@ -3783,7 +3747,7 @@ class RevenuesController extends AppController {
                 $this->Ttuj->virtualFields['back_leadtime_minute'] = 'MINUTE(TIMEDIFF(tgljam_balik, tgljam_pool))';
                 $this->Ttuj->virtualFields['back_leadtime_total'] = 'TIMESTAMPDIFF(HOUR, tgljam_balik, tgljam_pool)';
 
-                $this->paginate = $this->Ttuj->getData('paginate', array(
+                $options =  $this->Ttuj->_callRefineParams($params, array(
                     'conditions' => $default_conditions,
                     'order' => array(
                         'Ttuj.tgljam_berangkat' => 'ASC',
@@ -3792,7 +3756,8 @@ class RevenuesController extends AppController {
                         'Ttuj.tgljam_balik' => 'ASC',
                         'Ttuj.tgljam_pool' => 'ASC'
                     )
-                ), true, array(
+                ));
+                $this->paginate = $this->Ttuj->getData('paginate', $options, true, array(
                     'branch' => false,
                 ));
                 $truk_ritase = $this->paginate('Ttuj');
@@ -3854,6 +3819,12 @@ class RevenuesController extends AppController {
                 
                 $this->MkCommon->_layout_file(array(
                     'freeze',
+                    'select',
+                ));
+                $customers = $this->Ttuj->Customer->getData('list', array(
+                    'fields' => array(
+                        'Customer.id', 'Customer.customer_name_code'
+                    ),
                 ));
 
                 $sub_module_title = __('Detail Ritase Truk');
@@ -3861,7 +3832,7 @@ class RevenuesController extends AppController {
                 $this->set(compact(
                     'id', 'truk', 'truk_ritase', 'sub_module_title', 
                     'total_ritase', 'total_unit', 'total_lku',
-                    'total_ksu'
+                    'total_ksu', 'customers'
                 ));
             }else{
                 $this->MkCommon->setCustomFlash(__('Truk tidak ditemukan'), 'error');

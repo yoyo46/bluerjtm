@@ -7,7 +7,7 @@
     </div>
     <div class="box-body">
         <?php 
-	            echo $this->Form->create('Revenue', array(
+	            echo $this->Form->create('Search', array(
 	                'url'=> $this->Html->url( array(
 	                    'controller' => 'revenues',
 	                    'action' => 'search',
@@ -29,30 +29,35 @@
                             <i class="fa fa-calendar"></i>
                         </div>
                         <?php 
-                                echo $this->Form->input('Ttuj.date',array(
+                                echo $this->Form->input('dateritase',array(
                                     'label'=> false,
                                     'class'=>'form-control pull-right date-range',
                                     'required' => false,
+                                    'title' => __('Cari berdasarkan Tgl TTUJ, berangkat, tiba, bali dan sampai pool'),
                                 ));
                         ?>
                     </div>
                 </div>
-                <div class="form-group action">
-                    <?php
-                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
-                                'div' => false, 
-                                'class'=> 'btn btn-success btn-sm',
-                                'type' => 'submit',
-                            ));
-                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                <?php 
+                        echo $this->Common->buildInputForm('customerid', __('Customer'), array(
+                            'class'=>'form-control chosen-select',
+                            'empty' => __('Pilih Customer'),
+                            'options' => $customers
+                        ));
+                        echo $this->element('blocks/common/searchs/box_action', array(
+                            '_url' => array(
                                 'action' => 'detail_ritase', 
-                                $id
-                            ), array(
-                                'escape' => false, 
-                                'class'=> 'btn btn-default btn-sm',
-                            ));
-                    ?>
-                </div>
+                                $id,
+                                'admin' => false,
+                            ),
+                        ));
+                ?>
+            </div>
+            <div class="col-sm-6">
+                <?php 
+                        echo $this->Common->buildInputForm('nodoc', __('No TTUJ'));
+                        echo $this->Common->buildInputForm('note', __('Keterangan Muat'));
+                ?>
             </div>
         </div>
         <?php 
