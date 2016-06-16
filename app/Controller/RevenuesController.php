@@ -4969,9 +4969,8 @@ class RevenuesController extends AppController {
                                 ),
                             ));
                             $pph_debit_id = $this->MkCommon->filterEmptyField($coaSetting, 'CoaSetting', 'pph_coa_debit_id');
-                            $pph_credit_id = $this->MkCommon->filterEmptyField($coaSetting, 'CoaSetting', 'pph_coa_credit_id');
 
-                            if( !empty($pph_debit_id) && !empty($pph_credit_id) ) {
+                            if( !empty($pph_debit_id) ) {
                                 $pph_note = sprintf(__('Potongan Pph kwitansi No: %s / %s'), $document_no, $customer_code);
                                 $dataPph['CashBank'] = array(
                                     'branch_id' => Configure::read('__Site.config_branch_id'),
@@ -5013,7 +5012,7 @@ class RevenuesController extends AppController {
 
                                     $dataPphDetail['CashBankDetail'] = array(
                                         'cash_bank_id' => $cash_bank_id,
-                                        'coa_id' => $pph_credit_id,
+                                        'coa_id' => $coa_id,
                                         'total' => $pph_total,
                                     );
 
@@ -6258,15 +6257,15 @@ class RevenuesController extends AppController {
                     $this->params['data'] = $data;
 
                     $noref = str_pad($document_id, 6, '0', STR_PAD_LEFT);
-                    $this->MkCommon->setCustomFlash(sprintf(__('Berhasil melakukan Pembayaran dokumen #%s'), $noref), 'success'); 
-                    $this->Log->logActivity( sprintf(__('Berhasil melakukan Pembayaran dokumen #%s'), $document_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $document_id );
+                    $this->MkCommon->setCustomFlash(sprintf(__('Berhasil melakukan penerimaan surat jalan #%s'), $noref), 'success'); 
+                    $this->Log->logActivity( sprintf(__('Berhasil melakukan penerimaan surat jalan #%s'), $document_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $document_id );
                     
                     $this->redirect(array(
                         'action' => 'surat_jalan',
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(__('Gagal melakukan Pembayaran dokumen'), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal melakukan Pembayaran dokumen #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
+                    $this->MkCommon->setCustomFlash(__('Gagal melakukan penerimaan surat jalan'), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal melakukan penerimaan surat jalan #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
                 }
             }else{
                 if( !empty($errorDetail) ) {

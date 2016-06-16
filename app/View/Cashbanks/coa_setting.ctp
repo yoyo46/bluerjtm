@@ -335,17 +335,17 @@
 							));
 					?>
 				</div>
-				<div class="col-sm-4">
+				<!-- <div class="col-sm-4">
 		        	<?php 
-							echo $this->Form->input('pph_coa_credit_id',array(
-								'label'=> false, 
-								'class'=>'form-control chosen-select',
-								'required' => false,
-								'empty' => __('Pilih COA'),
-								'options' => $coas,
-							));
+							// echo $this->Form->input('pph_coa_credit_id',array(
+							// 	'label'=> false, 
+							// 	'class'=>'form-control chosen-select',
+							// 	'required' => false,
+							// 	'empty' => __('Pilih COA'),
+							// 	'options' => $coas,
+							// ));
 					?>
-				</div>
+				</div> -->
 			</div>
         </div>
         <div class="form-group">
