@@ -273,5 +273,29 @@ class RjCashBankComponent extends Component {
 
         return $data;
     }
+
+	function _callBeforeViewCashFlow( $params, $data_action ) {
+        $coas = $this->controller->User->Journal->Coa->_callOptGroup();
+
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom', false, array(
+        	'date' => 'd M Y',
+    	));
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo', false, array(
+        	'date' => 'd M Y',
+    	));
+
+        $period_text = __('Periode %s - %s', $dateFrom, $dateTo);
+        $this->controller->set('sub_module_title', __('Laporan Cash Flow'));
+        $this->controller->set('active_menu', 'report_recap_sj');
+        $this->MkCommon->_callBeforeViewReport($data_action, array(
+            'layout_file' => array(
+                'select',
+            ),
+        ));
+        $this->controller->set(compact(
+            'period_text', 'coas', 'data_action',
+            'dateFrom', 'dateTo'
+        ));
+	}
 }
 ?>

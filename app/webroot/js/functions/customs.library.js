@@ -1532,11 +1532,28 @@
     $.daterangepicker = function( options ) {
         var settings = $.extend({
             obj: $('.date-range'),
+            objCustom: $('.date-range-custom'),
         }, options );
 
         if( settings.obj.length > 0 ) {
             settings.obj.daterangepicker({
                 format: 'DD/MM/YYYY',
+            });
+        }
+
+        if( settings.objCustom.length > 0 ) {
+            settings.objCustom.each(function(){
+                var self = $(this);
+                var limitday = $.convertNumber(self.attr('data-limit'), 'int');
+
+                if( limitday == 0 ) {
+                    limitday = false;
+                }
+
+                self.daterangepicker({
+                    format: 'DD/MM/YYYY',
+                    dateLimit: { days: limitday },
+                });
             });
         }
     }

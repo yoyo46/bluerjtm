@@ -2526,4 +2526,74 @@ class CommonHelper extends AppHelper {
     function _callGenerateNoRef( $id ) {
         return str_pad($id, 6, '0', STR_PAD_LEFT);
     }
+
+    function _callListCheckboxCoas (  $coas ) {
+        $list = array();
+        $default_options = array(
+            'type' => 'checkbox',
+            'label'=> false,
+            'required' => false,
+            'div' => false,
+        );
+
+        if( !empty($coas) ) {
+            foreach ($coas as $key => $coa) {
+                if( is_array($coa) ) {
+                    $list[] = $this->Html->tag('li', $this->Html->tag('label', $key));
+                    $list = array_merge($list, $this->_callListCheckboxCoas($coa));
+                } else {
+                    $options = $default_options;
+                    $options['value'] = $key;
+                    $options['class'] = 'check-branch';
+
+                    $list[] = $this->Html->tag('li', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('coas.'.$key, $options).$coa), array(
+                        'class' => 'checkbox',
+                    )));
+                }
+            }
+        }
+
+        return $list;
+    }
+
+    function _callCheckboxCoas (  $coas ) {
+        $btn = $this->Form->button(__('Pilih COA ').$this->Html->tag('div', '', array(
+            'class' => 'caret',
+        )), array(
+            'class' => 'btn btn-default dropdown-toggle',
+            'data-toggle' => 'dropdown',
+        ));
+        $headLabel = $this->Html->tag('label', __('COA'), array(
+            'class' => 'block'
+        ));
+
+
+        $options = array(
+            'type' => 'checkbox',
+            'label'=> false,
+            'required' => false,
+            'div' => false,
+            'class' => 'check-all',
+        );
+        $headLi = $this->Html->tag('li', $this->Html->tag('li', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('coaall.', $options).__('Check/Uncheck All')), array(
+            'class' => 'checkbox',
+        ))));
+        $divider = $this->Html->tag('li', '', array(
+            'class' => 'divider',
+        ));
+        $ulContent = $this->Html->tag('ul', $headLi.$divider.implode('', $this->_callListCheckboxCoas($coas)), array(
+            'class' => 'dropdown-menu parent-check-branch',
+            'role' => 'menu',
+        ));
+
+        $result =  $this->Html->tag('div', $headLabel.$this->Html->tag('div', $btn.$ulContent, array(
+            'class' => 'btn-group columnDropdown',
+        )), array(
+            'class' => 'list-field',
+        ));
+
+        return $this->Html->tag('div', $result, array(
+            'class' => 'form-group'
+        ));
+    }
 }

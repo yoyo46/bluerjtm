@@ -1001,6 +1001,7 @@
                         'cashbanks' => array(
                             'index', 'journal_report', 'prepayment_report',
                             'ledger_report', 'profit_loss', 'balance_sheets',
+                            'cash_flows',
                         ),
                         'trucks' => array(
                             'kir_payments', 'stnk_payments', 'siup_payments',
@@ -1194,6 +1195,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'balance_sheets' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link(sprintf(__('%s Laporan Cash Flow'), $this->Common->icon('angle-double-right')), array(
+                                'controller' => 'cashbanks',
+                                'action' => 'cash_flows'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'cash_flows' )?'active':'',
                             ));
                     ?>
                 </ul>

@@ -481,3 +481,8 @@ tr.expired .red {
 	margin-top: 10px;
 }
 /* end progress bar */
+
+/*Cash Flow*/
+#cash-flow h3 {
+  text-transform: uppercase;
+}

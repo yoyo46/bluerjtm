@@ -175,6 +175,9 @@ class AppController extends Controller {
 				'cashbanks' => array(
 					'search'
 				),
+				'ttujs' => array(
+					'search',
+				),
 			);
 			Configure::write('__Site.allowed_module', $_allowedModule);
 

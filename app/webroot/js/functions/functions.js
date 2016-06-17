@@ -4222,7 +4222,7 @@ $(function() {
         var target = $(e.target);
         
         if( target.parents('.columnDropdown').length > 0 ) {
-            $('.columnDropdown').addClass('open');
+            target.parents('.columnDropdown').addClass('open');
         } else {
             $('.columnDropdown').removeClass('open');
         }

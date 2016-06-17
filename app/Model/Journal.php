@@ -145,11 +145,11 @@ class Journal extends AppModel {
         }
     }
 
-    function getData( $find, $options = false, $is_merge = true ){
+    function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+        $status = isset($elements['status'])?$elements['status']:'active';
+
         $default_options = array(
-            'conditions'=> array(
-                'Journal.status' => 1,
-            ),
+            'conditions'=> array(),
             'order'=> array(
                 'Journal.date' => 'DESC',
                 'Journal.document_id' => 'DESC',
@@ -162,6 +162,17 @@ class Journal extends AppModel {
                 'Coa'
             ),
         );
+
+        switch ($status) {
+            case 'active':
+                $default_options['conditions']['Journal.status'] = 1;
+                break;
+
+            case 'without-void':
+                $default_options['conditions']['Journal.status'] = 1;
+                $default_options['conditions']['Journal.type NOT like'] = '%void%';
+                break;
+        }
 
         if( !empty($options) && $is_merge ){
             if(!empty($options['conditions'])){
@@ -278,6 +289,53 @@ class Journal extends AppModel {
         }
         
         return $default_options;
+    }
+
+    function _callCashFlow ( $data, $value, $options = array() ) {
+        $conditions = $this->filterEmptyField($options, 'conditions');
+        $cashflow = $this->filterEmptyField($options, 'cashflow');
+        $total_field = $this->filterEmptyField($options, 'total_field');
+
+        $document_id = $this->filterEmptyField($value, 'Journal', 'document_id');
+        $journal_type = $this->filterEmptyField($value, 'Journal', 'type');
+
+        $this->User->Journal->virtualFields['total_debit'] = 'SUM(Journal.debit)';
+        $this->User->Journal->virtualFields['total_credit'] = 'SUM(Journal.credit)';
+        $options = array(
+            'conditions' => array_merge($conditions, array(
+                'Journal.document_id' => $document_id,
+                'Journal.type' => $journal_type,
+            )),
+            'group' => array(
+                'Journal.coa_id',
+                'Journal.document_id',
+                'Journal.type',
+            ),
+        );
+
+        $journals = $this->User->Journal->getData('all', $options, true, array(
+            'status' => 'without-void',
+        ));
+
+        if( !empty($journals) ) {
+            foreach ($journals as $key => $journal) {
+                $total = $this->filterEmptyField($journal, 'Journal', $total_field, false, 0);
+                $grandtotal = $this->filterEmptyField($data, 'Grandtotal', false, 0);
+                $journal_coa_id = $this->filterEmptyField($journal, 'Journal', 'coa_id');
+                
+                $journal = $this->Coa->getMerge($journal, $journal_coa_id);
+                $coa_name = $this->filterEmptyField($journal, 'Coa', 'coa_name');
+
+                $totalCashflow = $this->filterEmptyField($data, 'CashFlow', $cashflow);
+                $total_cashflow = $this->filterEmptyField($totalCashflow, $journal_coa_id, false, 0);
+                
+                $data['CashFlow'][$cashflow][$journal_coa_id] = $total_cashflow + $total;
+                $data['Grandtotal'] = $grandtotal + $total;
+                $data['Coas'][$cashflow][$journal_coa_id] = $coa_name;
+            }
+        }
+
+        return $data;
     }
 }
 ?>

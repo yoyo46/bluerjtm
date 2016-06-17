@@ -3,6 +3,7 @@
         $_add = !empty($_add)?$_add:false;
         $_add_multiple = !empty($_add_multiple)?$_add_multiple:false;
         $_label_multiple = !empty($_label_multiple)?$_label_multiple:false;
+        $_print = !empty($_print)?$_print:false;
 ?>
 <div class="box-header">
     <?php 
@@ -10,6 +11,21 @@
                 'class' => 'box-title'
             ));
 
+            if( empty($data_action) && !empty($_print) ) {
+                if( is_array($_print) ) {
+                    echo $this->Common->_getPrint(array_merge(array(
+                        '_attr' => array(
+                            'escape' => false,
+                        ),
+                    ), $_print));
+                } else {
+                    echo $this->Common->_getPrint(array(
+                        '_attr' => array(
+                            'escape' => false,
+                        ),
+                    ));
+                }
+            }
 
             if( !empty($_add) ) {
                 echo $this->Html->tag('div', $this->Common->link(__('Tambah'), $_add, array(

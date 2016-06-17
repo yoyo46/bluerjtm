@@ -1565,6 +1565,7 @@ class MkCommonComponent extends Component {
         $date = $this->filterEmptyField($data, 'Search', 'date');
         $daterange = $this->filterEmptyField($data, 'Search', 'daterange');
         $datettuj = $this->filterEmptyField($data, 'Search', 'datettuj');
+        $journalcoa = $this->filterEmptyField($data, 'Search', 'journalcoa');
         $params = array();
 
         $dateFrom = $this->filterEmptyField($data, 'Search', 'from');
@@ -1581,6 +1582,7 @@ class MkCommonComponent extends Component {
                 'daterange',
                 'datettuj',
                 'from',
+                'journalcoa',
             ),
         ), $data);
         $dataSearch = $this->filterEmptyField($data, 'Search');
@@ -1613,6 +1615,13 @@ class MkCommonComponent extends Component {
                     }
                 }
             }
+        }
+        if( !empty($journalcoa) ) {
+            if( is_array($journalcoa) ) {
+                $journalcoa = implode(',', $journalcoa);
+            }
+
+           $params['journalcoa'] = rawurlencode(urlencode($journalcoa));
         }
 
         if( !empty($date) ) {
@@ -1716,6 +1725,7 @@ class MkCommonComponent extends Component {
         $datettuj = $this->filterEmptyField($result, 'named', 'datettuj');
         $daterange = $this->filterEmptyField($result, 'named', 'daterange');
         $dateritase = $this->filterEmptyField($result, 'named', 'dateritase');
+        $journalcoa = $this->filterEmptyField($result, 'named', 'journalcoa');
 
         $dataString = $this->_callUnset(array(
             'date',
@@ -1724,6 +1734,7 @@ class MkCommonComponent extends Component {
             'dateritase',
             'to',
             'from',
+            'journalcoa',
         ), $result['named']);
 
         if( !empty($dataString) ) {
@@ -1731,6 +1742,19 @@ class MkCommonComponent extends Component {
                 $this->controller->request->data['Search'][$fieldName] = urldecode(rawurldecode($value));
                 $result['named'][$fieldName] = urldecode(rawurldecode($value));
             }
+        }
+        if( !empty($journalcoa) ) {
+            $journalcoa = urldecode(rawurldecode($journalcoa));
+            $journalcoaArr = explode(',', $journalcoa);
+
+            if( !empty($journalcoaArr) && count($journalcoaArr) > 1 ) {
+                $journalcoa = $journalcoaArr;
+                $result['named']['journalcoa'] = $journalcoa;
+            } else {
+                $result['named']['journalcoa'] = $journalcoa;
+            }
+
+            $this->controller->request->data['Search']['journalcoa'] = $journalcoa;
         }
 
         if( !empty($date) ) {

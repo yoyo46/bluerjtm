@@ -1865,4 +1865,98 @@ class CashbanksController extends AppController {
             }
         }
     }
+
+    public function cash_flows( $data_action = false ) {
+        $dateFrom = date('Y-m-d');
+        $dateTo = date('Y-m-d');
+
+        $options = array(
+            'conditions'=> array(
+                'Journal.coa_id <>' => 0,
+            ),
+            'contain' => false,
+            'order'=> array(
+                'Journal.created' => 'DESC',
+                'Journal.document_id' => 'ASC',
+            ),
+            'group' => array(
+                'Journal.document_id',
+                'Journal.type',
+            ),
+        );
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+
+        $options =  $this->User->Journal->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'Journal', $options );
+
+        $values = $this->User->Journal->getData('all', $options, true, array(
+            'status' => 'without-void',
+        ));
+        $data = array();
+        $dataRequest = $this->request->data;
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $coa_id = $this->MkCommon->filterEmptyField($value, 'Journal', 'coa_id');
+                $debit = $this->MkCommon->filterEmptyField($value, 'Journal', 'debit');
+                $credit = $this->MkCommon->filterEmptyField($value, 'Journal', 'credit');
+
+                $value = $this->User->Journal->Coa->getMerge($value, $coa_id);
+                $coa_type = $this->MkCommon->filterEmptyField($value, 'Coa', 'type');
+
+                switch ($coa_type) {
+                    case 'debit':
+                        if( !empty($debit) ) {
+                            $data = $this->User->Journal->_callCashFlow($data, $value, array(
+                                'conditions' => array(
+                                    'Journal.credit <>' => 0,
+                                ),
+                                'cashflow' => 'in',
+                                'total_field' => 'total_credit',
+                            ));
+                        } else if( !empty($credit) ) {
+                            $data = $this->User->Journal->_callCashFlow($data, $value, array(
+                                'conditions' => array(
+                                    'Journal.debit <>' => 0,
+                                ),
+                                'cashflow' => 'out',
+                                'total_field' => 'total_debit',
+                            ));
+                        }
+                        break;
+                    
+                    case 'credit':
+                        if( !empty($debit) ) {
+                            $data = $this->User->Journal->_callCashFlow($data, $value, array(
+                                'conditions' => array(
+                                    'Journal.debit <>' => 0,
+                                ),
+                                'cashflow' => 'out',
+                                'total_field' => 'total_debit',
+                            ));
+                        } else if( !empty($credit) ) {
+                            $data = $this->User->Journal->_callCashFlow($data, $value, array(
+                                'conditions' => array(
+                                    'Journal.credit <>' => 0,
+                                ),
+                                'cashflow' => 'in',
+                                'total_field' => 'total_credit',
+                            ));
+                        }
+                        break;
+                }
+
+                $values[$key] = $value;
+            }
+        }
+
+        $this->RjCashBank->_callBeforeViewCashFlow($params, $data_action);
+        $this->set(compact(
+            'values', 'data'
+        ));
+    }
 }
