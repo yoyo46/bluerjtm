@@ -320,7 +320,7 @@ class Journal extends AppModel {
         if( !empty($journals) ) {
             foreach ($journals as $key => $journal) {
                 $total = $this->filterEmptyField($journal, 'Journal', $total_field, false, 0);
-                $grandtotal = $this->filterEmptyField($data, 'Grandtotal', false, 0);
+                $grandtotal = $this->filterEmptyField($data, 'Grandtotal', $cashflow, 0);
                 $journal_coa_id = $this->filterEmptyField($journal, 'Journal', 'coa_id');
                 
                 $journal = $this->Coa->getMerge($journal, $journal_coa_id);
@@ -330,7 +330,7 @@ class Journal extends AppModel {
                 $total_cashflow = $this->filterEmptyField($totalCashflow, $journal_coa_id, false, 0);
                 
                 $data['CashFlow'][$cashflow][$journal_coa_id] = $total_cashflow + $total;
-                $data['Grandtotal'] = $grandtotal + $total;
+                $data['Grandtotal'][$cashflow] = $grandtotal + $total;
                 $data['Coas'][$cashflow][$journal_coa_id] = $coa_name;
             }
         }

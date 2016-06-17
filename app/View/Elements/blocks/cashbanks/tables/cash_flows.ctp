@@ -3,7 +3,8 @@
         $grandtotal = 0;
         $transactions = !empty($transactions)?$transactions:false;
         $dateTo = $this->Common->formatDate($dateTo, 'Y-m-d');
-        $grandtotal_cashflow = $this->Common->filterEmptyField($data, 'Grandtotal');
+        $grandtotal_in = $this->Common->filterEmptyField($data, 'Grandtotal', 'in', 0);
+        $grandtotal_out = $this->Common->filterEmptyField($data, 'Grandtotal', 'out', 0);
 
         if(!empty($values)){
             foreach ($values as $coa_id => $coa_name) {
@@ -81,7 +82,7 @@
                             ),
                         ),
                         array(
-                            $this->Html->tag('strong', $this->Common->getFormatPrice($grandtotal_cashflow, 0, 2)),
+                            $this->Html->tag('strong', $this->Common->getFormatPrice($grandtotal_in-$grandtotal_out, 0, 2)),
                             array(
                                 'style' => 'text-align: right;'.$style,
                             ),
