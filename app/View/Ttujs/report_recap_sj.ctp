@@ -99,7 +99,7 @@
         <?php 
                 if(!empty($values)){
         ?>
-        <table id="tt" class="table table-bordered table-colored">
+        <table id="tt" class="table table-bordered table-colored sorting">
             <thead>
                 <tr>
                     <?php
