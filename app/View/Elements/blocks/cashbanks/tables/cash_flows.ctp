@@ -76,7 +76,7 @@
                 echo $this->Html->tableCells(array(
                     array(
                         array(
-                            $this->Html->tag('strong', __('Grandtotal')),
+                            $this->Html->tag('strong', __('Saldo Akhir')),
                             array(
                                 'style' => 'text-align: right;'.$style,
                             ),

@@ -4,6 +4,7 @@
         $dataColumns = array(
             'noref' => array(
                 'name' => __('No. Ref'),
+                'field_model' => 'SuratJalan.id',
                 'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'noref\',width:80',
                 'align' => 'left',
@@ -11,6 +12,7 @@
             ),
             'nodoc' => array(
                 'name' => __('No. Doc'),
+                'field_model' => 'SuratJalan.nodoc',
                 'style' => 'text-align: left;vertical-align: middle;',
                 'data-options' => 'field:\'nodoc\',width:120',
                 'align' => 'left',
@@ -18,12 +20,14 @@
             ),
             'date' => array(
                 'name' => __('Tgl Diterima'),
+                'field_model' => 'SuratJalan.tgl_surat_jalan',
                 'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'date\',width:80',
                 'align' => 'center',
             ),
             'note' => array(
                 'name' => __('Keterangan'),
+                'field_model' => 'SuratJalan.note',
                 'style' => 'text-align: left;vertical-align: middle;',
                 'data-options' => 'field:\'note\',width:200',
                 'fix_column' => true,
@@ -32,6 +36,7 @@
             ),
             'nottuj' => array(
                 'name' => __('No. TTUJ'),
+                'field_model' => 'Ttuj.no_ttuj',
                 'style' => 'text-align: left;vertical-align: middle;',
                 'data-options' => 'field:\'nottuj\',width:120',
                 'align' => 'left',
@@ -39,18 +44,21 @@
             ),
             'date_ttuj' => array(
                 'name' => __('Tgl TTUJ'),
+                'field_model' => 'Ttuj.ttuj_date',
                 'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'date_ttuj\',width:80',
                 'align' => 'center',
             ),
             'nopol' => array(
                 'name' => __('Nopol'),
+                'field_model' => 'Ttuj.nopol',
                 'style' => 'text-align: left;vertical-align: middle;',
                 'data-options' => 'field:\'nopol\',width:80',
                 'align' => 'center',
             ),
             'driver' => array(
                 'name' => __('Supir'),
+                'field_model' => 'Ttuj.driver_name',
                 'style' => 'text-align: left;vertical-align: middle;',
                 'data-options' => 'field:\'driver\',width:120',
                 'align' => 'left',
@@ -58,6 +66,7 @@
             ),
             'to' => array(
                 'name' => __('Tujuan'),
+                'field_model' => 'Ttuj.to_city_name',
                 'style' => 'text-align: left;vertical-align: middle;',
                 'data-options' => 'field:\'to\',width:200',
                 'align' => 'left',
@@ -65,6 +74,7 @@
             ),
             'customer' => array(
                 'name' => __('Customer'),
+                'field_model' => 'Ttuj.customer_name',
                 'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'customer\',width:150',
                 'align' => 'left',
@@ -72,6 +82,7 @@
             ),
             'note_ttuj' => array(
                 'name' => __('Keterangan TTUJ'),
+                'field_model' => 'Ttuj.note',
                 'style' => 'text-align: left;vertical-align: middle;',
                 'data-options' => 'field:\'note_ttuj\',width:200',
                 'align' => 'left',
@@ -122,7 +133,7 @@
         <?php 
                 if(!empty($values)){
         ?>
-        <table id="tt" class="table table-bordered easyui-datagrid" singleSelect="true" data-options="
+        <table id="tt" class="table table-bordered easyui-datagrid sorting" singleSelect="true" data-options="
             singleSelect: true,
             rowStyler: function(index,row){
                 if ( index%2 == 0 ){

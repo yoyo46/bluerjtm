@@ -4111,19 +4111,23 @@ td.bold {
   font-weight: bold;
 }
 
-table.sorting thead th a {
+table.sorting thead th a,
+td > .datagrid-cell a {
   display: block;
 }
 
-table.sorting thead th a.asc {
+table.sorting thead th a.asc,
+td > .datagrid-cell a.asc {
   background: url('../img/sort_asc.png') no-repeat center right;
 }
 
-table.sorting thead th a.desc {
+table.sorting thead th a.desc,
+td > .datagrid-cell a.desc {
   background: url('../img/sort_desc.png') no-repeat center right;
 }
 
-table.sorting thead th a {
+table.sorting thead th a,
+td > .datagrid-cell a {
   background: url('../img/sort_both.png') no-repeat center right;
 }
 .auth-action-box .list-auth-action li{
