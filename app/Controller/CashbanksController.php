@@ -1905,13 +1905,12 @@ class CashbanksController extends AppController {
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
         ));
+        $params['named']['status'] = 'active';
 
         $options =  $this->User->Journal->_callRefineParams($params, $options);
         $options = $this->MkCommon->getConditionGroupBranch( $params, 'Journal', $options );
 
-        $values = $this->User->Journal->getData('all', $options, true, array(
-            'status' => 'without-void',
-        ));
+        $values = $this->User->Journal->getData('all', $options);
         $data = array();
         $dataRequest = $this->request->data;
 

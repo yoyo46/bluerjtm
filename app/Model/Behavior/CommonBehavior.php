@@ -36,4 +36,12 @@ class CommonBehavior extends ModelBehavior {
 
         return $result;
     }
+
+    function customDate(Model $model, $dateString, $format = 'd F Y', $result = '') {
+        if( !empty($dateString) && $dateString != '0000-00-00' && $dateString != '0000-00-00 00:00:00' ) {
+            $result = date($format, strtotime($dateString));
+        }
+
+        return $result;
+    }
 }

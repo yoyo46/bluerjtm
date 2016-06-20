@@ -416,7 +416,7 @@ class Asset extends AppModel {
         return $result;
     }
 
-    function doDepreciation ( $data ) {
+    function doDepreciation ( $data, $periode = false ) {
         $msg = __('Gagal melakukan depresiasi asset');
         $result = array(
             'msg' => $msg,
@@ -427,6 +427,23 @@ class Asset extends AppModel {
                 'error' => 1,
             ),
         );
+
+        if( !empty($periode) ) {
+            $periode = $this->customDate($periode, 'Y-m');
+            $this->AssetDepreciation->updateAll(array(
+                'AssetDepreciation.status'=> 0,
+            ), array(
+                'AssetDepreciation.status' => 1,
+                'DATE_FORMAT(AssetDepreciation.periode, \'%Y-%m\') >='=> $periode,
+            ));
+            $this->AssetDepreciation->Journal->updateAll(array(
+                'Journal.status'=> 0,
+            ), array(
+                'Journal.status' => 1,
+                'Journal.type' => 'depr_asset',
+                'DATE_FORMAT(Journal.date, \'%Y-%m\') >='=> $periode,
+            ));
+        }
 
         if( !empty($data) ) {
             $flag = $this->saveAll($data, array(

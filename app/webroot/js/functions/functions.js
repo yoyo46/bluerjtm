@@ -1838,7 +1838,7 @@ var datepicker = function( obj ){
     };
 
     if( min_date != 'false' ) {
-        // date_options['startDate'] = min_date;
+        date_options['startDate'] = min_date;
     }
 
     console.log(date_options);

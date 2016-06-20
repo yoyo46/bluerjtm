@@ -81,7 +81,7 @@ class CrontabController extends AppController {
     				$dataSave[] = $this->RjAsset->_callBeforeSaveDepreciation($asset, $periode, $branch_id, $user_id);
     			}
 
-	    		$result = $this->Asset->doDepreciation($dataSave);
+	    		$result = $this->Asset->doDepreciation($dataSave, $periode);
                 $status = $this->MkCommon->filterEmptyField($result, 'status');
 	            $this->MkCommon->setProcessSave($result);
 
