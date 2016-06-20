@@ -255,11 +255,18 @@ class AssetsController extends AppController {
             $grandtotal = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'grandtotal');
             $nodoc = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'nodoc');
 
-            $value = $this->User->getMerge($value, $user_id);
-            $user_position_id = $this->MkCommon->filterEmptyField($value, 'Employe', 'employe_position_id');
+            $allow_closing = $this->MkCommon->_callAllowClosing($value, 'PurchaseOrder', 'transaction_date', 'Y-m', false);
+            
+            if( !empty($allow_closing) ) {
+                $value = $this->User->getMerge($value, $user_id);
+                $user_position_id = $this->MkCommon->filterEmptyField($value, 'Employe', 'employe_position_id');
 
-            $user_otorisasi_approvals = $this->User->Employe->EmployePosition->Approval->getUserOtorisasiApproval('po', $user_position_id, $grandtotal, $id);
-            $show_approval = $this->User->Employe->EmployePosition->Approval->_callAuthApproval($user_otorisasi_approvals);
+                $user_otorisasi_approvals = $this->User->Employe->EmployePosition->Approval->getUserOtorisasiApproval('po', $user_position_id, $grandtotal, $id);
+                $show_approval = $this->User->Employe->EmployePosition->Approval->_callAuthApproval($user_otorisasi_approvals);
+            } else {
+                $show_approval = false;
+            }
+
             $data = $this->request->data;
 
             if( !empty($show_approval) && !empty($data) ) {

@@ -138,6 +138,9 @@
                         foreach ($revenues as $key => $value) {
                             $id = $this->Common->filterEmptyField($value, 'Revenue', 'id');
                             $is_manual = $this->Common->filterEmptyField($value, 'Revenue', 'is_manual');
+                            $periode = $this->Common->filterEmptyField($value, 'Revenue', 'date_revenue', false, false, array(
+                                'date' => 'Y-m',
+                            ));
                             
                             $from_city = $this->Common->filterEmptyField($value, 'FromCity', 'name');
                             $to_city = $this->Common->filterEmptyField($value, 'ToCity', 'name');
@@ -222,7 +225,15 @@
                             }
 
                             echo $this->Html->link($labelEdit, $urlEdit, array(
-                                'class' => 'btn btn-primary btn-xs'
+                                'class' => 'btn btn-primary btn-xs',
+                                'closing' => true,
+                                'periode' => $periode,
+                                'data-btn-replace' => array(
+                                    'controller' => 'revenues',
+                                    'action' => 'edit',
+                                    $id
+                                ),
+                                'data-btn-replace-label' => __('Detail'),
                             ));
                             
                             if( !in_array($value['Revenue']['transaction_status'], array( 'invoiced', 'half_invoiced' )) && !empty($value['Revenue']['status']) ){
@@ -232,7 +243,9 @@
                                     $id
                                 ), array(
                                     'class' => 'btn btn-danger btn-xs',
-                                    'title' => 'disable status'
+                                    'title' => 'disable status',
+                                    'closing' => true,
+                                    'periode' => $periode,
                                 ), __('Anda yakin ingin menghapus revenue ini?'));
                             }
                     ?>

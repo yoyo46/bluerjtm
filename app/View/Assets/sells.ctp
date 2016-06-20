@@ -59,6 +59,9 @@
                             $id = $this->Common->filterEmptyField($value, 'AssetSell', 'id');
                             $nodoc = $this->Common->filterEmptyField($value, 'AssetSell', 'nodoc');
                             $transactionDate = $this->Common->filterEmptyField($value, 'AssetSell', 'transaction_date');
+                            $periode = $this->Common->filterEmptyField($value, 'AssetSell', 'transaction_date', false, false, array(
+                                'date' => 'Y-m',
+                            ));
                             $transDate = $this->Common->filterEmptyField($value, 'AssetSell', 'transfer_date');
                             $note = $this->Common->filterEmptyField($value, 'AssetSell', 'note');
                             $grandtotal = $this->Common->filterEmptyField($value, 'AssetSell', 'grandtotal');
@@ -86,7 +89,9 @@
                                     $id,
                                     'admin' => false,
                                 ), array(
-                                    'class' => 'btn btn-primary btn-xs'
+                                    'class' => 'btn btn-primary btn-xs',
+                                    'closing' => true,
+                                    'periode' => $periode,
                                 ));
                                 $customAction .= $this->Html->link(__('Hapus'), array(
                                     'controller' => 'assets',
@@ -95,6 +100,8 @@
                                     'admin' => false,
                                 ), array(
                                     'class' => 'btn btn-danger btn-xs',
+                                    'closing' => true,
+                                    'periode' => $periode,
                                 ), __('Anda yakin ingin menghapus transaksi ini?'));
                             }
             ?>

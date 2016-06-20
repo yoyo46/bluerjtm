@@ -57,6 +57,10 @@
                             $is_canceled = $this->Common->filterEmptyField($value, 'LakaPayment', 'is_canceled');
                             $canceled_date = $this->Common->filterEmptyField($value, 'LakaPayment', 'canceled_date');
 
+                            $periode = $this->Common->filterEmptyField($value, 'LakaPayment', 'date_payment', false, false, array(
+                                'date' => 'Y-m',
+                            ));
+
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                             $total_payment = $this->Common->getFormatPrice($total_payment);
                             $date_payment = $this->Common->formatDate($date_payment, 'd/m/Y');
@@ -109,7 +113,9 @@
                                 'action' => 'payment_edit',
                                 $id,
                             ), array(
-                                'class' => 'btn btn-primary btn-xs'
+                                'class' => 'btn btn-primary btn-xs',
+                                'closing' => true,
+                                'periode' => $periode,
                             ));
                             
                             $actionDoc .= $this->Html->link(__('Void'), array(
@@ -119,7 +125,9 @@
                             ), array(
                                 'class' => 'btn btn-danger btn-xs ajaxModal',
                                 'data-action' => 'cancel_invoice',
-                                'title' => __('Void Pembayaran LAKA')
+                                'title' => __('Void Pembayaran LAKA'),
+                                'closing' => true,
+                                'periode' => $periode,
                             ));
                         }
                         echo $this->Html->tag('td', $actionDoc, array(

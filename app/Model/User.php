@@ -48,6 +48,10 @@ class User extends AppModel {
             'className' => 'LogUserLogin',
             'foreignKey' => 'user_id',
         ),
+        'CoaClosing' => array(
+            'className' => 'CoaClosing',
+            'foreignKey' => 'user_id',
+        ),
     );
     
     var $validate = array(

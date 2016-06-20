@@ -46,7 +46,10 @@
     		echo $this->Html->link(__('Kembali'), $urlRoot, array(
 				'class'=> 'btn btn-default',
 			));
-			$this->Common->_getButtonPostingUnposting( $value, 'PurchaseOrderPayment', array( 'Commit', 'Draft' ) );
+
+			if( empty($view) ) {
+				$this->Common->_getButtonPostingUnposting( $value, 'PurchaseOrderPayment', array( 'Commit', 'Draft' ) );
+			}
 	?>
 </div>
 <?php

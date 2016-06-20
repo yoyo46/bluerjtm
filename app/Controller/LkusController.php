@@ -619,6 +619,16 @@ class LkusController extends AppController {
     function DoLkuPayment($id = false, $data_local = false){
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'LkuPayment' => array(
+                        'tgl_bayar',
+                    ),
+                )
+            ));
+            $tgl_bayar = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'tgl_bayar');
+            $this->MkCommon->_callAllowClosing($data, 'LkuPayment', 'tgl_bayar');
+
             $customer_id = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'customer_id');
             $coa_id = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'coa_id');
             $transaction_status = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'transaction_status');
@@ -634,7 +644,6 @@ class LkusController extends AppController {
                 $msg = 'menambah';
             }
             
-            $data['LkuPayment']['tgl_bayar'] = $tgl_bayar = (!empty($data['LkuPayment']['tgl_bayar'])) ? $this->MkCommon->getDate($data['LkuPayment']['tgl_bayar']) : '';
             $data['LkuPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
             $total_price = 0;
 
@@ -1564,6 +1573,16 @@ class LkusController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'KsuPayment' => array(
+                        'tgl_bayar',
+                    ),
+                )
+            ));
+            $tgl_bayar = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'tgl_bayar');
+            $this->MkCommon->_callAllowClosing($data, 'KsuPayment', 'tgl_bayar');
+
             $customer_id = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'customer_id');
             $coa_id = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'coa_id');
             $transaction_status = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'transaction_status');
@@ -1579,7 +1598,6 @@ class LkusController extends AppController {
                 $msg = 'menambah';
             }
             
-            $data['KsuPayment']['tgl_bayar'] = $tgl_bayar = (!empty($data['KsuPayment']['tgl_bayar'])) ? $this->MkCommon->getDate($data['KsuPayment']['tgl_bayar']) : '';
             $data['KsuPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
             $total_price = 0;
 
@@ -1972,6 +1990,8 @@ class LkusController extends AppController {
         ));
 
         if(!empty($payments)){
+            $this->MkCommon->_callAllowClosing($payments, 'LkuPayment', 'tgl_bayar');
+
             $customer_id = $this->MkCommon->filterEmptyField($payments, 'LkuPayment', 'customer_id');
             $coa_id = $this->MkCommon->filterEmptyField($payments, 'LkuPayment', 'coa_id');
             $grandtotal = $this->MkCommon->filterEmptyField($payments, 'LkuPayment', 'grandtotal');
@@ -2081,6 +2101,8 @@ class LkusController extends AppController {
         ));
 
         if(!empty($payments)){
+            $this->MkCommon->_callAllowClosing($payments, 'KsuPayment', 'tgl_bayar');
+            
             $customer_id = $this->MkCommon->filterEmptyField($payments, 'KsuPayment', 'customer_id');
             $coa_id = $this->MkCommon->filterEmptyField($payments, 'KsuPayment', 'coa_id');
             $grandtotal = $this->MkCommon->filterEmptyField($payments, 'KsuPayment', 'grandtotal');

@@ -69,6 +69,9 @@
                             $id = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'id');
                             $nodoc = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'nodoc');
                             $transactionDate = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'transaction_date');
+                            $periode = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'transaction_date', false, false, array(
+                                'date' => 'Y-m',
+                            ));
                             $note = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'note');
                             $grandtotal = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'grandtotal');
                             $is_asset = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'is_asset');
@@ -102,7 +105,9 @@
                                     $id,
                                     'admin' => false,
                                 ), array(
-                                    'class' => 'btn btn-primary btn-xs'
+                                    'class' => 'btn btn-primary btn-xs',
+                                    'closing' => true,
+                                    'periode' => $periode,
                                 ));
                                 $customAction .= $this->Html->link(__('Hapus'), array(
                                     'controller' => 'purchases',
@@ -111,6 +116,8 @@
                                     'admin' => false,
                                 ), array(
                                     'class' => 'btn btn-danger btn-xs',
+                                    'closing' => true,
+                                    'periode' => $periode,
                                 ), __('Anda yakin ingin menghapus PO ini?'));
                             }
             ?>

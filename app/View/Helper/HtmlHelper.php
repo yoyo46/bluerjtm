@@ -30,6 +30,9 @@ App::uses('CakeResponse', 'Network');
  * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/html.html
  */
 class HtmlHelper extends AppHelper {
+	var $helpers = array(
+        'Common',
+    );
 
 /**
  * Reference to the Response object
@@ -343,65 +346,113 @@ class HtmlHelper extends AppHelper {
  * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/html.html#HtmlHelper::link
  */
 	public function link($title, $url = null, $options = array(), $confirmMessage = false) {
+		$is_show = true;
+		$lock_if_closing = Configure::read('__Site.Setting.lock_closing_bank');
+		$disallow_closing = $this->Common->filterEmptyField($options, 'closing');
 
-		/*custom*/
-		$current_branch_id = Configure::read('__Site.config_branch_id');
-		$is_show = false;
+		if( !empty($disallow_closing) && !empty( $lock_if_closing) ) {
+			$periode_document = $this->Common->filterEmptyField($options, 'periode');
 
-		if( !empty($url['controller']) ) {
-			$controllerName = $url['controller'];
-		} else if( !empty($this->params['controller']) ) {
-			$controllerName = $this->params['controller'];
-		} else {
-			$controllerName = false;
-		}
+			if( !empty($periode_document) ) {
+				$periode_closing = Configure::read('__Site.Closing.periode');
 
-		if( !empty($url['action']) ) {
-			$actionName = $url['action'];
-		} else {
-			$actionName = $this->action;
-		}
-
-		$actionName = !empty($url['action'])?$url['action']:false;
-		$_allow = !empty($options['allow'])?$options['allow']:false;
-		$_allowed_module = isset($options['allowed_module'])?$options['allowed_module']:true;
-		$group_id = Configure::read('__Site.config_group_id');
-
-		if( empty($_allowed_module) ) {
-			$allowed_module = false;
-		} else {
-			$allowed_module = Configure::read('__Site.allowed_module');
-		}
-
-		$allowAction = !empty($allowed_module[$controllerName])?$allowed_module[$controllerName]:array();
-		$allowPage = in_array($actionName, $allowAction)?true:false;
-		$allowPagination = false;
-
-		if( is_array($url) ) {
-			$allowPagination = array_key_exists('page', $url);
-		}
-
-		if( in_array($url, array('/', 'javascript:', '#')) || !empty($allowPage) || ($controllerName == 'ajax') || (!empty($url['sort']) && !empty($url['direction'])) || $allowPagination || $group_id == 1 || $_allow ){
-			$is_show = true;
-		}else if(is_array($url) && !empty($controllerName) && !empty($actionName) && !empty($current_branch_id)){
-			$allowed_module = Configure::read('__Site.config_allow_module');
-			$allowed_module = !empty($allowed_module[$current_branch_id])?$allowed_module[$current_branch_id]:array();
-
-			$allowAction = !empty($allowed_module[$controllerName]['action'])?$allowed_module[$controllerName]['action']:array();
-			$allowPage = in_array($actionName, $allowAction)?true:false;
-			$extend_name = !empty($allowed_module[$controllerName]['extends'][$actionName])?$allowed_module[$controllerName]['extends'][$actionName]:array();
-			$extend_param = !empty($url[0]) ? $url[0] : '';
-
-			if( !empty($extend_param) && !empty($extend_name) ) {
-				if( !empty($allowPage) && in_array($extend_param, $extend_name) ) {
+				if( $periode_document > $periode_closing ) {
 					$is_show = true;
+				} else {
+					$is_show = false;
 				}
-			} else if( !empty($allowPage) ){
-				$is_show = true;
+			} else {
+				$is_show = false;
 			}
 		}
 
-		/*end custom*/
+		$options = $this->Common->_callUnset(array(
+            'closing',
+            'periode',
+        ), $options);
+
+		if( $is_show ){
+			/*custom*/
+			$current_branch_id = Configure::read('__Site.config_branch_id');
+
+			if( !empty($url['controller']) ) {
+				$controllerName = $url['controller'];
+			} else if( !empty($this->params['controller']) ) {
+				$controllerName = $this->params['controller'];
+			} else {
+				$controllerName = false;
+			}
+
+			if( !empty($url['action']) ) {
+				$actionName = $url['action'];
+			} else {
+				$actionName = $this->action;
+			}
+
+			$actionName = !empty($url['action'])?$url['action']:false;
+			$_allow = !empty($options['allow'])?$options['allow']:false;
+			$_allowed_module = isset($options['allowed_module'])?$options['allowed_module']:true;
+			$group_id = Configure::read('__Site.config_group_id');
+
+			if( empty($_allowed_module) ) {
+				$allowed_module = false;
+			} else {
+				$allowed_module = Configure::read('__Site.allowed_module');
+			}
+
+			$allowAction = !empty($allowed_module[$controllerName])?$allowed_module[$controllerName]:array();
+			$allowPage = in_array($actionName, $allowAction)?true:false;
+			$allowPagination = false;
+
+			if( is_array($url) ) {
+				$allowPagination = array_key_exists('page', $url);
+			}
+
+			if( in_array($url, array('/', 'javascript:', '#')) || !empty($allowPage) || ($controllerName == 'ajax') || (!empty($url['sort']) && !empty($url['direction'])) || $allowPagination || $group_id == 1 || $_allow ){
+				$is_show = true;
+			}else if(is_array($url) && !empty($controllerName) && !empty($actionName) && !empty($current_branch_id)){
+				$allowed_module = Configure::read('__Site.config_allow_module');
+				$allowed_module = !empty($allowed_module[$current_branch_id])?$allowed_module[$current_branch_id]:array();
+
+				$allowAction = !empty($allowed_module[$controllerName]['action'])?$allowed_module[$controllerName]['action']:array();
+				$allowPage = in_array($actionName, $allowAction)?true:false;
+				$extend_name = !empty($allowed_module[$controllerName]['extends'][$actionName])?$allowed_module[$controllerName]['extends'][$actionName]:array();
+				$extend_param = !empty($url[0]) ? $url[0] : '';
+
+				if( !empty($extend_param) && !empty($extend_name) ) {
+					if( !empty($allowPage) && in_array($extend_param, $extend_name) ) {
+						$is_show = true;
+					}
+				} else if( !empty($allowPage) ){
+					$is_show = true;
+				}
+			}
+
+			/*end custom*/
+		}
+
+		if( empty($is_show) ) {
+			$btn_replace = $this->Common->filterEmptyField($options, 'data-btn-replace');
+			$btn_replace_class = $this->Common->filterEmptyField($options, 'data-btn-replace-class');
+			$btn_replace_label = $this->Common->filterEmptyField($options, 'data-btn-replace-label');
+
+			$options = $this->Common->_callUnset(array(
+	            'data-btn-replace',
+	            'data-btn-replace-class',
+	        ), $options);
+
+			if( !empty($btn_replace) ) {
+				$url = $btn_replace;
+				$is_show = true;
+
+				if( !empty($btn_replace_class) ) {
+					$options['class'] = $btn_replace_class;
+				}
+				if( !empty($btn_replace_label) ) {
+					$title = $btn_replace_label;
+				}
+			}
+		}
 
 		if($is_show){
 			$escapeTitle = true;

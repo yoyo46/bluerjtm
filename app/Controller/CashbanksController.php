@@ -103,6 +103,7 @@ class CashbanksController extends AppController {
 
             if( !empty($cashbank) ) {
                 $this->set('sub_module_title', 'Rubah Kas/Bank');
+                $this->MkCommon->_callAllowClosing($cashbank, 'CashBank', 'tgl_cash_bank');
                 $this->doCashBank( $id, $cashbank);
             } else {
                 $this->MkCommon->setCustomFlash(__('Kas/Bank tidak ditemukan.'), 'error');
@@ -146,7 +147,14 @@ class CashbanksController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
-            $data['CashBank']['tgl_cash_bank'] = $this->MkCommon->getDate($data['CashBank']['tgl_cash_bank']);
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'CashBank' => array(
+                        'tgl_cash_bank',
+                    ),
+                )
+            ));
+            $this->MkCommon->_callAllowClosing($data, 'CashBank', 'tgl_cash_bank');
 
             $coas_validate = true;
             $totalTagihanCredit = 0;
@@ -709,6 +717,8 @@ class CashbanksController extends AppController {
 
         if(!empty($locale)){
             $value = true;
+            $this->MkCommon->_callAllowClosing($locale, 'CashBank', 'tgl_cash_bank');
+
             $locale = $this->CashBank->CashBankDetail->getMerge($locale, $id);
             $receiving_cash_type = $this->MkCommon->filterEmptyField($locale, 'CashBank', 'receiving_cash_type');
             $receiver_id = $this->MkCommon->filterEmptyField($locale, 'CashBank', 'receiver_id');
@@ -852,6 +862,8 @@ class CashbanksController extends AppController {
             $grand_total = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'grand_total', 0);
             $description = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'description');
             
+            $allow_closing = $this->MkCommon->_callAllowClosing($cashbank, 'CashBank', 'tgl_cash_bank', 'Y-m', false);
+            
             $cashbank = $this->User->getMerge($cashbank, $user_id);
             $cashbank = $this->CashBank->Coa->getMerge($cashbank, $document_coa_id);
             $cashbank = $this->CashBank->CashBankDetail->getMerge($cashbank, $id, array(
@@ -861,54 +873,58 @@ class CashbanksController extends AppController {
                 ),
             ));
 
-            $user_position_id = $this->MkCommon->filterEmptyField($cashbank, 'Employe', 'employe_position_id');
+            if( !empty($allow_closing) ) {
+                $user_position_id = $this->MkCommon->filterEmptyField($cashbank, 'Employe', 'employe_position_id');
 
-            $user_otorisasi_approvals = $this->User->Employe->EmployePosition->Approval->getUserOtorisasiApproval('cash-bank', $user_position_id, $grand_total, $id);
-            $position_approval = $this->User->Employe->EmployePosition->Approval->getPositionPriority($user_otorisasi_approvals);
+                $user_otorisasi_approvals = $this->User->Employe->EmployePosition->Approval->getUserOtorisasiApproval('cash-bank', $user_position_id, $grand_total, $id);
+                $position_approval = $this->User->Employe->EmployePosition->Approval->getPositionPriority($user_otorisasi_approvals);
 
-            $position_priority = $this->MkCommon->filterEmptyField($position_approval, 'Priority');
-            $position_normal = $this->MkCommon->filterEmptyField($position_approval, 'Normal');
+                $position_priority = $this->MkCommon->filterEmptyField($position_approval, 'Priority');
+                $position_normal = $this->MkCommon->filterEmptyField($position_approval, 'Normal');
 
-            if( !empty($user_otorisasi_approvals) ) {
-                $position_otorisasi_approvals = Set::extract('/EmployePosition/id', $user_otorisasi_approvals);
-            } else {
-                $position_otorisasi_approvals = array();
-            }
-
-            $approval = $this->user_data;
-
-            $approval_employe_id = $this->MkCommon->filterEmptyField($approval, 'employe_id');
-            $approval = $this->CashBank->Employe->getMerge($approval, $approval);
-
-            $approval_position_id = $this->MkCommon->filterEmptyField($approval, 'Employe', 'employe_position_id');
-            $idx_arr_otorisasi = array_search($approval_position_id, $position_otorisasi_approvals);
-            $show_approval = false;
-
-            if( is_numeric($idx_arr_otorisasi) && !empty($user_otorisasi_approvals[$idx_arr_otorisasi]) ) {
-                $dataOtorisasiApproval = $user_otorisasi_approvals[$idx_arr_otorisasi];
-
-                $approval_detail_id = $this->MkCommon->filterEmptyField($dataOtorisasiApproval, 'ApprovalDetailPosition', 'approval_detail_id');
-                $approval_detail_position_id = $this->MkCommon->filterEmptyField($dataOtorisasiApproval, 'ApprovalDetailPosition', 'id');
-
-                $approvalDetail = $this->User->Employe->EmployePosition->Approval->ApprovalDetail->getData('first', array(
-                    'conditions' => array(
-                        'ApprovalDetail.id' => $approval_detail_id,
-                    ),
-                ));
-                $approval_id = $this->MkCommon->filterEmptyField($approvalDetail, 'ApprovalDetail', 'approval_id');
-
-                $auth = $this->CashBank->DocumentAuth->getData('first', array(
-                    'conditions' => array(
-                        'DocumentAuth.document_id' => $id,
-                        'DocumentAuth.approval_id' => $approval_id,
-                        'DocumentAuth.approval_detail_id' => $approval_detail_id,
-                        'DocumentAuth.approval_detail_position_id' => $approval_detail_position_id,
-                    ),
-                ));
-
-                if( empty($auth) ) {
-                    $show_approval = in_array($approval_position_id, $position_otorisasi_approvals)?true:false;
+                if( !empty($user_otorisasi_approvals) ) {
+                    $position_otorisasi_approvals = Set::extract('/EmployePosition/id', $user_otorisasi_approvals);
+                } else {
+                    $position_otorisasi_approvals = array();
                 }
+
+                $approval = $this->user_data;
+
+                $approval_employe_id = $this->MkCommon->filterEmptyField($approval, 'employe_id');
+                $approval = $this->CashBank->Employe->getMerge($approval, $approval);
+
+                $approval_position_id = $this->MkCommon->filterEmptyField($approval, 'Employe', 'employe_position_id');
+                $idx_arr_otorisasi = array_search($approval_position_id, $position_otorisasi_approvals);
+                $show_approval = false;
+
+                if( is_numeric($idx_arr_otorisasi) && !empty($user_otorisasi_approvals[$idx_arr_otorisasi]) ) {
+                    $dataOtorisasiApproval = $user_otorisasi_approvals[$idx_arr_otorisasi];
+
+                    $approval_detail_id = $this->MkCommon->filterEmptyField($dataOtorisasiApproval, 'ApprovalDetailPosition', 'approval_detail_id');
+                    $approval_detail_position_id = $this->MkCommon->filterEmptyField($dataOtorisasiApproval, 'ApprovalDetailPosition', 'id');
+
+                    $approvalDetail = $this->User->Employe->EmployePosition->Approval->ApprovalDetail->getData('first', array(
+                        'conditions' => array(
+                            'ApprovalDetail.id' => $approval_detail_id,
+                        ),
+                    ));
+                    $approval_id = $this->MkCommon->filterEmptyField($approvalDetail, 'ApprovalDetail', 'approval_id');
+
+                    $auth = $this->CashBank->DocumentAuth->getData('first', array(
+                        'conditions' => array(
+                            'DocumentAuth.document_id' => $id,
+                            'DocumentAuth.approval_id' => $approval_id,
+                            'DocumentAuth.approval_detail_id' => $approval_detail_id,
+                            'DocumentAuth.approval_detail_position_id' => $approval_detail_position_id,
+                        ),
+                    ));
+
+                    if( empty($auth) ) {
+                        $show_approval = in_array($approval_position_id, $position_otorisasi_approvals)?true:false;
+                    }
+                }
+            } else {
+                $show_approval = false;
             }
 
             if( !empty($this->request->data) ){

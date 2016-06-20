@@ -6,7 +6,7 @@
 		$this->Html->addCrumb($sub_module_title);
 		
         $data = $this->request->data;
-		$data_local = !empty($data_local)?$data_local:false;
+		$allow_closing = !empty($allow_closing)?$allow_closing:false;
         $revenueDetail = $this->Common->filterEmptyField($data, 'RevenueDetail');
 
 		echo $this->Form->create('Revenue', array(
@@ -149,7 +149,9 @@
 				'class'=> 'btn btn-default',
 			));
 
-			$this->Common->_getButtonPostingUnposting( $data_local );
+    		if( !empty($allow_closing) ) {
+				$this->Common->_getButtonPostingUnposting( $data_local );
+			}
 	?>
 </div>
 <?php

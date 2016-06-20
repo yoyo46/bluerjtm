@@ -590,7 +590,15 @@ class LakasController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
-            $data['LakaPayment']['date_payment'] = !empty($data['LakaPayment']['date_payment']) ? $this->MkCommon->getDate($data['LakaPayment']['date_payment']) : '';
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'LakaPayment' => array(
+                        'date_payment',
+                    ),
+                )
+            ));
+            $this->MkCommon->_callAllowClosing($data, 'LakaPayment', 'date_payment');
+
             $data['LakaPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             $dataAmount = $this->MkCommon->filterEmptyField($data, 'LakaPaymentDetail', 'amount');
@@ -652,8 +660,9 @@ class LakasController extends AppController {
                     $laka_id = $this->MkCommon->filterEmptyField($val, 'LakaPaymentDetail', 'laka_id');
                     $amount = $this->MkCommon->filterEmptyField($val, 'LakaPaymentDetail', 'amount');
 
-                    $this->request->data = $this->LakaPayment->LakaPaymentDetail->Laka->getMerge($this->request->data, $laka_id);
+                    $laka = $this->LakaPayment->LakaPaymentDetail->Laka->getMerge(array(), $laka_id);
 
+                    $this->request->data['Laka'][$key] = $laka;
                     $this->request->data['LakaPaymentDetail']['amount'][$key] = $amount;
                     $this->request->data['LakaPaymentDetail']['laka_id'][$key] = $laka_id;
                 }
@@ -841,6 +850,8 @@ class LakasController extends AppController {
         ));
 
         if( !empty($value) ){
+            $this->MkCommon->_callAllowClosing($value, 'LakaPayment', 'date_payment');
+            
             if(!empty($this->request->data)){
                 $data = $this->request->data;
                 $data = $this->MkCommon->dataConverter($data, array(

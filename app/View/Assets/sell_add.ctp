@@ -42,13 +42,17 @@
 </div>
 <?php     	
         echo $this->element('blocks/assets/tables/sells/detail');
+
 ?>
 <div class="box-footer text-center action">
 	<?php
     		echo $this->Html->link(__('Kembali'), $urlRoot, array(
 				'class'=> 'btn btn-default',
 			));
-			$this->Common->_getButtonPostingUnposting( $value, 'AssetSell', array( 'Commit', 'Draft' ) );
+        	
+        	if( empty($view) ) {
+				$this->Common->_getButtonPostingUnposting( $value, 'AssetSell', array( 'Commit', 'Draft' ) );
+			}
 	?>
 </div>
 <?php

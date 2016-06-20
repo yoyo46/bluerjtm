@@ -150,7 +150,8 @@
                         <?php
                                 echo $this->Form->input('LakaPaymentDetail.amount.'.$key,array(
                                     'label'=> false,
-                                    'class'=>'form-control input_price text-right sisa-amount',
+                                    'class'=>'form-control input_price_coma text-right sisa-amount',
+                                    'data-decimal' => '0',
                                     'required' => false,
                                     'value' => $last_paid,
                                 ));

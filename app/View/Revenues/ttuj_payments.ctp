@@ -71,6 +71,9 @@
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                             $transaction_status = $this->Common->filterEmptyField($value, 'TtujPayment', 'transaction_status');
                             $customStatus = $this->Revenue->_callStatusCustom($value, 'TtujPayment');
+                            $periode = $this->Common->filterEmptyField($value, 'TtujPayment', 'date_payment', false, false, array(
+                                'date' => 'Y-m',
+                            ));
             ?>
             <tr>
                 <?php 
@@ -110,7 +113,9 @@
                                     $action_type,
                                     $id,
                                 ), array(
-                                    'class' => 'btn btn-primary btn-xs'
+                                    'class' => 'btn btn-primary btn-xs',
+                                    'closing' => true,
+                                    'periode' => $periode,
                                 ));
                             }
                             
@@ -122,7 +127,9 @@
                             ), array(
                                 'class' => 'btn btn-danger btn-xs ajaxModal',
                                 'data-action' => 'cancel_invoice',
-                                'title' => __('Void Pembayaran Uang Jalan')
+                                'title' => __('Void Pembayaran Uang Jalan'),
+                                'closing' => true,
+                                'periode' => $periode,
                             ));
                         }
                         echo $this->Html->tag('td', $actionDoc, array(

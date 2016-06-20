@@ -216,6 +216,10 @@
                     if(!empty($ttujs)){
                         foreach ($ttujs as $key => $value) {
                             $id = $value['Ttuj']['id'];
+                            $periode = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date', false, false, array(
+                                'date' => 'Y-m',
+                            ));
+
                             $is_draft = $this->Common->filterEmptyField($value, 'Ttuj', 'is_draft');
                             $status = $this->Common->filterEmptyField($value, 'Ttuj', 'status');
                             $completed = $this->Common->filterEmptyField($value, 'Ttuj', 'completed');
@@ -364,7 +368,9 @@
                                         $active_menu,
                                         $id
                                     ), array(
-                                        'class' => 'btn btn-primary btn-xs'
+                                        'class' => 'btn btn-primary btn-xs',
+                                        'closing' => true,
+                                        'periode' => $periode,
                                     ));
                                 }
 
@@ -375,7 +381,9 @@
                                     $active_menu
                                 ), array(
                                     'class' => 'btn btn-danger btn-xs',
-                                    'title' => 'disable status brand'
+                                    'title' => 'disable status brand',
+                                    'closing' => true,
+                                    'periode' => $periode,
                                 ), __('Apakah Anda yakin akan menghapus data ini?'));
                             } else {
                                 if( !empty($allowEdit) ) {
@@ -386,6 +394,8 @@
                                     ), array(
                                         'class' => 'btn btn-primary btn-xs',
                                         'allowed_module' => !empty($is_draft)?true:false,
+                                        'closing' => true,
+                                        'periode' => $periode,
                                     ));
                                 }
 
@@ -396,7 +406,9 @@
                                         $id
                                     ), array(
                                         'class' => 'btn btn-danger btn-xs',
-                                        'title' => 'disable status brand'
+                                        'title' => 'disable status brand',
+                                        'closing' => true,
+                                        'periode' => $periode,
                                     ), __('Apakah Anda yakin akan membatalkan data ini?'));
                                 }
 

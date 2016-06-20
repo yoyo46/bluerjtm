@@ -1831,10 +1831,19 @@ var datepicker = function( obj ){
     }
 
     $('.datepicker.datepicker-dropdown').remove();
-    obj.datepicker({
+    var min_date = $.checkUndefined($('body').attr('datapicker-mindate'), 'false');
+    var date_options = {
         format: 'dd/mm/yyyy',
         todayHighlight: true,
-    });
+    };
+
+    if( min_date != 'false' ) {
+        // date_options['startDate'] = min_date;
+    }
+
+    console.log(date_options);
+
+    obj.datepicker(date_options);
 }
 
 var timepicker = function( obj ){
@@ -2727,6 +2736,7 @@ function check_option(self){
 
                 $.inputPrice({
                     obj: $('.child-'+id+' .input_price'),
+                    objComa: $('.child-'+id+' .input_price_coma'),
                 });
                 $.inputNumber({
                     obj: $('.child-'+id+' .input_number'),

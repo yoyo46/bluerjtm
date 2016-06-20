@@ -156,6 +156,7 @@ class RjAssetComponent extends Component {
                     ),
                 ),
             ));
+            $this->MkCommon->_callAllowClosing($data, 'PurchaseOrder', 'transaction_date');
 
             $values = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderAsset', 'name');
             $transaction_date = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'transaction_date');
@@ -296,6 +297,7 @@ class RjAssetComponent extends Component {
                     ),
                 ),
             ));
+            $this->MkCommon->_callAllowClosing($data, 'AssetSell', 'transaction_date');
 
             $values = $this->MkCommon->filterEmptyField($data, 'AssetSellDetail', 'asset_id');
             $transaction_status = $this->MkCommon->filterEmptyField($data, 'AssetSell', 'transaction_status');
@@ -436,7 +438,7 @@ class RjAssetComponent extends Component {
                 'user_id' => $user_id,
                 'title' => $journal_title,
                 'type' => 'depr_asset',
-                'date' => date('Y-m-d'),
+                'date' => $periode,
             );
 
             if( $nilai_buku < 0 ) {

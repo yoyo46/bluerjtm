@@ -60,6 +60,7 @@
 								foreach ($data['Laka'] as $key => $value) {
 									$id = $this->Common->filterEmptyField($value, 'Laka', 'id');
 					                $nopol = $this->Common->filterEmptyField($value, 'Laka', 'no_pol');
+					                $nopol = $this->Common->filterEmptyField($value, 'Laka', 'nopol', $nopol);
 					                $data_type = $this->Common->filterEmptyField($value, 'Laka', 'data_type');
 					                $to_date = $this->Common->filterEmptyField($value, 'Laka', 'to_date');
 					                $price = $this->Common->filterEmptyField($value, 'Laka', 'price');

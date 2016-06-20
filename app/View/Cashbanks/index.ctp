@@ -81,6 +81,9 @@
                             $id = $this->Common->filterEmptyField($value, 'CashBank', 'id');
                             $nodoc = $this->Common->filterEmptyField($value, 'CashBank', 'nodoc');
                             $tgl = $this->Common->filterEmptyField($value, 'CashBank', 'tgl_cash_bank');
+                            $periode = $this->Common->filterEmptyField($value, 'CashBank', 'tgl_cash_bank', false, false, array(
+                                'date' => 'Y-m',
+                            ));
                             $type = $this->Common->filterEmptyField($value, 'CashBank', 'receiving_cash_type');
                             $grand_total = $this->Common->filterEmptyField($value, 'CashBank', 'grand_total');
                             $description = $this->Common->filterEmptyField($value, 'CashBank', 'description');
@@ -121,7 +124,16 @@
                                     $id,
                                 ), array(
                                     'escape' => false,
-                                    'class' => 'btn btn-info btn-xs'
+                                    'class' => 'btn btn-info btn-xs',
+                                    'closing' => true,
+                                    'periode' => $periode,
+                                    'data-btn-replace' => array(
+                                        'controller' => 'cashbanks',
+                                        'action' => 'detail',
+                                        $id
+                                    ),
+                                    'data-btn-replace-class' => 'btn btn-primary btn-xs',
+                                    'data-btn-replace-label' => __('Detail'),
                                 ));
                             } else {
                                 $link = $this->Html->link('Detail', array(
@@ -142,7 +154,9 @@
                                     $id
                                 ), array(
                                     'escape' => false,
-                                    'class' => 'btn btn-danger btn-xs'
+                                    'class' => 'btn btn-danger btn-xs',
+                                    'closing' => true,
+                                    'periode' => $periode,
                                 ), __('Anda yakin ingin void data ini?'));
                             }
 

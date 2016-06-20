@@ -212,6 +212,7 @@ class RjPurchaseComponent extends Component {
                     ),
                 ),
             ));
+            $this->MkCommon->_callAllowClosing($data, 'PurchaseOrderPayment', 'transaction_date');
 
             $values = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPaymentDetail', 'purchase_order_id');
             $transaction_date = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPayment', 'transaction_date');

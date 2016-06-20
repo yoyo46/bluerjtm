@@ -53,6 +53,9 @@
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                             $transaction_status = $this->Common->filterEmptyField($value, 'InvoicePayment', 'transaction_status');
                             $customStatus = $this->Revenue->_callStatusCustom($value, 'InvoicePayment');
+                            $periode = $this->Common->filterEmptyField($value, 'InvoicePayment', 'date_payment', false, false, array(
+                                'date' => 'Y-m',
+                            ));
             ?>
             <tr>
                 <td><?php echo $noref;?></td>
@@ -90,7 +93,9 @@
                                         'action' => 'invoice_payment_edit',
                                         $id
                                     ), array(
-                                        'class' => 'btn btn-primary btn-xs'
+                                        'class' => 'btn btn-primary btn-xs',
+                                        'closing' => true,
+                                        'periode' => $periode,
                                     ));
                                 }
                                 
@@ -99,7 +104,9 @@
                                     'action' => 'invoice_payment_delete',
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-danger btn-xs'
+                                    'class' => 'btn btn-danger btn-xs',
+                                    'closing' => true,
+                                    'periode' => $periode,
                                 ), __('Apakah Anda yakin ingin mengbatalkan pembayaran invoice ini?'));
                             }
                     ?>

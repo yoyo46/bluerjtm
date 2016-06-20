@@ -141,7 +141,9 @@ class TrucksController extends AppController {
                 $value = $this->Truck->TruckCategory->getMerge($value, $truck_category_id);
                 $value = $this->Truck->TruckBrand->getMerge($value, $truck_brand_id);
                 $value = $this->Truck->Company->getMerge($value, $company_id);
-                $value = $this->Laka->getMerge($id, $value);
+                $value = $this->Laka->getMergeTruck($id, $value, array(
+                    'Laka.completed' => 0,
+                ));
                 $value = $this->Truck->Ttuj->getTruckStatus($value, $id);
 
                 $trucks[$key] = $value;
@@ -5656,6 +5658,15 @@ class TrucksController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'DocumentPayment' => array(
+                        'date_payment',
+                    ),
+                )
+            ));
+            $this->MkCommon->_callAllowClosing($data, 'DocumentPayment', 'date_payment');
+
             $data['DocumentPayment']['date_payment'] = !empty($data['DocumentPayment']['date_payment']) ? $this->MkCommon->getDate($data['DocumentPayment']['date_payment']) : '';
             $data['DocumentPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
 
@@ -5945,6 +5956,8 @@ class TrucksController extends AppController {
         ));
 
         if( !empty($value) ){
+            $this->MkCommon->_callAllowClosing($value, 'DocumentPayment', 'date_payment');
+            
             if(!empty($this->request->data)){
                 $data = $this->request->data;
                 $data = $this->MkCommon->dataConverter($data, array(

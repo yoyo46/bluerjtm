@@ -419,13 +419,19 @@ class LeasingsController extends AppController {
     }
 
     function _calDataIndexConvertion ( $data, $reverse = false ) {
-        return $this->MkCommon->dataConverter($data, array(
+        $data =  $this->MkCommon->dataConverter($data, array(
             'date' => array(
                 'LeasingPayment' => array(
                     'payment_date',
                 ),
             )
         ), $reverse);
+
+        if( empty($reverse) && !empty($data) ) {
+            $this->MkCommon->_callAllowClosing($data, 'LeasingPayment', 'payment_date');
+        }
+
+        return $data;
     }
 
     function _callDataSupport () {
@@ -562,6 +568,8 @@ class LeasingsController extends AppController {
         ));
 
         if( !empty($value) ){
+            $this->MkCommon->_callAllowClosing($value, 'LeasingPayment', 'payment_date');
+            
             $value = $this->Leasing->LeasingPayment->LeasingPaymentDetail->getMerge($value, $id);
             $no_doc = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'no_doc');
             $coa_id = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'coa_id');

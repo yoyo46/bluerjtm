@@ -53,6 +53,9 @@
                             $nodoc = $this->Common->filterEmptyField($value, 'DocumentPayment', 'nodoc');
                             $total_payment = $this->Common->filterEmptyField($value, 'DocumentPayment', 'total_payment');
                             $date_payment = $this->Common->filterEmptyField($value, 'DocumentPayment', 'date_payment');
+                            $periode = $this->Common->filterEmptyField($value, 'DocumentPayment', 'date_payment', false, false, array(
+                                'date' => 'Y-m',
+                            ));
                             $status = $this->Common->filterEmptyField($value, 'DocumentPayment', 'status');
                             $is_canceled = $this->Common->filterEmptyField($value, 'DocumentPayment', 'is_canceled');
                             $canceled_date = $this->Common->filterEmptyField($value, 'DocumentPayment', 'canceled_date');
@@ -109,7 +112,9 @@
                                 'action' => 'document_payment_edit',
                                 $id,
                             ), array(
-                                'class' => 'btn btn-primary btn-xs'
+                                'class' => 'btn btn-primary btn-xs',
+                                'closing' => true,
+                                'periode' => $periode,
                             ));
                             
                             $actionDoc .= $this->Html->link(__('Void'), array(
@@ -119,7 +124,9 @@
                             ), array(
                                 'class' => 'btn btn-danger btn-xs ajaxModal',
                                 'data-action' => 'cancel_invoice',
-                                'title' => __('Void Pembayaran Surat-surat Truk')
+                                'title' => __('Void Pembayaran Surat-surat Truk'),
+                                'closing' => true,
+                                'periode' => $periode,
                             ));
                         }
                         echo $this->Html->tag('td', $actionDoc, array(

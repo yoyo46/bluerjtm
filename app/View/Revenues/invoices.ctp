@@ -82,6 +82,9 @@
                         foreach ($invoices as $key => $value) {
                             $id = $value['Invoice']['id'];
                             $company = $this->Common->filterEmptyField($value, 'Company', 'name', 'RJTM');
+                            $periode = $this->Common->filterEmptyField($value, 'Invoice', 'invoice_date', false, false, array(
+                                'date' => 'Y-m',
+                            ));
             ?>
             <tr>
                 <td><?php echo $value['Invoice']['no_invoice'];?></td>
@@ -124,7 +127,9 @@
                                     ), array(
                                         'class' => 'btn btn-danger btn-xs ajaxModal',
                                         'data-action' => 'cancel_invoice',
-                                        'title' => __('Void Data Invoice')
+                                        'title' => __('Void Data Invoice'),
+                                        'closing' => true,
+                                        'periode' => $periode,
                                     ));
                                 }
                             }

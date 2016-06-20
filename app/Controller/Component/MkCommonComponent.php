@@ -1819,39 +1819,6 @@ class MkCommonComponent extends Component {
         // }
     }
 
-    function _callSettingGeneral ( $modelName = false, $labelName = false, $request = true ) {
-        $data = array();
-
-        if( !empty($modelName) ) {
-            $this->SettingGeneral = ClassRegistry::init('SettingGeneral'); 
-            $conditions = false;
-
-            if( !empty($labelName) ) {
-                $conditions['SettingGeneral.name'] = $labelName;
-            }
-
-            $values = $this->SettingGeneral->find('all', array(
-                'conditions' => $conditions,
-            ));
-            
-
-            if( !empty($values) ) {
-                foreach ($values as $key => $value) {
-                    $lbl = $this->filterEmptyField($value, 'SettingGeneral', 'name');
-                    $value = $this->filterEmptyField($value, 'SettingGeneral', 'value');
-
-                    if( !isset($this->controller->request->data[$modelName][$lbl]) ) {
-                        $data[$modelName][$lbl] = $this->controller->request->data[$modelName][$lbl] = $value;
-                    }
-                }
-            }
-        }
-
-        if( empty($request) ) {
-            return $data;
-        }
-    }
-
     function _callPercentAmount ( $total, $percent ) {
         return $total * ($percent/100);
     }
@@ -2177,6 +2144,63 @@ class MkCommonComponent extends Component {
                     ));
                 }
                 break;
+        }
+    }
+
+    function _callDataClosing () {
+        $this->SettingGeneral = ClassRegistry::init('SettingGeneral'); 
+        $value = $this->SettingGeneral->find('first', array(
+            'conditions' => array(
+                'SettingGeneral.name' => 'lock_closing_bank',
+            ),
+        ));
+
+        $lbl = $this->filterEmptyField($value, 'SettingGeneral', 'name');
+        $val = $this->filterEmptyField($value, 'SettingGeneral', 'value');
+
+        if( !empty($val) ) {
+            $closing = $this->controller->User->CoaClosing->getData('first', array(
+                'order' => array(
+                    'CoaClosing.periode' => 'DESC',
+                    'CoaClosing.id' => 'DESC',
+                ),
+            ));
+
+            $periode = $this->filterEmptyField($closing, 'CoaClosing', 'periode', false, array(
+                'date' => 'Y-m',
+            ));
+
+            if( !empty($periode) ) {
+                $min_date = date('01/m/Y', strtotime($periode. ' + 1 Month'));
+                Configure::write('__Site.Closing.min_date', $min_date);
+            }
+
+            Configure::write('__Site.Closing.periode', $periode);
+        }
+
+        Configure::write(sprintf('__Site.Setting.%s', $lbl), $val);
+    }
+
+    function _callAllowClosing ( $data, $modelName, $fieldName = false, $format = 'Y-m', $redirect = true ) {
+        $periode_document = $this->filterEmptyField($data, $modelName, $fieldName, false, array(
+            'date' => 'Y-m',
+        ));
+        $lock_if_closing = Configure::read('__Site.Setting.lock_closing_bank');
+
+        if( !empty($lock_if_closing) && !empty($periode_document) ) {
+            $periode_closing = Configure::read('__Site.Closing.periode');
+
+            if( $periode_document > $periode_closing ) {
+                return true;
+            } else {
+                if( !empty($redirect) ) {
+                    $this->redirectReferer(__('Transaksi utk periode tersebut telah Closing.'), 'error', '/');
+                } else {
+                    return false;
+                }
+            }
+        } else {
+            return true;
         }
     }
 }

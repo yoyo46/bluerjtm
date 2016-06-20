@@ -83,6 +83,9 @@
                             $id = $this->Common->filterEmptyField($value, 'LeasingPayment', 'id');
                             $no_doc = $this->Common->filterEmptyField($value, 'LeasingPayment', 'no_doc');
                             $payment_date = $this->Common->filterEmptyField($value, 'LeasingPayment', 'payment_date');
+                            $periode = $this->Common->filterEmptyField($value, 'LeasingPayment', 'payment_date', false, false, array(
+                                'date' => 'Y-m',
+                            ));
                             $grandtotal = $this->Common->filterEmptyField($value, 'LeasingPayment', 'grandtotal');
                             $status = $this->Common->filterEmptyField($value, 'LeasingPayment', 'status');
                             $rejected = $this->Common->filterEmptyField($value, 'LeasingPayment', 'rejected');
@@ -138,7 +141,9 @@
                                     'action' => 'payment_edit',
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-primary btn-xs'
+                                    'class' => 'btn btn-primary btn-xs',
+                                    'closing' => true,
+                                    'periode' => $periode,
                                 ));
 
                                 echo $this->Html->link('Void', array(
@@ -148,7 +153,9 @@
                                 ), array(
                                     'class' => 'btn btn-danger btn-xs ajaxModal',
                                     'data-action' => 'submit_form',
-                                    'title' => __('Void Pembayaran Leasing')
+                                    'title' => __('Void Pembayaran Leasing'),
+                                    'closing' => true,
+                                    'periode' => $periode,
                                 ));
                             }
                     ?>

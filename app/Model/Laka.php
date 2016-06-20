@@ -241,15 +241,15 @@ class Laka extends AppModel {
         return $result;
     }
 
-    function getMerge( $truck_id, $data ){
+    function getMerge( $data, $id ){
         if( empty($data['Laka'])){
             $data_merge = $this->getData('first', array(
                 'conditions' => array(
-                    'Laka.truck_id' => $truck_id,
-                    'Laka.completed' => 0,
+                    'Laka.id' => $id,
                 ),
             ), array(
                 'branch' => false,
+                'status' => 'all',
             ));
 
             if(!empty($data_merge)){

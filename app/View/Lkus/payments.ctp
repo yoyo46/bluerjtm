@@ -65,6 +65,9 @@
                         foreach ($payments as $key => $value) {
                             $id = $value['LkuPayment']['id'];
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                            $periode = $this->Common->filterEmptyField($value, 'LkuPayment', 'tgl_bayar', false, false, array(
+                                'date' => 'Y-m',
+                            ));
                             
                             $transaction_status = $this->Common->filterEmptyField($value, 'LkuPayment', 'transaction_status');
 
@@ -97,7 +100,9 @@
                                         'action' => 'payment_edit',
                                         $id
                                     ), array(
-                                        'class' => 'btn btn-primary btn-xs'
+                                        'class' => 'btn btn-primary btn-xs',
+                                        'closing' => true,
+                                        'periode' => $periode,
                                     ));
                                 }
 
@@ -106,7 +111,9 @@
                                     'action' => 'payment_delete',
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-danger btn-xs'
+                                    'class' => 'btn btn-danger btn-xs',
+                                    'closing' => true,
+                                    'periode' => $periode,
                                 ), __('Apakah Anda yakin ingin pembayaran ini?'));
                             }
                     ?>

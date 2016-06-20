@@ -56,6 +56,9 @@
                             $id = $this->Common->filterEmptyField($value, 'PurchaseOrderPayment', 'id');
                             $nodoc = $this->Common->filterEmptyField($value, 'PurchaseOrderPayment', 'nodoc');
                             $transactionDate = $this->Common->filterEmptyField($value, 'PurchaseOrderPayment', 'transaction_date');
+                            $periode = $this->Common->filterEmptyField($value, 'PurchaseOrderPayment', 'transaction_date', false, false, array(
+                                'date' => 'Y-m',
+                            ));
                             $note = $this->Common->filterEmptyField($value, 'PurchaseOrderPayment', 'note');
                             $grandtotal = $this->Common->filterEmptyField($value, 'PurchaseOrderPayment', 'grandtotal');
                             $transaction_status = $this->Common->filterEmptyField($value, 'PurchaseOrderPayment', 'transaction_status');
@@ -82,7 +85,9 @@
                                     $id,
                                     'admin' => false,
                                 ), array(
-                                    'class' => 'btn btn-primary btn-xs'
+                                    'class' => 'btn btn-primary btn-xs',
+                                    'closing' => true,
+                                    'periode' => $periode,
                                 ));
                             }
                             if( !in_array($transaction_status, array( 'void' )) ) {
@@ -93,6 +98,8 @@
                                 ), array(
                                     'class' => 'btn btn-danger btn-xs ajaxModal',
                                     'data-action' => 'submit_form',
+                                    'closing' => true,
+                                    'periode' => $periode,
                                     'title' => __('Void Pembayaran PO')
                                 ));
                             }

@@ -439,6 +439,16 @@ class RevenuesController extends AppController {
 
         if( !empty($this->request->data) && $is_draft ){
             $data = $this->request->data;
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'Ttuj' => array(
+                        'ttuj_date',
+                    ),
+                )
+            ));
+            $this->MkCommon->_callAllowClosing($data, 'Ttuj', 'ttuj_date');
+
+            $ttuj_date = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'ttuj_date');
             $is_draft = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'is_draft');
             $redirectUrl = array(
                 'controller' => 'revenues',
@@ -532,7 +542,6 @@ class RevenuesController extends AppController {
 
             $data['Ttuj']['customer_name'] = !empty($customer['Customer']['customer_name_code'])?$customer['Customer']['customer_name_code']:'';
             $data['Ttuj']['uang_jalan_id'] = !empty($uangJalan['UangJalan']['id'])?$uangJalan['UangJalan']['id']:false;
-            $data['Ttuj']['ttuj_date'] = $ttuj_date = $this->MkCommon->getDate($data['Ttuj']['ttuj_date']);
             $data['Ttuj']['commission'] = !empty($data['Ttuj']['commission'])?$this->MkCommon->convertPriceToString($data['Ttuj']['commission'], 0):0;
             $data['Ttuj']['commission_extra'] = $this->MkCommon->convertPriceToString($data['Ttuj']['commission_extra'], 0);
             $data['Ttuj']['commission_per_unit'] = !empty($data['Ttuj']['commission_per_unit'])?$data['Ttuj']['commission_per_unit']:0;
@@ -794,10 +803,6 @@ class RevenuesController extends AppController {
                                         $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'id');
                                         $tarifDefault = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity']);
 
-                                        // $dataSetting = $this->MkCommon->_callSettingGeneral('Revenue', array( 'pph', 'ppn' ), false);
-                                        // $dataSetting = $this->MkCommon->filterEmptyField($dataSetting, 'Revenue', false, array());
-
-                                        // $dataRevenue['Revenue'] = array_merge($dataSetting, array(
                                         $dataRevenue['Revenue'] = array(
                                             'id' => $revenue_id,
                                             'ttuj_id' => $document_id,
@@ -1268,6 +1273,8 @@ class RevenuesController extends AppController {
         ));
 
         if($locale){
+            $this->MkCommon->_callAllowClosing($locale, 'Ttuj', 'ttuj_date');
+
             $document_no = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'no_ttuj');
             $truck_id = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'truck_id');
             $driver_name = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'driver_name');
@@ -3482,6 +3489,7 @@ class RevenuesController extends AppController {
     function doRevenue($id = false, $data_local = false, $action_type = false){
         $this->loadModel('City');
         $data_revenue_detail = array();
+        $allow_closing = true;
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -3491,13 +3499,18 @@ class RevenuesController extends AppController {
                         'ppn_total',
                         'pph_total',
                     ),
-                )
+                ),
+                'date' => array(
+                    'Revenue' => array(
+                        'date_revenue',
+                    ),
+                ),
             ));
+            $this->MkCommon->_callAllowClosing($data, 'Revenue', 'date_revenue');
 
             $dataTtuj = $this->MkCommon->filterEmptyField($data, 'Ttuj');
             $ttuj_id = $this->MkCommon->filterEmptyField($data, 'Revenue', 'ttuj_id');
 
-            $data['Revenue']['date_revenue'] = $this->MkCommon->getDate($data['Revenue']['date_revenue']);
             $data['Revenue']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             if( $action_type == 'manual' ) {
@@ -3530,14 +3543,13 @@ class RevenuesController extends AppController {
         }else if($id && $data_local){
             $this->request->data = $data_local;
             $transaction_status = $this->MkCommon->filterEmptyField($data_local, 'Revenue', 'transaction_status');
+            $allow_closing = $this->MkCommon->_callAllowClosing($data_local, 'Revenue', 'date_revenue', 'Y-m', false);
 
             if( !empty($this->request->data['Revenue']['date_revenue']) && $this->request->data['Revenue']['date_revenue'] != '0000-00-00' ) {
                 $this->request->data['Revenue']['date_revenue'] = date('d/m/Y', strtotime($this->request->data['Revenue']['date_revenue']));
             } else {
                 $this->request->data['Revenue']['date_revenue'] = '';
             }
-        } else {
-            // $this->MkCommon->_callSettingGeneral('Revenue', array( 'pph', 'ppn' ));
         }
 
         $ttuj_id = !empty($data_local['Ttuj']['id'])?$data_local['Ttuj']['id']:false;
@@ -3576,7 +3588,8 @@ class RevenuesController extends AppController {
         $this->MkCommon->_layout_file('select');
         $this->set(compact(
             'toCities', 'groupMotors', 'tarifTruck',
-            'id', 'data_local', 'trucks', 'tarif'
+            'id', 'data_local', 'trucks', 'tarif',
+            'allow_closing'
         ));
         $this->set('active_menu', 'revenues');
 
@@ -3601,6 +3614,8 @@ class RevenuesController extends AppController {
         ));
 
         if($locale){
+            $this->MkCommon->_callAllowClosing($locale, 'Revenue', 'date_revenue');
+
             $date_revenue = $this->MkCommon->filterEmptyField($locale, 'Revenue', 'date_revenue');
             $no_doc = $this->MkCommon->filterEmptyField($locale, 'Revenue', 'no_doc');
             $customer_id = $this->MkCommon->filterEmptyField($locale, 'Revenue', 'customer_id');
@@ -3940,7 +3955,17 @@ class RevenuesController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
-            $customer_id = !empty($data['Invoice']['customer_id'])?$data['Invoice']['customer_id']:false;
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'Invoice' => array(
+                        'invoice_date',
+                    ),
+                )
+            ));
+            $this->MkCommon->_callAllowClosing($data, 'Invoice', 'invoice_date');
+
+            $customer_id = $this->MkCommon->filterEmptyField($data, 'Invoice', 'customer_id');
+            $invoice_date = $this->MkCommon->filterEmptyField($data, 'Invoice', 'invoice_date');
 
             if($id && $data_local){
                 $this->Invoice->id = $id;
@@ -3953,7 +3978,6 @@ class RevenuesController extends AppController {
 
             $data['Invoice']['period_from'] = $this->MkCommon->getDate($data['Invoice']['period_from']);
             $data['Invoice']['period_to'] = $this->MkCommon->getDate($data['Invoice']['period_to']);
-            $data['Invoice']['invoice_date'] = $invoice_date = $this->MkCommon->getDate($data['Invoice']['invoice_date']);
             $data['Invoice']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             $customer = $this->Ttuj->Customer->getData('first', array(
@@ -4753,9 +4777,16 @@ class RevenuesController extends AppController {
                         'ppn_total',
                         'pph_total',
                     ),
-                )
+                ),
+                'date' => array(
+                    'InvoicePayment' => array(
+                        'date_payment',
+                    ),
+                ),
             ));
+            $this->MkCommon->_callAllowClosing($data, 'InvoicePayment', 'date_payment');
 
+            $date_payment = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'date_payment');
             $customer_id = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'customer_id');
             $coa_id = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'coa_id');
             $transaction_status = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'transaction_status');
@@ -4776,7 +4807,6 @@ class RevenuesController extends AppController {
                 $msg = 'membuat';
             }
 
-            $data['InvoicePayment']['date_payment'] = $date_payment = !empty($data['InvoicePayment']['date_payment']) ? $this->MkCommon->getDate($data['InvoicePayment']['date_payment']) : '';
             $data['InvoicePayment']['branch_id'] = Configure::read('__Site.config_branch_id');
             $total = 0;
             $validate_price_pay = true;
@@ -4952,6 +4982,7 @@ class RevenuesController extends AppController {
                                     'tgl_cash_bank' => $date_payment,
                                     'description' => $pph_note,
                                     'debit_total' => $pph_total,
+                                    'transaction_status' => 'posting',
                                 );
 
                                 $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval('cash-bank', $pph_total);
@@ -5110,7 +5141,6 @@ class RevenuesController extends AppController {
                 'Coa.id', 'Coa.coa_name'
             ),
         ));
-        // $this->MkCommon->_callSettingGeneral('InvoicePayment', array( 'pph', 'ppn' ));
 
         $this->MkCommon->_layout_file('select');
         $this->set(compact(
@@ -5136,6 +5166,8 @@ class RevenuesController extends AppController {
             ));
             
             if(!empty($invoice_payment)){
+                $this->MkCommon->_callAllowClosing($invoice_payment, 'InvoicePayment', 'date_payment');
+
                 $customer_id = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'customer_id');
                 $coa_id = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'coa_id');
                 $date_payment = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'date_payment');
@@ -5262,6 +5294,8 @@ class RevenuesController extends AppController {
 
             if( !empty($revenues) ) {
                 foreach ($revenues as $key => $revenue) {
+                    $this->MkCommon->_callAllowClosing($revenue, 'Revenue', 'date_revenue');
+
                     $date_revenue = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'date_revenue');
                     $no_doc = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'no_doc');
                     $customer_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'customer_id');
@@ -5564,6 +5598,8 @@ class RevenuesController extends AppController {
         ));
 
         if( !empty($invoice) ){
+            $this->MkCommon->_callAllowClosing($invoice, 'Invoice', 'invoice_date');
+
             $customer_id = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'customer_id');
             $invoice_date = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'invoice_date');
             $invoice = $this->Invoice->Customer->getMerge($invoice, $customer_id);
@@ -7625,7 +7661,15 @@ class RevenuesController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
-            $data['TtujPayment']['date_payment'] = !empty($data['TtujPayment']['date_payment']) ? $this->MkCommon->getDate($data['TtujPayment']['date_payment']) : '';
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'TtujPayment' => array(
+                        'date_payment',
+                    ),
+                )
+            ));
+            $this->MkCommon->_callAllowClosing($data, 'TtujPayment', 'date_payment');
+
             $data['TtujPayment']['type'] = $action_type;
             $data['TtujPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
 
@@ -7712,6 +7756,8 @@ class RevenuesController extends AppController {
         if( !empty($invoice) ){
             if(!empty($this->request->data)){
                 $data = $this->request->data;
+                $this->MkCommon->_callAllowClosing($invoice, 'TtujPayment', 'date_payment');
+
                 $receiver_name = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'receiver_name');
                 $receiver_type = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'receiver_type', __('Supir'));
                 $date_payment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'date_payment');

@@ -77,6 +77,7 @@ class AppController extends Controller {
 			// Set Global Variable for User
 			$this->user_data = $User;
 			$employe_position_id = $this->MkCommon->filterEmptyField($User, 'Employe', 'employe_position_id');
+			$this->MkCommon->_callDataClosing();
 
 			Configure::write('__Site.User.employe_position_id', $employe_position_id);
 			Configure::write('__Site.config_group_id', $GroupId);

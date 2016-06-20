@@ -37,6 +37,9 @@
 				echo $this->Html->css($value).PHP_EOL;
 			}
 		}
+
+        $min_date = Configure::read('__Site.Closing.min_date');
+        $min_date = !empty($min_date)?$min_date:'false';
 ?>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -47,7 +50,7 @@
 	<link rel="icon" href="/img/favicon.png" type="image/jpg" />
 </head>
 <!-- <body class="skin-black"> -->
-<body class="skin-blue remove-blank-print">
+<body class="skin-blue remove-blank-print" datapicker-mindate="<?php echo $min_date; ?>">
     <?php
 			echo $this->element('headers/menu');
 	?>
