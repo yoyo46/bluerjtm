@@ -1283,6 +1283,24 @@ class CommonHelper extends AppHelper {
         return $result;
     }
 
+    function filterIssetField ( $value, $modelName, $fieldName = false, $empty = false, $removeHtml = true ) {
+        $result = '';
+        
+        if( empty($modelName) && $modelName != 0 ) {
+            $result = isset($value)?$value:$empty;
+        } else if( empty($fieldName) && $fieldName != 0 ) {
+            $result = isset($value[$modelName])?$value[$modelName]:$empty;
+        } else {
+            $result = isset($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
+        }
+
+        if( isset($removeHtml) && !is_array($result) ) {
+            return $this->safeTagPrint($result);
+        } else {
+            return $result;
+        }
+    }
+
     function getMergePrepayment ( $prepayment, $class = false ) {
         $result = false;
         $content = array();

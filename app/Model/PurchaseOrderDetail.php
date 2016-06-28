@@ -115,6 +115,23 @@ class PurchaseOrderDetail extends AppModel {
         return $data;
     }
 
+    function getMergeData( $data, $id, $product_id ){
+        $value = $this->getData('first', array(
+            'conditions' => array(
+                'PurchaseOrderDetail.purchase_order_id' => $id,
+                'PurchaseOrderDetail.product_id' => $product_id,
+            ),
+        ), array(
+            'status' => 'all',
+        ));
+
+        if(!empty($value)){
+            $data = array_merge($data, $value);
+        }
+
+        return $data;
+    }
+
     function doSave( $datas, $purchase_order_id, $is_validate = false ) {
         $result = false;
         $msg = __('Gagal menambahkan PO');

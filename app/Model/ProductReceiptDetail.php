@@ -30,6 +30,12 @@ class ProductReceiptDetail extends AppModel {
                 'message' => 'Qty harap diisi'
             ),
         ),
+        'serial_number' => array(
+            'notMatch' => array(
+                'rule' => array('serial_number'),
+                'message' => 'Mohon pilih no. seri'
+            ),
+        ),
 	);
 
 	function getData( $find, $options = false, $elements = false ){
@@ -84,7 +90,17 @@ class ProductReceiptDetail extends AppModel {
         ));
 
         if(!empty($values)){
-            $values = $this->Product->getMerge($values, false, 'ProductReceiptDetail', false);
+            if( !empty($values) ) {
+                foreach ($values as $key => $value) {
+                    $product_id = $this->filterEmptyField($value, 'ProductReceiptDetail', 'product_id');
+                    $product_receipt_id = $this->filterEmptyField($value, 'ProductReceiptDetail', 'product_receipt_id');
+                    
+                    $value = $this->Product->getMerge($value, $product_id);
+                    $value = $this->ProductReceipt->ProductReceiptDetailSerialNumber->getMergeAll($value, 'count', $product_id, $product_receipt_id);
+                    $values[$key] = $value;
+                }
+            }
+
             $data['ProductReceiptDetail'] = $values;
         }
 
@@ -133,6 +149,27 @@ class ProductReceiptDetail extends AppModel {
         }
 
         return $result;
+    }
+
+    function getTotalReceipt( $id, $document_id, $product_id ){
+        $receipts = $this->ProductReceipt->getData('list', array(
+            'conditions' => array(
+                'ProductReceipt.document_id' => $document_id,
+            ),
+            'fields' => array(
+                'ProductReceipt.id',
+            ),
+        ));
+
+        $this->virtualFields['total_receipt'] = 'SUM(ProductReceiptDetail.qty)';
+        $receipt = $this->getData('first', array(
+            'conditions' => array(
+                'ProductReceiptDetail.product_receipt_id' => $receipts,
+                'ProductReceiptDetail.product_receipt_id <>' => $id,
+                'ProductReceiptDetail.product_id' => $product_id,
+            ),
+        ));
+        return $this->filterEmptyField($receipt, 'ProductReceiptDetail', 'total_receipt', 0);
     }
 }
 ?>

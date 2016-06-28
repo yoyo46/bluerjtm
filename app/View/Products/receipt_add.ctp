@@ -112,5 +112,6 @@
 	?>
 </div>
 <?php
+		echo $this->Form->hidden('session_id');
 		echo $this->Form->end();
 ?>

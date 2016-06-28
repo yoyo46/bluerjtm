@@ -630,6 +630,25 @@
         }
     }
 
+    $.serialNumber = function(options){
+        var settings = $.extend({
+            obj: $('.serial-number-input'),
+        }, options );
+
+        if( settings.obj.length > 0 ) {
+            settings.obj.off('keyup');
+            settings.obj.keyup(function(event) {
+                var vthis = $(this);
+                var data_default = $.checkUndefined(vthis.attr('data-default'), '');
+                var data_target = $.checkUndefined(vthis.attr('data-target'), false);
+
+                if( data_target != false ) {
+                    $(data_target).html(data_default);
+                }
+            });     
+        }
+    }
+
     $.pickData = function() {
         $('.browse-form table tr').off('click');
         $('.browse-form table tr').click(function(){
@@ -762,8 +781,8 @@
                     success: function(result) {
                         if( type == 'content' ) {
                             var content = result;
-                            var status = $(content).find('#msg-status').html();
-                            var msg = $(content).find('#msg-text').html();
+                            var status = $.checkUndefined($(content).find('#msg-status').html(), $(content).filter('#msg-status').html());
+                            var msg = $.checkUndefined($(content).find('#msg-text').html(), $(content).filter('#msg-text').html());
                             var contentHtml = $(content).filter(data_wrapper_write).html();
 
                             if(typeof contentHtml == 'undefined' ) {
@@ -791,8 +810,9 @@
                                         window.history.pushState('data', '', data_url_pushstate);
                                     }
 
+
                                     if( data_close_modal == 'true' ) {
-                                        $('#myModal .close.btn').trigger("click");
+                                        $('#myModal .close.btn,#myModal button.close').trigger("click");
                                     }
                                 } else {
                                     $(data_wrapper_write).html(contentHtml);
@@ -828,6 +848,16 @@
         var data_check_named = $.checkUndefined(vthis.attr('data-check-named'), false);
         var data_check_alert = $.checkUndefined(vthis.attr('data-check-alert'), false);
         var modalSize = $.checkUndefined(vthis.attr('data-size'), '');
+        var data_form = $.checkUndefined(vthis.attr('data-form'), false);
+        var data_picker = $.checkUndefined(vthis.attr('data-picker'), false);
+        var formData = false;
+
+        if( data_form != false ) {
+            formData = $(data_form).serialize(); 
+        }
+        if( data_picker != false ) {
+            url += '/picker:' + $(data_picker).val() + '/';
+        }
 
         if( data_check != false ) {
             dataUrl = $(data_check).val();
@@ -855,6 +885,7 @@
         $.ajax({
             url: url,
             type: 'POST',
+            data: formData,
             success: function(response, status) {
                 if( title !== undefined ) {
                     settings.objId.find('.modal-title').html(title).show();
@@ -1024,9 +1055,25 @@
         return total;
     }
 
+    function calcGrandTotalQty () {
+        var objGrandTotal = $('.temp-document-picker .grandtotal .total');
+        var grandtotal = 0;
+        var decimal = $.checkUndefined(objGrandTotal.attr('data-decimal'), 0);
+
+        $.each( $('.pick-document .qty'), function( i, val ) {
+            var self = $(this);
+            grandtotal += $.convertNumber(self.val());
+        });
+
+        if( objGrandTotal.length > 0 ) {
+            objGrandTotal.html( $.formatDecimal(grandtotal, decimal) );
+        }
+    }
+
     $.calcTotal = function(options){
         var settings = $.extend({
             obj: $('.document-calc .price,.document-calc .disc,.document-calc .ppn,.document-calc .total,.document-calc .qty'),
+            objQty: $('.document-calc-qty .qty'),
             objClick: $('.ppn_include'),
             objDelete: $('.delete-document'),
         }, options );
@@ -1059,6 +1106,39 @@
                 objTotal.html( $.formatDecimal(total, 2) );
                 calcGrandTotal();
             });
+
+            calcGrandTotal();
+        }
+
+        if( settings.objQty.length > 0 ) {
+            settings.objQty.off('blur');
+            settings.objQty.blur(function(){
+                var self = $(this);
+                var parent = self.parents('.temp-document-picker');
+                var objTotal = parent.find('.total');
+                var qty = $.convertNumber(self.val());
+
+                var data_max = $.convertNumber(objTotal.attr('data-max'), 'float', false);
+                var data_max_alert = $.checkUndefined(objTotal.attr('data-max-alert'), false);
+                var format_type = self.attr('data-type');
+
+                if( data_max != false ) {
+                    if( qty > data_max ) {
+                        alert(data_max_alert);
+                        total = data_max;
+
+                        self.val( total );
+                    }
+                }
+
+                if( format_type == 'input_price_coma' ) {
+                    self.val( $.convertDecimal(self, 2) );
+                }
+
+                calcGrandTotalQty();
+            });
+
+            calcGrandTotalQty();
         }
 
         if( settings.objClick.length > 0 ) {
@@ -1085,8 +1165,8 @@
 
                 if ( confirm('Hapus dokumen ini?') ) { 
                     parent.remove();
-                    calcGrandTotal();
                     calcItemTotal(table);
+                    $.calcTotal();
                 }
 
                 return false;
@@ -1197,6 +1277,7 @@
         $.calcTotal();
         $.checkAll();
         $.dropdownFix();
+        $.serialNumber();
     }
 
     $.checkAll = function() {

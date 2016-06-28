@@ -36,21 +36,21 @@
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
-        if( $view != 'detail' ) {
-            echo $this->Html->tag('div', $this->Html->link($this->Common->icon('plus-square').__(' Ambil Barang'), $this->Html->url( array(
-                    'controller'=> 'products', 
-                    'action' => 'receipt_document_products',
-                    'admin' => false,
-                )), array(
-                    'escape' => false,
-                    'title' => __('Daftar Barang'),
-                    'class' => 'btn bg-maroon ajaxCustomModal',
-                )), array(
-                'class' => "form-group",
-            ));
-        }
+        // if( $view != 'detail' ) {
+        //     echo $this->Html->tag('div', $this->Html->link($this->Common->icon('plus-square').__(' Ambil Barang'), $this->Html->url( array(
+        //             'controller'=> 'products', 
+        //             'action' => 'receipt_document_products',
+        //             'admin' => false,
+        //         )), array(
+        //             'escape' => false,
+        //             'title' => __('Daftar Barang'),
+        //             'class' => 'btn bg-maroon ajaxCustomModal',
+        //         )), array(
+        //         'class' => "form-group",
+        //     ));
+        // }
 ?>
-<div class="temp-document-picker document-calc">
+<div class="temp-document-picker document-calc-qty">
 	<div class="box box-success">
 	    <?php 
 	            echo $this->element('blocks/common/box_header', array(
@@ -70,20 +70,28 @@
 
                             if(!empty($dataDetail)){
                                 foreach ($dataDetail as $key => $value) {
+                                    $id = $this->Common->filterEmptyField($value, 'ProductReceiptDetail', 'product_id');
                                     $qty = $this->Common->filterEmptyField($value, 'ProductReceiptDetail', 'qty');
+                                    $code = $this->Common->filterEmptyField($value, 'ProductReceiptDetail', 'code');
+                                    $serial_number = $this->Common->filterEmptyField($value, 'ProductReceiptDetailSerialNumber');
                                     $grandtotal += $qty;
 
-                                    $code = $this->Common->filterEmptyField($value, 'ProductReceiptDetail', 'code');
-                                    $name = $this->Common->filterEmptyField($value, 'ProductReceiptDetail', 'name');
-                                    $unit = $this->Common->filterEmptyField($value, 'ProductReceiptDetail', 'unit');
+                                    if( !empty($code) ) {
+                                        $modelName = 'ProductReceiptDetail';
+                                    } else {
+                                        $modelName = 'Product';
+                                    }
+                                    if( empty($serial_number) ) {
+                                        $serial_number = $this->Common->filterEmptyField($value, 'ProductReceiptDetail', 'serial_number');
+                                    }
 
-                                    echo $this->element('blocks/products/receipts/tables/detail_items', array(
-                                        'modelName' => 'ProductReceiptDetail',
+                                    echo $this->element('blocks/products/receipts/tables/items', array(
+                                        'id' => $id,
+                                        'modelName' => $modelName,
                                         'value' => $value,
-                                        'code' => $code,
-                                        'name' => $name,
-                                        'unit' => $unit,
-                                        'idx' => $key,
+                                        'qty' => $qty,
+                                        'key' => $key,
+                                        'serial_number' => $serial_number,
                                     ));
                                 }
                             }
@@ -97,7 +105,7 @@
                                     'class' => 'text-right',
                                 ));
                                 echo $this->Html->tag('td', $grandtotal, array(
-                                    'class' => 'text-right total',
+                                    'class' => 'text-center total',
                                 ));
                         ?>
                     </tr>

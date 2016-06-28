@@ -40,6 +40,7 @@
                             'title' => __('Ambil Data'),
                             'data-check' => '#supplier-val',
                             'data-check-title' => 'supplier',
+                    		'data-check-alert' => __('Mohon pilih supplier terlebih dahulu'),
                         );
     					$urlBrowse = array(
                             'controller'=> 'products', 

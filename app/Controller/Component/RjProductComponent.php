@@ -61,59 +61,153 @@ class RjProductComponent extends Component {
 
     function _callBeforeSaveReceipt ( $data, $id = false ) {
         if( !empty($data) ) {
-            $dataSave = array();
-            $transaction_date = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'transaction_date');
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'ProductReceipt' => array(
+                        'transaction_date',
+                    ),
+                )
+            ));
+            $document_number = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_number');
+            $document_type = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_type');
             $transaction_status = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'transaction_status');
+            $session_id = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'session_id');
 
-            $dataDetail = $this->MkCommon->filterEmptyField($data, 'ProductReceiptDetail');
-            $dataDetailProduct = $this->MkCommon->filterEmptyField($dataDetail, 'product_id');
-
-            $transaction_date = $this->MkCommon->getDate($transaction_date);
+            switch ($document_type) {
+                case 'po':
+                    $value = $this->controller->Product->PurchaseOrderDetail->PurchaseOrder->getMerge(array(), $document_number, 'active', 'PurchaseOrder.nodoc');
+                    $document_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'id');
+                    break;
+                
+                default:
+                    $document_id = '';
+                    break;
+            }
 
             $data['ProductReceipt']['id'] = $id;
             $data['ProductReceipt']['user_id'] = Configure::read('__Site.config_user_id');
-            $data['ProductReceipt']['transaction_date'] = $transaction_date;
+            $data['ProductReceipt']['document_id'] = $document_id;
+            $data['ProductReceipt']['branch_id'] = Configure::read('__Site.config_branch_id');
 
-            if( !empty($dataDetailProduct) ) {
-                $grandtotal = 0;
-                $values = array_filter($dataDetailProduct);
-                unset($data['ProductReceiptDetail']);
+            $details = $this->MkCommon->filterEmptyField($data, 'ProductReceiptDetail', 'product_id');
+            $receiptQty = $this->MkCommon->filterEmptyField($data, 'ProductReceiptDetail', 'qty');
+
+            if( !empty($details) ) {
+                $total = 0;
+                $dataDetail = array();
+                $values = array_filter($details);
+                $receipt_status = array();
 
                 foreach ($values as $key => $product_id) {
-                    $dataPODetail = array();
-                    $qty = $this->MkCommon->filterEmptyField($dataDetail, 'qty', $key);
+                    $qty = $this->MkCommon->filterIssetField($receiptQty, $key);
 
                     $product = $this->controller->Product->getMerge(array(), $product_id);
+
                     $code = $this->MkCommon->filterEmptyField($product, 'Product', 'code');
                     $name = $this->MkCommon->filterEmptyField($product, 'Product', 'name');
+                    $is_serial_number = $this->MkCommon->filterEmptyField($product, 'Product', 'is_serial_number');
                     $unit = $this->MkCommon->filterEmptyField($product, 'ProductUnit', 'name');
 
-                    $dataPODetail['ProductReceiptDetail'] = array(
+                    if( !empty($is_serial_number) ) {
+                        $serial_number = $this->controller->Product->ProductReceiptDetailSerialNumber->getCount($session_id, $product_id);
+                    } else {
+                        $serial_number = 0;
+                    }
+
+                    if( $qty != $serial_number ) {
+                        $serial_number = 0;
+                    }
+
+                    $dataDetail[$key]['ProductReceiptDetail'] = array(
                         'product_id' => $product_id,
+                        'is_serial_number' => $is_serial_number,
                         'code' => $code,
                         'name' => $name,
                         'unit' => $unit,
                         'qty' => $qty,
+                        'serial_number' => $serial_number,
                     );
 
-                    $dataSave[] = $dataPODetail;
-                    $grandtotal += $qty;
+                    switch ($document_type) {
+                        case 'po':
+                            $documentDetail = $this->controller->Product->PurchaseOrderDetail->getMergeData(array(), $document_id, $product_id);
+                            $total_receipt = $this->controller->Product->ProductReceiptDetail->getTotalReceipt($id, $document_id, $product_id);
+                            $total_receipt += $qty;
+                            
+                            $detailId = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'id');
+                            $detailQty = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'qty');
+
+                            if( $total_receipt >= $detailQty ) {
+                                $receipt_status[] = 'full';
+                            } else {
+                                $receipt_status[] = 'half';
+                            }
+                            
+                            $dataDetail[$key]['ProductReceiptDetail']['Product'] = array(
+                                'id' => $product_id,
+                                'truck_category_id' => 1,
+                                'PurchaseOrderDetail' => array(
+                                    array(
+                                        'id' => $detailId,
+                                        'total_receipt' => $total_receipt
+                                    ),
+                                ),
+                            );
+                            break;
+                    }
+
+                    $total += $qty;
                 }
 
-                $data['PurchaseOrder']['grandtotal'] = $qty;
-            }
+                $data['ProductReceipt']['total'] = $total;
+                $data['ProductReceiptDetail'] = $dataDetail;
 
-            if( !empty($dataSave) ) {
-                $data['ProductReceiptDetail'] = $dataSave;
+                switch ($document_type) {
+                    case 'po':
+                        if( !in_array('half', $receipt_status) ) {
+                            $receipt_status = 'full';
+                        } else {
+                            $receipt_status = 'half';
+                        }
+
+                        $data['PurchaseOrder'] = array(
+                            'id' => $document_id,
+                            'draft_receipt_status' => $receipt_status,
+                        );
+
+                        if( $transaction_status == 'posting' ) {
+                            $data['PurchaseOrder']['receipt_status'] = $receipt_status;
+                        }
+                        break;
+                }
             }
         }
 
         return $data;
     }
 
-    function _callBeforeRenderReceipt ( $data ) {
-        $transaction_date = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'transaction_date', date('Y-m-d'));
-        $data['ProductReceipt']['transaction_date'] = $this->MkCommon->getDate($transaction_date, true);
+    function _callBeforeRenderReceipt ( $data, $value = false ) {
+        if( empty($data) ) {
+            $data = $value;
+            $data['ProductReceipt']['document_number'] = $this->MkCommon->filterEmptyField($data, 'Document', 'nodoc');
+        }
+
+        $data = $this->MkCommon->dataConverter($data, array(
+            'date' => array(
+                'ProductReceipt' => array(
+                    'transaction_date',
+                ),
+            )
+        ), true);
+        $document_type = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_type');
+
+        switch ($document_type) {
+            case 'po':
+                $vendors = $this->controller->Product->PurchaseOrderDetail->PurchaseOrder->_callVendors('unreceipt');
+                break;
+        }
+
+        $this->controller->request->data = $data;
 
         $employes = $this->controller->User->Employe->getData('list', array(
         	'fields' => array(
@@ -130,10 +224,9 @@ class RjProductComponent extends Component {
 
         $this->MkCommon->_layout_file('select');
     	$this->controller->set(compact(
-    		'employes', 'toBranches'
+    		'employes', 'toBranches',
+            'vendors'
 		));
-
-        return $data;
     }
 
     function _callPurchaseOrders( $params, $vendor_id = false ) {
@@ -167,6 +260,69 @@ class RjProductComponent extends Component {
 
         $purchase_order_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'id');
         $value =  $this->controller->Product->PurchaseOrderDetail->getMerge($value, $purchase_order_id);
+
+        return $value;
+    }
+
+    function _callBeforeSaveSerialNumber ( $data, $id = false, $session_id = false ) {
+        $dataSave = array();
+
+        if( !empty($data) ) {
+            if( !empty($data) ) {
+                foreach ($data as $key => $serial_number) {
+                    $dataSave[]['ProductReceiptDetailSerialNumber'] = array(
+                        'product_id' => $id,
+                        'session_id' => $session_id,
+                        'serial_number' => $serial_number,
+                    );
+                }
+            }
+        }
+
+        return $dataSave;
+    }
+
+    function _callBeforeViewSerialNumber ( $values, $session_id = false ) {
+        if( !empty($values) ) {
+            $dataRequest = array();
+
+            foreach ($values as $key => $value) {
+                $serial_number = $this->MkCommon->filterEmptyField($value, 'ProductReceiptDetailSerialNumber', 'serial_number');
+                $dataRequest['ProductReceiptDetailSerialNumber']['serial_number'][$key] = $serial_number;
+            }
+
+            $this->controller->request->data = $dataRequest;
+        }
+
+        $this->controller->request->data['ProductReceipt']['session_id'] = $session_id;
+    }
+
+    function _callBeforeRenderReceipts () {
+        $vendors = $this->controller->Product->PurchaseOrderDetail->PurchaseOrder->_callVendors('unreceipt');
+
+        $this->controller->set(compact(
+            'vendors'
+        ));
+    }
+
+    function _callGetDocReceipt ( $value ) {
+        $document_id = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'document_id');
+        $document_type = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'document_type');
+
+        switch ($document_type) {
+            case 'po':
+                $value = $this->controller->Product->ProductReceiptDetail->ProductReceipt->getMergeList($value, array(
+                    'contain' => array(
+                        'Document' => array(
+                            'uses' => 'PurchaseOrder',
+                            'primaryKey' => 'id',
+                            'foreignKey' => 'document_id',
+                            'type' => 'first',
+                        ),
+                    ),
+                ));
+                break;
+        }
 
         return $value;
     }

@@ -355,6 +355,20 @@ class MkCommonComponent extends Component {
         return $result;
     }
 
+    function filterIssetField ( $value, $modelName, $fieldName = false, $empty = false ) {
+        $result = '';
+        
+        if( empty($modelName) && !is_numeric($modelName) ) {
+            $result = isset($value)?$value:$empty;
+        } else if( empty($fieldName) && !is_numeric($fieldName) ) {
+            $result = isset($value[$modelName])?$value[$modelName]:$empty;
+        } else {
+            $result = isset($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
+        }
+
+        return $result;
+    }
+
     function getMimeType( $filename ) {
         $mime_types = array(
             'txt' => 'text/plain',
@@ -615,6 +629,10 @@ class MkCommonComponent extends Component {
         ));
 
         Configure::write('__Site.Demo.Version', $this->_callDemoVersion());
+
+        if( $this->params['prefix'] == 'bypass' && $this->RequestHandler->isAjax() ) {
+            $this->layout = 'ajax';
+        }
     }
 
     function allowPage ( $branchs, $no_exact = false ) {

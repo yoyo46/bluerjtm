@@ -3,9 +3,9 @@
             'transaction_date' => array(
                 'name' => __('Tgl Penerimaan'),
             ),
-            'code' => array(
-                'name' => __('No Penerimaan'),
-            ),
+            // 'code' => array(
+            //     'name' => __('No Penerimaan'),
+            // ),
             'supplier' => array(
                 'name' => __('Supplier'),
             ),
@@ -59,10 +59,13 @@
                     if(!empty($values)){
                         foreach ($values as $key => $value) {
                             $id = $this->Common->filterEmptyField($value, 'ProductReceipt', 'id');
-                            $nodoc = $this->Common->filterEmptyField($value, 'ProductReceipt', 'nodoc');
+                            $nodoc = $this->Common->filterEmptyField($value, 'ProductReceipt', 'nodoc', '-');
                             $transactionDate = $this->Common->filterEmptyField($value, 'ProductReceipt', 'transaction_date');
                             $note = $this->Common->filterEmptyField($value, 'ProductReceipt', 'note');
                             $transaction_status = $this->Common->filterEmptyField($value, 'ProductReceipt', 'transaction_status');
+
+                            $document_number = $this->Common->filterEmptyField($value, 'Document', 'nodoc');
+                            $warehouse = $this->Common->filterEmptyField($value, 'Warehouse', 'name');
 
                             $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
                             $employe = $this->Common->filterEmptyField($value, 'Employe', 'full_name');
@@ -101,11 +104,11 @@
             <tr>
                 <?php 
                         echo $this->Html->tag('td', $customDate);
-                        echo $this->Html->tag('td', $nodoc);
+                        // echo $this->Html->tag('td', $nodoc);
                         echo $this->Html->tag('td', $vendor);
                         echo $this->Html->tag('td', $employe);
-                        echo $this->Html->tag('td', '');
-                        echo $this->Html->tag('td', '');
+                        echo $this->Html->tag('td', $document_number);
+                        echo $this->Html->tag('td', $warehouse);
                         echo $this->Html->tag('td', $note);
                         echo $this->Html->tag('td', $customStatus, array(
                             'class' => 'text-center',

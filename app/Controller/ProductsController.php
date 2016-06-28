@@ -412,6 +412,27 @@ class ProductsController extends AppController {
             'status' => 'all',
         ));
         $values = $this->paginate('ProductReceipt');
+        $values = $this->ProductReceipt->getMergeList($values, array(
+            'contain' => array(
+                'Vendor',
+                'Employe',
+                'Warehouse' => array(
+                    'uses' => 'Branch',
+                    'primaryKey' => 'id',
+                    'foreignKey' => 'to_branch_id',
+                    'type' => 'first',
+                ),
+            ),
+        ));
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $value = $this->RjProduct->_callGetDocReceipt($value);
+                $values[$key] = $value;
+            }
+        }
+
+        $this->RjProduct->_callBeforeRenderReceipts();
 
         $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'receipts');
@@ -424,14 +445,20 @@ class ProductsController extends AppController {
         $this->set('sub_module_title', __('Penerimaan Barang'));
 
         $data = $this->request->data;
-        $data = $this->RjProduct->_callBeforeSaveReceipt($data);
-        $result = $this->Product->ProductReceiptDetail->ProductReceipt->doSave($data);
-        $this->MkCommon->setProcessParams($result, array(
-            'controller' => 'receipts',
-            'action' => 'receipts',
-            'admin' => false,
-        ));
-        $this->request->data = $this->RjProduct->_callBeforeRenderReceipt($this->request->data);
+
+        if( !empty($data) ) {
+            $data = $this->RjProduct->_callBeforeSaveReceipt($data);
+            $result = $this->Product->ProductReceiptDetail->ProductReceipt->doSave($data);
+            $this->MkCommon->setProcessParams($result, array(
+                'controller' => 'products',
+                'action' => 'receipts',
+                'admin' => false,
+            ));
+        } else {
+            $this->request->data['ProductReceipt']['session_id'] = String::uuid();
+        }
+
+        $this->RjProduct->_callBeforeRenderReceipt($data);
 
         $this->set('active_menu', 'receipts');
         $this->set(compact(
@@ -451,18 +478,23 @@ class ProductsController extends AppController {
         ));
 
         if( !empty($value) ) {
+            $value = $this->RjProduct->_callGetDocReceipt($value);
             $value = $this->Product->ProductReceiptDetail->getMerge($value, $id);
             $value = $this->Product->ProductReceiptDetail->ProductReceipt->DocumentAuth->getMerge($value, $id, 'po');
 
             $data = $this->request->data;
-            $data = $this->RjProduct->_callBeforeSaveReceipt($data, $id);
-            $result = $this->Product->ProductReceiptDetail->ProductReceipt->doSave($data, $value, $id);
-            $this->MkCommon->setProcessParams($result, array(
-                'controller' => 'products',
-                'action' => 'receipts',
-                'admin' => false,
-            ));
-            $this->request->data = $this->RjProduct->_callBeforeRenderReceipt($this->request->data);
+
+            if( !empty($data) ) {
+                $data = $this->RjProduct->_callBeforeSaveReceipt($data, $id);
+                $result = $this->Product->ProductReceiptDetail->ProductReceipt->doSave($data, $value, $id);
+                $this->MkCommon->setProcessParams($result, array(
+                    'controller' => 'products',
+                    'action' => 'receipts',
+                    'admin' => false,
+                ));
+            }
+
+            $this->RjProduct->_callBeforeRenderReceipt($data, $value);
 
             $this->set('active_menu', 'receipts');
             $this->set(compact(
@@ -526,7 +558,7 @@ class ProductsController extends AppController {
                 ));
             }
 
-            $this->request->data = $this->RjProduct->_callBeforeRenderReceipt($value);
+            $this->RjProduct->_callBeforeRenderReceipt($value);
 
             $this->set('active_menu', 'receipts');
             $this->set('view', 'detail');
@@ -543,6 +575,51 @@ class ProductsController extends AppController {
     public function receipt_toggle( $id ) {
         $result = $this->Product->ProductReceiptDetail->ProductReceipt->doDelete( $id );
         $this->MkCommon->setProcessParams($result);
+    }
+
+    function bypass_receipt_serial_numbers ( $id = false ) {
+        $data = $this->request->data;
+        $session_id = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'session_id');
+        $number = $this->MkCommon->filterEmptyField($this->params, 'named', 'picker', 0);
+        $value = $this->Product->getData('first', array(
+            'conditions' => array(
+                'Product.id' => $id,
+            ),
+        ));
+
+        if( !empty($session_id) && !empty($value) ) {
+            $serial_numbers = $this->MkCommon->filterEmptyField($data, 'ProductReceiptDetailSerialNumber', 'serial_number');
+
+            if( !empty($serial_numbers) ) {
+                $serial_numbers = $this->RjProduct->_callBeforeSaveSerialNumber($serial_numbers, $id, $session_id);
+                $result = $this->Product->ProductReceiptDetailSerialNumber->doSave($serial_numbers, $id, $session_id);
+
+                $this->MkCommon->setProcessParams($result, false, array(
+                    'ajaxFlash' => true,
+                    'ajaxRedirect' => false,
+                ));
+            } else {
+                $values = $this->Product->ProductReceiptDetailSerialNumber->getData('all', array(
+                    'conditions' => array(
+                        'ProductReceiptDetailSerialNumber.product_id' => $id,
+                        'ProductReceiptDetailSerialNumber.session_id' => $session_id,
+                    ),
+                ));
+                $this->RjProduct->_callBeforeViewSerialNumber($values, $session_id);
+            }
+
+            $this->set('_flash', false);
+            $this->set(compact(
+                'number', 'value', 'id',
+                'result'
+            ));
+        } else {
+            if( empty($value) ) {
+                $this->set('message', __('Barang tidak ditemukan. Mohon cek kembali barang yang ingin Anda proses'));
+            }
+
+            $this->render('/Ajax/page_not_found');
+        }
     }
 
     function receipt_choose_documents ( $type = false ) {

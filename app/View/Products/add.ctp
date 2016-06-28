@@ -173,7 +173,7 @@
 		    			<div class="checkbox">
 					  		<label>
 					  			<?php 
-										echo $this->Form->input('is_auto_code',array(
+										echo $this->Form->input('is_serial_number',array(
 											'type' => 'checkbox',
 											'label'=> false, 
 											'div' => false,

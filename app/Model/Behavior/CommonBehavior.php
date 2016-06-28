@@ -44,4 +44,218 @@ class CommonBehavior extends ModelBehavior {
 
         return $result;
     }
+
+	public function callUnset( Model $model, $data = false, $fieldArr = false){
+		if(!empty($fieldArr)){
+			foreach($fieldArr as $key => $value){
+				if(is_array($value)){
+					foreach($value as $idx => $fieldName){
+						if(!empty($data[$key][$fieldName])){
+							unset($data[$key][$fieldName]);
+						}
+					}
+				} else {
+					unset($data[$value]);
+				}
+			}
+		}
+		return $data;
+	}
+
+	public function getMergeList( Model $model, $values, $options, $element = false){
+		$contains = $this->filterEmptyField($model, $options, 'contain');
+
+		if(!empty($values)){
+			if(!empty($values[0])){
+				foreach($values AS $key => $value){
+					foreach($contains AS $modelName => $options){
+						$value = $this->_callMergeData($model, $value, $element, $options, $modelName);
+					}
+					$values[$key] = $value;
+				}
+
+			}else{
+				foreach($contains AS $modelName => $options){
+					$values = $this->_callMergeData($model, $values, $element, $options, $modelName);
+				}
+			}
+		}
+		return $values;
+	}
+
+	function _callMergeData ( Model $model, $value, $element, $options, $modelName ) {
+		$mergeParents = $this->filterEmptyField($model, $element, 'mergeParent', false, array());
+		$generateMultiples = $this->filterEmptyField($model, $element, 'generateMultiple', false, array());
+
+		if( !is_array($options) ) {
+			$modelName = $uses = $options;
+			$optionsParams = array();
+		} else {
+			$mergeParent = $this->filterEmptyField( $model, $options, 'modelParent');
+
+			$options = $this->callUnset($model, $options, array(
+				'modelParent',
+			));
+
+			$optionsParams = $options; ## CONDITIONS, ELEMENTS for getData 
+			$type = $this->filterEmptyField( $model, $optionsParams, 'type');
+			$containRecursive = $this->filterEmptyField( $model, $options, 'contain');
+			$uses = $this->filterEmptyField($model, $options, 'uses', false, $modelName);
+		}
+
+		if( !empty($mergeParent) ) {
+			$modelParent = $this->filterEmptyField($model, $mergeParent, 0);
+			$foreignKey = $this->filterEmptyField($model, $mergeParent, 1);
+		} else {
+			$modelParent = $model->name;
+			$foreignKey = 'id';
+
+			if( !empty($options['foreignKey']) ) {
+				$foreignKey = $options['foreignKey'];
+			} else if( !empty($model->belongsTo[$uses]['foreignKey']) ) {
+				$foreignKey = $model->belongsTo[$uses]['foreignKey'];
+				$optionsParams = array_merge($optionsParams, array(
+					'foreignKey' => $foreignKey,
+					'primaryKey' => 'id',
+				));
+			} else if( !empty($model->hasOne[$uses]['foreignKey']) ) {
+				$foreignKey = 'id';
+				$optionsParams = array_merge($optionsParams, array(
+					'primaryKey' => $model->hasOne[$uses]['foreignKey'],
+					'foreignKey' => $foreignKey,
+				));
+			} else if( !empty($model->hasMany[$uses]['foreignKey']) ) {
+				$primaryKey = $model->hasMany[$uses]['foreignKey'];
+				$optionsParams = array_merge($optionsParams, array(
+					'foreignKey' => $foreignKey,
+					'primaryKey' => $primaryKey,
+					'type' => !empty($type)?$type:'all',
+				));
+			}
+		}
+
+		if(empty($value[$modelName])){
+			$id = $this->filterEmptyField( $model, $value, $modelParent, $foreignKey);
+
+			if( empty($id) ) {
+				$id = $this->filterEmptyField( $model, $value, $foreignKey);
+			}
+
+			if( !empty($id) ) {
+				## MERGEDATA JIKA DATA YANG INGIN DI MERGE BERSIFAT JAMAK/MULTIPLE 
+				## FUNGSI GETMERGE DI MODEL TERSEBUT HARUS DITAMBAHKAN PARAMETER KETIGA FIND = 'ALL/FIRST/ DLL'
+				$value = $this->getMerge( $model, $value, $modelName, $id, $optionsParams);
+				## KETIKA SUDAH DI BUILD DENGAN FUNGSI GETMERGE UNTUK DATA JAMAK HARUS
+				## MODEL => INDEX => MODEL => VALUE, ANDA BISA UBAH DATA DENGAN generateMultiples ATAU mergeParents
+
+				## KETIKA DATA MULTIPlE SUDAH DIBUILD dengan GENERATEMULTIPLE DIBAWAH INI, MENJADI MODEL => IDX => VALUE
+				if(in_array( $modelName, $generateMultiples)){
+					if(!empty($value[$modelName])){
+						if(!empty($value[$modelName][0])){
+							$temp_model = array();
+							foreach($value[$modelName] AS $key_multiple => $modelParams){
+								$temp_model[$key_multiple] = $modelParams[$modelName];
+							}
+							$value[$modelName] = $temp_model;
+						}
+						
+					}
+				## KETIKA DATA MULTIPlE SUDAH DIBUILD dengan MERGEPARENT DIBAWAH INI, MENJADI PARENTMODEL => MODEL => IDX => VALUE
+				}elseif(in_array($modelName,$mergeParents)){
+
+					if(!empty($value[$modelName])){
+
+						if(!empty($value[$modelName][0])){
+							$temp_model = array();
+							foreach($value[$modelName] AS $key_merge => $modelParams){
+								$temp_model[$key_merge] = $modelParams[$contain];
+							}
+							$value[$this->name][$modelName] = $temp_model;
+							unset($value[$modelName]);
+						}else{
+							$value[$this->name][$modelName] = $value[$contain];
+							unset($value[$modelName]);
+						}
+					}
+				}
+
+				if(!empty($containRecursive)){
+					$valueTemps = array();
+					if(!empty($value[$modelName])){
+						$valueTemps = $this->getMergeList($model->$modelName, $value[$modelName], array(
+							'contain' => $containRecursive,
+						));
+
+						if(!empty($valueTemps)){
+							$value = $this->callUnset($model->$modelName, $value, array(
+								$modelName
+							));
+							$value[$modelName] = $valueTemps;
+						}
+					}								
+				}
+			}
+		}
+
+		return $value;
+	}
+
+	public function getMerge( model $model, $data, $modelName,  $id = false, $options = array() ) {
+		// $conditions = !empty($options['conditions'])?$options['conditions']:array();
+		$options = !empty($options)?$options:array();
+		$elements = !empty($options['elements'])?$options['elements']:array();
+		$alias = $this->filterEmptyField($model, $options, 'uses');
+		$uses = $this->filterEmptyField($model, $options, 'uses', false, $modelName);
+		$foreignKey = !empty($options['foreignKey'])?$options['foreignKey']:'id';
+		$primaryKey = !empty($options['primaryKey'])?$options['primaryKey']:$foreignKey;
+		$type = !empty($options['type'])?$options['type']:'first';
+
+		$optionsModel = $this->callUnset($model, $options, array(
+			'elements',
+			'uses',
+			'foreignKey',
+			'type',
+		));
+
+		if(empty($data[$modelName])){
+
+			if(!empty($uses)){
+				if( $uses == $model->name ) {
+					$model = $model;
+				} else {
+					$model = $model->$uses;
+				}
+			}else{
+				$model = $model->$modelName;
+			}
+
+			$optionsModel['conditions'][sprintf('%s.%s', $uses, $primaryKey)] = $id;
+			$value = $model->getData($type, $optionsModel, $elements);
+
+			if(!empty($value)){
+				switch ($type) {
+					case 'count':
+						$data[$modelName] = $value;
+						break;
+					case 'list':
+						$data[$modelName] = $value;
+						break;
+					
+					default:
+						if(!empty($alias)){
+							$data[$modelName] = $value[$alias];
+						}else{
+							if(!empty($value[0])){
+								$data[$modelName] = $value;
+							}else{
+								$data = array_merge($data, $value);
+							}
+						}
+						break;
+				}
+			}
+		}	
+
+		return $data;
+	}
 }

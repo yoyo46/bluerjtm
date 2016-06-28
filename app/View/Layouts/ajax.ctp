@@ -23,5 +23,6 @@
 	}
 ?>
 <?php
+		echo $this->element('blocks/common/template_flash');	    
 		echo $this->fetch('content');
 ?>

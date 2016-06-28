@@ -40,6 +40,10 @@ class ProductReceipt extends AppModel {
                 'DocumentAuth.document_type' => 'product_receipt',
             ),
         ),
+        'ProductReceiptDetailSerialNumber' => array(
+            'className' => 'ProductReceiptDetailSerialNumber',
+            'foreignKey' => 'product_receipt_id',
+        ),
     );
 
 	var $validate = array(
@@ -179,57 +183,33 @@ class ProductReceipt extends AppModel {
         $defaul_msg = __('penerimaan barang');
 
         if ( !empty($data) ) {
-            $nodoc = $this->filterEmptyField($data, 'ProductReceipt', 'nodoc');
-            $transaction_status = $this->filterEmptyField($data, 'ProductReceipt', 'transaction_status');
-            $grandtotal = $this->filterEmptyField($data, 'ProductReceipt', 'grandtotal');
-
-            $data['ProductReceipt']['branch_id'] = Configure::read('__Site.config_branch_id');
-
-            if( !empty($nodoc) ) {
-                $defaul_msg = sprintf(__('%s #%s'), $defaul_msg, $nodoc);
-            }
-
-            if( empty($id) ) {
-                $this->create();
-                $defaul_msg = sprintf(__('menyimpan %s'), $defaul_msg);
-            } else {
-                $this->id = $id;
-                $defaul_msg = sprintf(__('mengubah %s'), $defaul_msg);
-            }
-
-            if( $transaction_status == 'posting' ) {
-                $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval('product_receipt', $grandtotal);
-
-                if( empty($allowApprovals) ) {
-                    $data['ProductReceipt']['transaction_status'] = 'approved';
-                }
-            }
-
             $flag = $this->saveAll($data, array(
-                'validate' => 'only',
                 'deep' => true,
+                'validate' => 'only',
             ));
 
             if( !empty($flag) ) {
-                if( !empty($id) ) {
-                    $this->ProductReceiptDetail->deleteAll(array(
-                        'ProductReceiptDetail.product_receipt_id' => $id,
-                    ));
-                }
+                $this->ProductReceiptDetail->deleteAll(array(
+                    'ProductReceiptDetail.product_receipt_id' => $id,
+                ));
 
                 $flag = $this->saveAll($data, array(
                     'deep' => true,
                 ));
-
+                
                 if( !empty($flag) ) {
                     $id = $this->id;
-                    $this->DocumentAuth->deleteAll(array(
-                        'DocumentAuth.document_id' => $id,
-                        'DocumentAuth.document_type' => 'product_receipt',
+                    
+                    $session_id = $this->filterEmptyField($data, 'ProductReceipt', 'session_id');
+                    $this->ProductReceiptDetailSerialNumber->updateAll(array(
+                        'ProductReceiptDetailSerialNumber.product_receipt_id' => $id,
+                        'ProductReceiptDetailSerialNumber.active' => 1,
+                    ),array(
+                        'ProductReceiptDetailSerialNumber.session_id' => $session_id,
+                        'ProductReceiptDetailSerialNumber.status' => 1,
                     ));
                     
-                    $defaul_msg = sprintf(__('Berhasil %s'), $defaul_msg);
-
+                    $defaul_msg = sprintf(__('Berhasil melakukan %s'), $defaul_msg);
                     $result = array(
                         'msg' => $defaul_msg,
                         'status' => 'success',
@@ -240,25 +220,8 @@ class ProductReceipt extends AppModel {
                         ),
                         'data' => $data,
                     );
-
-                    if( $transaction_status == 'posting' ) {
-                        if( !empty($allowApprovals) ) {
-                            $result['Notification'] = array(
-                                'user_id' => $allowApprovals,
-                                'name' => sprintf(__('Penerimaan barang dengan No Dokumen %s memerlukan ijin Approval'), $nodoc),
-                                'link' => array(
-                                    'controller' => 'products',
-                                    'action' => 'product_receipt_detail',
-                                    $id,
-                                    'admin' => false,
-                                ),
-                                'type_notif' => 'warning',
-                                'type' => 'warning',
-                            );
-                        }
-                    }
                 } else {
-                    $defaul_msg = sprintf(__('Gagal %s'), $defaul_msg);
+                    $defaul_msg = sprintf(__('Gagal melakukan %s'), $defaul_msg);
                     $result = array(
                         'msg' => $defaul_msg,
                         'status' => 'error',
@@ -272,7 +235,7 @@ class ProductReceipt extends AppModel {
                     );
                 }
             } else {
-                $defaul_msg = sprintf(__('Gagal %s'), $defaul_msg);
+                $defaul_msg = sprintf(__('Gagal melakukan %s'), $defaul_msg);
                 $result = array(
                     'msg' => $defaul_msg,
                     'status' => 'error',

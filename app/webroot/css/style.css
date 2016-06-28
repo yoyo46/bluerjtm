@@ -459,6 +459,10 @@ img {
 .table.no-border th {
   border: 0;
 }
+.table .error-message {
+  border: none;
+  padding: 0;
+}
 /* .text-center in tables */
 table.text-center,
 table.text-center td,

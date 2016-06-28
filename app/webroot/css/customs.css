@@ -486,3 +486,29 @@ tr.expired .red {
 #cash-flow h3 {
   text-transform: uppercase;
 }
+
+/*Penerimaan Barang*/
+.form-serial-number ul {
+  padding: 0;
+}
+.form-serial-number ul li {
+  list-style-type: decimal;
+  list-style-position: inside;
+  position: relative;
+  height: 35px;
+  margin-bottom: 25px;
+}
+.form-serial-number ul li .form-group {
+  position: absolute;
+  top: 0;
+  left: 35px;
+  width: 80%;
+}
+.form-serial-number ul li .form-group .error-message {
+  border: none;
+  padding: 0;
+  font-size: 12px;
+}
+.form-serial-number ul li input[type="text"] {
+  text-transform: uppercase;
+}

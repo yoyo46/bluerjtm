@@ -156,10 +156,10 @@ class PurchaseOrder extends AppModel {
         return $result;
     }
 
-    function getMerge( $data, $id, $status = 'active' ){
+    function getMerge( $data, $id, $status = 'active', $fieldName = 'PurchaseOrder.id' ){
         $data_merge = $this->getData('first', array(
             'conditions' => array(
-                'PurchaseOrder.id' => $id
+                $fieldName => $id
             ),
         ), array(
             'status' => $status,
