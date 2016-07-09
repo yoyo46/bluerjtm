@@ -7020,6 +7020,7 @@ class RevenuesController extends AppController {
 
             if( in_array($data_print, array( 'header', 'hso-yogya' )) ) {
                 $invoice = $this->Invoice->InvoiceDetail->getMerge($invoice, $invoice['Invoice']['id']);
+                $invoice = $this->Invoice->Company->getMerge($invoice, $invoice['Invoice']['company_id']);
 
                 if( !empty($invoice['InvoiceDetail']) ) {
                     switch ($data_print) {

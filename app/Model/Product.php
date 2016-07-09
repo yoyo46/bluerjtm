@@ -38,6 +38,10 @@ class Product extends AppModel {
             'className' => 'ProductReceiptDetailSerialNumber',
             'foreignKey' => 'product_id',
         ),
+        'ProductStock' => array(
+            'className' => 'ProductStock',
+            'foreignKey' => 'product_id',
+        ),
     );
 
 	var $validate = array(

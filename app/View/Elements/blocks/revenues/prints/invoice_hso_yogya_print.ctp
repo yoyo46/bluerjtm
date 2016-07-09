@@ -1,6 +1,7 @@
 <?php 
 		$data_print_type = isset($data_print_type)?$data_print_type:false;
 		$values = $this->Common->filterEmptyField($invoice, 'InvoiceDetail');
+		$company_name = $this->Common->filterEmptyField($invoice, 'Company', 'code', 'RJTM');
 
         if( !empty($action_print) && $action_print == 'pdf' ) {
         	$table_tr_head = 'background-color: #3C8DBC; border-right: 1px solid #FFFFFF; color: #FFFFFF; font-weight: bold; padding: 0 10px; text-align: left;';
@@ -140,7 +141,7 @@
 								echo $this->Html->tag('td', $totalPriceFormat, array(
 									'style' => 'text-align: right;padding: 10px;',
 								));
-								echo $this->Html->tag('td', 'RJTM', array(
+								echo $this->Html->tag('td', $company_name, array(
 									'style' => 'text-align: center;padding: 10px;',
 								));
 								echo $this->Html->tag('td', $noref, array(

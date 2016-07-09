@@ -136,11 +136,11 @@ class ProductReceiptDetailSerialNumber extends AppModel {
         return $result;
     }
 
-    function getMergeAll ( $data, $type = 'all', $product_id, $product_receipt_id ) {
+    function getMergeAll ( $data, $type = 'all', $product_id, $relation_id, $fieldName = 'ProductReceiptDetailSerialNumber.product_receipt_id' ) {
         $values = $this->getData($type, array(
             'conditions' => array(
                 'ProductReceiptDetailSerialNumber.product_id' => $product_id,
-                'ProductReceiptDetailSerialNumber.product_receipt_id' => $product_receipt_id,
+                $fieldName => $relation_id,
             ),
         ), array(
             'status' => 'active',

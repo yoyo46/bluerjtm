@@ -59,6 +59,50 @@ class RjProductComponent extends Component {
 		return $parameters;
 	}
 
+    function _callStockSerialNumber ( $session_id, $product_id, $data ) {
+        $serial_numbers = $this->controller->Product->ProductReceiptDetailSerialNumber->getMergeAll(array(), 'all', $product_id, $session_id, 'ProductReceiptDetailSerialNumber.session_id');
+        $result = array();
+        
+        if( !empty($serial_numbers['ProductReceiptDetailSerialNumber']) ) {
+            foreach ($serial_numbers['ProductReceiptDetailSerialNumber'] as $key => $value) {
+                $serial_number = $this->MkCommon->filterEmptyField($value, 'ProductReceiptDetailSerialNumber', 'serial_number');
+
+                $result[$key] = $data;
+                $result[$key]['qty'] = 1;
+                $result[$key]['serial_number'] = $serial_number;
+            }
+        }
+
+        return $result;
+    }
+
+    function _callStock ( $type, $data, $detail ) {
+        $transaction_status = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'transaction_status');
+        $session_id = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'session_id');
+
+        if( $transaction_status == 'posting' ) {
+            $product_id = $this->MkCommon->filterEmptyField($detail, 'ProductReceiptDetail', 'product_id');
+            $qty = $this->MkCommon->filterEmptyField($detail, 'ProductReceiptDetail', 'qty');
+            $price = $this->MkCommon->filterEmptyField($detail, 'ProductReceiptDetail', 'price');
+            $serial_number = $this->MkCommon->filterEmptyField($detail, 'ProductReceiptDetail', 'serial_number');
+
+            $stock = array(
+                'product_id' => $product_id,
+                'transaction_type' => $type,
+                'qty' => $qty,
+                'price' => $price,
+            );
+
+            if( !empty($serial_number) ) {
+                $detail['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock );
+            } else {
+                $detail['ProductStock'][] = $stock;
+            }
+        }
+
+        return $detail;
+    }
+
     function _callBeforeSaveReceipt ( $data, $id = false ) {
         if( !empty($data) ) {
             $data = $this->MkCommon->dataConverter($data, array(
@@ -136,6 +180,7 @@ class RjProductComponent extends Component {
                             
                             $detailId = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'id');
                             $detailQty = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'qty');
+                            $detailPrice = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'total');
 
                             if( $total_receipt >= $detailQty ) {
                                 $receipt_status[] = 'full';
@@ -143,6 +188,7 @@ class RjProductComponent extends Component {
                                 $receipt_status[] = 'half';
                             }
                             
+                            $dataDetail[$key]['ProductReceiptDetail']['price'] = $detailPrice;
                             $dataDetail[$key]['ProductReceiptDetail']['Product'] = array(
                                 'id' => $product_id,
                                 'truck_category_id' => 1,
@@ -155,6 +201,8 @@ class RjProductComponent extends Component {
                             );
                             break;
                     }
+
+                    $dataDetail[$key] = $this->_callStock('product_receipt', $data, $dataDetail[$key]);
 
                     $total += $qty;
                 }

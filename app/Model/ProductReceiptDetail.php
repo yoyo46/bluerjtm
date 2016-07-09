@@ -13,6 +13,16 @@ class ProductReceiptDetail extends AppModel {
         ),
     );
 
+    var $hasMany = array(
+        'ProductStock' => array(
+            'className' => 'ProductStock',
+            'foreignKey' => 'transaction_id',
+            'conditions' => array(
+                'ProductStock.transaction_type' => 'product_receipts',
+            ),
+        ),
+    );
+
 	var $validate = array(
         'product_id' => array(
             'notempty' => array(
