@@ -9331,6 +9331,116 @@ class RevenuesController extends AppController {
         }
     }
 
+    public function import_revision( $download = false ) {
+        App::import('Vendor', 'excelreader'.DS.'excel_reader2');
+
+        $this->set('module_title', __('TTUJ'));
+        $this->set('active_menu', 'ttujs');
+        $this->set('sub_module_title', __('Import TTUJ'));
+
+        if(!empty($this->request->data)) { 
+            $targetdir = $this->MkCommon->_import_excel( $this->request->data );
+
+            if( !empty($targetdir) ) {
+                $xls_files = glob( $targetdir );
+
+                if(empty($xls_files)) {
+                    $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
+                    $this->redirect(array(
+                        'action'=>'import_revision'
+                    ));
+                } else {
+                    $uploadedXls = $this->MkCommon->addToFiles('xls', $xls_files[0]);
+                    $uploaded_file = $uploadedXls['xls'];
+                    $file = explode(".", $uploaded_file['name']);
+                    $extension = array_pop($file);
+                    
+                    if($extension == 'xls') {
+                        $dataimport = new Spreadsheet_Excel_Reader();
+                        $dataimport->setUTFEncoder('iconv');
+                        $dataimport->setOutputEncoding('UTF-8');
+                        $dataimport->read($uploaded_file['tmp_name']);
+                        
+                        if(!empty($dataimport)) {
+                            $data = $dataimport;
+                            $row_submitted = 0;
+                            $successfull_row = 0;
+                            $failed_row = 0;
+                            $error_message = '';
+
+                            for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
+                                $datavar = array();
+                                $flag = true;
+                                $i = 1;
+                                $notFound = false;
+
+                                while ($flag) {
+                                    if( !empty($data->sheets[0]["cells"][1][$i]) ) {
+                                        $variable = $this->MkCommon->toSlug($data->sheets[0]["cells"][1][$i], '_');
+                                        $thedata = !empty($data->sheets[0]["cells"][$x][$i])?$data->sheets[0]["cells"][$x][$i]:NULL;
+                                        $$variable = $thedata;
+                                        $datavar[] = $thedata;
+                                    } else {
+                                        $flag = false;
+                                    }
+                                    $i++;
+                                }
+
+                                if(array_filter($datavar)) {
+                                    if( !empty($keterangan) ) {
+                                        $value = $this->Ttuj->find('first', array(
+                                            'conditions' => array(
+                                                'Ttuj.no_ttuj' => $no_ttuj,
+                                            ),
+                                        ));
+
+                                        if( !empty($value) ) {
+                                            $id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
+
+                                            if( $this->Ttuj->updateAll(array(
+                                                'Ttuj.note'=> "'".$keterangan."'",
+                                            ), array(
+                                                'Ttuj.id'=> $id,
+                                            )) ) {
+                                                $successfull_row++;
+                                            } else {
+                                                $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal mengubah keterangan'), $row_submitted+1) . '<br>';
+                                                $failed_row++;
+                                            }
+                                        } else {
+                                            $error_message .= sprintf(__('Gagal pada baris ke %s : data tidak ditemukan'), $row_submitted+1) . '<br>';
+                                            $failed_row++;
+                                        }
+                                    } else {
+                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Tidak ada revisi keterangan'), $row_submitted+1) . '<br>';
+                                        $failed_row++;
+                                    }
+
+                                    $row_submitted++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(!empty($successfull_row)) {
+                    $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, $row_submitted);
+                    $this->MkCommon->setCustomFlash(__($message_import1), 'success');
+                }
+                
+                if(!empty($error_message)) {
+                    $this->MkCommon->setCustomFlash(__($error_message), 'error');
+                }
+                $this->redirect(array('action'=>'import_revision'));
+            } else {
+                $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                $this->redirect(array(
+                    'action'=>'import_revision'
+                ));
+            }
+        }
+    }
+
     function generate_revenue_tarif_ankut () {
         $this->loadModel('City');
         $this->Ttuj->Revenue->RevenueDetail->virtualFields['min_id'] = 'MIN(RevenueDetail.id)';
