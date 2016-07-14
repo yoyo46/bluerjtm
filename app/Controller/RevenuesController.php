@@ -5882,8 +5882,10 @@ class RevenuesController extends AppController {
                 $invoicePayments = $this->InvoicePayment->InvoicePaymentDetail->getData('all', array(
                     'conditions' => array(
                         'Invoice.status' => 1,
-                        'InvoicePayment.transaction_status' => 'posting',
                         'InvoicePayment.status' => 1,
+                        'InvoicePayment.is_canceled' => 0,
+                        'InvoicePaymentDetail.status' => 1,
+                        'InvoicePayment.transaction_status' => 'posting',
                         'InvoicePayment.customer_id' => $customer['Customer']['id'],
                         'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') >=' => $fromDt,
                         'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $toDt,
@@ -5961,6 +5963,7 @@ class RevenuesController extends AppController {
 
                 $invoicePaymentsBefore = $this->InvoicePayment->getData('first', array(
                     'conditions' => array(
+                        'InvoicePayment.is_canceled' => 0,
                         'InvoicePayment.transaction_status' => 'posting',
                         'InvoicePayment.customer_id' => $customer['Customer']['id'],
                         'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $monthDt,
@@ -5969,7 +5972,7 @@ class RevenuesController extends AppController {
                         'SUM(InvoicePayment.total_payment) total',
                     ),
                 ), true, array(
-                    'status' => 'all',
+                    // 'status' => 'all',
                     'branch' => false,
                 ));
                 $invoiceVoidBefore = $this->Invoice->getData('first', array(

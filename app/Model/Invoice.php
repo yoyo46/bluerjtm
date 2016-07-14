@@ -185,6 +185,7 @@ class Invoice extends AppModel {
                     'InvoicePaymentDetail.invoice_id' => $id,
                     'InvoicePayment.transaction_status' => 'posting',
                     'InvoicePayment.status' => 1,
+                    'InvoicePayment.is_canceled' => 0,
                 ),
                 'contain' => array(
                     'InvoicePayment'
@@ -207,6 +208,7 @@ class Invoice extends AppModel {
                     'InvoicePayment.transaction_status' => 'posting',
                     'InvoicePaymentDetail.invoice_id' => $id,
                     'InvoicePayment.status' => 1,
+                    'InvoicePayment.is_canceled' => 0,
                 ),
                 'contain' => array(
                     'InvoicePayment'
