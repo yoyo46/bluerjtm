@@ -316,9 +316,10 @@ class TtujPayment extends AppModel {
     function _callTtujPaid ( $data, $ttuj_id, $type, $options = array() ) {
         $default_options = array(
             'conditions' => array(
+                'TtujPayment.is_canceled' => 0,
+                'TtujPaymentDetail.status' => 1,
                 'TtujPaymentDetail.ttuj_id' => $ttuj_id,
                 'TtujPaymentDetail.type' => $type,
-                'TtujPaymentDetail.status' => 1,
                 'TtujPayment.transaction_status' => 'posting',
             ),
             'contain' => array(

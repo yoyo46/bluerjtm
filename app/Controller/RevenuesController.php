@@ -8223,8 +8223,9 @@ class RevenuesController extends AppController {
         $this->set('sub_module_title', $module_title);
         $options =  $this->TtujPaymentDetail->TtujPayment->getData('paginate', array(
             'conditions' => array(
-                'TtujPayment.branch_id' => $allow_branch_id,
+                'TtujPayment.is_canceled' => 0,
                 'TtujPaymentDetail.status' => 1,
+                'TtujPayment.branch_id' => $allow_branch_id,
                 'TtujPayment.transaction_status' => 'posting',
             ),
             'contain' => array(
