@@ -314,9 +314,11 @@ class CashBank extends AppModel {
         $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
         $total = !empty($data['named']['total'])?$data['named']['total']:false;
         $description = !empty($data['named']['description'])?$data['named']['description']:false;
-        $documenttype = !empty($data['CashBank']['documenttype'])?urldecode($data['CashBank']['documenttype']):false;
         $transaction_status = !empty($data['named']['transaction_status'])?urldecode($data['named']['transaction_status']):false;
         $coa = !empty($data['named']['coa'])?urldecode($data['named']['coa']):false;
+        
+        $documenttype = !empty($data['named']['documenttype'])?urldecode($data['named']['documenttype']):false;
+        $documenttype = !empty($data['CashBank']['documenttype'])?urldecode($data['CashBank']['documenttype']):$documenttype;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
