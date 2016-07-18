@@ -224,14 +224,9 @@
                             $status = $this->Common->filterEmptyField($value, 'Ttuj', 'status');
                             $completed = $this->Common->filterEmptyField($value, 'Ttuj', 'completed');
                             $completed_date = $this->Common->filterEmptyField($value, 'Ttuj', 'completed_date');
-                            $status_sj = $this->Common->filterEmptyField($value, 'Ttuj', 'status_sj');
 
                             $customComplatedDate = $this->Common->formatDate($completed_date, 'd/m/Y', false);
-                            $allowEdit = true;
-
-                            if( $status_sj != 'none' ) {
-                                $allowEdit = false;
-                            }
+                            $allowEdit = $this->Revenue->_callTtujPaid($value);
             ?>
             <tr>
                 <td><?php echo $value['Ttuj']['no_ttuj'];?></td>

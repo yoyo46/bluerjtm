@@ -70,6 +70,9 @@ class RevenuesController extends AppController {
         if( !empty($ttujs) ) {
             foreach ($ttujs as $key => $ttuj) {
                 $id = $this->MkCommon->filterEmptyField( $ttuj, 'Ttuj', 'id' );
+                $ttuj = $this->Ttuj->TtujPaymentDetail->TtujPayment->_callTtujPaid($ttuj, $id);
+                $ttuj = $this->Ttuj->Revenue->getPaid( $ttuj, $id );
+
                 $ttujs[$key] = $this->Ttuj->SuratJalanDetail->getMergeFirst( $ttuj, $id, 'SuratJalanDetail.ttuj_id', array(
                     'conditions' => array(
                         'SuratJalan.status' => 1,
@@ -128,7 +131,8 @@ class RevenuesController extends AppController {
             }
 
             $ttuj = $this->Ttuj->getMergeContain( $ttuj, $id );
-            $ttuj = $this->Ttuj->Revenue->getPaid( $ttuj, $ttuj['Ttuj']['id'] );
+            $ttuj = $this->Ttuj->Revenue->getPaid( $ttuj, $id );
+            $ttuj = $this->Ttuj->TtujPaymentDetail->TtujPayment->_callTtujPaid($ttuj, $id);
             $data_action = false;
 
             if( !empty($demo) ) {

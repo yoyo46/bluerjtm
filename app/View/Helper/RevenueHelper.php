@@ -171,4 +171,18 @@ class RevenueHelper extends AppHelper {
             return $status;
         }
     }
+
+    function _callTtujPaid ( $value ) {
+        $paid = $this->Common->filterEmptyField($value, 'TtujPayment', 'paid');
+        $status_sj = $this->Common->filterEmptyField($value, 'Ttuj', 'status_sj', 'none');
+        $is_invoice = $this->Common->filterEmptyField($value, 'Ttuj', 'is_invoice');
+        $status = $this->Common->filterIssetField($value, 'Ttuj', 'status', true);
+        $allowEdit = true;
+
+        if( $status_sj != 'none' || !empty($paid) || !empty($is_invoice) || empty($status) ) {
+            $allowEdit = false;
+        }
+
+        return $allowEdit;
+    }
 }

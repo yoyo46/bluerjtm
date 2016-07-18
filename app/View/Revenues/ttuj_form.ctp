@@ -14,8 +14,6 @@
 			'id' => 'ttuj-form',
 		));
 
-        $status_sj = $this->Common->filterEmptyField($data_local, 'Ttuj', 'status_sj', 'none');
-
 		$datForm = !empty($this->request->data)?$this->request->data:false;
 		$ttujDate = (!empty($datForm['Ttuj']['ttuj_date'])) ? $datForm['Ttuj']['ttuj_date'] : date('d/m/Y');
 		$tglBerangkat = (!empty($datForm['Ttuj']['tgl_berangkat'])) ? $datForm['Ttuj']['tgl_berangkat'] : date('d/m/Y');
@@ -509,14 +507,7 @@
 		</div>
 		<div class="box-footer text-center action">
 			<?php
-					$allowSave = true;
-
-					if( isset($data_local['Ttuj']['status']) && empty($data_local['Ttuj']['status']) ) {
-						$allowSave = false;
-					}
-                    if( $status_sj != 'none' ) {
-						$allowSave = false;
-					}
+                    $allowSave = $this->Revenue->_callTtujPaid($data_local);
 
 					echo $this->Html->link(__('Kembali'), array(
 						'action' => 'ttuj', 
@@ -524,7 +515,7 @@
 						'class'=> 'btn btn-default',
 					));
 
-                    if( empty($data_local['Ttuj']['is_invoice']) && $allowSave ) {
+                    if( $allowSave ) {
 						if( !empty($data_local['Ttuj']['is_draft']) || empty($data_local) ) {
 				    		echo $this->Form->button(__('Commit'), array(
 								'class'=> 'btn btn-success submit-form btn-lg',
