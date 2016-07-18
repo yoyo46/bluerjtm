@@ -231,7 +231,7 @@ class SupplierQuotation extends AppModel {
                         }
                     }
                 } else {
-                    $defaul_msg = sprintf(__('Gagal %s'), $defaul_msg);
+                    $defaul_msg = sprintf(__('Gagal %s. Silahkan melengkapi field dibawah ini.'), $defaul_msg);
                     $result = array(
                         'msg' => $defaul_msg,
                         'status' => 'error',
@@ -245,7 +245,7 @@ class SupplierQuotation extends AppModel {
                     );
                 }
             } else {
-                $defaul_msg = sprintf(__('Gagal %s'), $defaul_msg);
+                $defaul_msg = sprintf(__('Gagal %s. Silahkan melengkapi field dibawah ini.'), $defaul_msg);
                 $result = array(
                     'msg' => $defaul_msg,
                     'status' => 'error',

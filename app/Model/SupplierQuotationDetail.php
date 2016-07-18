@@ -137,10 +137,10 @@ class SupplierQuotationDetail extends AppModel {
                     }
 
                     if( !$flagSave ) {
-                        $result = false;
+                        return false;
                     }
                 } else {
-                    $result = false;
+                    return false;
                 }
             }
 

@@ -260,6 +260,7 @@ class PurchasesController extends AppController {
         $this->request->data = $this->RjPurchase->_callBeforeRenderPO($this->request->data);
 
         $vendors = $this->PurchaseOrder->Vendor->getData('list');
+        $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'Purchase Order');
         $this->set(compact(
             'vendors'
@@ -292,6 +293,7 @@ class PurchasesController extends AppController {
             $this->request->data = $this->RjPurchase->_callBeforeRenderPO($this->request->data);
 
             $vendors = $this->PurchaseOrder->Vendor->getData('list');
+            $this->MkCommon->_layout_file('select');
             $this->set('active_menu', 'Purchase Order');
             $this->set(compact(
                 'vendors', 'value'

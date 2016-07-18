@@ -37,7 +37,8 @@
 						));
 						echo $this->Common->buildInputForm('vendor_id', __('Supplier *'), array(
 							'empty' => __('- Pilih Supplier -'),
-							'id' => 'supplier-val'
+							'id' => 'supplier-val',
+							'class' => 'form-control chosen-select',
 						));
 				?>
 				<div class="form-group">

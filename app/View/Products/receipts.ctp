@@ -1,8 +1,8 @@
 <?php 
         $dataColumns = array(
-            'noref' => array(
-                'name' => __('No. Ref'),
-            ),
+            // 'noref' => array(
+            //     'name' => __('No. Ref'),
+            // ),
             'transaction_date' => array(
                 'name' => __('Tgl Penerimaan'),
             ),
@@ -107,7 +107,7 @@
             ?>
             <tr>
                 <?php 
-                        echo $this->Html->tag('td', $noref);
+                        // echo $this->Html->tag('td', $noref);
                         echo $this->Html->tag('td', $customDate);
                         // echo $this->Html->tag('td', $nodoc);
                         echo $this->Html->tag('td', $vendor);

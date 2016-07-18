@@ -45,8 +45,12 @@ class RjPurchaseComponent extends Component {
 
                     $ppn = $this->MkCommon->_callPriceConverter($ppn);
                     $disc = $this->MkCommon->_callPriceConverter($disc);
-                    $price = $this->MkCommon->_callPriceConverter($price);
+                    $price = $this->MkCommon->_callPriceConverter($price) * 1;
                     $total = $price - $disc + $ppn;
+
+                    if( empty($price) ) {
+                        $price = '';
+                    }
 
                     $dataSQDetail['SupplierQuotationDetail'] = array(
                         'product_id' => $product_id,
