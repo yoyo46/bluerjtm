@@ -1,7 +1,9 @@
 <?php 
         $view = !empty($view)?$view:false;
+        $value = !empty($value)?$value:false;
         $data = $this->request->data;
         $dataDetail = $this->Common->filterEmptyField($data, 'ProductReceiptDetail');
+        $nodoc = $this->Common->filterEmptyField($value, 'Document', 'nodoc');
 
 		$dataColumns = array(
             'code' => array(
@@ -64,7 +66,7 @@
 	                        echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));
 	                    }
 	            ?>
-	        	<tbody class="wrapper-table-documents">
+	        	<tbody class="wrapper-table-documents" rel="<?php echo $nodoc; ?>">
                     <?php
                             $grandtotal = 0;
 

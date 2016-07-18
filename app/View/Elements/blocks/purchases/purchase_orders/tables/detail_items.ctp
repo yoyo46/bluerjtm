@@ -21,12 +21,14 @@
                 'value' => $supplier_quotation_detail_id,
             )));
             echo $this->Html->tag('td', $name);
-            echo $this->Html->tag('td', $unit);
+            echo $this->Html->tag('td', $unit, array(
+                'class' => 'text-center',
+            ));
             echo $this->Html->tag('td', $this->Common->buildInputForm('PurchaseOrderDetail.qty.'.$product_id, false, array(
                 'type' => 'text',
                 'fieldError' => 'PurchaseOrderDetail.'.$idx.'.qty',
                 'frameClass' => false,
-                'class' => 'qty input_number text-right',
+                'class' => 'qty input_number text-center',
                 'attributes' => array(
                     'value' => $qty,
                 ),

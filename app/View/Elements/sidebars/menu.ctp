@@ -1272,6 +1272,7 @@
                     $dataMenu = array(
                         'products' => array(
                             'categories', 'units',
+                            'receipts',
                         ),
                         'spk' => array(
                             'internal',
@@ -1281,7 +1282,8 @@
                     if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeSetting = false;
                         $settingMenu = array(
-                            'internal', 'product_categories', 'products'
+                            'internal', 'product_categories', 'products',
+                            'receipts',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {

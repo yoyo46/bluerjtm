@@ -20,7 +20,10 @@
             echo $this->Html->tag('td', $name);
             echo $this->Html->tag('td', $this->Common->buildInputForm('ProductReceiptDetail.qty.', false, array(
                 'type' => 'text',
-                'fieldError' => 'ProductReceiptDetail.'.$key.'.qty',
+                'fieldError' => array(
+                    'ProductReceiptDetail.'.$key.'.qty',
+                    'ProductReceiptDetail.'.$key.'.over_receipt'
+                ),
                 'frameClass' => false,
                 'class' => sprintf('qty input_number serial-number-input text-center %s', $targetQty),
                 'attributes' => array(

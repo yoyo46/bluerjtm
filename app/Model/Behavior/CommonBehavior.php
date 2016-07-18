@@ -110,7 +110,7 @@ class CommonBehavior extends ModelBehavior {
 			$modelParent = $model->name;
 			$foreignKey = 'id';
 
-			if( !empty($options['foreignKey']) ) {
+			if( !empty($options['foreignKey']) && is_array($options) ) {
 				$foreignKey = $options['foreignKey'];
 			} else if( !empty($model->belongsTo[$uses]['foreignKey']) ) {
 				$foreignKey = $model->belongsTo[$uses]['foreignKey'];

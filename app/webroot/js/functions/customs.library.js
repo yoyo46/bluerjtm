@@ -663,6 +663,9 @@
             var obj_note = $.checkUndefined(vthis.find('.document-note'), false);
             var data_note_target = $.checkUndefined(obj_note.attr('data-target-note'), false);
             var data_note_value = $.checkUndefined(obj_note.html(), false);
+            var data_duplicate = $.filterEmptyField(vthis.attr('data-duplicate'));
+            var data_wrapper_write = $.filterEmptyField(vthis.attr('data-wrapper-write'));
+            var flag = true;
 
             if(data_change == '.cash-bank-auth-user'){
                 data_change = vthis.attr('data-rel')+' '+data_change;
@@ -703,10 +706,24 @@
                 }
             }
 
-            if( typeof data_ajax != 'undefined' ) {
-                $.directAjaxLink({
-                    obj: vthis,
-                });
+            if( $(data_wrapper_write).length > 0 ) {
+                if( data_duplicate == 'false' ) {
+                    var rel = $(data_wrapper_write).attr('rel');
+
+                    if( data_value == rel ) {
+                        flag = false;
+                    }
+                }
+            }
+
+            if( flag == true ) {
+                $(data_wrapper_write).attr('rel', data_value);
+
+                if( typeof data_ajax != 'undefined' ) {
+                    $.directAjaxLink({
+                        obj: vthis,
+                    });
+                }
             }
 
             if( typeof data_change_extra != 'undefined' ) {

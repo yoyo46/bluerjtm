@@ -13,12 +13,12 @@ class ProductReceiptDetail extends AppModel {
         ),
     );
 
-    var $hasMany = array(
-        'ProductStock' => array(
-            'className' => 'ProductStock',
+    var $hasOne = array(
+        'ProductHistory' => array(
+            'className' => 'ProductHistory',
             'foreignKey' => 'transaction_id',
             'conditions' => array(
-                'ProductStock.transaction_type' => 'product_receipts',
+                'ProductHistory.transaction_type' => 'product_receipts',
             ),
         ),
     );
@@ -46,7 +46,23 @@ class ProductReceiptDetail extends AppModel {
                 'message' => 'Mohon pilih no. seri'
             ),
         ),
+        'over_receipt' => array(
+            'validateOverReceipt' => array(
+                'rule' => array('validateOverReceipt'),
+                'message' => 'Penerimaan Qty melebihi quota.'
+            ),
+        ),
 	);
+
+    function validateOverReceipt() {
+        $over_receipt = $this->filterEmptyField($this->data, 'ProductReceiptDetail', 'over_receipt');
+
+        if( !empty($over_receipt) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
 	function getData( $find, $options = false, $elements = false ){
         $status = isset($elements['status'])?$elements['status']:'active';

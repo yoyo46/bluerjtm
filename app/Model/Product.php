@@ -42,6 +42,10 @@ class Product extends AppModel {
             'className' => 'ProductStock',
             'foreignKey' => 'product_id',
         ),
+        'ProductHistory' => array(
+            'className' => 'ProductHistory',
+            'foreignKey' => 'product_id',
+        ),
     );
 
 	var $validate = array(

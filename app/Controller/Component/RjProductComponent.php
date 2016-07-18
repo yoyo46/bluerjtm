@@ -76,27 +76,45 @@ class RjProductComponent extends Component {
         return $result;
     }
 
-    function _callStock ( $type, $data, $detail ) {
+    function _callStock ( $transaction_type, $data, $detail, $type = 'in' ) {
         $transaction_status = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'transaction_status');
         $session_id = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'session_id');
+        $to_branch_id = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'to_branch_id');
 
         if( $transaction_status == 'posting' ) {
             $product_id = $this->MkCommon->filterEmptyField($detail, 'ProductReceiptDetail', 'product_id');
             $qty = $this->MkCommon->filterEmptyField($detail, 'ProductReceiptDetail', 'qty');
             $price = $this->MkCommon->filterEmptyField($detail, 'ProductReceiptDetail', 'price');
             $serial_number = $this->MkCommon->filterEmptyField($detail, 'ProductReceiptDetail', 'serial_number');
+            
+            $history = $this->controller->Product->ProductHistory->getMerge(array(), $product_id);
+            $balance = $this->MkCommon->filterEmptyField($history, 'ProductHistory', 'ending', 0);
+            $ending = $balance;
+
+            if( $type == 'out' ) {
+                $ending -= $qty;
+            } else if( $type == 'in' ) {
+                $ending += $qty;
+            }
 
             $stock = array(
+                'branch_id' => $to_branch_id,
+                'balance' => $balance,
+                'ending' => $ending,
                 'product_id' => $product_id,
-                'transaction_type' => $type,
+                'transaction_type' => $transaction_type,
+                'type' => $type,
                 'qty' => $qty,
                 'price' => $price,
             );
+            $detail['ProductHistory'] = $stock;
 
             if( !empty($serial_number) ) {
-                $detail['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock );
+                $detail['ProductHistory']['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock );
             } else {
-                $detail['ProductStock'][] = $stock;
+                $detail['ProductHistory']['ProductStock'][] = array_merge($stock, array(
+                    'serial_number' => sprintf('%s-%s', $this->MkCommon->getNoRef($product_id), date('ymdHis')),
+                ));
             }
         }
 
@@ -140,7 +158,6 @@ class RjProductComponent extends Component {
                 $total = 0;
                 $dataDetail = array();
                 $values = array_filter($details);
-                $receipt_status = array();
 
                 foreach ($values as $key => $product_id) {
                     $qty = $this->MkCommon->filterIssetField($receiptQty, $key);
@@ -183,11 +200,18 @@ class RjProductComponent extends Component {
                             $detailPrice = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'total');
 
                             if( $total_receipt >= $detailQty ) {
-                                $receipt_status[] = 'full';
+                                $receipt_detail_status = 'full';
                             } else {
-                                $receipt_status[] = 'half';
+                                $receipt_detail_status = 'half';
+                            }
+
+                            if( $qty > $detailQty ) {
+                                $over_receipt = true;
+                            } else {
+                                $over_receipt = false;
                             }
                             
+                            $dataDetail[$key]['ProductReceiptDetail']['over_receipt'] = $over_receipt;
                             $dataDetail[$key]['ProductReceiptDetail']['price'] = $detailPrice;
                             $dataDetail[$key]['ProductReceiptDetail']['Product'] = array(
                                 'id' => $product_id,
@@ -195,39 +219,20 @@ class RjProductComponent extends Component {
                                 'PurchaseOrderDetail' => array(
                                     array(
                                         'id' => $detailId,
-                                        'total_receipt' => $total_receipt
+                                        'receipt_status' => $receipt_detail_status,
                                     ),
                                 ),
                             );
                             break;
                     }
 
-                    $dataDetail[$key] = $this->_callStock('product_receipt', $data, $dataDetail[$key]);
+                    $dataDetail[$key] = $this->_callStock('product_receipt', $data, $dataDetail[$key], 'in');
 
                     $total += $qty;
                 }
 
                 $data['ProductReceipt']['total'] = $total;
                 $data['ProductReceiptDetail'] = $dataDetail;
-
-                switch ($document_type) {
-                    case 'po':
-                        if( !in_array('half', $receipt_status) ) {
-                            $receipt_status = 'full';
-                        } else {
-                            $receipt_status = 'half';
-                        }
-
-                        $data['PurchaseOrder'] = array(
-                            'id' => $document_id,
-                            'draft_receipt_status' => $receipt_status,
-                        );
-
-                        if( $transaction_status == 'posting' ) {
-                            $data['PurchaseOrder']['receipt_status'] = $receipt_status;
-                        }
-                        break;
-                }
             }
         }
 
@@ -235,9 +240,23 @@ class RjProductComponent extends Component {
     }
 
     function _callBeforeRenderReceipt ( $data, $value = false ) {
+        $document_id = false;
+
         if( empty($data) ) {
             $data = $value;
+
+            $type = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'document_type');
+            $document_id = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'document_id');
+
             $data['ProductReceipt']['document_number'] = $this->MkCommon->filterEmptyField($data, 'Document', 'nodoc');
+
+            if( empty($value) ) {
+                $data['ProductReceipt']['session_id'] = String::uuid();
+                $data['ProductReceipt']['transaction_date'] = date('Y-m-d');
+            }
+        } else {
+            $type = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_type');
+            $document_id = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_id');
         }
 
         $data = $this->MkCommon->dataConverter($data, array(
@@ -251,7 +270,7 @@ class RjProductComponent extends Component {
 
         switch ($document_type) {
             case 'po':
-                $vendors = $this->controller->Product->PurchaseOrderDetail->PurchaseOrder->_callVendors('unreceipt');
+                $vendors = $this->controller->Product->PurchaseOrderDetail->PurchaseOrder->_callVendors('unreceipt_draft', $document_id);
                 break;
         }
 
@@ -273,7 +292,7 @@ class RjProductComponent extends Component {
         $this->MkCommon->_layout_file('select');
     	$this->controller->set(compact(
     		'employes', 'toBranches',
-            'vendors'
+            'vendors', 'type'
 		));
     }
 
@@ -286,7 +305,7 @@ class RjProductComponent extends Component {
             'limit' => 10,
         ));
         $this->controller->paginate = $this->controller->PurchaseOrder->getData('paginate', $options, array(
-            'status' => 'unreceipt',
+            'status' => 'unreceipt_draft',
         ));
         $values = $this->controller->paginate('PurchaseOrder');
 
@@ -307,7 +326,7 @@ class RjProductComponent extends Component {
         ));
 
         $purchase_order_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'id');
-        $value =  $this->controller->Product->PurchaseOrderDetail->getMerge($value, $purchase_order_id);
+        $value =  $this->controller->Product->PurchaseOrderDetail->getMerge($value, $purchase_order_id, 'ProductReceipt');
 
         return $value;
     }
@@ -346,7 +365,7 @@ class RjProductComponent extends Component {
     }
 
     function _callBeforeRenderReceipts () {
-        $vendors = $this->controller->Product->PurchaseOrderDetail->PurchaseOrder->_callVendors('unreceipt');
+        $vendors = $this->controller->Product->PurchaseOrderDetail->PurchaseOrder->Vendor->getData('list');
 
         $this->controller->set(compact(
             'vendors'

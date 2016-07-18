@@ -1,3 +1,7 @@
+/*
+  - Status
+*/
+
 @import url(//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic);
 @import url(//fonts.googleapis.com/css?family=Kaushan+Script);
 /*! 
@@ -4349,4 +4353,17 @@ table#yamaha-rit>thead>tr>th {
 }
 .table-colored > tbody > tr.tf-total > td {
   background: transparent;
+}
+
+/*- Status*/
+
+
+/*- Status*/
+.text-grey {
+    color: #777;
+    font-weight: bold;
+}
+.text-green {
+    color: #777;
+    font-weight: bold;
 }

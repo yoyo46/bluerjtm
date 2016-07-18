@@ -13,22 +13,27 @@
                 ));
         ?>
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <?php 
                         echo $this->Common->buildInputForm('nodoc', __('No Dokumen'));
+                        echo $this->Common->buildInputForm('noref', __('No. Ref'));
+                ?>
+            </div>
+            <div class="col-sm-4">
+                <?php 
                         echo $this->Common->buildInputForm('vendor_id', __('Vendor'), array(
                             'empty' => __('- Pilih Vendor -'),
                             'class' => 'form-control chosen-select',
                         ));
-                ?>
-            </div>
-            <div class="col-sm-6">
-                <?php 
                         echo $this->Common->buildInputForm('date', __('Tanggal'), array(
                             'textGroup' => $this->Common->icon('calendar'),
                             'positionGroup' => 'positionGroup',
                             'class' => 'form-control pull-right date-range',
                         ));
+                ?>
+            </div>
+            <div class="col-sm-4">
+                <?php 
                         echo $this->Common->buildInputForm('status', __('Status'), array(
                             'empty' => __('Pilih Status'),
                             'options' => array(

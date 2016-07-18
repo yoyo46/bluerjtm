@@ -67,6 +67,16 @@ class ProductReceipt extends AppModel {
                 'message' => 'Vendor harap dipilih'
             ),
         ),
+        'to_branch_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Gudang Penerima harap dipilih'
+            ),
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'Gudang Penerima harap dipilih'
+            ),
+        ),
         'employe_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -162,13 +172,11 @@ class ProductReceipt extends AppModel {
         return $result;
     }
 
-    function getMerge( $data, $id, $status = 'active' ){
+    function getMerge( $data, $id, $fieldName = 'ProductReceipt.id' ){
         $data_merge = $this->getData('first', array(
             'conditions' => array(
-                'ProductReceipt.id' => $id
+                $fieldName => $id
             ),
-        ), array(
-            'status' => $status,
         ));
 
         if(!empty($data_merge)){
@@ -176,6 +184,39 @@ class ProductReceipt extends AppModel {
         }
 
         return $data;
+    }
+
+    function _callReceiptDocument( $data ) {
+        $document_id = $this->filterEmptyField($data, 'ProductReceipt', 'document_id');
+        $document_type = $this->filterEmptyField($data, 'ProductReceipt', 'document_type');
+        $transaction_status = $this->filterEmptyField($data, 'ProductReceipt', 'transaction_status');
+
+        switch ($document_type) {
+            case 'po':
+                $purchaseOrderDetail = $this->PurchaseOrder->PurchaseOrderDetail->getData('first', array(
+                    'conditions' => array(
+                        'purchaseOrderDetail.purchase_order_id' => $document_id,
+                    ),
+                ), array(
+                    'status' => 'unreceipt',
+                ));
+
+                if( !empty($purchaseOrderDetail) ) {
+                    $receipt_status = 'half';
+                } else {
+                    $receipt_status = 'full';
+                }
+
+                $this->PurchaseOrder->id = $document_id;
+                $this->PurchaseOrder->set('draft_receipt_status', $receipt_status);
+
+                if( $transaction_status == 'posting' ) {
+                    $this->PurchaseOrder->set('receipt_status', $receipt_status);
+                }
+
+                $this->PurchaseOrder->save();
+                break;
+        }
     }
 
     function doSave( $data, $value = false, $id = false ) {
@@ -208,6 +249,8 @@ class ProductReceipt extends AppModel {
                         'ProductReceiptDetailSerialNumber.session_id' => $session_id,
                         'ProductReceiptDetailSerialNumber.status' => 1,
                     ));
+
+                    $this->_callReceiptDocument( $data );
                     
                     $defaul_msg = sprintf(__('Berhasil melakukan %s'), $defaul_msg);
                     $result = array(
@@ -250,6 +293,7 @@ class ProductReceipt extends AppModel {
     }
 
     public function _callRefineParams( $data = '', $default_options = false ) {
+        $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
@@ -283,18 +327,24 @@ class ProductReceipt extends AppModel {
         ));
 
         if ( !empty($value) ) {
-            $sq_id = !empty($value['ProductReceipt']['document_id'])?$value['ProductReceipt']['document_id']:false;
-            $nodoc = !empty($value['ProductReceipt']['nodoc'])?$value['ProductReceipt']['nodoc']:false;
-            $default_msg = sprintf(__('menghapus penerimaan barang #%s'), $nodoc);
+            $document_id = $this->filterEmptyField($value, 'ProductReceipt', 'document_id');
+            $nodoc = $this->filterEmptyField($value, 'ProductReceipt', 'nodoc');
+            $document_type = $this->filterEmptyField($value, 'ProductReceipt', 'document_type');
+            $default_msg = sprintf(__('menghapus penerimaan barang #%s'), $id);
 
             $this->id = $id;
             $this->set('status', 0);
             $this->set('transaction_status', 'void');
 
             if( $this->save() ) {
-                $this->ProductReceipt->id = $sq_id;
-                $this->ProductReceipt->set('receipt_status', 'none');
-                $this->ProductReceipt->save();
+
+                switch ($document_type) {
+                    case 'po':
+                        $this->PurchaseOrder->id = $document_id;
+                        $this->PurchaseOrder->set('receipt_status', 'none');
+                        $this->PurchaseOrder->save();
+                        break;
+                }
 
                 $msg = sprintf(__('Berhasil %s'), $default_msg);
                 $result = array(

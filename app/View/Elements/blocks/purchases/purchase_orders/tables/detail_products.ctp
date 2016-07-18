@@ -100,9 +100,15 @@
 
                                     $customTotal = $this->Common->getFormatPrice($total, '', 2);
 
-                                    $code = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'code');
-                                    $name = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'name');
-                                    $unit = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'unit');
+                                    if( !empty($value['PurchaseOrderDetail']['code']) ) {
+                                        $code = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'code');
+                                        $name = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'name');
+                                        $unit = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'unit');
+                                    } else {
+                                        $code = $this->Common->filterEmptyField($value, 'Product', 'code');
+                                        $name = $this->Common->filterEmptyField($value, 'Product', 'name');
+                                        $unit = $this->Common->filterEmptyField($value, 'ProductUnit', 'name');
+                                    }
 
                                     echo $this->element('blocks/purchases/purchase_orders/tables/detail_items', array(
                                         'modelName' => 'PurchaseOrderDetail',

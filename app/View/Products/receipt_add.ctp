@@ -70,10 +70,12 @@
     			</div>
 				<?php
 						echo $this->Common->buildInputForm('employe_id', __('Diterima Oleh *'), array(
+							'type' => 'select',
 							'empty' => __('- Pilih Penerima -'),
 							'class' => 'form-control chosen-select',
 						));
 						echo $this->Common->buildInputForm('to_branch_id', __('Gudang Penerima *'), array(
+							'type' => 'select',
 							'empty' => __('- Pilih Gudang -'),
 							'class' => 'form-control chosen-select',
 						));

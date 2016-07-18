@@ -2614,4 +2614,26 @@ class CommonHelper extends AppHelper {
             'class' => 'form-group'
         ));
     }
+
+    function _callStatusReceipt ( $value, $modelName ) {
+        $receipt_status = $this->filterEmptyField($value, $modelName, 'receipt_status');
+
+        switch ($receipt_status) {
+            case 'half':
+                return $this->Html->tag('span', __('Sebagian'), array(
+                    'class' => 'text-orange',
+                ));
+                break;
+            case 'full':
+                return $this->Html->tag('span', __('Diterima'), array(
+                    'class' => 'text-green',
+                ));
+                break;
+            default:
+                return $this->Html->tag('span', __('Belum'), array(
+                    'class' => 'text-grey',
+                ));
+                break;
+        }
+    }
 }

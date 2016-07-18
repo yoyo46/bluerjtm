@@ -37,6 +37,13 @@ class PurchaseOrder extends AppModel {
                 'DocumentAuth.document_type' => 'po',
             ),
         ),
+        'ProductReceipt' => array(
+            'className' => 'ProductReceipt',
+            'foreignKey' => 'purchase_order_id',
+            'conditions' => array(
+                'ProductReceipt.document_type' => 'po',
+            ),
+        ),
     );
 
 	var $validate = array(
@@ -115,6 +122,18 @@ class PurchaseOrder extends AppModel {
                 $default_options['conditions']['PurchaseOrder.receipt_status'] = array( 'none', 'half' );
                 $default_options['conditions']['PurchaseOrder.is_asset'] = 0;
                 $default_options['conditions']['PurchaseOrder.status'] = 1;
+                break;
+            case 'unreceipt_draft':
+                $default_options['conditions']['PurchaseOrder.transaction_status'] = array( 'approved', 'paid', 'half_paid' );
+                $default_options['conditions']['PurchaseOrder.is_asset'] = 0;
+                $default_options['conditions']['PurchaseOrder.status'] = 1;
+
+                if( !empty($special_id) ) {
+                    $default_options['conditions']['OR']['PurchaseOrder.id'] = $special_id;
+                    $default_options['conditions']['OR']['PurchaseOrder.draft_receipt_status'] = array( 'none', 'half' );
+                } else {
+                    $default_options['conditions']['PurchaseOrder.draft_receipt_status'] = array( 'none', 'half' );
+                }
                 break;
             default:
                 $default_options['conditions']['PurchaseOrder.status'] = array( 0, 1 );

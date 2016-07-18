@@ -56,6 +56,11 @@ class PurchaseOrderDetail extends AppModel {
         ),
 	);
 
+    // public function __construct($id = false, $table = NULL, $ds = NULL){
+    //     parent::__construct($id, $table, $ds);
+    //     $this->virtualFields['total_remain'] = sprintf('%s.qty - IFNULL(%s.total_receipt, 0)', $this->alias, $this->alias);
+    // }
+
 	function getData( $find, $options = false, $elements = false ){
         $status = isset($elements['status'])?$elements['status']:'active';
 
@@ -71,6 +76,10 @@ class PurchaseOrderDetail extends AppModel {
         switch ($status) {
             case 'active':
                 $default_options['conditions']['PurchaseOrderDetail.status'] = 1;
+                break;
+            case 'unreceipt':
+                $default_options['conditions']['PurchaseOrderDetail.status'] = 1;
+                $default_options['conditions']['PurchaseOrderDetail.receipt_status <>'] = 'full';
                 break;
         }
 
@@ -98,7 +107,7 @@ class PurchaseOrderDetail extends AppModel {
         return $result;
     }
 
-    function getMerge( $data, $id ){
+    function getMerge( $data, $id, $type = false ){
         $values = $this->getData('all', array(
             'conditions' => array(
                 'PurchaseOrderDetail.purchase_order_id' => $id
@@ -108,7 +117,50 @@ class PurchaseOrderDetail extends AppModel {
         ));
 
         if(!empty($values)){
-            $values = $this->Product->getMerge($values, false, 'PurchaseOrderDetail', false);
+            foreach ($values as $key => $value) {
+                $purchase_order_id = $this->filterEmptyField($value, 'PurchaseOrderDetail', 'purchase_order_id');
+                $product_id = $this->filterEmptyField($value, 'PurchaseOrderDetail', 'product_id');
+                $qty = $this->filterEmptyField($value, 'PurchaseOrderDetail', 'qty');
+                
+                $value = $this->Product->getMerge($value, $product_id, 'PurchaseOrderDetail', false);
+
+                switch ($type) {
+                    case 'ProductReceipt':
+                        $receipts = $this->PurchaseOrder->ProductReceipt->getData('list', array(
+                            'conditions' => array(
+                                'ProductReceipt.document_id' => $purchase_order_id,
+                                'ProductReceipt.document_type' => 'po',
+                            ),
+                            'fields' => array(
+                                'ProductReceipt.id',
+                            ),
+                        ));
+                        $value['PurchaseOrderDetail']['total_remain'] = $qty;
+
+                        if( !empty($receipts) ) {
+                            $this->Product->ProductReceiptDetail->virtualFields['total_receipt'] = 'SUM(ProductReceiptDetail.qty)';
+                            $receiptProducts = $this->Product->ProductReceiptDetail->getData('first', array(
+                                'conditions' => array(
+                                    'ProductReceiptDetail.product_receipt_id' => $receipts,
+                                    'ProductReceiptDetail.product_id' => $product_id,
+                                ),
+                            ));
+
+                            $qty_receipt = $this->filterEmptyField($receiptProducts, 'ProductReceiptDetail', 'total_receipt');
+                            $total_remain = $qty - $qty_receipt;
+
+                            if( $total_remain < 0 ) {
+                                $total_remain = 0;
+                            }
+
+                            $value['PurchaseOrderDetail']['total_remain'] = $total_remain;
+                        }
+                        break;
+                }
+
+                $values[$key] = $value;
+            }
+
             $data['PurchaseOrderDetail'] = $values;
         }
 

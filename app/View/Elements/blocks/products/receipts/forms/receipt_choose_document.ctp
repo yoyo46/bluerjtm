@@ -14,7 +14,7 @@
 	?>
 	<div class="form-group">
 		<?php
-			echo $this->Form->label('document_number', __('No. Dokumen'));
+			echo $this->Form->label('document_number', __('No. Dokumen *'));
 		?>
 		<div class="row">
 			<div class="col-sm-10">
@@ -26,6 +26,7 @@
 								'placeholder' => __('No. Dokumen'),
 								'readonly' => true,
 							),
+							'fieldError' => 'ProductReceipt.document_id',
 						));
 						echo $this->Html->tag('span', '', array(
 							'id' => 'available-date',

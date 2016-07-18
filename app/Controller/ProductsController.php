@@ -454,15 +454,12 @@ class ProductsController extends AppController {
                 'action' => 'receipts',
                 'admin' => false,
             ));
-        } else {
-            $this->request->data['ProductReceipt']['session_id'] = String::uuid();
         }
 
         $this->RjProduct->_callBeforeRenderReceipt($data);
 
-        $this->set('active_menu', 'receipts');
-        $this->set(compact(
-            'vendors'
+        $this->set(array(
+            'active_menu' => 'receipts',
         ));
     }
 
@@ -496,9 +493,9 @@ class ProductsController extends AppController {
 
             $this->RjProduct->_callBeforeRenderReceipt($data, $value);
 
-            $this->set('active_menu', 'receipts');
-            $this->set(compact(
-                'vendors', 'value'
+            $this->set(array(
+                'value' => $value,
+                'active_menu' => 'receipts',
             ));
             $this->render('receipt_add');
         } else {
@@ -595,7 +592,7 @@ class ProductsController extends AppController {
                 $result = $this->Product->ProductReceiptDetailSerialNumber->doSave($serial_numbers, $id, $session_id);
 
                 $this->MkCommon->setProcessParams($result, false, array(
-                    'ajaxFlash' => true,
+                    'ajaxFlash' => false,
                     'ajaxRedirect' => false,
                 ));
             } else {
@@ -625,7 +622,7 @@ class ProductsController extends AppController {
     function receipt_choose_documents ( $type = false ) {
         switch ($type) {
             case 'po':
-                $vendors = $this->Product->PurchaseOrderDetail->PurchaseOrder->_callVendors('unreceipt');
+                $vendors = $this->Product->PurchaseOrderDetail->PurchaseOrder->_callVendors('unreceipt_draft');
                 break;
         }
 

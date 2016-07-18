@@ -7,15 +7,17 @@
                 if(!empty($values)){
                     foreach ($values as $key => $value) {
                         $id = $this->Common->filterEmptyField($value, 'Product', 'id');
-                        $qty = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'qty');
+                        $qty = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'total_remain');
 
-                        echo $this->element('blocks/products/receipts/tables/items', array(
-                            'id' => $id,
-                            'modelName' => 'Product',
-                            'value' => $value,
-                            'qty' => $qty,
-                            'key' => $key,
-                        ));
+                        if( !empty($qty) ) {
+                            echo $this->element('blocks/products/receipts/tables/items', array(
+                                'id' => $id,
+                                'modelName' => 'Product',
+                                'value' => $value,
+                                'qty' => $qty,
+                                'key' => $key,
+                            ));
+                        }
                     }
                 }
         ?>

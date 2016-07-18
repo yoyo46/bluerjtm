@@ -1,5 +1,8 @@
 <?php 
         $dataColumns = array(
+            'noref' => array(
+                'name' => __('No. Ref'),
+            ),
             'transaction_date' => array(
                 'name' => __('Tgl Penerimaan'),
             ),
@@ -72,6 +75,7 @@
 
                             $customStatus = $this->Common->_callTransactionStatus($value, 'ProductReceipt');
                             $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
+                            $noref = $this->Common->getNoRef($id);
 
                             $customAction = $this->Html->link(__('Detail'), array(
                                 'controller' => 'products',
@@ -103,6 +107,7 @@
             ?>
             <tr>
                 <?php 
+                        echo $this->Html->tag('td', $noref);
                         echo $this->Html->tag('td', $customDate);
                         // echo $this->Html->tag('td', $nodoc);
                         echo $this->Html->tag('td', $vendor);
