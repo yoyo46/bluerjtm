@@ -25,8 +25,8 @@ class PurchaseOrderDetail extends AppModel {
             ),
         ),
         'price' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
+            'emptyFill' => array(
+                'rule' => array('emptyFill', 'price'),
                 'message' => 'Harga barang harap dipilih'
             ),
             'numeric' => array(

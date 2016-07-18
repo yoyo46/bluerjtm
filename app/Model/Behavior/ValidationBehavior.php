@@ -17,4 +17,12 @@ class ValidationBehavior extends ModelBehavior {
 			return true;
 		}
 	}
+
+	public function emptyFill(Model $model, $data, $fieldName){
+		if( !empty($data[$fieldName]) ){
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
 }

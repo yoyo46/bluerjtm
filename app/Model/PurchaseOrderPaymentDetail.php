@@ -21,8 +21,8 @@ class PurchaseOrderPaymentDetail extends AppModel {
             ),
         ),
         'price' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
+            'emptyFill' => array(
+                'rule' => array('emptyFill', 'price'),
                 'message' => 'Total dibayar harap diisi'
             ),
             'numeric' => array(

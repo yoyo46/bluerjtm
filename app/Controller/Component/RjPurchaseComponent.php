@@ -48,10 +48,6 @@ class RjPurchaseComponent extends Component {
                     $price = $this->MkCommon->_callPriceConverter($price) * 1;
                     $total = $price - $disc + $ppn;
 
-                    if( empty($price) ) {
-                        $price = '';
-                    }
-
                     $dataSQDetail['SupplierQuotationDetail'] = array(
                         'product_id' => $product_id,
                         'price' => $price,
@@ -154,7 +150,7 @@ class RjPurchaseComponent extends Component {
 
                     $ppn = $this->MkCommon->_callPriceConverter($ppn);
                     $disc = $this->MkCommon->_callPriceConverter($disc);
-                    $price = $this->MkCommon->_callPriceConverter($price);
+                    $price = $this->MkCommon->_callPriceConverter($price) * 1;
 
                     $product = $this->controller->PurchaseOrder->PurchaseOrderDetail->Product->getMerge(array(), $product_id);
                     $code = $this->MkCommon->filterEmptyField($product, 'Product', 'code');
@@ -243,7 +239,7 @@ class RjPurchaseComponent extends Component {
                     $total_po = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'grandtotal');
 
                     $idDetail = !empty($idArr[$key])?$idArr[$key]:false;
-                    $price = !empty($priceArr[$key])?$this->MkCommon->_callPriceConverter($priceArr[$key]):false;
+                    $price = !empty($priceArr[$key])?$this->MkCommon->_callPriceConverter($priceArr[$key])*1:false;
                     $grandtotal += $price;
                     
                     $paid = $this->controller->PurchaseOrder->PurchaseOrderPaymentDetail->_callPaidPO($purchase_order_id, $id);
