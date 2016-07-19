@@ -8,18 +8,18 @@ class Journal extends AppModel {
                 'message' => 'COA harap dipilih'
             ),
 		),
-        'debit' => array(
-            'numeric' => array(
-                'rule' => array('numeric'),
-                'message' => 'Debit harus berupa angka',
-            ),
-        ),
-        'credit' => array(
-            'numeric' => array(
-                'rule' => array('numeric'),
-                'message' => 'Kredit harus berupa angka',
-            ),
-        )
+        // 'debit' => array(
+        //     'numeric' => array(
+        //         'rule' => array('numeric'),
+        //         'message' => 'Debit harus berupa angka',
+        //     ),
+        // ),
+        // 'credit' => array(
+        //     'numeric' => array(
+        //         'rule' => array('numeric'),
+        //         'message' => 'Kredit harus berupa angka',
+        //     ),
+        // )
 	);
 
     var $belongsTo = array(
