@@ -713,7 +713,6 @@ class AssetsController extends AppController {
                                     $bln = !empty($bln)?$bln:false;
                                     $thn = !empty($thn)?$thn:false;
                                     $tgl_perolehan = !empty($tgl_perolehan)?$tgl_perolehan:false;
-                                    $tgl_neraca = !empty($tgl_neraca)?$tgl_neraca:false;
                                     $perolehan_nilai = !empty($perolehan_nilai)?$this->MkCommon->_callPriceConverter($perolehan_nilai):false;
                                     $akun_penyusutan = !empty($akun_penyusutan)?$this->MkCommon->_callPriceConverter($akun_penyusutan):false;
                                     $dep_mth = !empty($dep_mth)?$dep_mth:false;
@@ -736,16 +735,9 @@ class AssetsController extends AppController {
                                     } else {
                                         $status_document = 'available';
                                     }
-                                    if( !empty($tgl_perolehan) ) {
-                                        $tgl_perolehan = $this->MkCommon->customDate($tgl_perolehan, 'd/m/Y');
-                                    } else {
-                                        $tgl_perolehan = sprintf('01/%s/%s', $bln, $tahun_perolehan);
-                                    }
-                                    if( !empty($tgl_neraca) ) {
-                                        $tgl_neraca = $this->MkCommon->customDate($tgl_neraca, 'd/m/Y');
-                                    } else {
-                                        $tgl_neraca = sprintf('01/%s/%s', $bln, $thn);
-                                    }
+
+                                    $tgl_perolehan = sprintf('01/%s/%s', $bln, $tahun_perolehan);
+                                    $tgl_neraca = sprintf('01/%s/%s', $bln, $thn);
 
                                     $dataArr = array(
                                         'Asset' => array(
@@ -759,6 +751,15 @@ class AssetsController extends AppController {
                                             'note' => $note,
                                             'status_document' => $status_document,
                                             'ak_penyusutan' => $akun_penyusutan,
+                                        ),
+                                        'AssetDepreciation' => array(
+                                            array(
+                                                'AssetDepreciation' => array(
+                                                    'depr_bulan' => $dep_mth,
+                                                    'ak_penyusutan' => $akun_penyusutan,
+                                                    'periode' => '2015-12-31',
+                                                ),
+                                            ),
                                         ),
                                     );
 
