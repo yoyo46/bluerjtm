@@ -2591,7 +2591,6 @@ class RevenuesController extends AppController {
         }
 
         $conditions = array(
-            'TtujTipeMotor.status'=> 1,
             'Ttuj.status'=> 1,
             'Ttuj.is_draft'=> 0,
             'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') >=' => date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear)),
@@ -2644,11 +2643,14 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'Ttuj.dt'
                     ),
-                    'fields'=> array(
-                        'Ttuj.id', 
-                        'Ttuj.truck_id', 
-                        'Ttuj.cnt',
-                        'Ttuj.dt',
+                    // 'fields'=> array(
+                    //     'Ttuj.id', 
+                    //     'Ttuj.truck_id', 
+                    //     'Ttuj.cnt',
+                    //     'Ttuj.dt',
+                    // ),
+                    'order' => array(
+                        'dt' => 'ASC',
                     ),
                 ), true, array(
                     'branch' => false,

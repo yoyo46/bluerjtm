@@ -289,7 +289,7 @@
         </table>
     <?php
             if( $data_action != 'excel' ) {
-                // echo $this->element('pagination');
+                echo $this->element('pagination');
     ?>
     </div>
     <?php 
