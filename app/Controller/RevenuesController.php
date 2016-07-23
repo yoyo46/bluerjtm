@@ -1816,7 +1816,7 @@ class RevenuesController extends AppController {
 
         $conditions = array(
             'Ttuj.id' => $ttuj_id,
-            'Ttuj.status' => 1,
+            // 'Ttuj.status' => 1,
         );
 
         switch ($action_type) {
@@ -1865,6 +1865,7 @@ class RevenuesController extends AppController {
             'conditions' => $conditions,
         ), true, array(
             'branch' => false,
+            'status' => 'all',
         ));
 
         if( !empty($data_local) ){
