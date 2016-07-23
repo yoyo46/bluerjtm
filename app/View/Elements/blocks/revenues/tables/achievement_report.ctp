@@ -23,7 +23,7 @@
                 }
             }
 
-            if( !empty($totalCnt) ) {
+            if( isset($totalCnt) ) {
                 for ($i=0; $i <= $totalCnt; $i++) {
                     $target = !empty($totalTargetGroup[$i][$manual_group][$type_id][$customer_group_id])?$totalTargetGroup[$i][$manual_group][$type_id][$customer_group_id]:'-';
                     $pencapaian = !empty($totalPencapaianGroup[$i][$manual_group][$type_id][$customer_group_id])?$totalPencapaianGroup[$i][$manual_group][$type_id][$customer_group_id]:'-';

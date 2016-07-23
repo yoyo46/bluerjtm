@@ -294,7 +294,7 @@
                     $content = $this->Html->tag('td', $no);
                     $content .= $this->Html->tag('td', $customer_name);
 
-                    if( !empty($totalCnt) ) {
+                    if( isset($totalCnt) ) {
                         for ($i=0; $i <= $totalCnt; $i++) {
                             $pencapaian = !empty($cntPencapaian[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))])?$cntPencapaian[$value['Customer']['id']][date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear))]:'-';
                             $content .= $this->Html->tag('td', $target_rit, array(

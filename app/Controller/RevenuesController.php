@@ -2655,6 +2655,7 @@ class RevenuesController extends AppController {
                 ), true, array(
                     'branch' => false,
                 ));
+            // debug($totals);die();
 
                 if( !empty($totals) ) {
                     foreach ($totals as $idx => $total) {

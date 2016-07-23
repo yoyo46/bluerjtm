@@ -222,7 +222,7 @@
                 <!-- <tr> -->
                     <?php 
                             $saldoAwal = 0;
-                            if( !empty($totalCnt) ) {
+                            if( isset($totalCnt) ) {
                                 for ($i=0; $i <= $totalCnt; $i++) {
                                     $monthName = date('F', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
                                     $monthDt = date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
@@ -433,7 +433,7 @@
                     $grandtotalKwBatalCust = 0;
                     $grandtotalSaldoAkhirCust = 0;
                     
-                    if( !empty($totalCnt) ) {
+                    if( isset($totalCnt) ) {
                         for ($i=0; $i <= $totalCnt; $i++) {
                             $monthName = date('F', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
                             $monthDt = date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));

@@ -207,7 +207,7 @@
                                 'align' => 'right',
                             ));
 
-                            if( !empty($totalCnt) ) {
+                            if( isset($totalCnt) ) {
                                 for ($i=0; $i <= $totalCnt; $i++) {
                                     $formatDate = 'F';
 
@@ -246,7 +246,7 @@
                                 $totalLeft = 0;
                                 $totalAvgYear = !empty($customer['RevenueYear'])?$customer['RevenueYear']:0;
                                 $totalFormatAgv = !empty($totalAvgYear)?$this->Number->format($totalAvgYear, Configure::read('__Site.config_currency_code'), array('places' => 0)):0;
-                                $totalLeft += $totalFormatAgv;
+                                $totalLeft += $totalAvgYear;
                 ?>
                 <tr>
                     <?php 
@@ -255,12 +255,12 @@
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
 
-                            if( !empty($totalCnt) ) {
+                            if( isset($totalCnt) ) {
                                 for ($i=0; $i <= $totalCnt; $i++) {
                                     $currDate = date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
                                     $formatDate = date('F Y', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
                                     $nameSlug = sprintf('totalBottom%s', $this->Common->toSlug($formatDate, '_'));
-                                    $pencapaian = !empty($customer['Customer'][$currDate]['total_revenue'])?$customer['Customer'][$currDate]['total_revenue']:'0';
+                                    $pencapaian = !empty($customer['Customer'][$currDate]['total_revenue'])?$customer['Customer'][$currDate]['total_revenue']:0;
                                     $$nameSlug += $pencapaian;
                                     $totalLeft += $pencapaian;
                                     $pencapaian = !empty($pencapaian)?$this->Number->format($pencapaian, Configure::read('__Site.config_currency_code'), array('places' => 0)):'0';
@@ -294,7 +294,7 @@
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
 
-                            if( !empty($totalCnt) ) {
+                            if( isset($totalCnt) ) {
                                 for ($i=0; $i <= $totalCnt; $i++) {
                                     $formatDate = date('F Y', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
                                     $nameSlug = sprintf('totalBottom%s', $this->Common->toSlug($formatDate, '_'));
@@ -371,7 +371,7 @@
                 'style' => 'text-align: center;vertical-align: middle;',
             ));
 
-            if( !empty($totalCnt) ) {
+            if( isset($totalCnt) ) {
                 for ($i=0; $i <= $totalCnt; $i++) {
                     $formatDate = 'F';
 
@@ -403,14 +403,14 @@
                     $totalLeft = 0;
                     $totalAvgYear = !empty($customer['RevenueYear'])?$customer['RevenueYear']:0;
                     $totalFormatAgv = !empty($totalAvgYear)?$this->Number->format($totalAvgYear, Configure::read('__Site.config_currency_code'), array('places' => 0)):0;
-                    $totalLeft += $totalFormatAgv;
+                    $totalLeft += $totalAvgYear;
                     $each_loop_message .= '<tr>';
                     $each_loop_message .= $this->Html->tag('td', $customer['Customer']['customer_name_code']);
                     $each_loop_message .= $this->Html->tag('td', $totalFormatAgv, array(
                         'style' => 'text-align: right;vertical-align: middle;',
                     ));
 
-                    if( !empty($totalCnt) ) {
+                    if( isset($totalCnt) ) {
                         for ($i=0; $i <= $totalCnt; $i++) {
                             $currDate = date('Y-m', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
                             $formatDate = date('F Y', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
@@ -442,7 +442,7 @@
                     'style' => 'text-align: right;vertical-align: middle;',
                 ));
 
-                if( !empty($totalCnt) ) {
+                if( isset($totalCnt) ) {
                     for ($i=0; $i <= $totalCnt; $i++) {
                         $formatDate = date('F Y', mktime(0, 0, 0, $fromMonth+$i, 1, $fromYear));
                         $nameSlug = sprintf('totalBottom%s', $this->Common->toSlug($formatDate, '_'));

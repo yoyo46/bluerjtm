@@ -9,7 +9,7 @@
 
             echo $this->Html->tag('td', __('TOTAL ').$total_group);
 
-            if( !empty($totalCnt) ) {
+            if( isset($totalCnt) ) {
                 for ($i=0; $i <= $totalCnt; $i++) {
                     $target = !empty($totalTargetGroup[$total_group][$i])?$totalTargetGroup[$total_group][$i]:'-';
                     $pencapaian = !empty($totalPencapaianGroup[$total_group][$i])?$totalPencapaianGroup[$total_group][$i]:'-';
