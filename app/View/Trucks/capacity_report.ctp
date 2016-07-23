@@ -69,7 +69,7 @@
                                 'label'=> __('Pemilik Truk'),
                                 'class'=>'form-control',
                                 'required' => false,
-                                'empty' => __('Pilih Pemilik Truk')
+                                'empty' => __('Pilih Semua')
                             ));
                     ?>
                 </div>

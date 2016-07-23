@@ -3475,27 +3475,25 @@ class TrucksController extends AppController {
         $this->set('active_menu', 'capacity_report');
         $this->set('sub_module_title', __('Laporan Truk Per Kapasitas'));
 
+        $params = $this->params;
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $conditions = array(
             'Customer.branch_id' => $allow_branch_id,
         );
+        $code = $this->MkCommon->filterEmptyField($params, 'named', 'code');
+        $options = array();
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            if(!empty($refine['code'])){
-                $value = urldecode($refine['code']);
-                $this->request->data['Truck']['customer_code'] = $value;
-                $conditions['Customer.code LIKE'] = '%'.$value.'%';
+        if(!empty($params['named'])){
+            if(!empty($code)){
+                $code = urldecode($code);
+                $code = trim($code);
+                $this->request->data['Truck']['customer_code'] = $code;
+                $options['conditions']['Customer.code LIKE'] = '%'.$code.'%';
             }
 
             // Custom Otorisasi
-            $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Customer', $conditions, 'conditions' );
+            $options = $this->MkCommon->getConditionGroupBranch( $params['named'], 'Customer', $options );
         }
-        
-        $options = array(
-            'conditions' => $conditions,
-        );
 
         if( !empty($data_action) ) {
             $customers = $this->Customer->getData('all', $options, true, array(
@@ -3510,28 +3508,10 @@ class TrucksController extends AppController {
             $customers = $this->paginate('Customer');
         }
 
-        $capacities = $this->Truck->getData('list', array(
-            // 'conditions' => array(
-            //     'Truck.branch_id' => $allow_branch_id,
-            // ),
-            'group' => array(
-                'Truck.capacity',
-            ),
-            'fields' => array(
-                'Truck.id',
-                'Truck.capacity',
-            ),
-            'order' => array(
-                'Truck.capacity*1' => 'ASC',
-            ),
-        ), true, array(
-            'branch' => false,
-        ));
-        $truckArr = array();
         $this->RjTruck->_callTruckCustomer( $customers );
 
         $this->set(compact(
-            'data_action', 'capacities'
+            'data_action'
         ));
 
         if($data_action == 'pdf'){

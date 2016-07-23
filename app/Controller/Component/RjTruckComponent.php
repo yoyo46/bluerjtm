@@ -211,6 +211,12 @@ class RjTruckComponent extends Component {
 	}
 
 	function _callTruckCustomer( $customers ) {
+        $conditionsTruck = array();
+        $conditionsCapacity = array(
+            // 'Truck.branch_id' => $allow_branch_id,
+        );
+    	$truckArr = array();
+
 		if( !empty($customers) ) {
 			$params = $this->controller->params;
             $this->controller->Truck->unBindModel(array(
@@ -231,13 +237,31 @@ class RjTruckComponent extends Component {
                 )
             ), false);
 
-            $conditionsTruck = array();
             $company = $this->MkCommon->filterEmptyField($params, 'named', 'company');
+            $code = $this->MkCommon->filterEmptyField($params, 'named', 'code');
+            $branch = $this->MkCommon->filterEmptyField($params, 'named', 'group_branch');
 
             if(!empty($company)){
                 $company = urldecode($company);
                 $conditionsTruck['Truck.company_id'] = $company;
+        		$conditionsCapacity['Truck.company_id'] = $company;
+
                 $this->controller->request->data['Truck']['company_id'] = $company;
+            }
+            if(!empty($code)){
+                $code = urldecode($code);
+                $code = trim($code);
+
+                $companies = $this->controller->Customer->getData('list', array(
+                	'conditions' => array(
+                		'Customer.code LIKE' => '%'.$code.'%',
+            		),
+            		'fields' => array(
+            			'Customer.id',
+        			),
+            	));
+                $conditionsTruck['TruckCustomer.customer_id'] = $companies;
+                $this->controller->request->data['TruckCustomer']['customer_id'] = $companies;
             }
 
         	$this->controller->Truck->virtualFields['cnt'] = 'COUNT(Truck.id)';
@@ -273,10 +297,26 @@ class RjTruckComponent extends Component {
         	));
         }
 
+        $capacities = $this->controller->Truck->getData('list', array(
+            'conditions' => $conditionsCapacity,
+            'group' => array(
+                'Truck.capacity',
+            ),
+            'fields' => array(
+                'Truck.id',
+                'Truck.capacity',
+            ),
+            'order' => array(
+                'Truck.capacity*1' => 'ASC',
+            ),
+        ), true, array(
+            'branch' => false,
+        ));
         $companies = $this->controller->Truck->Company->getData('list');
 
         $this->controller->set(compact(
-            'customers', 'truckArr', 'companies'
+            'customers', 'truckArr', 'companies',
+            'capacities'
         ));
 	}
 }
