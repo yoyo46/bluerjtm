@@ -1,5 +1,6 @@
 <?php 
-        $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
+        $total = array();
+        $full_name = $this->Common->filterEmptyField($User, 'Employe', 'full_name');
         $currentUrl = array(
             'controller' => 'trucks', 
             'action' => 'capacity_report', 
@@ -159,58 +160,12 @@
             </thead>
             <tbody>
                 <?php
-                        if(!empty($customers)){
-                            $total = array();
+                        $customer_id = 0;
 
-                            foreach ($customers as $key => $customer) {
-                                $customer_id = $customer['Customer']['id'];
+                        if( !empty($capacities) && !empty($truckArr[$customer_id]) ) {
                 ?>
                 <tr>
                     <?php
-                            if( !empty($capacities) ) {
-                                $totalRit = 0;
-
-                                echo $this->Html->tag('td', $customer['Customer']['code'], array(
-                                    'style' => $tdStyle,
-                                ));
-
-                                foreach ($capacities as $key => $capacity) {
-                                    $kapasitas = 0;
-
-                                    if( !empty($truckArr[$customer_id][$capacity]) ) {
-                                        $kapasitas = $truckArr[$customer_id][$capacity];
-                                    }
-
-                                    if( !empty($total[$capacity]) ) {
-                                        $total[$capacity] += $kapasitas;
-                                    } else {
-                                        $total[$capacity] = $kapasitas;
-                                    }
-
-                                    $totalRit += $kapasitas;
-                                    echo $this->Html->tag('td', $kapasitas, array(
-                                        'class' => 'text-center',
-                                        'style' => $tdStyle,
-                                    ));
-                                }
-
-                                echo $this->Html->tag('td', $totalRit, array(
-                                    'class' => 'text-center',
-                                    'style' => $tdStyle,
-                                ));
-                            }
-                    ?>
-                </tr>
-                <?php 
-
-                            }
-                        }
-
-                        if( !empty($capacities) && !empty($truckWithoutAlocations) ) {
-                ?>
-                <tr>
-                    <?php
-                            $customer_id = 0;
                             echo $this->Html->tag('td', __('-'), array(
                                 'style' => $tdStyle.'font-weight:bold;text-align:right;',
                             ));
@@ -247,8 +202,56 @@
                 </tr>
                 <?php
                         }
+                ?>
+                <?php
+                        if(!empty($customers)){
+                            foreach ($customers as $key => $customer) {
+                                $customer_id = $this->Common->filterEmptyField($customer, 'Customer', 'id');
+                                $code = $this->Common->filterEmptyField($customer, 'Customer', 'code');
+                ?>
+                <tr>
+                    <?php
+                            if( !empty($capacities) ) {
+                                $totalRit = 0;
 
-                        if( empty($capacities) && empty($truckWithoutAlocations) ) {
+                                echo $this->Html->tag('td', $code, array(
+                                    'style' => $tdStyle,
+                                ));
+
+                                foreach ($capacities as $key => $capacity) {
+                                    $kapasitas = 0;
+
+                                    if( !empty($truckArr[$customer_id][$capacity]) ) {
+                                        $kapasitas = $truckArr[$customer_id][$capacity];
+                                    }
+
+                                    if( !empty($total[$capacity]) ) {
+                                        $total[$capacity] += $kapasitas;
+                                    } else {
+                                        $total[$capacity] = $kapasitas;
+                                    }
+
+                                    $totalRit += $kapasitas;
+                                    echo $this->Html->tag('td', $kapasitas, array(
+                                        'class' => 'text-center',
+                                        'style' => $tdStyle,
+                                    ));
+                                }
+
+                                echo $this->Html->tag('td', $totalRit, array(
+                                    'class' => 'text-center',
+                                    'style' => $tdStyle,
+                                ));
+                            }
+                    ?>
+                </tr>
+                <?php 
+
+                            }
+                        }
+                ?>
+                <?php
+                        if( empty($capacities) ) {
                             echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan'), array(
                                 'colspan' => '7'
                             )));
@@ -286,7 +289,7 @@
         </table>
     <?php
             if( $data_action != 'excel' ) {
-                echo $this->element('pagination');
+                // echo $this->element('pagination');
     ?>
     </div>
     <?php 
@@ -322,6 +325,44 @@
         $no = 1;
 
         if( !empty($capacities) ) {
+            $customer_id = 0;
+
+            if(!empty($truckArr[$customer_id])){
+                $content = $this->Html->tag('td', $no, array(
+                    'style' => 'text-align: center;',
+                ));
+                
+                $content .= $this->Html->tag('td', '-', array(
+                    'style' => 'text-align: center;',
+                ));
+
+                $totalRit = 0;
+
+                foreach ($capacities as $key => $capacity) {
+                    $kapasitas = 0;
+
+                    if( !empty($truckArr[$customer_id][$capacity]) ) {
+                        $kapasitas = $truckArr[$customer_id][$capacity];
+                    }
+
+                    if( !empty($total[$capacity]) ) {
+                        $total[$capacity] += $kapasitas;
+                    } else {
+                        $total[$capacity] = $kapasitas;
+                    }
+
+                    $totalRit += $kapasitas;
+                    $content .= $this->Html->tag('th', $kapasitas, array(
+                        'style' => 'text-align: center;',
+                    ));
+                }
+
+                $content .= $this->Html->tag('th', $totalRit, array(
+                    'style' => 'text-align: center;',
+                ));
+                $each_loop_message .= $this->Html->tag('tr', $content);
+            }
+
             if(!empty($customers)){
                 foreach ($customers as $customer):
                     $content = $this->Html->tag('td', $no, array(
@@ -362,48 +403,9 @@
                     $no++;
                 endforeach;
             }
-
-            if(!empty($truckWithoutAlocations)){
-                if( !empty($capacities) ) {
-                    $content = $this->Html->tag('td', $no, array(
-                        'style' => 'text-align: center;',
-                    ));
-                    
-                    $customer_id = 0;
-                    $content .= $this->Html->tag('td', '-', array(
-                        'style' => 'text-align: center;',
-                    ));
-
-                    $totalRit = 0;
-
-                    foreach ($capacities as $key => $capacity) {
-                        $kapasitas = 0;
-
-                        if( !empty($truckArr[$customer_id][$capacity]) ) {
-                            $kapasitas = $truckArr[$customer_id][$capacity];
-                        }
-
-                        if( !empty($total[$capacity]) ) {
-                            $total[$capacity] += $kapasitas;
-                        } else {
-                            $total[$capacity] = $kapasitas;
-                        }
-
-                        $totalRit += $kapasitas;
-                        $content .= $this->Html->tag('th', $kapasitas, array(
-                            'style' => 'text-align: center;',
-                        ));
-                    }
-
-                    $content .= $this->Html->tag('th', $totalRit, array(
-                        'style' => 'text-align: center;',
-                    ));
-                    $each_loop_message .= $this->Html->tag('tr', $content);
-                }
-            }
         }
 
-        if( empty($capacities) || empty($truckWithoutAlocations) ) {
+        if( empty($capacities) ) {
             $each_loop_message .= '<tr><td colspan="4">data tidak tersedia</td></tr>';
         } else {
             $content = $this->Html->tag('th', __('Jumlah'), array(

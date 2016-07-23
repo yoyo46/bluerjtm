@@ -209,5 +209,75 @@ class RjTruckComponent extends Component {
 
 		return $result;
 	}
+
+	function _callTruckCustomer( $customers ) {
+		if( !empty($customers) ) {
+			$params = $this->controller->params;
+            $this->controller->Truck->unBindModel(array(
+                'hasMany' => array(
+                    'TruckCustomer'
+                )
+            ));
+
+            $this->controller->Truck->bindModel(array(
+                'hasOne' => array(
+                    'TruckCustomer' => array(
+                        'className' => 'TruckCustomer',
+                        'foreignKey' => 'truck_id',
+                        'conditions' => array(
+                            'TruckCustomer.primary' => 1
+                        )
+                    )
+                )
+            ), false);
+
+            $conditionsTruck = array();
+            $company = $this->MkCommon->filterEmptyField($params, 'named', 'company');
+
+            if(!empty($company)){
+                $company = urldecode($company);
+                $conditionsTruck['Truck.company_id'] = $company;
+                $this->controller->request->data['Truck']['company_id'] = $company;
+            }
+
+        	$this->controller->Truck->virtualFields['cnt'] = 'COUNT(Truck.id)';
+            $trucks = $this->controller->Truck->getData('all', array(
+                'conditions' => $conditionsTruck,
+                'contain' => array(
+                	'TruckCustomer',
+            	),
+                'group' => array(
+                    'Truck.capacity',
+                    'TruckCustomer.customer_id',
+                ),
+                'order' => array(
+                	'TruckCustomer.customer_id',
+            	),
+            ), true, array(
+                'branch' => false,
+            ));
+
+            if( !empty($trucks) ) {
+                foreach ($trucks as $key => $truck) {
+                    $customer_id = $this->MkCommon->filterEmptyField($truck, 'TruckCustomer', 'customer_id', 0);
+                    $capacity = $this->MkCommon->filterEmptyField($truck, 'Truck', 'capacity', 0);
+                    $qty = $this->MkCommon->filterEmptyField($truck, 'Truck', 'cnt', 0);
+                    $truckArr[$customer_id][$capacity] = $qty;
+                }
+            }
+
+            $customers = $this->controller->Customer->getMergeList($customers, array(
+            	'contain' => array(
+            		'Branch',
+        		),
+        	));
+        }
+
+        $companies = $this->controller->Truck->Company->getData('list');
+
+        $this->controller->set(compact(
+            'customers', 'truckArr', 'companies'
+        ));
+	}
 }
 ?>

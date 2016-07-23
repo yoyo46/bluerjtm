@@ -3511,9 +3511,9 @@ class TrucksController extends AppController {
         }
 
         $capacities = $this->Truck->getData('list', array(
-            'conditions' => array(
-                'Truck.branch_id' => $allow_branch_id,
-            ),
+            // 'conditions' => array(
+            //     'Truck.branch_id' => $allow_branch_id,
+            // ),
             'group' => array(
                 'Truck.capacity',
             ),
@@ -3524,112 +3524,14 @@ class TrucksController extends AppController {
             'order' => array(
                 'Truck.capacity*1' => 'ASC',
             ),
+        ), true, array(
+            'branch' => false,
         ));
         $truckArr = array();
-
-        if( !empty($customers) ) {
-            $customerArr = Set::extract('/Customer/id', $customers);
-            $conditionsTruck = array(
-                'Truck.status' => 1,
-                'TruckCustomer.customer_id' => $customerArr,
-                'TruckCustomer.primary' => 1,
-            );
-
-            if(!empty($this->params['named']['company'])){
-                $value = urldecode($this->params['named']['company']);
-                $conditionsTruck['Truck.company_id'] = $value;
-                $this->request->data['Truck']['company_id'] = $value;
-            }
-
-            $trucks = $this->TruckCustomer->getData('all', array(
-                'conditions' => $conditionsTruck,
-                'contain' => array(
-                    'Truck',
-                ),
-                'group' => array(
-                    'Truck.capacity',
-                    'TruckCustomer.customer_id',
-                ),
-                'fields' => array(
-                    'Truck.id',
-                    'Truck.capacity',
-                    'TruckCustomer.customer_id',
-                    'COUNT(Truck.id) AS cnt',
-                ),
-            ), true, array(
-                'branch' => false,
-            ));
-
-            if( !empty($trucks) ) {
-                foreach ($trucks as $key => $truck) {
-                    if( !empty($truck[0]['cnt']) ) {
-                        $customer_id = $truck['TruckCustomer']['customer_id'];
-                        $capacity = $truck['Truck']['capacity'];
-                        $truckArr[$customer_id][$capacity] = $truck[0]['cnt'];
-                    }
-                }
-            }
-
-            foreach ($customers as $key => $value) {
-                $branch_id = $this->MkCommon->filterEmptyField($value, 'Customer', 'branch_id');
-                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
-                $customers[$key] = $value;
-            }
-        }
-
-        if(empty($this->params['named']['company'])){
-            $this->Truck->unBindModel(array(
-                'hasMany' => array(
-                    'TruckCustomer'
-                )
-            ));
-
-            $this->Truck->bindModel(array(
-                'hasOne' => array(
-                    'TruckCustomer' => array(
-                        'className' => 'TruckCustomer',
-                        'foreignKey' => 'truck_id',
-                        'conditions' => array(
-                            'TruckCustomer.primary' => 1
-                        )
-                    )
-                )
-            ), false);
-            $truckWithoutAlocations = $this->Truck->getData('all', array(
-                'conditions' => array(
-                    'TruckCustomer.id' => NULL,
-                    'Truck.branch_id' => $allow_branch_id,
-                ),
-                'contain' => array(
-                    'TruckCustomer',
-                ),
-                'group' => array(
-                    'Truck.capacity',
-                ),
-                'fields' => array(
-                    'Truck.id',
-                    'Truck.capacity',
-                    'COUNT(Truck.id) AS cnt',
-                ),
-            ));
-
-            if( !empty($truckWithoutAlocations) ) {
-                foreach ($truckWithoutAlocations as $key => $truck) {
-                    if( !empty($truck[0]['cnt']) ) {
-                        $customer_id = 0;
-                        $capacity = $truck['Truck']['capacity'];
-                        $truckArr[$customer_id][$capacity] = $truck[0]['cnt'];
-                    }
-                }
-            }
-        }
-        
-        $companies = $this->Truck->Company->getData('list');
+        $this->RjTruck->_callTruckCustomer( $customers );
 
         $this->set(compact(
-            'data_action', 'customers', 'capacities',
-            'truckArr', 'truckWithoutAlocations',
-            'companies'
+            'data_action', 'capacities'
         ));
 
         if($data_action == 'pdf'){
@@ -3890,7 +3792,6 @@ class TrucksController extends AppController {
         ));
         $ttujs = $this->TtujTipeMotor->getData('all', array(
             'conditions' => array(
-                'TtujTipeMotor.status'=> 1,
                 'Ttuj.status'=> 1,
                 'Ttuj.is_draft'=> 0,
                 'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\')' => $currentMonth,
