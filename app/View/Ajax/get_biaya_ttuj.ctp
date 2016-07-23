@@ -278,6 +278,10 @@
                         'width' => '5%',
                     ));
                     echo $this->Html->tag('th', __('NoPol'));
+                    echo $this->Html->tag('th', __('Kap'), array(
+                        'width' => '5%',
+                        'class' => 'text-center',
+                    ));
                     echo $this->Html->tag('th', __('Customer'));
                     echo $this->Html->tag('th', __('Asal'));
                     echo $this->Html->tag('th', __('Tujuan'));
@@ -307,6 +311,7 @@
                         echo $this->element('blocks/ajax/biaya_uang_jalan', array(
                             'ttuj' => $ttuj,
                             'idx' => $key,
+                            'capacity' => true,
                         ));
         ?>
         

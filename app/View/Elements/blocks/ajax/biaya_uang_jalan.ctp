@@ -3,6 +3,7 @@
         $no_ttuj = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'no_ttuj');
         $ttuj_date = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'ttuj_date');
         $nopol = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'nopol');
+        $capacity = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'truck_capacity');
         $from_city_name = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'from_city_name');
         $to_city_name = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'to_city_name');
         $note = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'note');
@@ -45,6 +46,13 @@
     <td><?php echo $no_ttuj;?></td>
     <td><?php echo date('d M Y', strtotime($ttuj_date));?></td>
     <td><?php echo $nopol;?></td>
+    <?php 
+            if( !empty($capacity) ) {
+                echo $this->Html->tag('td', $capacity, array(
+                    'class' => 'text-center',
+                ));
+            }
+    ?>
     <td><?php echo $customer_name_code;?></td>
     <td><?php echo $from_city_name;?></td>
     <td><?php echo $to_city_name;?></td>
