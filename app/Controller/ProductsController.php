@@ -193,17 +193,9 @@ class ProductsController extends AppController {
 
     function units(){
         $this->loadModel('ProductUnit');
-        $options = array();
-
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            if(!empty($refine['name'])){
-                $name = urldecode($refine['name']);
-                $this->request->data['ProductUnit']['name'] = $name;
-                $options['conditions']['ProductUnit.name LIKE '] = '%'.$name.'%';
-            }
-        }
+        
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->ProductUnit->_callRefineParams($params);
 
         $this->paginate = $this->ProductUnit->getData('paginate', $options);
         $values = $this->paginate('ProductUnit');

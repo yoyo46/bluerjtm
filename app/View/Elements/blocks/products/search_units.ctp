@@ -7,7 +7,7 @@
     </div>
     <div class="box-body">
         <?php 
-            echo $this->Form->create('ProductUnit', array(
+            echo $this->Form->create('Search', array(
                 'url'=> $this->Html->url( array(
                     'controller' => 'products',
                     'action' => 'search',

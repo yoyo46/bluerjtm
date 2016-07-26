@@ -18,18 +18,20 @@
         </div>
     </div><!-- /.box-header -->
     <div class="box-body table-responsive">
-        <table class="table table-hover">
-            <tr>
-                <?php 
-                        echo $this->Html->tag('th', $this->Paginator->sort('ProductUnit.name', $this->Common->getSorting('ProductUnit.name', __('Satuan Barang')), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('ProductUnit.created', $this->Common->getSorting('ProductUnit.created', __('Dibuat')), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', __('Action'));
-                ?>
-            </tr>
+        <table class="table table-hover sorting">
+            <thead>
+                <tr>
+                    <?php 
+                            echo $this->Html->tag('th', $this->Paginator->sort('ProductUnit.name', $this->Common->getSorting('ProductUnit.name', __('Satuan Barang')), array(
+                                'escape' => false
+                            )));
+                            echo $this->Html->tag('th', $this->Paginator->sort('ProductUnit.created', $this->Common->getSorting('ProductUnit.created', __('Dibuat')), array(
+                                'escape' => false
+                            )));
+                            echo $this->Html->tag('th', __('Action'));
+                    ?>
+                </tr>
+            </thead>
             <?php
                     $i = 1;
 

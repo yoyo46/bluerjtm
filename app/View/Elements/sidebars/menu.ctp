@@ -1271,19 +1271,19 @@
 
                     $dataMenu = array(
                         'products' => array(
-                            'categories', 'units',
+                            'categories', 'product_units',
                             'receipts',
                         ),
                         'spk' => array(
-                            'internal',
+                            'index',
                         ),
                     );
 
                     if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeSetting = false;
                         $settingMenu = array(
-                            'internal', 'product_categories', 'products',
-                            'receipts',
+                            'spk', 'product_categories', 'products',
+                            'receipts', 'product_units'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1298,6 +1298,14 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Satuan', $this->Common->icon('angle-double-right')), array(
+                                'controller' => 'products',
+                                'action' => 'units'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'product_units' )?'active':'',
+                            ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Grup Barang', array(
                                 'controller' => 'products',
                                 'action' => 'categories'
@@ -1323,13 +1331,13 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'receipts' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> SPK Internal', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> SPK', array(
                                 'controller' => 'spk',
-                                'action' => 'internal'
+                                'action' => 'index'
                             ), array(
                                 'escape' => false
                             )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'internal' )?'active':'',
+                                'class' => ( !empty($active_menu) && $active_menu == 'spk' )?'active':'',
                             ));
                     ?>
                 </ul>

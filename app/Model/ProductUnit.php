@@ -61,5 +61,15 @@ class ProductUnit extends AppModel {
 
         return $data;
     }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $name = !empty($data['named']['name'])?$data['named']['name']:false;
+        
+        if( !empty($name) ) {
+            $default_options['conditions']['ProductUnit.name LIKE'] = '%'.$name.'%';
+        }
+        
+        return $default_options;
+    }
 }
 ?>
