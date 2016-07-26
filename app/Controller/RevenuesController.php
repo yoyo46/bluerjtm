@@ -5008,8 +5008,8 @@ class RevenuesController extends AppController {
 
                                     if( empty($allowApprovals) ) {
                                         $this->User->Journal->setJournal($pph_total, array(
-                                            'credit' => 'pph_coa_debit_id',
-                                            'debit' => 'pph_coa_credit_id',
+                                            'credit' => $coa_id,
+                                            'debit' => 'pph_coa_debit_id',
                                         ), array(
                                             'date' => $date_payment,
                                             'document_id' => $cash_bank_id,
