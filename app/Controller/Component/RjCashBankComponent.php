@@ -275,7 +275,16 @@ class RjCashBankComponent extends Component {
     }
 
 	function _callBeforeViewCashFlow( $params, $data_action ) {
-        $coas = $this->controller->User->Journal->Coa->_callOptGroup();
+        $coas = $this->controller->User->Journal->Coa->getData('list', array(
+        	'fields' => array(
+        		'Coa.id', 'Coa.coa_name',
+    		),
+    	), array(
+        	'status' => 'cash_bank_child',
+    	));
+     //    $coas = $this->controller->User->Journal->Coa->_callOptGroup( false, false, false, false, array(
+     //    	'status' => 'cash_bank_child',
+    	// ));
 
         $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom', false, array(
         	'date' => 'd M Y',
