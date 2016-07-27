@@ -13,6 +13,9 @@
 			                        'width' => '5%',
 			                    ));
 			                    echo $this->Html->tag('th', __('NoPol'));
+			                    echo $this->Html->tag('th', __('Kap'), array(
+			                        'class' => 'text-center',
+			                    ));
 			                    echo $this->Html->tag('th', __('Customer'));
 			                    echo $this->Html->tag('th', __('Dari'));
 			                    echo $this->Html->tag('th', __('Tujuan'));
