@@ -1,10 +1,17 @@
 <?php
 		$readonly = isset($readonly)?$readonly:true;
 		$onchange = !empty($onchange)?$onchange:false;
+		$attrBrowse = array(
+            'class' => 'ajaxModal visible-xs browse-docs',
+            'escape' => false,
+            'data-action' => 'browse-form',
+            'data-change' => 'document-id',
+            'title' => $label,
+        );
 ?>
 <div class="form-group">
 	<?php
-			echo $this->Form->label($fieldName, $label);
+			echo $this->Form->label($fieldName, $label.$this->Html->link($this->Common->icon('plus-square'), $dataUrl, $attrBrowse));
 	?>
 	<div class="row">
 		<div class="col-sm-10">
@@ -23,14 +30,7 @@
 		</div>
 		<div class="col-sm-2">
 			<?php 
-					$attrBrowse = array(
-                        'class' => 'ajaxModal visible-xs browse-docs',
-                        'escape' => false,
-                        'data-action' => 'browse-form',
-                        'data-change' => 'document-id',
-                        'title' => $label,
-                    );
-					$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
+					$attrBrowse['class'] = 'btn bg-maroon ajaxModal hidden-xs';
                     echo $this->Html->link($this->Common->icon('plus-square'), $dataUrl, $attrBrowse);
             ?>
 		</div>

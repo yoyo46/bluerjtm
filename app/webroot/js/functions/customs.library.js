@@ -1031,6 +1031,7 @@
     function calcGrandTotal () {
         var objGrandTotal = $('.temp-document-picker .grandtotal .total');
         var grandtotal = 0;
+
         var decimal = $.checkUndefined(objGrandTotal.attr('data-decimal'), 0);
 
         $.each( $('.pick-document'), function( i, val ) {
@@ -1043,8 +1044,8 @@
         }
     }
 
-    function calculate(parent, self){
-        var type = parent.attr('data-type');
+    function calculate(parent, self, type){
+        var type = $.checkUndefined(type, parent.attr('data-type'));
         var objPrice = parent.find('.price');
         var self = $.checkUndefined(self, objPrice);
 
@@ -1093,6 +1094,7 @@
             objQty: $('.document-calc-qty .qty'),
             objClick: $('.ppn_include'),
             objDelete: $('.delete-document'),
+            objCustom: $('.document-calc .price_custom'),
         }, options );
 
         if( settings.obj.length > 0 ) {
@@ -1188,6 +1190,66 @@
 
                 return false;
             });
+        }
+
+        if( settings.objCustom.length > 0 ) {
+            function calcGrandTotalCustom () {
+                var objGrandTotal = $('.temp-document-picker .grandtotal .total_custom');
+
+                $.each( objGrandTotal, function( i, val ) {
+                    var objTotal = $(this);
+                    var grandtotal = 0;
+                    var rel = objTotal.attr('rel');
+                    var decimal = $.checkUndefined(objTotal.attr('data-decimal'), 0);
+
+                    $.each( $('.pick-document'), function( i, val ) {
+                        var self = $(this);
+                        var priceObj = self.find('.price_custom[rel="'+rel+'"]');
+                        var price = $.convertNumber(priceObj.val());
+                        var format_type = priceObj.attr('data-type');
+
+                        grandtotal += price;
+
+                        if( format_type == 'input_price_coma' ) {
+                            priceObj.val( $.convertDecimal(priceObj, 2) );
+                        }
+                    });
+
+                    if( objTotal.length > 0 ) {
+                        objTotal.html( $.formatDecimal(grandtotal, decimal) );
+                    }
+                });
+            }
+
+            settings.objCustom.off('blur');
+            settings.objCustom.blur(function(){
+                var self = $(this);
+                var rel = self.attr('rel');
+                var parent = self.parents('.pick-document');
+                var objTotal = parent.find('.total_custom[rel="'+rel+'"]');
+                var price = $.convertNumber(self.val());
+
+                var data_max = $.convertNumber(self.attr('data-max'), 'float', false);
+                var data_max_alert = $.checkUndefined(self.attr('data-max-alert'), false);
+
+                if( data_max != false ) {
+                    if( price > data_max ) {
+                        alert(data_max_alert);
+                        total = data_max;
+
+                        self.val( $.formatDecimal(total) );
+                    } else {
+                        total = calculate(parent, self);
+                    }
+                } else {
+                    total = calculate(parent, self);
+                }
+
+                objTotal.html( $.formatDecimal(total, 2) );
+                calcGrandTotalCustom();
+            });
+
+            calcGrandTotal();
         }
     }
 

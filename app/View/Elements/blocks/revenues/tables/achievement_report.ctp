@@ -6,8 +6,8 @@
 ?>
 <tr style="font-weight:bold;">
     <?php 
-            $total_target = !empty($grandTotalTargetGroup[$manual_group][$type_id][$customer_group_id])?$grandTotalTargetGroup[$manual_group][$type_id][$customer_group_id]:'-';
-            $total_pencapaian = !empty($grandTotalPencapaianGroup[$manual_group][$type_id][$customer_group_id])?$grandTotalPencapaianGroup[$manual_group][$type_id][$customer_group_id]:'-';
+            $total_target = !empty($grandTotalTargetGroup[$manual_group][$type_id][$customer_group_id])?$grandTotalTargetGroup[$manual_group][$type_id][$customer_group_id]:0;
+            $total_pencapaian = !empty($grandTotalPencapaianGroup[$manual_group][$type_id][$customer_group_id])?$grandTotalPencapaianGroup[$manual_group][$type_id][$customer_group_id]:0;
 
             if( !empty($manual_group) ) {
                 echo $this->Html->tag('td', __('TOTAL ').$manual_group);
@@ -25,8 +25,8 @@
 
             if( isset($totalCnt) ) {
                 for ($i=0; $i <= $totalCnt; $i++) {
-                    $target = !empty($totalTargetGroup[$i][$manual_group][$type_id][$customer_group_id])?$totalTargetGroup[$i][$manual_group][$type_id][$customer_group_id]:'-';
-                    $pencapaian = !empty($totalPencapaianGroup[$i][$manual_group][$type_id][$customer_group_id])?$totalPencapaianGroup[$i][$manual_group][$type_id][$customer_group_id]:'-';
+                    $target = !empty($totalTargetGroup[$i][$manual_group][$type_id][$customer_group_id])?$totalTargetGroup[$i][$manual_group][$type_id][$customer_group_id]:0;
+                    $pencapaian = !empty($totalPencapaianGroup[$i][$manual_group][$type_id][$customer_group_id])?$totalPencapaianGroup[$i][$manual_group][$type_id][$customer_group_id]:0;
 
                     echo $this->Html->tag('td', $target, array(
                         'style' => 'text-align:center;',

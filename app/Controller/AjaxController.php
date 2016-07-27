@@ -2447,6 +2447,7 @@ class AjaxController extends AppController {
         $this->loadModel('Product');
         $wrapper = $this->MkCommon->filterEmptyField($this->params, 'named', 'wrapper');
 
+		$render = 'products';
         $params = $this->MkCommon->_callRefineParams($this->params);
         $options =  $this->Product->_callRefineParams($params, array(
         	'limit' => 10,
@@ -2456,7 +2457,10 @@ class AjaxController extends AppController {
         	case 'po':
         		$status = 'no-sq';
         		break;
-        	
+        	case 'spk':
+        		$status = 'active';
+        		$render = '/Spk/products';
+        		break;
         	default:
         		$status = 'active';
         		break;
@@ -2486,6 +2490,7 @@ class AjaxController extends AppController {
         	'values', 'groups', 'action_type',
         	'wrapper'
     	));
+    	$this->render($render);
 	}
 
 	function supplier_quotations ( $vendor_id = false ) {

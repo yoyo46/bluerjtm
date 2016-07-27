@@ -1,7 +1,9 @@
 <?php
 App::uses('AppController', 'Controller');
 class SpkController extends AppController {
-    public $uses = array();
+    public $uses = array(
+        'Spk',
+    );
 
     public $components = array(
         'RjSpk'
@@ -31,104 +33,54 @@ class SpkController extends AppController {
         $this->redirect('/');
     }
 
-    public function internal() {
-        $this->loadModel('Spk');
-        $this->set('active_menu', 'internal');
-        $this->set('sub_module_title', __('SPK Internal'));
-        $conditions = array();
+    public function index() {
+        $this->set('sub_module_title', __('SPK'));
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
 
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            if(!empty($refine['nottuj'])){
-                $nottuj = urldecode($refine['nottuj']);
-                $this->request->data['Ttuj']['nottuj'] = $nottuj;
-                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
-            }
-            if(!empty($refine['nopol'])){
-                $nopol = urldecode($refine['nopol']);
-                $this->request->data['Ttuj']['nopol'] = $nopol;
-                $conditions['Ttuj.nopol LIKE '] = '%'.$nopol.'%';
-            }
-            if(!empty($refine['customer'])){
-                $customer = urldecode($refine['customer']);
-                $this->request->data['Ttuj']['customer'] = $customer;
-                $conditions['Ttuj.customer_name LIKE '] = '%'.$customer.'%';
-            }
-            if(!empty($refine['is_draft'])){
-                $is_draft = urldecode($refine['is_draft']);
-                $conditions['Ttuj.is_draft'] = 1;
-                $this->request->data['Ttuj']['is_draft'] = $is_draft;
-            }
-            if(!empty($refine['is_commit'])){
-                $is_commit = urldecode($refine['is_commit']);
-                $conditions['Ttuj.is_draft'] = 0;
-                $conditions['Ttuj.is_arrive'] = 0;
-                $conditions['Ttuj.is_bongkaran'] = 0;
-                $conditions['Ttuj.is_balik'] = 0;
-                $conditions['Ttuj.is_pool'] = 0;
-                $this->request->data['Ttuj']['is_commit'] = $is_commit;
-            }
-            if(!empty($refine['is_arrive'])){
-                $is_arrive = urldecode($refine['is_arrive']);
-                $conditions['Ttuj.is_arrive'] = 1;
-                $conditions['Ttuj.is_bongkaran'] = 0;
-                $conditions['Ttuj.is_balik'] = 0;
-                $conditions['Ttuj.is_pool'] = 0;
-                $this->request->data['Ttuj']['is_arrive'] = $is_arrive;
-            }
-            if(!empty($refine['is_bongkaran'])){
-                $is_bongkaran = urldecode($refine['is_bongkaran']);
-                $conditions['Ttuj.is_bongkaran'] = 1;
-                $conditions['Ttuj.is_balik'] = 0;
-                $conditions['Ttuj.is_pool'] = 0;
-                $this->request->data['Ttuj']['is_bongkaran'] = $is_bongkaran;
-            }
-            if(!empty($refine['is_balik'])){
-                $is_balik = urldecode($refine['is_balik']);
-                $conditions['Ttuj.is_balik'] = 1;
-                $conditions['Ttuj.is_pool'] = 0;
-                $this->request->data['Ttuj']['is_balik'] = $is_balik;
-            }
-            if(!empty($refine['is_pool'])){
-                $is_pool = urldecode($refine['is_pool']);
-                $conditions['Ttuj.is_pool'] = 1;
-                $this->request->data['Ttuj']['is_pool'] = $is_pool;
-            }
-            if(!empty($refine['is_sj_not_completed'])){
-                $is_sj_not_completed = urldecode($refine['is_sj_not_completed']);
-                $conditions['Ttuj.status_sj'] = array( 'none', 'half' );
-                $this->request->data['Ttuj']['is_sj_not_completed'] = $is_sj_not_completed;
-            }
-            if(!empty($refine['is_sj_completed'])){
-                $is_sj_completed = urldecode($refine['is_sj_completed']);
-                $conditions['Ttuj.status_sj'] = 'full';
-                $this->request->data['Ttuj']['is_sj_completed'] = $is_sj_completed;
-            }
-            if(!empty($refine['is_revenue'])){
-                $is_revenue = urldecode($refine['is_revenue']);
-                $conditions['Ttuj.is_revenue'] = 1;
-                $this->request->data['Ttuj']['is_revenue'] = $is_revenue;
-            }
-            if(!empty($refine['is_not_revenue'])){
-                $is_not_revenue = urldecode($refine['is_not_revenue']);
-                $conditions['Ttuj.is_revenue'] = 0;
-                $this->request->data['Ttuj']['is_not_revenue'] = $is_not_revenue;
-            }
-        }
-
-        $this->paginate = $this->Spk->getData('paginate', array(
-            'conditions' => $conditions
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
         ));
-        $spks = $this->paginate('Spk');
+        $options =  $this->Spk->_callRefineParams($params);
+        $this->paginate = $this->Spk->getData('paginate', $options, array(
+            'status' => 'all',
+        ));
+        $values = $this->paginate('Spk');
+        $values = $this->Spk->getMergeList($values, array(
+            'contain' => array(
+                'Vendor',
+            ),
+        ));
 
-        $this->set('spks', $spks);
+        $this->MkCommon->_layout_file('select');
+        $this->set('active_menu', 'spk');
+        $this->set(compact(
+            'values'
+        ));
     }
 
-    function internal_add(){
-        $module_title = __('Tambah Spk');
-        $this->set('sub_module_title', trim($module_title));
-        $this->doSpk();
+    function add(){
+        $this->set('sub_module_title', __('Buat SPK'));
+
+        $data = $this->request->data;
+
+        if( !empty($data) ) {
+            $data = $this->RjSpk->_callBeforeSave($data);
+            $result = $this->Spk->doSave($data);
+            $this->MkCommon->setProcessParams($result, array(
+                'controller' => 'products',
+                'action' => 'receipts',
+                'admin' => false,
+            ));
+        }
+
+        $this->RjSpk->_callSpkBeforeRender($data);
+
+        $this->set(array(
+            'active_menu' => 'receipts',
+        ));
     }
 
     function doSpk($id = false, $data_local = false){

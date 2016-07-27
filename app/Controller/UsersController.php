@@ -770,7 +770,7 @@ class UsersController extends AppController {
             'conditions' => array(
                 'Employe.id' => $id
             ),
-        ), true, array(
+        ), array(
             'status' => 'all',
         ));
 
@@ -844,7 +844,7 @@ class UsersController extends AppController {
             'conditions' => array(
                 'Employe.id' => $id
             ),
-        ), true, array(
+        ), array(
             'status' => 'all',
         ));
 

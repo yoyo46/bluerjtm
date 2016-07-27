@@ -1,177 +1,176 @@
 <?php
 App::uses('Sanitize', 'Utility');
 class RjSpkComponent extends Component {
-	
-	function processRefine($refine = false, $default_conditions = array()) {
-		if(!$refine) {
-			return false;
-		} else {
-			$refine_conditions = array();
+	var $components = array(
+		'MkCommon'
+	);
 
-			if(!empty($refine)) {
-				if( !empty($refine['Ttuj']['no_ttuj']) ) {
-					$refine_conditions['Ttuj']['no_ttuj'] = $refine['Ttuj']['no_ttuj'];
-				}
-				if( !empty($refine['Ttuj']['nottuj']) ) {
-					$refine_conditions['Ttuj']['nottuj'] = $refine['Ttuj']['nottuj'];
-				}
-				if( !empty($refine['Ttuj']['nopol']) ) {
-					$refine_conditions['Ttuj']['nopol'] = $refine['Ttuj']['nopol'];
-				}
-				if( !empty($refine['Ttuj']['customer']) ) {
-					$refine_conditions['Ttuj']['customer'] = $refine['Ttuj']['customer'];
-				}
-				if( !empty($refine['Ttuj']['driver_name']) ) {
-					$refine_conditions['Ttuj']['driver_name'] = $refine['Ttuj']['driver_name'];
-				}
-				if( !empty($refine['Ttuj']['date']) ) {
-					$refine_conditions['Ttuj']['date'] = urlencode($refine['Ttuj']['date']);
-				}
-				if( !empty($refine['Ttuj']['from']['month']) ) {
-					$refine_conditions['Ttuj']['fromMonth'] = urlencode($refine['Ttuj']['from']['month']);
-				}
-				if( !empty($refine['Ttuj']['from']['year']) ) {
-					$refine_conditions['Ttuj']['fromYear'] = urlencode($refine['Ttuj']['from']['year']);
-				}
-				if( !empty($refine['Ttuj']['to']['month']) ) {
-					$refine_conditions['Ttuj']['toMonth'] = urlencode($refine['Ttuj']['to']['month']);
-				}
-				if( !empty($refine['Ttuj']['to']['year']) ) {
-					$refine_conditions['Ttuj']['toYear'] = urlencode($refine['Ttuj']['to']['year']);
-				}
-				if( !empty($refine['Ttuj']['status']) ) {
-					$refine_conditions['Ttuj']['status'] = urlencode($refine['Ttuj']['status']);
-				}
-				if( !empty($refine['Ttuj']['is_draft']) ) {
-					$refine_conditions['Ttuj']['is_draft'] = urlencode($refine['Ttuj']['is_draft']);
-				}
-				if( !empty($refine['Ttuj']['is_commit']) ) {
-					$refine_conditions['Ttuj']['is_commit'] = urlencode($refine['Ttuj']['is_commit']);
-				}
-				if( !empty($refine['Ttuj']['is_arrive']) ) {
-					$refine_conditions['Ttuj']['is_arrive'] = urlencode($refine['Ttuj']['is_arrive']);
-				}
-				if( !empty($refine['Ttuj']['is_bongkaran']) ) {
-					$refine_conditions['Ttuj']['is_bongkaran'] = urlencode($refine['Ttuj']['is_bongkaran']);
-				}
-				if( !empty($refine['Ttuj']['is_balik']) ) {
-					$refine_conditions['Ttuj']['is_balik'] = urlencode($refine['Ttuj']['is_balik']);
-				}
-				if( !empty($refine['Ttuj']['is_pool']) ) {
-					$refine_conditions['Ttuj']['is_pool'] = urlencode($refine['Ttuj']['is_pool']);
-				}
-				if( !empty($refine['Ttuj']['is_sj_not_completed']) ) {
-					$refine_conditions['Ttuj']['is_sj_not_completed'] = urlencode($refine['Ttuj']['is_sj_not_completed']);
-				}
-				if( !empty($refine['Ttuj']['is_sj_completed']) ) {
-					$refine_conditions['Ttuj']['is_sj_completed'] = urlencode($refine['Ttuj']['is_sj_completed']);
-				}
-				if( !empty($refine['Ttuj']['is_revenue']) ) {
-					$refine_conditions['Ttuj']['is_revenue'] = urlencode($refine['Ttuj']['is_revenue']);
-				}
-				if( !empty($refine['Ttuj']['is_not_revenue']) ) {
-					$refine_conditions['Ttuj']['is_not_revenue'] = urlencode($refine['Ttuj']['is_not_revenue']);
-				}
-				if( !empty($refine['Revenue']['no_doc']) ) {
-					$refine_conditions['Revenue']['no_doc'] = urlencode($refine['Revenue']['no_doc']);
-				}
-				if( !empty($refine['Revenue']['customer_id']) ) {
-					$refine_conditions['Revenue']['customer'] = urlencode($refine['Revenue']['customer_id']);
-				}
-				if( !empty($refine['Revenue']['from_date']) ) {
-					$refine_conditions['Revenue']['from'] = urlencode($refine['Revenue']['from_date']);
-				}
-				if( !empty($refine['Revenue']['to_date']) ) {
-					$refine_conditions['Revenue']['to'] = urlencode($refine['Revenue']['to_date']);
-				}
-				if( !empty($refine['Revenue']['transaction_status']) ) {
-					$refine_conditions['Revenue']['status'] = urlencode($refine['Revenue']['transaction_status']);
-				}
-				if( !empty($refine['Revenue']['date']) ) {
-					$refine_conditions['Revenue']['date'] = urlencode($refine['Revenue']['date']);
-				}
-				if( !empty($refine['RevenueDetail']['no_reference']) ) {
-					$refine_conditions['RevenueDetail']['no_ref'] = urlencode($refine['RevenueDetail']['no_reference']);
-				}
-				if( !empty($refine['Invoice']['customer_id']) ) {
-					$refine_conditions['Invoice']['customer'] = urlencode($refine['Invoice']['customer_id']);
-				}
-				if( !empty($refine['Invoice']['from_date']) ) {
-					$refine_conditions['Invoice']['from'] = urlencode($refine['Invoice']['from_date']);
-				}
-				if( !empty($refine['Invoice']['to_date']) ) {
-					$refine_conditions['Invoice']['to'] = urlencode($refine['Invoice']['to_date']);
-				}
-				if( !empty($refine['Invoice']['date']) ) {
-					$refine_conditions['Invoice']['date'] = urlencode($refine['Invoice']['date']);
-				}
-				if( !empty($refine['Invoice']['transaction_status']) ) {
-					$refine_conditions['Invoice']['status'] = urlencode($refine['Invoice']['transaction_status']);
-				}
-				if( !empty($refine['Invoice']['no_invoice']) ) {
-					$refine_conditions['Invoice']['no_invoice'] = urlencode($refine['Invoice']['no_invoice']);
-				}
-				if( !empty($refine['Invoice']['status']) ) {
-					$refine_conditions['Invoice']['status'] = urlencode($refine['Invoice']['status']);
-				}
-				if( !empty($refine['InvoicePayment']['date_from']) ) {
-					$refine_conditions['InvoicePayment']['from'] = urlencode($refine['InvoicePayment']['date_from']);
-				}
-				if( !empty($refine['InvoicePayment']['date_to']) ) {
-					$refine_conditions['InvoicePayment']['to'] = urlencode($refine['InvoicePayment']['date_to']);
-				}
-				if( !empty($refine['InvoicePayment']['nodoc']) ) {
-					$refine_conditions['InvoicePayment']['nodoc'] = urlencode($refine['InvoicePayment']['nodoc']);
-				}
-				if( !empty($refine['Ttuj']['monitoring_customer_id']) ) {
-					$refine_conditions['Ttuj']['monitoring_customer_id'] = array_filter($refine['Ttuj']['monitoring_customer_id']);
-					$refine_conditions['Ttuj']['monitoring_customer_id'] = implode(',', $refine_conditions['Ttuj']['monitoring_customer_id']);
-				}
-			}
-				
-			return $refine_conditions;
-		}
+	function initialize(Controller $controller, $settings = array()) {
+		$this->controller = $controller;
 	}
 
-	function generateSearchURL($refine) {
-		$parameters = array();
-		if(isset($refine['Ttuj']) && !empty($refine['Ttuj'])) {
-			foreach($refine['Ttuj'] as $param => $value) {
-				if($value) {
-					$parameters[trim($param)] = rawurlencode($value);
-				}
-			}
-		}
-		if(isset($refine['Revenue']) && !empty($refine['Revenue'])) {
-			foreach($refine['Revenue'] as $param => $value) {
-				if($value) {
-					$parameters[trim($param)] = rawurlencode($value);
-				}
-			}
-		}
-		if(isset($refine['RevenueDetail']) && !empty($refine['RevenueDetail'])) {
-			foreach($refine['RevenueDetail'] as $param => $value) {
-				if($value) {
-					$parameters[trim($param)] = rawurlencode($value);
-				}
-			}
-		}
-		if(isset($refine['Invoice']) && !empty($refine['Invoice'])) {
-			foreach($refine['Invoice'] as $param => $value) {
-				if($value) {
-					$parameters[trim($param)] = rawurlencode($value);
-				}
-			}
-		}
-		if(isset($refine['InvoicePayment']) && !empty($refine['InvoicePayment'])) {
-			foreach($refine['InvoicePayment'] as $param => $value) {
-				if($value) {
-					$parameters[trim($param)] = rawurlencode($value);
-				}
-			}
-		}
+    function _callMechanicBeforeSave ( $data ) {
+        $spkMechanic = $this->MkCommon->filterEmptyField($data, 'SpkMechanic', false, array());
+        $spkMechanic = array_filter($spkMechanic);
 
-		return $parameters;
-	}
+        if( !empty($spkMechanic['employe_id']) ) {
+            $data = $this->MkCommon->_callUnset(array(
+                'SpkMechanic',
+            ), $data);
+            $spkMechanic['employe_id'] = array_unique($spkMechanic['employe_id']);
+            $spkMechanic['employe_id'] = array_values($spkMechanic['employe_id']);
+
+            foreach ($spkMechanic['employe_id'] as $key => $mechanic_id) {
+                $data['SpkMechanic'][]['SpkMechanic'] = array(
+                    'employe_id' => $mechanic_id,
+                );
+            }
+        } else {
+            $data['Spk']['mechanic'] = '';
+        }
+
+        return $data;
+    }
+
+    function _callProductBeforeSave ( $data ) {
+        $spkProduct = $this->MkCommon->filterEmptyField($data, 'SpkProduct', false, array());
+        $spkProduct = array_filter($spkProduct);
+
+        if( !empty($spkProduct['product_id']) ) {
+            $data = $this->MkCommon->_callUnset(array(
+                'SpkProduct',
+            ), $data);
+
+            foreach ($spkProduct['product_id'] as $key => $product_id) {
+                $qty = $this->MkCommon->filterIssetField($spkProduct, 'qty', $key);
+                $price_service = $this->MkCommon->filterIssetField($spkProduct, 'price_service', $key);
+                $price = $this->MkCommon->filterIssetField($spkProduct, 'price', $key);
+
+                $dataProduct = array(
+                    'product_id' => $product_id,
+                    'qty' => $qty,
+                    'price_service' => $price_service,
+                    'price' => $price,
+                );
+                $dataProduct = $this->MkCommon->dataConverter($dataProduct, array(
+                    'price' => array(
+                        'price_service',
+                        'price',
+                    )
+                ));
+
+                $data['SpkProduct'][]['SpkProduct'] = $dataProduct;
+            }
+        } else {
+            $data['Spk']['product'] = '';
+        }
+
+        return $data;
+    }
+
+    function _callBeforeSave ( $data, $id = false ) {
+        if( !empty($data) ) {
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'Spk' => array(
+                        'transaction_date',
+                        'start_date',
+                        'estimation_date',
+                        'complete_date',
+                    ),
+                )
+            ));
+
+            $data = $this->_callMechanicBeforeSave($data);
+            $data = $this->_callProductBeforeSave($data);
+        }
+
+        return $data;
+    }
+
+    function _callProductBeforeRender ( $data ) {
+        $spkProduct = $this->MkCommon->filterEmptyField($data, 'SpkProduct');
+
+        if( !empty($spkProduct) ) {
+            $spkProduct = $this->controller->Spk->SpkProduct->getMergeList($spkProduct, array(
+                'contain' => array(
+                    'Product' => array(
+                        'contain' => array(
+                            'ProductUnit',
+                        ),
+                    ),
+                ),
+            ));
+
+            $data['SpkProduct'] = $spkProduct;
+        }
+
+        return $data;
+    }
+
+    function _callMechanicBeforeRender ( $data ) {
+        $spkMechanic = $this->MkCommon->filterEmptyField($data, 'SpkMechanic', false, array());
+
+        if( !empty($spkMechanic) ) {
+            $spkMechanic = Set::extract('/SpkMechanic/employe_id', $spkMechanic);
+
+            if( !empty($spkMechanic) ) {
+                $spkMechanic = array_unique($spkMechanic);
+                $spkMechanic = array_values($spkMechanic);
+                $data['SpkMechanic']['employe_id'] = $spkMechanic;
+            }
+        }
+
+        return $data;
+    }
+
+    function _callSpkBeforeRender ( $data, $value = false ) {
+        $document_id = false;
+
+        if( empty($data) ) {
+            $data = $value;
+
+            if( empty($value) ) {
+                $data['Spk']['transaction_date'] = date('Y-m-d');
+            }
+        }
+
+        $data = $this->_callMechanicBeforeRender($data);
+        $data = $this->_callProductBeforeRender($data);
+
+        $data = $this->MkCommon->dataConverter($data, array(
+            'date' => array(
+                'Spk' => array(
+                    'est_start_date',
+                    'est_end_date',
+                    'complete_date',
+                    'transaction_date',
+                ),
+            )
+        ), true);
+        $this->controller->request->data = $data;
+
+        $employes = $this->controller->User->Employe->getData('list', array(
+        	'fields' => array(
+        		'Employe.id', 'Employe.full_name',
+    		),
+            'contain' => false,
+    	), array(
+    		'role' => 'mekanik',
+    	));
+        $toBranches = $this->controller->GroupBranch->Branch->getData('list', array(
+        	'fields' => array(
+        		'Branch.id', 'Branch.code',
+    		),
+    		'contain' => false,
+    	));
+        $vendors = $this->controller->Spk->Vendor->getData('list');
+
+        $this->MkCommon->_layout_file('select');
+    	$this->controller->set(compact(
+    		'employes', 'toBranches',
+            'vendors'
+		));
+    }
 }
 ?>

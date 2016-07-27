@@ -1271,6 +1271,11 @@ class CommonHelper extends AppHelper {
                     $format = $format['date'];
                     $result = $this->formatDate($result, $format);
                 }
+                if( !empty($format['price_to_string']) ) {
+                    $empty = isset($format['price_to_string']['empty'])?$format['price_to_string']['empty']:'';
+                    $decimal = isset($format['price_to_string']['decimal'])?$format['price_to_string']['decimal']:0;
+                    $result = $this->convertPriceToString($result, $empty, $decimal);
+                }
             } else {
                 switch ($format) {
                     case 'EOL':
@@ -2635,5 +2640,35 @@ class CommonHelper extends AppHelper {
                 ));
                 break;
         }
+    }
+
+    // New Input Form - Nanti semua akan diganti kesini
+    function _callInputForm ($fieldName, $options = false) {
+        $default_options = array(
+            'fieldName' => $fieldName,
+            'label' => false,
+            'frameClass' => 'form-group',
+            'class' => 'form-control',
+            'div' => false,
+            'required' => false,
+            'placeholder' => false,
+            'text' => false,
+            'disabled' => false,
+        );
+
+        if( !empty($options) ) {
+            $default_options = array_merge($default_options, $options);
+        }
+
+        $attributes = $this->_callUnset(array(
+            'label',
+            'fieldName',
+            'frameClass',
+            'text',
+            'div',
+        ), $default_options);
+        $default_options['attributes'] = $attributes;
+
+        return $this->_View->element('blocks/common/forms/input', $default_options);
     }
 }
