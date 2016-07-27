@@ -5305,19 +5305,23 @@ class RevenuesController extends AppController {
                     $this->MkCommon->_callAllowClosing($revenue, 'Revenue', 'date_revenue');
 
                     $date_revenue = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'date_revenue');
-                    $no_doc = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'no_doc');
                     $customer_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'customer_id');
 
                     $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'RevenueDetail', 'revenue_id');
                     $revenue = $this->Ttuj->Customer->getMerge($revenue, $customer_id);
                     $total = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'total');
                     $customer_name = $this->MkCommon->filterEmptyField($revenue, 'Customer', 'customer_name_code');
+                    $no_doc = str_pad($revenue_id, 5, '0', STR_PAD_LEFT);
 
                     $this->Revenue->set('total', $total);
                     $this->Revenue->id = $revenue_id;
                     $this->Revenue->save();
 
                     $titleJournal = sprintf(__('Revenue customer %s'), $customer_name);
+                    
+                    $this->User->Journal->deleteJournal($revenue_id, array(
+                        'revenue',
+                    ));
                     $this->User->Journal->setJournal($total, array(
                         'credit' => 'revenue_coa_credit_id',
                         'debit' => 'revenue_coa_debit_id',
