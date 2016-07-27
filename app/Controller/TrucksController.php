@@ -4598,11 +4598,16 @@ class TrucksController extends AppController {
         ));
 
         if( !empty($data_action) ) {
+            $start_page = 0;
             $ttujs = $this->Ttuj->getData('all', $options, true, array(
                 'branch' => false,
             ));
         } else {
-            $options['limit'] = 20;
+            $limit = 20;
+            $page = $this->MkCommon->filterEmptyField($this->params, 'named', 'page', 1);
+            $start_page = $limit * ($page-1);
+            $options['limit'] = $limit;
+
             $options = $this->Ttuj->getData('paginate', $options, true, array(
                 'branch' => false,
             ));
@@ -4664,7 +4669,7 @@ class TrucksController extends AppController {
             'ttujs', 'from_date', 'to_date', 
             'data_action', 'header_module_title',
             'periode', 'allow_branch', 'companies',
-            'cities'
+            'cities', 'start_page'
         ));
 
         if($data_action == 'pdf'){

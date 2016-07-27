@@ -2,6 +2,11 @@
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $header_module_title = !empty($header_module_title)?$header_module_title:false;
         $dataColumns = array(
+            'no' => array(
+                'name' => __('No.'),
+                'style' => 'text-align: center',
+                'data-options' => 'field:\'no\',width:50',
+            ),
             'date' => array(
                 'name' => __('Tanggal'),
                 'field_model' => 'Ttuj.ttuj_date',

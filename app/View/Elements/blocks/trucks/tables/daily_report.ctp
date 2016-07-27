@@ -4,8 +4,10 @@
             $grandtotal_uang_jalan_extra = 0;
             $grandtotal_total_uang_jalan = 0;
             $grandtotal_unit = 0;
+            $idx = !empty($start_page)?$start_page:0;
 
             foreach ($ttujs as $key => $value) {
+                $idx++;
                 $ttuj_date = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date');
                 $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
                 $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
@@ -27,7 +29,10 @@
                 $grandtotal_total_uang_jalan += $total_uang_jalan;
                 $grandtotal_unit += $total_unit;
 
-                $content = $this->Common->_getDataColumn($this->Common->customDate($ttuj_date, 'd M Y'), 'Ttuj', 'ttuj_date', array(
+                $content = $this->Html->tag('td', $idx, array(
+                    'style' => 'text-align: center;',
+                ));
+                $content .= $this->Common->_getDataColumn($this->Common->customDate($ttuj_date, 'd M Y'), 'Ttuj', 'ttuj_date', array(
                     'style' => 'text-align: center;',
                     'class' => 'ttuj_date',
                 ));
@@ -73,6 +78,7 @@
             }
 
             $content = $this->Html->tag('td', '&nbsp;');
+            $content .= $this->Html->tag('td', '&nbsp;');
             $content .= $this->Html->tag('td', '&nbsp;');
             $content .= $this->Html->tag('td', '&nbsp;');
             $content .= $this->Html->tag('td', '&nbsp;');
