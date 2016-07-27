@@ -5179,7 +5179,7 @@ class RevenuesController extends AppController {
                 $customer_id = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'customer_id');
                 $coa_id = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'coa_id');
                 $date_payment = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'date_payment');
-                $transaction_status = $this->MkCommon->filterEmptyField($invoice_payment, 'TtujPayment', 'transaction_status');
+                $transaction_status = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'transaction_status');
                 
                 $invoice_payment = $this->Invoice->InvoicePaymentDetail->InvoicePayment->Customer->getMerge($invoice_payment, $customer_id);
                 $customer_name_code = $this->MkCommon->filterEmptyField($invoice_payment, 'Customer', 'customer_name_code');
@@ -5318,7 +5318,7 @@ class RevenuesController extends AppController {
                     $this->Revenue->save();
 
                     $titleJournal = sprintf(__('Revenue customer %s'), $customer_name);
-                    
+
                     $this->User->Journal->deleteJournal($revenue_id, array(
                         'revenue',
                     ));
