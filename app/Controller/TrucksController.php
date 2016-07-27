@@ -3776,7 +3776,7 @@ class TrucksController extends AppController {
                 'Ttuj.is_draft'=> 0,
                 'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\')' => $currentMonth,
                 'Ttuj.customer_id' => $customerArr,
-                'Ttuj.is_retail' => 0,
+                // 'Ttuj.is_retail' => 0,
                 'Ttuj.branch_id' => $branch_plant_id,
             ),
             'contain' => array(
