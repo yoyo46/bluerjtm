@@ -22,6 +22,14 @@ class CommonBehavior extends ModelBehavior {
 				}
 				break;
 		}
+
+		if( !empty($result) && is_string($result) ) {
+			$result = urldecode($result);
+
+			if( !empty($trim) ) {
+				$result = trim($result);
+			}
+		}
 	}
 
     function convertPriceToString ( Model $model, $price, $result = '', $places = 0 ) {

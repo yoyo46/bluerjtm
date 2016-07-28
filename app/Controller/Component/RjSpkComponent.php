@@ -80,12 +80,41 @@ class RjSpkComponent extends Component {
                     ),
                 )
             ));
+            $nopol = $this->MkCommon->filterEmptyField($data, 'Spk', 'nopol');
+            $truck = $this->controller->Spk->Truck->getMerge(array(), $nopol, 'Truck.nopol');
+
+            $data['Spk']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['Spk']['truck_id'] = $this->MkCommon->filterEmptyField($truck, 'Truck', 'id');
 
             $data = $this->_callMechanicBeforeSave($data);
             $data = $this->_callProductBeforeSave($data);
         }
 
         return $data;
+    }
+
+    function _callBeforeRender () {
+        $employes = $this->controller->User->Employe->getData('list', array(
+            'fields' => array(
+                'Employe.id', 'Employe.full_name',
+            ),
+            'contain' => false,
+        ), array(
+            'role' => 'mekanik',
+        ));
+        $toBranches = $this->controller->GroupBranch->Branch->getData('list', array(
+            'fields' => array(
+                'Branch.id', 'Branch.code',
+            ),
+            'contain' => false,
+        ));
+        $vendors = $this->controller->Spk->Vendor->getData('list');
+
+        $this->MkCommon->_layout_file('select');
+        $this->controller->set(compact(
+            'employes', 'toBranches',
+            'vendors'
+        ));
     }
 
     function _callProductBeforeRender ( $data ) {
@@ -141,8 +170,8 @@ class RjSpkComponent extends Component {
         $data = $this->MkCommon->dataConverter($data, array(
             'date' => array(
                 'Spk' => array(
-                    'est_start_date',
-                    'est_end_date',
+                    'start_date',
+                    'estimation_date',
                     'complete_date',
                     'transaction_date',
                 ),

@@ -2463,6 +2463,12 @@ class CommonHelper extends AppHelper {
                 ));
                 break;
 
+            case 'finish':
+                $customStatus = $this->Html->tag('span', __('Finish'), array(
+                    'class' => 'label label-success',
+                ));
+                break;
+
             case 'progress':
                 $customStatus = $this->Html->tag('span', __('Pending'), array(
                     'class' => 'label label-warning',
@@ -2493,6 +2499,12 @@ class CommonHelper extends AppHelper {
                 ));
                 break;
 
+            case 'closed':
+                $customStatus = $this->Html->tag('span', __('Closed'), array(
+                    'class' => 'label label-danger',
+                ));
+                break;
+
             case 'approved':
                 $customStatus = $this->Html->tag('span', __('Disetujui'), array(
                     'class' => 'label label-success',
@@ -2502,6 +2514,12 @@ class CommonHelper extends AppHelper {
             case 'po':
                 $customStatus = $this->Html->tag('span', __('PO'), array(
                     'class' => 'label label-pink',
+                ));
+                break;
+
+            case 'open':
+                $customStatus = $this->Html->tag('span', __('Open'), array(
+                    'class' => 'label label-default',
                 ));
                 break;
             

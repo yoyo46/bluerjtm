@@ -36,7 +36,7 @@
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
         $this->Html->addCrumb($sub_module_title);
-        echo $this->element('blocks/products/receipts/forms/search');
+        echo $this->element('blocks/spk/forms/search');
 ?>
 <div class="box">
     <?php 
@@ -68,17 +68,17 @@
                             $transaction_status = $this->Common->filterEmptyField($value, 'Spk', 'transaction_status');
                             $document_type = $this->Common->filterEmptyField($value, 'Spk', 'document_type');
                             $nopol = $this->Common->filterEmptyField($value, 'Spk', 'nopol');
-                            $est_start_date = $this->Common->filterEmptyField($value, 'Spk', 'est_start_date');
-                            $est_end_date = $this->Common->filterEmptyField($value, 'Spk', 'est_end_date');
+                            $estimation_date = $this->Common->filterEmptyField($value, 'Spk', 'estimation_date', false, true, array(
+                                'date' => 'd/m/Y',
+                            ));
                             $complete_date = $this->Common->filterEmptyField($value, 'Spk', 'complete_date', false, true, array(
                                 'date' => 'd/m/Y',
                             ));
 
                             $document_type = ucwords($document_type);
                             $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
-                            $est_date = $this->Common->combineDate($est_start_date, $est_end_date);
 
-                            $customStatus = $this->Spk->_callStatus($value, 'Spk');
+                            $customStatus = $this->Common->_callTransactionStatus($value, 'Spk');
                             $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
 
                             $customAction = $this->Html->link(__('Detail'), array(
@@ -114,7 +114,7 @@
                         echo $this->Html->tag('td', $document_type);
                         echo $this->Html->tag('td', $vendor);
                         echo $this->Html->tag('td', $nopol);
-                        echo $this->Html->tag('td', $est_date);
+                        echo $this->Html->tag('td', $estimation_date);
                         echo $this->Html->tag('td', $complete_date);
                         echo $this->Html->tag('td', $note);
                         echo $this->Html->tag('td', $customStatus, array(

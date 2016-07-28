@@ -19,6 +19,10 @@ class Spk extends AppModel {
             'className' => 'Employe',
             'foreignKey' => 'employe_id',
         ),
+        'Truck' => array(
+            'className' => 'Truck',
+            'foreignKey' => 'truck_id',
+        ),
     );
 
     var $hasMany = array(
@@ -166,6 +170,7 @@ class Spk extends AppModel {
     function getData( $find, $options = false, $elements = false ){
         $branch = isset($elements['branch'])?$elements['branch']:true;
         $status = isset($elements['status'])?$elements['status']:'active';
+        $role = isset($elements['role'])?$elements['role']:false;
 
         $default_options = array(
             'conditions'=> array(),
@@ -197,6 +202,10 @@ class Spk extends AppModel {
 
         if( !empty($branch) ) {
             $default_options['conditions']['Spk.branch_id'] = Configure::read('__Site.config_branch_id');
+        }
+
+        if( !empty($role) ) {
+            $default_options['conditions']['Spk.transaction_status'] = $role;
         }
 
         if( !empty($options) ) {
@@ -343,11 +352,12 @@ class Spk extends AppModel {
     }
 
     public function _callRefineParams( $data = '', $default_options = false ) {
-        $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
-        $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
-        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
-        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
-        $vendor_id = !empty($data['named']['vendor_id'])?$data['named']['vendor_id']:false;
+        $noref = $this->filterEmptyField($data, 'named', 'noref');
+        $document_type = $this->filterEmptyField($data, 'named', 'document_type');
+        $nodoc = $this->filterEmptyField($data, 'named', 'nodoc');
+        $dateFrom = $this->filterEmptyField($data, 'named', 'DateFrom');
+        $dateTo = $this->filterEmptyField($data, 'named', 'DateTo');
+        $vendor_id = $this->filterEmptyField($data, 'named', 'vendor_id');
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -364,67 +374,11 @@ class Spk extends AppModel {
         if( !empty($vendor_id) ) {
             $default_options['conditions']['Spk.vendor_id'] = $vendor_id;
         }
+        if( !empty($document_type) ) {
+            $default_options['conditions']['Spk.document_type'] = $document_type;
+        }
         
         return $default_options;
-    }
-
-    function doDelete( $id ) {
-        $result = false;
-        $value = $this->getData('first', array(
-            'conditions' => array(
-                'Spk.id' => $id,
-            ),
-        ));
-
-        if ( !empty($value) ) {
-            $document_id = $this->filterEmptyField($value, 'Spk', 'document_id');
-            $nodoc = $this->filterEmptyField($value, 'Spk', 'nodoc');
-            $document_type = $this->filterEmptyField($value, 'Spk', 'document_type');
-            $default_msg = sprintf(__('menghapus penerimaan barang #%s'), $id);
-
-            $this->id = $id;
-            $this->set('status', 0);
-            $this->set('transaction_status', 'void');
-
-            if( $this->save() ) {
-
-                switch ($document_type) {
-                    case 'po':
-                        $this->PurchaseOrder->id = $document_id;
-                        $this->PurchaseOrder->set('receipt_status', 'none');
-                        $this->PurchaseOrder->save();
-                        break;
-                }
-
-                $msg = sprintf(__('Berhasil %s'), $default_msg);
-                $result = array(
-                    'msg' => $msg,
-                    'status' => 'success',
-                    'Log' => array(
-                        'activity' => $msg,
-                        'old_data' => $value,
-                    ),
-                );
-            } else {
-                $msg = sprintf(__('Gagal %s'), $default_msg);
-                $result = array(
-                    'msg' => $msg,
-                    'status' => 'error',
-                    'Log' => array(
-                        'activity' => $msg,
-                        'old_data' => $value,
-                        'error' => 1,
-                    ),
-                );
-            }
-        } else {
-            $result = array(
-                'msg' => __('Gagal menghapus penerimaan barang. Data tidak ditemukan'),
-                'status' => 'error',
-            );
-        }
-
-        return $result;
     }
 
     function generateNoId(){
@@ -456,6 +410,53 @@ class Spk extends AppModel {
         $format_id .= $id;
         
         return $format_id;
+    }
+
+    function doDelete( $id ) {
+        $result = false;
+        $value = $this->getData('first', array(
+            'conditions' => array(
+                'Spk.id' => $id,
+            ),
+        ));
+
+        if ( !empty($value) ) {
+            $default_msg = sprintf(__('menghapus SPK #%s'), $id);
+
+            $this->id = $id;
+            $this->set('status', 0);
+            $this->set('transaction_status', 'void');
+
+            if( $this->save() ) {
+                $msg = sprintf(__('Berhasil %s'), $default_msg);
+                $result = array(
+                    'msg' => $msg,
+                    'status' => 'success',
+                    'Log' => array(
+                        'activity' => $msg,
+                        'old_data' => $value,
+                    ),
+                );
+            } else {
+                $msg = sprintf(__('Gagal %s'), $default_msg);
+                $result = array(
+                    'msg' => $msg,
+                    'status' => 'error',
+                    'Log' => array(
+                        'activity' => $msg,
+                        'old_data' => $value,
+                        'error' => 1,
+                    ),
+                );
+            }
+        } else {
+            $result = array(
+                'msg' => __('Gagal menghapus SPK. Data tidak ditemukan'),
+                'status' => 'error',
+            );
+        }
+
+        return $result;
     }
 }
 ?>
