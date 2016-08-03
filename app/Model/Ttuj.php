@@ -313,7 +313,7 @@ class Ttuj extends AppModel {
 
             switch ($data_action) {
                 case 'tgl_surat_jalan':
-                    $data_merge = $this->SuratJalanDetail->find('all', array(
+                    $data_merge = $this->SuratJalanDetail->find('first', array(
                         'conditions' => $conditions,
                         'order' => array(
                             'SuratJalan.tgl_surat_jalan' => 'DESC',
