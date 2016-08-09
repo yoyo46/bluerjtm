@@ -70,12 +70,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <?php 
-                            // Custom Otorisasi
-                            echo $this->Common->getCheckboxBranch();
-                    ?>
-                </div>
+                <?php 
+                        echo $this->Common->_callInputForm('customer_id', array(
+                            'label' => __('Customer'),
+                            'class' => 'chosen-select form-control',
+                            'empty' => __('Pilih Customer'),
+                        ));
+                ?>
             </div>
             <div class="col-sm-4">
                 <div class="form-group">
@@ -103,6 +104,12 @@
                                 'class'=>'form-control',
                                 'required' => false,
                             ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            // Custom Otorisasi
+                            echo $this->Common->getCheckboxBranch();
                     ?>
                 </div>
                 <div class="form-group action">

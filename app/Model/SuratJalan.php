@@ -132,6 +132,7 @@ class SuratJalan extends AppModel {
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
         $nottuj = !empty($data['named']['nottuj'])?$data['named']['nottuj']:false;
         $customer = !empty($data['named']['customer'])?$data['named']['customer']:false;
+        $customer_id = !empty($data['named']['customer_id'])?$data['named']['customer_id']:false;
         $note_ttuj = !empty($data['named']['note_ttuj'])?$data['named']['note_ttuj']:false;
 
         $status = !empty($data['named']['status'])?$data['named']['status']:false;
@@ -170,19 +171,24 @@ class SuratJalan extends AppModel {
             }
             $default_options['contain'][] = 'Ttuj';
         }
-        if(!empty($customer)){
-            $customers = $this->Ttuj->Customer->getData('list', array(
-                'conditions' => array(
-                    'Customer.customer_name_code LIKE' => '%'.$customer.'%',
-                ),
-                'fields' => array(
-                    'Customer.id', 'Customer.id'
-                ),
-            ), true, array(
-                'status' => 'all',
-                'branch' => false,
-            ));
-            $default_options['conditions']['Ttuj.customer_id'] = $customers;
+        if(!empty($customer) || !empty($customer_id)){
+            if( !empty($customer) ){
+                $customers = $this->SuratJalanDetail->Ttuj->Customer->getData('list', array(
+                    'conditions' => array(
+                        'Customer.customer_name_code LIKE' => '%'.$customer.'%',
+                    ),
+                    'fields' => array(
+                        'Customer.id', 'Customer.id'
+                    ),
+                ), true, array(
+                    'status' => 'all',
+                    'branch' => false,
+                ));
+                $default_options['conditions']['Ttuj.customer_id'] = $customers;
+            } else {
+                $default_options['conditions']['Ttuj.customer_id'] = $customer_id;
+            }
+
             $default_options['contain'][] = 'Ttuj';
         }
         if(!empty($nottuj)){

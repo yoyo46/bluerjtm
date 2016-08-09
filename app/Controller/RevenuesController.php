@@ -9616,9 +9616,16 @@ class RevenuesController extends AppController {
             }
         }
 
+        $customers = $this->Ttuj->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+
         $this->set('active_menu', 'report_surat_jalan');
         $this->set(compact(
-            'values', 'module_title', 'data_action'
+            'values', 'module_title', 'data_action',
+            'customers'
         ));
 
         if($data_action == 'pdf'){
