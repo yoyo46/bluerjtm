@@ -27,6 +27,11 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.nodoc', __('No. Dokumen'), array(
                             'escape' => false
                         )));
+                        echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.date_payment', __('Tgl pembayaran'), array(
+                            'escape' => false
+                        )), array(
+                            'class' => 'text-center'
+                        ));
                         echo $this->Html->tag('th', __('Customer'));
                         // echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.coa_id', __('COA'), array(
                         //     'escape' => false
@@ -34,11 +39,6 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.total_payment', __('Total Dibayar'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.date_payment', __('Tgl pembayaran'), array(
-                            'escape' => false
-                        )), array(
-                            'class' => 'text-center'
-                        ));
                         echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.status', __('Status'), array(
                             'escape' => false
                         )));
@@ -60,10 +60,10 @@
             <tr>
                 <td><?php echo $noref;?></td>
                 <td><?php echo $value['InvoicePayment']['nodoc'];?></td>
+                <td class="text-center"><?php echo $this->Common->customDate($value['InvoicePayment']['date_payment'], 'd M Y');?></td>
                 <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:false;?></td>
                 <!-- <td><?php // echo !empty($value['Coa']['name'])?$value['Coa']['name']:false;?></td> -->
                 <td align="right"><?php echo $this->Number->currency($value['InvoicePayment']['grand_total_payment'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
-                <td class="text-center"><?php echo $this->Common->customDate($value['InvoicePayment']['date_payment'], 'd M Y');?></td>
                 <td>
                     <?php 
                             echo $customStatus;
