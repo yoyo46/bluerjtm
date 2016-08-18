@@ -1,3 +1,10 @@
+<?php 
+        if( !empty($coas) ) {
+            $coas = array_merge(array(
+                'all' => __('Pilih Semua COA'),
+            ), $coas);
+        }
+?>
 <div class="box">
     <?php
             echo $this->element('blocks/common/searchs/box_header');
@@ -30,7 +37,7 @@
                                 'label'=> __('COA'),
                                 'class'=>'form-control chosen-select',
                                 'required' => false,
-                                'empty' => __('Pilih COA'),
+                                // 'empty' => __('Pilih COA'),
                                 'options' => !empty($coas)?$coas:false,
                                 'multiple' => true,
                             ));

@@ -262,7 +262,7 @@ class Journal extends AppModel {
         if( !empty($nodoc) ) {
             $default_options['conditions']['Journal.document_no LIKE'] = '%'.$nodoc.'%';
         }
-        if( !empty($journalcoa) ) {
+        if( !empty($journalcoa) && $journalcoa != 'all' ) {
             $default_options['conditions']['Journal.coa_id'] = $journalcoa;
         }
         if( $status == 'active' ) {
