@@ -33,7 +33,7 @@
     </div>
     <div class="box-body">
         <?php 
-            echo $this->Form->create('Invoice', array(
+            echo $this->Form->create('Search', array(
                 'url'=> $this->Html->url( array(
                     'controller' => 'revenues',
                     'action' => 'search',
@@ -45,58 +45,29 @@
         ?>
         <div class="row">
             <div class="col-sm-6">
+                <?php 
+                        echo $this->Common->_callInputForm('date',array(
+                            'label'=> __('Tgl Kwitansi'),
+                            'class'=>'form-control date-range',
+                            'required' => false,
+                        ));
+                ?>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('Ttuj.customer',array(
-                                'label'=> __('Customer'),
-                                'class'=>'form-control chosen-select',
-                                'required' => false,
-                                'empty' => __('Pilih Customer'),
-                            ));
-                    ?>
-                </div>
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->input('Invoice.company_id',array(
-                                'label'=> __('Company'),
-                                'class'=>'form-control chosen-select',
-                                'required' => false,
-                                'empty' => __('Pilih Company'),
-                            ));
-                    ?>
-                </div>
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->input('date',array(
+                            echo $this->Form->input('daterange',array(
                                 'label'=> __('Periode Tanggal'),
                                 'class'=>'form-control date-range',
                                 'required' => false,
                             ));
                     ?>
                 </div>
-                <div class="form-group action">
-                    <?php
-                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
-                                'div' => false, 
-                                'class'=> 'btn btn-success btn-sm',
-                                'type' => 'submit',
-                            ));
-                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'list_kwitansi', 
-                            ), array(
-                                'escape' => false, 
-                                'class'=> 'btn btn-default btn-sm',
-                            ));
-                    ?>
-                </div>
-            </div>
-            <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('no_invoice',array(
-                                'label'=> __('No. Invoice'),
-                                'class'=>'form-control',
+                            echo $this->Form->input('customer',array(
+                                'label'=> __('Customer'),
+                                'class'=>'form-control chosen-select',
                                 'required' => false,
+                                'empty' => __('Pilih Customer'),
                             ));
                     ?>
                 </div>
@@ -112,8 +83,48 @@
                     ?>
                 </div>
                 <?php 
+                        echo $this->element('blocks/common/searchs/box_action', array(
+                            '_url' => array(
+                                'action' => 'list_kwitansi', 
+                            ),
+                        ));
+                ?>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('nodoc',array(
+                                'label'=> __('No. Invoice'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('company_id',array(
+                                'label'=> __('Company'),
+                                'class'=>'form-control chosen-select',
+                                'required' => false,
+                                'empty' => __('Pilih Company'),
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('customer_group_id',array(
+                                'label'=> __('Group Customer'),
+                                'class'=>'form-control chosen-select',
+                                'required' => false,
+                                'empty' => __('Pilih Group Customer'),
+                            ));
+                    ?>
+                </div>
+                <?php 
                         // Custom Otorisasi
-                        echo $this->Common->getCheckboxBranch();
+                        echo $this->Html->tag('div', $this->Common->getCheckboxBranch(), array(
+                            'class' => 'form-group',
+                        ));
                 ?>
             </div>
         </div>
@@ -284,8 +295,6 @@
                                 $totalUnit = !empty($invoice['qty_unit'])?$invoice['qty_unit']:0;
                                 
                                 $totalPPH = $this->Common->filterEmptyField($invoice, 'Invoice', 'total_pph', 0);
-                                $totalPPH = !empty($invoice[0]['total_pph'])?$invoice[0]['total_pph']:$totalPPH;
-                                // $totalPPH = !empty($invoice['total_pph'])?$invoice['total_pph']:0;
 
                                 $company = $this->Common->filterEmptyField($invoice, 'Company', 'code');
                                 
@@ -295,7 +304,6 @@
                                 $invoiceStatus = $this->Common->getInvoiceStatus( $invoice );
                                 $totalTagihan += $invoice['Invoice']['total'];
                                 $totalQty += $totalUnit;
-                                $grandtotalPPH += $totalPPH;
 
                                 if( !empty($invoice['InvoicePaymentDate']) ) {
                                     foreach ($invoice['InvoicePaymentDate'] as $key => $dtPaid) {
@@ -303,11 +311,12 @@
                                     }
                                 }
 
-                                if( !empty($invoice[0]['total_payment']) ) {
-                                    $totalPaid = $invoice[0]['total_payment'];
-                                }
+                                $totalPPH = $this->Common->filterEmptyField($invoice, 'InvoicePaymentDetail', 'total_pph', $totalPPH);
+                                $total_ppn = $this->Common->filterEmptyField($invoice, 'InvoicePaymentDetail', 'total_ppn', 0);
+                                $totalPaid = $this->Common->filterEmptyField($invoice, 'InvoicePaymentDetail', 'total_payment', 0) + $total_ppn;
 
                                 $totalTransfer += $totalPaid;
+                                $grandtotalPPH += $totalPPH;
 
                                 if( strtolower($invoiceStatus['text']) == 'void' ) {
                                     $totalVoidTransfer += $totalPaid;
@@ -495,14 +504,13 @@
 
                 foreach ($invoices as $key => $invoice) {
                     $totalUnit = !empty($invoice['qty_unit'])?$invoice['qty_unit']:0;
-                    $totalPPH = !empty($invoice['total_pph'])?$invoice['total_pph']:0;
+                    $totalPPH = $this->Common->filterEmptyField($invoice, 'Invoice', 'total_pph', 0);
                     $dateTOP = !empty($invoice['Invoice']['term_of_payment'])?date('d/m/Y', strtotime(sprintf('+%s day', $invoice['Invoice']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']))):'-';
                     $datePayment = array();
                     $totalPaid = 0;
                     $invoiceStatus = $this->Common->getInvoiceStatus( $invoice );
                     $totalTagihan += $invoice['Invoice']['total'];
                     $totalQty += $totalUnit;
-                    $grandtotalPPH += $totalPPH;
 
                     $company = $this->Common->filterEmptyField($invoice, 'Company', 'code');
 
@@ -512,11 +520,12 @@
                         }
                     }
 
-                    if( !empty($invoice[0]['total_payment']) ) {
-                        $totalPaid = $invoice[0]['total_payment'];
-                    }
+                    $totalPPH = $this->Common->filterEmptyField($invoice, 'InvoicePaymentDetail', 'total_pph', $totalPPH);
+                    $total_ppn = $this->Common->filterEmptyField($invoice, 'InvoicePaymentDetail', 'total_ppn', 0);
+                    $totalPaid = $this->Common->filterEmptyField($invoice, 'InvoicePaymentDetail', 'total_payment', 0) + $total_ppn;
 
                     $totalTransfer += $totalPaid;
+                    $grandtotalPPH += $totalPPH;
 
                     if( strtolower($invoiceStatus['text']) == 'void' ) {
                         $totalVoidTransfer += $totalPaid;

@@ -180,19 +180,20 @@ class Invoice extends AppModel {
 
     function getMergePayment($data, $id){
         if(empty($data['InvoicePaymentDetail'])){
+            $this->InvoicePaymentDetail->virtualFields['total_payment'] = 'SUM(InvoicePaymentDetail.price_pay)';
+            $this->InvoicePaymentDetail->virtualFields['total_ppn'] = 'SUM(ppn_nominal)';
+            $this->InvoicePaymentDetail->virtualFields['total_pph'] = 'SUM(pph_nominal)';
+
             $data_merge = $this->InvoicePaymentDetail->getData('first', array(
                 'conditions' => array(
                     'InvoicePaymentDetail.invoice_id' => $id,
                     'InvoicePayment.transaction_status' => 'posting',
+                    'InvoicePaymentDetail.status' => 1,
                     'InvoicePayment.status' => 1,
                     'InvoicePayment.is_canceled' => 0,
                 ),
                 'contain' => array(
                     'InvoicePayment'
-                ),
-                'fields' => array(
-                    'SUM(InvoicePayment.total_payment) total_payment',
-                    'SUM(InvoicePayment.total_payment * (InvoicePayment.pph / 100)) total_pph',
                 ),
                 'group' => array(
                     'InvoicePaymentDetail.invoice_id'
@@ -233,6 +234,13 @@ class Invoice extends AppModel {
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+        $dateFromRange = $this->filterEmptyField($data, 'named', 'DateFromRange');
+        $dateToRange = $this->filterEmptyField($data, 'named', 'DateToRange');
+
+        $customer = $this->filterEmptyField($data, 'named', 'customer');
+        $company_id = $this->filterEmptyField($data, 'named', 'company_id');
+        $customer_group_id = $this->filterEmptyField($data, 'named', 'customer_group_id');
+        $status = $this->filterEmptyField($data, 'named', 'status');
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -243,8 +251,54 @@ class Invoice extends AppModel {
                 $default_options['conditions']['DATE_FORMAT(Invoice.invoice_date, \'%Y-%m-%d\') <='] = $dateTo;
             }
         }
+        if( !empty($dateFromRange) || !empty($dateToRange) ) {
+            if( !empty($dateFromRange) ) {
+                $default_options['conditions']['DATE_FORMAT(Invoice.period_from, \'%Y-%m-%d\') >='] = $dateFromRange;
+            }
+
+            if( !empty($dateToRange) ) {
+                $default_options['conditions']['DATE_FORMAT(Invoice.period_to, \'%Y-%m-%d\') <='] = $dateToRange;
+            }
+        }
         if(!empty($nodoc)){
             $default_options['conditions']['Invoice.no_invoice LIKE'] = '%'.$nodoc.'%';
+        }
+
+        if(!empty($customer)){
+            $default_options['conditions']['CustomerNoType.id'] = $customer;
+            $default_options['contain'][] = 'CustomerNoType';
+        }
+
+        if(!empty($customer_group_id)){
+            $default_options['conditions']['CustomerNoType.customer_group_id'] = $customer_group_id;
+            $default_options['contain'][] = 'CustomerNoType';
+        }
+
+        if(!empty($company_id)){
+            $default_options['conditions']['Invoice.company_id'] = $company_id;
+        }
+
+        if(!empty($status)){
+            switch ($status) {
+                case 'paid':
+                    $default_options['conditions']['Invoice.complete_paid '] = 1;
+                    break;
+
+                case 'halfpaid':
+                    $default_options['conditions']['Invoice.complete_paid '] = 0;
+                    $default_options['conditions']['Invoice.paid '] = 1;
+                    break;
+
+                case 'void':
+                    $default_options['conditions']['Invoice.is_canceled '] = 1;
+                    break;
+                
+                default:
+                    $default_options['conditions']['Invoice.complete_paid '] = 0;
+                    $default_options['conditions']['Invoice.paid '] = 0;
+                    $default_options['conditions']['Invoice.is_canceled '] = 0;
+                    break;
+            }
         }
         
         return $default_options;

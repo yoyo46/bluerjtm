@@ -48,7 +48,7 @@
 							'label' => __('Customer *'),
 							'class'=>'form-control customer-ajax',
 							'required' => false,
-							// 'empty' => __('Pilih Customer'),
+							'empty' => __('Pilih Customer'),
 							'options' => $list_customer,
 							'id' => 'customer-val'
 						));

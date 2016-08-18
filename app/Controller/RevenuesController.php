@@ -4804,7 +4804,7 @@ class RevenuesController extends AppController {
         }
 
         $this->RjRevenue->_callBeforeViewInvoicePayment($data, $data_local);
-        
+
         $this->set(array(
             'active_menu' => 'invoice_payments',
         ));
@@ -4874,11 +4874,11 @@ class RevenuesController extends AppController {
                         }
                     }
 
-                    $this->Invoice->InvoicePaymentDetail->updateAll(array(
-                        'InvoicePaymentDetail.status' => 0
-                    ), array(
-                        'InvoicePaymentDetail.invoice_payment_id' => $id
-                    ));
+                    // $this->Invoice->InvoicePaymentDetail->updateAll(array(
+                    //     'InvoicePaymentDetail.status' => 0
+                    // ), array(
+                    //     'InvoicePaymentDetail.invoice_payment_id' => $id
+                    // ));
                 }
 
                 $this->Invoice->InvoicePaymentDetail->InvoicePayment->id = $id;
@@ -5061,8 +5061,17 @@ class RevenuesController extends AppController {
         $start = 1;
         $limit = 30;
 
-        $invoice_conditions = array(
-            'Invoice.branch_id' => $allow_branch_id,
+        $options = array(
+            'conditions' => array(
+                'Invoice.branch_id' => $allow_branch_id,
+            ),
+            'order' => array(
+                'Invoice.modified' => 'DESC',
+                'Invoice.id' => 'DESC',
+            ),
+            'contain' => array(
+                'CustomerNoType'
+            ),
         );
         $invoiceUnpaidOption = array(
             'Invoice.is_canceled' => 0,
@@ -5089,91 +5098,24 @@ class RevenuesController extends AppController {
             'Customer.branch_id' => $allow_branch_id,
         );
 
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Invoice->_callRefineParams($params, $options);
+        // debug($params);die();
+
         if( !empty($this->params['named']) ){
             $refine = $this->params['named'];
-
-            if(!empty($refine['date'])){
-                $dateStr = urldecode($refine['date']);
-                $date = explode('-', $dateStr);
-
-                if( !empty($date) ) {
-                    $date[0] = urldecode($date[0]);
-                    $date[1] = urldecode($date[1]);
-                    $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-                    $dateFrom = $this->MkCommon->getDate($date[0]);
-                    $dateTo = $this->MkCommon->getDate($date[1]);
-                    $invoice_conditions['DATE_FORMAT(Invoice.period_from, \'%Y-%m-%d\') >='] = $dateFrom;
-                    $invoice_conditions['DATE_FORMAT(Invoice.period_to, \'%Y-%m-%d\') <='] = $dateTo;
-                }
-                $this->request->data['Invoice']['date'] = $dateStr;
-            }
-
-            if(!empty($refine['customer'])){
-                $customer = urldecode($refine['customer']);
-                $this->request->data['Ttuj']['customer'] = $customer;
-                $invoice_conditions['CustomerNoType.id'] = $customer;
-            }
-
-            if(!empty($refine['company_id'])){
-                $company_id = urldecode($refine['company_id']);
-                $this->request->data['Invoice']['company_id'] = $company_id;
-                $invoice_conditions['Invoice.company_id'] = $company_id;
-            }
-
-            if(!empty($refine['no_invoice'])){
-                $no_invoice = urldecode($refine['no_invoice']);
-                $this->request->data['Invoice']['no_invoice'] = $no_invoice;
-                $invoice_conditions['Invoice.no_invoice LIKE'] = '%'.$no_invoice.'%';
-            }
-
-            if(!empty($refine['status'])){
-                $status = urldecode($refine['status']);
-                $this->request->data['Invoice']['status'] = $status;
-
-                switch ($status) {
-                    case 'paid':
-                        $invoice_conditions['Invoice.complete_paid '] = 1;
-                        break;
-
-                    case 'halfpaid':
-                        $invoice_conditions['Invoice.complete_paid '] = 0;
-                        $invoice_conditions['Invoice.paid '] = 1;
-                        break;
-
-                    case 'void':
-                        $invoice_conditions['Invoice.is_canceled '] = 1;
-                        break;
-                    
-                    default:
-                        $invoice_conditions['Invoice.complete_paid '] = 0;
-                        $invoice_conditions['Invoice.paid '] = 0;
-                        $invoice_conditions['Invoice.is_canceled '] = 0;
-                        break;
-                }
-            }
 
             if(!empty($refine['page'])){
                 $start = (($refine['page']-1)*$limit)+1;
             }
 
             // Custom Otorisasi
-            $invoice_conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Invoice', $invoice_conditions, 'conditions' );
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Invoice', $options );
             $invoiceUnpaidOption = $this->MkCommon->getConditionGroupBranch( $refine, 'Invoice', $invoiceUnpaidOption, 'conditions' );
             $invoicePaidOption = $this->MkCommon->getConditionGroupBranch( $refine, 'Invoice', $invoicePaidOption, 'conditions' );
             $invoiceHalfPaidOption = $this->MkCommon->getConditionGroupBranch( $refine, 'Invoice', $invoiceHalfPaidOption, 'conditions' );
             $invoiceVoidOption = $this->MkCommon->getConditionGroupBranch( $refine, 'Invoice', $invoiceVoidOption, 'conditions' );
         }
-
-        $options = array(
-            'conditions' => $invoice_conditions,
-            'order' => array(
-                'Invoice.modified' => 'DESC',
-                'Invoice.id' => 'DESC',
-            ),
-            'contain' => array(
-                'CustomerNoType'
-            ),
-        );
 
         if( !empty($data_action) ) {
             $invoices = $this->Invoice->find('all', $options);
@@ -5216,6 +5158,11 @@ class RevenuesController extends AppController {
             }
         }
 
+        $customerGroups = $this->Invoice->Customer->CustomerGroup->getData('list', array(
+            'fields' => array(
+                'CustomerGroup.id', 'CustomerGroup.code'
+            ),
+        ));
         $customers = $this->Invoice->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
@@ -5251,7 +5198,7 @@ class RevenuesController extends AppController {
 
         $this->set(compact(
             'invoices', 'data_action', 'start',
-            'dataStatus', 'companies'
+            'dataStatus', 'companies', 'customerGroups'
         ));
     }
 
