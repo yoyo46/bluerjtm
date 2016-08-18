@@ -5,6 +5,12 @@
 		));
 		$this->Html->addCrumb($sub_module_title);
 
+		$data = $this->request->data;
+		$view = !empty($view)?$view:false;
+		$customer_name_code = $this->Common->filterEmptyField($data, 'Customer', 'customer_name_code');
+		$coa_name = $this->Common->filterEmptyField($data, 'Coa', 'coa_name');
+		$date_payment = $this->Common->filterEmptyField($data, 'InvoicePayment', 'date_payment', date('d/m/Y'));
+
 		echo $this->Form->create('InvoicePayment', array(
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
@@ -28,48 +34,63 @@
 						));
 				?>
 	        </div>
-	        <div class="form-group">
-	        	<?php
-                    	echo $this->Form->label('customer_id', __('Customer *'));
-	        	?>
-	        	<div class="row">
-	        		<div class="col-sm-10">
-	        			<?php 
-								echo $this->Form->input('customer_id',array(
-									'label'=> false, 
-									'class'=>'form-control customer-ajax',
-									'required' => false,
-									'empty' => __('Pilih Customer'),
-									'options' => $list_customer,
-									'id' => 'customer-val'
-								));
-						?>
-	        		</div>
-	        	</div>
-	        </div>
-	        <div class="form-group">
-	        	<?php 
-						echo $this->Form->input('coa_id',array(
+	        <?php 
+            		if( !empty($view) ) {
+            			echo $this->Html->tag('div', 
+            				$this->Html->tag('label', __('Customer')).
+            				$this->Html->tag('div', $customer_name_code, array(
+            					'class' => 'form-control',
+        					)), array(
+        					'class' => 'form-group',
+    					));
+					} else {
+						echo $this->Common->_callInputForm('customer_id',array(
+							'label' => __('Customer *'),
+							'class'=>'form-control customer-ajax',
+							'required' => false,
+							// 'empty' => __('Pilih Customer'),
+							'options' => $list_customer,
+							'id' => 'customer-val'
+						));
+					}
+
+            		if( !empty($view) ) {
+            			echo $this->Html->tag('div', 
+            				$this->Html->tag('label', __('Account Kas/Bank')).
+            				$this->Html->tag('div', $coa_name, array(
+            					'class' => 'form-control',
+        					)), array(
+        					'class' => 'form-group',
+    					));
+					} else {
+						echo $this->Common->_callInputForm('coa_id',array(
 							'label'=> __('Account Kas/Bank *'), 
 							'class'=>'form-control chosen-select',
 							'required' => false,
 							'empty' => __('Pilih Kas/Bank'),
 							'options' => $coas
 						));
-				?>
-	        </div>
-	        <div class="form-group">
-	        	<?php 
-						echo $this->Form->input('date_payment',array(
+					}
+
+            		if( !empty($view) ) {
+            			echo $this->Html->tag('div', 
+            				$this->Html->tag('label', __('Tgl Pembayaran')).
+            				$this->Html->tag('div', $date_payment, array(
+            					'class' => 'form-control',
+        					)), array(
+        					'class' => 'form-group',
+    					));
+					} else {
+						echo $this->Common->_callInputForm('date_payment',array(
 							'type' => 'text',
 							'label'=> __('Tgl Pembayaran *'), 
 							'class'=>'form-control custom-date',
 							'required' => false,
 							'placeholder' => __('Tgl Pembayaran'),
-							'value' => (!empty($this->request->data['InvoicePayment']['date_payment'])) ? $this->request->data['InvoicePayment']['date_payment'] : date('d/m/Y')
+							'value' => $date_payment,
 						));
-				?>
-	        </div>
+					}
+			?>
 	        <div class="form-group">
 	        	<?php 
 						echo $this->Form->input('description',array(
@@ -81,8 +102,8 @@
 						));
 				?>
 	        </div>
-	        <div class="form-group">
-	        	<?php 
+	        <?php 
+	        		if( empty($view) ) {
 	        			$attrBrowse = array(
                             'class' => 'ajaxModal visible-xs browse-docs',
                             'escape' => false,
@@ -96,27 +117,40 @@
 	                        ))
                         );
 						$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-                        echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Ambil Tagihan'), 'javascript:', $attrBrowse);
-                ?>
-	        </div>
+
+                        echo $this->Html->tag('div',
+                        	$this->Html->link(__('%s Ambil Tagihan', $this->Common->icon('plus-square')), 'javascript:', $attrBrowse), array(
+                    		'class' => 'form-group',
+                		));
+                    }
+            ?>
 	    </div>
 	</div>
-	<div class="document-pick-info-detail <?php echo (!empty($this->request->data) && !empty($invoices)) ? '' : 'hide';?>">
+	<div class="document-pick-info-detail <?php echo !empty($data['InvoicePaymentDetail']) ? '' : 'hide';?>">
 		<div class="box box-primary">
 		    <div class="box-header">
 		        <h3 class="box-title"><?php echo __('Detail Info Pembayaran Invoice'); ?></h3>
 		    </div>
-		    <div class="box-body table-responsive">
+		    <div class="box-body table-responsive document-calc">
 		        <table class="table table-hover">
 		        	<thead>
 		        		<tr>
 		        			<th><?php echo __('No.Invoice');?></th>
-		                    <th><?php echo __('Tgl Invoice');?></th>
+		                    <th><?php echo __('Tgl');?></th>
 		                    <th class="text-center"><?php echo __('Periode');?></th>
 		                    <th class="text-center"><?php echo __('Total');?></th>
-		                    <th class="text-center"><?php echo __('Telah Dibayar');?></th>
-		                    <th class="text-center" width="15%"><?php echo __('Invoice Dibayar');?></th>
-		                    <th class="text-center"><?php echo __('Action');?></th>
+		                    <th class="text-center"><?php echo __('Dibayar');?></th>
+		                    <th class="text-center" width="10%"><?php echo __('Inv Dibayar');?></th>
+		                    <th class="text-center" width="15%"><?php echo __('PPN');?></th>
+		                    <th class="text-center" width="15%"><?php echo __('Pph');?></th>
+		                    <th class="text-center" width="10%"><?php echo __('Total');?></th>
+					        <?php 
+					        		if( empty($view) ) {
+				                        echo $this->Html->tag('th',__('Action'), array(
+				                    		'class' => 'text-center',
+				                		));
+				                    }
+				            ?>
 		        		</tr>
 		        	</thead>
 		        	<tbody class="ttuj-info-table">
@@ -135,11 +169,10 @@
 				), array(
 					'class'=> 'btn btn-default',
 				));
-				$this->Common->_getButtonPostingUnposting( $data_local, 'InvoicePayment', array( 'Commit', 'Draft' ) );
-	   //  		echo $this->Form->button(__('Simpan'), array(
-	   //  			'type' => 'submit',
-				// 	'class'=> 'btn btn-success btn-lg',
-				// ));
+
+				if( empty($view) ) {
+					$this->Common->_getButtonPostingUnposting( $data_local, 'InvoicePayment', array( 'Commit', 'Draft' ) );
+				}
 		?>
 	</div>
 </div>

@@ -17,7 +17,15 @@ class InvoicePaymentDetail extends AppModel {
         'price_pay' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Jumlah pembayaran harap diisi'
+                'message' => 'Pembayaran harap diisi'
+            ),
+            'overPayment' => array(
+                'rule' => array('overPayment'),
+                'message' => 'Tidak boleh lebih besar dari total invoice'
+            ),
+            'errorPrice' => array(
+                'rule' => array('errorPrice'),
+                'message' => 'Pembayaran harap diisi'
             ),
         ),
 	);
@@ -32,6 +40,28 @@ class InvoicePaymentDetail extends AppModel {
             'foreignKey' => 'invoice_id',
         ),
 	);
+
+    function overPayment() {
+        $data = $this->data;
+        $flag = $this->filterEmptyField($data, 'InvoicePaymentDetail', 'over_payment');
+
+        if( !empty($flag) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function errorPrice() {
+        $data = $this->data;
+        $flag = $this->filterEmptyField($data, 'InvoicePaymentDetail', 'error_price');
+
+        if( !empty($flag) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
 	function getData( $find, $options = false, $is_merge = true ){
         $default_options = array(
@@ -77,6 +107,9 @@ class InvoicePaymentDetail extends AppModel {
             $data_merge = $this->find('first', array(
                 'conditions' => array(
                     'InvoicePaymentDetail.id' => $id
+                ),
+                'order' => array(
+                    'InvoicePaymentDetail.id' => 'ASC',
                 ),
             ));
 

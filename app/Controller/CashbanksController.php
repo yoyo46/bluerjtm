@@ -1401,6 +1401,7 @@ class CashbanksController extends AppController {
                     ),
                     'contain' => false,
                 ));
+                // debug($summaryBalance);die();
 
                 $balance_credit = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'begining_balance_credit', 0);
                 $balance_debit = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'begining_balance_debit', 0);

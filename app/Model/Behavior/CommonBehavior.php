@@ -53,6 +53,13 @@ class CommonBehavior extends ModelBehavior {
         return $result;
     }
 
+	public function callSet( Model $model, $data, $fieldArr ) {
+		if( !empty($fieldArr) && !empty($data) ) {
+			$data = array_intersect_key($data, array_flip($fieldArr));
+		}
+		return $data;
+	}
+
 	public function callUnset( Model $model, $data = false, $fieldArr = false){
 		if(!empty($fieldArr)){
 			foreach($fieldArr as $key => $value){
@@ -70,25 +77,84 @@ class CommonBehavior extends ModelBehavior {
 		return $data;
 	}
 
-	public function getMergeList( Model $model, $values, $options, $element = false){
-		$contains = $this->filterEmptyField($model, $options, 'contain');
+	public function getMerge( model $model, $data, $modelName,  $id = false, $options = array() ) {
+		// $conditions = !empty($options['conditions'])?$options['conditions']:array();
+		$options = !empty($options)?$options:array();
+		$elements = !empty($options['elements'])?$options['elements']:array();
+		$alias = $this->filterEmptyField($model, $options, 'uses');
+		$uses = $this->filterEmptyField($model, $options, 'uses', false, $modelName);
+		$foreignKey = !empty($options['foreignKey'])?$options['foreignKey']:'id';
+		$primaryKey = !empty($options['primaryKey'])?$options['primaryKey']:$foreignKey;
+		$position = !empty($options['position'])?$options['position']:'outside';
+		$type = !empty($options['type'])?$options['type']:'first';
+		$parentModelName = $model->name;
 
-		if(!empty($values)){
-			if(!empty($values[0])){
-				foreach($values AS $key => $value){
-					foreach($contains AS $modelName => $options){
-						$value = $this->_callMergeData($model, $value, $element, $options, $modelName);
-					}
-					$values[$key] = $value;
+		$optionsModel = $this->callSet($model, $options, array(
+			'conditions',
+			// 'contain',
+			'fields',
+			'group',
+			'limit',
+			'order',
+		));
+
+		if(empty($data[$modelName])){
+
+			if(!empty($uses)){
+				if( $uses == $model->name ) {
+					$model = $model;
+				} else {
+					$model = $model->$uses;
 				}
-
 			}else{
-				foreach($contains AS $modelName => $options){
-					$values = $this->_callMergeData($model, $values, $element, $options, $modelName);
+				$model = $model->$modelName;
+			}
+
+			$optionsModel['conditions'][sprintf('%s.%s', $uses, $primaryKey)] = $id;
+			$value = $model->getData($type, $optionsModel, $elements);
+
+			if(!empty($value)){
+				switch ($type) {
+					case 'count':
+						$data[$modelName] = $value;
+						break;
+					case 'list':
+						$data[$modelName] = $value;
+						break;
+					
+					default:
+						if(!empty($alias) ){
+							if( !empty($value[$alias]) ) {
+								$data[$modelName] = $value[$alias];
+							} else if(!empty($value[0])){
+								$data[$modelName] = $value;
+							}
+						}else{
+							if(!empty($value[0])){
+								$data[$modelName] = $value;
+							}else{
+								switch ($position) {
+									case 'inside':
+										if( !empty($parentModelName) ) {
+											$parentDataModel = !empty($data[$parentModelName])?$data[$parentModelName]:array();
+											$data[$parentModelName] = array_merge($parentDataModel, $value);
+										} else {
+											$data = array_merge($data, $value);
+										}
+										break;
+									
+									default:
+										$data = array_merge($data, $value);
+										break;
+								}
+							}
+						}
+						break;
 				}
 			}
-		}
-		return $values;
+		}	
+
+		return $data;
 	}
 
 	function _callMergeData ( Model $model, $value, $element, $options, $modelName ) {
@@ -106,10 +172,19 @@ class CommonBehavior extends ModelBehavior {
 			));
 
 			$optionsParams = $options; ## CONDITIONS, ELEMENTS for getData 
-			$type = $this->filterEmptyField( $model, $optionsParams, 'type');
-			$containRecursive = $this->filterEmptyField( $model, $options, 'contain');
 			$uses = $this->filterEmptyField($model, $options, 'uses', false, $modelName);
+
+			if( !empty($options) ) {
+				$containRecursive = $this->filterEmptyField( $model, $options, 'contain');
+
+				if( empty($containRecursive) && !empty($options[0]) ) {
+					$containRecursive = $options;
+				}
+			}
 		}
+
+		$type = $this->filterEmptyField($model, $optionsParams, 'type');
+		$forceMerge = $this->filterEmptyField($model, $optionsParams, 'forceMerge');
 
 		if( !empty($mergeParent) ) {
 			$modelParent = $this->filterEmptyField($model, $mergeParent, 0);
@@ -137,12 +212,22 @@ class CommonBehavior extends ModelBehavior {
 				$optionsParams = array_merge($optionsParams, array(
 					'foreignKey' => $foreignKey,
 					'primaryKey' => $primaryKey,
-					'type' => !empty($type)?$type:'all',
 				));
+				$type_custom = 'all';
+			}
+
+			if( empty($type) && !empty($type_custom) ) {
+				$optionsParams['type'] = $type_custom;
 			}
 		}
 
-		if(empty($value[$modelName])){
+		if( empty($value[$modelName]) || !empty($forceMerge) ){
+			if( !empty($value[$modelName]) ) {
+				$value = $this->callUnset($model, $value, array(
+					$modelName,
+				));
+			}
+
 			$id = $this->filterEmptyField( $model, $value, $modelParent, $foreignKey);
 
 			if( empty($id) ) {
@@ -186,21 +271,22 @@ class CommonBehavior extends ModelBehavior {
 						}
 					}
 				}
+			}
+		}
 
-				if(!empty($containRecursive)){
-					$valueTemps = array();
-					if(!empty($value[$modelName])){
-						$valueTemps = $this->getMergeList($model->$modelName, $value[$modelName], array(
-							'contain' => $containRecursive,
-						));
+		if(!empty($containRecursive)){
+			$valueTemps = array();
+			
+			if(!empty($value[$modelName])){
+				$valueTemps = $this->getMergeList($model->$uses, $value[$modelName], array(
+					'contain' => $containRecursive,
+				));
 
-						if(!empty($valueTemps)){
-							$value = $this->callUnset($model->$modelName, $value, array(
-								$modelName
-							));
-							$value[$modelName] = $valueTemps;
-						}
-					}								
+				if(!empty($valueTemps)){
+					$value = $this->callUnset($model->$uses, $value, array(
+						$modelName
+					));
+					$value[$modelName] = $valueTemps;
 				}
 			}
 		}
@@ -208,62 +294,24 @@ class CommonBehavior extends ModelBehavior {
 		return $value;
 	}
 
-	public function getMerge( model $model, $data, $modelName,  $id = false, $options = array() ) {
-		// $conditions = !empty($options['conditions'])?$options['conditions']:array();
-		$options = !empty($options)?$options:array();
-		$elements = !empty($options['elements'])?$options['elements']:array();
-		$alias = $this->filterEmptyField($model, $options, 'uses');
-		$uses = $this->filterEmptyField($model, $options, 'uses', false, $modelName);
-		$foreignKey = !empty($options['foreignKey'])?$options['foreignKey']:'id';
-		$primaryKey = !empty($options['primaryKey'])?$options['primaryKey']:$foreignKey;
-		$type = !empty($options['type'])?$options['type']:'first';
+	public function getMergeList( Model $model, $values, $options, $element = false){
+		$contains = $this->filterEmptyField($model, $options, 'contain');
 
-		$optionsModel = $this->callUnset($model, $options, array(
-			'elements',
-			'uses',
-			'foreignKey',
-			'type',
-		));
-
-		if(empty($data[$modelName])){
-
-			if(!empty($uses)){
-				if( $uses == $model->name ) {
-					$model = $model;
-				} else {
-					$model = $model->$uses;
+		if(!empty($values)){
+			if(!empty($values[0])){
+				foreach($values AS $key => $value){
+					foreach($contains AS $modelName => $options){
+						$value = $this->_callMergeData($model, $value, $element, $options, $modelName);
+					}
+					$values[$key] = $value;
 				}
+
 			}else{
-				$model = $model->$modelName;
-			}
-
-			$optionsModel['conditions'][sprintf('%s.%s', $uses, $primaryKey)] = $id;
-			$value = $model->getData($type, $optionsModel, $elements);
-
-			if(!empty($value)){
-				switch ($type) {
-					case 'count':
-						$data[$modelName] = $value;
-						break;
-					case 'list':
-						$data[$modelName] = $value;
-						break;
-					
-					default:
-						if(!empty($alias)){
-							$data[$modelName] = $value[$alias];
-						}else{
-							if(!empty($value[0])){
-								$data[$modelName] = $value;
-							}else{
-								$data = array_merge($data, $value);
-							}
-						}
-						break;
+				foreach($contains AS $modelName => $options){
+					$values = $this->_callMergeData($model, $values, $element, $options, $modelName);
 				}
 			}
-		}	
-
-		return $data;
+		}
+		return $values;
 	}
 }

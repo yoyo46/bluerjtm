@@ -4770,6 +4770,7 @@ class RevenuesController extends AppController {
 
         $head_office = Configure::read('__Site.config_branch_head_office');
         $elementRevenue = false;
+        $data = $this->request->data;
 
         if( !empty($head_office) ) {
             $elementRevenue = array(
@@ -4777,386 +4778,36 @@ class RevenuesController extends AppController {
             );
         }
 
-        if(!empty($this->request->data)){
-            $data = $this->request->data;
-            $data = $this->MkCommon->dataConverter($data, array(
-                'price' => array(
-                    'InvoicePayment' => array(
-                        'ppn_total',
-                        'pph_total',
-                    ),
-                ),
-                'date' => array(
-                    'InvoicePayment' => array(
-                        'date_payment',
-                    ),
-                ),
+        if(!empty($data)){
+            $data = $this->RjRevenue->_callBeforeSaveInvoicePayment($data, $data_local);
+            $flag = $this->InvoicePayment->saveAll($data, array(
+                'validate' => 'only',
             ));
-            $this->MkCommon->_callAllowClosing($data, 'InvoicePayment', 'date_payment');
 
-            $date_payment = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'date_payment');
-            $customer_id = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'customer_id');
-            $coa_id = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'coa_id');
-            $transaction_status = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'transaction_status');
-
-            $customer = $this->Ttuj->Customer->getData('first', array(
-                'conditions' => array(
-                    'Customer.id' => $customer_id
-                )
-            ));
-            $customer_name_code = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_name_code');
-            $customer_code = $this->MkCommon->filterEmptyField($customer, 'Customer', 'code');
-
-            if($id && $data_local){
-                $this->InvoicePayment->id = $id;
-                $msg = 'merubah';
-            }else{
-                $this->InvoicePayment->create();
-                $msg = 'membuat';
-            }
-
-            $data['InvoicePayment']['branch_id'] = Configure::read('__Site.config_branch_id');
-            $total = 0;
-            $validate_price_pay = true;
-
-            if(!empty($data['InvoicePaymentDetail']['price_pay']) && !empty($data['InvoicePaymentDetail']['invoice_id'])){
-                foreach ($data['InvoicePaymentDetail']['price_pay'] as $key => $value) {
-                    $price = $this->MkCommon->convertPriceToString($value);
-                    $_invoice_id = $data['InvoicePaymentDetail']['invoice_id'][$key];
-
-                    if(empty($price) || empty($data['InvoicePaymentDetail']['price_pay'][$key])){
-                        $validate_price_pay = false;
-                        break;
-                    }else{
-                        $invoice_has_paid = $this->InvoicePayment->InvoicePaymentDetail->getData('first', array(
-                            'conditions' => array(
-                                'InvoicePaymentDetail.invoice_id' => $_invoice_id,
-                                'InvoicePayment.status' => 1,
-                                'InvoicePayment.is_canceled' => 0,
-                                'InvoicePayment.id <>' => $id,
-                            ),
-                            'fields' => array(
-                                'SUM(InvoicePaymentDetail.price_pay) as invoice_has_paid'
-                            ),
-                            'contain' => array(
-                                'InvoicePayment'
-                            ),
-                        ));
-
-                        $invoice_has_paid = (!empty($invoice_has_paid[0]['invoice_has_paid'])) ? $invoice_has_paid[0]['invoice_has_paid'] : 0;
-                        $total_paid = $invoice_has_paid + $price;
-
-                        $invoice_data = $this->InvoicePayment->InvoicePaymentDetail->Invoice->getData('first', array(
-                            'conditions' => array(
-                                'Invoice.id' => $_invoice_id,
-                            ),
-                        ), true, $elementRevenue);
-                        
-                        if(!empty($invoice_data)){
-                            if($total_paid > $invoice_data['Invoice']['total']){
-                                $validate_price_pay = false;
-                                break;
-                            }else{
-                                $data['InvoicePaymentDetail']['price_pay'][$key] = $price;
-                                $total += $price;
-                            }
-                        }
-                    }
-                }
-            }else{
-                $validate_price_pay = false;
-            }
-            
-            $temptotal = $total;
-            $data['InvoicePayment']['total_payment'] = $total;
-
-            if(!empty($data['InvoicePayment']['ppn_total'])){
-                $temptotal += $data['InvoicePayment']['ppn_total'];
-            }
-            
-            $total = $temptotal;
-            $data['InvoicePayment']['grand_total_payment'] = $total;
-            $this->InvoicePayment->set($data);
-            $validateInv = $this->InvoicePayment->validates();
-
-            $pph_total = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'pph_total');
-            $document_no = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'nodoc');
-
-            if($validateInv && $validate_price_pay){
-                $this->InvoicePayment->set($data);
-
-                if($this->InvoicePayment->save()){
-                    $invoice_payment_id = $this->InvoicePayment->id;
-
-                    if( $transaction_status == 'posting' ) {
-                        $this->User->Journal->deleteJournal($invoice_payment_id, array(
-                            'invoice_payment',
-                        ));
-
-                        if( !empty($data['InvoicePayment']['grand_total_payment']) ) {
-                            $titleJournalInv = sprintf(__('Pembayaran invoice oleh customer %s'), $customer_name_code);
-                            $titleJournalInv = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'description', $titleJournalInv);
-                            $grandTotal = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'grand_total_payment');
-
-                            $this->User->Journal->setJournal($grandTotal, array(
-                                'credit' => 'pembayaran_invoice_coa_id',
-                                'debit' => $coa_id,
-                            ), array(
-                                'date' => $date_payment,
-                                'document_id' => $invoice_payment_id,
-                                'title' => $titleJournalInv,
-                                'document_no' => $document_no,
-                                'type' => 'invoice_payment',
-                            ));
-                        }
-                    }
-
-                    if($id && $data_local){
-                        $this->InvoicePayment->InvoicePaymentDetail->deleteAll(array(
-                            'InvoicePaymentDetail.invoice_payment_id' => $invoice_payment_id
-                        ));
-                    }
-
-                    if( !empty($data['InvoicePaymentDetail']['price_pay']) ) {
-                        foreach ($data['InvoicePaymentDetail']['price_pay'] as $key => $value) {
-                            $invoice_id = $data['InvoicePaymentDetail']['invoice_id'][$key];
-
-                            $this->InvoicePayment->InvoicePaymentDetail->create();
-                            $this->InvoicePayment->InvoicePaymentDetail->set(array(
-                                'price_pay' => trim($value),
-                                'invoice_id' => $invoice_id,
-                                'invoice_payment_id' => $invoice_payment_id
-                            ));
-                            $this->InvoicePayment->InvoicePaymentDetail->save();
-
-                            if( $transaction_status == 'posting' ) {
-                                $default_conditions_detail = array(
-                                    'InvoicePayment.transaction_status' => 'posting',
-                                    'InvoicePaymentDetail.invoice_id' => $invoice_id,
-                                    'InvoicePaymentDetail.status' => 1
-                                );
-
-                                $invoice_has_paid = $this->InvoicePayment->InvoicePaymentDetail->getData('first', array(
-                                    'conditions' => $default_conditions_detail,
-                                    'fields' => array(
-                                        '*',
-                                        'SUM(InvoicePaymentDetail.price_pay) as invoice_has_paid'
-                                    ),
-                                    'contain' => array(
-                                        'InvoicePayment',
-                                        'Invoice'
-                                    )
-                                ));
-                                $invoice_paid = !empty($invoice_has_paid[0]['invoice_has_paid'])?$invoice_has_paid[0]['invoice_has_paid']:0;
-                                $invoice_total = !empty($invoice_has_paid['Invoice']['total'])?$invoice_has_paid['Invoice']['total']:0;
-                                
-                                if($invoice_paid >= $invoice_total){
-                                    $this->InvoicePayment->InvoicePaymentDetail->Invoice->id = $invoice_id;
-                                    $this->InvoicePayment->InvoicePaymentDetail->Invoice->set(array(
-                                        'paid' => 1,
-                                        'complete_paid' => 1
-                                    ));
-                                    $this->InvoicePayment->InvoicePaymentDetail->Invoice->save();
-                                }else{
-                                    $this->InvoicePayment->InvoicePaymentDetail->Invoice->id = $invoice_id;
-                                    $this->InvoicePayment->InvoicePaymentDetail->Invoice->set(array(
-                                        'paid' => 1,
-                                        'complete_paid' => 0
-                                    ));
-                                    $this->InvoicePayment->InvoicePaymentDetail->Invoice->save();
-                                }
-                            }
-                        }
-                    }
-
-                    if( $transaction_status == 'posting' ) {
-                        if( !empty($pph_total) ) {
-                            $coaSetting = $this->User->CoaSetting->getData('first', array(
-                                'conditions' => array(
-                                    'CoaSetting.status' => 1
-                                ),
-                            ));
-                            $pph_debit_id = $this->MkCommon->filterEmptyField($coaSetting, 'CoaSetting', 'pph_coa_debit_id');
-
-                            if( !empty($pph_debit_id) ) {
-                                $pph_note = sprintf(__('Potongan Pph kwitansi No: %s / %s'), $document_no, $customer_code);
-                                $dataPph['CashBank'] = array(
-                                    'branch_id' => Configure::read('__Site.config_branch_id'),
-                                    'user_id' => $this->user_id,
-                                    'coa_id' => $pph_debit_id,
-                                    'receiving_cash_type' => 'out',
-                                    'receiver_type' => 'Customer',
-                                    'receiver_id' => $customer_id,
-                                    'tgl_cash_bank' => $date_payment,
-                                    'description' => $pph_note,
-                                    'debit_total' => $pph_total,
-                                    'transaction_status' => 'posting',
-                                );
-
-                                $allowApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval('cash-bank', $pph_total);
-
-                                if( empty($allowApprovals) ) {
-                                    $dataPph['CashBank']['completed'] = 1;
-                                }
-
-                                $this->User->CashBank->create();
-                                $this->User->CashBank->set($dataPph);
-
-                                if( $this->User->CashBank->save() ) {
-                                    $cash_bank_id = $this->User->CashBank->id;
-                                    $noref = str_pad($cash_bank_id, 6, '0', STR_PAD_LEFT);
-
-                                    if( empty($allowApprovals) ) {
-                                        $this->User->Journal->setJournal($pph_total, array(
-                                            'credit' => $coa_id,
-                                            'debit' => 'pph_coa_debit_id',
-                                        ), array(
-                                            'date' => $date_payment,
-                                            'document_id' => $cash_bank_id,
-                                            'title' => $pph_note,
-                                            'document_no' => $noref,
-                                            'type' => 'out',
-                                        ));
-                                    }
-
-                                    $dataPphDetail['CashBankDetail'] = array(
-                                        'cash_bank_id' => $cash_bank_id,
-                                        'coa_id' => $coa_id,
-                                        'total' => $pph_total,
-                                    );
-
-                                    $this->User->CashBank->CashBankDetail->create();
-                                    $this->User->CashBank->CashBankDetail->set($dataPphDetail);
-                                
-                                    $this->User->CashBank->CashBankDetail->save();
-                                }
-                            }
-                        }
-                    }
-
-                    $this->params['old_data'] = $data_local;
-                    $this->params['data'] = $data;
-
-                    $noref = str_pad($invoice_payment_id, 6, '0', STR_PAD_LEFT);
-                    $this->MkCommon->setCustomFlash(sprintf(__('Berhasil %s Pembayaran Invoice #%s'), $msg, $noref), 'success'); 
-                    $this->Log->logActivity( sprintf(__('Berhasil %s Pembayaran Invoice #%s'), $msg, $invoice_payment_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $invoice_payment_id );
-                    
-                    $this->redirect(array(
-                        'action' => 'invoice_payments'
+            if( !empty($flag) ){
+                if( !empty($id) ){
+                    $this->InvoicePayment->InvoicePaymentDetail->deleteAll(array(
+                        'InvoicePaymentDetail.invoice_payment_id' => $id
                     ));
-                }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Pembayaran Invoice'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Pembayaran Invoice #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+                }
+
+                $flag = $this->InvoicePayment->saveAll($data);
+
+                if( !empty($flag) ) {
+                    $this->RjRevenue->_callAfterSaveInvoicePayment($data, $data_local);
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Gagal menyimpan Pembayaran Invoice'), 'error'); 
                 }
             }else{
-                $text = sprintf(__('Gagal %s Pembayaran Invoice'), $msg);
-
-                if( !$validate_price_pay ){
-                    $text .= ', pembayaran tidak boleh lebih besar dari total invoice';
-                } else if( empty($validateInv) ) {
-                    $text .= ', harap isi semua field';
-                }
-
-                $this->MkCommon->setCustomFlash($text, 'error'); 
-            }            
-        }else if(!empty($id) && !empty($data_local)){
-            $customer_id = $this->MkCommon->filterEmptyField($data_local, 'InvoicePayment', 'customer_id');
-            $dataDetail = $this->MkCommon->filterEmptyField($data_local, 'InvoicePaymentDetail');
-            unset($data_local['InvoicePaymentDetail']);
-
-            $this->request->data = $data_local;
-            $this->request->data['InvoicePayment']['date_payment'] = !empty($this->request->data['InvoicePayment']['date_payment']) ? $this->MkCommon->getDate($this->request->data['InvoicePayment']['date_payment'], true) : '';
-            $customer = $this->Ttuj->Customer->getMerge(array(), $customer_id);
-
-            if( !empty($dataDetail) ) {
-                foreach ($dataDetail as $key => $value) {
-                    $invoice_id = $this->MkCommon->filterEmptyField($value, 'InvoicePaymentDetail', 'invoice_id');
-                    $price_pay = $this->MkCommon->filterEmptyField($value, 'InvoicePaymentDetail', 'price_pay');
-
-                    $this->request->data['InvoicePaymentDetail']['invoice_id'][$invoice_id] = $invoice_id;
-                    $this->request->data['InvoicePaymentDetail']['price_pay'][$invoice_id] = $price_pay;
-                }
+                $this->MkCommon->setCustomFlash(__('Gagal menyimpan Pembayaran Invoice'), 'error'); 
             }
         }
 
-        if(!empty($customer)){
-            $invoice_id = $this->MkCommon->filterEmptyField($this->request->data, 'InvoicePaymentDetail', 'invoice_id');
-            $bank_id = $this->MkCommon->filterEmptyField($customer, 'Customer', 'bank_id');
-            $options = array(
-                'conditions' => array(
-                    'Invoice.id' => $invoice_id,
-                    'Invoice.customer_id' => $this->request->data['InvoicePayment']['customer_id'],
-                ),
-            );
-
-            if( empty($id) ) {
-                $options['conditions']['Invoice.complete_paid'] = 0;
-            }
-
-            $invoices = $this->InvoicePayment->InvoicePaymentDetail->Invoice->getdata('all', $options, true, $elementRevenue);
-
-            if( !empty($bank_id) ) {
-                $this->request->data['InvoicePayment']['bank_id'] = $bank_id;
-            }
-
-            if(!empty($invoices)){
-                foreach ($invoices as $key => $value) {
-                    $invoice_has_paid = $this->InvoicePayment->InvoicePaymentDetail->Invoice->InvoicePaymentDetail->getData('first', array(
-                        'conditions' => array(
-                            'InvoicePaymentDetail.invoice_id' => $value['Invoice']['id'],
-                            'InvoicePaymentDetail.invoice_payment_id <>' => $id,
-                        ),
-                        'fields' => array(
-                            'SUM(InvoicePaymentDetail.price_pay) as invoice_has_paid',
-                        )
-                    ));
-
-                     $invoices[$key]['invoice_has_paid'] = $invoice_has_paid[0]['invoice_has_paid'];
-                }
-            }
-
-            $this->set(compact('invoices'));
-        }
-
-        $customers = $this->InvoicePayment->InvoicePaymentDetail->Invoice->getData('list', array(
-            'conditions' => array(
-                'Invoice.complete_paid' => 0
-            ),
-            'contain' => array(
-                'Customer'
-            ),
-            'group' => array(
-                'Invoice.customer_id'
-            ),
-            'fields' => array(
-                'Invoice.id', 'Customer.id'
-            )
-        ), true, $elementRevenue);
-        $list_customer = $this->Ttuj->Customer->getData('list', array(
-            'conditions' => array(
-                'Customer.id' => $customers,
-            ),
-            'fields' => array(
-                'Customer.id', 'Customer.customer_name_code'
-            ),
+        $this->RjRevenue->_callBeforeViewInvoicePayment($data, $data_local);
+        
+        $this->set(array(
+            'active_menu' => 'invoice_payments',
         ));
-        $coas = $this->InvoicePayment->Coa->getData('list', array(
-            'conditions' => array(
-                'Coa.status' => 1,
-                'Coa.is_cash_bank' => 1
-            ),
-            'fields' => array(
-                'Coa.id', 'Coa.coa_name'
-            ),
-        ));
-
-        $this->MkCommon->_layout_file('select');
-        $this->set(compact(
-            'list_customer', 'id', 'action',
-            'coas', 'data_local'
-        ));
-        $this->set('active_menu', 'invoice_payments');
-        $this->layout = 'default';
         $this->render('invoice_payment_form');
     }
 
@@ -5362,21 +5013,37 @@ class RevenuesController extends AppController {
                 'conditions' => array(
                     'InvoicePayment.id' => $id
                 ),
-                'contain' => array(
-                    'InvoicePaymentDetail' => array(
-                        'Invoice'
-                    ),
-                    'Coa',
-                )
+                // 'contain' => array(
+                //     'InvoicePaymentDetail' => array(
+                //         'Invoice'
+                //     ),
+                //     'Coa',
+                // )
             ), true, array(
                 'status' => 'all',
             ));
+            $invoice = $this->InvoicePayment->getMergeList($invoice, array(
+                'contain' => array(
+                    'InvoicePaymentDetail' => array(
+                        'Invoice',
+                    ),
+                    'Coa',
+                ),
+            ));
 
             if(!empty($invoice)){
-                $invoice = $this->InvoicePayment->Customer->getMerge($invoice, $invoice['InvoicePayment']['customer_id']);
-                $sub_module_title = 'Detail Pembayaran Invoice';
-                $this->set('active_menu', 'invoice_payments');
-                $this->set(compact('invoice', 'sub_module_title'));
+                $customer_id = $this->MkCommon->filterEmptyField($invoice, 'InvoicePayment', 'customer_id');
+                $invoice = $this->InvoicePayment->Customer->getMerge($invoice, $customer_id);
+
+
+                $this->RjRevenue->_callBeforeViewInvoicePayment(array(), $invoice);
+        
+                $this->set(array(
+                    'view' => true,
+                    'sub_module_title' => __('Detail Pembayaran Invoice'),
+                    'active_menu' => 'invoice_payments',
+                ));
+                $this->render('invoice_payment_form');
             }else{
                 $this->MkCommon->setCustomFlash(__('Pembayaran invoice tidak ditemukan'), 'error');
                 $this->redirect($this->referer());

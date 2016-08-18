@@ -1390,6 +1390,52 @@ function calcPPNPPH(){
     }
 }
 
+function calcTax( type, val, total ){
+    var result = 0;
+
+    if( type == 'percent' ) {
+        result = total * (val / 100);
+    } else if( type == 'nominal' ) {
+        result = (val/total) * 100;
+    }
+    
+    return result;
+}
+
+function calcTaxtotal( type, percent, nominal ){
+    var tax_percent = [];
+    var tax_nominal = [];
+
+    $.each( $('.document-calc .tax-percent'), function( i, val ) {
+        var self = $(this);
+        var rel = self.attr('rel');
+
+        var total = $.checkUndefined(tax_percent[rel], 0);
+        total = parseFloat(total);
+
+        var val = $.convertNumber(self.val(), 'float');
+        val = parseFloat(val);
+        tax_percent[rel] = total + val;
+    });
+
+    $.each( $('.document-calc .tax-nominal'), function( i, val ) {
+        var self = $(this);
+        var rel = self.attr('rel');
+
+        var total = $.checkUndefined(tax_nominal[rel], 0);
+        total = parseFloat(total);
+
+        var val = $.convertNumber(self.val(), 'float');
+        tax_nominal[rel] = total + val;
+    });
+
+    $('#total-ppn-percent').html($.formatDecimal(tax_percent['ppn'], 2));
+    $('#total-ppn-nominal').html($.formatDecimal(tax_nominal['ppn']));
+
+    $('#total-pph-percent').html($.formatDecimal(tax_percent['pph'], 2));
+    $('#total-pph-nominal').html($.formatDecimal(tax_nominal['pph']));
+}
+
 function calcPPNPPHNominal(){
     var total = $.convertNumber($('#grand-total-document').html().replace(/,/gi, "").replace(/IDR/gi, ""), 'int');
     var ppn = 0;
@@ -1840,8 +1886,6 @@ var datepicker = function( obj ){
     if( min_date != 'false' ) {
         date_options['startDate'] = min_date;
     }
-
-    console.log(date_options);
 
     obj.datepicker(date_options);
 }
@@ -2390,38 +2434,81 @@ var leasing_action = function(){
     });
 }
 
+function _callTotalInvoice () {
+    var invoice_price = $('.document-pick-info-detail .document-pick-price');
+    var length = invoice_price.length;
+    var total_price = 0;
+    var grand_total = 0;
+    
+    if( $('.document-calc .tax-percent').length > 0 ) {
+        calcTaxtotal();
+    }
+
+    $.each( invoice_price, function( i, val ) {
+        var self = $(this);
+        var price = self.val();
+        var parent = self.parents('tr.child');
+        var ppn = $.convertNumber( parent.find('.tax-nominal[rel="ppn"]').val() );
+        var total_document = parent.find('.total-document');
+
+        var price = $.convertNumber( price );
+
+        total = price + ppn;
+
+        if( total_document.length > 0 ) {
+            total_document.html($.formatDecimal(total));
+        }
+
+        grand_total += total;
+        total_price += price;
+    });
+
+    if( $('#grandtotal-document').length > 0 ) {
+        $('#grandtotal-document').html( $.formatDecimal(grand_total) );
+    }
+
+    return total_price;
+}
+
 var invoice_price_payment = function(){
+    $('.document-pick-price').off('keyup');
     $('.document-pick-price').keyup(function(){
         getTotalPick();
         calcPPNPPH();
     });
-}
 
-function _callTotalInvoice () {
-    var invoice_price = $('.document-pick-info-detail .document-pick-price');
-    var length = invoice_price.length;
-    var total = 0;
+    $('.document-pick-price').off('blur');
+    $('.document-pick-price').blur(function(){
+        var self = $(this);
+        var parent = self.parents('tr.child');
 
-    for (var i = 0; i < length; i++) {
-        if(typeof invoice_price[i] != 'undefined'){
-            var price = invoice_price[i].value;
-            var arr_string = price.split(',');
-            var text_val = '';
-            for (var a = 0; a < arr_string.length; a++) {
-                text_val += arr_string[a].toString();
-            };
-            
-            price = text_val;
-            price = parseInt(price);
-            total += price;
+        parent.find('.tax-percent').trigger('change');
+    });
+
+    $('.tax-percent,.tax-nominal').off('change');
+    $('.tax-percent,.tax-nominal').change(function(){
+        var self = $(this);
+        var val = self.val();
+        var type = self.attr('data-type');
+        var rel = self.attr('rel');
+        
+        var parent = self.parents('tr.child');
+        var total = $.convertNumber( parent.find('.document-pick-price').val() );
+
+        result = calcTax(type, val, total);
+
+        if( type == 'percent' ) {
+            parent.find('.tax-nominal[rel="'+rel+'"]').val( $.formatDecimal(result) );
+            // tax_nominal[rel] += result;
+        } else {
+            parent.find('.tax-percent[rel="'+rel+'"]').val( $.formatDecimal(result, 2) );
+            // tax_percent[rel] += result;
         }
-    };
 
-    if( isNaN(total) ) {
-        total = 0;
-    }
+        _callTotalInvoice();
 
-    return total;
+        return false;
+    });
 }
 
 function getTotalPick(){
@@ -4359,28 +4446,28 @@ $(function() {
     $.onFocused();
     $.Autocomplete();
 
-    $('#ppn-total-invoice').blur(function(){
-        var self = $(this);
-        var ppn = self.val();
-        var total = _callTotalInvoice();
+    // $('#ppn-total-invoice').blur(function(){
+    //     var self = $(this);
+    //     var ppn = self.val();
+    //     var total = _callTotalInvoice();
 
-        ppn = $.convertNumber(ppn, 'int');
-        ppn = (ppn / total) * 100;
-        ppn = $.formatDecimal(ppn, 2);
+    //     ppn = $.convertNumber(ppn, 'int');
+    //     ppn = (ppn / total) * 100;
+    //     ppn = $.formatDecimal(ppn, 2);
 
-        $('.invoice-ppn').val(ppn);
-    });
-    $('#pph-total-invoice').blur(function(){
-        var self = $(this);
-        var pph = self.val();
-        var total = _callTotalInvoice();
+    //     $('.invoice-ppn').val(ppn);
+    // });
+    // $('#pph-total-invoice').blur(function(){
+    //     var self = $(this);
+    //     var pph = self.val();
+    //     var total = _callTotalInvoice();
 
-        pph = $.convertNumber(pph, 'int');
-        pph = (pph / total) * 100;
-        pph = $.formatDecimal(pph, 2);
+    //     pph = $.convertNumber(pph, 'int');
+    //     pph = (pph / total) * 100;
+    //     pph = $.formatDecimal(pph, 2);
 
-        $('.invoice-pph').val(pph);
-    });
+    //     $('.invoice-pph').val(pph);
+    // });
 
     $('#id-choosen').change(function(){
         var self = $(this);

@@ -484,11 +484,17 @@ class CommonHelper extends AppHelper {
         }
     }
 
-    function calcFloat ( $total, $float ) {
+    function calcFloat ( $total, $float, $format = false ) {
         $result = 0;
 
         if(!empty($total) && !empty($float)){
             $result = $total * ($float / 100);
+        }
+
+        switch ($format) {
+            case 'price':
+                $result = $this->getFormatPrice($result);
+                break;
         }
         
         return $result;
@@ -1275,6 +1281,9 @@ class CommonHelper extends AppHelper {
                     $empty = isset($format['price_to_string']['empty'])?$format['price_to_string']['empty']:'';
                     $decimal = isset($format['price_to_string']['decimal'])?$format['price_to_string']['decimal']:0;
                     $result = $this->convertPriceToString($result, $empty, $decimal);
+                }
+                if( !empty($format['price']) ) {
+                    $result = $this->getFormatPrice($result);
                 }
             } else {
                 switch ($format) {

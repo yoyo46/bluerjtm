@@ -1,74 +1,154 @@
 <?php
         $data = $this->request->data;
-        $total = $i = 0;
+        $invoices = $this->Common->filterEmptyField($data, 'InvoicePaymentDetail');
+
+        $grantotalPayment = 0;
+        $grantotal = 0;
+        $grantotalPpn = 0;
+        $grantotalPpnNominal = 0;
+        $grantotalPph = 0;
+        $grantotalPphNominal = 0;
 
         if(!empty($invoices)){
             foreach ($invoices as $key => $value) {
-                $invoice = $value['Invoice'];
-?>
-<tr class="child child-<?php echo $invoice['id'];?>" rel="<?php echo $invoice['id'];?>">
-    <td>
-        <?php
-            echo $invoice['no_invoice'];
+                $invoice_id = $this->Common->filterEmptyField($value, 'InvoicePaymentDetail', 'invoice_id');
+                $invoice_has_paid = $this->Common->filterEmptyField($value, 'InvoicePaymentDetail', 'invoice_has_paid', '-', true, array(
+                    'price' => true,
+                ));
+                $price_pay = $this->Common->filterEmptyField($value, 'InvoicePaymentDetail', 'price_pay');
+                $ppn = $this->Common->filterEmptyField($value, 'InvoicePaymentDetail', 'ppn');
+                $ppn_nominal = $this->Common->filterEmptyField($value, 'InvoicePaymentDetail', 'ppn_nominal');
+                $pph = $this->Common->filterEmptyField($value, 'InvoicePaymentDetail', 'pph');
+                $pph_nominal = $this->Common->filterEmptyField($value, 'InvoicePaymentDetail', 'pph_nominal');
 
-            echo $this->Form->input('InvoicePaymentDetail.invoice_id.'.$invoice['id'], array(
-                'type' => 'hidden',
-                'value' => $invoice['id']
-            ));
-        ?>
-    </td>
+                $no_invoice = $this->Common->filterEmptyField($value, 'Invoice', 'no_invoice');
+                $total = $this->Common->filterEmptyField($value, 'Invoice', 'total', false, true, array(
+                    'price' => true,
+                ));
+                $invoice_date = $this->Common->filterEmptyField($value, 'Invoice', 'invoice_date', false, true, array(
+                    'date' => 'd M Y',
+                ));
+                $period_from = $this->Common->filterEmptyField($value, 'Invoice', 'period_from', false, true, array(
+                    'date' => 'd M Y',
+                ));
+                $period_to = $this->Common->filterEmptyField($value, 'Invoice', 'period_to', false, true, array(
+                    'date' => 'd M Y',
+                ));
+                
+                $grantotalPayment += $price_pay;
+                $total_payment = $total + $ppn_nominal;
+                $grantotal += $total_payment;
+                $grantotalPpn += $ppn;
+                $grantotalPpnNominal += $ppn_nominal;
+                $grantotalPph += $pph;
+                $grantotalPphNominal += $pph_nominal;
+
+                $customPpnNominal = $this->Common->getFormatPrice($ppn_nominal);
+                $customPphNominal = $this->Common->getFormatPrice($pph_nominal);
+                $customTotalPayment = $this->Common->getFormatPrice($total_payment);
+?>
+<tr class="child child-<?php echo $invoice_id;?>" rel="<?php echo $invoice_id;?>">
     <td>
         <?php
-                echo $this->Common->customDate($invoice['invoice_date']);
+                echo $no_invoice;
+                echo $this->Form->input('InvoicePaymentDetail.invoice_id.'.$invoice_id, array(
+                    'type' => 'hidden',
+                    'value' => $invoice_id
+                ));
         ?>
     </td>
-    <td class="text-center">
-        <?php
-                printf('%s s/d %s', $this->Common->customDate($invoice['period_from'], 'd/m/Y'), $this->Common->customDate($invoice['period_to'], 'd/m/Y'));
-        ?>
-    </td>
-    <td class="text-right">
-        <?php
-            echo $this->Common->getFormatPrice($invoice['total']);
-        ?>
-    </td>
-    <td class="text-right">
-        <?php
-            $price_pay = 0;
-            if(!empty($value['invoice_has_paid'])){
-                echo $this->Common->getFormatPrice($value['invoice_has_paid']); 
-                $price_pay = $value['invoice_has_paid'];
-            }else{
-                echo '-';
-            }
-            
-        ?>
-    </td>
+    <?php
+            echo $this->Html->tag('td', $invoice_date);
+            echo $this->Html->tag('td', __('%s s/d %s', $period_from, $period_to), array(
+                'class' => 'text-center',
+            ));
+            echo $this->Html->tag('td', $total, array(
+                'class' => 'text-right',
+            ));
+            echo $this->Html->tag('td', $invoice_has_paid, array(
+                'class' => 'text-right',
+            ));
+        
+    ?>
     <td class="text-right" valign="top">
         <?php
-            echo $this->Form->input('InvoicePaymentDetail.price_pay.'.$invoice['id'], array(
-                'type' => 'text',
-                'label' => false,
-                'div' => false,
-                'required' => false,
-                'class' => 'form-control input_price document-pick-price text-right',
-                'value' => (!empty($this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']])) ? $this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']] : $price_pay
-            ));
-
-            if(!empty($this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']])){
-                $total += str_replace(',', '', $this->request->data['InvoicePaymentDetail']['price_pay'][$invoice['id']]);
-            }
+                echo $this->Common->_callInputForm('InvoicePaymentDetail.price_pay.'.$invoice_id, array(
+                    'div' => false,
+                    'required' => false,
+                    'class' => 'form-control input_price document-pick-price text-right',
+                    'value' => $price_pay,
+                    'fieldError' => __('InvoicePaymentDetail.%s.price_pay', $invoice_id),
+                ));
         ?>
     </td>
-    <td>
+    <td class="text-right row" valign="top">
         <?php
-            echo $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
-                'class' => 'delete-custom-field btn btn-danger btn-xs',
-                'escape' => false,
-                'action_type' => 'invoice_first'
-            ));
+                echo $this->Common->_callInputForm('InvoicePaymentDetail.ppn.'.$invoice_id, array(
+                    'frameClass' => false,
+                    'div' => 'col-sm-5 no-padding',
+                    'required' => false,
+                    'class' => 'form-control input_number text-center tax-percent',
+                    'placeholder' => '%',
+                    'data-type' => 'percent',
+                    'rel' => 'ppn',
+                    'value' => $ppn,
+                    'fieldError' => __('InvoicePaymentDetail.%s.ppn', $invoice_id),
+                ));
+                echo $this->Common->_callInputForm('InvoicePaymentDetail.ppn_total.'.$invoice_id, array(
+                    'frameClass' => false,
+                    'div' => 'col-sm-7 no-padding',
+                    'required' => false,
+                    'class' => 'form-control text-right tax-nominal',
+                    'placeholder' => 'Rp.',
+                    'data-decimal' => '0',
+                    'data-type' => 'nominal',
+                    'rel' => 'ppn',
+                    'value' => $customPpnNominal,
+                    'fieldError' => __('InvoicePaymentDetail.%s.ppn_total', $invoice_id),
+                ));
         ?>
     </td>
+    <td class="text-right row" valign="top">
+        <?php
+                echo $this->Common->_callInputForm('InvoicePaymentDetail.pph.'.$invoice_id, array(
+                    'frameClass' => false,
+                    'div' => 'col-sm-5 no-padding',
+                    'required' => false,
+                    'class' => 'form-control input_number text-center tax-percent',
+                    'placeholder' => '%',
+                    'data-type' => 'percent',
+                    'rel' => 'pph',
+                    'value' => $pph,
+                    'fieldError' => __('InvoicePaymentDetail.%s.pph', $invoice_id),
+                ));
+                echo $this->Common->_callInputForm('InvoicePaymentDetail.pph_total.'.$invoice_id, array(
+                    'frameClass' => false,
+                    'div' => 'col-sm-7 no-padding',
+                    'required' => false,
+                    'class' => 'form-control text-right tax-nominal',
+                    'placeholder' => 'Rp.',
+                    'data-decimal' => '0',
+                    'data-type' => 'nominal',
+                    'rel' => 'pph',
+                    'value' => $customPphNominal,
+                    'fieldError' => __('InvoicePaymentDetail.%s.pph_total', $invoice_id),
+                ));
+        ?>
+    </td>
+    <?php
+            echo $this->Html->tag('td', $customTotalPayment, array(
+                'class' => 'text-right total-document',
+            ));
+        
+            if( empty($view) ) {
+                echo $this->Html->tag('td', 
+                    $this->Html->link(__('%s Hapus', $this->Common->icon('times')), 'javascript:', array(
+                    'class' => 'delete-custom-field btn btn-danger btn-xs',
+                    'escape' => false,
+                    'action_type' => 'invoice_first'
+                )));
+            }
+    ?>
 </tr>
 <?php
         }
@@ -76,77 +156,41 @@
 ?>
 <tr id="field-grand-total-document">
     <td align="right" colspan="5"><?php echo __('Total')?></td>
-    <td align="right" id="grand-total-document">
-        <?php 
-            echo $this->Common->getFormatPrice($total);
-        ?>
-    </td>
-    <td>&nbsp;</td>
-</tr>
-<tr id="ppn-grand-total-invoice">
-    <td align="right" colspan="5" class="relative additional-input-invoice">
-        <?php 
-            echo $this->Form->input('InvoicePayment.ppn', array(
-                'type' => 'text',
-                'label' => __('PPN'),
-                'class' => 'input_number ppn-persen',
-                'required' => false,
-                'div' => false
-            )).$this->Html->tag('span', '%', array('class' => 'notation-input'));
-        ?>
-    </td>
-    <td align="right">
-        <?php 
-                echo $this->Form->input('InvoicePayment.ppn_total', array(
-                    'type' => 'text',
-                    'id' => 'ppn-total',
-                    'label' => false,
-                    'class' => 'input_price_coma text-right form-control',
-                    'data-decimal' => '0',
-                    'required' => false,
-                    'div' => false,
-                ));
-        ?>
-    </td>
-    <td>&nbsp;</td>
-</tr>
-<tr id="pph-grand-total-invoice">
-    <td align="right" colspan="5" class="relative additional-input-invoice">
-        <?php 
-                echo $this->Form->input('InvoicePayment.pph', array(
-                    'type' => 'text',
-                    'label' => __('PPh'),
-                    'class' => 'input_number pph-persen',
-                    'required' => false,
-                    'div' => false
-                )).$this->Html->tag('span', '%', array('class' => 'notation-input'));
-        ?>
-    </td>
-    <td align="right">
-        <?php 
-                echo $this->Form->input('InvoicePayment.pph_total', array(
-                    'type' => 'text',
-                    'label' => false,
-                    'class' => 'input_price_coma text-right form-control',
-                    'data-decimal' => '0',
-                    'id' => 'pph-total',
-                    'required' => false,
-                    'div' => false,
-                ));
-        ?>
-    </td>
-    <td>&nbsp;</td>
-</tr>
-<tr id="grand-total-invoice-payemnt">
-    <td align="right" colspan="5"><?php echo __('Grand Total')?></td>
-    <td align="right" id="all-total">
-        <?php 
-                $ppn = $this->Common->filterEmptyField($data, 'InvoicePayment', 'ppn_total', 0);
-                $ppn = $this->Common->convertPriceToString($ppn);
-                $total += $ppn;
+    <?php
+            echo $this->Html->tag('td', $this->Common->getFormatPrice($grantotalPayment), array(
+                'id' => 'grand-total-document',
+                'class' => 'text-right',
+            ));
+        
+            echo $this->Html->tag('td', 
+                $this->Html->tag('div', $this->Common->getFormatPrice($grantotalPpn), array(
+                    'id' => 'total-ppn-percent',
+                    'class' => 'col-sm-5 no-padding text-center',
+                )).
+                $this->Html->tag('div', $this->Common->getFormatPrice($grantotalPpnNominal), array(
+                    'id' => 'total-ppn-nominal',
+                    'class' => 'col-sm-7 no-padding text-center',
+                )), array(
+                'class' => 'text-right row',
+            ));
+            echo $this->Html->tag('td', 
+                $this->Html->tag('div', $this->Common->getFormatPrice($grantotalPph), array(
+                    'id' => 'total-pph-percent',
+                    'class' => 'col-sm-5 no-padding text-center',
+                )).
+                $this->Html->tag('div', $this->Common->getFormatPrice($grantotalPphNominal), array(
+                    'id' => 'total-pph-nominal',
+                    'class' => 'col-sm-7 no-padding text-center',
+                )), array(
+                'class' => 'text-right row',
+            ));
 
-                echo $this->Common->getFormatPrice($total);
-        ?>
-    </td>
+            echo $this->Html->tag('td', 
+                $this->Html->tag('div', $this->Common->getFormatPrice($grantotal), array(
+                    'id' => 'grandtotal-document',
+                )), array(
+                'class' => 'text-right row',
+            ));
+    ?>
     <td>&nbsp;</td>
 </tr>

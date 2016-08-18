@@ -1095,6 +1095,7 @@
             objClick: $('.ppn_include'),
             objDelete: $('.delete-document'),
             objCustom: $('.document-calc .price_custom'),
+            // objPpnCustom: $('.document-calc .ppn_trigger'),
         }, options );
 
         if( settings.obj.length > 0 ) {
@@ -1251,6 +1252,65 @@
 
             calcGrandTotal();
         }
+
+        // if( settings.objPpnCustom.length > 0 ) {
+        //     // function calcGrandTotalPpn () {
+        //     //     var objGrandTotal = $('.temp-document-picker .grandtotal .total_custom');
+
+        //     //     $.each( objGrandTotal, function( i, val ) {
+        //     //         var objTotal = $(this);
+        //     //         var grandtotal = 0;
+        //     //         var rel = objTotal.attr('rel');
+        //     //         var decimal = $.checkUndefined(objTotal.attr('data-decimal'), 0);
+
+        //     //         $.each( $('.pick-document'), function( i, val ) {
+        //     //             var self = $(this);
+        //     //             var priceObj = self.find('.price_custom[rel="'+rel+'"]');
+        //     //             var price = $.convertNumber(priceObj.val());
+        //     //             var format_type = priceObj.attr('data-type');
+
+        //     //             grandtotal += price;
+
+        //     //             if( format_type == 'input_price_coma' ) {
+        //     //                 priceObj.val( $.convertDecimal(priceObj, 2) );
+        //     //             }
+        //     //         });
+
+        //     //         if( objTotal.length > 0 ) {
+        //     //             objTotal.html( $.formatDecimal(grandtotal, decimal) );
+        //     //         }
+        //     //     });
+        //     // }
+
+        //     settings.objPpnCustom.off('blur');
+        //     settings.objPpnCustom.blur(function(){
+        //         var self = $(this);
+        //         var rel = self.attr('rel');
+        //         var type = self.attr('data-type');
+        //         var parent = self.parents('.pick-document');
+
+        //         var objTotal = parent.find('.total_transaction[rel="'+rel+'"]');
+        //         var objPpnNominal = parent.find('.ppn_nominal[rel="'+rel+'"]');
+        //         var objPpn = parent.find('.ppn_percent[rel="'+rel+'"]');
+
+        //         var price = $.convertNumber(objTotal.val(), 'float');
+        //         var ppn = $.convertNumber(objPpn.val(), 'float');
+        //         var ppn_nominal = $.convertNumber(objPpnNominal.val(), 'float');
+
+        //         if( type == 'percent' ) {
+        //             ppn_nominal = (ppn/100) * price;
+        //         } else if( type == 'nominal' ) {
+        //             ppn = (ppn_nominal/price) * 100;
+        //         }
+
+        //         objPpnNominal.html( $.formatDecimal(ppn_nominal) );
+        //         objPpn.html( $.formatDecimal(ppn, 2) );
+
+        //         // calcGrandTotalPpn();
+        //     });
+
+        //     // calcGrandTotalPpn();
+        // }
     }
 
     $.filterEmptyField = function(num, empty){

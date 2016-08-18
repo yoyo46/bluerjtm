@@ -1,4 +1,8 @@
 /*
+  - Col
+*/
+
+/*
   - Status
 */
 
@@ -4366,4 +4370,12 @@ table#yamaha-rit>thead>tr>th {
 .text-green {
     color: #777;
     font-weight: bold;
+}
+
+/*- Col*/
+.no-pr {
+  padding-right: 0 !important;
+}
+.no-pl {
+  padding-left: 0 !important;
 }

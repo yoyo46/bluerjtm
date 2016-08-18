@@ -1477,7 +1477,7 @@ class AjaxController extends AppController {
         $named = $this->MkCommon->filterEmptyField($this->params, 'named');
         $payment_id = $this->MkCommon->filterEmptyField($named, 'payment_id');
         
-        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateFrom = date('Y-m-d', strtotime('-6 Month'));
         $dateTo = date('Y-m-d');
         $head_office = Configure::read('__Site.config_branch_head_office');
         $elementRevenue = false;
@@ -1505,6 +1505,8 @@ class AjaxController extends AppController {
 			$invoices = $this->Invoice->getdata('all', $options, true, $elementRevenue);
 
 			if(!empty($invoices)){
+            	$this->Invoice->InvoicePaymentDetail->virtualFields['invoice_has_paid'] = 'SUM(InvoicePaymentDetail.price_pay)';
+
 				foreach ($invoices as $key => $value) {
 					$invoice_has_paid = $this->Invoice->InvoicePaymentDetail->getData('first', array(
 						'conditions' => array(
@@ -1512,20 +1514,19 @@ class AjaxController extends AppController {
 							'InvoicePaymentDetail.status' => 1,
 							'InvoicePaymentDetail.invoice_payment_id <>' => $payment_id,
 						),
-						'fields' => array(
-							'SUM(InvoicePaymentDetail.price_pay) as invoice_has_paid'
-						)
 					));
 
-				 	$invoices[$key]['invoice_has_paid'] = $invoice_has_paid[0]['invoice_has_paid'];
+				 	$invoices[$key]['invoice_has_paid'] = $this->MkCommon->filterEmptyField($invoice_has_paid, 'InvoicePaymentDetail', 'invoice_has_paid');
 				}
 			}
 		}
+        $tax = $this->MkCommon->_callSettingGeneral('Invoice', array( 'pph', 'ppn' ), false);
 
 		$data_action = 'browse-invoice';
 		$title = __('Invoice Customer');
 		$this->set(compact(
-			'invoices', 'id', 'data_action', 'title'
+			'invoices', 'id', 'data_action', 'title',
+			'tax'
 		));
 	}
 

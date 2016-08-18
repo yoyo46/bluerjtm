@@ -37,8 +37,10 @@
                         //     'escape' => false
                         // )));
                         echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.total_payment', __('Total Dibayar'), array(
-                            'escape' => false
-                        )));
+                            'escape' => false,
+                        )), array(
+                            'class' => 'text-right',
+                        ));
                         echo $this->Html->tag('th', $this->Paginator->sort('InvoicePayment.status', __('Status'), array(
                             'escape' => false
                         )));
@@ -63,7 +65,7 @@
                 <td class="text-center"><?php echo $this->Common->customDate($value['InvoicePayment']['date_payment'], 'd M Y');?></td>
                 <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:false;?></td>
                 <!-- <td><?php // echo !empty($value['Coa']['name'])?$value['Coa']['name']:false;?></td> -->
-                <td align="right"><?php echo $this->Number->currency($value['InvoicePayment']['grand_total_payment'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
+                <td align="right"><?php echo $this->Common->getFormatPrice($value['InvoicePayment']['grand_total_payment']);?></td>
                 <td>
                     <?php 
                             echo $customStatus;
