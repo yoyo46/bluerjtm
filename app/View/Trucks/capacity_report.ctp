@@ -160,50 +160,6 @@
             </thead>
             <tbody>
                 <?php
-                        $customer_id = 0;
-
-                        if( !empty($capacities) && !empty($truckArr[$customer_id]) ) {
-                ?>
-                <tr>
-                    <?php
-                            echo $this->Html->tag('td', __('-'), array(
-                                'style' => $tdStyle.'font-weight:bold;text-align:right;',
-                            ));
-
-                            if( !empty($capacities) ) {
-                                $totalRit = 0;
-
-                                foreach ($capacities as $key => $capacity) {
-                                    $kapasitas = 0;
-
-                                    if( !empty($truckArr[$customer_id][$capacity]) ) {
-                                        $kapasitas = $truckArr[$customer_id][$capacity];
-                                    }
-
-                                    if( !empty($total[$capacity]) ) {
-                                        $total[$capacity] += $kapasitas;
-                                    } else {
-                                        $total[$capacity] = $kapasitas;
-                                    }
-
-                                    $totalRit += $kapasitas;
-                                    echo $this->Html->tag('td', $kapasitas, array(
-                                        'class' => 'text-center',
-                                        'style' => $tdStyle,
-                                    ));
-                                }
-
-                                echo $this->Html->tag('td', $totalRit, array(
-                                    'class' => 'text-center',
-                                    'style' => $tdStyle,
-                                ));
-                            }
-                    ?>
-                </tr>
-                <?php
-                        }
-                ?>
-                <?php
                         if(!empty($customers)){
                             foreach ($customers as $key => $customer) {
                                 $customer_id = $this->Common->filterEmptyField($customer, 'Customer', 'id');
@@ -248,6 +204,50 @@
                 <?php 
 
                             }
+                        }
+                ?>
+                <?php
+                        $customer_id = 0;
+
+                        if( !empty($capacities) && !empty($truckArr[$customer_id]) ) {
+                ?>
+                <tr>
+                    <?php
+                            echo $this->Html->tag('td', __('-'), array(
+                                'style' => $tdStyle.'font-weight:bold;text-align:right;',
+                            ));
+
+                            if( !empty($capacities) ) {
+                                $totalRit = 0;
+
+                                foreach ($capacities as $key => $capacity) {
+                                    $kapasitas = 0;
+
+                                    if( !empty($truckArr[$customer_id][$capacity]) ) {
+                                        $kapasitas = $truckArr[$customer_id][$capacity];
+                                    }
+
+                                    if( !empty($total[$capacity]) ) {
+                                        $total[$capacity] += $kapasitas;
+                                    } else {
+                                        $total[$capacity] = $kapasitas;
+                                    }
+
+                                    $totalRit += $kapasitas;
+                                    echo $this->Html->tag('td', $kapasitas, array(
+                                        'class' => 'text-center',
+                                        'style' => $tdStyle,
+                                    ));
+                                }
+
+                                echo $this->Html->tag('td', $totalRit, array(
+                                    'class' => 'text-center',
+                                    'style' => $tdStyle,
+                                ));
+                            }
+                    ?>
+                </tr>
+                <?php
                         }
                 ?>
                 <?php
