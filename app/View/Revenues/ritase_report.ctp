@@ -321,7 +321,7 @@
                                 'controller' => 'revenues',
                                 'action' => 'detail_ritase',
                                 $id,
-                                'date' => $paramDate,
+                                'dateritase' => $paramDate,
                             ));
                             echo $this->Html->tag('td', $link_truck);
 
