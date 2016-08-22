@@ -13,16 +13,23 @@ class SpkMechanic extends AppModel {
 
 	var $validate = array(
         'employe_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Mekanik harap dipilih'
-            ),
-            'numeric' => array(
-                'rule' => array('numeric'),
+            'mechanicValidate' => array(
+                'rule' => array('mechanicValidate'),
                 'message' => 'Mekanik harap dipilih'
             ),
         ),
 	);
+
+    function mechanicValidate () {
+        $data = $this->data;
+        $employe_id = $this->filterEmptyField($data, 'SpkMechanic', 'employe_id');
+
+        if( $this->callDisplayToggle('mechanic', $data) && empty($to_branch_id) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
 	function getData( $find, $options = false ){
         $default_options = array(

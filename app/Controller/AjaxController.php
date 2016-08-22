@@ -124,11 +124,11 @@ class AjaxController extends AppController {
 		$data_ttuj = $this->Ttuj->getData('first', $options);
 		
 		if(!empty($data_ttuj)){
-			if( !empty($data_ttuj['Ttuj']['driver_penganti_id']) ) {
+			if( !empty($data_ttuj['Ttuj']['driver_pengganti_id']) ) {
 				$this->loadModel('Driver');
 
-				$driver_penganti_id = $data_ttuj['Ttuj']['driver_penganti_id'];
-				$data_ttuj = $this->Driver->getMerge($data_ttuj, $driver_penganti_id, 'DriverPenganti');
+				$driver_pengganti_id = $data_ttuj['Ttuj']['driver_pengganti_id'];
+				$data_ttuj = $this->Driver->getMerge($data_ttuj, $driver_pengganti_id, 'DriverPengganti');
 			}
 
 			if(!empty($data_ttuj['TtujTipeMotor'])){
@@ -182,8 +182,8 @@ class AjaxController extends AppController {
 		
 		if(!empty($data_ttuj)){
 			$this->loadModel('Driver');
-			$driver_id = !empty($data_ttuj['Ttuj']['driver_penganti_id'])?$data_ttuj['Ttuj']['driver_penganti_id']:false;
-			$data_ttuj = $this->Driver->getMerge($data_ttuj, $driver_id, 'DriverPenganti');
+			$driver_id = !empty($data_ttuj['Ttuj']['driver_pengganti_id'])?$data_ttuj['Ttuj']['driver_pengganti_id']:false;
+			$data_ttuj = $this->Driver->getMerge($data_ttuj, $driver_id, 'DriverPengganti');
 			$this->request->data = $data_ttuj;
 		}
 
@@ -251,8 +251,8 @@ class AjaxController extends AppController {
 			$this->loadModel('City');
 			$driver_id = $data_ttuj['Ttuj']['driver_id'];
 
-			if(!empty($data_ttuj['Ttuj']['driver_penganti_id'])){
-				$driver_id = $data_ttuj['Ttuj']['driver_penganti_id'];
+			if(!empty($data_ttuj['Ttuj']['driver_pengganti_id'])){
+				$driver_id = $data_ttuj['Ttuj']['driver_pengganti_id'];
 			}
 			
 			$data_ttuj = $this->Driver->getMerge($data_ttuj, $driver_id);
@@ -1051,7 +1051,7 @@ class AjaxController extends AppController {
 
         switch ($action_type) {
         	case 'pengganti':
-        		$options['conditions'] = $this->Driver->getListDriverPenganti($id, true);
+        		$options['conditions'] = $this->Driver->getListDriverPengganti($id, true);
         		// $options['contain'][] = 'Ttuj';
         		break;
         	
@@ -1427,10 +1427,16 @@ class AjaxController extends AppController {
 				$ttuj_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'id');
 				$to_city_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'to_city_id');
 
-        		if( !empty($ttuj['Ttuj']['driver_penganti_id']) ) {
-					$driver_penganti_id = $ttuj['Ttuj']['driver_penganti_id'];
-					$ttuj = $this->Driver->getMerge($ttuj, $driver_penganti_id, 'DriverPenganti');
-				}
+				$value = $this->Ttuj->getMergeList($ttuj, array(
+                    'contain' => array(
+                        'DriverPengganti' => array(
+                            'uses' => 'Driver',
+                            'primaryKey' => 'id',
+                            'foreignKey' => 'driver_pengganti_id',
+                        ),
+                        'Driver',
+                    ),
+                ));
 
 				// if( $this->Ttuj->validateTtujAfterLeave( $to_city_id, $this->GroupBranch->Branch ) ) {
 				// 	$ttujs[$key] = $ttuj;
@@ -2080,11 +2086,11 @@ class AjaxController extends AppController {
         		$customer_id = $this->MkCommon->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'customer_id');
             	$driver_id = $this->MkCommon->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'driver_id');
             	$ttuj_id = $this->MkCommon->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'id');
-            	$driver_penganti_id = $this->MkCommon->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'driver_penganti_id');
+            	$driver_pengganti_id = $this->MkCommon->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'driver_pengganti_id');
 
         		$ttuj = $this->Ttuj->Customer->getMerge($ttuj, $customer_id);
             	$ttuj = $this->Ttuj->Truck->Driver->getMerge($ttuj, $driver_id);
-            	$ttuj = $this->Ttuj->Truck->Driver->getMerge($ttuj, $driver_penganti_id, 'DriverPenganti');
+            	$ttuj = $this->Ttuj->Truck->Driver->getMerge($ttuj, $driver_pengganti_id, 'DriverPengganti');
 
             	switch ($action_type) {
 		        	case 'biaya_ttuj':

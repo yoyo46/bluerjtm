@@ -302,7 +302,9 @@
 		        				$ttuj_date = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date');
 		        				$from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
 		        				$to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
-		        				$driver = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
+		        				
+		        				$driver = $this->Common->_callGetDriver($value);
+
 		        				$tgljam_berangkat = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_berangkat');
 		        				$tgljam_tiba = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_tiba');
 		        				$tgljam_bongkaran = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_bongkaran');

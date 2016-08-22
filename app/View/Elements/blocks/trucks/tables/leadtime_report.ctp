@@ -12,7 +12,7 @@
                 $tgljam_pool = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_pool');
 
                 $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
-                $driver_name = $this->Common->filterEmptyField($value, 'DriverPenganti', 'driver_name', $driver_name);
+                $driver_name = $this->Common->filterEmptyField($value, 'DriverPengganti', 'driver_name', $driver_name);
 
                 $from_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
                 $to_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');

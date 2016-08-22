@@ -319,15 +319,15 @@ class Driver extends AppModel {
         return $format_id;
     }
 
-    function getListDriverPenganti ( $include_this_driver_id = false, $only_bind = false ) {
+    function getListDriverPengganti ( $include_this_driver_id = false, $only_bind = false ) {
         $ttujs = $this->Truck->Ttuj->_callTtujOngoing(array(
             'fields' => array(
-                'Ttuj.id', 'Ttuj.driver_penganti_id',
+                'Ttuj.id', 'Ttuj.driver_pengganti_id',
             ),
         ));
 
         if( !empty($include_this_driver_id) ) {
-            // Ambil data Driver Penganti berikut id ini
+            // Ambil data Driver pengganti berikut id ini
             $conditions = array(
                 'OR' => array(
                     'Driver.id' => $include_this_driver_id,

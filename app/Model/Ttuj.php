@@ -48,7 +48,7 @@ class Ttuj extends AppModel {
                 'message' => 'Truk harap dipilih'
             ),
         ),
-        'driver_penganti_id' => array(
+        'driver_pengganti_id' => array(
             'getDriver' => array(
                 'rule' => array('getDriver'),
                 'message' => 'Supir pengganti harap dipilih'
@@ -130,6 +130,14 @@ class Ttuj extends AppModel {
         'UangJalan' => array(
             'className' => 'UangJalan',
             'foreignKey' => 'uang_jalan_id',
+        ),
+        'Driver' => array(
+            'className' => 'Driver',
+            'foreignKey' => 'driver_id',
+        ),
+        'DriverPengganti' => array(
+            'className' => 'Driver',
+            'foreignKey' => 'driver_pengganti_id',
         ),
     );
 
@@ -262,7 +270,7 @@ class Ttuj extends AppModel {
     }
 
     function getDriver () {
-        if( empty($this->data['Ttuj']['driver_name']) && empty($this->data['Ttuj']['driver_penganti_id']) ) {
+        if( empty($this->data['Ttuj']['driver_name']) && empty($this->data['Ttuj']['driver_pengganti_id']) ) {
             return false;
         } else {
             return true;
@@ -342,7 +350,7 @@ class Ttuj extends AppModel {
             'conditions' => array(
                 'OR' => array(
                     'Ttuj.driver_id' => $driver_id,
-                    'Ttuj.driver_penganti_id' => $driver_id,
+                    'Ttuj.driver_pengganti_id' => $driver_id,
                 ),
                 'Ttuj.status_sj' => array( 'none', 'half' ),
             ),
@@ -471,8 +479,8 @@ class Ttuj extends AppModel {
         $this->TtujPerlengkapan = ClassRegistry::init('TtujPerlengkapan');
         $this->Driver = ClassRegistry::init('Driver');
 
-        $driver_penganti_id = !empty($data['Ttuj']['driver_penganti_id'])?$data['Ttuj']['driver_penganti_id']:false;
-        $data = $this->Driver->getMerge($data, $driver_penganti_id, 'DriverPenganti');
+        $driver_pengganti_id = !empty($data['Ttuj']['driver_pengganti_id'])?$data['Ttuj']['driver_pengganti_id']:false;
+        $data = $this->Driver->getMerge($data, $driver_pengganti_id, 'DriverPengganti');
         $data = $this->TtujTipeMotor->getMergeTipeMotor( $data, $ttuj_id, 'all');
         $data = $this->TtujPerlengkapan->getMerge($data, $ttuj_id);
 
@@ -771,7 +779,9 @@ class Ttuj extends AppModel {
         $uje = !empty($data['named']['uje'])?$data['named']['uje']:false;
         $com = !empty($data['named']['com'])?$data['named']['com']:false;
         $come = !empty($data['named']['come'])?$data['named']['come']:false;
-
+        
+        $sort = $this->filterEmptyField($data, 'named', 'sort');
+        $direction = $this->filterEmptyField($data, 'named', 'direction');
 
         if( !empty($dateFromRange) || !empty($dateToRange) || $status == 'sj_receipt_unpaid' ) {
             $this->unBindModel(array(
@@ -1121,6 +1131,13 @@ class Ttuj extends AppModel {
                     $default_options['contain'][] = 'UangJalan';
                     break;
             }
+        }
+
+        if( $sort == 'Ttuj.driver_name' ) {
+            $this->virtualFields['driver_name'] = 'IFNULL(DriverPengganti.name, Driver.name)';
+
+            $default_options['contain'][] = 'DriverPengganti';
+            $default_options['contain'][] = 'Driver';
         }
 
         return $default_options;

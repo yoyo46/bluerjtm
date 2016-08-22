@@ -166,7 +166,7 @@
 										'label'=> __('Supir Pengganti'), 
 										'empty'=> __('Pilih Supir Pengganti'), 
 										'class'=>'form-control supir-pengganti-val',
-										'options' => $driverPengantis,
+										'options' => $driverPenggantis,
 										'required' => false,
 										'id' => 'laka-driver-change-id',
 										// 'value' => !empty($this->request->data['Laka']['change_driver_name']) ? $this->request->data['Laka']['change_driver_name']: '',

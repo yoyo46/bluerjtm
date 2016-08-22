@@ -33,7 +33,7 @@
 		echo $this->Form->hidden('Laka.change_driver_id',array(
 			'id' => 'laka-driver-change-id',
 			'readonly' => true,
-			'value' => !empty($data_ttuj['Ttuj']['driver_penganti_id']) ? $data_ttuj['Ttuj']['driver_penganti_id'] : 0
+			'value' => !empty($data_ttuj['Ttuj']['driver_pengganti_id']) ? $data_ttuj['Ttuj']['driver_pengganti_id'] : 0
 		));
 
 		echo $this->Form->input('Laka.change_driver_name',array(

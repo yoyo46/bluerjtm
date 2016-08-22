@@ -13,7 +13,7 @@
         $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
 
         $driver_name = $this->Common->filterEmptyField($value, 'TtujOutstanding', 'driver_name');
-        $driver_name = $this->Common->filterEmptyField($value, 'DriverPenganti', 'driver_name', $driver_name);
+        $driver_name = $this->Common->filterEmptyField($value, 'DriverPengganti', 'driver_name', $driver_name);
 
         $customTtujDate = $this->Common->formatDate($ttuj_date, 'd/m/Y');
 

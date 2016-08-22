@@ -12,21 +12,26 @@ class RjSpkComponent extends Component {
     function _callMechanicBeforeSave ( $data ) {
         $spkMechanic = $this->MkCommon->filterEmptyField($data, 'SpkMechanic', false, array());
         $spkMechanic = array_filter($spkMechanic);
+        $mechanic = $this->_callDisplayToggle('mechanic', $data);
 
-        if( !empty($spkMechanic['employe_id']) ) {
-            $data = $this->MkCommon->_callUnset(array(
-                'SpkMechanic',
-            ), $data);
-            $spkMechanic['employe_id'] = array_unique($spkMechanic['employe_id']);
-            $spkMechanic['employe_id'] = array_values($spkMechanic['employe_id']);
+        if( !empty($mechanic) ) {
+            if( !empty($spkMechanic['employe_id']) ) {
+                $data = $this->MkCommon->_callUnset(array(
+                    'SpkMechanic',
+                ), $data);
+                $spkMechanic['employe_id'] = array_unique($spkMechanic['employe_id']);
+                $spkMechanic['employe_id'] = array_values($spkMechanic['employe_id']);
 
-            foreach ($spkMechanic['employe_id'] as $key => $mechanic_id) {
-                $data['SpkMechanic'][]['SpkMechanic'] = array(
-                    'employe_id' => $mechanic_id,
-                );
+                foreach ($spkMechanic['employe_id'] as $key => $mechanic_id) {
+                    $data['SpkMechanic'][]['SpkMechanic'] = array(
+                        'employe_id' => $mechanic_id,
+                    );
+                }
+            } else {
+                $data['Spk']['mechanic'] = '';
             }
-        } else {
-            $data['Spk']['mechanic'] = '';
+        } else if( !empty($data['SpkMechanic']) ) {
+            unset($data['SpkMechanic']);
         }
 
         return $data;
@@ -68,7 +73,7 @@ class RjSpkComponent extends Component {
         return $data;
     }
 
-    function _callBeforeSave ( $data, $id = false ) {
+    function _callBeforeSave ( $data ) {
         if( !empty($data) ) {
             $data = $this->MkCommon->dataConverter($data, array(
                 'date' => array(
@@ -198,8 +203,33 @@ class RjSpkComponent extends Component {
         $this->MkCommon->_layout_file('select');
     	$this->controller->set(compact(
     		'employes', 'toBranches',
-            'vendors'
+            'vendors', 'value'
 		));
+    }
+
+    function _callDisplayToggle ( $type, $value ) {
+        $document_type = $this->MkCommon->filterEmptyField($value, 'Spk', 'document_type');
+        $result = true;
+        
+        switch ($type) {
+            case 'mechanic':
+                if( !in_array($document_type, array( 'internal', 'production' )) ) {
+                    $result = false;
+                }
+                break;
+            case 'wht':
+                if( !in_array($document_type, array( 'wht' )) ) {
+                    $result = false;
+                }
+                break;
+            case 'eksternal':
+                if( !in_array($document_type, array( 'eksternal' )) ) {
+                    $result = false;
+                }
+                break;
+        }
+
+        return $result;
     }
 }
 ?>

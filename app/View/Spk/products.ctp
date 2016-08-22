@@ -1,3 +1,7 @@
+<?php 
+        $data = $this->request->data;
+        $eksternalClass = $this->Spk->_callDisplayToggle('eksternal', $data);
+?>
 <div id="wrapper-modal-write" class="document-picker">
     <?php 
             $modelName = 'SpkProduct';
@@ -71,12 +75,14 @@
                                     'rel' => 'qty',
                                 ),
                             )), array(
-                                'class' => 'hide',
+                                'class' => 'hide %s',
                             ));
                             echo $this->Html->tag('td', $stock, array(
                                 'class' => 'hide text-center',
                             ));
-                            echo $this->Html->tag('td', $unit);
+                            echo $this->Html->tag('td', $unit, array(
+                                'class' => 'text-center',
+                            ));
                             echo $this->Html->tag('td', $group, array(
                                 'class' => 'removed',
                             ));
@@ -93,7 +99,8 @@
                                     'rel' => 1,
                                 ),
                             )), array(
-                                'class' => 'hide',
+                                'data-display' => $eksternalClass,
+                                'class' => 'hide wrapper-eksternal',
                             ));
                             echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.price.%s', $modelName, $id), false, array(
                                 'type' => 'text',
@@ -110,7 +117,7 @@
                                 'class' => 'delete-document btn btn-danger btn-xs',
                                 'escape' => false,
                             )), array(
-                                'class' => 'actions hide',
+                                'class' => 'actions text-center hide',
                             ));
                     ?>
                 </tr>

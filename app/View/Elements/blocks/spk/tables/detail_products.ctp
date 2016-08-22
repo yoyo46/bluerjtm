@@ -1,7 +1,9 @@
 <?php 
         $view = !empty($view)?$view:false;
         $data = $this->request->data;
+
         $dataDetail = $this->Common->filterEmptyField($data, 'SpkProduct');
+        $eksternalClass = $this->Spk->_callDisplayToggle('eksternal', $data);
 
 		$dataColumns = array(
             'code' => array(
@@ -30,7 +32,7 @@
             ),
             'price_service' => array(
                 'name' => __('Harga Jasa'),
-                'class' => 'text-center',
+                'class' => __('text-center wrapper-eksternal %s', $eksternalClass),
                 'style' => 'width:15%;',
             ),
             'price' => array(
@@ -56,6 +58,7 @@
                     'escape' => false,
                     'title' => __('Daftar Barang'),
                     'class' => 'btn bg-maroon ajaxCustomModal',
+                    'data-form' => '#form-spk',
                 )), array(
                 'class' => "form-group",
             ));
@@ -109,14 +112,13 @@
                                     'value' => $product_id,
                                 )));
                                 echo $this->Html->tag('td', $name);
-                                echo $this->Html->tag('td', $this->Common->buildInputForm(__('SpkProduct.qty.%s', $product_id), false, array(
+                                echo $this->Html->tag('td', $this->Common->_callInputForm(__('SpkProduct.qty.%s', $product_id), array(
                                     'type' => 'text',
                                     'frameClass' => false,
                                     'class' => 'input_number text-center price_custom',
-                                    'attributes' => array(
-                                        'rel' => 'qty',
-                                        'value' => $qty,
-                                    ),
+                                    'rel' => 'qty',
+                                    'value' => $qty,
+                                    'fieldError' => __('SpkProduct.%s.qty', $key),
                                 )));
                                 echo $this->Html->tag('td', $stock, array(
                                     'class' => 'text-center',
@@ -124,30 +126,32 @@
                                 echo $this->Html->tag('td', $unit, array(
                                     'class' => 'text-center',
                                 ));
-                                echo $this->Html->tag('td', $this->Common->buildInputForm(__('SpkProduct.price_service.%s', $product_id), false, array(
+                                echo $this->Html->tag('td', $this->Common->_callInputForm(__('SpkProduct.price_service.%s', $product_id), array(
                                     'type' => 'text',
                                     'frameClass' => false,
                                     'class' => 'text-right price_custom',
-                                    'attributes' => array(
-                                        'data-type' => 'input_price_coma',
-                                        'rel' => 1,
-                                        'value' => $this->Common->getFormatPrice($price_service, 0, 2),
-                                    ),
-                                )));
-                                echo $this->Html->tag('td', $this->Common->buildInputForm(__('SpkProduct.price.%s', $product_id), false, array(
+                                    'data-type' => 'input_price_coma',
+                                    'rel' => 1,
+                                    'value' => $this->Common->getFormatPrice($price_service, 0, 2),
+                                    'fieldError' => __('SpkProduct.%s.price_service', $key),
+                                )), array(
+                                    'class' => __('wrapper-eksternal %s', $eksternalClass),
+                                ));
+                                echo $this->Html->tag('td', $this->Common->_callInputForm(__('SpkProduct.price.%s', $product_id), array(
                                     'type' => 'text',
                                     'frameClass' => false,
                                     'class' => 'text-right price_custom',
-                                    'attributes' => array(
-                                        'data-type' => 'input_price_coma',
-                                        'rel' => 2,
-                                        'value' => $this->Common->getFormatPrice($price, 0, 2),
-                                    ),
+                                    'data-type' => 'input_price_coma',
+                                    'rel' => 2,
+                                    'value' => $this->Common->getFormatPrice($price, 0, 2),
+                                    'fieldError' => __('SpkProduct.%s.price', $key),
                                 )));
                                 echo $this->Html->tag('td', $this->Html->link($this->Common->icon('times'), '#', array(
                                     'class' => 'delete-document btn btn-danger btn-xs',
                                     'escape' => false,
-                                )));
+                                )), array(
+                                    'class' => 'text-center',
+                                ));
                         ?>
                     </tr>
                     <?php
@@ -175,7 +179,7 @@
                                     'class' => 'text-right',
                                 ));
                                 echo $this->Html->tag('td', $price_service, array(
-                                    'class' => 'text-right total_custom',
+                                    'class' => __('text-right total_custom wrapper-eksternal %s', $eksternalClass),
                                     'data-decimal' => 2,
                                     'rel' => 1,
                                 ));

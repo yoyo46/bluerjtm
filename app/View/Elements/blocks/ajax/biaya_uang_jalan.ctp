@@ -13,7 +13,7 @@
 
         $customer_name_code = $this->Common->filterEmptyField($ttuj, 'Customer', 'code');
         $driver_name = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'driver_name');
-        $driver_name = $this->Common->filterEmptyField($ttuj, 'DriverPenganti', 'driver_name', $driver_name);
+        $driver_name = $this->Common->filterEmptyField($ttuj, 'DriverPengganti', 'driver_name', $driver_name);
 
         $checkbox = isset($checkbox)?$checkbox:true;
 		$alias = sprintf('child-%s-%s', $id, $data_type);

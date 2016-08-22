@@ -225,7 +225,7 @@ class PaymentNotification extends AppModel {
     //     	));
     //         $default_options['conditions']['AND']['OR'] = array(
     //         	'UangJalanKomisiPayment.driver_id' => $driverId,
-    //         	'UangJalanKomisiPayment.driver_penganti_id' => $driverId,
+    //         	'UangJalanKomisiPayment.driver_pengganti_id' => $driverId,
     //     	);
     //     }
     //     if(!empty($customer)){

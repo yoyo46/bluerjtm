@@ -104,6 +104,17 @@ class TtujsController extends AppController {
                 $value = $this->Ttuj->Revenue->getPaid($value, $id, 'invoiced');
                 $value = $this->Ttuj->Revenue->RevenueDetail->getToCity($value, $id);
 
+                $value = $this->Ttuj->getMergeList($value, array(
+                    'contain' => array(
+                        'DriverPengganti' => array(
+                            'uses' => 'Driver',
+                            'primaryKey' => 'id',
+                            'foreignKey' => 'driver_pengganti_id',
+                        ),
+                        'Driver',
+                    ),
+                ));
+
                 $values[$key] = $value;
             }
         }

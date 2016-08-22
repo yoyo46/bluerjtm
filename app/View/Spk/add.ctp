@@ -5,14 +5,19 @@
 			'action' => 'index',
 			'admin' => false,
 		);
-		$value = !empty($value)?$value:false;
+
+        $data = $this->request->data;
 		$view = !empty($view)?$view:false;
+
+		$mechanicClass = $this->Spk->_callDisplayToggle('mechanic', $data);
+		$whtClass = $this->Spk->_callDisplayToggle('wht', $data);
 
 		$this->Html->addCrumb($title, $urlRoot);
 		$this->Html->addCrumb($sub_module_title);
 
 		echo $this->Form->create('Spk', array(
 			'class' => 'receipt-form',
+			'id' => 'form-spk',
 		));
 ?>
 <div class="row">
@@ -33,8 +38,9 @@
 		                    'textGroup' => $this->Common->icon('calendar'),
 		                    'class' => 'form-control pull-right custom-date',
 						));
-						echo $this->Common->buildInputForm('document_type', __('Jenis SPK *'), array(
-		                    'class' => 'form-control',
+						echo $this->Common->_callInputForm('document_type', array(
+							'label' => __('Jenis SPK *'),
+		                    'class' => 'form-control handle-toggle',
 		                    'empty' => __('Pilih Jenis SPK'),
 		                    'options' => array(
 						    	'internal' => __('Internal'),
@@ -42,19 +48,25 @@
 						    	'wht' => __('WHT'),
 						    	'production' => __('Produksi'),
 					    	),
+					    	'data-match' => '[[\'.wrapper-mechanic\', [\'internal\',\'production\'], \'slide\'],[\'.wrapper-wht\', [\'wht\'], \'slide\'],[\'.wrapper-eksternal\', [\'eksternal\'], \'fade\']]',
 						));
-						echo $this->Common->buildInputForm('employe_id', __('Kepala Mekanik *'), array(
-							'type' => 'select',
-							'empty' => __('- Pilih Penerima -'),
-							'class' => 'form-control chosen-select',
-						));
-						echo $this->Common->_callInputForm('SpkMechanic.employe_id', array(
-							'type' => 'select',
-							'label' => __('Mekanik *'),
-							'empty' => __('- Pilih Mekanik -'),
-                            'class'=>'form-control chosen-select',
-                            'multiple' => true,
-                            'fieldError' => 'Spk.mechanic',
+
+						echo $this->Html->tag('div',
+							$this->Common->_callInputForm('employe_id', array(
+								'label' => __('Kepala Mekanik *'), 
+								'type' => 'select',
+								'empty' => __('- Pilih Penerima -'),
+								'class' => 'form-control chosen-select',
+								'div' => 'form-group',
+							)).
+							$this->Common->_callInputForm('SpkMechanic.employe_id', array(
+								'type' => 'select',
+								'label' => __('Mekanik *'),
+	                            'class'=>'form-control chosen-select',
+	                            'multiple' => true,
+	                            'fieldError' => 'Spk.mechanic',
+							)), array(
+							'class' => __('wrapper-mechanic select-block %s', $mechanicClass),
 						));
 						echo $this->Common->_callInputForm('start', array(
 							'type' => 'datetime',
@@ -108,6 +120,8 @@
 							'label' => __('Gudang Penerima *'),
 							'empty' => __('- Pilih Gudang Penerima -'),
                             'class'=>'form-control chosen-select',
+                            'div' => 'form-group select-block',
+                            'frameClass' => __('wrapper-wht %s', $whtClass),
 						));
 						echo $this->Common->buildInputForm('note', __('Keterangan'));
 			    ?>

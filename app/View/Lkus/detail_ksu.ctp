@@ -10,7 +10,7 @@
 		$nopol = $this->Common->filterEmptyField($Ksu, 'Ttuj', 'nopol');
 
 		$driver_name = $this->Common->filterEmptyField($Ksu, 'Ttuj', 'driver_name');
-        $driver_name = $this->Common->filterEmptyField($Ksu, 'DriverPenganti', 'driver_name', $driver_name);
+        $driver_name = $this->Common->filterEmptyField($Ksu, 'DriverPengganti', 'driver_name', $driver_name);
 
 		$customCompletedDate = $this->Common->customDate($completed_date, 'd/m/Y');
 ?>

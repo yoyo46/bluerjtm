@@ -4,9 +4,11 @@ class SpkController extends AppController {
     public $uses = array(
         'Spk',
     );
-
     public $components = array(
         'RjSpk'
+    );
+    public $helpers = array(
+        'Spk'
     );
 
     function beforeFilter() {
@@ -108,7 +110,7 @@ class SpkController extends AppController {
 
             if( !empty($data) ) {
                 $data = $this->RjSpk->_callBeforeSave($data);
-                $result = $this->Spk->doSave($data);
+                $result = $this->Spk->doSave($data, $value, $id);
                 $this->MkCommon->setProcessParams($result, array(
                     'controller' => 'spk',
                     'action' => 'index',

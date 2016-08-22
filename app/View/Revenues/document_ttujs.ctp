@@ -113,11 +113,11 @@
                         $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
                         $from_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
                         $to_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
-                        $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
                         $note = $this->Common->filterEmptyField($value, 'Ttuj', 'note');
                         $ttuj_date = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date');
                         $tgljam_berangkat = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_berangkat');
-                        $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
+                        
+                        $driver = $this->Common->_callGetDriver($value);
 
                         $qty = $this->Common->filterEmptyField($value, 'Ttuj', 'qty');
                         $qty_diterima = $this->Common->filterEmptyField($value, 'Ttuj', 'qty_diterima', 0);
@@ -162,7 +162,7 @@
                         }
 
                         echo $this->Html->tag('td', $no_ttuj);
-                        echo $this->Html->tag('td', $driver_name);
+                        echo $this->Html->tag('td', $driver);
                         echo $this->Html->tag('td', $nopol, array(
                             'class' => 'text-center',
                         ));

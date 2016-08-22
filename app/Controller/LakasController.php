@@ -104,7 +104,7 @@ class LakasController extends AppController {
         $this->loadModel('Ttuj');
         $this->loadModel('City');
 
-        $driver_penganti_id = $this->MkCommon->filterEmptyField($data_local, 'Laka', 'change_driver_id');
+        $driver_pengganti_id = $this->MkCommon->filterEmptyField($data_local, 'Laka', 'change_driver_id');
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
@@ -151,16 +151,16 @@ class LakasController extends AppController {
                     'status' => 'all',
                     'plant' => true,
                 ));
-                $driver_penganti_id = $this->MkCommon->filterEmptyField($ttuj_data, 'Ttuj', 'driver_penganti_id');
+                $driver_pengganti_id = $this->MkCommon->filterEmptyField($ttuj_data, 'Ttuj', 'driver_pengganti_id');
                 $driver_name = $this->MkCommon->filterEmptyField($ttuj_data, 'Ttuj', 'driver_name');
-                $data['Laka']['change_driver_id'] = $driver_penganti_id;
+                $data['Laka']['change_driver_id'] = $driver_pengganti_id;
 
                 if(!empty($driver_name)){
                     $data['Laka']['driver_name'] = $driver_name;
                 }
 
-                if(!empty($driver_penganti_id)){
-                    $driver = $this->Ttuj->Truck->Driver->getMerge(array(), $driver_penganti_id);
+                if(!empty($driver_pengganti_id)){
+                    $driver = $this->Ttuj->Truck->Driver->getMerge(array(), $driver_pengganti_id);
 
                     if(!empty($driver)){
                         $driver_name = $this->MkCommon->filterEmptyField($driver, 'Driver', 'driver_name');
@@ -357,10 +357,10 @@ class LakasController extends AppController {
         $trucks = $result;
         $material = $this->LakaMaterial->find('list');
         $insurance = $this->LakaInsurance->find('list');
-        $driverPengantis = $this->Truck->Driver->getData('list', array(
+        $driverPenggantis = $this->Truck->Driver->getData('list', array(
             'conditions' => array(
                 'OR' => array(
-                    'Driver.id' => $driver_penganti_id,
+                    'Driver.id' => $driver_pengganti_id,
                     'Truck.id <>' => NULL,
                 ),
             ),
@@ -393,7 +393,7 @@ class LakasController extends AppController {
         $this->set('active_menu', 'lakas');
         $this->set(compact(
             'material', 'insurance', 'step', 
-            'ttujs', 'driverPengantis', 'id',
+            'ttujs', 'driverPenggantis', 'id',
             'trucks'
         ));
         $this->render('laka_form');

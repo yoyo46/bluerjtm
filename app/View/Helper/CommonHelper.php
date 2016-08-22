@@ -2698,4 +2698,11 @@ class CommonHelper extends AppHelper {
 
         return $this->_View->element('blocks/common/forms/input', $default_options);
     }
+
+    function _callGetDriver ( $value ) {
+        $driver = $this->filterEmptyField($value, 'Driver', 'driver_name');
+        $driver = $this->filterEmptyField($value, 'DriverPengganti', 'driver_name', $driver);
+
+        return $driver;
+    }
 }

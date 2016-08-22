@@ -27,10 +27,14 @@ class SpkProduct extends AppModel {
                 'rule' => array('numeric'),
                 'message' => 'Qty harap diisi'
             ),
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Qty harap diisi'
+            ),
         ),
         'price_service' => array(
-            'numeric' => array(
-                'rule' => array('numeric'),
+            'eksternalValidate' => array(
+                'rule' => array('eksternalValidate'),
                 'message' => 'Harga jasa harap diisi'
             ),
         ),
@@ -39,8 +43,24 @@ class SpkProduct extends AppModel {
                 'rule' => array('numeric'),
                 'message' => 'Harga barang harap diisi'
             ),
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Harga barang harap diisi'
+            ),
         ),
 	);
+
+    function eksternalValidate () {
+        $dataSpk = $this->Spk->data;
+        $data = $this->data;
+        $price_service = $this->filterEmptyField($data, 'SpkProduct', 'price_service');
+
+        if( $this->callDisplayToggle('eksternal', $dataSpk) && empty($price_service) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
 	function getData( $find, $options = false ){
         $default_options = array(

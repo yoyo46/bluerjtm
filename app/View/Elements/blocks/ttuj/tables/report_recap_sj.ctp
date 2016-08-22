@@ -11,12 +11,12 @@
                 $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
                 $ttuj_date = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date');
                 $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
-                $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
                 $city_name = $this->Ttuj->_callDariTujuan($value);
 
                 $unit = $this->Common->filterEmptyField($value, 'Qty', false, 0);
                 $unitSj = $this->Common->filterEmptyField($value, 'QtySJ', false, 0);
 
+                $driver = $this->Common->_callGetDriver($value);
                 $tglSJ = $this->Common->filterEmptyField($value, 'SuratJalan', 'tgl_surat_jalan', '-', false, array(
                     'date' => 'd/m/Y',
                 ));
@@ -68,7 +68,7 @@
                             ),
                         ),
                         array(
-                            $driver_name,
+                            $driver,
                             array(
                                 'style' => $style,
                             ),

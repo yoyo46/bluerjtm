@@ -467,9 +467,9 @@ class LkusController extends AppController {
             $this->loadModel('Driver');
 
             $tipe_motor_list = array();
-            $driver_penganti_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'driver_penganti_id');
+            $driver_pengganti_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'driver_pengganti_id');
             $ttuj = $this->TtujTipeMotor->getMergeTtujTipeMotor( $ttuj, $ttuj_id, 'all');
-            $ttuj = $this->Driver->getMerge( $ttuj, $driver_penganti_id, 'DriverPenganti');
+            $ttuj = $this->Driver->getMerge( $ttuj, $driver_pengganti_id, 'DriverPengganti');
 
             if(!empty($ttuj['TtujTipeMotor'])){
                 foreach ($ttuj['TtujTipeMotor'] as $key => $value) {
@@ -1142,10 +1142,10 @@ class LkusController extends AppController {
 
             if(!empty($Ksu)){
                 $customer_id = $this->MkCommon->filterEmptyField($Ksu, 'Ttuj', 'customer_id');
-                $driver_penganti_id = $this->MkCommon->filterEmptyField($Ksu, 'Ttuj', 'driver_penganti_id');
+                $driver_pengganti_id = $this->MkCommon->filterEmptyField($Ksu, 'Ttuj', 'driver_pengganti_id');
 
                 $Ksu = $this->Ksu->Ttuj->Customer->getMerge($Ksu, $customer_id);
-                $Ksu = $this->Ksu->Ttuj->Truck->Driver->getMerge($Ksu, $driver_penganti_id, 'DriverPengganti');
+                $Ksu = $this->Ksu->Ttuj->Truck->Driver->getMerge($Ksu, $driver_pengganti_id, 'DriverPengganti');
 
                 if(!empty($Ksu['KsuDetail'])){
                     foreach ($Ksu['KsuDetail'] as $key => $value) {
@@ -1432,10 +1432,10 @@ class LkusController extends AppController {
 
         if(!empty($ttuj)){
             $perlengkapan_list = array();
-            $driver_penganti_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'driver_penganti_id');
+            $driver_pengganti_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'driver_pengganti_id');
 
             $ttuj = $this->Ttuj->TtujPerlengkapan->getMerge($ttuj, $ttuj_id);
-            $ttuj = $this->Ttuj->Truck->Driver->getMerge($ttuj, $driver_penganti_id, 'DriverPenganti');
+            $ttuj = $this->Ttuj->Truck->Driver->getMerge($ttuj, $driver_pengganti_id, 'DriverPengganti');
 
             if(!empty($ttuj['TtujPerlengkapan'])){
                 foreach ($ttuj['TtujPerlengkapan'] as $key => $value) {
@@ -2530,7 +2530,7 @@ class LkusController extends AppController {
                         'branch' => false,
                     ));
                     $conditions['OR']['Ttuj.driver_id'] = $dataSearchId;
-                    $conditions['OR']['Ttuj.driver_penganti_id'] = $dataSearchId;
+                    $conditions['OR']['Ttuj.driver_pengganti_id'] = $dataSearchId;
                 }
 
                 if(!empty($refine['status'])){
@@ -2610,10 +2610,10 @@ class LkusController extends AppController {
 
                     $value = $this->$modelName->Ttuj->Truck->getMerge($value, $truck_id);
                     $category_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'truck_category_id');
-                    $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
+                    $driver_pengganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_pengganti_id');
 
                     $value = $this->$modelName->Ttuj->Truck->TruckCategory->getMerge($value, $category_id);
-                    $value = $this->$modelName->Ttuj->Truck->Driver->getMerge($value, $driver_penganti_id, 'DriverPengganti');
+                    $value = $this->$modelName->Ttuj->Truck->Driver->getMerge($value, $driver_pengganti_id, 'DriverPengganti');
 
                     if( $type == 'ksu' ) {
                         $value = $this->$modelName->KsuDetail->getGroupMerge($value, $id);

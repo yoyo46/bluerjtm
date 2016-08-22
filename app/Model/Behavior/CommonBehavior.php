@@ -314,4 +314,29 @@ class CommonBehavior extends ModelBehavior {
 		}
 		return $values;
 	}
+
+    function callDisplayToggle ( Model $model, $type, $value ) {
+        $document_type = $this->filterEmptyField($model, $value, 'Spk', 'document_type');
+        $result = true;
+        
+        switch ($type) {
+            case 'mechanic':
+                if( !in_array($document_type, array( 'internal', 'production' )) ) {
+                    $result = false;
+                }
+                break;
+            case 'wht':
+                if( !in_array($document_type, array( 'wht' )) ) {
+                    $result = false;
+                }
+                break;
+            case 'eksternal':
+                if( !in_array($document_type, array( 'eksternal' )) ) {
+                    $result = false;
+                }
+                break;
+        }
+
+        return $result;
+    }
 }

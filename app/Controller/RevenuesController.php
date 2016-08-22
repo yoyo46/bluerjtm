@@ -528,10 +528,10 @@ class RevenuesController extends AppController {
             $to_city_name = $this->MkCommon->filterEmptyField($uangJalan, 'ToCity', 'name');
 
             $driver_id = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'driver_id');
-            $driver_penganti_id = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'driver_penganti_id', 0);
+            $driver_pengganti_id = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'driver_pengganti_id', 0);
 
-            if( !empty($driver_penganti_id) ) {
-                $driver_of_truck = $driver_penganti_id;
+            if( !empty($driver_pengganti_id) ) {
+                $driver_of_truck = $driver_pengganti_id;
             } else {
                 $driver_of_truck = $driver_id;
             }
@@ -539,7 +539,7 @@ class RevenuesController extends AppController {
             $driver = $this->Ttuj->Truck->Driver->getMerge(array(), $driver_of_truck);
             $driver_name = $this->MkCommon->filterEmptyField($driver, 'Driver', 'driver_name');
 
-            $data['Ttuj']['driver_penganti_id'] = $driver_penganti_id;
+            $data['Ttuj']['driver_pengganti_id'] = $driver_pengganti_id;
             $data['Ttuj']['nopol'] = $nopol;
             $data['Ttuj']['from_city_name'] = $from_city_name;
             $data['Ttuj']['to_city_name'] = $to_city_name;
@@ -1203,8 +1203,8 @@ class RevenuesController extends AppController {
         $ttuj_truck_nopol = !empty($data_local['Ttuj']['nopol'])?$data_local['Ttuj']['nopol']:false;
         $trucks = $this->Ttuj->Truck->getListTruck($ttuj_truck_id, false, $ttuj_truck_nopol, $plantCityId);
 
-        $driver_penganti_id = !empty($data_local['Ttuj']['driver_penganti_id'])?$data_local['Ttuj']['driver_penganti_id']:false;
-        $driverPengantis = $this->Ttuj->Truck->Driver->getListDriverPenganti($driver_penganti_id);
+        $driver_pengganti_id = !empty($data_local['Ttuj']['driver_pengganti_id'])?$data_local['Ttuj']['driver_pengganti_id']:false;
+        $driverPenggantis = $this->Ttuj->Truck->Driver->getListDriverPengganti($driver_pengganti_id);
 
         $perlengkapans = $this->Ttuj->Truck->TruckPerlengkapan->Perlengkapan->getData('list', array(
             'fields' => array(
@@ -1242,7 +1242,7 @@ class RevenuesController extends AppController {
         $this->set('module_title', __('TTUJ'));
         $this->set('active_menu', 'ttuj');
         $this->set(compact(
-            'trucks', 'customers', 'driverPengantis',
+            'trucks', 'customers', 'driverPenggantis',
             'fromCities', 'toCities', 'uangJalan',
             'tipeMotors', 'perlengkapans',
             'truckInfo', 'data_local', 'data_action',
@@ -2966,8 +2966,8 @@ class RevenuesController extends AppController {
                     $change_driver_id = $this->MkCommon->filterEmptyField($value, 'Laka', 'change_driver_id', '-');
 
                     if( $change_driver_name == '-' && !empty($change_driver_id) ) {
-                        $value = $this->Ttuj->Truck->Driver->getMerge($value, $change_driver_id, 'DriverPenganti');
-                        $change_driver_name = $this->MkCommon->filterEmptyField($value, 'DriverPenganti', 'driver_name', '-');
+                        $value = $this->Ttuj->Truck->Driver->getMerge($value, $change_driver_id, 'DriverPengganti');
+                        $change_driver_name = $this->MkCommon->filterEmptyField($value, 'DriverPengganti', 'driver_name', '-');
                     }
 
                     $TglLaka = $this->MkCommon->customDate($tgl_laka, 'Y-m-d');
@@ -3070,12 +3070,12 @@ class RevenuesController extends AppController {
 
             foreach ($ttujs as $key => $value) {
                 $inArr = array();
-                $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
+                $driver_pengganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_pengganti_id');
                 $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
                 $nopol = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'nopol');
                 $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
 
-                $value = $this->Driver->getMerge($value, $driver_penganti_id, 'DriverPenganti');
+                $value = $this->Driver->getMerge($value, $driver_pengganti_id, 'DriverPengganti');
                 $value = $this->Laka->getMergeTtuj($ttuj_id, $value, array(
                     'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\')' => $currentMonth,
                 ));
@@ -3097,7 +3097,7 @@ class RevenuesController extends AppController {
                 $dataTmp = array(
                     'Tujuan' => $value['Ttuj']['to_city_name'],
                     'Driver' => $value['Ttuj']['driver_name'],
-                    'DriverChange' => !empty($value['DriverPenganti']['name'])?$value['DriverPenganti']['name']:false,
+                    'DriverChange' => !empty($value['DriverPengganti']['name'])?$value['DriverPengganti']['name']:false,
                     'Muatan' => $totalMuatan,
                     'NoPol' => $nopol,
                 );
@@ -3791,6 +3791,16 @@ class RevenuesController extends AppController {
                     foreach ($truk_ritase as $key => $value) {
                         $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
                         $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
+                        $value = $this->Ttuj->getMergeList($value, array(
+                            'contain' => array(
+                                'DriverPengganti' => array(
+                                    'uses' => 'Driver',
+                                    'primaryKey' => 'id',
+                                    'foreignKey' => 'driver_pengganti_id',
+                                ),
+                                'Driver',
+                            ),
+                        ));
 
                         $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
                         $qty_ritase = $this->Ttuj->TtujTipeMotor->getData('first', array(
@@ -6039,7 +6049,7 @@ class RevenuesController extends AppController {
                 'conditions' => array(
                     'OR' => array(
                         'Ttuj.driver_id' => $driver_id,
-                        'Ttuj.driver_penganti_id' => $driver_id,
+                        'Ttuj.driver_pengganti_id' => $driver_id,
                     ),
                     'Ttuj.status_sj' => 'none',
                 ),
@@ -6101,6 +6111,17 @@ class RevenuesController extends AppController {
             foreach ($values as $key => $value) {
                 $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
                 $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
+
+                $value = $this->Ttuj->getMergeList($value, array(
+                    'contain' => array(
+                        'DriverPengganti' => array(
+                            'uses' => 'Driver',
+                            'primaryKey' => 'id',
+                            'foreignKey' => 'driver_pengganti_id',
+                        ),
+                        'Driver',
+                    ),
+                ));
 
                 $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
                 $value['Ttuj']['qty'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
@@ -7910,9 +7931,9 @@ class RevenuesController extends AppController {
                     ),
                 ));
                 
-                $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
+                $driver_pengganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_pengganti_id');
                 $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
-                $value = $this->Ttuj->Truck->Driver->getMerge($value, $driver_penganti_id, 'DriverPenganti');
+                $value = $this->Ttuj->Truck->Driver->getMerge($value, $driver_pengganti_id, 'DriverPengganti');
                 $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
 
                 $values[$key] = $value;
@@ -9222,6 +9243,16 @@ class RevenuesController extends AppController {
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'branch_id');
                 
                 $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                $value = $this->Ttuj->getMergeList($value, array(
+                    'contain' => array(
+                        'DriverPengganti' => array(
+                            'uses' => 'Driver',
+                            'primaryKey' => 'id',
+                            'foreignKey' => 'driver_pengganti_id',
+                        ),
+                        'Driver',
+                    ),
+                ));
 
                 $muatan = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
                 $value['Ttuj']['qty'] = $muatan;

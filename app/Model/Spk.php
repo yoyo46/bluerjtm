@@ -58,22 +58,14 @@ class Spk extends AppModel {
             ),
         ),
         'to_branch_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Gudang Penerima harap dipilih'
-            ),
-            'numeric' => array(
-                'rule' => array('numeric'),
+            'branchValidate' => array(
+                'rule' => array('branchValidate'),
                 'message' => 'Gudang Penerima harap dipilih'
             ),
         ),
         'employe_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Kepala mekanik harap dipilih'
-            ),
-            'numeric' => array(
-                'rule' => array('numeric'),
+            'mechanicValidate' => array(
+                'rule' => array('mechanicValidate'),
                 'message' => 'Kepala mekanik harap dipilih'
             ),
         ),
@@ -166,6 +158,27 @@ class Spk extends AppModel {
             ),
         ),
     );
+
+    function mechanicValidate () {
+        $data = $this->data;
+        $employe_id = $this->filterEmptyField($data, 'Spk', 'employe_id');
+        
+        if( $this->callDisplayToggle('mechanic', $data) && empty($employe_id) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    function branchValidate () {
+        $data = $this->data;
+        $to_branch_id = $this->filterEmptyField($data, 'Spk', 'to_branch_id');
+
+        if( $this->callDisplayToggle('wht', $data) && empty($to_branch_id) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     function getData( $find, $options = false, $elements = false ){
         $branch = isset($elements['branch'])?$elements['branch']:true;
@@ -291,6 +304,10 @@ class Spk extends AppModel {
         $defaul_msg = __('menyimpan SPK');
 
         if ( !empty($data) ) {
+            if( !empty($id) ) {
+                $data['Spk']['id'] = $id;
+            }
+
             $flag = $this->saveAll($data, array(
                 'deep' => true,
                 'validate' => 'only',
@@ -344,8 +361,6 @@ class Spk extends AppModel {
                     'data' => $data,
                 );
             }
-        } else if( !empty($value) ) {
-            $result['data'] = $value;
         }
 
         return $result;

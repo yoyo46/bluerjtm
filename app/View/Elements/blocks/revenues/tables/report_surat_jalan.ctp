@@ -17,13 +17,13 @@
                 $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
                 $ttuj_date = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date');
                 $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
-                $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
                 $from_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
                 $to_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
                 $customer_name = $this->Common->filterEmptyField($value, 'Ttuj', 'customer_name');
                 $note_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'note', false, false, 'EOL');
                 $qtyTtuj = $this->Common->filterEmptyField($value, 'Ttuj', 'qty');
 
+                $driver = $this->Common->_callGetDriver($value);
                 $tujuan = sprintf('%s - %s', $from_city_name, $to_city_name);
 
                 if( !empty($id) ) {
@@ -69,7 +69,7 @@
             echo $this->Html->tag('td', $nopol, array(
                 'style' => 'text-align: center;'.$style,
             ));
-            echo $this->Html->tag('td', $driver_name, array(
+            echo $this->Html->tag('td', $driver, array(
                 'style' => $style,
             ));
             echo $this->Html->tag('td', $tujuan, array(

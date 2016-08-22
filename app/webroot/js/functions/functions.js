@@ -2380,8 +2380,8 @@ function findInfoTTujPayment(url){
             $('.from-city-name').val(response.from_name);
             $('.to-city-name').val(response.to_name);
 
-            if( response.driver_penganti_id != '' ) {
-                $('.driver-id').val(response.driver_penganti_id);
+            if( response.driver_pengganti_id != '' ) {
+                $('.driver-id').val(response.driver_pengganti_id);
             } else if( response.driver_id != '' ) {
                 $('.driver-id').val(response.driver_id);
             }
@@ -4292,7 +4292,7 @@ $(function() {
         }
     });
     
-    $('.driver-penganti').change(function(){
+    $('.driver-pengganti').change(function(){
         var val = $(this).val();
 
         if(val != ''){

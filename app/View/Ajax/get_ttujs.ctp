@@ -139,6 +139,9 @@
         <?php
                 if(!empty($ttujs)){
                     foreach ($ttujs as $key => $value) {
+                        $driver = $this->Common->filterEmptyField($value, 'Driver', 'driver_name', '-');
+                        $driver_pengganti = $this->Common->filterEmptyField($value, 'DriverPengganti', 'driver_name', '-');
+
                         if( in_array($action_type, array( 'lku', 'ksu' )) ) {
                             $result = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
                             $attr = 'data-trigger="change"';
@@ -151,8 +154,8 @@
             <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
             <td><?php echo date('d/m/Y', strtotime($value['Ttuj']['ttuj_date']));?></td>
             <td><?php echo $value['Ttuj']['nopol'];?></td>
-            <td><?php echo $value['Ttuj']['driver_name'];?></td>
-            <td><?php echo !empty($value['DriverPenganti']['driver_name'])?$value['DriverPenganti']['driver_name']:'-';?></td>
+            <td><?php echo $driver;?></td>
+            <td><?php echo $driver_pengganti;?></td>
             <td><?php echo $value['Ttuj']['customer_name'];?></td>
             <td><?php echo $value['Ttuj']['from_city_name'];?></td>
             <td><?php echo $value['Ttuj']['to_city_name'];?></td>

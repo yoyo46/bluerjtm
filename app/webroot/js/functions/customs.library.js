@@ -989,7 +989,9 @@
                         var html_content = '<tr class="pick-document" rel="'+rel_id+'">'+pickDocument.html()+'</tr>';
                         temp_picker.find('tbody').append(html_content);
 
-                        temp_picker.find('td.hide').removeClass('hide');
+                        temp_picker.find('.pick-document[rel="'+rel_id+'"] td.hide').removeClass('hide');
+                        temp_picker.find('.pick-document[rel="'+rel_id+'"] td[data-display="hide"]').addClass('hide');
+                        
                         temp_picker.find('td.removed').remove();
 
                         calcItemTotal(temp_picker);
@@ -1417,6 +1419,7 @@
         $.checkAll();
         $.dropdownFix();
         $.serialNumber();
+        $.handle_toggle();
     }
 
     $.checkAll = function() {
@@ -1776,5 +1779,61 @@
                 });
             });
         }
+    }
+
+    $.handle_toggle = function(options){
+        var settings = $.extend({
+            obj: '.handle-toggle',
+        }, options );
+        
+        $( "body" ).delegate( settings.obj, "change", function() {
+            var self = $(this);
+            var match = self.attr('data-match');
+            var value = self.val();
+            var result = false;
+
+            match = eval(match);
+
+            if( $.isArray(match) ) {
+                $.each( match, function( i, val ) {
+                    target = val[0];
+                    dataMatch = val[1];
+                    type = val[2];
+
+                    var key = $.inArray( value, dataMatch );
+
+                    if( key >= 0 ) {
+                        result = true;
+                        $(target).removeClass('hide');
+                    } else {
+                        result = false;
+                    }
+
+                    switch (type) { 
+                        case 'fade':
+                            if( result ) {
+                                $(target).fadeIn();
+                            } else {
+                                $(target).fadeOut();
+                            }
+                        break;
+                        case 'slide':
+                            if( result ) {
+                                $(target).slideDown();
+                            } else {
+                                $(target).slideUp();
+                            }
+                        break;
+                    }
+
+                    if( !result ) {
+                        $(target).find('input,select').val('');
+                        $.callChoosen({
+                            obj: $(target).find('.chosen-select'),
+                        });
+                    }
+                });
+            }
+        });
     }
 }( jQuery ));

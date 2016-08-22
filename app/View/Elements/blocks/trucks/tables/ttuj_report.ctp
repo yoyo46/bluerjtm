@@ -40,8 +40,8 @@
 
                 $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
                 $customer = $this->Common->filterEmptyField($value, 'Customer', 'code');
-                $driver_pengganti = $this->Common->filterEmptyField($value, 'DriverPenganti', 'driver_name');
-                $driver = $this->Common->filterEmptyField($value, 'Driver', 'driver_name', $driver_pengganti);
+                
+                $driver = $this->Common->_callGetDriver($value);
 
                 $total += $uang_jalan + $uang_jalan_extra + $uang_jalan_2 + $commission + $commission_extra;
 

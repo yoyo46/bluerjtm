@@ -20,7 +20,7 @@
 </div>
 <div class="form-group">
 	<?php 
-			echo $this->Form->input('DriverPenganti.driver_name',array(
+			echo $this->Form->input('DriverPengganti.driver_name',array(
 				'label'=> __('Nama Supir Pengganti'), 
 				'class'=>'form-control',
 				'required' => false,

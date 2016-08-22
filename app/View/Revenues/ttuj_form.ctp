@@ -210,19 +210,19 @@
 		                            $urlBrowse = array(
 		                                'controller'=> 'ajax', 
 										'action' => 'getDrivers',
-										!empty($data_local['Ttuj']['driver_penganti_id'])?$data_local['Ttuj']['driver_penganti_id']:0,
+										!empty($data_local['Ttuj']['driver_pengganti_id'])?$data_local['Ttuj']['driver_pengganti_id']:0,
 										'pengganti',
 		                            );
-									echo $this->Form->label('driver_penganti_id', sprintf(__('Supir Pengganti %s'), $this->Html->tag('small', '', array(
+									echo $this->Form->label('driver_pengganti_id', sprintf(__('Supir Pengganti %s'), $this->Html->tag('small', '', array(
 										'class' => 'sj_outstanding_pengganti'
 									))).$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
 							?>
 				        	<div class="row">
 				        		<div class="col-sm-10">
 						        	<?php 
-											echo $this->Form->input('driver_penganti_id',array(
+											echo $this->Form->input('driver_pengganti_id',array(
 												'label'=> false, 
-												'class'=>'form-control driver-penganti chosen-select',
+												'class'=>'form-control driver-pengganti chosen-select',
 												'required' => false,
 												'empty' => __('Pilih Supir Pengganti --'),
 												'id' => 'driverID',

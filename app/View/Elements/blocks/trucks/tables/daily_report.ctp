@@ -13,8 +13,7 @@
                 $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
                 $capacity = $this->Common->filterEmptyField($value, 'Truck', 'capacity');
 
-                $driver_pengganti = $this->Common->filterEmptyField($value, 'DriverPenganti', 'driver_name');
-                $driver = $this->Common->filterEmptyField($value, 'Driver', 'driver_name', $driver_pengganti);
+                $driver = $this->Common->_callGetDriver($value);
 
                 $from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
                 $to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');

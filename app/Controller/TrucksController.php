@@ -4618,20 +4618,25 @@ class TrucksController extends AppController {
         $allow_branch = array();
 
         if( !empty($ttujs) ) {
-            $this->loadModel('Driver');
-
             foreach ($ttujs as $key => $value) {
                 $id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
                 $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'branch_id');
-                $driver_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_id');
-                $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
                 $is_retail = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'is_retail');
 
                 $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
-                $value = $this->Driver->getMerge($value, $driver_id);
-                $value = $this->Driver->getMerge($value, $driver_penganti_id, 'DriverPenganti');
                 $value = $this->Truck->getMerge($value, $truck_id);
+
+                $value = $this->Ttuj->getMergeList($value, array(
+                    'contain' => array(
+                        'DriverPengganti' => array(
+                            'uses' => 'Driver',
+                            'primaryKey' => 'id',
+                            'foreignKey' => 'driver_pengganti_id',
+                        ),
+                        'Driver',
+                    ),
+                ));
 
                 if( !empty($is_retail) ) {
                     $value = $this->Ttuj->TtujTipeMotor->getMergeTtujTipeMotor( $value, $id );
@@ -5308,16 +5313,23 @@ class TrucksController extends AppController {
                 $id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
                 $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'branch_id');
-                $driver_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_id');
-                $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
                 $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
                 $is_retail = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'is_retail');
 
                 $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
                 $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
-                $value = $this->Truck->Driver->getMerge($value, $driver_id);
-                $value = $this->Truck->Driver->getMerge($value, $driver_penganti_id, 'DriverPenganti');
                 $value = $this->Truck->getMerge($value, $truck_id);
+
+                $value = $this->Ttuj->getMergeList($value, array(
+                    'contain' => array(
+                        'DriverPengganti' => array(
+                            'uses' => 'Driver',
+                            'primaryKey' => 'id',
+                            'foreignKey' => 'driver_Pengganti_id',
+                        ),
+                        'Driver',
+                    ),
+                ));
 
                 if( !empty($is_retail) ) {
                     $value = $this->Ttuj->TtujTipeMotor->getMergeTtujTipeMotor( $value, $id );
@@ -5440,11 +5452,11 @@ class TrucksController extends AppController {
         if( !empty($values) ) {
             foreach ($values as $key => $value) {
                 $id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
-                $driver_penganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_penganti_id');
+                $driver_pengganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_pengganti_id');
                 $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
                 $uang_jalan_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'uang_jalan_id');
 
-                $value = $this->Ttuj->Truck->Driver->getMerge($value, $driver_penganti_id, 'DriverPenganti');
+                $value = $this->Ttuj->Truck->Driver->getMerge($value, $driver_pengganti_id, 'DriverPengganti');
                 $value = $this->Ttuj->UangJalan->getMerge($value, $uang_jalan_id);
                 $value = $this->Ttuj->Truck->getMerge($value, $truck_id);
                 $value = $this->Ttuj->getSumUnit( $value, $id );
