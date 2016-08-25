@@ -591,7 +591,7 @@ class UangJalanKomisiPayment extends AppModel {
         		'fields' => array(
         			'Driver.id', 'Driver.id'
     			),
-        	), true, array(
+        	), array(
         		'branch' => false,
         	));
             $default_options['conditions']['AND']['OR'] = array(

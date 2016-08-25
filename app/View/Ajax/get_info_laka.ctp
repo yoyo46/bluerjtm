@@ -42,7 +42,7 @@
 			'class'=>'form-control',
 			'required' => false,
 			'id' => 'laka-driver-change-name',
-			'value' => !empty($data_ttuj['Driver']['driver_name']) ? $data_ttuj['Driver']['driver_name']: '',
+			'value' => $this->Common->filterEmptyField($data_ttuj, 'DriverPengganti', 'driver_name'),
 			'readonly' => true
 		));
 	?>

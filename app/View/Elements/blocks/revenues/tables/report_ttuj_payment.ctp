@@ -20,8 +20,7 @@
 
                 $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
 
-                $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
-                $driver_name = $this->Common->filterEmptyField($value, 'DriverPengganti', 'driver_name', $driver_name);
+                $driver = $this->Common->_callGetDriver($value);
 
                 $customDatePayment = $this->Common->formatDate($date_payment, 'd/m/Y');
                 $customTtujDate = $this->Common->formatDate($ttuj_date, 'd/m/Y');
@@ -41,7 +40,7 @@
             echo $this->Html->tag('td', $customer);
             echo $this->Html->tag('td', $from_city_name);
             echo $this->Html->tag('td', $to_city_name);
-            echo $this->Html->tag('td', $driver_name);
+            echo $this->Html->tag('td', $driver);
             echo $this->Html->tag('td', $note);
             echo $this->Html->tag('td', $customType);
             echo $this->Html->tag('td', $this->Common->getFormatPrice($total));

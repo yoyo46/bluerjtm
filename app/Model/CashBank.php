@@ -378,7 +378,7 @@ class CashBank extends AppModel {
                     'Driver.id', 'Driver.id',
                 ),
                 'limit' => 100,
-            ), true, array(
+            ), array(
                 'branch' => false,
             ));
 
@@ -503,7 +503,7 @@ class CashBank extends AppModel {
                     'Driver.id', 'Driver.id',
                 ),
                 'limit' => 100,
-            ), true, array(
+            ), array(
                 'branch' => false,
             ));
 

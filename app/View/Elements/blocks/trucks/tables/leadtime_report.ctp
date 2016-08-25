@@ -11,8 +11,7 @@
                 $tgljam_balik = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_balik');
                 $tgljam_pool = $this->Common->filterEmptyField($value, 'Ttuj', 'tgljam_pool');
 
-                $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
-                $driver_name = $this->Common->filterEmptyField($value, 'DriverPengganti', 'driver_name', $driver_name);
+                $driver = $this->Common->_callGetDriver($value);
 
                 $from_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
                 $to_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
@@ -57,7 +56,7 @@
     <?php 
             echo $this->Html->tag('td', $nopol);
             echo $this->Html->tag('td', $capacity);
-            echo $this->Html->tag('td', $driver_name);
+            echo $this->Html->tag('td', $driver);
             echo $this->Html->tag('td', $no_ttuj);
             echo $this->Html->tag('td', $from_city_name);
             echo $this->Html->tag('td', $to_city_name);

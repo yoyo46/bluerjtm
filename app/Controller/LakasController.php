@@ -151,21 +151,32 @@ class LakasController extends AppController {
                     'status' => 'all',
                     'plant' => true,
                 ));
-                $driver_pengganti_id = $this->MkCommon->filterEmptyField($ttuj_data, 'Ttuj', 'driver_pengganti_id');
-                $driver_name = $this->MkCommon->filterEmptyField($ttuj_data, 'Ttuj', 'driver_name');
+                $ttuj_data = $this->Ttuj->getMergeList($ttuj_data, array(
+                    'contain' => array(
+                        'DriverPengganti' => array(
+                            'uses' => 'Driver',
+                            'primaryKey' => 'id',
+                            'foreignKey' => 'driver_pengganti_id',
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
+                        'Driver' => array(
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
+                    ),
+                ));
+
                 $data['Laka']['change_driver_id'] = $driver_pengganti_id;
 
-                if(!empty($driver_name)){
-                    $data['Laka']['driver_name'] = $driver_name;
+                if(!empty($ttuj_data['Driver']['driver_name'])){
+                    $data['Laka']['driver_name'] = $ttuj_data['Driver']['driver_name'];
                 }
 
-                if(!empty($driver_pengganti_id)){
-                    $driver = $this->Ttuj->Truck->Driver->getMerge(array(), $driver_pengganti_id);
-
-                    if(!empty($driver)){
-                        $driver_name = $this->MkCommon->filterEmptyField($driver, 'Driver', 'driver_name');
-                        $data['Laka']['change_driver_name'] = $driver_name;
-                    }
+                if(!empty($ttuj_data['DriverPengganti']['driver_name'])){
+                    $data['Laka']['change_driver_name'] = $ttuj_data['DriverPengganti']['driver_name'];
                 }
             }
 
@@ -295,7 +306,7 @@ class LakasController extends AppController {
                     'conditions' => array(
                         'Driver.id' => $this->request->data['Laka']['change_driver_id']
                     )
-                ), true, array(
+                ), array(
                     'status' => 'all',
                 ));
 
@@ -370,7 +381,7 @@ class LakasController extends AppController {
             'contain' => array(
                 'Truck'
             )
-        ), true, array(
+        ), array(
             'plant' => true,
         ));
 

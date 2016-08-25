@@ -110,8 +110,15 @@ class TtujsController extends AppController {
                             'uses' => 'Driver',
                             'primaryKey' => 'id',
                             'foreignKey' => 'driver_pengganti_id',
+                            'elements' => array(
+                                'branch' => false,
+                            ),
                         ),
-                        'Driver',
+                        'Driver' => array(
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
                     ),
                 ));
 

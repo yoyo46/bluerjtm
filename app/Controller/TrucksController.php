@@ -484,7 +484,7 @@ class TrucksController extends AppController {
             'contain' => array(
                 'Truck'
             ),
-        ), true, array(
+        ), array(
             'branch' => false,
         ));
         $branches = $this->City->branchCities();
@@ -826,7 +826,7 @@ class TrucksController extends AppController {
                 'Driver.status' => 'DESC',
                 'Driver.name' => 'ASC',
             ),
-        ), true, array(
+        ), array(
             'status' => 'all',
         ));
         $truck_drivers = $this->paginate('Driver');
@@ -851,7 +851,7 @@ class TrucksController extends AppController {
             'conditions' => array(
                 'Driver.id' => $id,
             ),
-        ), true, array(
+        ), array(
             'status' => 'all',
             // 'branch' => false,
         ));
@@ -1011,7 +1011,7 @@ class TrucksController extends AppController {
             'conditions' => array(
                 'Driver.id' => $id,
             ),
-        ), true, array(
+        ), array(
             'status' => 'all',
             // 'branch' => false,
         ));
@@ -4314,7 +4314,7 @@ class TrucksController extends AppController {
                                         'conditions' => array(
                                             'Driver.no_id' => $no_id_supir,
                                         ),
-                                    ), true, array(
+                                    ), array(
                                         'branch' => false,
                                     ));
 
@@ -4803,7 +4803,7 @@ class TrucksController extends AppController {
             'contain' => array(
                 'Truck'
             ),
-        ), true, array(
+        ), array(
             'branch' => false,
         ));
 
@@ -5222,14 +5222,14 @@ class TrucksController extends AppController {
         }
 
         if( !empty($data_action) ) {
-            $drivers = $this->Truck->Driver->getData('all', $options, true, array(
+            $drivers = $this->Truck->Driver->getData('all', $options, array(
                 'branch' => false,
             ));
         } else {
             $this->loadModel('Driver');
 
             $options['limit'] = 20;
-            $options = $this->Truck->Driver->getData('paginate', $options, true, array(
+            $options = $this->Truck->Driver->getData('paginate', $options, array(
                 'branch' => false,
             ));
 
@@ -5326,8 +5326,15 @@ class TrucksController extends AppController {
                             'uses' => 'Driver',
                             'primaryKey' => 'id',
                             'foreignKey' => 'driver_Pengganti_id',
+                            'elements' => array(
+                                'branch' => false,
+                            ),
                         ),
-                        'Driver',
+                        'Driver' => array(
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
                     ),
                 ));
 
@@ -5452,15 +5459,30 @@ class TrucksController extends AppController {
         if( !empty($values) ) {
             foreach ($values as $key => $value) {
                 $id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
-                $driver_pengganti_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'driver_pengganti_id');
                 $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
                 $uang_jalan_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'uang_jalan_id');
 
-                $value = $this->Ttuj->Truck->Driver->getMerge($value, $driver_pengganti_id, 'DriverPengganti');
                 $value = $this->Ttuj->UangJalan->getMerge($value, $uang_jalan_id);
                 $value = $this->Ttuj->Truck->getMerge($value, $truck_id);
                 $value = $this->Ttuj->getSumUnit( $value, $id );
                 $value = $this->Ttuj->Lku->_callTotalLkuFromTtuj( $value, $id );
+                $value = $this->Ttuj->getMergeList($value, array(
+                    'contain' => array(
+                        'DriverPengganti' => array(
+                            'uses' => 'Driver',
+                            'primaryKey' => 'id',
+                            'foreignKey' => 'driver_pengganti_id',
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
+                        'Driver' => array(
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
+                    ),
+                ));
 
                 $values[$key] = $value;
             }

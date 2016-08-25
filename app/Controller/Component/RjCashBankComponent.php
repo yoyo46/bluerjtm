@@ -108,7 +108,7 @@ class RjCashBankComponent extends Component {
                     'conditions' => array(
                         'Driver.id' => $receiver_id,
                     )
-                ), true, array(
+                ), array(
                 	'branch' => false,
                 ));
 

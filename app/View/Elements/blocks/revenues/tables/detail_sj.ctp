@@ -54,7 +54,7 @@
 								foreach ($values as $key => $value) {
 									$id = $this->Common->filterEmptyField($value, 'Ttuj', 'id');
 									$no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
-					                $driver = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
+            						$driver = $this->Common->_callGetDriver($value);
 					                $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
 					                $ttuj_date = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date');
 					                $from_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');

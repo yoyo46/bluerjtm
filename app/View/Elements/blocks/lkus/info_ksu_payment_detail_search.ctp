@@ -93,7 +93,9 @@
                         $ksu = $value['Ksu'];
 
                         $price_pay = 0;
-                        $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
+
+                        $driver = $this->Common->_callGetDriver($value);
+
                         $total_price = $this->Common->filterEmptyField($value, 'KsuDetail', 'total_price', 0);
                         $ksu_has_paid = $this->Common->filterEmptyField($value, 'KsuDetail', 'ksu_has_paid');
                         
@@ -138,7 +140,7 @@
                 </td>
                 <td>
                     <?php
-                        echo $driver_name;
+                        echo $driver;
                     ?>
                 </td>
                 <td>

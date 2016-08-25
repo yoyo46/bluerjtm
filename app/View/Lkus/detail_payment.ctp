@@ -90,7 +90,7 @@
 							foreach ($LkuPayment['LkuPaymentDetail'] as $key => $value) {
             					$no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
             					$nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
-            					$driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
+                				$driver = $this->Common->_callGetDriver($value);
 
 								$grandTotal += $value['total_biaya_klaim'];
 
@@ -109,7 +109,7 @@
 									'class' => 'text-center'
 								));
 								$colom .= $this->Html->tag('td', $no_ttuj);
-								$colom .= $this->Html->tag('td', $driver_name);
+								$colom .= $this->Html->tag('td', $driver);
 								$colom .= $this->Html->tag('td', $nopol, array(
 									'class' => 'text-center'
 								));

@@ -25,8 +25,7 @@
                 $category = $this->Common->filterEmptyField($value, 'TruckCategory', 'name');
 
                 $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
-                $change_driver_name = $this->Common->filterEmptyField($value, 'DriverPengganti', 'driver_name');
-                $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name', $change_driver_name);
+                $driver = $this->Common->_callGetDriver($value);
                 $from_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
                 $to_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
                 $rowspan = count($detail);
@@ -120,7 +119,7 @@
                 'rowspan' => $rowspan,
                 'style' => 'vertical-align:top;text-align:center;',
             ));
-            echo $this->Html->tag('td', $driver_name, array(
+            echo $this->Html->tag('td', $driver, array(
                 'rowspan' => $rowspan,
                 'style' => 'vertical-align:top;',
             ));

@@ -12,8 +12,7 @@
         $data_type = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'data_type', $data_type);
 
         $customer_name_code = $this->Common->filterEmptyField($ttuj, 'Customer', 'code');
-        $driver_name = $this->Common->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'driver_name');
-        $driver_name = $this->Common->filterEmptyField($ttuj, 'DriverPengganti', 'driver_name', $driver_name);
+        $driver = $this->Common->_callGetDriver($ttuj);
 
         $checkbox = isset($checkbox)?$checkbox:true;
 		$alias = sprintf('child-%s-%s', $id, $data_type);
@@ -58,7 +57,7 @@
     <td><?php echo $to_city_name;?></td>
     <td>
     	<?php
-    			echo $driver_name;
+    			echo $driver;
 		?>
 	</td>
     <td class="text-center">

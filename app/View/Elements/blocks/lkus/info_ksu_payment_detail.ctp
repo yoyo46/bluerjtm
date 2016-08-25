@@ -4,7 +4,7 @@
     if(!empty($ksu_details)){
         foreach ($ksu_details as $key => $value) {
             $Ksu = $value['KsuDetail'];
-            $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
+            $driver = $this->Common->_callGetDriver($value);
 ?>
 <tr class="child child-<?php echo $Ksu['id'];?>" rel="<?php echo $Ksu['id'];?>">
     <td>
@@ -35,7 +35,7 @@
     </td>
     <td>
         <?php
-                echo $driver_name;
+                echo $driver;
         ?>
     </td>
     <td class="data-from-city">

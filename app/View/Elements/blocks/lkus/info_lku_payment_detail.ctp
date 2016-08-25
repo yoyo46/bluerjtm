@@ -4,7 +4,7 @@
     if(!empty($lku_details)){
         foreach ($lku_details as $key => $value) {
             $Lku = $value['LkuDetail'];
-            $driver_name = $this->Common->filterEmptyField($value, 'Ttuj', 'driver_name');
+            $driver = $this->Common->_callGetDriver($value);
 ?>
 <tr class="child child-<?php echo $Lku['id'];?>" rel="<?php echo $Lku['id'];?>">
     <td>
@@ -35,7 +35,7 @@
     </td>
     <td>
         <?php
-                echo $driver_name;
+                echo $driver;
         ?>
     </td>
     <td class="data-from-city">

@@ -9,8 +9,7 @@
 		$no_ttuj = $this->Common->filterEmptyField($Ksu, 'Ttuj', 'no_ttuj');
 		$nopol = $this->Common->filterEmptyField($Ksu, 'Ttuj', 'nopol');
 
-		$driver_name = $this->Common->filterEmptyField($Ksu, 'Ttuj', 'driver_name');
-        $driver_name = $this->Common->filterEmptyField($Ksu, 'DriverPengganti', 'driver_name', $driver_name);
+		$driver = $this->Common->_callGetDriver($Ksu);
 
 		$customCompletedDate = $this->Common->customDate($completed_date, 'd/m/Y');
 ?>
@@ -40,7 +39,7 @@
 					</tr>
 					<tr>
 						<th width="30%"><?php echo __('Supir');?></th>
-						<td><?php echo $driver_name;?></td>
+						<td><?php echo $driver;?></td>
 					</tr>
 					<tr>
 						<th width="30%"><?php echo __('Customer');?></th>

@@ -390,11 +390,25 @@ class Ttuj extends AppModel {
         $total = 0;
 
         if( !empty($data_ttuj) ) {
-            $this->Driver = ClassRegistry::init('Driver');
             $customer_id = !empty($data_ttuj['Ttuj']['customer_id'])?$data_ttuj['Ttuj']['customer_id']:'';
-            $driver_id = !empty($data_ttuj['Ttuj']['driver_id'])?$data_ttuj['Ttuj']['driver_id']:'';
             $data_ttuj = $this->Customer->getMerge($data_ttuj, $customer_id);
-            $data_ttuj = $this->Driver->getMerge($data_ttuj, $driver_id);
+            $data_ttuj = $this->getMergeList($data_ttuj, array(
+                'contain' => array(
+                    'DriverPengganti' => array(
+                        'uses' => 'Driver',
+                        'primaryKey' => 'id',
+                        'foreignKey' => 'driver_pengganti_id',
+                        'elements' => array(
+                            'branch' => false,
+                        ),
+                    ),
+                    'Driver' => array(
+                        'elements' => array(
+                            'branch' => false,
+                        ),
+                    ),
+                ),
+            ));
 
             switch ($data_action) {
                 case 'commission':
@@ -477,12 +491,27 @@ class Ttuj extends AppModel {
     function getMergeContain ( $data, $ttuj_id ) {
         $this->TtujTipeMotor = ClassRegistry::init('TtujTipeMotor');
         $this->TtujPerlengkapan = ClassRegistry::init('TtujPerlengkapan');
-        $this->Driver = ClassRegistry::init('Driver');
 
-        $driver_pengganti_id = !empty($data['Ttuj']['driver_pengganti_id'])?$data['Ttuj']['driver_pengganti_id']:false;
-        $data = $this->Driver->getMerge($data, $driver_pengganti_id, 'DriverPengganti');
         $data = $this->TtujTipeMotor->getMergeTipeMotor( $data, $ttuj_id, 'all');
         $data = $this->TtujPerlengkapan->getMerge($data, $ttuj_id);
+        $data = $this->getMergeList($data, array(
+            'contain' => array(
+                'DriverPengganti' => array(
+                    'uses' => 'Driver',
+                    'primaryKey' => 'id',
+                    'foreignKey' => 'driver_pengganti_id',
+                    'elements' => array(
+                        'branch' => false,
+                    ),
+                ),
+                'Driver' => array(
+                    'elements' => array(
+                        'branch' => false,
+                    ),
+                ),
+            ),
+        ));
+        $data['Ttuj']['driver_name'] = $this->filterEmptyField($data, 'Driver', 'driver_name');
 
         return $data;
     }

@@ -124,12 +124,24 @@ class AjaxController extends AppController {
 		$data_ttuj = $this->Ttuj->getData('first', $options);
 		
 		if(!empty($data_ttuj)){
-			if( !empty($data_ttuj['Ttuj']['driver_pengganti_id']) ) {
-				$this->loadModel('Driver');
-
-				$driver_pengganti_id = $data_ttuj['Ttuj']['driver_pengganti_id'];
-				$data_ttuj = $this->Driver->getMerge($data_ttuj, $driver_pengganti_id, 'DriverPengganti');
-			}
+            $data_ttuj = $this->Ttuj->getMergeList($data_ttuj, array(
+                'contain' => array(
+                    'DriverPengganti' => array(
+                        'uses' => 'Driver',
+                        'primaryKey' => 'id',
+                        'foreignKey' => 'driver_pengganti_id',
+                        'elements' => array(
+                            'branch' => false,
+                        ),
+                    ),
+                    'Driver' => array(
+                        'elements' => array(
+                            'branch' => false,
+                        ),
+                    ),
+                ),
+            ));
+            $data_ttuj['Ttuj']['driver_name'] = $this->MkCommon->filterEmptyField($data_ttuj, 'Driver', 'driver_name');
 
 			if(!empty($data_ttuj['TtujTipeMotor'])){
 				$this->loadModel('TipeMotor');
@@ -181,9 +193,24 @@ class AjaxController extends AppController {
 		$data_ttuj = $this->Ttuj->getData('first', $options);
 		
 		if(!empty($data_ttuj)){
-			$this->loadModel('Driver');
-			$driver_id = !empty($data_ttuj['Ttuj']['driver_pengganti_id'])?$data_ttuj['Ttuj']['driver_pengganti_id']:false;
-			$data_ttuj = $this->Driver->getMerge($data_ttuj, $driver_id, 'DriverPengganti');
+            $data_ttuj = $this->Ttuj->getMergeList($data_ttuj, array(
+                'contain' => array(
+                    'DriverPengganti' => array(
+                        'uses' => 'Driver',
+                        'primaryKey' => 'id',
+                        'foreignKey' => 'driver_pengganti_id',
+                        'elements' => array(
+                            'branch' => false,
+                        ),
+                    ),
+                    'Driver' => array(
+                        'elements' => array(
+                            'branch' => false,
+                        ),
+                    ),
+                ),
+            ));
+            $data_ttuj['Ttuj']['driver_name'] = $this->MkCommon->filterEmptyField($data_ttuj, 'Driver', 'driver_name');
 			$this->request->data = $data_ttuj;
 		}
 
@@ -247,15 +274,24 @@ class AjaxController extends AppController {
 		));
 
 		if( !empty($data_ttuj) ) {
-			$this->loadModel('Driver');
 			$this->loadModel('City');
-			$driver_id = $data_ttuj['Ttuj']['driver_id'];
-
-			if(!empty($data_ttuj['Ttuj']['driver_pengganti_id'])){
-				$driver_id = $data_ttuj['Ttuj']['driver_pengganti_id'];
-			}
-			
-			$data_ttuj = $this->Driver->getMerge($data_ttuj, $driver_id);
+            $data_ttuj = $this->Ttuj->getMergeList($data_ttuj, array(
+                'contain' => array(
+                    'DriverPengganti' => array(
+                        'uses' => 'Driver',
+                        'primaryKey' => 'id',
+                        'foreignKey' => 'driver_pengganti_id',
+                        'elements' => array(
+                            'branch' => false,
+                        ),
+                    ),
+                    'Driver' => array(
+                        'elements' => array(
+                            'branch' => false,
+                        ),
+                    ),
+                ),
+            ));
 
             if( !empty($data_ttuj['Ttuj']['from_city_id']) ) {
                 $data_ttuj['Laka']['from_city_name'] = $this->City->getCity( $data_ttuj['Ttuj']['from_city_id'], 'name' );
@@ -339,7 +375,27 @@ class AjaxController extends AppController {
 						),
 						'contain' => false,
 					));
-					$value['Ttuj'] = !empty($ttuj['Ttuj']) ? $ttuj['Ttuj'] : array();
+	                $ttuj = $this->Lku->Ttuj->getMergeList($ttuj, array(
+	                    'contain' => array(
+	                        'DriverPengganti' => array(
+	                            'uses' => 'Driver',
+	                            'primaryKey' => 'id',
+	                            'foreignKey' => 'driver_pengganti_id',
+	                            'elements' => array(
+	                            	'branch' => false,
+                            	),
+	                        ),
+	                        'Driver' => array(
+	                            'elements' => array(
+	                            	'branch' => false,
+                            	),
+	                        ),
+	                    ),
+	                ));
+
+					if( !empty($ttuj) ) {
+						$value = array_merge($value, $ttuj);
+					}
 
 					if(!empty($part_motor_id)){
 						$part_motor = $this->LkuDetail->PartsMotor->getData('first', array(
@@ -436,6 +492,23 @@ class AjaxController extends AppController {
 						),
 						'contain' => false,
 					));
+	                $ttuj = $this->Ksu->Ttuj->getMergeList($ttuj, array(
+	                    'contain' => array(
+	                        'DriverPengganti' => array(
+	                            'uses' => 'Driver',
+	                            'primaryKey' => 'id',
+	                            'foreignKey' => 'driver_pengganti_id',
+	                            'elements' => array(
+	                            	'branch' => false,
+                            	),
+	                        ),
+	                        'Driver' => array(
+	                            'elements' => array(
+	                            	'branch' => false,
+                            	),
+	                        ),
+	                    ),
+	                ));
 
 					if(!empty($value['KsuDetail']['perlengkapan_id'])){
 						$Perlengkapan = $this->Perlengkapan->getData('first', array(
@@ -445,7 +518,10 @@ class AjaxController extends AppController {
 						));
 					}
 
-					$value['Ttuj'] = !empty($ttuj['Ttuj']) ? $ttuj['Ttuj'] : array();
+					if( !empty($ttuj) ) {
+						$value = array_merge($value, $ttuj);
+					}
+
 					$value['KsuDetail']['ksu_has_paid'] = !empty($ksu_has_paid[0]['ksu_has_paid'])?$ksu_has_paid[0]['ksu_has_paid']:0;
 					$value['KsuDetail']['Perlengkapan'] = !empty($Perlengkapan['Perlengkapan']) ? $Perlengkapan['Perlengkapan'] : array();
 					$ksu_details[$key] = $value;
@@ -1078,7 +1154,7 @@ class AjaxController extends AppController {
 			$filterBranch = true;
 		}
 
-		$this->paginate = $this->Driver->getData('paginate', $options, true, array(
+		$this->paginate = $this->Driver->getData('paginate', $options, array(
 			'branch' => $filterBranch,
 		));
         $drivers = $this->paginate('Driver');
@@ -1421,22 +1497,28 @@ class AjaxController extends AppController {
         $ttujs = $this->paginate('Ttuj');
 
         if( !empty($ttujs) ) {
-        	$this->loadModel('Driver');
-
         	foreach ($ttujs as $key => $ttuj) {
-				$ttuj_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'id');
-				$to_city_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'to_city_id');
+				// $ttuj_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'id');
+				// $to_city_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'to_city_id');
 
-				$value = $this->Ttuj->getMergeList($ttuj, array(
+				$ttuj = $this->Ttuj->getMergeList($ttuj, array(
                     'contain' => array(
                         'DriverPengganti' => array(
                             'uses' => 'Driver',
                             'primaryKey' => 'id',
                             'foreignKey' => 'driver_pengganti_id',
+                            'elements' => array(
+                            	'branch' => false,
+                        	),
                         ),
-                        'Driver',
+                        'Driver' => array(
+                            'elements' => array(
+                            	'branch' => false,
+                        	),
+                        ),
                     ),
                 ));
+                $ttujs[$key] = $ttuj;
 
 				// if( $this->Ttuj->validateTtujAfterLeave( $to_city_id, $this->GroupBranch->Branch ) ) {
 				// 	$ttujs[$key] = $ttuj;

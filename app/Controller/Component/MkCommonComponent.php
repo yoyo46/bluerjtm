@@ -2258,5 +2258,12 @@ class MkCommonComponent extends Component {
     function getNoRef ( $id, $length = 5, $op = '0', $position = STR_PAD_LEFT ) {
         return str_pad($id, $length, $op, $position);
     }
+
+    function _callGetDriver ( $value ) {
+        $driver = $this->filterEmptyField($value, 'Driver', 'driver_name');
+        $driver = $this->filterEmptyField($value, 'DriverPengganti', 'driver_name', $driver);
+
+        return $driver;
+    }
 }
 ?>

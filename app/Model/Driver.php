@@ -181,7 +181,7 @@ class Driver extends AppModel {
         return $result;
     }
 
-	function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+	function getData( $find, $options = false, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
         $branch = isset($elements['branch'])?$elements['branch']:true;
         $plant = isset($elements['plant'])?$elements['plant']:false;
@@ -218,7 +218,7 @@ class Driver extends AppModel {
             $default_options['conditions']['Driver.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
-        if( !empty($options) && $is_merge ){
+        if( !empty($options) ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
@@ -239,8 +239,6 @@ class Driver extends AppModel {
             if(!empty($options['group'])){
                 $default_options['group'] = $options['group'];
             }
-        } else if( !empty($options) ) {
-            $default_options = $options;
         }
 
         if( $find == 'paginate' ) {
@@ -252,13 +250,12 @@ class Driver extends AppModel {
     }
 
     function getMerge($data, $id, $modelName = 'Driver'){
-        if(empty($data['Driver'])){
+        if(empty($data[$modelName])){
             $data_merge = $this->getData('first', array(
                 'conditions' => array(
                     'Driver.id' => $id,
-                    'Driver.is_resign' => 0,
                 )
-            ), true, array(
+            ), array(
                 'branch' => false,
             ));
 
@@ -304,7 +301,7 @@ class Driver extends AppModel {
             'fields' => array(
                 'Driver.no_id'
             )
-        ), true, array(
+        ), array(
             'branch' => false,
         ));
 
@@ -363,7 +360,7 @@ class Driver extends AppModel {
                 'contain' => array(
                     'Truck',
                 ),
-            ), true, array(
+            ), array(
                 'branch' => false,
             ));
 
@@ -381,7 +378,7 @@ class Driver extends AppModel {
                 'Driver.no_id' => $no_id,
                 'Driver.id NOT' => $id,
             ),
-        ), true, array(
+        ), array(
             'branch' => false,
         ));
         
