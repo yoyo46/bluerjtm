@@ -5,7 +5,7 @@ table{
 
 table td,
 table th {
-	padding: 0 5px;
+	padding: 0 3px;
 }
 
 table th {
@@ -21,9 +21,17 @@ table td {
 }
 
 @media print{
-  body,
-  table th,
-  table td {
-    font-size: 10px;
-  }
+	body,
+	table th,
+	table td {
+		font-size: 10px;
+	}
+
+	table { page-break-inside:auto }
+   tr    { page-break-inside:avoid; page-break-after:auto }
+
+	table td,
+	table th {
+		padding: 5px 3px;
+	}
 }

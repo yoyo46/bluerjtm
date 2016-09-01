@@ -52,6 +52,10 @@ class User extends AppModel {
             'className' => 'CoaClosing',
             'foreignKey' => 'user_id',
         ),
+        'GeneralLedger' => array(
+            'className' => 'GeneralLedger',
+            'foreignKey' => 'user_id',
+        ),
     );
     
     var $validate = array(

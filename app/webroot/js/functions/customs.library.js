@@ -25,15 +25,11 @@
         if( settings.obj.length > 0 ) {
             settings.obj.off('click');
             settings.obj.click(function(e){
-                if( $('.field-copy .tipe_motor_id').length > 0 ) {
+                var chosen = $('.form-added .chosen-select');
+
+                if( chosen.length > 0 ) {
                     $.callChoosen({
-                        obj: $('.field-copy .tipe_motor_id'),
-                        init: 'destroy',
-                    });
-                }
-                if( $('.field-copy .city-retail-id').length > 0 ) {
-                    $.callChoosen({
-                        obj: $('.field-copy .city-retail-id'),
+                        obj: chosen,
                         init: 'destroy',
                     });
                 }
@@ -63,14 +59,16 @@
                 if( $('.field-content > .item:last-child .city-retail-id').length > 0 && $('#getTruck').length > 0 ) {
                    $('.field-content > .item:last-child .city-retail-id').val( $('#getTruck').val() );
                 }
+                
+                var chosen = $('.form-added .chosen-select');
 
                 $.calcTotal();
                 $.rowRemoved();
-                $.callChoosen({
-                    obj: $('.form-added .chosen-select'),
-                });
                 $.qtyMuatanPress({
                     obj: $('.form-added .qty-muatan'),
+                });
+                $.callChoosen({
+                    obj: chosen,
                 });
                 $.inputPrice({
                     obj: $('.field-content > div.item:last-child .input_price'),
@@ -93,11 +91,16 @@
             settings.obj.off('click');
             settings.obj.click(function(e){
                 var self = $(this);
-
                 var item = self.parents('.item');
+                var data_eval = $.checkUndefined(self.attr('data-eval'), null);
 
                 item.remove();
                 $.getNopol();
+
+                if( data_eval != null ) {
+                    eval(data_eval);
+                }
+
                 return false;
             });
         }
@@ -1089,6 +1092,33 @@
             objGrandTotal.html( $.formatDecimal(grandtotal, decimal) );
         }
     }
+    function calcGrandTotalCustom () {
+        var objGrandTotal = $('.temp-document-picker .grandtotal .total_custom');
+
+        $.each( objGrandTotal, function( i, val ) {
+            var objTotal = $(this);
+            var grandtotal = 0;
+            var rel = objTotal.attr('rel');
+            var decimal = $.checkUndefined(objTotal.attr('data-decimal'), 0);
+
+            $.each( $('.pick-document'), function( i, val ) {
+                var self = $(this);
+                var priceObj = self.find('.price_custom[rel="'+rel+'"]');
+                var price = $.convertNumber(priceObj.val());
+                var format_type = priceObj.attr('data-type');
+
+                grandtotal += price;
+
+                if( format_type == 'input_price_coma' ) {
+                    priceObj.val( $.convertDecimal(priceObj, 2) );
+                }
+            });
+
+            if( objTotal.length > 0 ) {
+                objTotal.html( $.formatDecimal(grandtotal, decimal) );
+            }
+        });
+    }
 
     $.calcTotal = function(options){
         var settings = $.extend({
@@ -1196,34 +1226,6 @@
         }
 
         if( settings.objCustom.length > 0 ) {
-            function calcGrandTotalCustom () {
-                var objGrandTotal = $('.temp-document-picker .grandtotal .total_custom');
-
-                $.each( objGrandTotal, function( i, val ) {
-                    var objTotal = $(this);
-                    var grandtotal = 0;
-                    var rel = objTotal.attr('rel');
-                    var decimal = $.checkUndefined(objTotal.attr('data-decimal'), 0);
-
-                    $.each( $('.pick-document'), function( i, val ) {
-                        var self = $(this);
-                        var priceObj = self.find('.price_custom[rel="'+rel+'"]');
-                        var price = $.convertNumber(priceObj.val());
-                        var format_type = priceObj.attr('data-type');
-
-                        grandtotal += price;
-
-                        if( format_type == 'input_price_coma' ) {
-                            priceObj.val( $.convertDecimal(priceObj, 2) );
-                        }
-                    });
-
-                    if( objTotal.length > 0 ) {
-                        objTotal.html( $.formatDecimal(grandtotal, decimal) );
-                    }
-                });
-            }
-
             settings.objCustom.off('blur');
             settings.objCustom.blur(function(){
                 var self = $(this);

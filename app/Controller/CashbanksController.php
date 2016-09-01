@@ -1975,4 +1975,111 @@ class CashbanksController extends AppController {
             'values', 'data'
         ));
     }
+
+    function general_ledgers(){
+        $this->loadModel('GeneralLedger');
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->GeneralLedger->_callRefineParams($params);
+        $this->paginate = $this->GeneralLedger->getData('paginate', $options);
+        $values = $this->paginate('GeneralLedger');
+
+        $this->set('sub_module_title', __('Jurnal Umum'));
+        $this->set('active_menu', 'general_ledgers');
+        $this->set(compact(
+            'values'
+        ));
+    }
+
+    public function general_ledger_add() {
+        $this->set('sub_module_title', __('Tambah Jurnal Umum'));
+        $data = $this->request->data;
+
+        if( !empty($data) ) {
+            $data = $this->RjCashBank->_callBeforeSaveGeneralLedger($data);
+            $result = $this->User->GeneralLedger->doSave($data);
+            $this->MkCommon->setProcessParams($result, array(
+                'controller' => 'cashbanks',
+                'action' => 'general_ledgers',
+                'admin' => false,
+            ));
+        }
+
+        $this->RjCashBank->_callBeforeRenderGeneralLedger();
+        $this->set('active_menu', 'general_ledgers');
+    }
+
+    public function general_ledger_edit( $id = false ) {
+        $this->set('sub_module_title', __('Edit Jurnal Umum'));
+
+        $value = $this->User->GeneralLedger->getData('first', array(
+            'conditions' => array(
+                'GeneralLedger.id' => $id,
+            ),
+        ), array(
+            'status' => 'unposting',
+        ));
+
+        if( !empty($value) ) {
+            $data = $this->request->data;
+            $value = $this->User->GeneralLedger->GeneralLedgerDetail->getMerge($value, $id);
+
+            if( !empty($data) ) {
+                $data = $this->RjCashBank->_callBeforeSaveGeneralLedger($data, $value);
+                $result = $this->User->GeneralLedger->doSave($data);
+                $this->MkCommon->setProcessParams($result, array(
+                    'controller' => 'cashbanks',
+                    'action' => 'general_ledgers',
+                    'admin' => false,
+                ));
+            }
+
+            $this->RjCashBank->_callBeforeRenderGeneralLedger( $value );
+
+            $this->set(array(
+                'active_menu' => 'general_ledgers',
+                'value' => $value,
+            ));
+            $this->render('general_ledger_add');
+        } else {
+            $this->MkCommon->redirectReferer(__('Jurnal Umum tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function general_ledger_detail( $id = false ) {
+        $this->set('sub_module_title', __('Detail Jurnal Umum'));
+
+        $value = $this->User->GeneralLedger->getData('first', array(
+            'conditions' => array(
+                'GeneralLedger.id' => $id,
+            ),
+        ), array(
+            'branch' => false,
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->User->GeneralLedger->GeneralLedgerDetail->getMerge($value, $id);
+            $this->RjCashBank->_callBeforeRenderGeneralLedger( $value );
+
+            $this->set(array(
+                'view' => true,
+                'active_menu' => 'general_ledgers',
+                'value' => $value,
+            ));
+            $this->render('general_ledger_add');
+        } else {
+            $this->MkCommon->redirectReferer(__('Jurnal Umum tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function general_ledger_toggle( $id ) {
+        $result = $this->User->GeneralLedger->doDelete( $id );
+        $this->MkCommon->setProcessParams($result);
+    }
 }

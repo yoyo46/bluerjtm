@@ -1283,7 +1283,10 @@ class CommonHelper extends AppHelper {
                     $result = $this->convertPriceToString($result, $empty, $decimal);
                 }
                 if( !empty($format['price']) ) {
-                    $result = $this->getFormatPrice($result);
+                    $decimal = !empty($format['price']['decimal'])?$format['price']['decimal']:0;
+                    $empty = !empty($format['price']['empty'])?$format['price']['empty']:0;
+
+                    $result = $this->getFormatPrice($result, $empty, $decimal);
                 }
             } else {
                 switch ($format) {
@@ -2337,6 +2340,13 @@ class CommonHelper extends AppHelper {
                 'action' => 'detail_ttuj_payment',
                 $id,
                 'uang_jalan_commission',
+                'admin' => false,
+            );
+        } else if( in_array($type, array( 'general_ledger' )) ) {
+            $urlDefault = array(
+                'controller' => 'cashbanks',
+                'action' => 'general_ledger_detail',
+                $id,
                 'admin' => false,
             );
         }

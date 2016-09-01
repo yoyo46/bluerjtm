@@ -306,5 +306,77 @@ class RjCashBankComponent extends Component {
             'dateFrom', 'dateTo'
         ));
 	}
+
+    function _callBeforeRenderGeneralLedger ( $value = false ) {
+        $data = $this->controller->request->data;
+
+        if( empty($data) && !empty($value) ) {
+            $data = $value;
+        }
+
+        $transaction_date = $this->MkCommon->filterEmptyField($data, 'GeneralLedger', 'transaction_date', date('Y-m-d'));
+        $data['GeneralLedger']['transaction_date'] = $this->MkCommon->getDate($transaction_date, true);
+
+        $this->controller->request->data = $data;
+        
+        $coas = $this->controller->GroupBranch->Branch->BranchCoa->getCoas(false, false);
+        $this->MkCommon->_layout_file('select');
+        $this->controller->set(compact(
+        	'coas'
+    	));
+    }
+
+    function _callBeforeSaveGeneralLedger ( $data, $value = false ) {
+        if( !empty($data) ) {
+            $id = $this->MkCommon->filterEmptyField($value, 'GeneralLedger', 'id');
+
+            $dataSave = array();
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'GeneralLedger' => array(
+                        'transaction_date',
+                    ),
+                )
+            ));
+            $dataDetail = $this->MkCommon->filterEmptyField($data, 'GeneralLedgerDetail');
+
+            $data['GeneralLedger']['id'] = $id;
+            $data['GeneralLedger']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['GeneralLedger']['user_id'] = Configure::read('__Site.config_user_id');
+
+            if( !empty($dataDetail) ) {
+                $grandtotal_debit = 0;
+                $grandtotal_credit = 0;
+                $dataArr = array();
+
+                foreach ($dataDetail['coa_id'] as $key => $coa_id) {
+                    $debit = $this->MkCommon->filterIssetField($dataDetail, 'debit', $key);
+                    $credit = $this->MkCommon->filterIssetField($dataDetail, 'credit', $key);
+
+                    $debit = $this->MkCommon->_callPriceConverter($debit);
+                    $credit = $this->MkCommon->_callPriceConverter($credit);
+
+                    $dataArr[] = array(
+                        'GeneralLedgerDetail' => array(
+                            'coa_id' => $coa_id,
+                            'debit' => $debit,
+                            'credit' => $credit,
+                        ),
+                    );
+                    $grandtotal_debit += $debit;
+                    $grandtotal_credit += $credit;
+                }
+
+                $data['GeneralLedger']['debit_total'] = $grandtotal_debit;
+                $data['GeneralLedger']['credit_total'] = $grandtotal_credit;
+            }
+
+            if( !empty($dataArr) ) {
+                $data['GeneralLedgerDetail'] = $dataArr;
+            }
+        }
+
+        return $data;
+    }
 }
 ?>

@@ -996,12 +996,13 @@
                         'report_ttuj_payment', 'report_ttuj_outstanding',
                         'document_payments', 'laka_payments',
                         'profit_loss', 'balance_sheets', 'asset_sells',
+                        'general_ledgers',
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
                             'index', 'journal_report', 'prepayment_report',
                             'ledger_report', 'profit_loss', 'balance_sheets',
-                            'cash_flows',
+                            'cash_flows', 'general_ledgers',
                         ),
                         'trucks' => array(
                             'kir_payments', 'stnk_payments', 'siup_payments',
@@ -1045,6 +1046,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'cash_bank' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Jurnal Umum', $this->Common->icon('angle-double-right')), array(
+                                'controller' => 'cashbanks',
+                                'action' => 'general_ledgers'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( $active_menu == 'general_ledgers' )?'active':'',
                             ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Penjualan Asset', array(
                                 'controller' => 'assets',
