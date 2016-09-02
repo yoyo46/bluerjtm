@@ -4354,6 +4354,10 @@ class RevenuesController extends AppController {
 
             $invoice = $this->User->getMerge($invoice, $invoice['Invoice']['billing_id']);
             $invoice = $this->Bank->getMerge($invoice, $invoice['Invoice']['bank_id']);
+
+            $employe_position_id = $this->MkCommon->filterEmptyField($invoice, 'Employe', 'employe_position_id');
+            $invoice = $this->User->Employe->EmployePosition->getMerge($invoice, $employe_position_id);
+
             $revenueDetailId = Set::extract('/InvoiceDetail/revenue_detail_id', $invoice);
 
             if( $data_print == 'header' ) {

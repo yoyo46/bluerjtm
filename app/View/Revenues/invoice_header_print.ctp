@@ -1,6 +1,7 @@
 <?php
 		$qty_unit = !empty($invoice['qty_unit'])?$invoice['qty_unit']:0;
         $full_name = $this->Common->filterEmptyField($invoice, 'Employe', 'full_name');
+        $position = $this->Common->filterEmptyField($invoice, 'EmployePosition', 'name');
         $logo = $this->Common->filterEmptyField($invoice, 'Company', 'logo');
 
         if( !empty($logo) ) {
@@ -116,7 +117,7 @@ $tbl = <<<EOD
 					$dateLocation
 			  		<br><br><br>
 					<div style="margin: 70px 0 0;text-decoration: underline;">$billing_name</div>
-					Billing
+					$position
 				</td>
 			</tr>
 		</tbody>
@@ -294,7 +295,7 @@ readfile($path.'/'.$filename);
 							echo $this->Html->tag('p', $full_name, array(
 								'style' => 'margin: 90px 0 0;border-bottom: 1px solid #000;display: inline-block;'
 							));
-							echo $this->Html->tag('p', __('Billing'));
+							echo $this->Html->tag('p', $position);
 					?>
 				</td>
 			</tr>
