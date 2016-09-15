@@ -76,16 +76,67 @@ class RjProductComponent extends Component {
         return $result;
     }
 
-    function _callStock ( $transaction_type, $data, $detail, $type = 'in' ) {
-        $transaction_status = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'transaction_status');
-        $session_id = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'session_id');
-        $to_branch_id = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'to_branch_id');
+    function _callOutStock ( $product_id, $qty, $serial_number = false ) {
+        $conditions = array(
+            'conditions' => array(
+                'ProductStock.product_id' => $product_id,
+            ),
+        );
+
+        if( !empty($serial_number) ) {
+            $conditions['conditions']['ProductStock.serial_number'] = $serial_number;
+        }
+
+        $stock = $this->controller->Product->ProductStock->getData('first', $conditions, array(
+            'status' => 'FIFO',
+        ));
+
+        $id = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'id');
+        $product_history_id = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'product_history_id');
+        $qty_total = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'qty_total');
+        $qty_use = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'qty_use');
+        $qty_total -= $qty;
+
+        if( $qty_total < 0 ) {
+            $status = false;
+        } else {
+            $status = true;
+        }
+
+        return array(
+            'id' => $id,
+            'product_history_id' => $product_history_id,
+            'qty_use' => $qty_use + $qty,
+            'status' => $status,
+        );
+    }
+
+    function _callOutStockSerialNumber ( $serial_numbers ) {
+        $result = array();
+
+        if( !empty($serial_numbers) ) {
+            foreach ($serial_numbers as $key => $value) {
+                $product_id = $this->MkCommon->filterEmptyField($value, 'product_id');
+                $serial_number = $this->MkCommon->filterEmptyField($value, 'serial_number');
+
+                $result[] = $this->_callOutStock( $product_id, 1, $serial_number);
+            }
+        }
+
+        return $result;
+    }
+
+    function _callStock ( $transaction_type, $data, $detail, $type = 'in', $model = 'ProductReceipt' ) {
+        $transaction_status = $this->MkCommon->filterEmptyField($data, $model, 'transaction_status');
+        $transaction_date = $this->MkCommon->filterEmptyField($data, $model, 'transaction_date');
+        $session_id = $this->MkCommon->filterEmptyField($data, $model, 'session_id');
+        $to_branch_id = $this->MkCommon->filterEmptyField($data, $model, 'to_branch_id');
+        $modelDetail = __('%sDetail', $model);
 
         if( $transaction_status == 'posting' ) {
-            $product_id = $this->MkCommon->filterEmptyField($detail, 'ProductReceiptDetail', 'product_id');
-            $qty = $this->MkCommon->filterEmptyField($detail, 'ProductReceiptDetail', 'qty');
-            $price = $this->MkCommon->filterEmptyField($detail, 'ProductReceiptDetail', 'price');
-            $serial_number = $this->MkCommon->filterEmptyField($detail, 'ProductReceiptDetail', 'serial_number');
+            $product_id = $this->MkCommon->filterEmptyField($detail, $modelDetail, 'product_id');
+            $qty = $this->MkCommon->filterEmptyField($detail, $modelDetail, 'qty');
+            $price = $this->MkCommon->filterEmptyField($detail, $modelDetail, 'price');
             
             $history = $this->controller->Product->ProductHistory->getMerge(array(), $product_id);
             $balance = $this->MkCommon->filterEmptyField($history, 'ProductHistory', 'ending', 0);
@@ -93,12 +144,15 @@ class RjProductComponent extends Component {
 
             if( $type == 'out' ) {
                 $ending -= $qty;
+                $serial_numbers = $this->MkCommon->filterEmptyField($detail, $modelDetail, 'ProductExpenditureDetailSerialNumber');
             } else if( $type == 'in' ) {
                 $ending += $qty;
+                $serial_number = $this->MkCommon->filterEmptyField($detail, $modelDetail, 'serial_number');
             }
 
             $stock = array(
                 'branch_id' => $to_branch_id,
+                'transaction_date' => $transaction_date,
                 'balance' => $balance,
                 'ending' => $ending,
                 'product_id' => $product_id,
@@ -109,12 +163,28 @@ class RjProductComponent extends Component {
             );
             $detail['ProductHistory'] = $stock;
 
-            if( !empty($serial_number) ) {
-                $detail['ProductHistory']['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock );
-            } else {
-                $detail['ProductHistory']['ProductStock'][] = array_merge($stock, array(
-                    'serial_number' => sprintf('%s-%s', $this->MkCommon->getNoRef($product_id), date('ymdHis')),
-                ));
+            if( $ending < 0 ) {
+                $detail['ProductExpenditureDetail']['out_stock'] = true;
+            }
+
+            switch ($type) {
+                case 'in':
+                    if( !empty($serial_number) ) {
+                        $detail['ProductHistory']['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock );
+                    } else {
+                        $detail['ProductHistory']['ProductStock'][] = array_merge($stock, array(
+                            'serial_number' => sprintf('%s-%s', $this->MkCommon->getNoRef($product_id), date('ymdHis')),
+                        ));
+                    }
+                    break;
+                
+                default:
+                    if( !empty($serial_numbers) ) {
+                        $detail['ProductHistory']['ProductStock'] = $this->_callOutStockSerialNumber( $serial_numbers );
+                    } else {
+                        $detail['ProductHistory']['ProductStock']['id'] = $this->_callOutStock($product_id, $qty);
+                    }
+                    break;
             }
         }
 
@@ -392,6 +462,284 @@ class RjProductComponent extends Component {
         }
 
         return $value;
+    }
+
+    function _callBeforeRenderExpenditures () {
+    }
+
+    function _callBeforeRenderExpenditure ( $data, $value = false ) {
+        $document_id = false;
+
+        if( empty($data) ) {
+            $data = $value;
+
+            $id = $this->MkCommon->filterEmptyField($value, 'ProductExpenditure', 'id');
+            $type = $this->MkCommon->filterEmptyField($value, 'ProductExpenditure', 'document_type');
+            $document_id = $this->MkCommon->filterEmptyField($value, 'ProductExpenditure', 'document_id');
+            $transaction_status = $this->MkCommon->filterEmptyField($value, 'ProductExpenditure', 'transaction_status');
+            $details = $this->MkCommon->filterEmptyField($value, 'ProductExpenditureDetail');
+
+            $data['ProductExpenditure']['document_number'] = $this->MkCommon->filterEmptyField($data, 'Spk', 'nodoc');
+            $serial_numbers = Set::extract('/ProductExpenditureDetail/ProductExpenditureDetailSerialNumber/ProductExpenditureDetailSerialNumber', $data);
+
+            if( empty($value) ) {
+                $data['ProductExpenditure']['transaction_date'] = date('Y-m-d');
+            }
+
+            if( !empty($details) ) {
+                foreach ($details as $key => $val) {
+                    $product_expenditure_detail_id = $this->MkCommon->filterEmptyField($val, 'ProductExpenditureDetail', 'id');
+                    $product_id = $this->MkCommon->filterEmptyField($val, 'ProductExpenditureDetail', 'product_id');
+                    $is_serial_number = $this->MkCommon->filterEmptyField($val, 'Product', 'is_serial_number');
+                    
+                    $spk_detail = $this->controller->Product->SpkProduct->getMergeProduct(array(), $document_id, $product_id);
+                    $spk_qty = $this->MkCommon->filterEmptyField($spk_detail, 'SpkProduct', 'qty');
+                    
+                    $out_qty = $this->controller->Product->ProductExpenditureDetail->getTotalExpenditure($id, $document_id, $product_id);
+
+                    if( !empty($is_serial_number) ) {
+                        $product_serial_numbers = $this->controller->Product->ProductStock->_callSerialNumbers($product_id, $id);
+
+                        // if( $transaction_status == 'posting' ) {
+                        //     $product_serial_numbers = array_merge($product_serial_numbers, $this->controller->Product->ProductExpenditureDetailSerialNumber->getData('list', array(
+                        //         'conditions' => array(
+                        //             'ProductExpenditureDetailSerialNumber.product_id' => $product_id,
+                        //             'ProductExpenditureDetailSerialNumber.product_expenditure_detail_id' => $product_expenditure_detail_id,
+                        //         ),
+                        //         'fields' => array(
+                        //             'ProductExpenditureDetailSerialNumber.serial_number',
+                        //             'ProductExpenditureDetailSerialNumber.serial_number',
+                        //         ),
+                        //         'group' => array(
+                        //             'ProductExpenditureDetailSerialNumber.serial_number',
+                        //         ),
+                        //     )));
+                        // }
+
+                        $data['ProductExpenditureDetail'][$key]['ProductExpenditureDetail']['serial_numbers'] = $product_serial_numbers;
+                    }
+                    
+                    $data['ProductExpenditureDetail'][$key]['ProductExpenditureDetail']['spk_qty'] = $spk_qty;
+                    $data['ProductExpenditureDetail'][$key]['ProductExpenditureDetail']['out_qty'] = $out_qty;
+                }
+            }
+        } else {
+            $type = $this->MkCommon->filterEmptyField($data, 'ProductExpenditure', 'document_type');
+            $document_id = $this->MkCommon->filterEmptyField($data, 'ProductExpenditure', 'document_id');
+            $serial_numbers = Set::extract('/ProductExpenditureDetail/ProductExpenditureDetail/ProductExpenditureDetailSerialNumber', $data);
+        }
+
+        if( !empty($serial_numbers) ) {
+            foreach ($serial_numbers as $key => $value) {
+                $product_id = $this->MkCommon->filterEmptyField($value, 'ProductExpenditureDetailSerialNumber', 'product_id');
+                $serial_number = $this->MkCommon->filterEmptyField($value, 'ProductExpenditureDetailSerialNumber', 'serial_number');
+
+                if( !empty($serial_number) ) {
+                    $data['ProductExpenditureDetailSerialNumber']['serial_numbers'][$product_id][] = $serial_number;
+                }
+            }
+        }
+
+        $data = $this->MkCommon->dataConverter($data, array(
+            'date' => array(
+                'ProductExpenditure' => array(
+                    'transaction_date',
+                ),
+            )
+        ), true);
+        $document_type = $this->MkCommon->filterEmptyField($data, 'ProductExpenditure', 'document_type');
+
+        $this->controller->request->data = $data;
+
+        $employes = $this->controller->User->Employe->getData('list', array(
+            'fields' => array(
+                'Employe.id', 'Employe.full_name',
+            ),
+            'contain' => false,
+        ));
+        $toBranches = $this->controller->GroupBranch->Branch->getData('list', array(
+            'fields' => array(
+                'Branch.id', 'Branch.code',
+            ),
+            'contain' => false,
+        ));
+
+        $this->MkCommon->_layout_file('select');
+        $this->controller->set(compact(
+            'employes', 'toBranches',
+            'vendors', 'type'
+        ));
+    }
+
+    function _callExpenditureSN ( $data, $product, $details ) {
+        $detail_serial_numbers = $this->MkCommon->filterEmptyField($data, 'ProductExpenditureDetailSerialNumber', 'serial_numbers');
+
+        $product_id = $this->MkCommon->filterEmptyField($product, 'Product', 'id');
+        $is_serial_number = $this->MkCommon->filterEmptyField($product, 'Product', 'is_serial_number');
+        $product_serial_numbers = $this->MkCommon->filterIssetField($detail_serial_numbers, $product_id);
+        
+        $qty = $this->MkCommon->filterEmptyField($details, 'qty');
+
+        if( !empty($is_serial_number) ) {
+            if( !empty($product_serial_numbers) ) {
+                $count_sn = count($product_serial_numbers);
+
+                if( $qty != $count_sn ) {
+                    $details['sn_match'] = true;
+                }
+
+                foreach ($product_serial_numbers as $idx => $serial_number) {
+                    $details['ProductExpenditureDetailSerialNumber'][] = array(
+                        'product_id' => $product_id,
+                        'serial_number' => $serial_number,
+                    );
+                }
+            } else {
+                $details['sn_empty'] = true;
+            }
+        }
+
+        return $details;
+    }
+
+    function _callBeforeSaveExpenditure ( $data, $id = false ) {
+        if( !empty($data) ) {
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'ProductExpenditure' => array(
+                        'transaction_date',
+                    ),
+                )
+            ));
+            $transaction_status = $this->MkCommon->filterEmptyField($data, 'ProductExpenditure', 'transaction_status');
+            $document_number = $this->MkCommon->filterEmptyField($data, 'ProductExpenditure', 'document_number');
+
+            $value = $this->controller->Product->ProductExpenditureDetail->ProductExpenditure->Spk->getMerge(array(), $document_number, 'Spk.nodoc', 'pending-out');
+            $document_id = $this->MkCommon->filterEmptyField($value, 'Spk', 'id');
+
+            $data['ProductExpenditure']['id'] = $id;
+            $data['ProductExpenditure']['user_id'] = Configure::read('__Site.config_user_id');
+            $data['ProductExpenditure']['document_id'] = $document_id;
+            $data['ProductExpenditure']['branch_id'] = Configure::read('__Site.config_branch_id');
+
+            $details = $this->MkCommon->filterEmptyField($data, 'ProductExpenditureDetail', 'product_id');
+            $qtys = $this->MkCommon->filterEmptyField($data, 'ProductExpenditureDetail', 'qty');
+
+            if( !empty($details) ) {
+                $total = 0;
+                $dataDetail = array();
+                $values = array_filter($details);
+
+                foreach ($values as $key => $product_id) {
+                    $qty = $this->MkCommon->filterIssetField($qtys, $key);
+
+                    $product = $this->controller->Product->getMerge(array(), $product_id);
+                    $spk_detail = $this->controller->Product->SpkProduct->getMergeProduct(array(), $document_id, $product_id);
+
+                    $code = $this->MkCommon->filterEmptyField($product, 'Product', 'code');
+                    $name = $this->MkCommon->filterEmptyField($product, 'Product', 'name');
+                    $unit = $this->MkCommon->filterEmptyField($product, 'ProductUnit', 'name');
+                    $is_serial_number = $this->MkCommon->filterEmptyField($product, 'Product', 'is_serial_number');
+
+                    $spk_product_id = $this->MkCommon->filterEmptyField($spk_detail, 'SpkProduct', 'id');
+                    $spk_qty = $this->MkCommon->filterEmptyField($spk_detail, 'SpkProduct', 'qty');
+                    $out_qty = $this->controller->Product->ProductExpenditureDetail->getTotalExpenditure($id, $document_id, $product_id);
+                    $remain_qty = $spk_qty - $out_qty;
+
+                    if( !empty($is_serial_number) ) {
+                        $serial_numbers = $this->controller->Product->ProductStock->_callSerialNumbers($product_id, $id);
+                    } else {
+                        $serial_numbers = false;
+                    }
+
+                    if( $qty >= $remain_qty ) {
+                        $status = 'full';
+                    } else {
+                        $status = 'half';
+                    }
+
+                    $dataDetail[$key]['ProductExpenditureDetail'] = array(
+                        'product_id' => $product_id,
+                        'spk_product_id' => $spk_product_id,
+                        'code' => $code,
+                        'name' => $name,
+                        'unit' => $unit,
+                        'spk_qty' => $spk_qty,
+                        'out_qty' => $out_qty,
+                        'qty' => $qty,
+                        'is_serial_number' => $is_serial_number,
+                        'serial_numbers' => $serial_numbers,
+                        'qty_over' => ($qty > $remain_qty)?true:false,
+                    );
+                    $dataDetail[$key]['ProductExpenditureDetail'] = $this->_callExpenditureSN($data, $product, $dataDetail[$key]['ProductExpenditureDetail']);
+
+                    if( !empty($qty) ) {
+                        $dataDetail[$key]['ProductExpenditureDetail']['Product'] = array(
+                            'id' => $product_id,
+                            'truck_category_id' => 1,
+                            'SpkProduct' => array(
+                                array(
+                                    'id' => $spk_product_id,
+                                    'document_status' => $status,
+                                ),
+                            ),
+                        );
+                        $dataDetail[$key] = $this->_callStock('product_expenditure', $data, $dataDetail[$key], 'out', 'ProductExpenditure');
+                    }
+
+                    $total += $qty;
+                }
+
+                $data['ProductExpenditure']['total'] = $total;
+                $data['ProductExpenditureDetail'] = $dataDetail;
+            }
+        }
+        // debug($data);die();
+
+        return $data;
+    }
+
+    function _callBeforeRenderSpkProducts ( $values, $transaction_id = false ) {
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $value = $this->controller->SpkProduct->getMergeList($value, array(
+                    'contain' => array(
+                        'Product' => array(
+                            'contain' => array(
+                                'ProductUnit',
+                                'ProductCategory',
+                            ),
+                        ),
+                    ),
+                ));
+                $document_id = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'spk_id');
+                $product_id = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'product_id');
+                $qty = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'qty');
+                $out_qty = $this->controller->Product->ProductExpenditureDetail->getTotalExpenditure($transaction_id, $document_id, $product_id);
+                $qty -= $out_qty;
+
+                if( !empty($qty) ) {
+                    $is_serial_number = $this->MkCommon->filterEmptyField($value, 'Product', 'is_serial_number');
+
+                    $value['SpkProduct']['qty'] = $qty;
+                    $value['SpkProduct']['out_qty'] = $out_qty;
+
+                    if( !empty($is_serial_number) ) {
+                        $serial_numbers = $this->controller->Product->ProductStock->_callSerialNumbers($product_id, $transaction_id);
+                        $value['Product']['serial_numbers'] = $serial_numbers;
+                    }
+                    
+                    $values[$key] = $value;
+                } else {
+                    unset($values[$key]);
+                }
+            }
+        }
+
+        $this->controller->set('module_title', __('Barang'));
+        $this->controller->set(compact(
+            'values'
+        ));
     }
 }
 ?>

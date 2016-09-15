@@ -15,17 +15,13 @@ class Product extends AppModel {
             'className' => 'TruckCategory',
             'foreignKey' => 'truck_category_id',
         ),
-    );
-
-    var $hasMany = array(
-        'ProductUnit' => array(
-            'className' => 'ProductUnit',
-            'foreignKey' => 'product_unit_id',
-        ),
         'ProductCategory' => array(
             'className' => 'ProductCategory',
             'foreignKey' => 'product_category_id',
         ),
+    );
+
+    var $hasMany = array(
         'ProductReceiptDetail' => array(
             'className' => 'ProductReceiptDetail',
             'foreignKey' => 'product_id',
@@ -44,6 +40,18 @@ class Product extends AppModel {
         ),
         'ProductHistory' => array(
             'className' => 'ProductHistory',
+            'foreignKey' => 'product_id',
+        ),
+        'ProductExpenditureDetail' => array(
+            'className' => 'ProductExpenditureDetail',
+            'foreignKey' => 'product_id',
+        ),
+        'SpkProduct' => array(
+            'className' => 'SpkProduct',
+            'foreignKey' => 'product_id',
+        ),
+        'ProductExpenditureDetailSerialNumber' => array(
+            'className' => 'ProductExpenditureDetailSerialNumber',
             'foreignKey' => 'product_id',
         ),
     );

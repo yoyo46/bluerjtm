@@ -14,7 +14,12 @@ class ProductStock extends AppModel {
                 'ProductStock.transaction_type' => 'product_receipts',
             ),
         ),
-    );
+    )
+    ;
+    public function __construct($id = false, $table = NULL, $ds = NULL){
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['qty_total'] = __('%s.qty - %s.qty_use', $this->alias, $this->alias);
+    }
 
 	function getData( $find, $options = false, $elements = false ){
         $status = isset($elements['status'])?$elements['status']:'active';
@@ -31,6 +36,16 @@ class ProductStock extends AppModel {
         switch ($status) {
             case 'active':
                 $default_options['conditions']['ProductStock.status'] = 1;
+            case 'in_stock':
+                $default_options['conditions']['ProductStock.qty_total <>'] = 0;
+                $default_options['conditions']['ProductStock.status'] = 1;
+            case 'FIFO':
+                $default_options['conditions']['ProductStock.qty_total <>'] = 0;
+                $default_options['conditions']['ProductStock.status'] = 1;
+                $default_options['order'] = array(
+                    'ProductStock.transaction_date' => 'ASC',
+                    'ProductStock.id' => 'ASC',
+                );
         }
 
         if(!empty($options['conditions'])){
@@ -129,6 +144,63 @@ class ProductStock extends AppModel {
         $this->Product->id = $product_id;
         $this->Product->set('product_stock_cnt', $qty);
         $this->Product->save();
+    }
+
+    function _callSerialNumbers ( $product_id, $transaction_id = false ) {
+        $values = $this->getData('all', array(
+            'conditions' => array(
+                'ProductStock.product_id' => $product_id,
+            ),
+            // 'fields' => array(
+            //     'ProductStock.serial_number', 'ProductStock.serial_number',
+            // ),
+            'group' => array(
+                'ProductStock.serial_number',
+            ),
+        ), array(
+            'status' => 'in_stock',
+        ));
+        $result = array();
+
+        if( !empty($values) ) {
+            if( !empty($transaction_id) ) {
+                $product_expenditure_detail_id = $this->Product->ProductExpenditureDetail->getData('list', array(
+                    'conditions' => array(
+                        'ProductExpenditureDetail.product_expenditure_id' => $transaction_id,
+                    ),
+                    'fields' => array(
+                        'ProductExpenditureDetail.id', 'ProductExpenditureDetail.id',
+                    ),
+                ));
+            } else {
+                $product_expenditure_detail_id = false;
+            }
+
+            foreach ($values as $key => $value) {
+                $product_id = $this->filterEmptyField($value, 'ProductStock', 'product_id');
+                $serial_number = $this->filterEmptyField($value, 'ProductStock', 'serial_number');
+                $qty_total = $this->filterEmptyField($value, 'ProductStock', 'qty_total');
+
+                $usage = $this->Product->ProductExpenditureDetailSerialNumber->getData('count', array(
+                    'conditions' => array(
+                        'ProductExpenditureDetailSerialNumber.product_id' => $product_id,
+                        'ProductExpenditureDetailSerialNumber.serial_number' => $serial_number,
+                        'ProductExpenditureDetailSerialNumber.product_expenditure_detail_id NOT' => $product_expenditure_detail_id,
+                    ),
+                    'group' => array(
+                        'ProductExpenditureDetailSerialNumber.serial_number',
+                    ),
+                ));
+
+                $qty_total -= $usage;
+
+                if( !empty($qty_total) ) {
+                    $result[$serial_number] = $serial_number;
+                }
+            }
+        }
+
+        return $result;
     }
 }
 ?>

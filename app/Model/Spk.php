@@ -211,6 +211,11 @@ class Spk extends AppModel {
             default:
                 $default_options['conditions']['Spk.status'] = array( 0, 1 );
                 break;
+            case 'pending-out':
+                $default_options['conditions']['Spk.status'] = 1;
+                $default_options['conditions']['Spk.document_type'] = array( 'internal' );
+                $default_options['conditions']['Spk.transaction_status'] = array( 'open' );
+                break;
         }
 
         if( !empty($branch) ) {
@@ -252,11 +257,13 @@ class Spk extends AppModel {
         return $result;
     }
 
-    function getMerge( $data, $id, $fieldName = 'Spk.id' ){
+    function getMerge( $data, $id, $fieldName = 'Spk.id', $status = false ){
         $data_merge = $this->getData('first', array(
             'conditions' => array(
                 $fieldName => $id
             ),
+        ), array(
+            'status' => $status,
         ));
 
         if(!empty($data_merge)){

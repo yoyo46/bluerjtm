@@ -25,4 +25,12 @@ class ValidationBehavior extends ModelBehavior {
 			return FALSE;
 		}
 	}
+
+	public function validateValue(Model $model, $data, $fieldName){
+		if( !empty($data[$fieldName]) ){
+			return FALSE;
+		} else {
+			return true;
+		}
+	}
 }

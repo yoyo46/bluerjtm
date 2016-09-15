@@ -1281,7 +1281,7 @@
                     $dataMenu = array(
                         'products' => array(
                             'categories', 'product_units',
-                            'receipts',
+                            'receipts', 'expenditures',
                         ),
                         'spk' => array(
                             'index',
@@ -1292,7 +1292,7 @@
                         $activeSetting = false;
                         $settingMenu = array(
                             'spk', 'product_categories', 'products',
-                            'receipts', 'product_units'
+                            'receipts', 'product_units', 'expenditures',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1331,7 +1331,15 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'products' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link(__('%s Penerimaan Barang', $this->Common->icon('angle-double-right')), array(
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Pengeluaran', $this->Common->icon('angle-double-right')), array(
+                                'controller' => 'products',
+                                'action' => 'expenditures'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'expenditures' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Penerimaan', $this->Common->icon('angle-double-right')), array(
                                 'controller' => 'products',
                                 'action' => 'receipts'
                             ), array(

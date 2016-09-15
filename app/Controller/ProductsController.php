@@ -656,4 +656,196 @@ class ProductsController extends AppController {
             'value', 'type'
         ));
     }
+
+    public function expenditures() {
+        $this->loadModel('ProductExpenditure');
+        $this->set('sub_module_title', __('Pengeluaran Barang'));
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->ProductExpenditure->_callRefineParams($params);
+        $this->paginate = $this->ProductExpenditure->getData('paginate', $options, array(
+            'status' => 'all',
+        ));
+        $values = $this->paginate('ProductExpenditure');
+        $values = $this->ProductExpenditure->getMergeList($values, array(
+            'contain' => array(
+                'Staff',
+                'Spk' => array(
+                    'Truck',
+                ),
+            ),
+        ));
+        $this->RjProduct->_callBeforeRenderExpenditures();
+
+        $this->MkCommon->_layout_file('select');
+        $this->set('active_menu', 'expenditures');
+        $this->set(compact(
+            'values'
+        ));
+    }
+
+    function expenditure_add(){
+        $this->set('sub_module_title', __('Pengeluaran Barang'));
+
+        $data = $this->request->data;
+
+        if( !empty($data) ) {
+            $data = $this->RjProduct->_callBeforeSaveExpenditure($data);
+            $result = $this->Product->ProductExpenditureDetail->ProductExpenditure->doSave($data);
+            $this->MkCommon->setProcessParams($result, array(
+                'controller' => 'products',
+                'action' => 'expenditures',
+                'admin' => false,
+            ));
+        }
+
+        $this->RjProduct->_callBeforeRenderExpenditure($data);
+
+        $this->set(array(
+            'active_menu' => 'expenditures',
+        ));
+    }
+
+    public function expenditure_edit( $id = false ) {
+        $this->set('sub_module_title', __('Edit Pengeluaran'));
+
+        $value = $this->Product->ProductExpenditureDetail->ProductExpenditure->getData('first', array(
+            'conditions' => array(
+                'ProductExpenditure.id' => $id,
+            ),
+        ), array(
+            'status' => 'pending',
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->Product->ProductExpenditureDetail->ProductExpenditure->getMergeList($value, array(
+                'contain' => array(
+                    'ProductExpenditureDetail' => array(
+                        'Product',
+                        'ProductExpenditureDetailSerialNumber',
+                    ),
+                    'Spk',
+                ),
+            ));
+            // debug($value);die();
+
+            $data = $this->request->data;
+
+            if( !empty($data) ) {
+                $data = $this->RjProduct->_callBeforeSaveExpenditure($data, $id);
+                $result = $this->Product->ProductExpenditureDetail->ProductExpenditure->doSave($data, $value, $id);
+                $this->MkCommon->setProcessParams($result, array(
+                    'controller' => 'products',
+                    'action' => 'expenditures',
+                    'admin' => false,
+                ));
+            }
+
+            $this->RjProduct->_callBeforeRenderExpenditure($data, $value);
+
+            $this->set(array(
+                'value' => $value,
+                'active_menu' => 'expenditures',
+            ));
+            $this->render('expenditure_add');
+        } else {
+            $this->MkCommon->redirectReferer(__('Pengeluaran tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function expenditure_detail( $id = false ) {
+        $this->set('sub_module_title', __('Detail Pengeluaran'));
+
+        $value = $this->Product->ProductExpenditureDetail->ProductExpenditure->getData('first', array(
+            'conditions' => array(
+                'ProductExpenditure.id' => $id,
+            ),
+        ), array(
+            'status' => 'commit-void',
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->Product->ProductExpenditureDetail->ProductExpenditure->getMergeList($value, array(
+                'contain' => array(
+                    'ProductExpenditureDetail' => array(
+                        'Product',
+                        'ProductExpenditureDetailSerialNumber',
+                    ),
+                    'Spk',
+                ),
+            ));
+            $this->RjProduct->_callBeforeRenderExpenditure(false, $value);
+
+            $this->set(array(
+                'value' => $value,
+                'active_menu' => 'expenditures',
+                'view' => true,
+            ));
+            $this->render('expenditure_add');
+        } else {
+            $this->MkCommon->redirectReferer(__('Pengeluaran tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function expenditure_toggle( $id ) {
+        $result = $this->Product->ProductExpenditureDetail->ProductExpenditure->doDelete( $id );
+        $this->MkCommon->setProcessParams($result);
+    }
+
+    function expenditure_documents () {
+        $this->loadModel('Spk');
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Spk->_callRefineParams($params, array(
+            'limit' => 10,
+        ));
+        $this->paginate = $this->Spk->getData('paginate', $options, array(
+            'status' => 'pending-out',
+        ));
+        $values = $this->paginate('Spk');
+        $values = $this->Spk->getMergeList($values, array(
+            'contain' => array(
+                'Truck',
+            ),
+        ));
+
+        $this->MkCommon->_layout_file('select');
+        $this->set(compact(
+            'values'
+        ));
+    }
+
+    function spk_products ( $transaction_id = false, $nodoc = false ) {
+        $this->loadModel('SpkProduct');
+
+        $nodoc = urldecode($nodoc);
+        $value = $this->SpkProduct->Spk->getData('first', array(
+            'conditions' => array(
+                'Spk.nodoc' => $nodoc,
+            ),
+        ), array(
+            'status' => 'pending-out',
+        ));
+        $spk_id = $this->MkCommon->filterEmptyField($value, 'Spk', 'id');
+
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->SpkProduct->_callRefineParams($params, array(
+            'conditions' => array(
+                'SpkProduct.spk_id' => $spk_id,
+            ),
+            'limit' => 10,
+        ));
+        $this->paginate = $this->SpkProduct->getData('paginate', $options);
+        $values = $this->paginate('SpkProduct');
+
+        $this->RjProduct->_callBeforeRenderSpkProducts($values, $transaction_id);
+        $this->set(compact(
+            'nodoc'
+        ));
+    }
 }

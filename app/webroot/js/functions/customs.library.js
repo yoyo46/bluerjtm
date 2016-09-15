@@ -977,7 +977,8 @@
             settings.objCheck.off('click');
             settings.objCheck.click(function(){
                 var self = $(this);
-                check_option_coa(self)
+                check_option_coa(self);
+                calcGrandTotalCustom();
             });
 
             function check_option_coa(self){
@@ -986,10 +987,19 @@
                 var temp_picker = $('.temp-document-picker');
                 var pickDocumentStr = '.pick-document[rel="'+rel_id+'"]';
                 var pickDocument = $(pickDocumentStr);
+                var chosen = $('.document-picker .chosen-select');
+
+                if( chosen.length > 0 ) {
+                    $.callChoosen({
+                        obj: chosen,
+                        init: 'destroy',
+                    });
+                }
 
                 if(self.is(':checked')){
                     if(temp_picker.find('.pick-document[rel="'+rel_id+'"]').length <= 0){
                         var html_content = '<tr class="pick-document" rel="'+rel_id+'">'+pickDocument.html()+'</tr>';
+
                         temp_picker.find('tbody').append(html_content);
 
                         temp_picker.find('.pick-document[rel="'+rel_id+'"] td.hide').removeClass('hide');
@@ -998,8 +1008,13 @@
                         temp_picker.find('td.removed').remove();
 
                         calcItemTotal(temp_picker);
-
                         temp_picker.removeClass('hide');
+                        
+                        if( chosen.length > 0 ) {
+                            $.callChoosen({
+                                obj: temp_picker.find('td .chosen-select'),
+                            });
+                        }
                     }
                 } else {
                     temp_picker.find(pickDocumentStr).remove();
@@ -1039,10 +1054,12 @@
 
         var decimal = $.checkUndefined(objGrandTotal.attr('data-decimal'), 0);
 
-        $.each( $('.pick-document'), function( i, val ) {
-            var self = $(this);
-            grandtotal += calculate(self);
-        });
+        if( $('.pick-document').length > 0 ) {
+            $.each( $('.pick-document'), function( i, val ) {
+                var self = $(this);
+                grandtotal += calculate(self);
+            });
+        }
 
         if( objGrandTotal.length > 0 ) {
             objGrandTotal.html( $.formatDecimal(grandtotal, decimal) );
@@ -1101,10 +1118,19 @@
             var rel = objTotal.attr('rel');
             var decimal = $.checkUndefined(objTotal.attr('data-decimal'), 0);
 
-            $.each( $('.pick-document'), function( i, val ) {
+            $.each( $('.document-calc .pick-document'), function( i, val ) {
                 var self = $(this);
                 var priceObj = self.find('.price_custom[rel="'+rel+'"]');
-                var price = $.convertNumber(priceObj.val());
+                
+                var type = priceObj.attr('type');
+
+                if( type == 'text' ) {
+                    var input = priceObj.val();
+                } else {
+                    var input = priceObj.html();
+                }
+
+                var price = $.convertNumber(input);
                 var format_type = priceObj.attr('data-type');
 
                 grandtotal += price;
@@ -1225,14 +1251,16 @@
             });
         }
 
-        if( settings.objCustom.length > 0 ) {
+        // if( settings.objCustom.length > 0 ) {
             settings.objCustom.off('blur');
             settings.objCustom.blur(function(){
                 var self = $(this);
                 var rel = self.attr('rel');
                 var parent = self.parents('.pick-document');
                 var objTotal = parent.find('.total_custom[rel="'+rel+'"]');
-                var price = $.convertNumber(self.val());
+                
+                var input = $.convertNumber(self.val(), self.html());
+                var price = $.convertNumber(input);
 
                 var data_max = $.convertNumber(self.attr('data-max'), 'float', false);
                 var data_max_alert = $.checkUndefined(self.attr('data-max-alert'), false);
@@ -1255,7 +1283,7 @@
             });
 
             calcGrandTotal();
-        }
+        // }
 
         // if( settings.objPpnCustom.length > 0 ) {
         //     // function calcGrandTotalPpn () {
