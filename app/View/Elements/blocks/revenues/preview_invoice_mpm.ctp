@@ -34,7 +34,7 @@
 		</tr>
 		<tr>
 			<th class="text-center" style="width: 5%;"><?php echo __('No.');?></th>
-			<th class="text-center" style="width: 10%;"><?php echo __('No. Truk');?></th>
+			<th class="text-center" style="width: 14%;"><?php echo __('No. Truk');?></th>
 			<th class="text-center" style="width: 12%;">
 				<?php
 						echo __('No.DO');
