@@ -262,6 +262,7 @@ class BranchCoa extends AppModel {
     function getCoas ( $fields = false, $is_cash_bank = true ) {
         $conditions = array(
             'BranchCoa.branch_id' => Configure::read('__Site.config_branch_id'),
+            'Coa.status' => 1,
         );
 
         if( empty($fields) ) {

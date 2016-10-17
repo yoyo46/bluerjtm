@@ -440,7 +440,7 @@ img {
   .right-side {
     margin: 0;
   }
-  .row-offcanvas-left,
+  /*.row-offcanvas-left,
   .remove-blank-print,
   html {
     min-height: inherit !important;
@@ -449,7 +449,7 @@ img {
   @page {
     size: auto;
     margin: 5mm;
-  }
+  }*/
 }
 /* Remove border radius */
 .flat {
@@ -4266,16 +4266,18 @@ td > .datagrid-cell a {
 }
 
 @media print{
+  html,
+  body {
+    overflow-x: visible!important;
+  }
   body,
   table th,
   table td {
     font-size: 11px !important;
-    padding: 0 3px !important;
+    padding: 1px 3px !important;
   }
 
-  h3.header-invoice,
   .page-header,
-  .header-invoice,
   .no-invoice > p {
     font-size: 14px !important;
   }
@@ -4293,9 +4295,6 @@ td > .datagrid-cell a {
   #invoice-header-preview table.text {
     width: 100%;
   }
-  /*.print-width-70 {
-    width: 70% !important;
-  }*/
 }
 
 #modal-report .small-box {

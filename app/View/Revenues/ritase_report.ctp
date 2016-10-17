@@ -13,8 +13,8 @@
             $addClass = '';
 
             if( $data_action == 'excel' ) {
-                // header('Content-type: application/ms-excel');
-                // header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
+                header('Content-type: application/ms-excel');
+                header('Content-Disposition: attachment; filename='.$sub_module_title.'.xls');
                 $border = 1;
                 $tdStyle = 'text-align: center;';
                 $addClass = '';

@@ -93,7 +93,9 @@
 		    <div class="box-body">
 		    	<?php 
         				echo $this->element('blocks/products/receipts/forms/receipt_choose_document');
-						echo $this->Common->buildInputForm('note', __('Keterangan'));
+						echo $this->Common->buildInputForm('note', __('Keterangan'), array(
+							'type' => 'textarea',
+						));
 			    ?>
 		    </div>
 		</div>

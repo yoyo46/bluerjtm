@@ -657,6 +657,39 @@ class ProductsController extends AppController {
         ));
     }
 
+    function receipt_document_products ( $transaction_id = false ) {
+        $data = $this->request->data;
+        $nodoc = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_number', 'PO001');
+        $document_type = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_type', 'po');
+        $values = false;
+
+        $params = $this->MkCommon->_callRefineParams($this->params);
+
+        switch ($document_type) {
+            case 'po':
+                $value = $this->Product->PurchaseOrderDetail->PurchaseOrder->getData('first', array(
+                    'conditions' => array(
+                        'PurchaseOrder.nodoc' => $nodoc,
+                    ),
+                ), array(
+                    'status' => 'unreceipt_draft',
+                ));
+                $document_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'id');
+
+                $options =  $this->Product->PurchaseOrderDetail->_callRefineParams($params, array(
+                    'conditions' => array(
+                        'PurchaseOrderDetail.purchase_order_id' => $document_id,
+                    ),
+                    'limit' => 10,
+                ));
+                $this->paginate = $this->Product->PurchaseOrderDetail->getData('paginate', $options);
+                $values = $this->paginate('PurchaseOrderDetail');
+                $this->RjProduct->_callBeforeRenderReceiptPODetails($values, $transaction_id);
+                $this->render('receipt_po_products');
+                break;
+        }
+    }
+
     public function expenditures() {
         $this->loadModel('ProductExpenditure');
         $this->set('sub_module_title', __('Pengeluaran Barang'));

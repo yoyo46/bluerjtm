@@ -3,21 +3,38 @@
         $modelName = !empty($modelName)?$modelName:false;
         $qty = !empty($qty)?$qty:false;
         $serial_number = !empty($serial_number)?$serial_number:false;
+        $document_detail_id = !empty($document_detail_id)?$document_detail_id:false;
 
         $code = $this->Common->filterEmptyField($value, $modelName, 'code');
         $name = $this->Common->filterEmptyField($value, $modelName, 'name');
         $is_serial_number = $this->Common->filterEmptyField($value, $modelName, 'is_serial_number');
-        $unit = $this->Common->filterEmptyField($value, $modelName, 'name');
+        $unit = $this->Common->filterEmptyField($value, $modelName, 'unit');
 
-        $targetQty = sprintf('inpu-qty-%s', $id);
+        $targetQty = __('input-qty-%s', $id);
         $lblSerialNumber = __('Masukan No. Seri %s', $this->Common->icon('plus-square', false, 'i', 'ml5'));
 ?>
 <tr class="pick-document" rel="<?php echo $id; ?>">
     <?php
-            echo $this->Html->tag('td', $code.$this->Form->hidden('ProductReceiptDetail.product_id.', array(
-                'value' => $id,
-            )));
+            echo $this->Html->tag('td', $code.
+                $this->Form->hidden('ProductReceiptDetail.product_id.', array(
+                    'value' => $id,
+                )).
+                $this->Form->hidden('ProductReceiptDetail.document_detail_id.', array(
+                    'value' => $document_detail_id,
+                ))
+            );
             echo $this->Html->tag('td', $name);
+            echo $this->Html->tag('td', $unit, array(
+                'class' => 'text-center',
+            ));
+            echo $this->Html->tag('td', $doc_qty, array(
+                'class' => 'text-center price_custom',
+                'rel' => 'qty-dic',
+            ));
+            echo $this->Html->tag('td', $in_qty, array(
+                'class' => 'text-center price_custom',
+                'rel' => 'qty-in',
+            ));
             echo $this->Html->tag('td', $this->Common->buildInputForm('ProductReceiptDetail.qty.', false, array(
                 'type' => 'text',
                 'fieldError' => array(
@@ -25,16 +42,14 @@
                     'ProductReceiptDetail.'.$key.'.over_receipt'
                 ),
                 'frameClass' => false,
-                'class' => sprintf('qty input_number serial-number-input text-center %s', $targetQty),
+                'class' => sprintf('price_custom input_number serial-number-input text-center %s', $targetQty),
                 'attributes' => array(
                     'value' => $qty,
                     'data-target' => sprintf('.serial-number-fill-%s', $id),
                     'data-default' => $lblSerialNumber,
+                    'rel' => 'qty',
                 ),
             )));
-            echo $this->Html->tag('td', $unit, array(
-                'class' => 'text-center',
-            ));
 
             if( !empty($is_serial_number) ) {
                 if( !empty($serial_number) ) {
@@ -52,11 +67,11 @@
                     'bypass' => true,
                 ), array(
                     'escape' => false,
-                    'class' => sprintf('ajaxCustomModal browse-docs serial-number-fill-%s', $id),
+                    'class' => __('ajaxCustomModal browse-docs serial-number-fill-%s', $id),
                     'title' => __('Serial Number'),
                     'data-action' => 'browse-form',
                     'data-form' => '.receipt-form',
-                    'data-picker' => sprintf('.%s', $targetQty),
+                    'data-picker' => __('.%s', $targetQty),
                 )).$this->Form->error('ProductReceiptDetail.'.$key.'.serial_number'), array(
                     'class' => 'text-center',
                 ));

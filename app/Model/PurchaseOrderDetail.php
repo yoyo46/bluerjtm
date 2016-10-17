@@ -227,5 +227,35 @@ class PurchaseOrderDetail extends AppModel {
 
         return $result;
     }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        // $noref = $this->filterEmptyField($data, 'named', 'noref');
+        // $document_type = $this->filterEmptyField($data, 'named', 'document_type');
+        // $nodoc = $this->filterEmptyField($data, 'named', 'nodoc');
+        // $dateFrom = $this->filterEmptyField($data, 'named', 'DateFrom');
+        // $dateTo = $this->filterEmptyField($data, 'named', 'DateTo');
+        // $vendor_id = $this->filterEmptyField($data, 'named', 'vendor_id');
+
+        // if( !empty($dateFrom) || !empty($dateTo) ) {
+        //     if( !empty($dateFrom) ) {
+        //         $default_options['conditions']['DATE_FORMAT(Spk.transaction_date, \'%Y-%m-%d\') >='] = $dateFrom;
+        //     }
+
+        //     if( !empty($dateTo) ) {
+        //         $default_options['conditions']['DATE_FORMAT(Spk.transaction_date, \'%Y-%m-%d\') <='] = $dateTo;
+        //     }
+        // }
+        // if( !empty($nodoc) ) {
+        //     $default_options['conditions']['Spk.nodoc LIKE'] = '%'.$nodoc.'%';
+        // }
+        // if( !empty($vendor_id) ) {
+        //     $default_options['conditions']['Spk.vendor_id'] = $vendor_id;
+        // }
+        // if( !empty($document_type) ) {
+        //     $default_options['conditions']['Spk.document_type'] = $document_type;
+        // }
+        
+        return $default_options;
+    }
 }
 ?>

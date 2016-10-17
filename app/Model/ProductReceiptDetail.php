@@ -177,25 +177,26 @@ class ProductReceiptDetail extends AppModel {
         return $result;
     }
 
-    function getTotalReceipt( $id, $document_id, $product_id ){
-        $receipts = $this->ProductReceipt->getData('list', array(
+    function getTotalReceipt( $id, $document_id, $document_type, $product_id ){
+        $values = $this->ProductReceipt->getData('list', array(
             'conditions' => array(
                 'ProductReceipt.document_id' => $document_id,
+                'ProductReceipt.document_type' => $document_type,
             ),
             'fields' => array(
                 'ProductReceipt.id',
             ),
         ));
 
-        $this->virtualFields['total_receipt'] = 'SUM(ProductReceiptDetail.qty)';
-        $receipt = $this->getData('first', array(
+        $this->virtualFields['total'] = 'SUM(ProductReceiptDetail.qty)';
+        $value = $this->getData('first', array(
             'conditions' => array(
-                'ProductReceiptDetail.product_receipt_id' => $receipts,
+                'ProductReceiptDetail.product_receipt_id' => $values,
                 'ProductReceiptDetail.product_receipt_id <>' => $id,
                 'ProductReceiptDetail.product_id' => $product_id,
             ),
         ));
-        return $this->filterEmptyField($receipt, 'ProductReceiptDetail', 'total_receipt', 0);
+        return $this->filterEmptyField($value, 'ProductReceiptDetail', 'total', 0);
     }
 }
 ?>

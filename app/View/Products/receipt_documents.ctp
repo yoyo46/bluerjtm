@@ -42,7 +42,7 @@
                                     'admin' => false,
                                 ));
                 ?>
-                <tr href="<?php echo $href; ?>" data-value="<?php echo $nodoc; ?>" data-change="#document-number" data-form=".receipt-form" data-wrapper-write=".wrapper-table-documents" data-duplicate="false" data-id="<?php echo $id; ?>" >
+                <tr data-value="<?php echo $nodoc; ?>" data-change="#document-number" data-form=".receipt-form" data-wrapper-write=".wrapper-table-documents" data-duplicate="false" data-id="<?php echo $id; ?>" >
                     <?php
                             echo $this->Html->tag('td', $nodoc.$this->Form->hidden('PurchaseOrderPaymentDetail.purchase_order_id.', array(
                                 'value' => $id,

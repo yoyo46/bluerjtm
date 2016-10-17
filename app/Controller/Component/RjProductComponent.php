@@ -262,8 +262,8 @@ class RjProductComponent extends Component {
                     switch ($document_type) {
                         case 'po':
                             $documentDetail = $this->controller->Product->PurchaseOrderDetail->getMergeData(array(), $document_id, $product_id);
-                            $total_receipt = $this->controller->Product->ProductReceiptDetail->getTotalReceipt($id, $document_id, $product_id);
-                            $total_receipt += $qty;
+                            $qty_receipt = $this->controller->Product->ProductReceiptDetail->getTotalReceipt($id, $document_id, $document_type, $product_id);
+                            $total_receipt = $qty_receipt + $qty;
                             
                             $detailId = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'id');
                             $detailQty = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'qty');
@@ -280,7 +280,10 @@ class RjProductComponent extends Component {
                             } else {
                                 $over_receipt = false;
                             }
-                            
+
+                            $dataDetail[$key]['ProductReceiptDetail']['document_detail_id'] = $detailId;
+                            $dataDetail[$key]['ProductReceiptDetail']['doc_qty'] = $detailQty;
+                            $dataDetail[$key]['ProductReceiptDetail']['in_qty'] = $qty_receipt;
                             $dataDetail[$key]['ProductReceiptDetail']['over_receipt'] = $over_receipt;
                             $dataDetail[$key]['ProductReceiptDetail']['price'] = $detailPrice;
                             $dataDetail[$key]['ProductReceiptDetail']['Product'] = array(
@@ -315,14 +318,37 @@ class RjProductComponent extends Component {
         if( empty($data) ) {
             $data = $value;
 
+            $id = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'id');
             $type = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'document_type');
             $document_id = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'document_id');
+            $details = $this->MkCommon->filterEmptyField($value, 'ProductReceiptDetail');
 
             $data['ProductReceipt']['document_number'] = $this->MkCommon->filterEmptyField($data, 'Document', 'nodoc');
 
             if( empty($value) ) {
                 $data['ProductReceipt']['session_id'] = String::uuid();
                 $data['ProductReceipt']['transaction_date'] = date('Y-m-d');
+            }
+
+            if( !empty($details) ) {
+                foreach ($details as $key => &$detail) {
+                    $product_id = $this->MkCommon->filterEmptyField($detail, 'ProductReceiptDetail', 'product_id');
+
+                    $detail['Product']['unit'] = $this->MkCommon->filterEmptyField($detail, 'ProductUnit', 'name');
+
+                    switch ($type) {
+                        case 'po':
+                            $documentDetail = $this->controller->Product->PurchaseOrderDetail->getMergeData(array(), $document_id, $product_id);
+                            $qty_receipt = $this->controller->Product->ProductReceiptDetail->getTotalReceipt($id, $document_id, $type, $product_id);
+                            $detailQty = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'qty');
+                            
+                            $detail['ProductReceiptDetail']['doc_qty'] = $detailQty;
+                            $detail['ProductReceiptDetail']['in_qty'] = $qty_receipt;
+                            break;
+                    }
+                }
+
+                $data['ProductReceiptDetail'] = $details;
             }
         } else {
             $type = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_type');
@@ -729,6 +755,44 @@ class RjProductComponent extends Component {
                         $value['Product']['serial_numbers'] = $serial_numbers;
                     }
                     
+                    $values[$key] = $value;
+                } else {
+                    unset($values[$key]);
+                }
+            }
+        }
+
+        $this->controller->set('module_title', __('Barang'));
+        $this->controller->set(compact(
+            'values'
+        ));
+    }
+
+    function _callBeforeRenderReceiptPODetails ( $values, $transaction_id = false ) {
+        $data = $this->controller->request->data;
+        $document_type = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_type', 'po');
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $value = $this->controller->Product->PurchaseOrderDetail->getMergeList($value, array(
+                    'contain' => array(
+                        'Product' => array(
+                            'contain' => array(
+                                'ProductUnit',
+                                'ProductCategory',
+                            ),
+                        ),
+                    ),
+                ));
+                $document_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrderDetail', 'purchase_order_id');
+                $product_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrderDetail', 'product_id');
+                $qty = $this->MkCommon->filterEmptyField($value, 'PurchaseOrderDetail', 'qty');
+                $in_qty = $this->controller->Product->ProductReceiptDetail->getTotalReceipt($transaction_id, $document_id, $document_type, $product_id);
+                $qty -= $in_qty;
+
+                if( !empty($qty) ) {
+                    $value['PurchaseOrderDetail']['qty'] = $qty;
+                    $value['PurchaseOrderDetail']['in_qty'] = $in_qty;
                     $values[$key] = $value;
                 } else {
                     unset($values[$key]);
