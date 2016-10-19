@@ -103,6 +103,15 @@ class RjTruckComponent extends Component {
 				if( !empty($refine['Ttuj']['no_ttuj']) ) {
 					$refine_conditions['Ttuj']['no_ttuj'] = $refine['Ttuj']['no_ttuj'];
 				}
+				if( !empty($refine['Truck']['customer_group_id']) ) {
+					$customer_group_id = $refine['Truck']['customer_group_id'];
+
+					if( is_array($customer_group_id) ) {
+						$customer_group_id = implode(',', $customer_group_id);
+					}
+
+					$refine_conditions['Truck']['customer_group_id'] = $customer_group_id;
+				}
 			}
 				
 			return $refine_conditions;

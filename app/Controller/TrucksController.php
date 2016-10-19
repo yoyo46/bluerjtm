@@ -4583,6 +4583,27 @@ class TrucksController extends AppController {
                 $options['conditions']['Ttuj.no_ttuj LIKE'] = '%'.$data.'%';
                 $this->request->data['Ttuj']['no_ttuj'] = $data;
             }
+            if(!empty($refine['customer_group_id'])){
+                $customer_group_id = urldecode($refine['customer_group_id']);
+
+                $this->Ttuj->bindModel(array(
+                    'belongsTo' => array(
+                        'CustomerType' => array(
+                            'className' => 'CustomerType',
+                            'foreignKey' => false,
+                            'conditions' => array(
+                                'CustomerType.id = Customer.customer_type_id',
+                            )
+                        ),
+                    )
+                ));
+
+                $customer_group_id = explode(',', $customer_group_id);
+                $options['conditions']['Customer.customer_group_id'] = $customer_group_id;
+                $options['contain'][] = 'Customer';
+                $options['contain'][] = 'CustomerType';
+                $this->request->data['Truck']['customer_group_id'] = $customer_group_id;
+            }
 
             // Custom Otorisasi
             $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $options );
@@ -4673,6 +4694,7 @@ class TrucksController extends AppController {
 
         $companies = $this->Truck->Company->getData('list');
         $cities = $this->City->getListCities();
+        $customerGroups  = $this->Ttuj->Customer->CustomerGroup->getData('list');
 
         $this->set('active_menu', 'daily_report');
         $this->set('sub_module_title', $sub_module_title);
@@ -4681,7 +4703,7 @@ class TrucksController extends AppController {
             'ttujs', 'from_date', 'to_date', 
             'data_action', 'header_module_title',
             'periode', 'allow_branch', 'companies',
-            'cities', 'start_page'
+            'cities', 'start_page', 'customerGroups'
         ));
 
         if($data_action == 'pdf'){

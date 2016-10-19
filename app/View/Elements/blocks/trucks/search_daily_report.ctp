@@ -121,6 +121,18 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('customer_group_id',array(
+                                'label'=> __('Group Customer'),
+                                'class'=>'form-control chosen-select',
+                                'required' => false,
+                                // 'empty' => __('Pilih COA'),
+                                'options' => !empty($customerGroups)?$customerGroups:false,
+                                'multiple' => true,
+                            ));
+                    ?>
+                </div>
                 <?php 
                         // Custom Otorisasi
                         echo $this->Common->getCheckboxBranch();
