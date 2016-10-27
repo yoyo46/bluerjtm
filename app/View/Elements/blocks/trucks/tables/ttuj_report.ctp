@@ -32,6 +32,7 @@
                 $uang_keamanan = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_keamanan', 0);
                 $total = $uang_kuli_muat + $uang_kuli_bongkar + $asdp + $uang_kawal + $uang_keamanan;
 
+                $uang_jalan_id = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_id', '-');
                 $uang_jalan = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_1', 0);
                 $uang_jalan_2 = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_2', 0);
                 $uang_jalan_extra = $this->Common->filterEmptyField($value, 'Ttuj', 'uang_jalan_extra', 0);
@@ -93,6 +94,10 @@
                 ));
                 $content .= $this->Common->_getDataColumn($total_unit, 'Ttuj', 'total_unit', array(
                     'class' => 'unit',
+                    'style' => 'text-align: center;',
+                ));
+                $content .= $this->Common->_getDataColumn(__('#%s', $uang_jalan_id), 'Ttuj', 'uang_jalan_id', array(
+                    'class' => 'uang_jalan_id',
                     'style' => 'text-align: center;',
                 ));
                 $content .= $this->Common->_getDataColumn($uang_jalan, 'Ttuj', 'uang_jalan', array(

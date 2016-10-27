@@ -60,6 +60,12 @@
                 'align' => 'center',
                 'data-options' => 'field:\'unit\',width:80',
             ),
+            'id_uang_jalan' => array(
+                'name' => __('Id Uang Jalan'),
+                'style' => 'text-align: center',
+                'align' => 'center',
+                'data-options' => 'field:\'id_uang_jalan\',width:100',
+            ),
             'uang_jalan' => array(
                 'name' => __('Uang Jalan 1'),
                 'align' => 'right',

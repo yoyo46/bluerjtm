@@ -21,6 +21,15 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
+                        echo $this->Form->input('noref',array(
+                            'label'=> __('ID/No. Ref'),
+                            'class'=>'form-control',
+                            'required' => false,
+                        ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
                         echo $this->Form->input('name',array(
                             'label'=> __('Nama Uang Jalan'),
                             'class'=>'form-control',
@@ -28,8 +37,6 @@
                         ));
                     ?>
                 </div>
-            </div>
-            <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
                         echo $this->Form->input('capacity',array(
@@ -40,10 +47,8 @@
                     ?>
                 </div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="row">
-                <div class="col-sm-6">
+            <div class="col-sm-6">
+                <div class="form-group">
                     <?php 
                         echo $this->Form->input('from_city',array(
                             'label'=> __('Kota Asal'),
@@ -52,7 +57,7 @@
                         ));
                     ?>
                 </div>
-                <div class="col-sm-6">
+                <div class="form-group">
                     <?php 
                         echo $this->Form->input('to_city',array(
                             'label'=> __('Kota Tujuan'),

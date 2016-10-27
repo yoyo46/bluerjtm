@@ -988,6 +988,11 @@ class SettingsController extends AppController {
                 $this->request->data['UangJalan']['capacity'] = $capacity;
                 $options['conditions']['UangJalan.capacity LIKE'] = '%'.$capacity.'%';
             }
+            if(!empty($refine['noref'])){
+                $noref = urldecode($refine['noref']);
+                $this->request->data['UangJalan']['noref'] = $noref;
+                $options['conditions']['UangJalan.id'] = $noref;
+            }
 
             if(!empty($refine['from'])){
                 $name = urldecode($refine['from']);

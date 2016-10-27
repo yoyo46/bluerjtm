@@ -50,6 +50,12 @@
         <table class="table table-hover">
             <tr>
                 <?php
+                        echo $this->Html->tag('th', $this->Paginator->sort('UangJalan.id', __('ID/No. Ref'), array(
+                            'escape' => false
+                        )), array(
+                            'width' => '10%',
+                            'class' => 'text-center',
+                        ));
                         echo $this->Html->tag('th', $this->Paginator->sort('UangJalan.title', __('Nama'), array(
                             'escape' => false
                         )));
@@ -77,6 +83,7 @@
                             $to_city_name = !empty($value['ToCity']['name'])?$value['ToCity']['name']:false;
             ?>
             <tr>
+                <td class="text-center"><?php echo __('#%s', $id);?></td>
                 <td><?php echo $value['UangJalan']['title'];?></td>
                 <td><?php echo $from_city_name;?></td>
                 <td><?php echo $to_city_name;?></td>
