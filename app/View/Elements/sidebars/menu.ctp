@@ -939,7 +939,7 @@
             ?>
             <li class="treeview <?php echo $activeSetting; ?>">
                 <a href="#">
-                    <i class="fa fa-book"></i>
+                    <i class="fa fa-folder-open"></i>
                     <span>COA</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
@@ -985,24 +985,96 @@
             </li>
             <?php 
                     }
+            ?>
+            <?php
+                    $activeSetting = false;
+                    $settingMenu = array(
+                        'general_ledgers', 'journal_report', 'profit_loss',
+                        'balance_sheets', 'cash_flows',
+                    );
+                    $dataMenu = array(
+                        'cashbanks' => array(
+                            'general_ledgers', 'journal_report', 'profit_loss',
+                            'balance_sheets', 'cash_flows',
+                        ),
+                    );
 
+                    if( $this->Common->allowMenu( $dataMenu  ) ) {
+                        if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
+                            $activeSetting = 'active';
+                        }
+
+                        echo $this->Html->tag('li',
+                            $this->Html->link(
+                                $this->Common->icon('crosshairs').
+                                $this->Html->tag('span', __('Accounting')).
+                                $this->Common->icon('angle-left', false, 'i', 'pull-right'), 
+                                '#', array(
+                                'escape' => false,
+                            )).
+                            $this->Html->tag('ul',
+                                $this->Html->tag('li', $this->Html->link(__('%s Jurnal Umum', $this->Common->icon('angle-double-right')), array(
+                                    'controller' => 'cashbanks',
+                                    'action' => 'general_ledgers'
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( $active_menu == 'general_ledgers' )?'active':'',
+                                )).
+                                $this->Html->tag('li', $this->Html->link(__('%s Laporan Journal', $this->Common->icon('angle-double-right')), array(
+                                    'controller' => 'cashbanks',
+                                    'action' => 'journal_report',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'journal_report' )?'active':'',
+                                )).
+                                $this->Html->tag('li', $this->Html->link(__('%s Laporan Laba Rugi', $this->Common->icon('angle-double-right')), array(
+                                    'controller' => 'cashbanks',
+                                    'action' => 'profit_loss',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'profit_loss' )?'active':'',
+                                )).
+                                $this->Html->tag('li', $this->Html->link(__('%s Laporan Neraca', $this->Common->icon('angle-double-right')), array(
+                                    'controller' => 'cashbanks',
+                                    'action' => 'balance_sheets',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'balance_sheets' )?'active':'',
+                                )).
+                                $this->Html->tag('li', $this->Html->link(__('%s Laporan Cash Flow', $this->Common->icon('angle-double-right')), array(
+                                    'controller' => 'cashbanks',
+                                    'action' => 'cash_flows'
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'cash_flows' )?'active':'',
+                                )), array(
+                                'class' => 'treeview-menu',
+                            )), array(
+                            'class' => __('treeview %s', $activeSetting),
+                        ));
+                    }
+            ?>
+            <?php
                     $activeSetting = false;
                     $settingMenu = array(
                         'cash_bank', 'invoice_payments', 
                         'lku_payments', 'ksu_payments',
                         'uang_jalan_commission_payments',
                         'biaya_ttuj_payments', 'leasing_payments',
-                        'journal_report', 'prepayment_report', 'ledger_report',
+                        'prepayment_report', 'ledger_report',
                         'report_ttuj_payment', 'report_ttuj_outstanding',
                         'document_payments', 'laka_payments',
-                        'profit_loss', 'balance_sheets', 'asset_sells',
-                        'general_ledgers',
+                        'asset_sells',
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
-                            'index', 'journal_report', 'prepayment_report',
-                            'ledger_report', 'profit_loss', 'balance_sheets',
-                            'cash_flows', 'general_ledgers',
+                            'index', 'prepayment_report',
+                            'ledger_report',
                         ),
                         'trucks' => array(
                             'kir_payments', 'stnk_payments', 'siup_payments',
@@ -1046,14 +1118,6 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'cash_bank' )?'active':'',
-                            ));
-                            echo $this->Html->tag('li', $this->Html->link(__('%s Jurnal Umum', $this->Common->icon('angle-double-right')), array(
-                                'controller' => 'cashbanks',
-                                'action' => 'general_ledgers'
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( $active_menu == 'general_ledgers' )?'active':'',
                             ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Penjualan Asset', array(
                                 'controller' => 'assets',
@@ -1153,14 +1217,6 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'prepayment_report' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Journal', array(
-                                'controller' => 'cashbanks',
-                                'action' => 'journal_report',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'journal_report' )?'active':'',
-                            ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Ledger', array(
                                 'controller' => 'cashbanks',
                                 'action' => 'ledger_report',
@@ -1187,37 +1243,13 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'report_ttuj_outstanding' )?'active':'',
                             ));
-
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Laba Rugi', array(
-                                'controller' => 'cashbanks',
-                                'action' => 'profit_loss',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'profit_loss' )?'active':'',
-                            ));
-
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Neraca', array(
-                                'controller' => 'cashbanks',
-                                'action' => 'balance_sheets',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'balance_sheets' )?'active':'',
-                            ));
-                            echo $this->Html->tag('li', $this->Html->link(sprintf(__('%s Laporan Cash Flow'), $this->Common->icon('angle-double-right')), array(
-                                'controller' => 'cashbanks',
-                                'action' => 'cash_flows'
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'cash_flows' )?'active':'',
-                            ));
                     ?>
                 </ul>
             </li>
             <?php 
                     }
+            ?>
+            <?php
 
                     $activeSetting = false;
                     $settingMenu = array(
@@ -1301,7 +1333,7 @@
             ?>
             <li class="treeview <?php echo $activeSetting; ?>">
                 <a href="#">
-                    <i class="fa fa-book"></i>
+                    <i class="fa fa-cubes"></i>
                     <span>Gudang</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
