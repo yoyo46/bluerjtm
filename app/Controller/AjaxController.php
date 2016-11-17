@@ -689,6 +689,7 @@ class AjaxController extends AppController {
 	    		}
 			}
 		}
+		$truck_id = $this->MkCommon->filterEmptyField( $data_ttuj, 'Ttuj', 'truck_id' );
 
 		$customers = $this->Ttuj->Customer->getData('list', array(
             'fields' => array(
@@ -699,7 +700,7 @@ class AjaxController extends AppController {
 		$groupMotors = $this->GroupMotor->getData('list');
 
         if( $data_action == 'manual' ) {
-            $trucks = $this->Ttuj->Truck->_callListTruck();
+            $trucks = $this->Ttuj->Truck->_callListTruck($truck_id, $ttuj_id);
         }
 
 		$this->set(compact(
@@ -1211,10 +1212,30 @@ class AjaxController extends AppController {
             if( $action_type == 'revenue_manual' ) {
 				$data_change = '.truck-revenue-id';
 	        }
+
+	        $ttujs = $this->Truck->Ttuj->getData('list', array(
+	            'fields' => array(
+	                'Ttuj.truck_id', 'Ttuj.truck_id'
+	            ),
+	            'conditions' => array(
+	                'OR' => array(
+	                    array(
+	                        'Ttuj.is_revenue' => 0,
+	                        'Ttuj.is_draft' => 0,
+	                        'Ttuj.status' => 1,
+	                    ),
+	                    array(
+	                        'Ttuj.id' => $action_id,
+	                    ),
+	                ),
+	            ),
+	            'limit' => 100,
+	        ), true, array(
+	            'plant' => true,
+	        ));
 	        
     		$plantCityId = Configure::read('__Site.Branch.Plant.id');
-			$addConditions = $this->Truck->getListTruck( $ttuj_truck_id, true, false, $plantCityId );
-            $options['conditions'] = array_merge($options['conditions'], $addConditions);
+			$options['conditions'] = $this->Truck->getListTruck( $ttuj_truck_id, true, false, $plantCityId, $options['conditions'], $ttujs );
 	        
             $element = array(
         		'branch' => false,

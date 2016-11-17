@@ -573,7 +573,7 @@ class Revenue extends AppModel {
 
         $ttuj_id = !empty($data['Revenue']['ttuj_id'])?$data['Revenue']['ttuj_id']:false;
         $tarif = $this->RevenueDetail->TarifAngkutan->findTarif($from_city_id, $to_city_id, $customer_id, $capacity);
-        $jenis_unit = $this->filterEmptyField($tarif, 'jenis_unit');
+        $jenis_unit = $this->filterEmptyField($tarif, 'jenis_unit', false, 'per_unit');
 
         $data['Revenue']['revenue_tarif_type'] = $jenis_unit;
 

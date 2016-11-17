@@ -468,42 +468,62 @@ class Truck extends AppModel {
         return $data;
     }
 
-    function getListTruck ( $include_this_truck_id = false, $only_bind = false, $nopol = false, $branch_id = false ) {        
-        $ttujs = $this->Ttuj->_callTtujOngoing();
+    function getListTruck ( $include_this_truck_id = false, $only_bind = false, $nopol = false, $branch_id = false, $conditions = array(), $ttujs = false ) {
+        $ttuj_ongoing = $this->Ttuj->_callTtujOngoing();
         $branch_is_plant = Configure::read('__Site.config_branch_plant');
 
         if( !empty($include_this_truck_id) ) {
             // Ambil data truck berikut id ini
-            $conditions = array(
+            $conditions = array_merge($conditions, array(
                 'OR' => array(
                     array(
                         'Truck.id' => $include_this_truck_id,
                     ),
                     array(
-                        'Truck.id NOT' => $ttujs,
+                        'Truck.id NOT' => $ttuj_ongoing,
                     ),
                 ),
                 'AND' => array(
                     'OR' => array(
-                        'Truck.id' => $include_this_truck_id,
+                        array(
+                            'Truck.id' => $include_this_truck_id
+                        ),
                     ),
                 ),
-            );
+            ));
 
             if( !empty($branch_is_plant) ) {
                 $conditions['AND']['OR']['Truck.branch_id'] = Configure::read('__Site.Branch.Plant.id');
             } else {
                 $conditions['AND']['OR']['Truck.branch_id'] = Configure::read('__Site.config_branch_id');
             }
+
+            if( !empty($ttujs) ) {
+                $conditions = $this->callUnset($conditions, array(
+                    'Truck.branch_id',
+                ));
+
+                $conditions['AND']['OR'][]['Truck.id'] = $ttujs;
+            }
         } else {
-            $conditions = array(
-                'Truck.id NOT' => $ttujs,
-            );
+            $conditions['Truck.id NOT'] = $ttuj_ongoing;
 
             if( !empty($branch_is_plant) ) {
                 $conditions['Truck.branch_id'] = Configure::read('__Site.Branch.Plant.id');
             } else {
                 $conditions['Truck.branch_id'] = Configure::read('__Site.config_branch_id');
+            }
+
+            if( !empty($ttujs) ) {
+                $branch_id = $conditions['Truck.branch_id'];
+                $conditions = $this->callUnset($conditions, array(
+                    'Truck.branch_id',
+                ));
+
+                $conditions[]['OR'] = array(
+                    'Truck.branch_id' => $branch_id,
+                    'Truck.id' => $ttujs,
+                );
             }
         }
 
@@ -716,16 +736,35 @@ class Truck extends AppModel {
         return $data;
     }
 
-    function _callListTruck ( $id = false ) {
+    function _callListTruck ( $id = false, $ttuj_id = false ) {
         $plantCityId = Configure::read('__Site.Branch.Plant.id');
         $conditions = array();
+        $ttujs = $this->Ttuj->getData('list', array(
+            'fields' => array(
+                'Ttuj.truck_id', 'Ttuj.truck_id'
+            ),
+            'conditions' => array(
+                'OR' => array(
+                    array(
+                        'Ttuj.is_revenue' => 0,
+                        'Ttuj.is_draft' => 0,
+                        'Ttuj.status' => 1,
+                    ),
+                    array(
+                        'Ttuj.id' => $ttuj_id,
+                    ),
+                ),
+            ),
+            'limit' => 100,
+        ), true, array(
+            'plant' => true,
+        ));
 
         if( !empty($plantCityId) ) {
             $conditions['Truck.branch_id'] = $plantCityId;
         }
 
-        $addConditions = $this->getListTruck( $id, true, false, $plantCityId );
-        $conditions = array_merge($conditions, $addConditions);
+        $conditions = $this->getListTruck( $id, true, false, $plantCityId, $conditions, $ttujs );
 
         return $this->getData('list', array(
             'conditions' => $conditions,

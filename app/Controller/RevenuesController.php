@@ -3639,7 +3639,8 @@ class RevenuesController extends AppController {
         $this->set('active_menu', 'revenues');
 
         if( $action_type == 'manual' ) {
-            $trucks = $this->Ttuj->Truck->_callListTruck($id);
+            $trucks = $this->Ttuj->Truck->_callListTruck($id, $ttuj_id);
+            // debug($trucks);die();
 
             $this->set(compact(
                 'trucks'

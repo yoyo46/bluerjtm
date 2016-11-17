@@ -345,7 +345,7 @@ class Driver extends AppModel {
         }
 
         $branch_plant_id = Configure::read('__Site.Branch.Plant.id');
-        $conditions['Truck.id'] = NULL;
+        // $conditions['Truck.id'] = NULL;
 
         if( !empty($branch_plant_id) ) {
             $conditions['Driver.branch_id'] = $branch_plant_id;
@@ -357,9 +357,9 @@ class Driver extends AppModel {
                 'fields' => array(
                     'Driver.id', 'Driver.driver_name'
                 ),
-                'contain' => array(
-                    'Truck',
-                ),
+                // 'contain' => array(
+                //     'Truck',
+                // ),
             ), array(
                 'branch' => false,
             ));

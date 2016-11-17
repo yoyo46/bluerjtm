@@ -1,3 +1,7 @@
+<?php 
+        $data_local = !empty($data_local)?$data_local:false;
+        $ttuj_id = $this->Common->filterEmptyField($data_local, 'Revenue', 'ttuj_id');
+?>
 <div class="form-group">
     <?php 
 			$attrBrowse = array(
@@ -12,6 +16,7 @@
                 'controller'=> 'ajax', 
                 'action' => 'getTrucks',
                 'revenue_manual',
+                $ttuj_id,
             );
             echo $this->Form->label('Revenue.truck_id', __('No. Pol * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
     ?>

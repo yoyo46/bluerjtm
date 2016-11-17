@@ -144,6 +144,7 @@
 			        '/js/bootstrap.min',
 				)).PHP_EOL;
 			}
+			echo($this->Html->div('clearfix', $this->element('sql_dump')));
 	?>
 </body>
 </html>
