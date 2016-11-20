@@ -131,10 +131,11 @@ body > .header {
 .form-added .tbody .item {
   margin-bottom: 10px;
 }
-.form-added .item:first-child .removed {
+.form-added .item:first-child .removed,
+.form-added .tbody .field-copy .item .removed {
   display: none;
 }
-.form-added .tbody .field-copy .item .removed {
+#general-ledger.form-added .item:nth-child(2) .removed {
   display: none;
 }
 

@@ -124,8 +124,7 @@ class GeneralLedgerDetail extends AppModel {
         return $data;
     }
 
-    function setJournal ( $id, $data ) {
-        $nodoc = $this->filterEmptyField($data, 'GeneralLedger', 'nodoc');
+    function setJournal ( $id, $data, $nodoc = false ) {
         $transaction_date = $this->filterEmptyField($data, 'GeneralLedger', 'transaction_date');
         $transaction_status = $this->filterEmptyField($data, 'GeneralLedger', 'transaction_status');
         $details = $this->filterEmptyField($data, 'GeneralLedgerDetail');
@@ -133,6 +132,10 @@ class GeneralLedgerDetail extends AppModel {
         if( $transaction_status == 'posting' && !empty($details) ) {
             $title = sprintf(__('Jurnal umum #%s '), $nodoc);
             $title = $this->filterEmptyField($data, 'GeneralLedger', 'note', $title);
+
+            $this->GeneralLedger->User->Journal->deleteJournal($id, array(
+                'general_ledger',
+            ));
 
             foreach ($details as $key => $detail) {
                 $coa_id = $this->filterEmptyField($detail, 'GeneralLedgerDetail', 'coa_id');
@@ -146,6 +149,7 @@ class GeneralLedgerDetail extends AppModel {
                         'debit' => $coa_id,
                     );
                 } else {
+                    $total = $credit;
                     $options = array(
                         'credit' => $coa_id,
                     );

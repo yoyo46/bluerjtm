@@ -6,12 +6,12 @@
             'transaction_date' => array(
                 'name' => __('Tgl Transaksi'),
             ),
-            'debit' => array(
-                'name' => __('Debit'),
-                'class' => 'text-right',
-            ),
-            'credit' => array(
-                'name' => __('Kredit'),
+            // 'debit' => array(
+            //     'name' => __('Debit'),
+            //     'class' => 'text-right',
+            // ),
+            'total' => array(
+                'name' => __('Total'),
                 'class' => 'text-right',
             ),
             'note' => array(
@@ -72,6 +72,7 @@
                                     'decimal' => 2,
                                 ),
                             ));
+                            $allow_closing = $this->Common->filterEmptyField($value, 'GeneralLedger', 'AllowClosing');
 
                             $customStatus = $this->Common->_callTransactionStatus($value, 'GeneralLedger');
 
@@ -84,7 +85,7 @@
                                 'class' => 'btn btn-info btn-xs'
                             ));
 
-                            if( in_array($transaction_status, array( 'unposting', 'revised' )) ){
+                            if( !empty($allow_closing) ) {
                                 $customAction .= $this->Html->link(__('Edit'), array(
                                     'controller' => 'cashbanks',
                                     'action' => 'general_ledger_edit',
@@ -93,6 +94,9 @@
                                 ), array(
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
+                            }
+
+                            if( in_array($transaction_status, array( 'unposting', 'revised' )) ){
                                 $customAction .= $this->Html->link(__('Hapus'), array(
                                     'controller' => 'cashbanks',
                                     'action' => 'general_ledger_toggle',
@@ -109,9 +113,9 @@
                         echo $this->Html->tag('td', $transactionDate, array(
                             'class' => 'text-center',
                         ));
-                        echo $this->Html->tag('td', $debit_total, array(
-                            'class' => 'text-right',
-                        ));
+                        // echo $this->Html->tag('td', $debit_total, array(
+                        //     'class' => 'text-right',
+                        // ));
                         echo $this->Html->tag('td', $credit_total, array(
                             'class' => 'text-right',
                         ));

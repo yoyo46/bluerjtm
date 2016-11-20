@@ -131,16 +131,25 @@ class GeneralLedger extends AppModel {
             if( !empty($flag) ) {
                 if( $credit_total == $debit_total ) {
                     if( !empty($id) ) {
+                        $nodoc = $this->filterEmptyField($value, 'GeneralLedger', 'nodoc');
                         $this->GeneralLedgerDetail->deleteAll(array(
                             'GeneralLedgerDetail.general_ledger_id' => $id,
                         ));
+                        $data = $this->callUnset($data, array(
+                            'GeneralLedger' => array(
+                                'nodoc',
+                            ),
+                        ));
+                    } else {
+                        $nodoc = $this->generateNoDoc();
+                        $data['GeneralLedger']['nodoc'] = $nodoc;
                     }
 
                     if( $this->saveAll($data) ) {
                         $id = $this->id;
                         $defaul_msg = sprintf(__('Berhasil %s'), $defaul_msg);
 
-                        $this->GeneralLedgerDetail->setJournal($id, $data);
+                        $this->GeneralLedgerDetail->setJournal($id, $data, $nodoc);
 
                         $result = array(
                             'id' => $id,
@@ -258,6 +267,37 @@ class GeneralLedger extends AppModel {
         }
 
         return $result;
+    }
+
+    function generateNoDoc(){
+        $default_id = 1;
+        $format_id = sprintf('GJ-%s-', date('Y'));
+
+        $last_data = $this->getData('first', array(
+            'conditions' => array(
+                'GeneralLedger.nodoc LIKE' => ''.$format_id.'%',
+            ),
+            'order' => array(
+                'GeneralLedger.nodoc' => 'DESC'
+            ),
+            'fields' => array(
+                'GeneralLedger.nodoc'
+            )
+        ), array(
+            'branch' => false,
+        ));
+        $nodoc = $this->filterEmptyField($last_data, 'GeneralLedger', 'nodoc');
+
+        if(!empty($nodoc)){
+            $str_arr = explode('-', $nodoc);
+            $last_arr = count($str_arr)-1;
+            $default_id = intval($str_arr[$last_arr]+1);
+        }
+
+        $id = str_pad($default_id, 5,'0',STR_PAD_LEFT);
+        $format_id .= $id;
+        
+        return $format_id;
     }
 }
 ?>

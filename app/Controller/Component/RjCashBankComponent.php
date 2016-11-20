@@ -319,7 +319,9 @@ class RjCashBankComponent extends Component {
 
         $this->controller->request->data = $data;
         
-        $coas = $this->controller->GroupBranch->Branch->BranchCoa->getCoas(false, false);
+        $coas = $this->controller->GroupBranch->Branch->BranchCoa->getCoas(false, false, array(
+            'status' => 'non-cashbank',
+        ));
         $this->MkCommon->_layout_file('select');
         $this->controller->set(compact(
         	'coas'

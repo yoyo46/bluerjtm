@@ -1163,11 +1163,14 @@ class CommonHelper extends AppHelper {
                     'class'=> 'btn btn-success submit-form btn-lg',
                     'action_type' => 'posting'
                 ));
-                echo $this->Form->button(!empty($lblArr[1])?$lblArr[1]:__('Unposting'), array(
-                    'type' => 'submit',
-                    'class'=> 'btn btn-primary submit-form',
-                    'action_type' => 'unposting'
-                ));
+
+                if( empty($posting) ) {
+                    echo $this->Form->button(!empty($lblArr[1])?$lblArr[1]:__('Unposting'), array(
+                        'type' => 'submit',
+                        'class'=> 'btn btn-primary submit-form',
+                        'action_type' => 'unposting'
+                    ));
+                }
             }
         }
     }

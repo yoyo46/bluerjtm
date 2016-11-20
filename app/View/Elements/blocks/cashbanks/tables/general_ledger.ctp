@@ -58,9 +58,11 @@
                                     ));
                                 }
                             } else {
-                                echo $this->element('blocks/cashbanks/tables/general_ledger_item', array(
-                                    'idx' => 0,
-                                ));
+                                for ($i=0; $i < 2; $i++) {
+                                    echo $this->element('blocks/cashbanks/tables/general_ledger_item', array(
+                                        'idx' => $i,
+                                    ));
+                                }
                             }
                     ?>
                 </tbody>

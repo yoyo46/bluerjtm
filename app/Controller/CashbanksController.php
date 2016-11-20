@@ -1990,6 +1990,13 @@ class CashbanksController extends AppController {
         $this->paginate = $this->GeneralLedger->getData('paginate', $options);
         $values = $this->paginate('GeneralLedger');
 
+        if( !empty($values) ) {
+            foreach ($values as $key => &$value) {
+                $allow_closing = $this->MkCommon->_callAllowClosing($value, 'GeneralLedger', 'transaction_date', 'Y-m', false);
+                $value['GeneralLedger']['AllowClosing'] = $allow_closing;
+            }
+        }
+
         $this->set('sub_module_title', __('Jurnal Umum'));
         $this->set('active_menu', 'general_ledgers');
         $this->set(compact(
@@ -2023,16 +2030,18 @@ class CashbanksController extends AppController {
                 'GeneralLedger.id' => $id,
             ),
         ), array(
-            'status' => 'unposting',
+            'status' => array( 'unposting', 'posting' ),
         ));
 
         if( !empty($value) ) {
+            $this->MkCommon->_callAllowClosing($value, 'GeneralLedger', 'transaction_date', 'Y-m');
+
             $data = $this->request->data;
             $value = $this->User->GeneralLedger->GeneralLedgerDetail->getMerge($value, $id);
 
             if( !empty($data) ) {
                 $data = $this->RjCashBank->_callBeforeSaveGeneralLedger($data, $value);
-                $result = $this->User->GeneralLedger->doSave($data);
+                $result = $this->User->GeneralLedger->doSave($data, $value);
                 $this->MkCommon->setProcessParams($result, array(
                     'controller' => 'cashbanks',
                     'action' => 'general_ledgers',

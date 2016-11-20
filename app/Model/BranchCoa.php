@@ -259,7 +259,9 @@ class BranchCoa extends AppModel {
         return $result;
     }
 
-    function getCoas ( $fields = false, $is_cash_bank = true ) {
+    function getCoas ( $fields = false, $is_cash_bank = true, $elements = array() ) {
+        $status = $this->filterEmptyField($elements, 'status');
+
         $conditions = array(
             'BranchCoa.branch_id' => Configure::read('__Site.config_branch_id'),
             'Coa.status' => 1,
@@ -272,6 +274,12 @@ class BranchCoa extends AppModel {
         }
         if( !empty($is_cash_bank) ) {
             $conditions['Coa.is_cash_bank'] = 1;
+        }
+
+        switch ($status) {
+            case 'non-cashbank':
+                $conditions['Coa.is_cash_bank'] = 0;
+                break;
         }
 
         $this->virtualFields['coa_name'] = 'CASE WHEN Coa.with_parent_code IS NOT NULL AND Coa.with_parent_code <> \'\' THEN CONCAT(Coa.with_parent_code, \' - \', Coa.name) WHEN Coa.code <> \'\' THEN CONCAT(Coa.code, \' - \', Coa.name) ELSE Coa.name END';

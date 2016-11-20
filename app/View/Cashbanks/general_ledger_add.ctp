@@ -19,7 +19,7 @@
 
 		echo $this->Form->create('GeneralLedger');
 ?>
-<div class="box form-added">
+<div class="box form-added" id="general-ledger">
     <?php 
             echo $this->element('blocks/common/box_header', array(
                 'title' => $title,
@@ -27,7 +27,12 @@
     ?>
     <div class="box-body">
     	<?php 
-				echo $this->Common->buildInputForm('nodoc', __('No Dokumen *'));
+    			if( !empty($value) ) {
+					echo $this->Common->buildInputForm('nodoc', __('No Dokumen *'), array(
+						'disabled' => true,
+					));
+				}
+
 				echo $this->Common->buildInputForm('transaction_date', __('Tgl Transaksi *'), array(
 					'type' => 'text',
                     'textGroup' => $this->Common->icon('calendar'),
