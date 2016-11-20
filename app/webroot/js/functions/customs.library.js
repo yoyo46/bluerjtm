@@ -115,7 +115,9 @@
             if( settings.init == false ) {
                 settings.obj.select2();
             } else {
-                settings.obj.select2(settings.init);
+                settings.obj.each(function(i,item){
+                    $(item).select2(settings.init);
+                });
             }
         }
     }
