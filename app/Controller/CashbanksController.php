@@ -1347,6 +1347,106 @@ class CashbanksController extends AppController {
         }
     }
 
+    public function journal_rinci_report( $data_action = false ) {
+        $this->loadModel('Journal');
+
+        $this->set('sub_module_title', 'Laporan Jurnal Rinci');
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+        $options = array(
+            'conditions' => array(
+                'Journal.branch_id' => $allow_branch_id,
+            ),
+            'contain' => false,
+            'group' => array(
+                'Journal.document_id',
+                'Journal.type',
+            ),
+            'order'=> array(
+                'Journal.date' => 'DESC',
+                'Journal.document_id' => 'DESC',
+                'Journal.id' => 'DESC',
+            ),
+        );
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+
+        $options =  $this->User->Journal->_callRefineParams($params, $options);
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            // Custom Otorisasi
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Journal', $options );
+        }
+
+        $module_title = __('Laporan Jurnal Rinci');
+        $values = array();
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+
+        if( !empty($data_action) ){
+            $journals = $this->User->Journal->getData('all', $options);
+        } else {
+            $options['limit'] = Configure::read('__Site.config_pagination');
+            $this->paginate = $this->User->Journal->getData('paginate', $options);
+            $journals = $this->paginate('Journal');
+            
+            $this->MkCommon->_layout_file(array(
+                'select',
+                'freeze',
+            ));
+        }
+
+        if( !empty($journals) ) {
+            $this->User->Journal->virtualFields['sorting_journal'] = 'CASE WHEN Journal.credit <> 0 THEN 1 ELSE 0 END';
+
+            foreach ($journals as $key => $value) {
+                $document_id = $this->MkCommon->filterEmptyField($value, 'Journal', 'document_id');
+                $type = $this->MkCommon->filterEmptyField($value, 'Journal', 'type');
+
+                $journal = $this->Journal->getData('all', array(
+                    'conditions' => array(
+                        'Journal.document_id' => $document_id,
+                        'Journal.type' => $type,
+                    ),
+                    'order'=> array(
+                        'Journal.date' => 'DESC',
+                        'Journal.document_id' => 'DESC',
+                        'Journal.sorting_journal' => 'ASC',
+                        'Journal.id' => 'ASC',
+                    ),
+                ));
+
+                $values = array_merge($values, $journal);
+            }
+        }
+
+
+        $coas = $this->User->Journal->Coa->_callOptGroup();
+
+        $this->set('active_menu', 'journal_rinci_report');
+        $this->set(compact(
+            'values', 'module_title', 'data_action',
+            'coas'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        }
+    }
+
     public function ledger_report( $data_action = false ) {
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');

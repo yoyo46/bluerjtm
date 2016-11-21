@@ -990,12 +990,12 @@
                     $activeSetting = false;
                     $settingMenu = array(
                         'general_ledgers', 'journal_report', 'profit_loss',
-                        'balance_sheets', 'cash_flows',
+                        'balance_sheets', 'cash_flows', 'journal_rinci_report'
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
                             'general_ledgers', 'journal_report', 'profit_loss',
-                            'balance_sheets', 'cash_flows',
+                            'balance_sheets', 'cash_flows', 'journal_rinci_report'
                         ),
                     );
 
@@ -1021,13 +1021,21 @@
                                 )), array(
                                     'class' => ( $active_menu == 'general_ledgers' )?'active':'',
                                 )).
-                                $this->Html->tag('li', $this->Html->link(__('%s Laporan Journal', $this->Common->icon('angle-double-right')), array(
+                                $this->Html->tag('li', $this->Html->link(__('%s Laporan Jurnal', $this->Common->icon('angle-double-right')), array(
                                     'controller' => 'cashbanks',
                                     'action' => 'journal_report',
                                 ), array(
                                     'escape' => false
                                 )), array(
                                     'class' => ( !empty($active_menu) && $active_menu == 'journal_report' )?'active':'',
+                                )).
+                                $this->Html->tag('li', $this->Html->link(__('%s Laporan Jurnal Rinci', $this->Common->icon('angle-double-right')), array(
+                                    'controller' => 'cashbanks',
+                                    'action' => 'journal_rinci_report',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'journal_rinci_report' )?'active':'',
                                 )).
                                 $this->Html->tag('li', $this->Html->link(__('%s Laporan Laba Rugi', $this->Common->icon('angle-double-right')), array(
                                     'controller' => 'cashbanks',
