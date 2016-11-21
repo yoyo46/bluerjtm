@@ -136,6 +136,7 @@
 									$totalPriceUnitTfoot += $total_price_unit;
 									
 									$date_revenue = $this->Common->formatDate($date_revenue, 'd/m/Y');
+									$totalUnit = $this->Common->getFormatPrice($totalUnit);
 					?>
 					<tr>
 						<?php 
@@ -177,6 +178,7 @@
             						$temp = $revenue_id;
 								}
 
+								$grandTotalUnit = $this->Common->getFormatPrice($grandTotalUnit);
 								$grandTotalTarif = $this->Common->getFormatPrice($grandTotalTarif);
 
 								$colom = $this->Html->tag('td', __('TOTAL'), array(

@@ -6764,6 +6764,8 @@ class RevenuesController extends AppController {
                                     $resultDetails[$price_unit][] = $detail;
                                     $invoice['InvoiceDetail'][$key] = $detail;
                                 }
+
+                                ksort($resultDetails);
                             }
                             break;
                         
