@@ -23,7 +23,7 @@
 	?>
 	<tr>
 		<td>
-			<table border="0" style="width: 100%;magin:0;">
+			<table border="0" style="width: 100%;margin-bottom: 20px;">
 				<tr>
 					<td colspan="5" style="text-align: left;width: 50%;" valign="top">
 						<?php 
@@ -51,12 +51,31 @@
 	?>
 	<tr>
 		<td>
-			<table border="1" style="margin-top: 0;width: 100%;<?php echo $table; ?>">
+			<?php 
+					if(!empty($resultDetails)){
+						$totalUnitTfoot = 0;
+						$totalPriceUnitTfoot = 0;
+						$idx = 1;
+
+						foreach ($resultDetails as $price_unit => $values) {
+							$price_unit = $this->Common->getFormatPrice($price_unit);
+			?>
+				<table border="1" width="100%" style="margin-top: 20px;<?php echo $table; ?>">
 				<?php 
 	                    if( !empty($fieldColumn) ) {
-	                        echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn, array(
-	                        	'style' => $table_tr_head,
-                        	)));
+	                        echo $this->Html->tag('thead', 
+	                        	$this->Html->tag('tr', 
+		                        	$this->Html->tag('td', __('Tarif Angkutan : %s', $price_unit), array(
+			                        	'style' => 'text-transform:uppercase;text-align:center;font-weight: bold;',
+			                        	'colspan' => '10',
+		                        	)), array(
+		                        	'style' => $table_tr_head,
+	                        	)).
+	                        	$this->Html->tag('tr', $fieldColumn, array(
+		                        	'style' => $table_tr_head,
+	                        	)), array(
+	                        	'class' => 'header-invoice-print',
+                        	));
 	                    }
 				?>
 				<tbody>
@@ -112,7 +131,10 @@
 
 									$grandTotalUnit += $totalUnit;
 									$grandTotalTarif += $total_price_unit;
-
+									
+									$totalUnitTfoot += $totalUnit;
+									$totalPriceUnitTfoot += $total_price_unit;
+									
 									$date_revenue = $this->Common->formatDate($date_revenue, 'd/m/Y');
 					?>
 					<tr>
@@ -190,7 +212,43 @@
 							}
 					?>
 				</tbody>
+				<?php 
+						if( $idx == count($resultDetails) ) {
+							$totalUnitTfoot = $this->Common->getFormatPrice($totalUnitTfoot);
+							$totalPriceUnitTfoot = $this->Common->getFormatPrice($totalPriceUnitTfoot);
+				?>
+				<tfoot>
+					<?php
+							$colom = $this->Html->tag('td', __('GrandTotal '), array(
+								'align' => 'right',
+								'style' => 'font-weight: bold;',
+								'colspan' => 5,
+							));
+							$colom .= $this->Html->tag('td', $totalUnitTfoot, array(
+								'align' => 'center'
+							));
+							$colom .= $this->Html->tag('td', '&nbsp;');
+							$colom .= $this->Html->tag('td', $totalPriceUnitTfoot, array(
+								'align' => 'right',
+								'style' => 'font-weight: bold;',
+							));
+							$colom .= $this->Html->tag('td', '&nbsp;');
+							$colom .= $this->Html->tag('td', '&nbsp;');
+							
+							echo $this->Html->tag('tr', $colom, array(
+								'class' => 'total-row'
+							));
+					?>
+				</tfoot>
+				<?php
+						}
+				?>
 			</table>
+			<?php 
+							$idx++;
+						}
+					}
+			?>
 		</td>
 	</tr>
 </table>

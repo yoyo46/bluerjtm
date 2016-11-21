@@ -6732,6 +6732,7 @@ class RevenuesController extends AppController {
         ));
 
         if(!empty($invoice)){
+            $resultDetails = array();
             $invoice = $this->Invoice->Customer->getMerge($invoice, $invoice['Invoice']['customer_id']);
             $tarif_type = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'tarif_type');
 
@@ -6750,6 +6751,8 @@ class RevenuesController extends AppController {
                                     $detail = $this->Invoice->InvoiceDetail->RevenueDetail->getMerge($detail, $revenue_detail_id);
                                     $detail = $this->Invoice->InvoiceDetail->Revenue->getMerge($detail, false, $revenue_id);
 
+                                    $price_unit = $this->MkCommon->filterEmptyField($detail, 'RevenueDetail', 'price_unit');
+
                                     $city_id = $this->MkCommon->filterEmptyField($detail, 'RevenueDetail', 'city_id');
                                     $ttuj_id = $this->MkCommon->filterEmptyField($detail, 'Revenue', 'ttuj_id');
                                     $truck_id = $this->MkCommon->filterEmptyField($detail, 'Revenue', 'truck_id');
@@ -6757,6 +6760,8 @@ class RevenuesController extends AppController {
                                     $detail = $this->City->getMerge($detail, $city_id);
                                     $detail = $this->Ttuj->getMerge($detail, $ttuj_id);
                                     $detail = $this->Ttuj->Truck->getMerge($detail, $truck_id);
+                                    
+                                    $resultDetails[$price_unit][] = $detail;
                                     $invoice['InvoiceDetail'][$key] = $detail;
                                 }
                             }
@@ -6798,7 +6803,7 @@ class RevenuesController extends AppController {
 
             $this->set(compact(
                 'invoice', 'action_print', 'revenue_detail',
-                'tarif_name', 'id'
+                'tarif_name', 'id', 'resultDetails'
             ));
 
             if($action_print == 'pdf'){
