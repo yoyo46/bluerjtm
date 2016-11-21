@@ -38,6 +38,7 @@
             'status' => array(
                 'name' => __('Status'),
                 'field_model' => 'TruckMutation.status',
+                'class' => 'text-center',
                 'display' => true,
             ),
             'action' => array(
@@ -119,7 +120,7 @@
                         ?>
                     </td> -->
                     <td><?php echo $this->Time->niceShort($created);?></td>
-                    <td>
+                    <td class="text-center">
                         <?php
                                 echo $iconStatus;
 
