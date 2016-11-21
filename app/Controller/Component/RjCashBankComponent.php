@@ -330,6 +330,8 @@ class RjCashBankComponent extends Component {
 
     function _callBeforeSaveGeneralLedger ( $data, $value = false ) {
         if( !empty($data) ) {
+            $this->MkCommon->_callAllowClosing($data, 'GeneralLedger', 'transaction_date');
+            
             $id = $this->MkCommon->filterEmptyField($value, 'GeneralLedger', 'id');
 
             $dataSave = array();

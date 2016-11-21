@@ -2245,7 +2245,7 @@ class MkCommonComponent extends Component {
                 return true;
             } else {
                 if( !empty($redirect) ) {
-                    $this->redirectReferer(__('Transaksi utk periode tersebut telah Closing.'), 'error', '/');
+                    $this->redirectReferer(__('Transaksi utk periode tersebut telah Closing.'), 'error');
                 } else {
                     return false;
                 }
