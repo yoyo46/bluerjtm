@@ -4764,6 +4764,20 @@ class TrucksController extends AppController {
                 $options['conditions']['TruckMutation.description LIKE'] = '%'.$value.'%';
                 $this->request->data['Truck']['description'] = $value;
             }
+            if(!empty($refine['status'])){
+                $status = urldecode($refine['status']);
+                
+                switch ($status) {
+                    case 'active':
+                        $options['conditions']['TruckMutation.status'] = 1;
+                        break;
+                    case 'non-active':
+                        $options['conditions']['TruckMutation.status'] = 0;
+                        break;
+                }
+
+                $this->request->data['Truck']['status'] = $status;
+            }
         }
 
         $options['conditions'] = array_merge($options['conditions'], array(
@@ -4914,9 +4928,10 @@ class TrucksController extends AppController {
         ));
 
         if( !empty($truckMutation) ){
-            if(!empty($this->request->data)){
-                if(!empty($this->request->data['TruckMutation']['canceled_date'])){
-                    $this->request->data['TruckMutation']['void_date'] = $this->MkCommon->getDate($this->request->data['TruckMutation']['canceled_date']);
+            // if(!empty($this->request->data)){
+                // if(!empty($this->request->data['TruckMutation']['canceled_date'])){
+                    $this->request->data['TruckMutation']['void_date'] = date('Y-m-d');
+                    // $this->request->data['TruckMutation']['void_date'] = $this->MkCommon->getDate($this->request->data['TruckMutation']['canceled_date']);
                     $this->request->data['TruckMutation']['status'] = 0;
 
                     $this->TruckMutation->id = $id;
@@ -4929,18 +4944,19 @@ class TrucksController extends AppController {
                         );
                         $this->MkCommon->setCustomFlash( $msg['msg'], $msg['type']);  
                         $this->Log->logActivity( sprintf(__('Berhasil melakukan void mutasi truk #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
+                        $this->redirect($this->referer());
                     }else{
                         $this->Log->logActivity( sprintf(__('Gagal melakukan void mutasi truk #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
                     }
-                }else{
-                    $msg = array(
-                        'msg' => __('Harap masukkan tanggal pembatalan'),
-                        'type' => 'error'
-                    );
-                }
-            }
+                // }else{
+                //     $msg = array(
+                //         'msg' => __('Harap masukkan tanggal pembatalan'),
+                //         'type' => 'error'
+                //     );
+                // }
+            // }
 
-            $this->set('truckMutation', $truckMutation);
+            // $this->set('truckMutation', $truckMutation);
         }else{
             $msg = array(
                 'msg' => __('Mutasi truk tidak ditemukan'),

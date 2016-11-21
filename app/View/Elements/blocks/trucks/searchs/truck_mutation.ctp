@@ -46,21 +46,15 @@
                             ));
                     ?>
                 </div>
-                <div class="form-group action">
-                    <?php
-                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
-                                'div' => false, 
-                                'class'=> 'btn btn-success btn-sm',
-                                'type' => 'submit',
-                            ));
-                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'mutations', 
-                            ), array(
-                                'escape' => false, 
-                                'class'=> 'btn btn-default btn-sm',
-                            ));
-                    ?>
-                </div>
+                <?php 
+                        echo $this->Common->buildInputForm('status', __('Status'), array(
+                            'empty' => __('Pilih Status'),
+                            'options' => array(
+                                'active' => __('Aktif'),
+                                'non-active' => __('Non-Aktif/Dihapus'),
+                            ),
+                        ));
+                ?>
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
@@ -102,6 +96,21 @@
                             ?>
                         </div>
                     </div>
+                </div>
+                <div class="form-group action">
+                    <?php
+                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
+                                'div' => false, 
+                                'class'=> 'btn btn-success btn-sm',
+                                'type' => 'submit',
+                            ));
+                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'action' => 'mutations', 
+                            ), array(
+                                'escape' => false, 
+                                'class'=> 'btn btn-default btn-sm',
+                            ));
+                    ?>
                 </div>
             </div>
         </div>

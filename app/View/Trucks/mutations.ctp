@@ -124,10 +124,10 @@
                         <?php
                                 echo $iconStatus;
 
-                                if( !empty($void_date) ) {
-                                    echo '<br>';
-                                    echo $this->Common->customDate($void_date, 'd/m/Y');
-                                }
+                                // if( !empty($void_date) ) {
+                                //     echo '<br>';
+                                //     echo $this->Common->customDate($void_date, 'd/m/Y');
+                                // }
                         ?>
                     </td>
                     <td class="action">
@@ -142,12 +142,13 @@
                                 ));
 
                                 if( !empty($status) ) {
-                                    echo $this->Html->link(__('Void'), array(
+                                    echo $this->Html->link(__('Hapus'), array(
                                         'controller' => 'trucks',
                                         'action' => 'mutation_toggle',
                                         $id
                                     ), array(
-                                        'class' => 'btn btn-danger btn-xs ajaxModal',
+                                        // 'class' => 'btn btn-danger btn-xs ajaxModal',
+                                        'class' => 'btn btn-danger btn-xs',
                                         'data-action' => 'submit_form',
                                     ), __('Apakah Anda yakin akan menghapus data ini?'));
                                 }
