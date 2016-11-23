@@ -2,34 +2,50 @@
 App::uses('ModelBehavior', 'Model');
 
 class CommonBehavior extends ModelBehavior {
+	function formatConverter ( Model $model, $result, $format ) {
+		switch ($format) {
+			case 'number':
+				$result = $result * 1;
+				break;
+		}
+
+		return $result;
+	}
+
 	function filterEmptyField(Model $model, $value, $modelName, $fieldName = false, $empty = false, $options = false){
 		$type = !empty($options['type'])?$options['type']:'empty';
+		$formats = !empty($options['format'])?$options['format']:false;
+		$result = false;
 
 		switch($type){
 			case 'isset':
 				if(empty($fieldName) && isset($value[$modelName])){
-					return $value[$modelName];
+					$result = $value[$modelName];
 				} else {
-					return isset($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
+					$result = isset($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
 				}
 				break;
 			
 			default:
 				if(empty($fieldName) && !empty($value[$modelName])){
-					return $value[$modelName];
+					$result = $value[$modelName];
 				} else {
-					return !empty($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
+					$result = !empty($value[$modelName][$fieldName])?$value[$modelName][$fieldName]:$empty;
 				}
 				break;
 		}
 
-		if( !empty($result) && is_string($result) ) {
-			$result = urldecode($result);
-
-			if( !empty($trim) ) {
-				$result = trim($result);
+		if( !empty($formats ) ){
+			if( is_array($formats) ) {
+				foreach ($formats as $key => $format) {
+					$result = $this->formatConverter($model, $result, $format);
+				}
+			} else {
+				$result = $this->formatConverter($model, $result, $formats);
 			}
 		}
+
+		return $result;
 	}
 
     function convertPriceToString ( Model $model, $price, $result = '', $places = 0 ) {

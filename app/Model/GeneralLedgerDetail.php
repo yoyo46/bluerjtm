@@ -139,8 +139,12 @@ class GeneralLedgerDetail extends AppModel {
 
             foreach ($details as $key => $detail) {
                 $coa_id = $this->filterEmptyField($detail, 'GeneralLedgerDetail', 'coa_id');
-                $debit = $this->filterEmptyField($detail, 'GeneralLedgerDetail', 'debit');
-                $credit = $this->filterEmptyField($detail, 'GeneralLedgerDetail', 'credit');
+                $debit = $this->filterEmptyField($detail, 'GeneralLedgerDetail', 'debit', false, array(
+                    'format' => 'number',
+                ));
+                $credit = $this->filterEmptyField($detail, 'GeneralLedgerDetail', 'credit', false, array(
+                    'format' => 'number',
+                ));
                 $options = array();
 
                 if( !empty($debit) ) {

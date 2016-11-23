@@ -271,7 +271,7 @@ class GeneralLedger extends AppModel {
 
     function generateNoDoc(){
         $default_id = 1;
-        $format_id = sprintf('GJ-%s-', date('Y'));
+        $format_id = sprintf('GJ%s', date('Y'));
 
         $last_data = $this->getData('first', array(
             'conditions' => array(
@@ -289,7 +289,7 @@ class GeneralLedger extends AppModel {
         $nodoc = $this->filterEmptyField($last_data, 'GeneralLedger', 'nodoc');
 
         if(!empty($nodoc)){
-            $str_arr = explode('-', $nodoc);
+            $str_arr = explode($format_id, $nodoc);
             $last_arr = count($str_arr)-1;
             $default_id = intval($str_arr[$last_arr]+1);
         }

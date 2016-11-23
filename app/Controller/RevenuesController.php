@@ -609,7 +609,7 @@ class RevenuesController extends AppController {
 
             if($this->Ttuj->validates($data)){
                 if( !empty($data['TtujTipeMotor']['tipe_motor_id']) ) {
-                    $dataTtujTipeMotor = array_filter($data['TtujTipeMotor']['tipe_motor_id']);
+                    $dataTtujTipeMotor = $data['TtujTipeMotor']['tipe_motor_id'];
 
                     if( !empty($data['TtujPerlengkapan']['qty']) ) {
                         $dataTtujPerlengkapan = array_filter($data['TtujPerlengkapan']['qty']);
