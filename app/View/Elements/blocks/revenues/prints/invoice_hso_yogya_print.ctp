@@ -64,13 +64,13 @@
 				<?php 
 	                    if( !empty($fieldColumn) ) {
 	                        echo $this->Html->tag('thead', 
-	                        	$this->Html->tag('tr', 
-		                        	$this->Html->tag('td', __('Tarif Angkutan : %s', $price_unit), array(
-			                        	'style' => 'text-transform:uppercase;text-align:center;font-weight: bold;',
-			                        	'colspan' => '10',
-		                        	)), array(
-		                        	'style' => $table_tr_head,
-	                        	)).
+	                        	// $this->Html->tag('tr', 
+		                        // 	$this->Html->tag('td', __('Tarif Angkutan : %s', $price_unit), array(
+			                       //  	'style' => 'text-transform:uppercase;text-align:center;font-weight: bold;',
+			                       //  	'colspan' => '10',
+		                        // 	)), array(
+		                        // 	'style' => $table_tr_head,
+	                        	// )).
 	                        	$this->Html->tag('tr', $fieldColumn, array(
 		                        	'style' => $table_tr_head,
 	                        	)), array(
