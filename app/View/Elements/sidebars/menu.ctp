@@ -992,7 +992,9 @@
                     $activeSetting = false;
                     $settingMenu = array(
                         'general_ledgers', 'journal_report', 'profit_loss',
-                        'balance_sheets', 'cash_flows', 'journal_rinci_report'
+                        'balance_sheets', 'cash_flows', 'journal_rinci_report',
+                        'coas', 'banks', 'coa_setting',
+                        'closing'
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
@@ -1520,7 +1522,7 @@
                         $settingMenu = array(
                             'cities', 'vendors', 'companies',
                             'perlengkapan', 'branches', 
-                            'classifications', 'banks', 'calendar_colors',
+                            'classifications', 'calendar_colors',
                             'calendar_icons', 'settings', 'jenis_sim',
                             'parts_motor', 'approval_setting'
                         );

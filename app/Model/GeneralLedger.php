@@ -220,15 +220,8 @@ class GeneralLedger extends AppModel {
         return $default_options;
     }
 
-    function doDelete( $id ) {
+    function doDelete( $id, $value ) {
         $result = false;
-        $value = $this->getData('first', array(
-            'conditions' => array(
-                'GeneralLedger.id' => $id,
-            ),
-        ), array(
-            'status' => 'unposting',
-        ));
 
         if ( !empty($value) ) {
             $nodoc = $this->filterEmptyField($value, 'GeneralLedger', 'nodoc');
@@ -238,6 +231,10 @@ class GeneralLedger extends AppModel {
             $this->set('transaction_status', 'void');
 
             if( $this->save() ) {
+                $this->User->Journal->deleteJournal($id, array(
+                    'general_ledger',
+                ));
+                    
                 $msg = sprintf(__('Berhasil %s'), $default_msg);
                 $result = array(
                     'msg' => $msg,

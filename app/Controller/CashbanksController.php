@@ -2188,7 +2188,24 @@ class CashbanksController extends AppController {
     }
 
     public function general_ledger_toggle( $id ) {
-        $result = $this->User->GeneralLedger->doDelete( $id );
-        $this->MkCommon->setProcessParams($result);
+        $value = $this->User->GeneralLedger->getData('first', array(
+            'conditions' => array(
+                'GeneralLedger.id' => $id,
+                'GeneralLedger.transaction_status NOT' => array( 'void' ),
+            ),
+        ));
+
+        if( !empty($value) ) {
+            $transaction_status = $this->MkCommon->filterEmptyField($value, 'GeneralLedger', 'transaction_status');
+
+            if( $transaction_status == 'posting' ) {
+                $this->MkCommon->_callAllowClosing($value, 'GeneralLedger', 'transaction_date');
+            }
+
+            $result = $this->User->GeneralLedger->doDelete( $id, $value );
+            $this->MkCommon->setProcessParams($result);
+        } else {
+            $this->MkCommon->redirectReferer(__('Jurnal Umum tidak ditemukan.'), 'error');
+        }
     }
 }

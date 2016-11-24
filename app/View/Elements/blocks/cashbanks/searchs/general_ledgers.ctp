@@ -35,7 +35,7 @@
                             'options' => array(
                                 'unposting' => __('Draft'),
                                 'posting' => __('Commit'),
-                                'void' => __('Void'),
+                                'void' => __('Void/Hapus'),
                             ),
                         ));
                 ?>

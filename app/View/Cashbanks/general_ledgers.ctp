@@ -96,7 +96,8 @@
                                 ));
                             }
 
-                            if( in_array($transaction_status, array( 'unposting', 'revised' )) ){
+                            // if( in_array($transaction_status, array( 'unposting', 'revised' )) ){
+                            if( !empty($allow_closing) && !in_array($transaction_status, array( 'void' )) ){
                                 $customAction .= $this->Html->link(__('Hapus'), array(
                                     'controller' => 'cashbanks',
                                     'action' => 'general_ledger_toggle',
