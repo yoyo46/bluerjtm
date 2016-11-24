@@ -374,6 +374,7 @@ class HtmlHelper extends AppHelper {
 		if( $is_show ){
 			/*custom*/
 			$current_branch_id = Configure::read('__Site.config_branch_id');
+			$is_show = false;
 
 			if( !empty($url['controller']) ) {
 				$controllerName = $url['controller'];
