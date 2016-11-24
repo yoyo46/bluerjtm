@@ -917,6 +917,7 @@
             <?php 
                     }
 
+                    /*
                     $dataMenu = array(
                         'settings' => array(
                             'coas', 'banks',
@@ -985,6 +986,7 @@
             </li>
             <?php 
                     }
+                    */
             ?>
             <?php
                     $activeSetting = false;
@@ -995,7 +997,11 @@
                     $dataMenu = array(
                         'cashbanks' => array(
                             'general_ledgers', 'journal_report', 'profit_loss',
-                            'balance_sheets', 'cash_flows', 'journal_rinci_report'
+                            'balance_sheets', 'cash_flows', 'journal_rinci_report',
+                            'coa_setting', 'closing',
+                        ),
+                        'settings' => array(
+                            'coas', 'banks',
                         ),
                     );
 
@@ -1013,6 +1019,38 @@
                                 'escape' => false,
                             )).
                             $this->Html->tag('ul',
+                                $this->Html->tag('li', $this->Html->link(__('%s Bank', $this->Common->icon('angle-double-right')), array(
+                                    'controller' => 'settings',
+                                    'action' => 'banks',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( $active_menu == 'banks' )?'active':'',
+                                )).
+                                $this->Html->tag('li', $this->Html->link(__('%s COA', $this->Common->icon('angle-double-right')), array(
+                                    'controller' => 'settings',
+                                    'action' => 'coas',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( $active_menu == 'coas' )?'active':'',
+                                )).
+                                $this->Html->tag('li', $this->Html->link(__('%s Pengaturan COA', $this->Common->icon('angle-double-right')), array(
+                                    'controller' => 'cashbanks',
+                                    'action' => 'coa_setting'
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( $active_menu == 'coa_setting' )?'active':'',
+                                )).
+                                $this->Html->tag('li', $this->Html->link(__('%s Closing', $this->Common->icon('angle-double-right')), array(
+                                    'controller' => 'cashbanks',
+                                    'action' => 'closing'
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( $active_menu == 'closing' )?'active':'',
+                                )).
                                 $this->Html->tag('li', $this->Html->link(__('%s Jurnal Umum', $this->Common->icon('angle-double-right')), array(
                                     'controller' => 'cashbanks',
                                     'action' => 'general_ledgers'
