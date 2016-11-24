@@ -5370,7 +5370,7 @@ class TrucksController extends AppController {
                         'DriverPengganti' => array(
                             'uses' => 'Driver',
                             'primaryKey' => 'id',
-                            'foreignKey' => 'driver_Pengganti_id',
+                            'foreignKey' => 'driver_pengganti_id',
                             'elements' => array(
                                 'branch' => false,
                             ),
