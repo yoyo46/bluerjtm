@@ -77,22 +77,24 @@
             ?>
         </div>
     	<?php 
-    			$attrBrowse = array(
-                    'class' => 'ajaxModal visible-xs browse-docs',
-                    'escape' => false,
-                    'data-action' => 'browse-check-docs',
-                    'data-change' => 'ttuj-info-table',
-                    'url' => $this->Html->url( array(
-                        'controller'=> 'ajax', 
-                        'action' => 'getLakas',
-                        'payment_id' => $id,
-                    )),
-                    'title' => sprintf(__('Detail %s'), $titleBrowse),
-                );
-				$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-                echo $this->Html->tag('div', $this->Html->link('<i class="fa fa-plus-square"></i> '.$titleBrowse, 'javascript:', $attrBrowse), array(
-                	'class' => "form-group",
-            	));
+                if( empty($view) ) {
+        			$attrBrowse = array(
+                        'class' => 'ajaxModal visible-xs browse-docs',
+                        'escape' => false,
+                        'data-action' => 'browse-check-docs',
+                        'data-change' => 'ttuj-info-table',
+                        'url' => $this->Html->url( array(
+                            'controller'=> 'ajax', 
+                            'action' => 'getLakas',
+                            'payment_id' => $id,
+                        )),
+                        'title' => sprintf(__('Detail %s'), $titleBrowse),
+                    );
+    				$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
+                    echo $this->Html->tag('div', $this->Html->link('<i class="fa fa-plus-square"></i> '.$titleBrowse, 'javascript:', $attrBrowse), array(
+                    	'class' => "form-group",
+                	));
+                }
         ?>
     </div>
 </div>
@@ -106,10 +108,13 @@
 			), array(
 				'class'=> 'btn btn-default',
 			));
-    		echo $this->Form->button(__('Simpan'), array(
-    			'type' => 'submit',
-				'class'=> 'btn btn-success btn-lg',
-			));
+
+            if( empty($view) ) {
+        		echo $this->Form->button(__('Simpan'), array(
+        			'type' => 'submit',
+    				'class'=> 'btn btn-success btn-lg',
+    			));
+            }
 	?>
 </div>
 <?php

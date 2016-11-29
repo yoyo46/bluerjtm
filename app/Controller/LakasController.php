@@ -584,6 +584,8 @@ class LakasController extends AppController {
             $elementRevenue = array(
                 'branch' => false,
             );
+        } else {
+            $elementRevenue = false;
         }
 
         $value = $this->LakaPayment->getData('first', array(
@@ -831,16 +833,26 @@ class LakasController extends AppController {
             if( !empty($value['LakaPaymentDetail']) ) {
                 foreach ($value['LakaPaymentDetail'] as $key => $val) {
                     $laka_id = $this->MkCommon->filterEmptyField($val, 'LakaPaymentDetail', 'laka_id');
-                    $val = $this->LakaPayment->LakaPaymentDetail->Laka->getMerge($val, $laka_id);
+                    $amount = $this->MkCommon->filterEmptyField($val, 'LakaPaymentDetail', 'amount');
 
-                    $value['LakaPaymentDetail'][$key] = $val;
+                    $laka = $this->LakaPayment->LakaPaymentDetail->Laka->getMerge(array(), $laka_id);
+
+                    $value['Laka'][$key] = $laka;
+                    $value['LakaPaymentDetail']['amount'][$key] = $amount;
+                    $value['LakaPaymentDetail']['laka_id'][$key] = $laka_id;
                 }
             }
 
+            $this->request->data = $value;
+
+            $this->MkCommon->_layout_file('select');
+            $this->set('view', true);
             $this->set(compact(
                 'value', 'sub_module_title', 'title_for_layout',
                 'module_title'
             ));
+
+            $this->render('payment_add');
         }else{
             $this->MkCommon->setCustomFlash(__('Data tidak ditemukan'), 'error');
             $this->redirect($this->referer());

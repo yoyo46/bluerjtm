@@ -99,16 +99,17 @@
                             'class' => 'text-center'
                         ));
 
-                        $actionDoc = $this->Html->link('Detail', array(
-                            'controller' => 'lakas',
-                            'action' => 'payment_detail',
-                            $id,
-                        ), array(
-                            'class' => 'btn btn-info btn-xs'
-                        ));
+                        $actionDoc = '';
+                        // $actionDoc = $this->Html->link('Detail', array(
+                        //     'controller' => 'lakas',
+                        //     'action' => 'payment_detail',
+                        //     $id,
+                        // ), array(
+                        //     'class' => 'btn btn-info btn-xs'
+                        // ));
                         
                         if(empty($is_canceled)){
-                            $actionDoc .= $this->Html->link(__('Edit'), array(
+                            $actionDoc = $this->Html->link(__('Edit'), array(
                                 'controller' => 'lakas',
                                 'action' => 'payment_edit',
                                 $id,
@@ -129,7 +130,16 @@
                                 'closing' => true,
                                 'periode' => $periode,
                             ));
+                        } else {
+                            $actionDoc = $this->Html->link('Detail', array(
+                                'controller' => 'lakas',
+                                'action' => 'payment_detail',
+                                $id,
+                            ), array(
+                                'class' => 'btn btn-info btn-xs'
+                            ));
                         }
+
                         echo $this->Html->tag('td', $actionDoc, array(
                             'class' => 'action',
                         ));
