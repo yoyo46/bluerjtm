@@ -106,11 +106,13 @@
                     foreach ($values as $key => $value) {
                         $id = $this->Common->filterEmptyField($value, 'Laka', 'id');
                         $document_date = $this->Common->filterEmptyField($value, 'Laka', 'tgl_laka');
-                        $driver = $this->Common->filterEmptyField($value, 'Laka', 'driver_name');
                         $lokasi = $this->Common->filterEmptyField($value, 'Laka', 'lokasi_laka');
                         $status_muatan = $this->Common->filterEmptyField($value, 'Laka', 'status_muatan');
                         $last_paid = $this->Common->filterEmptyField($value, 'Laka', 'last_paid', 0);
                         $nopol = $this->Common->filterEmptyField($value, 'Laka', 'nopol');
+                        
+                        $driver = $this->Common->filterEmptyField($value, 'Laka', 'driver_name');
+                        $driver = $this->Common->filterEmptyField($value, 'Laka', 'change_driver_name', $driver);
 
                         $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                         $status_muatan = strtoupper($status_muatan);
