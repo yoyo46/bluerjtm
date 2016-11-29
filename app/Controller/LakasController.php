@@ -169,7 +169,7 @@ class LakasController extends AppController {
                     ),
                 ));
 
-                $data['Laka']['change_driver_id'] = $driver_pengganti_id;
+                $data['Laka']['change_driver_id'] = $this->MkCommon->filterEmptyField($ttuj_data, 'Ttuj', 'driver_pengganti_id');
 
                 if(!empty($ttuj_data['Driver']['driver_name'])){
                     $data['Laka']['driver_name'] = $ttuj_data['Driver']['driver_name'];

@@ -2870,7 +2870,7 @@ var laka_ttuj_change = function(){
     $('#laka-ttuj-change').change(function(){
         var self = $(this);
         var val = self.val();
-        $('#laka-driver-change-id option:contains("")').text('Pilih Supir Pengganti');
+        $('#laka-driver-change-id option:first').text('Pilih Supir Pengganti');
         
         if(val != ''){
             $.ajax({
@@ -2886,7 +2886,7 @@ var laka_ttuj_change = function(){
 
                         if( $('#laka-driver-change-id').val() != $(response).find('#laka-driver-change-id').val() ) {
                             $('#laka-driver-change-id').val('');
-                            $('#laka-driver-change-id option:contains("")').text(driver_name);
+                            $('#laka-driver-change-id option:first').text(driver_name);
                         }
                     }else{
                         $('#laka-driver-change-id').val('');

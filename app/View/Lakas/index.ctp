@@ -36,9 +36,7 @@
                             'escape' => false
                         )));
 
-                        echo $this->Html->tag('th', $this->Paginator->sort('Laka.driver_name', __('Supir'), array(
-                            'escape' => false
-                        )));
+                        echo $this->Html->tag('th', __('Supir'));
                         echo $this->Html->tag('th', $this->Paginator->sort('Laka.nopol', __('Nopol 
 
                             '), array(
@@ -88,10 +86,10 @@
                 </td>
                 <td>
                     <?php 
-                        if(!empty($value['Laka']['driver_name'])){
-                            echo $value['Laka']['driver_name'];
-                        }else if(!empty($value['Laka']['change_driver_name'])){
+                        if(!empty($value['Laka']['change_driver_name'])){
                             echo sprintf('%s (supir pengganti)', $value['Laka']['change_driver_name']);
+                        } else if(!empty($value['Laka']['driver_name'])){
+                            echo $value['Laka']['driver_name'];
                         }
                     ?>
                 </td>
