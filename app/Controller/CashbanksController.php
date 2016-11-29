@@ -2202,8 +2202,41 @@ class CashbanksController extends AppController {
                 $this->MkCommon->_callAllowClosing($value, 'GeneralLedger', 'transaction_date');
             }
 
-            $result = $this->User->GeneralLedger->doDelete( $id, $value );
-            $this->MkCommon->setProcessParams($result);
+            $is_ajax = $this->RequestHandler->isAjax();
+            $msg = array(
+                'msg' => '',
+                'type' => 'error'
+            );
+            $data = $this->request->data;
+
+            if(!empty($data)){
+                $data = $this->MkCommon->dataConverter($data, array(
+                    'date' => array(
+                        'GeneralLedger' => array(
+                            'canceled_date',
+                        ),
+                    )
+                ));
+                    
+                $result = $this->User->GeneralLedger->doDelete( $id, $value, $data );
+                $msg = array(
+                    'msg' => $this->MkCommon->filterEmptyField($result, 'msg'),
+                    'type' => $this->MkCommon->filterEmptyField($result, 'status'),
+                );
+                $this->MkCommon->setProcessParams($result, false, array(
+                    'ajaxFlash' => true,
+                    'noRedirect' => true,
+                ));
+            }
+
+            $modelName = 'GeneralLedger';
+            $canceled_date = $this->MkCommon->filterEmptyField($data, $modelName, 'canceled_date');
+            $this->set('_flash', false);
+            $this->set(compact(
+                'msg', 'is_ajax',
+                'canceled_date', 'modelName', 'value'
+            ));
+            $this->render('/Elements/blocks/common/form_delete');
         } else {
             $this->MkCommon->redirectReferer(__('Jurnal Umum tidak ditemukan.'), 'error');
         }

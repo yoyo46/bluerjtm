@@ -1876,18 +1876,20 @@ var datepicker = function( obj ){
         obj = $( ".custom-date" );
     }
 
-    $('.datepicker.datepicker-dropdown').remove();
-    var min_date = $.checkUndefined($('body').attr('datapicker-mindate'), 'false');
-    var date_options = {
-        format: 'dd/mm/yyyy',
-        todayHighlight: true,
-    };
+    if( obj.length > 0 ) {
+        $('.datepicker.datepicker-dropdown').remove();
+        var min_date = $.checkUndefined($('body').attr('datapicker-mindate'), 'false');
+        var date_options = {
+            format: 'dd/mm/yyyy',
+            todayHighlight: true,
+        };
 
-    if( min_date != 'false' ) {
-        date_options['startDate'] = min_date;
+        if( min_date != 'false' ) {
+            date_options['startDate'] = min_date;
+        }
+
+        obj.datepicker(date_options);
     }
-
-    obj.datepicker(date_options);
 }
 
 var timepicker = function( obj ){
@@ -2252,6 +2254,8 @@ var formInput = function( obj ) {
                             pickIcon();
                             pickColor()
                             submitForm();
+                            datepicker();
+
                             $('.timepicker').timepicker({
                                 showMeridian: false
                             });

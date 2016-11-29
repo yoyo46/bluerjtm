@@ -8,6 +8,7 @@
 		$value = !empty($value)?$value:false;
         $status = $this->Common->filterEmptyField($value, 'GeneralLedger', 'status');
         $transaction_status = $this->Common->filterEmptyField($value, 'GeneralLedger', 'transaction_status');
+        $customStatus = $this->Common->_callTransactionStatus($value, 'GeneralLedger');
 
         echo $this->element('blocks/cashbanks/tables/list_approvals', array(
         	'urlBack' => false,
@@ -47,6 +48,18 @@
 		                )), array(
 	                	'class' => "form-group",
 	            	));
+	            } else {
+        			$canceled_note = $this->Common->filterEmptyField($value, 'GeneralLedger', 'canceled_note', false, true, 'EOL');
+
+        			if( !empty($canceled_note) ) {
+        				$canceled_note = '<br>'.$canceled_note;
+        			}
+
+	            	echo $this->Html->tag('div', 
+	            		$this->Html->tag('label', __('Status')).
+	            		$this->Html->tag('p', $customStatus.$canceled_note), array(
+	            		'class' => 'form-group',
+            		));
 	            }
 	    ?>
     </div>

@@ -59,6 +59,9 @@
                             $transactionDate = $this->Common->filterEmptyField($value, 'GeneralLedger', 'transaction_date', false, true, array(
                                 'date' => 'd/m/Y',
                             ));
+                            $periode = $this->Common->filterEmptyField($value, 'GeneralLedger', 'transaction_date', false, false, array(
+                                'date' => 'Y-m',
+                            ));
                             $note = $this->Common->filterEmptyField($value, 'GeneralLedger', 'note');
                             $status = $this->Common->filterEmptyField($value, 'GeneralLedger', 'status');
                             $transaction_status = $this->Common->filterEmptyField($value, 'GeneralLedger', 'transaction_status');
@@ -104,7 +107,11 @@
                                     $id,
                                     'admin' => false,
                                 ), array(
-                                    'class' => 'btn btn-danger btn-xs',
+                                    'class' => 'btn btn-danger btn-xs ajaxModal',
+                                    'data-action' => 'submit_form',
+                                    'title' => __('Hapus'),
+                                    'closing' => true,
+                                    'periode' => $periode,
                                 ), __('Anda yakin ingin menghapus data ini?'));
                             }
             ?>

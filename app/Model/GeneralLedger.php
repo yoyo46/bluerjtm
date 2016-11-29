@@ -40,6 +40,12 @@ class GeneralLedger extends AppModel {
                 'message' => 'Tgl transaksi harap dipilih'
             ),
         ),
+        'canceled_date' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Tgl pembatalan harap dipilih'
+            ),
+        ),
 	);
 
     public function __construct($id = false, $table = NULL, $ds = NULL){
@@ -220,7 +226,7 @@ class GeneralLedger extends AppModel {
         return $default_options;
     }
 
-    function doDelete( $id, $value ) {
+    function doDelete( $id, $value, $data ) {
         $result = false;
 
         if ( !empty($value) ) {
@@ -228,9 +234,9 @@ class GeneralLedger extends AppModel {
             $default_msg = sprintf(__('menghapus jurnal umum #%s'), $nodoc);
 
             $this->id = $id;
-            $this->set('transaction_status', 'void');
+            $data['GeneralLedger']['transaction_status'] = 'void';
 
-            if( $this->save() ) {
+            if( $this->save($data) ) {
                 $this->User->Journal->deleteJournal($id, array(
                     'general_ledger',
                 ));

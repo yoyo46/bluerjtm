@@ -2435,6 +2435,7 @@ class CommonHelper extends AppHelper {
 
     function _callTransactionStatus ( $data, $modelName = false, $fieldName = 'transaction_status' ) {
         $transaction_status = $this->filterEmptyField($data, $modelName, $fieldName);
+        $canceled_date = $this->filterEmptyField($data, $modelName, 'canceled_date');
 
         switch ($transaction_status) {
             case 'paid':
@@ -2453,6 +2454,11 @@ class CommonHelper extends AppHelper {
                 $customStatus = $this->Html->tag('span', __('Void'), array(
                     'class' => 'label label-danger',
                 ));
+
+                if(!empty($canceled_date)){
+                    $canceled_date = $this->formatDate($canceled_date, 'd/m/Y', false);
+                    $customStatus .= '<br>'.$canceled_date;
+                }
                 break;
 
             case 'sold':

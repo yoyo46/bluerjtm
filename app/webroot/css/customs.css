@@ -1,3 +1,7 @@
+/*
+  - Jurnal Umum
+*/
+
 /*Notification*/
 .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a {
     padding: 5px;
@@ -511,4 +515,10 @@ tr.expired .red {
 }
 .form-serial-number ul li input[type="text"] {
   text-transform: uppercase;
+}
+
+/*- Jurnal Umum*/
+.form-added .form-group .label-danger {
+  margin-bottom: 5px;
+  display: inline-block;
 }
