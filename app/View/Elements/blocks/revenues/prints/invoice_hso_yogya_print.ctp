@@ -63,14 +63,20 @@
 				<table border="1" width="100%" style="margin-top: 20px;<?php echo $table; ?>">
 				<?php 
 	                    if( !empty($fieldColumn) ) {
+	                    	if( $idx == 2 ) {
+	                    		$label = $this->Html->tag('tr', 
+		                        	$this->Html->tag('td', __('%s - CBR/PCX', $tarif_name), array(
+			                        	'style' => 'text-transform:uppercase;text-align:center;font-weight: bold;',
+			                        	'colspan' => '10',
+		                        	)), array(
+		                        	'style' => $table_tr_head,
+	                        	));
+	                    	} else {
+	                    		$label = '';
+	                    	}
+
 	                        echo $this->Html->tag('thead', 
-	                        	// $this->Html->tag('tr', 
-		                        // 	$this->Html->tag('td', __('Tarif Angkutan : %s', $price_unit), array(
-			                       //  	'style' => 'text-transform:uppercase;text-align:center;font-weight: bold;',
-			                       //  	'colspan' => '10',
-		                        // 	)), array(
-		                        // 	'style' => $table_tr_head,
-	                        	// )).
+	                        	$label.
 	                        	$this->Html->tag('tr', $fieldColumn, array(
 		                        	'style' => $table_tr_head,
 	                        	)), array(

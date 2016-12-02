@@ -2741,6 +2741,7 @@ class AjaxController extends AppController {
             'limit' => Configure::read('__Site.config_pagination'),
     	));
 
+        $options =  $this->Laka->getData('paginate', $options);
         $this->paginate = $options;
         $values = $this->paginate('Laka');
 
