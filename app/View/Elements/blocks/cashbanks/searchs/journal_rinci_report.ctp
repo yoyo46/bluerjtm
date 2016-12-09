@@ -80,6 +80,20 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('status',array(
+                                'label'=> __('Status'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => false,
+                                'options' => array(
+                                    'all' => __('Semua'),
+                                    'active' => __('Aktif'),
+                                ),
+                            ));
+                    ?>
+                </div>
             </div>
         </div>
         <?php 
