@@ -497,6 +497,11 @@ class RjRevenueComponent extends Component {
                         'conditions' => array(
                             'InvoicePaymentDetail.invoice_id' => $invoice_id,
                             'InvoicePaymentDetail.invoice_payment_id <>' => $id,
+							'InvoicePayment.status' => 1,
+							'InvoicePayment.is_canceled' => 0,
+						),
+						'contain' => array(
+							'InvoicePayment',
                         ),
                     ));
 
@@ -610,9 +615,9 @@ class RjRevenueComponent extends Component {
                     $invoice_has_paid = $this->controller->InvoicePayment->InvoicePaymentDetail->getData('first', array(
                         'conditions' => array(
                             'InvoicePaymentDetail.invoice_id' => $_invoice_id,
+                            'InvoicePayment.id <>' => $id,
                             'InvoicePayment.status' => 1,
                             'InvoicePayment.is_canceled' => 0,
-                            'InvoicePayment.id <>' => $id,
                         ),
                         'fields' => array(
                             'SUM(InvoicePaymentDetail.price_pay) as invoice_has_paid'
@@ -715,7 +720,9 @@ class RjRevenueComponent extends Component {
 	                    'conditions' => array(
 		                    'InvoicePayment.transaction_status' => 'posting',
 		                    'InvoicePaymentDetail.invoice_id' => $invoice_id,
-		                    'InvoicePaymentDetail.status' => 1
+		                    'InvoicePaymentDetail.status' => 1,
+							'InvoicePayment.status' => 1,
+							'InvoicePayment.is_canceled' => 0,
 		                ),
 	                    'contain' => array(
 	                        'InvoicePayment',

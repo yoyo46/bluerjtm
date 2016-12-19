@@ -308,7 +308,7 @@ class Invoice extends AppModel {
         if(empty($data['Invoice'])){
             $data_merge = $this->find($find, array(
                 'conditions' => array(
-                    'Invoice.id' => $id
+                    'Invoice.id' => $id,
                 ),
             ));
 

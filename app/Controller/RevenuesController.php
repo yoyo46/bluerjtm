@@ -4907,6 +4907,7 @@ class RevenuesController extends AppController {
                                 'conditions' => array(
                                     'InvoicePaymentDetail.invoice_id' => $value['invoice_id'],
                                     'InvoicePayment.status' => 1,
+                                    'InvoicePayment.is_canceled' => 0,
                                 ),
                                 'fields' => array(
                                     '*',

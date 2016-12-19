@@ -1620,8 +1620,13 @@ class AjaxController extends AppController {
 					$invoice_has_paid = $this->Invoice->InvoicePaymentDetail->getData('first', array(
 						'conditions' => array(
 							'InvoicePaymentDetail.invoice_id' => $value['Invoice']['id'],
-							'InvoicePaymentDetail.status' => 1,
 							'InvoicePaymentDetail.invoice_payment_id <>' => $payment_id,
+							'InvoicePaymentDetail.status' => 1,
+							'InvoicePayment.status' => 1,
+							'InvoicePayment.is_canceled' => 0,
+						),
+						'contain' => array(
+							'InvoicePayment',
 						),
 					));
 
