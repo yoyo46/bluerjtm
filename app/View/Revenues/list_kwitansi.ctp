@@ -346,10 +346,10 @@
                             echo $this->Html->tag('td', $company, array(
                                 'style' => 'text-align: center;vertical-align: middle;',
                             ));
-                            echo $this->Html->tag('td', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                            echo $this->Html->tag('td', $this->Common->getFormatPrice($invoice['Invoice']['total']), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
-                            echo $this->Html->tag('td', $this->Number->currency($totalPPH, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                            echo $this->Html->tag('td', $this->Common->getFormatPrice($totalPPH), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
                             echo $this->Html->tag('td', $this->Common->combineDate($invoice['Invoice']['period_from'], $invoice['Invoice']['period_to']), array(
@@ -370,7 +370,7 @@
                             echo $this->Html->tag('td', implode('<br>', $datePayment), array(
                                 'style' => 'text-align: center;vertical-align: middle;',
                             ));
-                            echo $this->Html->tag('td', $this->Number->currency($totalPaid, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                            echo $this->Html->tag('td', $this->Common->getFormatPrice($totalPaid), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
                             echo $this->Html->tag('td', $this->Html->tag('span', $invoiceStatus['text'], array(
@@ -393,10 +393,10 @@
                             )), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
-                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalTagihan, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Common->getFormatPrice($totalTagihan)), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
-                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($grandtotalPPH, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Common->getFormatPrice($grandtotalPPH)), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
                             $tdContent .= $this->Html->tag('td', '');
@@ -407,7 +407,7 @@
                             $tdContent .= $this->Html->tag('td', '');
                             $tdContent .= $this->Html->tag('td', '');
                             $tdContent .= $this->Html->tag('td', '');
-                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalTransfer, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Common->getFormatPrice($totalTransfer)), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
                             $tdContent .= $this->Html->tag('td', '', array(
@@ -426,7 +426,7 @@
                             )), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
-                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalVoid, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Common->getFormatPrice($totalVoid)), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
                             $tdContent .= $this->Html->tag('td', '');
@@ -436,7 +436,7 @@
                             $tdContent .= $this->Html->tag('td', '');
                             $tdContent .= $this->Html->tag('td', '');
                             $tdContent .= $this->Html->tag('td', '');
-                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalVoidTransfer, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                            $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Common->getFormatPrice($totalVoidTransfer)), array(
                                 'style' => 'text-align: right;vertical-align: middle;',
                             ));
                             $tdContent .= $this->Html->tag('td', '');
@@ -547,10 +547,10 @@
                     $content .= $this->Html->tag('td', $company, array(
                         'style' => 'text-align: center;vertical-align: middle;',
                     ));
-                    $content .= $this->Html->tag('td', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                    $content .= $this->Html->tag('td', $this->Common->getFormatPrice($invoice['Invoice']['total']), array(
                         'style' => 'text-align: right;vertical-align: middle;',
                     ));
-                    $content .= $this->Html->tag('td', $this->Number->currency($totalPPH, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                    $content .= $this->Html->tag('td', $this->Common->getFormatPrice($totalPPH), array(
                         'style' => 'text-align: right;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', $this->Common->combineDate($invoice['Invoice']['period_from'], $invoice['Invoice']['period_to']), array(
@@ -571,7 +571,7 @@
                     $content .= $this->Html->tag('td', implode('<br>', $datePayment), array(
                         'style' => 'text-align: center;vertical-align: middle;',
                     ));
-                    $content .= $this->Html->tag('td', $this->Number->currency($totalPaid, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
+                    $content .= $this->Html->tag('td', $this->Common->getFormatPrice($totalPaid), array(
                         'style' => 'text-align: right;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', $invoiceStatus['text'].$invoiceStatus['void_date'], array(
@@ -588,10 +588,10 @@
                     'style' => 'text-align: right;vertical-align: middle;',
                     'colspan' => 5,
                 ));
-                $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalTagihan, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Common->getFormatPrice($totalTagihan)), array(
                     'style' => 'text-align: right;vertical-align: middle;',
                 ));
-                $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($grandtotalPPH, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Common->getFormatPrice($grandtotalPPH)), array(
                     'style' => 'text-align: right;vertical-align: middle;',
                 ));
                 $tdContent .= $this->Html->tag('td', '', array(
@@ -600,7 +600,7 @@
                 $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $totalQty), array(
                     'style' => 'text-align: center;vertical-align: middle;',
                 ));
-                $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalTransfer, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Common->getFormatPrice($totalTransfer)), array(
                     'style' => 'text-align: right;vertical-align: middle;',
                     'colspan' => 4,
                 ));
@@ -613,10 +613,10 @@
                     'style' => 'text-align: right;vertical-align: middle;',
                     'colspan' => 5,
                 ));
-                $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalVoid, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Common->getFormatPrice($totalVoid)), array(
                     'style' => 'text-align: right;vertical-align: middle;',
                 ));
-                $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Number->currency($totalVoidTransfer, Configure::read('__Site.config_currency_code'), array('places' => 0))), array(
+                $tdContent .= $this->Html->tag('td', $this->Html->tag('strong', $this->Common->getFormatPrice($totalVoidTransfer)), array(
                     'style' => 'text-align: right;vertical-align: middle;',
                     'colspan' => 8,
                 ));

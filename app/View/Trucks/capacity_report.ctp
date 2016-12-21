@@ -89,7 +89,7 @@
 <?php 
         }
 ?>
-<section class="content invoice">
+<section class="box content invoice">
     <?php 
             if( $data_action != 'excel' ) {
     ?>
@@ -289,10 +289,10 @@
         </table>
     <?php
             if( $data_action != 'excel' ) {
-                echo $this->element('pagination');
     ?>
     </div>
     <?php 
+                echo $this->element('pagination');
             }
 
             echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(

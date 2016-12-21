@@ -65,12 +65,6 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            // Custom Otorisasi
-                            echo $this->Common->getCheckboxBranch();
-                    ?>
-                </div>
-                <div class="form-group">
-                    <?php 
                             echo $this->Form->input('journalcoa',array(
                                 'label'=> __('COA'),
                                 'class'=>'form-control chosen-select',
@@ -92,6 +86,12 @@
                                     'active' => __('Aktif'),
                                 ),
                             ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            // Custom Otorisasi
+                            echo $this->Common->getCheckboxBranch();
                     ?>
                 </div>
             </div>

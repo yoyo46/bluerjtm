@@ -20,12 +20,6 @@
                 $noref = str_pad($document_id, 6, '0', STR_PAD_LEFT);
                 $customNoref = $this->Common->_callDocumentJournal( $noref, $document_id, $type, $data_action );
                 $document_no = $this->Common->filterEmptyField($value, 'Journal', 'document_no', $noref);
-
-                if( $new != $old ) {
-                    if( !empty($old) ) {
-                        echo '<tr><td colspan="8"><hr></td></tr>';
-                    }
-                }
 ?>
 <tr>
     <?php

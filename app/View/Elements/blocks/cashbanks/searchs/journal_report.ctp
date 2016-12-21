@@ -65,12 +65,6 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            // Custom Otorisasi
-                            echo $this->Common->getCheckboxBranch();
-                    ?>
-                </div>
-                <div class="form-group">
-                    <?php 
                             echo $this->Form->input('journalcoa',array(
                                 'label'=> __('COA'),
                                 'class'=>'form-control chosen-select',
@@ -78,6 +72,26 @@
                                 'empty' => __('Pilih COA'),
                                 'options' => !empty($coas)?$coas:false,
                             ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('status',array(
+                                'label'=> __('Status'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => false,
+                                'options' => array(
+                                    'all' => __('Semua'),
+                                    'active' => __('Aktif'),
+                                ),
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            // Custom Otorisasi
+                            echo $this->Common->getCheckboxBranch();
                     ?>
                 </div>
             </div>
