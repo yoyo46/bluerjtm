@@ -99,8 +99,8 @@
                         if( $total > $totalPaid ) {
                             $sisaPembayaran = (!empty($data['InvoicePaymentDetail']['price_pay'][$invoice['id']])) ? $data['InvoicePaymentDetail']['price_pay'][$invoice['id']] : $sisaPembayaran;
 
-                            $ppnTotal = $this->Common->calcFloat($sisaPembayaran, $ppn);
-                            $pphTotal = $this->Common->calcFloat($sisaPembayaran, $pph);
+                            $ppnTotal = $this->Common->calcFloat($total, $ppn);
+                            $pphTotal = $this->Common->calcFloat($total, $pph);
                             $totalPayment = $sisaPembayaran + $ppnTotal;
 
                             $customPpnTotal = $this->Common->getFormatPrice($ppnTotal);
@@ -136,7 +136,7 @@
                             printf('%s s/d %s', $this->Common->customDate($invoice['period_from'], 'd M Y'), $this->Common->customDate($invoice['period_to'], 'd M Y'));
                     ?>
                 </td>
-                <td class="text-right">
+                <td class="text-right total-payment">
                     <?php
                             echo $this->Common->getFormatPrice($total);
                     ?>

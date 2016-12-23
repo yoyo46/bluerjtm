@@ -43,6 +43,10 @@ class InvoicePayment extends AppModel {
             'className' => 'Coa',
             'foreignKey' => 'coa_id',
         ),
+        'CashBank' => array(
+            'className' => 'CashBank',
+            'foreignKey' => 'document_id',
+        ),
 	);
 
     var $hasMany = array(

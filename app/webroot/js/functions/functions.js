@@ -2439,7 +2439,7 @@ var leasing_action = function(){
 }
 
 function _callTotalInvoice () {
-    var invoice_price = $('.document-pick-info-detail .document-pick-price');
+    var invoice_price = $('.document-pick-info-detail .total-payment');
     var length = invoice_price.length;
     var total_price = 0;
     var grand_total = 0;
@@ -2450,7 +2450,7 @@ function _callTotalInvoice () {
 
     $.each( invoice_price, function( i, val ) {
         var self = $(this);
-        var price = self.val();
+        var price = self.html();
         var parent = self.parents('tr.child');
         var ppn = $.convertNumber( parent.find('.tax-nominal[rel="ppn"]').val() );
         var total_document = parent.find('.total-document');
@@ -2497,7 +2497,7 @@ var invoice_price_payment = function(){
         var rel = self.attr('rel');
         
         var parent = self.parents('tr.child');
-        var total = $.convertNumber( parent.find('.document-pick-price').val() );
+        var total = $.convertNumber( parent.find('.total-payment').html() );
 
         result = calcTax(type, val, total);
 

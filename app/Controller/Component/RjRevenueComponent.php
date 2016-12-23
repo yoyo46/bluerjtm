@@ -764,6 +764,7 @@ class RjRevenueComponent extends Component {
                         'branch_id' => Configure::read('__Site.config_branch_id'),
                         'user_id' => $this->controller->user_id,
                         'coa_id' => $pph_debit_id,
+                        'document_id' => $invoice_payment_id,
                         'receiving_cash_type' => 'out',
                         'receiver_type' => 'Customer',
                         'receiver_id' => $customer_id,

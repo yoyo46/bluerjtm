@@ -63,7 +63,7 @@
                 'class' => 'text-center',
             ));
             echo $this->Html->tag('td', $total, array(
-                'class' => 'text-right',
+                'class' => 'text-right total-payment',
             ));
             echo $this->Html->tag('td', $invoice_has_paid, array(
                 'class' => 'text-right',

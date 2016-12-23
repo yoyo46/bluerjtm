@@ -4882,7 +4882,19 @@ class RevenuesController extends AppController {
                     'InvoicePaymentDetail'
                 )
             ));
-            
+            $invoice_payment = $this->Invoice->InvoicePaymentDetail->InvoicePayment->getMergeList($invoice_payment, array(
+                'contain' => array(
+                    'CashBank' => array(
+                        'uses' => 'CashBank',
+                        'primaryKey' => 'document_id',
+                        'foreignKey' => 'id',
+                        'elements' => array(
+                            'branch' => false,
+                        ),
+                    ),
+                ),
+            ));
+
             if(!empty($invoice_payment)){
                 $this->MkCommon->_callAllowClosing($invoice_payment, 'InvoicePayment', 'date_payment');
 
@@ -4894,6 +4906,8 @@ class RevenuesController extends AppController {
                 $invoice_payment = $this->Invoice->InvoicePaymentDetail->InvoicePayment->Customer->getMerge($invoice_payment, $customer_id);
                 $customer_name_code = $this->MkCommon->filterEmptyField($invoice_payment, 'Customer', 'customer_name_code');
                 $total_payment = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'total_payment');
+                
+                $cash_bank_id = $this->MkCommon->filterEmptyField($invoice_payment, 'CashBank', 'id');
                 // $pph = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'pph');
 
                 // if( !empty($pph) ) {
@@ -4967,6 +4981,33 @@ class RevenuesController extends AppController {
                                 'document_no' => $document_no,
                                 'type' => 'invoice_payment_void',
                             ));
+
+                            if( !empty($cash_bank_id) ) {
+                                $tgl_cash_bank = $this->MkCommon->filterEmptyField($invoice_payment, 'CashBank', 'tgl_cash_bank');
+                                $pph_total = $this->MkCommon->filterEmptyField($invoice_payment, 'CashBank', 'grand_total');
+                                $description = $this->MkCommon->filterEmptyField($invoice_payment, 'CashBank', 'description');
+
+                                $this->Invoice->InvoicePaymentDetail->InvoicePayment->CashBank->id = $cash_bank_id;
+                                $this->Invoice->InvoicePaymentDetail->InvoicePayment->CashBank->set(array(
+                                    'is_rejected' => 1,
+                                ));
+                                
+                                if($this->Invoice->InvoicePaymentDetail->InvoicePayment->CashBank->save()){
+                                    $noref = str_pad($cash_bank_id, 6, '0', STR_PAD_LEFT);
+                                    $description = __('<i>Pembatalan</i> %s', $description);
+
+                                    $this->User->Journal->setJournal($pph_total, array(
+                                        'credit' => 'pph_coa_debit_id',
+                                        'debit' => $coa_id,
+                                    ), array(
+                                        'date' => $tgl_cash_bank,
+                                        'document_id' => $cash_bank_id,
+                                        'title' => $description,
+                                        'document_no' => $noref,
+                                        'type' => 'out_void',
+                                    ));
+                                }
+                            }
                         }
                     }
 
