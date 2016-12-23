@@ -6,7 +6,7 @@
         $dataColumns = array(
             'no' => array(
                 'name' => __('NO'),
-				'style' => 'text-align:center;width: 5%;',
+				'style' => 'text-align:center;width: 3%;',
             ),
             'date' => array(
                 'name' => __('TANGGAL'),
@@ -14,7 +14,7 @@
             ),
             'dealer' => array(
                 'name' => __('DEALER'),
-				'style' => 'text-align:center;width: 12%;',
+				'style' => 'text-align:center;width: 18%;',
             ),
             'nopol' => array(
                 'name' => __('NOPOL'),
