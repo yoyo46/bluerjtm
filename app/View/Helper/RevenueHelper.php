@@ -172,7 +172,7 @@ class RevenueHelper extends AppHelper {
         }
     }
 
-    function _callTtujPaid ( $value ) {
+    function _callTtujPaid ( $value, $alert = false ) {
         $group_id = Configure::read('__Site.config_group_id');
         $paid = $this->Common->filterEmptyField($value, 'TtujPayment', 'paid');
         $status_sj = $this->Common->filterEmptyField($value, 'Ttuj', 'status_sj', 'none');
@@ -180,11 +180,17 @@ class RevenueHelper extends AppHelper {
         $status = $this->Common->filterIssetField($value, 'Ttuj', 'status', true);
         $allowEdit = true;
 
-        if( $group_id != 1 ) {
+        if( !empty($is_invoice) && !empty($alert) ) {
+            echo $this->Html->tag('p', __('Invoice untuk TTUJ ini telah terbentuk. Segala perubahan data tidak diperbolehkan.'), array(
+                'class' => 'alert alert-warning text-center',
+            ));
+        }
+
+        // if( $group_id != 1 ) {
             if( $status_sj != 'none' || !empty($paid) || !empty($is_invoice) || empty($status) ) {
                 $allowEdit = false;
             }
-        }
+        // }
 
         return $allowEdit;
     }

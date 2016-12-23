@@ -507,7 +507,7 @@
 		</div>
 		<div class="box-footer text-center action">
 			<?php
-                    $allowSave = $this->Revenue->_callTtujPaid($data_local);
+                    $allowSave = $this->Revenue->_callTtujPaid($data_local, true);
 
 					echo $this->Html->link(__('Kembali'), array(
 						'action' => 'ttuj', 
