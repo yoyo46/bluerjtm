@@ -1,8 +1,8 @@
 <?php 
         if( !empty($coas) ) {
-            $coas = array_merge(array(
+            $coas = array(
                 'all' => __('Pilih Semua COA'),
-            ), $coas);
+            ) + $coas;
         }
 ?>
 <div class="box">

@@ -242,11 +242,12 @@
                                     'action' => 'revenue_toggle',
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-danger btn-xs',
+                                    'class' => 'btn btn-danger btn-xs trigger-disabled',
                                     'title' => 'disable status',
                                     'closing' => true,
                                     'periode' => $periode,
-                                ), __('Anda yakin ingin menghapus revenue ini?'));
+                                    'data-alert' => __('Anda yakin ingin menghapus revenue ini?'),
+                                ));
                             }
                     ?>
                 </td>

@@ -70,15 +70,15 @@
 						));
 						echo $this->Common->_callInputForm('start', array(
 							'type' => 'datetime',
-							'label' => __('Tgl Mulai'),
+							'label' => __('Tgl Mulai *'),
 						));
 						echo $this->Common->_callInputForm('estimation', array(
 							'type' => 'datetime',
-							'label' => __('Estimasi Penyelesaian'),
+							'label' => __('Estimasi Penyelesaian *'),
 						));
 						echo $this->Common->_callInputForm('complete', array(
 							'type' => 'datetime',
-							'label' => __('Tgl Selesai'),
+							'label' => __('Tgl Selesai *'),
 						));
 				?>
 			</div>
@@ -93,14 +93,14 @@
 		    ?>
 		    <div class="box-body">
 		    	<?php 
-						echo $this->Common->_callInputForm('transaction_status', array(
-							'label' => __('Status *'),
-							'empty' => __('- Pilih Status -'),
-							'options' => array(
-								'open' => __('Open'),
-								'closed' => __('Closed'),
-							),
-						));
+						// echo $this->Common->_callInputForm('transaction_status', array(
+						// 	'label' => __('Status *'),
+						// 	'empty' => __('- Pilih Status -'),
+						// 	'options' => array(
+						// 		'open' => __('Open'),
+						// 		'closed' => __('Closed'),
+						// 	),
+						// ));
 						echo $this->element('blocks/common/forms/input_pickup', array(
 							'fieldName' => 'nopol',
 							'label' => __('No. Pol *'),

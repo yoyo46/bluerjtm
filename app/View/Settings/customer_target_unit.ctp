@@ -53,9 +53,10 @@
                                 'action' => 'customer_target_unit_toggle',
                                 $id
                             ), array(
-                                'class' => 'btn btn-danger btn-xs',
-                                'title' => 'disable status brand'
-                            ), __('Anda yakin ingin menghapus data Target Unit ini?'));
+                                'class' => 'btn btn-danger btn-xs trigger-disabled',
+                                'title' => 'disable status brand',
+                                'data-alert' => __('Anda yakin ingin menghapus data Target Unit ini?'),
+                            ));
                     ?>
                 </td>
             </tr>

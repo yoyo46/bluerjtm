@@ -75,7 +75,7 @@
                                     'rel' => 'qty',
                                 ),
                             )), array(
-                                'class' => 'hide %s',
+                                'class' => 'hide',
                             ));
                             echo $this->Html->tag('td', $stock, array(
                                 'class' => 'hide text-center',
@@ -111,7 +111,8 @@
                                     'rel' => 2,
                                 ),
                             )), array(
-                                'class' => 'hide',
+                                'data-display' => $eksternalClass,
+                                'class' => 'hide wrapper-eksternal',
                             ));
                             echo $this->Html->tag('td', $this->Html->link($this->Common->icon('times'), '#', array(
                                 'class' => 'delete-document btn btn-danger btn-xs',

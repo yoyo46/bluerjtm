@@ -54,9 +54,10 @@
                                 'action' => 'customer_group_toggle',
                                 $id
                             ), array(
-                                'class' => 'btn btn-danger btn-xs',
-                                'title' => 'Hapus Grup Customer'
-                            ), __('Anda yakin ingin menghapus data Grup Customer ini?'));
+                                'class' => 'btn btn-danger btn-xs trigger-disabled',
+                                'title' => 'Hapus Grup Customer',
+                                'data-alert' => __('Anda yakin ingin menghapus data Grup Customer ini?'),
+                            ));
                     ?>
                 </td>
             </tr>

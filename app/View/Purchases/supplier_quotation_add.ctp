@@ -35,6 +35,7 @@
 				));
 				echo $this->Common->buildInputForm('vendor_id', __('Supplier *'), array(
 					'empty' => __('- Pilih Supplier -'),
+					'class' => 'form-control chosen-select',
 				));
 				echo $this->Common->buildInputForm('available_date', __('Tgl Berlaku *'), array(
 					'type' => 'text',

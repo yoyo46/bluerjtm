@@ -150,9 +150,10 @@
                                         'action' => 'toggle',
                                         $id
                                     ), array(
-                                        'class' => 'btn btn-danger btn-xs',
-                                        'title' => 'disable status brand'
-                                    ), __('Apakah Anda yakin akan mengbatalkan data ini?'));
+                                        'class' => 'btn btn-danger btn-xs trigger-disabled',
+                                        'title' => 'disable status brand',
+                                        'data-alert' => __('Apakah Anda yakin akan mengbatalkan data ini?'),
+                                    ));
                                 }
                         ?>
                     </td>

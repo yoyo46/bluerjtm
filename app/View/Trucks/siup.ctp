@@ -106,8 +106,9 @@
                                         'action' => 'siup_delete',
                                         $id
                                     ), array(
-                                        'class' => 'btn btn-danger btn-xs'
-                                    ), __('Anda yakin ingin void data Perpanjang Ijin Usaha ini?'));
+                                        'class' => 'btn btn-danger btn-xs trigger-disabled',
+                                        'data-alert' => __('Anda yakin ingin void data Perpanjang Ijin Usaha ini?'),
+                                    ));
                                 }
                             }
                     ?>

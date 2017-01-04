@@ -106,8 +106,9 @@
                                     'action' => 'stnk_payment_delete',
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-danger btn-xs'
-                                ), __('Anda yakin ingin membatalkan data pembayaran STNK ini?'));
+                                    'class' => 'btn btn-danger btn-xs trigger-disabled',
+                                    'data-alert' => __('Anda yakin ingin membatalkan data pembayaran STNK ini?'),
+                                ));
                             }
                     ?>
                 </td>

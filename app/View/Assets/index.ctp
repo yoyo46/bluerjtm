@@ -122,8 +122,9 @@
                                 $id,
                                 'admin' => false,
                             ), array(
-                                'class' => 'btn btn-danger btn-xs',
-                            ), __('Anda yakin ingin menghapus asset ini?'));
+                                'class' => 'btn btn-danger btn-xs trigger-disabled',
+                                'data-alert' => __('Anda yakin ingin menghapus asset ini?'),
+                            ));
 
                             echo $this->Html->tableCells(array(
                                 array(

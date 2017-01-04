@@ -148,9 +148,10 @@
                                         $id
                                     ), array(
                                         // 'class' => 'btn btn-danger btn-xs ajaxModal',
-                                        'class' => 'btn btn-danger btn-xs',
+                                        'class' => 'btn btn-danger btn-xs trigger-disabled',
                                         'data-action' => 'submit_form',
-                                    ), __('Apakah Anda yakin akan menghapus data ini?'));
+                                        'data-alert' => __('Apakah Anda yakin akan menghapus data ini?'),
+                                    ));
                                 }
                         ?>
                     </td>

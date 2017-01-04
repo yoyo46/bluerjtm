@@ -3,37 +3,43 @@
             'code' => array(
                 'name' => __('Kode'),
                 'field_model' => 'Product.code',
-                'display' => true,
             ),
             'name' => array(
                 'name' => __('Nama'),
                 'field_model' => 'Product.name',
-                'display' => true,
-            ),
-            'unit' => array(
-                'name' => __('Satuan'),
-                'field_model' => false,
-                'display' => true,
-            ),
-            'group' => array(
-                'name' => __('Grup'),
-                'field_model' => false,
-                'display' => true,
             ),
             'type' => array(
                 'name' => __('Tipe'),
                 'field_model' => 'Product.type',
-                'display' => true,
+            ),
+            'unit' => array(
+                'name' => __('Satuan'),
+            ),
+            'group' => array(
+                'name' => __('Grup'),
+            ),
+            'sq' => array(
+                'name' => __('Harus ada SQ ?'),
+                'field_model' => 'Product.is_supplier_quotation',
+                'class' => 'text-center',
+            ),
+            'sn' => array(
+                'name' => __('SN ?'),
+                'field_model' => 'Product.is_serial_number',
+                'class' => 'text-center',
+            ),
+            'stock' => array(
+                'name' => __('Stok'),
+                'field_model' => 'Product.product_stock_cnt',
+                'class' => 'text-center',
             ),
             'status' => array(
                 'name' => __('Status'),
                 'field_model' => 'Product.status',
-                'display' => true,
+                'class' => 'text-center',
             ),
             'action' => array(
                 'name' => __('Action'),
-                'field_model' => false,
-                'display' => true,
             ),
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
@@ -73,13 +79,21 @@
                             $type = $this->Common->filterEmptyField($value, 'Product', 'type');
                             $created = $this->Common->filterEmptyField($value, 'Product', 'created');
                             $status = $this->Common->filterEmptyField($value, 'Product', 'status');
+                            $product_stock_cnt = $this->Common->filterEmptyField($value, 'Product', 'product_stock_cnt', '-');
+                            $is_supplier_quotation = $this->Common->filterEmptyField($value, 'Product', 'is_supplier_quotation');
+                            $is_serial_number = $this->Common->filterEmptyField($value, 'Product', 'is_serial_number');
 
                             $unit = $this->Common->filterEmptyField($value, 'ProductUnit', 'name');
                             $group = $this->Common->filterEmptyField($value, 'ProductCategory', 'name');
 
                             $customCreated = $this->Common->formatDate($created, 'd/m/Y');
-                            $customType = $this->Common->unSlug($type);
+                            
+                            $customType = str_replace('_', ' ', $type);
+                            $customType = ucwords($customType);
+
                             $customStatus = $this->Common->getCheckStatus($status);
+                            $sq = $this->Common->getCheckStatus($is_supplier_quotation);
+                            $sn = $this->Common->getCheckStatus($is_serial_number);
                             $customAction = $this->Html->link('Edit', array(
                                 'controller' => 'products',
                                 'action' => 'edit',
@@ -92,17 +106,29 @@
                                 'action' => 'toggle',
                                 $id
                             ), array(
-                                'class' => 'btn btn-danger btn-xs',
-                            ), __('Anda yakin ingin menghapus barang ini?'));
+                                'class' => 'btn btn-danger btn-xs trigger-disabled',
+                                'data-alert' => __('Anda yakin ingin menghapus barang ini?'),
+                            ));
             ?>
             <tr>
                 <?php 
                         echo $this->Html->tag('td', $code);
                         echo $this->Html->tag('td', $name);
+                        echo $this->Html->tag('td', $customType);
                         echo $this->Html->tag('td', $unit);
                         echo $this->Html->tag('td', $group);
-                        echo $this->Html->tag('td', $customType);
-                        echo $this->Html->tag('td', $customStatus);
+                        echo $this->Html->tag('td', $sq, array(
+                            'class' => 'text-center',
+                        ));
+                        echo $this->Html->tag('td', $sn, array(
+                            'class' => 'text-center',
+                        ));
+                        echo $this->Html->tag('td', $product_stock_cnt, array(
+                            'class' => 'text-center',
+                        ));
+                        echo $this->Html->tag('td', $customStatus, array(
+                            'class' => 'text-center',
+                        ));
                         echo $this->Html->tag('td', $customAction, array(
                             'class' => 'action',
                         ));

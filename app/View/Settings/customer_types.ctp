@@ -68,9 +68,10 @@
                                 'action' => 'customer_type_toggle',
                                 $id
                             ), array(
-                                'class' => 'btn btn-danger btn-xs',
-                                'title' => 'disable status brand'
-                            ), __('Anda yakin ingin menghapus data Tipe Customer ini?'));
+                                'class' => 'btn btn-danger btn-xs trigger-disabled',
+                                'title' => 'disable status brand',
+                                'data-alert' => __('Anda yakin ingin menghapus data Tipe Customer ini?'),
+                            ));
                     ?>
                 </td>
             </tr>

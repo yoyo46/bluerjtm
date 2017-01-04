@@ -78,8 +78,9 @@
                                 'action' => 'approval_setting_toggle',
                                 $id
                             ), array(
-                                'class' => 'btn btn-danger btn-xs',
-                            ), __('Anda yakin ingin menghapus data ini?'));
+                                'class' => 'btn btn-danger btn-xs trigger-disabled',
+                                'data-alert' => __('Anda yakin ingin menghapus data ini?'),
+                            ));
                     ?>
                 </td>
             </tr>

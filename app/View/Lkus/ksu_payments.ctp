@@ -114,10 +114,11 @@
                                     'action' => 'ksu_payment_delete',
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-danger btn-xs',
+                                    'class' => 'btn btn-danger btn-xs trigger-disabled',
                                     'closing' => true,
                                     'periode' => $periode,
-                                ), __('Apakah Anda yakin ingin pembayaran ini?'));
+                                    'data-alert' => __('Apakah Anda yakin ingin pembayaran ini?'),
+                                ));
                             }
                     ?>
                 </td>

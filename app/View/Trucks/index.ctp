@@ -222,8 +222,9 @@
                                     'action' => 'toggle',
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-danger btn-xs',
-                                ), sprintf(__('Apakah Anda yakin akan menghapus truk dengan nopol %s?'), $nopol));
+                                    'class' => 'btn btn-danger btn-xs trigger-disabled',
+                                    'data-alert' => sprintf(__('Apakah Anda yakin akan menghapus truk dengan nopol %s?'), $nopol),
+                                ));
                         ?>
                     </td>
                 </tr>

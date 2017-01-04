@@ -106,10 +106,11 @@
                                     'action' => 'invoice_payment_delete',
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-danger btn-xs',
+                                    'class' => 'btn btn-danger btn-xs trigger-disabled',
                                     'closing' => true,
                                     'periode' => $periode,
-                                ), __('Apakah Anda yakin ingin mengbatalkan pembayaran invoice ini?'));
+                                    'data-alert' => __('Apakah Anda yakin ingin mengbatalkan pembayaran invoice ini?'),
+                                ));
                             }
                     ?>
                 </td>

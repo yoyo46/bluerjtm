@@ -4396,6 +4396,23 @@ $(function() {
         }
     });
 
+    $('.trigger-disabled').click(function(){
+        var self = $(this);
+        var alert = $.checkUndefined(self.attr('data-alert'), null);
+        var body = self.parents('body');
+        var button = body.find('button[type="submit"],.trigger-disabled');
+
+        if( alert != null ) {
+            if( confirm(alert) ) {
+                button.attr('disabled', true);
+            } else {
+                return false;
+            }
+        } else {
+            button.attr('disabled', true);
+        }
+    });
+
     $('.leasing-last-year-installment,.leasing-last-month-installment,.leasing-last-day-installment').change(function(){
         _callMonthInstallment();
     });

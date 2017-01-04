@@ -106,9 +106,10 @@
                                         'action' => 'kir_delete',
                                         $id
                                     ), array(
-                                        'class' => 'btn btn-danger btn-xs',
+                                        'class' => 'btn btn-danger btn-xs trigger-disabled',
                                         'branch_id' => $branch_id,
-                                    ), __('Anda yakin ingin menon-aktifkan data Perpanjang KIR ini?'));
+                                        'data-alert' => __('Anda yakin ingin menon-aktifkan data Perpanjang KIR ini?'),
+                                    ));
                                 }
                             }
                     ?>

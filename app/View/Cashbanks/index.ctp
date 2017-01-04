@@ -154,10 +154,11 @@
                                     $id
                                 ), array(
                                     'escape' => false,
-                                    'class' => 'btn btn-danger btn-xs',
+                                    'class' => 'btn btn-danger btn-xs trigger-disabled',
                                     'closing' => true,
                                     'periode' => $periode,
-                                ), __('Anda yakin ingin void data ini?'));
+                                    'data-alert' => __('Anda yakin ingin void data ini?'),
+                                ));
                             }
 
                             $content .= $this->Html->tag('td', $link, array(

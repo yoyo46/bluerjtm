@@ -158,9 +158,10 @@
                                         'action' => 'toggle',
                                         $id
                                     ), array(
-                                        'class' => 'btn btn-danger btn-xs',
+                                        'class' => 'btn btn-danger btn-xs trigger-disabled',
                                         'branch_id' => $branch_id,
-                                    ), __('Apakah Anda yakin akan void kontrak ini?'));
+                                        'data-alert' => __('Apakah Anda yakin akan void kontrak ini?'),
+                                    ));
                                 }else{
                                     // echo $this->Html->link('Enable', array(
                                     //     'controller' => 'leasings',

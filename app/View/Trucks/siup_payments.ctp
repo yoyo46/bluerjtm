@@ -98,8 +98,9 @@
                                     'action' => 'siup_payment_delete',
                                     $id
                                 ), array(
-                                    'class' => 'btn btn-danger btn-xs'
-                                ), __('Anda yakin ingin membatalkan data pembayaran Ijin Usaha ini?'));
+                                    'class' => 'btn btn-danger btn-xs trigger-disabled',
+                                    'data-alert' => __('Anda yakin ingin membatalkan data pembayaran Ijin Usaha ini?'),
+                                ));
                             }
                     ?>
                 </td>

@@ -52,9 +52,10 @@
                             'action' => 'facility_toggle',
                             $id
                         ), array(
-                            'class' => 'btn btn-danger btn-xs',
-                            'title' => 'disable status brand'
-                        ), sprintf(__('Apakah Anda yakin akan menghapus data Fasilitas %s?'), $value_data['name']));
+                            'class' => 'btn btn-danger btn-xs trigger-disabled',
+                            'title' => 'disable status brand',
+                            'data-alert' => sprintf(__('Apakah Anda yakin akan menghapus data Fasilitas %s?'), $value_data['name']),
+                        ));
                     ?>
                 </td>
             </tr>

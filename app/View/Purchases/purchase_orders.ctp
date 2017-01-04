@@ -120,10 +120,11 @@
                                     $id,
                                     'admin' => false,
                                 ), array(
-                                    'class' => 'btn btn-danger btn-xs',
+                                    'class' => 'btn btn-danger btn-xs trigger-disabled',
                                     'closing' => true,
                                     'periode' => $periode,
-                                ), __('Anda yakin ingin menghapus PO ini?'));
+                                    'data-alert' => __('Anda yakin ingin menghapus PO ini?'),
+                                ));
                             }
             ?>
             <tr>

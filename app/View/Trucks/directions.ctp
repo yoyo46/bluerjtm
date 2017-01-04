@@ -53,9 +53,10 @@
                             'action' => 'direction_toggle',
                             $id
                         ), array(
-                            'class' => 'btn btn-danger btn-sm',
-                            'title' => 'disable status brand'
-                        ), __('Anda yakin ingin menghapus data Rute ini?'));
+                            'class' => 'btn btn-danger btn-sm trigger-disabled',
+                            'title' => 'disable status brand',
+                            'data-alert' => __('Anda yakin ingin menghapus data Rute ini?'),
+                        ));
                     ?>
                 </td>
             </tr>
