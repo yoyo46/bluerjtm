@@ -47,9 +47,9 @@ class RjSpkComponent extends Component {
             ), $data);
 
             foreach ($spkProduct['product_id'] as $key => $product_id) {
-                $qty = $this->MkCommon->filterIssetField($spkProduct, 'qty', $key);
-                $price_service = $this->MkCommon->filterIssetField($spkProduct, 'price_service', $key);
-                $price = $this->MkCommon->filterIssetField($spkProduct, 'price', $key);
+                $qty = !empty($spkProduct['qty'][$key])?$spkProduct['qty'][$key]:false;
+                $price_service = !empty($spkProduct['price_service'][$key])?$spkProduct['price_service'][$key]:false;
+                $price = !empty($spkProduct['price'][$key])?$spkProduct['price'][$key]:false;
 
                 $dataProduct = array(
                     'product_id' => $product_id,

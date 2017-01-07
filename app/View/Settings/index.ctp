@@ -352,7 +352,41 @@
 	<div class="col-sm-6">
 		<div class="box box-primary">
 		    <div class="box-header">
-		        <h3 class="box-title"><?php echo __('Informasi Toggle'); ?></h3>
+		        <h3 class="box-title"><?php echo __('Pengaturan SPK'); ?></h3>
+		    </div>
+		    <div class="box-body">
+	    		<?php 
+						echo $this->Form->input('SettingGeneral.spk_internal_policy',array(
+							'label'=> __('Ketentuan SPK Internal'), 
+							'class'=>'form-control',
+							'required' => false,
+							'div' => 'form-group',
+							'empty' => __('Pilih Ketentuan SPK'),
+							'options' => array(
+								'receipt' => __('Ada Penerimaan barang bekas'),
+								'no_receipt' => __('Tidak ada penerimaan barang bekas'),
+							),
+						));
+						echo $this->Form->input('SettingGeneral.spk_internal_status',array(
+							'label'=> __('Status SPK Internal'), 
+							'class'=>'form-control',
+							'required' => false,
+							'empty' => __('Pilih Ketentuan SPK'),
+							'div' => 'form-group',
+							'options' => array(
+								'closed_expenditured' => __('"Closed" ketika barang keluar'),
+								'closed_receipt' => __('"Closed" ketika barang bekas diterima'),
+								'closed_all_condition' => __('Semua kondisi terpenuhi'),
+							),
+						));
+				?>
+		    </div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="box box-primary">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Pengaturan Transaksi'); ?></h3>
 		    </div>
 		    <div class="box-body">
 		    	<div class="row">

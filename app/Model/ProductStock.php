@@ -14,6 +14,13 @@ class ProductStock extends AppModel {
                 'ProductStock.transaction_type' => 'product_receipts',
             ),
         ),
+        'ProductExpenditureDetail' => array(
+            'className' => 'ProductExpenditureDetail',
+            'foreignKey' => 'transaction_id',
+            'conditions' => array(
+                'ProductStock.transaction_type' => 'product_expenditure',
+            ),
+        ),
     )
     ;
     public function __construct($id = false, $table = NULL, $ds = NULL){
@@ -23,6 +30,7 @@ class ProductStock extends AppModel {
 
 	function getData( $find, $options = false, $elements = false ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $branch = isset($elements['branch'])?$elements['branch']:true;
 
         $default_options = array(
             'conditions'=> array(),
@@ -46,6 +54,10 @@ class ProductStock extends AppModel {
                     'ProductStock.transaction_date' => 'ASC',
                     'ProductStock.id' => 'ASC',
                 );
+        }
+
+        if( !empty($branch) ) {
+            $default_options['conditions']['ProductStock.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
         if(!empty($options['conditions'])){

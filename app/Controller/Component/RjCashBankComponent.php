@@ -295,7 +295,7 @@ class RjCashBankComponent extends Component {
 
         $period_text = __('Periode %s - %s', $dateFrom, $dateTo);
         $this->controller->set('sub_module_title', __('Laporan Cash Flow'));
-        $this->controller->set('active_menu', 'report_recap_sj');
+        $this->controller->set('active_menu', 'cash_flows');
         $this->MkCommon->_callBeforeViewReport($data_action, array(
             'layout_file' => array(
                 'select',

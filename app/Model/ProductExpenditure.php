@@ -197,11 +197,18 @@ class ProductExpenditure extends AppModel {
             $status = 'full';
         }
 
+        $settings = $this->callSettingGeneral('spk_internal_status');
+        $spk_internal_status = $this->filterEmptyField($settings, 'spk_internal_status');
+
         $this->Spk->id = $document_id;
         $this->Spk->set('draft_document_status', $status);
 
         if( $transaction_status == 'posting' && $status == 'full' ) {
-            $this->Spk->set('transaction_status', 'finish');
+            if( $spk_internal_status == 'closed_expenditured' ) {
+                $this->Spk->set('transaction_status', 'closed');
+            } else {
+                $this->Spk->set('transaction_status', 'finish');
+            }
         }
 
         $this->Spk->save();

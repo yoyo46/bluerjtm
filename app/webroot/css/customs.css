@@ -1,5 +1,6 @@
 /*
   - Jurnal Umum
+  - Label
 */
 
 /*Notification*/
@@ -521,4 +522,9 @@ tr.expired .red {
 .form-added .form-group .label-danger {
   margin-bottom: 5px;
   display: inline-block;
+}
+
+/*- Label*/
+.label-dark {
+    background-color: #444;
 }

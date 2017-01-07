@@ -92,6 +92,7 @@
                             ));
                             echo $this->Html->tag('td', '', array(
                                 'class' => 'text-right total',
+                                'data-decimal' => 2,
                             ));
                     ?>
                 </tr>

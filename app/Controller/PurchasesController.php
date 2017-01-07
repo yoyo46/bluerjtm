@@ -97,12 +97,6 @@ class PurchasesController extends AppController {
         }
 
         $this->request->data = $this->RjPurchase->_callBeforeRenderQuotation($this->request->data);
-
-        $vendors = $this->SupplierQuotation->Vendor->getData('list');
-        $this->set('active_menu', 'Supplier Quotation');
-        $this->set(compact(
-            'vendors'
-        ));
     }
 
     public function supplier_quotation_edit( $id = false ) {
@@ -136,10 +130,8 @@ class PurchasesController extends AppController {
             ));
             $this->request->data = $this->RjPurchase->_callBeforeRenderQuotation($this->request->data);
 
-            $vendors = $this->SupplierQuotation->Vendor->getData('list');
-            $this->set('active_menu', 'Supplier Quotation');
             $this->set(compact(
-                'vendors', 'value'
+                'value'
             ));
             $this->render('supplier_quotation_add');
         } else {
@@ -202,8 +194,6 @@ class PurchasesController extends AppController {
 
             $this->request->data = $this->RjPurchase->_callBeforeRenderQuotation($value);
 
-            $vendors = $this->SupplierQuotation->Vendor->getData('list');
-            $this->set('active_menu', 'Supplier Quotation');
             $this->set('view', 'detail');
             $this->set(compact(
                 'vendors', 'value',

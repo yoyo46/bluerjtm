@@ -355,4 +355,31 @@ class CommonBehavior extends ModelBehavior {
 
         return $result;
     }
+
+    function callSettingGeneral ( Model $model, $labelName = null ) {
+        $data = array();
+
+        $this->SettingGeneral = ClassRegistry::init('SettingGeneral'); 
+        $conditions = false;
+
+        if( !empty($labelName) ) {
+            $conditions['SettingGeneral.name'] = $labelName;
+        }
+
+        $values = $this->SettingGeneral->find('all', array(
+            'conditions' => $conditions,
+        ));
+        
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $lbl = $this->filterEmptyField($model, $value, 'SettingGeneral', 'name');
+                $value = $this->filterEmptyField($model, $value, 'SettingGeneral', 'value');
+
+                $data[$lbl] = $value;
+            }
+        }
+
+        return $data;
+    }
 }

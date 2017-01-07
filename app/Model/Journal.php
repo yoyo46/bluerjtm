@@ -147,6 +147,7 @@ class Journal extends AppModel {
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $type = isset($elements['type'])?$elements['type']:false;
 
         $default_options = array(
             'conditions'=> array(),
@@ -171,6 +172,32 @@ class Journal extends AppModel {
             case 'without-void':
                 $default_options['conditions']['Journal.status'] = 1;
                 $default_options['conditions']['Journal.type NOT like'] = '%void%';
+                break;
+                break;
+        }
+
+        switch ($type) {
+            case 'active':
+                $default_options['conditions']['Journal.type NOT LIKE'] = '%void%';
+                $default_options['conditions']['JournalVoid.id'] = NULL;
+                $default_options['contain'][] = 'JournalVoid';
+
+                $this->bindModel(array(
+                    'belongsTo' => array(
+                        'JournalVoid' => array(
+                            'className' => 'Journal',
+                            'foreignKey' => false,
+                            'conditions' => array(
+                                'Journal.document_id = JournalVoid.document_id',
+                                'Journal.document_no = JournalVoid.document_no',
+                                'OR' => array(
+                                    'JournalVoid.type = CONCAT(Journal.type, \'_void\')',
+                                    'JournalVoid.type = CONCAT(\'void_\', Journal.type)',
+                                ),
+                            ),
+                        ),
+                    )
+                ), false);
                 break;
         }
 

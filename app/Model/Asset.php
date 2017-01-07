@@ -58,16 +58,16 @@ class Asset extends AppModel {
                 'message' => 'Depr/bulan harus berupa angka',
             ),
         ),
-        'ak_penyusutan' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Ak. Penyusutan harap diisi'
-            ),
-            'numeric' => array(
-                'rule' => array('numeric'),
-                'message' => 'Ak. Penyusutan harus berupa angka',
-            ),
-        ),
+        // 'ak_penyusutan' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Ak. Penyusutan harap diisi'
+        //     ),
+        //     'numeric' => array(
+        //         'rule' => array('numeric'),
+        //         'message' => 'Ak. Penyusutan harus berupa angka',
+        //     ),
+        // ),
         'nilai_buku' => array(
             'notempty' => array(
                 'rule' => array('notempty'),

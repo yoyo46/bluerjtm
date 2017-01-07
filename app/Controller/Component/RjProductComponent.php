@@ -95,6 +95,7 @@ class RjProductComponent extends Component {
         $product_history_id = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'product_history_id');
         $qty_total = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'qty_total');
         $qty_use = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'qty_use');
+        $price = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'price');
         $qty_total -= $qty;
 
         if( $qty_total < 0 ) {
@@ -103,12 +104,22 @@ class RjProductComponent extends Component {
             $status = true;
         }
 
-        return array(
+        $result = array(
             'id' => $id,
             'product_history_id' => $product_history_id,
+            'product_id' => $product_id,
             'qty_use' => $qty_use + $qty,
             'status' => $status,
         );
+
+        if( !empty($serial_number) ) {
+            return $result;   
+        } else {
+            return array(
+                'price' => $price,
+                'ProductStock' => $result,
+            );   
+        }
     }
 
     function _callOutStockSerialNumber ( $serial_numbers ) {
@@ -130,14 +141,14 @@ class RjProductComponent extends Component {
         $transaction_status = $this->MkCommon->filterEmptyField($data, $model, 'transaction_status');
         $transaction_date = $this->MkCommon->filterEmptyField($data, $model, 'transaction_date');
         $session_id = $this->MkCommon->filterEmptyField($data, $model, 'session_id');
-        $to_branch_id = $this->MkCommon->filterEmptyField($data, $model, 'to_branch_id');
+        $to_branch_id = $this->MkCommon->filterEmptyField($data, $model, 'to_branch_id', Configure::read('__Site.config_branch_id'));
         $modelDetail = __('%sDetail', $model);
 
         if( $transaction_status == 'posting' ) {
             $product_id = $this->MkCommon->filterEmptyField($detail, $modelDetail, 'product_id');
             $qty = $this->MkCommon->filterEmptyField($detail, $modelDetail, 'qty');
             $price = $this->MkCommon->filterEmptyField($detail, $modelDetail, 'price');
-            
+
             $history = $this->controller->Product->ProductHistory->getMerge(array(), $product_id);
             $balance = $this->MkCommon->filterEmptyField($history, 'ProductHistory', 'ending', 0);
             $ending = $balance;
@@ -182,7 +193,9 @@ class RjProductComponent extends Component {
                     if( !empty($serial_numbers) ) {
                         $detail['ProductHistory']['ProductStock'] = $this->_callOutStockSerialNumber( $serial_numbers );
                     } else {
-                        $detail['ProductHistory']['ProductStock']['id'] = $this->_callOutStock($product_id, $qty);
+                        $result = $this->_callOutStock($product_id, $qty);
+                        $detail['ProductHistory']['price'] = $this->MkCommon->filterEmptyField($result, 'price', false, $price);
+                        $detail['ProductHistory']['ProductStock'][] = $this->MkCommon->filterEmptyField($result, 'ProductStock');
                     }
                     break;
             }
@@ -703,12 +716,10 @@ class RjProductComponent extends Component {
                         $dataDetail[$key]['ProductExpenditureDetail']['Product'] = array(
                             'id' => $product_id,
                             'truck_category_id' => 1,
-                            'SpkProduct' => array(
-                                array(
-                                    'id' => $spk_product_id,
-                                    'document_status' => $status,
-                                ),
-                            ),
+                        );
+                        $dataDetail[$key]['ProductExpenditureDetail']['SpkProduct'] = array(
+                            'id' => $spk_product_id,
+                            'document_status' => $status,
                         );
                         $dataDetail[$key] = $this->_callStock('product_expenditure', $data, $dataDetail[$key], 'out', 'ProductExpenditure');
                     }

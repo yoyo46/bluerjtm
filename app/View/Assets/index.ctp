@@ -110,6 +110,10 @@
                             $nilai_buku = $this->Common->getFormatPrice($nilai_buku, 0, 2);
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
 
+                            if( $purchase_date == '01/01/1970' ) {
+                                $purchase_date = '-';
+                            }
+
                             $action = $this->Html->link(__('Edit'), array(
                                 'action' => 'edit',
                                 $id,

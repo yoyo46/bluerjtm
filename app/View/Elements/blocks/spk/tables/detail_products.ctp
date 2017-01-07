@@ -37,7 +37,7 @@
             ),
             'price' => array(
                 'name' => __('Harga Barang'),
-                'class' => 'text-center',
+                'class' => __('text-center wrapper-eksternal %s', $eksternalClass),
                 'style' => 'width:15%;',
             ),
             'action' => array(
@@ -145,7 +145,9 @@
                                     'rel' => 2,
                                     'value' => $this->Common->getFormatPrice($price, 0, 2),
                                     'fieldError' => __('SpkProduct.%s.price', $key),
-                                )));
+                                )), array(
+                                    'class' => __('wrapper-eksternal %s', $eksternalClass),
+                                ));
                                 echo $this->Html->tag('td', $this->Html->link($this->Common->icon('times'), '#', array(
                                     'class' => 'delete-document btn btn-danger btn-xs',
                                     'escape' => false,
@@ -184,7 +186,7 @@
                                     'rel' => 1,
                                 ));
                                 echo $this->Html->tag('td', $price, array(
-                                    'class' => 'text-right total_custom',
+                                    'class' => __('text-right total_custom wrapper-eksternal %s', $eksternalClass),
                                     'data-decimal' => 2,
                                     'rel' => 2,
                                 ));

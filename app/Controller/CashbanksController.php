@@ -1491,6 +1491,8 @@ class CashbanksController extends AppController {
                 $this->User->Journal->virtualFields['begining_balance_credit'] = 'SUM(Journal.credit)';
                 $this->User->Journal->virtualFields['begining_balance_debit'] = 'SUM(Journal.debit)';
 
+                $type = $this->MkCommon->filterEmptyField($params, 'named', 'status');
+
                 $summaryBalance = $this->User->Journal->getData('first', array(
                     'conditions' => array_merge(array(
                         'Journal.coa_id' => $coa_id,
@@ -1499,9 +1501,9 @@ class CashbanksController extends AppController {
                     'group' => array(
                         'Journal.coa_id',
                     ),
-                    'contain' => false,
+                ), true, array(
+                    'type' => $type,
                 ));
-                // debug($summaryBalance);die();
 
                 $balance_credit = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'begining_balance_credit', 0);
                 $balance_debit = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'begining_balance_debit', 0);

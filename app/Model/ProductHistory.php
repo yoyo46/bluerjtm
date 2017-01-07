@@ -14,6 +14,13 @@ class ProductHistory extends AppModel {
                 'ProductHistory.transaction_type' => 'product_receipts',
             ),
         ),
+        'ProductExpenditureDetail' => array(
+            'className' => 'ProductExpenditureDetail',
+            'foreignKey' => 'transaction_id',
+            'conditions' => array(
+                'ProductHistory.transaction_type' => 'product_expenditure',
+            ),
+        ),
     );
 
     var $hasMany = array(
@@ -25,6 +32,7 @@ class ProductHistory extends AppModel {
 
 	function getData( $find, $options = false, $elements = false ){
         $status = isset($elements['status'])?$elements['status']:'active';
+        $branch = isset($elements['branch'])?$elements['branch']:true;
 
         $default_options = array(
             'conditions'=> array(),
@@ -38,6 +46,10 @@ class ProductHistory extends AppModel {
         switch ($status) {
             case 'active':
                 $default_options['conditions']['ProductHistory.status'] = 1;
+        }
+
+        if( !empty($branch) ) {
+            $default_options['conditions']['ProductHistory.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
         if(!empty($options['conditions'])){

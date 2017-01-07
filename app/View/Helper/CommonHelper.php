@@ -2529,7 +2529,7 @@ class CommonHelper extends AppHelper {
 
             case 'closed':
                 $customStatus = $this->Html->tag('span', __('Closed'), array(
-                    'class' => 'label label-danger',
+                    'class' => 'label label-dark',
                 ));
                 break;
 

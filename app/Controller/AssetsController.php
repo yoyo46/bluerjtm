@@ -713,9 +713,12 @@ class AssetsController extends AppController {
                                     $bln = !empty($bln)?$bln:false;
                                     $thn = !empty($thn)?$thn:false;
                                     $perolehan_nilai = !empty($perolehan_nilai)?$this->MkCommon->_callPriceConverter($perolehan_nilai):false;
-                                    $akun_penyusutan = !empty($akun_penyusutan)?$this->MkCommon->_callPriceConverter($akun_penyusutan):false;
+                                    $ak_penyusutan = !empty($ak_penyusutan)?$this->MkCommon->_callPriceConverter($ak_penyusutan):false;
                                     $dep_mth = !empty($dep_mth)?$dep_mth:false;
                                     $terjual = !empty($terjual)?$terjual:false;
+                                    $group_asset = !empty($group_asset)?$group_asset:false;
+                                    $periode_ak_penyusutan = !empty($periode_ak_penyusutan)?$periode_ak_penyusutan:'2015-12-31';
+                                    $periode_ak_penyusutan = $this->MkCommon->customDate($periode_ak_penyusutan, 'Y-m-d');
                                     $note  = array();
 
                                     if( !empty($no_kontrak) ) {
@@ -735,32 +738,42 @@ class AssetsController extends AppController {
                                         $status_document = 'available';
                                     }
 
-                                    if( !empty($tgl_perolehan) || !empty($tgl_neraca) ) {
-                                        $tgl_perolehan = $this->MkCommon->customDate($tgl_perolehan, 'd/m/Y');
-                                    } else {
+                                    // if( !empty($tgl_perolehan) || !empty($tgl_neraca) ) {
+                                    //     $tgl_perolehan = $this->MkCommon->customDate($tgl_perolehan, 'd/m/Y');
+                                    // } else {
                                         $tgl_perolehan = sprintf('01/%s/%s', $bln, $tahun_perolehan);
                                         $tgl_neraca = sprintf('01/%s/%s', $bln, $thn);
+                                    // }
+
+                                    switch ($group_asset) {
+                                        case 'INVT':
+                                            $asset_group_id = 2;
+                                            break;
+                                        
+                                        default:
+                                            $asset_group_id = 1;
+                                            break;
                                     }
 
                                     $dataArr = array(
                                         'Asset' => array(
                                             'name' => $nama_asset_nopol,
-                                            'asset_group_id' => 2,
+                                            'asset_group_id' => $asset_group_id,
                                             'purchase_date' => $tgl_perolehan,
                                             'neraca_date' => $tgl_neraca,
                                             'nilai_perolehan' => $perolehan_nilai,
                                             'depr_bulan' => $dep_mth,
-                                            'nilai_buku' => $perolehan_nilai - $akun_penyusutan,
+                                            'nilai_buku' => $perolehan_nilai - $ak_penyusutan,
                                             'note' => $note,
                                             'status_document' => $status_document,
-                                            'ak_penyusutan' => $akun_penyusutan,
+                                            'ak_penyusutan' => $ak_penyusutan,
                                         ),
                                         'AssetDepreciation' => array(
                                             array(
                                                 'AssetDepreciation' => array(
                                                     'depr_bulan' => $dep_mth,
-                                                    'ak_penyusutan' => $akun_penyusutan,
-                                                    'periode' => '2015-12-31',
+                                                    'ak_penyusutan' => $ak_penyusutan,
+                                                    'periode' => $periode_ak_penyusutan,
                                                 ),
                                             ),
                                         ),

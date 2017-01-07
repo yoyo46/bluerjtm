@@ -80,6 +80,14 @@ class RjPurchaseComponent extends Component {
         
         $transaction_date = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'transaction_date', date('Y-m-d'));
         $data['SupplierQuotation']['transaction_date'] = $this->MkCommon->getDate($transaction_date, true);
+        
+        $vendors = $this->controller->SupplierQuotation->Vendor->getData('list');
+        
+        $this->MkCommon->_layout_file('select');
+        $this->controller->set('active_menu', 'Supplier Quotation');
+        $this->controller->set(compact(
+            'vendors'
+        ));
 
         return $data;
     }

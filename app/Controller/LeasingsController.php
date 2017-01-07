@@ -113,6 +113,7 @@ class LeasingsController extends AppController {
                     ),
                 ));
 
+                $this->set('active_menu', 'view_leasing');
                 $this->set('view', 'detail');
                 $this->set(compact(
                     'value', 'sub_module_title',

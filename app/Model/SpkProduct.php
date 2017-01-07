@@ -10,6 +10,12 @@ class SpkProduct extends AppModel {
             'foreignKey' => 'product_id',
         ),
     );
+    var $hasMany = array(
+        'ProductExpenditureDetail' => array(
+            'className' => 'ProductExpenditureDetail',
+            'foreignKey' => 'product_id',
+        ),
+    );
 
 	var $validate = array(
         'product_id' => array(
@@ -34,26 +40,22 @@ class SpkProduct extends AppModel {
         ),
         'price_service' => array(
             'eksternalValidate' => array(
-                'rule' => array('eksternalValidate'),
+                'rule' => array('eksternalValidate', 'price_service'),
                 'message' => 'Harga jasa harap diisi'
             ),
         ),
         'price' => array(
-            'numeric' => array(
-                'rule' => array('numeric'),
-                'message' => 'Harga barang harap diisi'
-            ),
-            'notempty' => array(
-                'rule' => array('notempty'),
+            'checkPrice' => array(
+                'rule' => array('eksternalValidate', 'price'),
                 'message' => 'Harga barang harap diisi'
             ),
         ),
 	);
 
-    function eksternalValidate () {
+    function eksternalValidate ( $data, $field = false ) {
         $dataSpk = $this->Spk->data;
         $data = $this->data;
-        $price_service = $this->filterEmptyField($data, 'SpkProduct', 'price_service');
+        $price_service = $this->filterEmptyField($data, 'SpkProduct', $field);
 
         if( $this->callDisplayToggle('eksternal', $dataSpk) && empty($price_service) ) {
             return false;

@@ -11,6 +11,10 @@ class ProductExpenditureDetail extends AppModel {
             'className' => 'Product',
             'foreignKey' => 'product_id',
         ),
+        'SpkProduct' => array(
+            'className' => 'SpkProduct',
+            'foreignKey' => 'spk_product_id',
+        ),
     );
 
     var $hasOne = array(

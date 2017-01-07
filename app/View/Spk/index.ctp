@@ -65,7 +65,6 @@
                             $nodoc = $this->Common->filterEmptyField($value, 'Spk', 'nodoc', '-');
                             $transactionDate = $this->Common->filterEmptyField($value, 'Spk', 'transaction_date');
                             $note = $this->Common->filterEmptyField($value, 'Spk', 'note');
-                            $transaction_status = $this->Common->filterEmptyField($value, 'Spk', 'transaction_status');
                             $document_type = $this->Common->filterEmptyField($value, 'Spk', 'document_type');
                             $nopol = $this->Common->filterEmptyField($value, 'Spk', 'nopol');
                             $estimation_date = $this->Common->filterEmptyField($value, 'Spk', 'estimation_date', false, true, array(

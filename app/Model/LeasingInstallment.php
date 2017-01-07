@@ -183,8 +183,18 @@ class LeasingInstallment extends AppModel {
         ));
 
         if( !empty($value) ) {
-            $id = !empty($value['LeasingInstallment']['id'])?$value['LeasingInstallment']['id']:false;
+            $paid_date = !empty($value['LeasingInstallment']['min_paid_date'])?$value['LeasingInstallment']['min_paid_date']:false;
 
+            if( empty($leasing_installment_id) ) {
+                $last_date = $this->getData('first', array(
+                    'conditions' => array_merge($conditions, array(
+                        'LeasingInstallment.paid_date' => $paid_date,
+                    )),
+                ));
+                $value = array_merge($value, $last_date);
+            }
+
+            $id = !empty($value['LeasingInstallment']['id'])?$value['LeasingInstallment']['id']:false;
             $value = $this->_callLastPaidInstallment($value, $id, $leasing_payment_id);
             $data = array_merge($data, $value);
         }
