@@ -27,9 +27,9 @@
                 $price_sold = $this->Common->filterEmptyField($value, 'Asset', 'price_sold', 0);
                 $nilai_sisa = $this->Common->filterEmptyField($value, 'AssetGroup', 'nilai_sisa', 0);
 
-                $umur_ekonomis = $this->Common->filterEmptyField($value, 'AssetGroup', 'umur_ekonomis');
+                $umur_ekonomis = $this->Common->filterEmptyField($value, 'AssetGroup', 'umur_ekonomis', 0) * 12;
                 $no_contract = $this->Common->filterEmptyField($value, 'Leasing', 'no_contract', '-');
-                $sisa_bulan = $umur_ekonomis - $month_use;
+                // $sisa_bulan = $umur_ekonomis - $month_use;
 
                 $customNeracaDate = $this->Common->formatDate($neraca_date, 'd/m/Y');
                 $customNilaiPerolehan = $this->Common->getFormatPrice($nilai_perolehan, 0, 2);
@@ -41,12 +41,12 @@
                 $customPercent = $this->Common->getFormatPrice($percent, 0, 2);
                 $totalDepr = 0;
 
-                if( $sisa_bulan < 0 ) {
-                    $sisa_bulan = 0;
-                }
+                // if( $sisa_bulan < 0 ) {
+                //     $sisa_bulan = 0;
+                // }
 
                 $totalPerolehan += $nilai_perolehan;
-                $totalSisaBulan += $sisa_bulan;
+                // $totalSisaBulan += $sisa_bulan;
 ?>
 <tr>
     <?php 
@@ -102,6 +102,9 @@
             $nilaiBuku = $this->Common->getFormatPrice($nilai_buku, 0, 2);
             $laba = $this->Common->getFormatPrice($laba, 0, 2);
 
+            $sisa_bulan = $nilai_buku / $depr_bulan;
+            $customSisaBulan = $this->Common->getFormatPrice($sisa_bulan);
+            $totalSisaBulan += $sisa_bulan;
 
             echo $this->Html->tag('td', $totalDepr, array(
                 'style' => 'text-align: right;',
@@ -112,7 +115,7 @@
             echo $this->Html->tag('td', $nilaiBuku, array(
                 'style' => 'text-align: right;',
             ));
-            echo $this->Html->tag('td', $sisa_bulan, array(
+            echo $this->Html->tag('td', $customSisaBulan, array(
                 'style' => 'text-align: center;',
             ));
 
@@ -135,6 +138,7 @@
             $totalHargaJual = $this->Common->getFormatPrice($totalHargaJual, 0, 2);
             $totalLaba = $this->Common->getFormatPrice($totalLaba, 0, 2);
             $totalAkPenyusutan = $this->Common->getFormatPrice($totalAkPenyusutan, 0, 2);
+            $totalSisaBulan = $this->Common->getFormatPrice($totalSisaBulan);
 ?>
 <tr>
     <?php 
