@@ -423,14 +423,30 @@ class RjAssetComponent extends Component {
 
             $id = $this->MkCommon->filterEmptyField($value, 'Asset', 'id');
             $name = $this->MkCommon->filterEmptyField($value, 'Asset', 'name');
-            $depr_bulan = $this->MkCommon->filterEmptyField($value, 'Asset', 'depr_bulan');
-            $ak_penyusutan = $this->MkCommon->filterEmptyField($value, 'Asset', 'ak_penyusutan');
             $nilai_buku = $this->MkCommon->filterEmptyField($value, 'Asset', 'nilai_buku');
+            $nilai_perolehan = $this->MkCommon->filterEmptyField($value, 'Asset', 'nilai_perolehan');
+
+            if( !empty($value['AssetDepreciation']['id']) ) {
+                $depr_bulan = $this->MkCommon->filterEmptyField($value, 'AssetDepreciation', 'depr_bulan');
+                $ak_penyusutan = $this->MkCommon->filterEmptyField($value, 'ak_penyusutan');
+                
+                $nilai_buku = $nilai_perolehan - $ak_penyusutan;
+            } else {
+                $depr_bulan = $this->MkCommon->filterEmptyField($value, 'Asset', 'depr_bulan');
+                $ak_penyusutan = $this->MkCommon->filterEmptyField($value, 'Asset', 'ak_penyusutan');
+
+                if( $depr_bulan > $nilai_buku  ) {
+                    $ak_penyusutan = $nilai_perolehan;
+                    $depr_bulan = $nilai_buku;
+                    $nilai_buku = 0;
+                } else {
+                    $ak_penyusutan = $ak_penyusutan + $depr_bulan;
+                    $nilai_buku = $nilai_buku - $depr_bulan;
+                }
+            }
 
             // $ak_penyusutan = $ak_penyusutan - $old_depr_bulan + $depr_bulan;
             // $nilai_buku = $nilai_buku + $old_depr_bulan - $depr_bulan;
-            $ak_penyusutan = $ak_penyusutan + $depr_bulan;
-            $nilai_buku = $nilai_buku - $depr_bulan;
 
             // $journal_title = sprintf(__('Depresiasi Asset %s - %s'), $name, $periode_short);
             // $journal_options = array(

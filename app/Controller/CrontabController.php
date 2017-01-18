@@ -64,18 +64,57 @@ class CrontabController extends AppController {
         	$cnt_asset = $this->Asset->getData('count', $options, $status);
         	$limit = 200;
 
+            $this->Asset->bindModel(array(
+                'hasOne' => array(
+                    'AssetDepreciation' => array(
+                        'foreignKey' => 'asset_id',
+                    ),
+                )
+            ), false);
+            $this->Asset->unBindModel(array(
+                'hasMany' => array(
+                    'AssetDepreciation'
+                )
+            ));
+
     		$assets = $this->Asset->getData('all', array_merge($options, array(
         		'conditions' => array(
-        			'Asset.nilai_buku >' => 0,
-        			'Asset.id >' => $last_asset_id,
+                    'OR' => array(
+                        'Asset.nilai_buku >' => 0,
+                        'AssetDepreciation.id NOT' => NULL,
+                    ),
+                    'Asset.id >' => $last_asset_id,
+        			// 'Asset.id' => 186,
     			),
+                'contain' => array(
+                    'AssetDepreciation' => array(
+                        'conditions' => array(
+                            'AssetDepreciation.periode' => $periode,
+                            'AssetDepreciation.status' => 1,
+                        ),
+                    ),
+                ),
     			'limit' => $limit,
 			)), $status);
+                // debug($assets);die();
 
     		if( !empty($assets) ) {
     			$dataSave = array();
     			$progress += ((count($assets)/$cnt_asset) * 100) / 2;
                 $periode_short = $this->MkCommon->customDate($periode, 'F Y');
+
+                $this->Asset->bindModel(array(
+                    'hasMany' => array(
+                        'AssetDepreciation' => array(
+                            'foreignKey' => 'asset_id',
+                        ),
+                    )
+                ), false);
+                $this->Asset->unBindModel(array(
+                    'hasOne' => array(
+                        'AssetDepreciation'
+                    )
+                ));
 
                 $last_gl = $this->User->GeneralLedger->getData('first', array(
                     'conditions' => array(
@@ -103,7 +142,13 @@ class CrontabController extends AppController {
     			foreach ($assets as $key => $asset) {
             		$id = $this->MkCommon->filterEmptyField($asset, 'Asset', 'id');
                     $asset_group_id = $this->MkCommon->filterEmptyField($asset, 'Asset', 'asset_group_id');
-                    $depr_bulan = $this->MkCommon->filterEmptyField($asset, 'Asset', 'depr_bulan', 0);
+                    $last_depreciation = $this->MkCommon->filterEmptyField($asset, 'AssetDepreciation', 'id');
+
+                    if( !empty($last_depreciation) ) {
+                        $depr_bulan = $this->MkCommon->filterEmptyField($asset, 'AssetDepreciation', 'depr_bulan', 0);
+                    } else {
+                        $depr_bulan = $this->MkCommon->filterEmptyField($asset, 'Asset', 'depr_bulan', 0);
+                    }
 
                     $depresiasiAcc = $this->Asset->AssetGroup->AssetGroupCoa->getMerge($asset, $asset_group_id, 'first', 'Depresiasi');
                     $accumulationDeprAcc = $this->Asset->AssetGroup->AssetGroupCoa->getMerge($asset, $asset_group_id, 'first', 'AccumulationDepr');
