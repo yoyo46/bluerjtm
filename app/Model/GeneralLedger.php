@@ -33,8 +33,8 @@ class GeneralLedger extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'No dokumen harap diisi'
             ),
-            'unique' => array(
-                'rule' => 'isUnique',
+            'checkUniq' => array(
+                'rule' => 'checkUniq',
                 'message' => 'No dokumen sudah terdaftar, mohon masukkan no dokumen lain.'
             ),
         ),
@@ -57,6 +57,25 @@ class GeneralLedger extends AppModel {
 
         $alias = $this->alias;
         $this->virtualFields['order'] = __('CASE %s.transaction_status WHEN \'unposting\' THEN 2 WHEN \'posting\' THEN 1 ELSE 0 END', $alias, $alias);
+    }
+
+    function checkUniq () {
+        $id = !empty($this->data['GeneralLedgerDetail']['id'])?$this->data['GeneralLedgerDetail']['id']:false;
+        $nodoc = !empty($this->data['GeneralLedgerDetail']['nodoc'])?$this->data['GeneralLedgerDetail']['nodoc']:false;
+        $driver = $this->getData('count', array(
+            'conditions' => array(
+                'GeneralLedger.nodoc' => $nodoc,
+                'GeneralLedger.id NOT' => $id,
+            ),
+        ), array(
+            'branch' => false,
+        ));
+        
+        if( !empty($driver) ) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 	function getData( $find, $options = false, $elements = false ){

@@ -75,14 +75,22 @@ class CrontabController extends AppController {
     		if( !empty($assets) ) {
     			$dataSave = array();
     			$progress += ((count($assets)/$cnt_asset) * 100) / 2;
-                
                 $periode_short = $this->MkCommon->customDate($periode, 'F Y');
+
+                $last_gl = $this->User->GeneralLedger->getData('first', array(
+                    'conditions' => array(
+                        'GeneralLedger.is_closing' => 1,
+                        'DATE_FORMAT(GeneralLedger.transaction_date, \'%Y-%m\') >='=> $this->MkCommon->customDate($periode, 'Y-m'),
+                    ),
+                ));
+                $nodoc = $this->MkCommon->filterEmptyField($last_gl, 'GeneralLedger', 'nodoc', $this->User->GeneralLedger->generateNoDoc());
+                
                 $journal_title = sprintf(__('Depresiasi Asset - %s'), $periode_short);
                 $groupDepr = array(
                     'GeneralLedger' => array(
                         'branch_id' => $branch_id,
                         'user_id' => $user_id,
-                        'nodoc' => $this->User->GeneralLedger->generateNoDoc(),
+                        'nodoc' => $nodoc,
                         'transaction_date' => date('Y-m-t', strtotime($periode)),
                         'note' => $journal_title,
                         'transaction_status' => 'posting',
