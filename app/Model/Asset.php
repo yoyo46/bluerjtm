@@ -95,6 +95,10 @@ class Asset extends AppModel {
             'className' => 'Truck',
             'foreignKey' => 'truck_id',
         ),
+        'Branch' => array(
+            'className' => 'Branch',
+            'foreignKey' => 'branch_id',
+        ),
     );
 
     var $hasMany = array(
@@ -416,7 +420,7 @@ class Asset extends AppModel {
         return $result;
     }
 
-    function doDepreciation ( $data, $periode = false ) {
+    function doDepreciation ( $data, $periode = null, $groupDepr = null ) {
         $msg = __('Gagal melakukan depresiasi asset');
         $result = array(
             'msg' => $msg,
@@ -443,6 +447,15 @@ class Asset extends AppModel {
                 'Journal.type' => 'depr_asset',
                 'DATE_FORMAT(Journal.date, \'%Y-%m\') >='=> $periode,
             ));
+            $this->Branch->GeneralLedger->updateAll(array(
+                'GeneralLedger.status'=> 0,
+                'GeneralLedger.canceled_note'=> "'".__('Reclosing Asset %s', $periode)."'",
+                'GeneralLedger.canceled_date'=> "'".date('Y-m-d')."'",
+            ), array(
+                'GeneralLedger.status' => 1,
+                'GeneralLedger.is_closing' => 1,
+                'DATE_FORMAT(GeneralLedger.transaction_date, \'%Y-%m\') >='=> $periode,
+            ));
         }
 
         if( !empty($data) ) {
@@ -451,6 +464,13 @@ class Asset extends AppModel {
             ));
             
             if( !empty($flag) ) {
+                if( !empty($groupDepr) ) {
+                    if( !empty($groupDepr['GeneralLedgerDetail']) ) {
+                        $groupDepr['GeneralLedgerDetail'] = array_values($groupDepr['GeneralLedgerDetail']);
+                    }
+                    $this->Branch->GeneralLedger->doSave($groupDepr);
+                }
+
                 $msg = __('Berhasil melakukan depresiasi asset');
                 $result = array(
                     'msg' => $msg,

@@ -7,6 +7,10 @@ class GeneralLedger extends AppModel {
             'className' => 'User',
             'foreignKey' => 'user_id',
         ),
+        'Branch' => array(
+            'className' => 'Branch',
+            'foreignKey' => 'branch_id',
+        ),
     );
 
     var $hasMany = array(
@@ -146,7 +150,7 @@ class GeneralLedger extends AppModel {
                                 'nodoc',
                             ),
                         ));
-                    } else {
+                    } else if( empty($nodoc) ) {
                         $nodoc = $this->generateNoDoc();
                         $data['GeneralLedger']['nodoc'] = $nodoc;
                     }

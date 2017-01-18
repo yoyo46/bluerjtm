@@ -102,7 +102,12 @@
             $nilaiBuku = $this->Common->getFormatPrice($nilai_buku, 0, 2);
             $laba = $this->Common->getFormatPrice($laba, 0, 2);
 
-            $sisa_bulan = $nilai_buku / $depr_bulan;
+            if( empty($depr_bulan) ) {
+                $sisa_bulan = 0;
+            } else {
+                $sisa_bulan = $nilai_buku / $depr_bulan;
+            }
+
             $customSisaBulan = $this->Common->getFormatPrice($sisa_bulan);
             $totalSisaBulan += $sisa_bulan;
 

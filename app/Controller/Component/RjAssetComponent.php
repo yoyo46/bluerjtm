@@ -406,20 +406,20 @@ class RjAssetComponent extends Component {
         return $data;
     }
 
-    function _callBeforeSaveDepreciation ( $value, $periode, $branch_id, $user_id ) {
+    function _callBeforeSaveDepreciation ( $queue_id = null, $value, $periode, $branch_id, $user_id ) {
         $dataSave = false;
 
         if( !empty($value) ) {
-            $periode_short = $this->MkCommon->customDate($periode, 'F Y');
+            // $periode_short = $this->MkCommon->customDate($periode, 'F Y');
             // $old_depr_id = $this->MkCommon->filterEmptyField($old_date, 'AssetDepreciation', 'id', 0);
             // $old_depr_bulan = $this->MkCommon->filterEmptyField($old_date, 'AssetDepreciation', 'depr_bulan', 0);
 
             $asset_group_id = $this->MkCommon->filterEmptyField($value, 'Asset', 'asset_group_id');
-            $accumulationDeprAcc = $this->controller->Asset->AssetGroup->AssetGroupCoa->getMerge($value, $asset_group_id, 'first', 'AccumulationDepr');
-            $depresiasiAcc = $this->controller->Asset->AssetGroup->AssetGroupCoa->getMerge($value, $asset_group_id, 'first', 'Depresiasi');
+            // $accumulationDeprAcc = $this->controller->Asset->AssetGroup->AssetGroupCoa->getMerge($value, $asset_group_id, 'first', 'AccumulationDepr');
+            // $depresiasiAcc = $this->controller->Asset->AssetGroup->AssetGroupCoa->getMerge($value, $asset_group_id, 'first', 'Depresiasi');
 
-            $accumulationDeprAccId = $this->MkCommon->filterEmptyField($accumulationDeprAcc, 'AssetGroupCoa', 'coa_id');
-            $depresiasiAccId = $this->MkCommon->filterEmptyField($depresiasiAcc, 'AssetGroupCoa', 'coa_id');
+            // $accumulationDeprAccId = $this->MkCommon->filterEmptyField($accumulationDeprAcc, 'AssetGroupCoa', 'coa_id');
+            // $depresiasiAccId = $this->MkCommon->filterEmptyField($depresiasiAcc, 'AssetGroupCoa', 'coa_id');
 
             $id = $this->MkCommon->filterEmptyField($value, 'Asset', 'id');
             $name = $this->MkCommon->filterEmptyField($value, 'Asset', 'name');
@@ -432,14 +432,14 @@ class RjAssetComponent extends Component {
             $ak_penyusutan = $ak_penyusutan + $depr_bulan;
             $nilai_buku = $nilai_buku - $depr_bulan;
 
-            $journal_title = sprintf(__('Depresiasi Asset %s - %s'), $name, $periode_short);
-            $journal_options = array(
-                'branch_id' => $branch_id,
-                'user_id' => $user_id,
-                'title' => $journal_title,
-                'type' => 'depr_asset',
-                'date' => $periode,
-            );
+            // $journal_title = sprintf(__('Depresiasi Asset %s - %s'), $name, $periode_short);
+            // $journal_options = array(
+            //     'branch_id' => $branch_id,
+            //     'user_id' => $user_id,
+            //     'title' => $journal_title,
+            //     'type' => 'depr_asset',
+            //     'date' => date('Y-m-t', strtotime($periode)),
+            // );
 
             if( $nilai_buku < 0 ) {
                 $nilai_buku = 0;
@@ -454,26 +454,27 @@ class RjAssetComponent extends Component {
                 'AssetDepreciation' => array(
                     array(
                         'AssetDepreciation' => array(
+                            'queue_id' => $queue_id,
                             'user_id' => $user_id,
                             'asset_id' => $id,
                             'depr_bulan' => $depr_bulan,
                             'ak_penyusutan' => $ak_penyusutan,
                             'periode' => $periode,
                         ),
-                        'Journal' => array(
-                            array(
-                                'Journal' => array_merge($journal_options, array(
-                                    'coa_id' => $depresiasiAccId,
-                                    'debit' => $depr_bulan,
-                                )),
-                            ),
-                            array(
-                                'Journal' => array_merge($journal_options, array(
-                                    'coa_id' => $accumulationDeprAccId,
-                                    'credit' => $depr_bulan,
-                                )),
-                            ),
-                        ),
+                        // 'Journal' => array(
+                        //     array(
+                        //         'Journal' => array_merge($journal_options, array(
+                        //             'coa_id' => $depresiasiAccId,
+                        //             'debit' => $depr_bulan,
+                        //         )),
+                        //     ),
+                        //     array(
+                        //         'Journal' => array_merge($journal_options, array(
+                        //             'coa_id' => $accumulationDeprAccId,
+                        //             'credit' => $depr_bulan,
+                        //         )),
+                        //     ),
+                        // ),
                     ),
                 ),
             );

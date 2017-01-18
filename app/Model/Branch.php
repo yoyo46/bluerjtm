@@ -68,6 +68,10 @@ class Branch extends AppModel {
             'className' => 'Leasing',
             'foreignKey' => 'branch_id',
         ),
+        'GeneralLedger' => array(
+            'className' => 'GeneralLedger',
+            'foreignKey' => 'branch_id',
+        ),
     );
 
 	function getData($find, $options = false){

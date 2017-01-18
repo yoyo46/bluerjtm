@@ -39,6 +39,7 @@ class CrontabController extends AppController {
 
 			$last_depreciation = $this->Asset->AssetDepreciation->getData('first', array(
 				'conditions' => array(
+                    'AssetDepreciation.queue_id' => $queue_id,
 					'AssetDepreciation.periode' => $periode,
 				),
 	            'order' => array(
@@ -74,14 +75,58 @@ class CrontabController extends AppController {
     		if( !empty($assets) ) {
     			$dataSave = array();
     			$progress += ((count($assets)/$cnt_asset) * 100) / 2;
+                
+                $periode_short = $this->MkCommon->customDate($periode, 'F Y');
+                $journal_title = sprintf(__('Depresiasi Asset - %s'), $periode_short);
+                $groupDepr = array(
+                    'GeneralLedger' => array(
+                        'branch_id' => $branch_id,
+                        'user_id' => $user_id,
+                        'nodoc' => $this->User->GeneralLedger->generateNoDoc(),
+                        'transaction_date' => date('Y-m-t', strtotime($periode)),
+                        'note' => $journal_title,
+                        'transaction_status' => 'posting',
+                        'is_closing' => 1,
+                    ),
+                );
+                $debit_total = 0;
+                $creadit_total = 0;
 
     			foreach ($assets as $key => $asset) {
             		$id = $this->MkCommon->filterEmptyField($asset, 'Asset', 'id');
+                    $asset_group_id = $this->MkCommon->filterEmptyField($asset, 'Asset', 'asset_group_id');
+                    $depr_bulan = $this->MkCommon->filterEmptyField($asset, 'Asset', 'depr_bulan', 0);
 
-    				$dataSave[] = $this->RjAsset->_callBeforeSaveDepreciation($asset, $periode, $branch_id, $user_id);
+                    $depresiasiAcc = $this->Asset->AssetGroup->AssetGroupCoa->getMerge($asset, $asset_group_id, 'first', 'Depresiasi');
+                    $accumulationDeprAcc = $this->Asset->AssetGroup->AssetGroupCoa->getMerge($asset, $asset_group_id, 'first', 'AccumulationDepr');
+
+                    $depresiasiAccId = $this->MkCommon->filterEmptyField($depresiasiAcc, 'AssetGroupCoa', 'coa_id');
+                    $accumulationDeprAccId = $this->MkCommon->filterEmptyField($accumulationDeprAcc, 'AssetGroupCoa', 'coa_id');
+                    
+                    $debit_alias = __('%s-%s', $asset_group_id, $depresiasiAccId);
+                    $credit_alias = __('%s-%s', $asset_group_id, $accumulationDeprAccId);
+                    $debit = !empty($groupDepr['GeneralLedgerDetail'][$debit_alias]['GeneralLedgerDetail']['debit'])?$groupDepr['GeneralLedgerDetail'][$debit_alias]['GeneralLedgerDetail']['debit']:0;
+                    $credit = !empty($groupDepr['GeneralLedgerDetail'][$credit_alias]['GeneralLedgerDetail']['credit'])?$groupDepr['GeneralLedgerDetail'][$credit_alias]['GeneralLedgerDetail']['credit']:0;
+
+                    $debit_total = $depr_bulan+$debit;
+                    $credit_total = $depr_bulan+$credit;
+
+                    $groupDepr['GeneralLedgerDetail'][$debit_alias]['GeneralLedgerDetail'] = array(
+                        'coa_id' => $depresiasiAccId,
+                        'debit' => $debit_total,
+                    );
+                    $groupDepr['GeneralLedgerDetail'][$credit_alias]['GeneralLedgerDetail'] = array(
+                        'coa_id' => $accumulationDeprAccId,
+                        'credit' => $credit_total,
+                    );
+
+    				$dataSave[] = $this->RjAsset->_callBeforeSaveDepreciation($queue_id, $asset, $periode, $branch_id, $user_id);
     			}
 
-	    		$result = $this->Asset->doDepreciation($dataSave, $periode);
+                $groupDepr['GeneralLedger']['debit_total'] = $debit_total;
+                $groupDepr['GeneralLedger']['credit_total'] = $credit_total;
+
+	    		$result = $this->Asset->doDepreciation($dataSave, $periode, $groupDepr);
                 $status = $this->MkCommon->filterEmptyField($result, 'status');
 	            $this->MkCommon->setProcessSave($result);
 
