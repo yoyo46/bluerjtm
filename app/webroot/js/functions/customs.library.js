@@ -735,6 +735,11 @@
                 $(data_change_extra).html(data_extra_text);
             }
 
+            if( $('.document-calc table tbody[data-remove="true"]').length > 0 ) {
+                $('.document-calc table tbody[data-remove="true"]').html('');
+                calcGrandTotalCustom();
+            }
+
             $('#myModal').modal('hide');
             return false;
         });
@@ -973,6 +978,8 @@
                         var self = $(this);
                         check_option_coa(self)
                     });
+                    
+                    calcGrandTotalCustom();
                 }
             });
 
@@ -986,14 +993,21 @@
             function check_option_coa(self){
                 var parent = self.parents('.pick-document');
                 var rel_id = parent.attr('rel');
-                var temp_picker = $('.temp-document-picker');
-                var pickDocumentStr = '.pick-document[rel="'+rel_id+'"]';
+                var rel_table = $.checkUndefined(parent.attr('data-table'), null);
+                var pickDocumentStr = '.document-picker .pick-document[rel="'+rel_id+'"]';
                 var pickDocument = $(pickDocumentStr);
-                var chosen = $('.document-picker .chosen-select');
+                var chosenBuild = $('.document-picker td .chosen-select.select2-hidden-accessible');
+                var chosen = $('.document-picker td .chosen-select');
 
-                if( chosen.length > 0 ) {
+                if( rel_table != null && $('.temp-document-picker[rel="'+rel_table+'"').length > 0 ) {
+                    var temp_picker = $('.temp-document-picker[rel="'+rel_table+'"');
+                } else {
+                    var temp_picker = $('.temp-document-picker');
+                }
+
+                if( chosenBuild.length > 0 ) {
                     $.callChoosen({
-                        obj: chosen,
+                        obj: chosenBuild,
                         init: 'destroy',
                     });
                 }
@@ -1118,9 +1132,10 @@
             var objTotal = $(this);
             var grandtotal = 0;
             var rel = objTotal.attr('rel');
+            var pickDocument = objTotal.parents('.document-calc').find('.pick-document');
             var decimal = $.checkUndefined(objTotal.attr('data-decimal'), 0);
 
-            $.each( $('.document-calc .pick-document'), function( i, val ) {
+            $.each( pickDocument, function( i, val ) {
                 var self = $(this);
                 var priceObj = self.find('.price_custom[rel="'+rel+'"]');
                 
@@ -1246,6 +1261,7 @@
                 if ( confirm('Hapus dokumen ini?') ) { 
                     parent.remove();
                     calcItemTotal(table);
+                    calcGrandTotalCustom();
                     $.calcTotal();
                 }
 

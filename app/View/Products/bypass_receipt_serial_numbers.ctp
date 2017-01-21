@@ -29,9 +29,13 @@
 					echo $this->Html->tag('ul', implode('', $dataArr), array(
 						'class' => 'row',
 					));	
+		        	
+		        	echo $this->element('blocks/common/forms/submit_action');
+				} else {
+                     echo $this->Html->tag('p', __('Mohon masukan QTY'), array(
+                        'class' => 'alert alert-warning text-center',
+                    ));
 				}
-
-		        echo $this->element('blocks/common/forms/submit_action');
 
 				echo $this->Form->hidden('ProductReceipt.session_id');
 				echo $this->Form->end();

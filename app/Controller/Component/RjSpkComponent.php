@@ -73,6 +73,35 @@ class RjSpkComponent extends Component {
         return $data;
     }
 
+    function _callProductionBeforeSave ( $data ) {
+        $document_type = $this->MkCommon->filterEmptyField($data, 'Spk', 'document_type');
+        $spkProduction = $this->MkCommon->filterEmptyField($data, 'SpkProduction', false, array());
+        $spkProduction = array_filter($spkProduction);
+
+        if( $document_type == 'production' ) {
+            if( !empty($spkProduction['product_id']) ) {
+                $data = $this->MkCommon->_callUnset(array(
+                    'SpkProduction',
+                ), $data);
+
+                foreach ($spkProduction['product_id'] as $key => $product_id) {
+                    $qty = !empty($spkProduction['qty'][$key])?$spkProduction['qty'][$key]:false;
+
+                    $dataProduct = array(
+                        'product_id' => $product_id,
+                        'qty' => $qty,
+                    );
+
+                    $data['SpkProduction'][]['SpkProduction'] = $dataProduct;
+                }
+            } else {
+                $data['Spk']['production'] = '';
+            }
+        }
+
+        return $data;
+    }
+
     function _callBeforeSave ( $data ) {
         if( !empty($data) ) {
             $data = $this->MkCommon->dataConverter($data, array(
@@ -93,6 +122,7 @@ class RjSpkComponent extends Component {
 
             $data = $this->_callMechanicBeforeSave($data);
             $data = $this->_callProductBeforeSave($data);
+            $data = $this->_callProductionBeforeSave($data);
         }
 
         return $data;
@@ -126,17 +156,46 @@ class RjSpkComponent extends Component {
         $spkProduct = $this->MkCommon->filterEmptyField($data, 'SpkProduct');
 
         if( !empty($spkProduct) ) {
-            $spkProduct = $this->controller->Spk->SpkProduct->getMergeList($spkProduct, array(
-                'contain' => array(
-                    'Product' => array(
-                        'contain' => array(
-                            'ProductUnit',
+            foreach ($spkProduct as $key => &$value) {
+                $product_id = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'product_id');
+                
+                $value = $this->controller->Spk->SpkProduct->getMergeList($value, array(
+                    'contain' => array(
+                        'Product' => array(
+                            'contain' => array(
+                                'ProductUnit',
+                            ),
                         ),
                     ),
-                ),
-            ));
+                ));
+                $value['Product']['product_stock_cnt'] = $this->controller->Spk->SpkProduct->Product->ProductStock->_callStock($product_id);
+            }
 
             $data['SpkProduct'] = $spkProduct;
+        }
+
+        return $data;
+    }
+
+    function _callProductionBeforeRender ( $data ) {
+        $spkProduction = $this->MkCommon->filterEmptyField($data, 'SpkProduction');
+
+        if( !empty($spkProduction) ) {
+            foreach ($spkProduction as $key => &$value) {
+                $product_id = $this->MkCommon->filterEmptyField($value, 'SpkProduction', 'product_id');
+                
+                $value = $this->controller->Spk->SpkProduction->getMergeList($value, array(
+                    'contain' => array(
+                        'Product' => array(
+                            'contain' => array(
+                                'ProductUnit',
+                            ),
+                        ),
+                    ),
+                ));
+            }
+
+            $data['SpkProduction'] = $spkProduction;
         }
 
         return $data;
@@ -171,6 +230,7 @@ class RjSpkComponent extends Component {
 
         $data = $this->_callMechanicBeforeRender($data);
         $data = $this->_callProductBeforeRender($data);
+        $data = $this->_callProductionBeforeRender($data);
 
         $data = $this->MkCommon->dataConverter($data, array(
             'date' => array(

@@ -89,6 +89,7 @@ class ProductExpenditure extends AppModel {
 	function getData( $find, $options = false, $elements = false ){
         $branch = isset($elements['branch'])?$elements['branch']:true;
         $status = isset($elements['status'])?$elements['status']:'active';
+        $special_id = isset($elements['special_id'])?$elements['special_id']:false;
 
         $default_options = array(
             'conditions'=> array(),
@@ -124,6 +125,32 @@ class ProductExpenditure extends AppModel {
                         'ProductExpenditure.status' => 0,
                     ),
                 );
+                break;
+            case 'unreceipt_draft':
+                $default_options['conditions']['ProductExpenditure.status'] = 1;
+
+                if( !empty($special_id) ) {
+                    $default_options['conditions']['OR']['ProductExpenditure.id'] = $special_id;
+                    $default_options['conditions']['OR']['ProductExpenditure.draft_receipt_status'] = array( 'none', 'half' );
+                } else {
+                    $default_options['conditions']['ProductExpenditure.draft_receipt_status'] = array( 'none', 'half' );
+                }
+                break;
+            case 'untransfer_draft':
+                $default_options['conditions']['ProductExpenditure.status'] = 1;
+                $default_options['conditions']['ProductExpenditure.document_type'] = array( 'wht' );
+                $default_options['conditions']['ProductExpenditure.transaction_status'] = 'posting';
+                $default_options['conditions']['Spk.to_branch_id'] = Configure::read('__Site.config_branch_id');
+                $default_options['conditions']['Spk.document_type'] = 'wht';
+
+                if( !empty($special_id) ) {
+                    $default_options['conditions']['OR']['ProductExpenditure.id'] = $special_id;
+                    $default_options['conditions']['OR']['ProductExpenditure.draft_receipt_status'] = array( 'none', 'half' );
+                } else {
+                    $default_options['conditions']['ProductExpenditure.draft_receipt_status'] = array( 'none', 'half' );
+                }
+                
+                $default_options['contain'][] = 'Spk';
                 break;
             default:
                 $default_options['conditions']['ProductExpenditure.status'] = array( 0, 1 );
@@ -170,6 +197,8 @@ class ProductExpenditure extends AppModel {
             'conditions' => array(
                 $fieldName => $id
             ),
+        ), array(
+            'branch' => false,
         ));
 
         if(!empty($data_merge)){
@@ -182,6 +211,7 @@ class ProductExpenditure extends AppModel {
     function _callExpenditureDocument( $data ) {
         $document_id = $this->filterEmptyField($data, 'ProductExpenditure', 'document_id');
         $transaction_status = $this->filterEmptyField($data, 'ProductExpenditure', 'transaction_status');
+        $document_type = $this->filterEmptyField($data, 'ProductExpenditure', 'document_type');
 
         $detail = $this->Spk->SpkProduct->getData('first', array(
             'conditions' => array(
@@ -204,10 +234,18 @@ class ProductExpenditure extends AppModel {
         $this->Spk->set('draft_document_status', $status);
 
         if( $transaction_status == 'posting' && $status == 'full' ) {
-            if( $spk_internal_status == 'closed_expenditured' ) {
-                $this->Spk->set('transaction_status', 'closed');
-            } else {
-                $this->Spk->set('transaction_status', 'finish');
+            switch ($document_type) {
+                case 'wht':
+                    $this->Spk->set('transaction_status', 'out');
+                    break;
+                
+                default:
+                    if( $spk_internal_status == 'closed_expenditured' ) {
+                        $this->Spk->set('transaction_status', 'closed');
+                    } else {
+                        $this->Spk->set('transaction_status', 'finish');
+                    }
+                    break;
             }
         }
 
@@ -396,6 +434,37 @@ class ProductExpenditure extends AppModel {
         $format_id .= $id;
         
         return $format_id;
+    }
+
+    function _callVendors ( $status = 'unpaid', $id = false ) {
+        $this->bindModel(array(
+            'belongsTo' => array(
+                'Vendor' => array(
+                    'className' => 'Vendor',
+                    'foreignKey' => false,
+                    'conditions' => array(
+                        'Vendor.id = Spk.vendor_id',
+                    ),
+                ),
+            )
+        ), false);
+
+        return $this->getData('list', array(
+                'contain' => array(
+                    'Spk',
+                    'Vendor',
+                ),
+                'fields' => array(
+                    'Vendor.id', 'Vendor.name',
+                ),
+                'group' => array(
+                    'Spk.vendor_id',
+                ),
+            ), array(
+                'status' => $status,
+                'special_id' => $id,
+                'branch' => false,
+            ));
     }
 }
 ?>

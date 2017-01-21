@@ -51,7 +51,7 @@
 
                                 $spk_product_id = $this->Common->filterEmptyField($value, 'SpkProduct', 'id');
                                 $qty = $this->Common->filterEmptyField($value, 'SpkProduct', 'qty');
-                                $out_qty = $this->Common->filterEmptyField($value, 'SpkProduct', 'out_qty');
+                                $out_qty = $this->Common->filterEmptyField($value, 'SpkProduct', 'out_qty', 0);
 
                                 $id = $this->Common->filterEmptyField($value, 'Product', 'id');
                                 $code = $this->Common->filterEmptyField($value, 'Product', 'code');
@@ -100,15 +100,16 @@
                                 'class' => 'input_number text-center price_custom',
                                 'attributes' => array(
                                     'rel' => 'qty',
+                                    'value' => $qty,
                                 ),
-                                'value' => $qty,
                             )), array(
                                 'class' => 'hide',
                             ));
 
-                            if( !empty($is_serial_number) ) {
+                            // if( !empty($is_serial_number) ) {
                                 echo $this->Html->tag('td', $this->Common->_callInputForm(__('ProductExpenditureDetailSerialNumber.serial_numbers.%s', $id), array(
                                     'div' => false,
+                                    'frameClass' => false,
                                     'class' => 'chosen-select form-control full',
                                     'multiple' => true,
                                     'data-url' => $this->Html->url(array(
@@ -117,14 +118,24 @@
                                         'admin' => false,
                                     )),
                                     'options' => $serial_numbers,
+                                )).$this->Html->link($this->Common->icon('plus-square'), array(
+                                    'controller'=> 'ajax', 
+                                    'action' => 'getTrucks',
+                                    'cashbank',
+                                    'admin' => false,
+                                ), array(
+                                    'escape' => false,
+                                    'class' => 'ajaxModal browse-docs',
+                                    'title' => __('Data Truk'),
+                                    'data-action' => 'browse-form',
                                 )), array(
-                                    'class' => 'text-center hide',
+                                    'class' => 'text-center pick-product-code hide',
                                 ));
-                            } else {
-                                echo $this->Html->tag('td', '-', array(
-                                    'class' => 'text-center hide',
-                                ));
-                            }
+                            // } else {
+                            //     echo $this->Html->tag('td', '-', array(
+                            //         'class' => 'text-center hide',
+                            //     ));
+                            // }
 
                             echo $this->Html->tag('td', $this->Html->link($this->Common->icon('times'), '#', array(
                                 'class' => 'delete-document btn btn-danger btn-xs',

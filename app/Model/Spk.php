@@ -34,6 +34,10 @@ class Spk extends AppModel {
             'className' => 'SpkMechanic',
             'foreignKey' => 'spk_id',
         ),
+        'SpkProduction' => array(
+            'className' => 'SpkProduction',
+            'foreignKey' => 'spk_id',
+        ),
     );
 
     var $validate = array(
@@ -157,6 +161,12 @@ class Spk extends AppModel {
                 'message' => 'Mohon pilih barang terlebih dahulu'
             ),
         ),
+        'production' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Mohon pilih barang yg dihasilkan'
+            ),
+        ),
     );
 
     function mechanicValidate () {
@@ -184,6 +194,8 @@ class Spk extends AppModel {
         $branch = isset($elements['branch'])?$elements['branch']:true;
         $status = isset($elements['status'])?$elements['status']:'active';
         $role = isset($elements['role'])?$elements['role']:false;
+        $special_id = isset($elements['special_id'])?$elements['special_id']:false;
+        $type = isset($elements['type'])?$elements['type']:false;
 
         $default_options = array(
             'conditions'=> array(),
@@ -213,8 +225,41 @@ class Spk extends AppModel {
                 break;
             case 'pending-out':
                 $default_options['conditions']['Spk.status'] = 1;
-                $default_options['conditions']['Spk.document_type'] = array( 'internal' );
+                $default_options['conditions']['Spk.document_type'] = array( 'internal', 'wht', 'production' );
                 $default_options['conditions']['Spk.transaction_status'] = array( 'open' );
+                break;
+            case 'unreceipt':
+                $default_options['conditions']['Spk.status'] = 1;
+                $default_options['conditions']['Spk.document_type'] = array( 'internal' );
+                $default_options['conditions']['Spk.receipt_status'] = array( 'none', 'half' );
+                break;
+            case 'unreceipt_draft':
+                $default_options['conditions']['Spk.status'] = 1;
+                $default_options['conditions']['Spk.document_type'] = array( 'internal' );
+
+                if( !empty($special_id) ) {
+                    $default_options['conditions']['OR']['Spk.id'] = $special_id;
+                    $default_options['conditions']['OR']['Spk.draft_receipt_status'] = array( 'none', 'half' );
+                } else {
+                    $default_options['conditions']['Spk.draft_receipt_status'] = array( 'none', 'half' );
+                }
+                break;
+            case 'untransfer_draft':
+                $default_options['conditions']['Spk.status'] = 1;
+                $default_options['conditions']['Spk.document_type'] = array( 'wht' );
+
+                if( !empty($special_id) ) {
+                    $default_options['conditions']['OR']['Spk.id'] = $special_id;
+                    $default_options['conditions']['OR']['Spk.transaction_status'] = 'out';
+                } else {
+                    $default_options['conditions']['Spk.transaction_status'] = 'out';
+                }
+                break;
+        }
+
+        switch ($type) {
+            case 'production':
+                $default_options['conditions']['Spk.document_type'] = 'production';
                 break;
         }
 
@@ -273,39 +318,6 @@ class Spk extends AppModel {
         return $data;
     }
 
-    function _callReceiptDocument( $data ) {
-        $document_id = $this->filterEmptyField($data, 'Spk', 'document_id');
-        $document_type = $this->filterEmptyField($data, 'Spk', 'document_type');
-        $transaction_status = $this->filterEmptyField($data, 'Spk', 'transaction_status');
-
-        switch ($document_type) {
-            case 'po':
-                $purchaseOrderDetail = $this->PurchaseOrder->PurchaseOrderDetail->getData('first', array(
-                    'conditions' => array(
-                        'purchaseOrderDetail.purchase_order_id' => $document_id,
-                    ),
-                ), array(
-                    'status' => 'unreceipt',
-                ));
-
-                if( !empty($purchaseOrderDetail) ) {
-                    $receipt_status = 'half';
-                } else {
-                    $receipt_status = 'full';
-                }
-
-                $this->PurchaseOrder->id = $document_id;
-                $this->PurchaseOrder->set('draft_receipt_status', $receipt_status);
-
-                if( $transaction_status == 'posting' ) {
-                    $this->PurchaseOrder->set('receipt_status', $receipt_status);
-                }
-
-                $this->PurchaseOrder->save();
-                break;
-        }
-    }
-
     function doSave( $data, $value = false, $id = false ) {
         $result = false;
         $defaul_msg = __('menyimpan SPK');
@@ -326,6 +338,9 @@ class Spk extends AppModel {
                 ));
                 $this->SpkMechanic->deleteAll(array(
                     'SpkMechanic.spk_id' => $id,
+                ));
+                $this->SpkProduction->deleteAll(array(
+                    'SpkProduction.spk_id' => $id,
                 ));
 
                 $flag = $this->saveAll($data, array(
@@ -479,6 +494,24 @@ class Spk extends AppModel {
         }
 
         return $result;
+    }
+
+    function _callVendors ( $status = 'unpaid', $id = false, $document_type = false ) {
+        return $this->getData('list', array(
+                'contain' => array(
+                    'Vendor',
+                ),
+                'fields' => array(
+                    'Vendor.id', 'Vendor.name',
+                ),
+                'group' => array(
+                    'Spk.vendor_id',
+                ),
+            ), array(
+                'status' => $status,
+                'special_id' => $id,
+                'type' => $document_type,
+            ));
     }
 }
 ?>

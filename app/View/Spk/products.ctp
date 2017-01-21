@@ -48,14 +48,14 @@
                                 $code = $this->Common->filterEmptyField($value, 'Product', 'code');
                                 $name = $this->Common->filterEmptyField($value, 'Product', 'name');
                                 $type = $this->Common->filterEmptyField($value, 'Product', 'type');
-                                $stock = $this->Common->filterEmptyField($value, 'Product', 'product_stock_cnt');
+                                $stock = $this->Common->filterEmptyField($value, 'Product', 'product_stock_cnt', 0);
 
                                 $unit = $this->Common->filterEmptyField($value, 'ProductUnit', 'name');
                                 $group = $this->Common->filterEmptyField($value, 'ProductCategory', 'name');
 
                                 $customType = $this->Common->unSlug($type);
                 ?>
-                <tr class="pick-document" rel="<?php echo $id; ?>" data-type="single-total">
+                <tr class="pick-document" rel="<?php echo $id; ?>" data-type="single-total" data-table="<?php echo $action_type ?>">
                     <?php
                             echo $this->Html->tag('td', $this->Form->checkbox('document_id.'.$id, array(
                                 'class' => 'check-option',
@@ -67,16 +67,6 @@
                                 'value' => $id,
                             )));
                             echo $this->Html->tag('td', $name);
-                            echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.qty.%s', $modelName, $id), false, array(
-                                'type' => 'text',
-                                'frameClass' => false,
-                                'class' => 'input_number text-center price_custom',
-                                'attributes' => array(
-                                    'rel' => 'qty',
-                                ),
-                            )), array(
-                                'class' => 'hide',
-                            ));
                             echo $this->Html->tag('td', $stock, array(
                                 'class' => 'hide text-center',
                             ));
@@ -88,6 +78,16 @@
                             ));
                             echo $this->Html->tag('td', $customType, array(
                                 'class' => 'removed',
+                            ));
+                            echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.qty.%s', $modelName, $id), false, array(
+                                'type' => 'text',
+                                'frameClass' => false,
+                                'class' => 'input_number text-center price_custom',
+                                'attributes' => array(
+                                    'rel' => 'qty',
+                                ),
+                            )), array(
+                                'class' => 'hide',
                             ));
 
                             echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.price_service.%s', $modelName, $id), false, array(

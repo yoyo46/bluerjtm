@@ -265,6 +265,12 @@ class AppController extends Controller {
 			}
 
 			Configure::write('__Site.config_branch_id', $current_branch_id);
+			Configure::write('__Site.Spk.type', array(
+		    	'internal' => __('Internal'),
+		    	'eksternal' => __('Eksternal'),
+		    	'wht' => __('WHT'),
+		    	'production' => __('Produksi'),
+	    	));
 			
 			$allowAction = !empty($_allowedModule[$paramController])?$_allowedModule[$paramController]:array();
 			$allowPage = in_array($paramAction, $allowAction)?true:false;

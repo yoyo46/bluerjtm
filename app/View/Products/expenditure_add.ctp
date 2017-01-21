@@ -59,6 +59,9 @@
 							));
 					?>
 				</div>
+				<?php 
+						if( empty($view) ) {
+				?>
 				<div class="col-sm-2 hidden-xs">
 					<?php 
 							$attrBrowse = array(
@@ -74,6 +77,9 @@
 	                        echo $this->Html->link($this->Common->icon('plus-square'), $urlBrowse, $attrBrowse);
 	                ?>
 				</div>
+				<?php 
+						}
+				?>
 			</div>
 		</div>
     	<?php 

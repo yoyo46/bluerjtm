@@ -18,6 +18,7 @@
                     'empty' => __('Pilih Jenis SPK'),
                     'options' => array(
                         'internal' => __('Internal'),
+                        'wht' => __('WHT'),
                     ),
                 ));
         ?>

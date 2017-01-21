@@ -25,27 +25,49 @@
                 'class' => 'text-center',
                 'style' => 'width:5%;',
             ),
-            'qty_out' => array(
-                'name' => __('Qty Out'),
-                'class' => 'text-center',
-                'style' => 'width:5%;',
-            ),
-            'qty' => array(
-                'name' => __('Qty'),
-                'class' => 'text-center',
-                'style' => 'width:5%;',
-            ),
+        );
+
+        if( empty($view) ) {
+            $dataColumns = array_merge($dataColumns, array(
+                'qty_out' => array(
+                    'name' => __('Qty Out'),
+                    'class' => 'text-center',
+                    'style' => 'width:5%;',
+                ),
+                'qty' => array(
+                    'name' => __('Qty'),
+                    'class' => 'text-center',
+                    'style' => 'width:5%;',
+                ),
+            ));
+        } else {
+            $dataColumns = array_merge($dataColumns, array(
+                'qty' => array(
+                    'name' => __('Qty Keluar'),
+                    'class' => 'text-center',
+                    'style' => 'width:5%;',
+                ),
+            ));
+        }
+
+        $dataColumns = array_merge($dataColumns, array(
             'serial_number' => array(
                 'name' => __('No Seri'),
                 'class' => 'text-center',
                 'style' => 'width:10%;',
             ),
-            'action' => array(
-                'name' => __('Action'),
-                'class' => 'text-center',
-                'style' => 'width:5%;',
-            ),
-        );
+        ));
+
+        if( empty($view) ) {
+            $dataColumns = array_merge($dataColumns, array(
+                'action' => array(
+                    'name' => __('Action'),
+                    'class' => 'text-center',
+                    'style' => 'width:5%;',
+                ),
+            ));
+        }
+
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
         if( $view != 'detail' ) {
@@ -79,7 +101,7 @@
 	                        echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));
 	                    }
 	            ?>
-	        	<tbody class="wrapper-table-documents" rel="<?php echo $nodoc; ?>">
+	        	<tbody class="wrapper-table-documents" data-remove="true" rel="<?php echo $nodoc; ?>">
                     <?php
                             $total_spk_qty = 0;
                             $total_qty = 0;
@@ -129,14 +151,20 @@
                                     'class' => 'text-center total_custom',
                                     'rel' => 'qty-spk',
                                 ));
-                                echo $this->Html->tag('td', $total_out_qty, array(
-                                    'class' => 'text-center total_custom',
-                                    'rel' => 'qty-out',
-                                ));
+                                
+                                if( empty($view) ) {
+                                    echo $this->Html->tag('td', $total_out_qty, array(
+                                        'class' => 'text-center total_custom',
+                                        'rel' => 'qty-out',
+                                    ));
+                                }
+
                                 echo $this->Html->tag('td', $total_qty, array(
                                     'class' => 'text-center total_custom',
                                     'rel' => 'qty',
                                 ));
+                                
+                                echo $this->Html->tag('td', '&nbsp;');
                         ?>
                     </tr>
                 </tfoot>

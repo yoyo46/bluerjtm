@@ -52,7 +52,11 @@ class SpkController extends AppController {
         $values = $this->paginate('Spk');
         $values = $this->Spk->getMergeList($values, array(
             'contain' => array(
-                'Vendor',
+                'Vendor' => array(
+                    'elements' => array(
+                        'status' => 'all',
+                    ),
+                ),
                 'Employe',
                 'Truck',
             ),
@@ -60,9 +64,12 @@ class SpkController extends AppController {
 
         $this->RjSpk->_callBeforeRender();
 
+        $settings = $this->MkCommon->_callSettingGeneral('Product', 'spk_internal_policy', false);
+        $spk_internal_policy = $this->MkCommon->filterEmptyField($settings, 'Product', 'spk_internal_policy');
+
         $this->set('active_menu', 'spk');
         $this->set(compact(
-            'values'
+            'values', 'spk_internal_policy'
         ));
     }
 
@@ -103,6 +110,7 @@ class SpkController extends AppController {
             $value = $this->Spk->getMergeList($value, array(
                 'contain' => array(
                     'SpkProduct',
+                    'SpkProduction',
                     'SpkMechanic',
                 ),
             ));
@@ -144,6 +152,7 @@ class SpkController extends AppController {
             $value = $this->Spk->getMergeList($value, array(
                 'contain' => array(
                     'SpkProduct',
+                    'SpkProduction',
                     'SpkMechanic',
                 ),
             ));

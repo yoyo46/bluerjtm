@@ -98,6 +98,10 @@ class ProductExpenditureDetail extends AppModel {
                 $default_options['conditions']['ProductExpenditureDetail.status'] = 1;
                 $default_options['conditions']['ProductExpenditureDetail.document_status <>'] = 'full';
                 break;
+            case 'unreceipt':
+                $default_options['conditions']['ProductExpenditureDetail.status'] = 1;
+                $default_options['conditions']['ProductExpenditureDetail.receipt_status <>'] = 'full';
+                break;
         }
 
         if(!empty($options['conditions'])){
@@ -213,6 +217,44 @@ class ProductExpenditureDetail extends AppModel {
             ),
         ));
         return $this->filterEmptyField($value, 'ProductExpenditureDetail', 'total', 0);
+    }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $code = $this->filterEmptyField($data, 'named', 'code');
+        $name = $this->filterEmptyField($data, 'named', 'name');
+        $group = $this->filterEmptyField($data, 'named', 'group');
+
+        if( !empty($code) ) {
+            $default_options['conditions']['Product.code LIKE'] = '%'.$code.'%';
+            $default_options['contain'][] = 'Product';
+        }
+        if( !empty($name) ) {
+            $default_options['conditions']['Product.name LIKE'] = '%'.$name.'%';
+            $default_options['contain'][] = 'Product';
+        }
+        if( !empty($group) ) {
+            $default_options['conditions']['Product.product_category_id'] = $group;
+            $default_options['contain'][] = 'Product';
+        }
+        
+        return $default_options;
+    }
+
+    function getMergeData( $data, $id, $product_id ){
+        $value = $this->getData('first', array(
+            'conditions' => array(
+                'ProductExpenditureDetail.product_expenditure_id' => $id,
+                'ProductExpenditureDetail.product_id' => $product_id,
+            ),
+        ), array(
+            'status' => 'all',
+        ));
+
+        if(!empty($value)){
+            $data = array_merge($data, $value);
+        }
+
+        return $data;
     }
 }
 ?>

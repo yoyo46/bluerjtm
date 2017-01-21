@@ -1,6 +1,8 @@
 /*
   - Jurnal Umum
   - Label
+  - Table
+  - SPK
 */
 
 /*Notification*/
@@ -527,4 +529,22 @@ tr.expired .red {
 /*- Label*/
 .label-dark {
     background-color: #444;
+}
+
+/*- Table*/
+.wrapper-table-documents .select2-container {
+  width: 100% !important;
+}
+tbody.wrapper-table-documents td {
+  vertical-align: middle !important;
+}
+
+/*- SPK*/
+.pick-product-code > div {
+  display: inline-block;
+  width: 70%;
+}
+.pick-product-code > a.browse-docs {
+  display: inline-block;
+  padding: 7px 10px;
 }

@@ -31,25 +31,36 @@
                 'class' => 'text-center price_custom',
                 'rel' => 'qty-dic',
             ));
-            echo $this->Html->tag('td', $in_qty, array(
-                'class' => 'text-center price_custom',
-                'rel' => 'qty-in',
-            ));
-            echo $this->Html->tag('td', $this->Common->buildInputForm('ProductReceiptDetail.qty.', false, array(
-                'type' => 'text',
-                'fieldError' => array(
-                    'ProductReceiptDetail.'.$key.'.qty',
-                    'ProductReceiptDetail.'.$key.'.over_receipt'
-                ),
-                'frameClass' => false,
-                'class' => sprintf('price_custom input_number serial-number-input text-center %s', $targetQty),
-                'attributes' => array(
-                    'value' => $qty,
-                    'data-target' => sprintf('.serial-number-fill-%s', $id),
-                    'data-default' => $lblSerialNumber,
+
+            if( empty($view) ) {
+                echo $this->Html->tag('td', $in_qty, array(
+                    'class' => 'text-center price_custom',
+                    'rel' => 'qty-in',
+                ));
+            }
+
+            if( empty($view) ) {
+                echo $this->Html->tag('td', $this->Common->buildInputForm('ProductReceiptDetail.qty.', false, array(
+                    'type' => 'text',
+                    'fieldError' => array(
+                        'ProductReceiptDetail.'.$key.'.qty',
+                        'ProductReceiptDetail.'.$key.'.over_receipt'
+                    ),
+                    'frameClass' => false,
+                    'class' => sprintf('price_custom input_number serial-number-input text-center %s', $targetQty),
+                    'attributes' => array(
+                        'value' => $qty,
+                        'data-target' => sprintf('.serial-number-fill-%s', $id),
+                        'data-default' => $lblSerialNumber,
+                        'rel' => 'qty',
+                    ),
+                )));
+            } else {
+                echo $this->Html->tag('td', $qty, array(
+                    'class' => 'text-center price_custom',
                     'rel' => 'qty',
-                ),
-            )));
+                ));
+            }
 
             if( !empty($is_serial_number) ) {
                 if( !empty($serial_number) ) {
@@ -81,11 +92,13 @@
                 ));
             }
 
-            echo $this->Html->tag('td', $this->Html->link($this->Common->icon('times'), '#', array(
-                'class' => 'delete-document btn btn-danger btn-xs',
-                'escape' => false,
-            )), array(
-                'class' => 'text-center',
-            ));
+            if( empty($view) ) {
+                echo $this->Html->tag('td', $this->Html->link($this->Common->icon('times'), '#', array(
+                    'class' => 'delete-document btn btn-danger btn-xs',
+                    'escape' => false,
+                )), array(
+                    'class' => 'text-center',
+                ));
+            }
     ?>
 </tr>

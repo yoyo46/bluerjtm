@@ -54,6 +54,10 @@ class Product extends AppModel {
             'className' => 'ProductExpenditureDetailSerialNumber',
             'foreignKey' => 'product_id',
         ),
+        'SpkProduction' => array(
+            'className' => 'SpkProduction',
+            'foreignKey' => 'product_id',
+        ),
     );
 
 	var $validate = array(

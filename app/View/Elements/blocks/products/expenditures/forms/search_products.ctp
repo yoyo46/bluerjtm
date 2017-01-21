@@ -1,13 +1,21 @@
 <?php 
         $nodoc = !empty($nodoc)?$nodoc:false;
+        $urlForm = !empty($urlForm)?$urlForm:array(
+            'controller' => 'products',
+            'action' => 'search',
+            'spk_products',
+            $nodoc,
+            'admin' => false,
+        );
+        $urlReset = !empty($urlReset)?$urlReset:array(
+            'controller' => 'products', 
+            'action' => 'spk_products', 
+            $nodoc,
+            'admin' => false,
+        );
+
         echo $this->Form->create('Search', array(
-            'url' => array(
-                'controller' => 'products',
-                'action' => 'search',
-                'spk_products',
-                $nodoc,
-                'admin' => false,
-            ),
+            'url' => $urlForm,
             'class' => 'ajax-form',
             'data-wrapper-write' => '#wrapper-modal-write',
         ));
@@ -17,7 +25,10 @@
         <?php 
                 echo $this->Common->buildInputForm('code', __('Kode Barang'));
                 echo $this->Common->buildInputForm('group', __('Grup Barang'), array(
-                    'empty' => __('- Pilih Grup -'),
+                    'class'=>'form-control chosen-select',
+                    'options' => $productCategories,
+                    'empty' => __('Pilih Group'),
+                    'frameClass' => 'select-block form-group',
                 ));
         ?>
     </div>
@@ -29,12 +40,7 @@
 </div>
 <?php 
         echo $this->element('blocks/common/searchs/box_action', array(
-            '_url' => array(
-                'controller' => 'products', 
-                'action' => 'spk_products', 
-                $nodoc,
-                'admin' => false,
-            ),
+            '_url' => $urlReset,
             'linkOptions' => array(
                 'escape' => false, 
                 'class'=> 'btn btn-default btn-sm ajaxCustomModal',

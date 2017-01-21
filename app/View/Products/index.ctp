@@ -18,6 +18,11 @@
             'group' => array(
                 'name' => __('Grup'),
             ),
+            'stock' => array(
+                'name' => __('Stok'),
+                'field_model' => 'Product.product_stock_cnt',
+                'class' => 'text-center',
+            ),
             'sq' => array(
                 'name' => __('Harus ada SQ ?'),
                 'field_model' => 'Product.is_supplier_quotation',
@@ -26,11 +31,6 @@
             'sn' => array(
                 'name' => __('SN ?'),
                 'field_model' => 'Product.is_serial_number',
-                'class' => 'text-center',
-            ),
-            'stock' => array(
-                'name' => __('Stok'),
-                'field_model' => 'Product.product_stock_cnt',
                 'class' => 'text-center',
             ),
             'status' => array(
@@ -117,13 +117,13 @@
                         echo $this->Html->tag('td', $customType);
                         echo $this->Html->tag('td', $unit);
                         echo $this->Html->tag('td', $group);
+                        echo $this->Html->tag('td', $product_stock_cnt, array(
+                            'class' => 'text-center',
+                        ));
                         echo $this->Html->tag('td', $sq, array(
                             'class' => 'text-center',
                         ));
                         echo $this->Html->tag('td', $sn, array(
-                            'class' => 'text-center',
-                        ));
-                        echo $this->Html->tag('td', $product_stock_cnt, array(
                             'class' => 'text-center',
                         ));
                         echo $this->Html->tag('td', $customStatus, array(

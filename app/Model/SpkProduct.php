@@ -84,12 +84,20 @@ class SpkProduct extends AppModel {
                 $default_options['contain'][] = 'Spk';
                 break;
             case 'unexit':
+                $default_options['conditions']['SpkProduct.status'] = 1;
                 $default_options['conditions']['SpkProduct.document_status <>'] = 'full';
+                break;
+            case 'unreceipt':
+                $default_options['conditions']['SpkProduct.status'] = 1;
+                $default_options['conditions']['SpkProduct.receipt_status <>'] = 'full';
                 break;
         }
 
         if(!empty($options['conditions'])){
             $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
+        }
+        if(!empty($options['contain'])){
+            $default_options['contain'] = $options['contain'];
         }
         if(!empty($options['order'])){
             $default_options['order'] = $options['order'];
@@ -142,33 +150,41 @@ class SpkProduct extends AppModel {
     }
 
     public function _callRefineParams( $data = '', $default_options = false ) {
-        // $noref = $this->filterEmptyField($data, 'named', 'noref');
-        // $document_type = $this->filterEmptyField($data, 'named', 'document_type');
-        // $nodoc = $this->filterEmptyField($data, 'named', 'nodoc');
-        // $dateFrom = $this->filterEmptyField($data, 'named', 'DateFrom');
-        // $dateTo = $this->filterEmptyField($data, 'named', 'DateTo');
-        // $vendor_id = $this->filterEmptyField($data, 'named', 'vendor_id');
+        $code = $this->filterEmptyField($data, 'named', 'code');
+        $name = $this->filterEmptyField($data, 'named', 'name');
+        $group = $this->filterEmptyField($data, 'named', 'group');
 
-        // if( !empty($dateFrom) || !empty($dateTo) ) {
-        //     if( !empty($dateFrom) ) {
-        //         $default_options['conditions']['DATE_FORMAT(Spk.transaction_date, \'%Y-%m-%d\') >='] = $dateFrom;
-        //     }
-
-        //     if( !empty($dateTo) ) {
-        //         $default_options['conditions']['DATE_FORMAT(Spk.transaction_date, \'%Y-%m-%d\') <='] = $dateTo;
-        //     }
-        // }
-        // if( !empty($nodoc) ) {
-        //     $default_options['conditions']['Spk.nodoc LIKE'] = '%'.$nodoc.'%';
-        // }
-        // if( !empty($vendor_id) ) {
-        //     $default_options['conditions']['Spk.vendor_id'] = $vendor_id;
-        // }
-        // if( !empty($document_type) ) {
-        //     $default_options['conditions']['Spk.document_type'] = $document_type;
-        // }
+        if( !empty($code) ) {
+            $default_options['conditions']['Product.code LIKE'] = '%'.$code.'%';
+            $default_options['contain'][] = 'Product';
+        }
+        if( !empty($name) ) {
+            $default_options['conditions']['Product.name LIKE'] = '%'.$name.'%';
+            $default_options['contain'][] = 'Product';
+        }
+        if( !empty($group) ) {
+            $default_options['conditions']['Product.product_category_id'] = $group;
+            $default_options['contain'][] = 'Product';
+        }
         
         return $default_options;
+    }
+
+    function getMergeData( $data, $id, $product_id ){
+        $value = $this->getData('first', array(
+            'conditions' => array(
+                'SpkProduct.spk_id' => $id,
+                'SpkProduct.product_id' => $product_id,
+            ),
+        ), array(
+            'status' => 'all',
+        ));
+
+        if(!empty($value)){
+            $data = array_merge($data, $value);
+        }
+
+        return $data;
     }
 }
 ?>

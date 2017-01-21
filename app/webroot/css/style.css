@@ -288,9 +288,14 @@ img {
 .margin {
   margin: 10px;
 }
+
 .ml5 {
   margin-left: 5px !important;
 }
+.mb30 {
+  margin-bottom: 30px !important;
+}
+
 /* Display inline */
 .inline {
   display: inline;

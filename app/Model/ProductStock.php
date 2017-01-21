@@ -47,6 +47,7 @@ class ProductStock extends AppModel {
             case 'in_stock':
                 $default_options['conditions']['ProductStock.qty_total <>'] = 0;
                 $default_options['conditions']['ProductStock.status'] = 1;
+                $default_options['conditions']['ProductStock.type'] = 'default';
             case 'FIFO':
                 $default_options['conditions']['ProductStock.qty_total <>'] = 0;
                 $default_options['conditions']['ProductStock.status'] = 1;
@@ -54,6 +55,9 @@ class ProductStock extends AppModel {
                     'ProductStock.transaction_date' => 'ASC',
                     'ProductStock.id' => 'ASC',
                 );
+            case 'barang_jadi':
+                $default_options['conditions']['ProductStock.status'] = 1;
+                $default_options['conditions']['ProductStock.type'] = 'default';
         }
 
         if( !empty($branch) ) {
@@ -142,6 +146,8 @@ class ProductStock extends AppModel {
             'conditions' => array(
                 'ProductStock.product_id' => $product_id,
             ),
+        ), array(
+            'status' => 'barang_jadi',
         ));
         $total_stock = $this->filterEmptyField($value, 'ProductStock', 'qty_cnt');
 

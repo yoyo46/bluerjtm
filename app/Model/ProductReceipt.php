@@ -26,6 +26,20 @@ class ProductReceipt extends AppModel {
                 'ProductReceipt.document_type' => 'po',
             ),
         ),
+        'Spk' => array(
+            'className' => 'Spk',
+            'foreignKey' => 'document_id',
+            'conditions' => array(
+                'ProductReceipt.document_type' => 'spk',
+            ),
+        ),
+        'ProductExpenditure' => array(
+            'className' => 'ProductExpenditure',
+            'foreignKey' => 'document_id',
+            'conditions' => array(
+                'ProductReceipt.document_type' => 'wht',
+            ),
+        ),
     );
 
     var $hasMany = array(
@@ -192,7 +206,128 @@ class ProductReceipt extends AppModel {
         $transaction_status = $this->filterEmptyField($data, 'ProductReceipt', 'transaction_status');
 
         switch ($document_type) {
-            case 'po':
+            case 'spk':
+                $dataDetail = $this->Spk->SpkProduct->getData('first', array(
+                    'conditions' => array(
+                        'SpkProduct.spk_id' => $document_id,
+                    ),
+                ), array(
+                    'status' => 'unreceipt',
+                ));
+
+                if( !empty($dataDetail) ) {
+                    $receipt_status = 'half';
+                } else {
+                    $receipt_status = 'full';
+                }
+
+                $settings = $this->callSettingGeneral('spk_internal_status');
+                $spk_internal_status = $this->filterEmptyField($settings, 'spk_internal_status');
+
+                $this->Spk->id = $document_id;
+                $this->Spk->set('draft_receipt_status', $receipt_status);
+
+                if( $transaction_status == 'posting' ) {
+                    $this->Spk->set('receipt_status', $receipt_status);
+
+                    if( $receipt_status == 'full' ) {
+                        $this->Spk->set('transaction_status', 'closed');
+                    }
+                }
+
+                $this->Spk->save();
+                break;
+            case 'wht':
+                $dataDetail = $this->ProductExpenditure->ProductExpenditureDetail->getData('first', array(
+                    'conditions' => array(
+                        'ProductExpenditureDetail.product_expenditure_id' => $document_id,
+                    ),
+                ), array(
+                    'status' => 'unreceipt',
+                ));
+
+                $expenditure = $this->ProductExpenditure->getData('first', array(
+                    'conditions' => array(
+                        'ProductExpenditure.id' => $document_id,
+                    ),
+                ), array(
+                    'branch' => false,
+                ));
+                $expenditure = $this->ProductExpenditure->getMergeList($expenditure, array(
+                    'contain' => array(
+                        'Spk' => array(
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
+                    ),
+                ));
+                $spk_id = $this->filterEmptyField($expenditure, 'ProductExpenditure', 'document_id');
+                $spk_status = $this->filterEmptyField($expenditure, 'Spk', 'transaction_status');
+
+                $outstanding = $this->ProductExpenditure->getData('count', array(
+                    'conditions' => array(
+                        'ProductExpenditure.document_type' => 'wht',
+                        'ProductExpenditure.document_id' => $spk_id,
+                        'ProductExpenditure.receipt_status <>' => 'full',
+                    ),
+                ), array(
+                    'branch' => false,
+                ));
+
+                if( !empty($dataDetail) ) {
+                    $receipt_status = 'half';
+                } else {
+                    $receipt_status = 'full';
+                }
+
+                $dataSave = array(
+                    'ProductExpenditure' => array(
+                        'id' => $document_id,
+                        'draft_receipt_status' => $receipt_status,
+                    ),
+                );
+
+                if( $transaction_status == 'posting' ) {
+                    $dataSave['ProductExpenditure']['receipt_status'] = $receipt_status;
+
+                    if( empty($outstanding) && $spk_status == 'out' ) {
+                        $dataSave['Spk']['id'] = $spk_id;
+                        $dataSave['Spk']['transaction_status'] = 'closed';
+                    }
+                }
+
+                $this->ProductExpenditure->saveAll($dataSave);
+                break;
+            case 'production':
+                $dataDetail = $this->Spk->SpkProduction->getData('first', array(
+                    'conditions' => array(
+                        'SpkProduction.spk_id' => $document_id,
+                    ),
+                ), array(
+                    'status' => 'unreceipt',
+                ));
+
+                if( !empty($dataDetail) ) {
+                    $receipt_status = 'half';
+                } else {
+                    $receipt_status = 'full';
+                }
+
+                $this->Spk->id = $document_id;
+                $this->Spk->set('draft_receipt_status', $receipt_status);
+
+                if( $transaction_status == 'posting' ) {
+                    $this->Spk->set('receipt_status', $receipt_status);
+
+                    if( $receipt_status == 'full' ) {
+                        $this->Spk->set('transaction_status', 'closed');
+                    }
+                }
+
+                $this->Spk->save();
+                break;
+            default:
                 $purchaseOrderDetail = $this->PurchaseOrder->PurchaseOrderDetail->getData('first', array(
                     'conditions' => array(
                         'purchaseOrderDetail.purchase_order_id' => $document_id,
@@ -339,9 +474,52 @@ class ProductReceipt extends AppModel {
             if( $this->save() ) {
 
                 switch ($document_type) {
-                    case 'po':
+                    case 'spk':
+                        $this->Spk->id = $document_id;
+                        $this->Spk->set('receipt_status', 'none');
+                        $this->Spk->set('draft_receipt_status', 'none');
+                        $this->Spk->save();
+                        break;
+                    case 'wht':
+                        $value = $this->ProductExpenditure->getMerge($value, $document_id);
+                        $value = $this->ProductExpenditure->getMergeList($value, array(
+                            'contain' => array(
+                                'Spk',
+                            ),
+                        ));
+                        $spk_id = $this->filterEmptyField($value, 'ProductExpenditure', 'document_id');
+                        $spk_status = $this->filterEmptyField($value, 'Spk', 'transaction_status');
+
+                        if( $spk_status == 'closed' ) {
+                            $transaction_status = 'out';
+                        } else {
+                            $transaction_status = 'open';
+                        }
+
+                        $dataSave = array(
+                            'ProductExpenditure' => array(
+                                'id' => $document_id,
+                                'receipt_status' => 'none',
+                                'draft_receipt_status' => 'none',
+                            ),
+                            'Spk' => array(
+                                'Spk.id' => $spk_id,
+                                'Spk.transaction_status' => $transaction_status,
+                            ),
+                        );
+
+                        $this->ProductExpenditure->saveAll($dataSave);
+                        break;
+                    case 'production':
+                        $this->Spk->id = $document_id;
+                        $this->Spk->set('receipt_status', 'none');
+                        $this->Spk->set('draft_receipt_status', 'none');
+                        $this->Spk->save();
+                        break;
+                    default:
                         $this->PurchaseOrder->id = $document_id;
                         $this->PurchaseOrder->set('receipt_status', 'none');
+                        $this->PurchaseOrder->set('draft_receipt_status', 'none');
                         $this->PurchaseOrder->save();
                         break;
                 }

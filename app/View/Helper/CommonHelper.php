@@ -2497,6 +2497,12 @@ class CommonHelper extends AppHelper {
                 ));
                 break;
 
+            case 'out':
+                $customStatus = $this->Html->tag('span', __('Proses'), array(
+                    'class' => 'label label-success',
+                ));
+                break;
+
             case 'progress':
                 $customStatus = $this->Html->tag('span', __('Pending'), array(
                     'class' => 'label label-warning',

@@ -66,7 +66,7 @@
                                 $customType = $this->Common->unSlug($type);
                                 $customRate = $this->Common->getFormatPrice($rate, '-');
                 ?>
-                <tr class="pick-document" rel="<?php echo $id; ?>">
+                <tr class="pick-document" rel="<?php echo $id; ?>" data-table="<?php echo $action_type ?>">
                     <?php
                             echo $this->Html->tag('td', $this->Form->checkbox('document_id.'.$id, array(
                                 'class' => 'check-option',
@@ -140,7 +140,7 @@
                                 'class' => 'delete-document btn btn-danger btn-xs',
                                 'escape' => false,
                             )), array(
-                                'class' => 'actions hide',
+                                'class' => 'actions text-center hide',
                             ));
                     ?>
                 </tr>

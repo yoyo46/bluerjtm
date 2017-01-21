@@ -323,6 +323,10 @@ class Driver extends AppModel {
             ),
         ));
 
+        if( !empty($ttujs) ) {
+            $ttujs = array_filter($ttujs);
+        }
+
         if( !empty($include_this_driver_id) ) {
             // Ambil data Driver pengganti berikut id ini
             $conditions = array(

@@ -377,6 +377,7 @@
 								'closed_expenditured' => __('"Closed" ketika barang keluar'),
 								'closed_receipt' => __('"Closed" ketika barang bekas diterima'),
 								'closed_all_condition' => __('Semua kondisi terpenuhi'),
+								'manually' => __('Manual by User'),
 							),
 						));
 				?>

@@ -2576,6 +2576,10 @@ class AjaxController extends AppController {
         		$status = 'active';
         		$render = '/Spk/products';
         		break;
+        	case 'productions':
+        		$status = 'active';
+        		$render = '/Spk/productions';
+        		break;
         	default:
         		$status = 'active';
         		break;
@@ -2595,6 +2599,11 @@ class AjaxController extends AppController {
                 $value = $this->Product->ProductUnit->getMerge($value, $product_unit_id);
                 $value = $this->Product->ProductCategory->getMerge($value, $product_category_id);
                 $value['Product']['rate'] = $this->Product->SupplierQuotationDetail->SupplierQuotation->_callRatePrice($id, false, '-');
+
+                if( $action_type == 'spk' ) {
+        			$value['Product']['product_stock_cnt'] = $this->Product->ProductStock->_callStock($id);
+                }
+
                 $values[$key] = $value;
             }
         }

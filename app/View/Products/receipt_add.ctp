@@ -7,6 +7,15 @@
 		);
 		$value = !empty($value)?$value:false;
 		$view = !empty($view)?$view:false;
+		$documentTypes = array(
+	    	'po' => __('PO'),
+	    	'wht' => __('WHT'),
+	    	'production' => __('Produksi'),
+    	);
+
+    	if( !empty($spk_internal_policy) && $spk_internal_policy == 'receipt' ) {
+    		$documentTypes['spk'] = __('SPK External');
+    	}
 
 		$this->Html->addCrumb($title, $urlRoot);
 		$this->Html->addCrumb($sub_module_title);
@@ -47,12 +56,7 @@
 							<div class="radio">
 			    				<label>
 						    		<?php 
-						    				echo $this->Form->radio('document_type', array(
-										    	'po' => __('PO'),
-										    	'spk' => __('SPK External'),
-										    	'wht' => __('WHT'),
-										    	'production' => __('Produksi'),
-									    	), array(
+						    				echo $this->Form->radio('document_type', $documentTypes, array(
 									    		'class' => 'ajax-change',
 									    		'href' => $this->Html->url(array(
 									    			'controller' => 'products',

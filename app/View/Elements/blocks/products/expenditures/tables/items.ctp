@@ -29,26 +29,37 @@
                 'class' => 'text-center price_custom',
                 'rel' => 'qty-spk',
             ));
-            echo $this->Html->tag('td', $out_qty, array(
-                'class' => 'text-center price_custom',
-                'rel' => 'qty-out',
-            ));
-            echo $this->Html->tag('td', $this->Common->buildInputForm('ProductExpenditureDetail.qty.', false, array(
-                'type' => 'text',
-                'fieldError' => array(
-                    'ProductExpenditureDetail.'.$key.'.qty',
-                    'ProductExpenditureDetail.'.$key.'.qty_over',
-                    'ProductExpenditureDetail.'.$key.'.out_stock',
-                ),
-                'frameClass' => false,
-                'class' => 'price_custom input_number serial-number-input text-center',
-                'attributes' => array(
-                    'value' => $qty,
-                    'rel' => 'qty',
-                ),
-            )));
+            
+            if( empty($view) ) {
+                echo $this->Html->tag('td', $out_qty, array(
+                    'class' => 'text-center price_custom',
+                    'rel' => 'qty-out',
+                ));
+            }
 
-            if( !empty($is_serial_number) ) {
+            if( empty($view) ) {
+                echo $this->Html->tag('td', $this->Common->buildInputForm('ProductExpenditureDetail.qty.', false, array(
+                    'type' => 'text',
+                    'fieldError' => array(
+                        'ProductExpenditureDetail.'.$key.'.qty',
+                        'ProductExpenditureDetail.'.$key.'.qty_over',
+                        'ProductExpenditureDetail.'.$key.'.out_stock',
+                    ),
+                    'frameClass' => false,
+                    'class' => 'price_custom input_number serial-number-input text-center',
+                    'attributes' => array(
+                        'value' => $qty,
+                        'rel' => 'qty',
+                    ),
+                )));
+            } else {
+                echo $this->Html->tag('td', $qty, array(
+                    'class' => 'text-center price_custom',
+                    'rel' => 'qty',
+                ));
+            }
+
+            // if( !empty($is_serial_number) ) {
                 if( !empty($view) ) {
                     $data = $this->request->data;
                     $serialNumbers = $this->Common->filterEmptyField($data, 'ProductExpenditureDetailSerialNumber');
@@ -76,19 +87,21 @@
                         ),
                     ));
                 }
-            } else {
-                $serial_number_text = '-';
-            }
+            // } else {
+            //     $serial_number_text = '-';
+            // }
 
             echo $this->Html->tag('td', $serial_number_text, array(
                 'class' => 'text-center',
             ));
 
-            echo $this->Html->tag('td', $this->Html->link($this->Common->icon('times'), '#', array(
-                'class' => 'delete-document btn btn-danger btn-xs',
-                'escape' => false,
-            )), array(
-                'class' => 'text-center',
-            ));
+            if( empty($view) ) {
+                echo $this->Html->tag('td', $this->Html->link($this->Common->icon('times'), '#', array(
+                    'class' => 'delete-document btn btn-danger btn-xs',
+                    'escape' => false,
+                )), array(
+                    'class' => 'text-center',
+                ));
+            }
     ?>
 </tr>

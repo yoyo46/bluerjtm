@@ -15,7 +15,7 @@ class ProductsController extends AppController {
         $this->set('module_title', __('Barang'));
     }
 
-    function search( $index = 'index' ){
+    function search( $index = 'index', $add_param1 = null, $add_param2 = null, $add_param3 = null ){
         $refine = array();
         if(!empty($this->request->data)) {
             $data = $this->request->data;
@@ -26,6 +26,16 @@ class ProductsController extends AppController {
             
             $params = array_merge($params, $result);
             $params['action'] = $index;
+
+            if( $add_param1 != null ) {
+                $params[] = $add_param1;
+            }
+            if( $add_param2 != null ) {
+                $params[] = $add_param2;
+            }
+            if( $add_param3 != null ) {
+                $params[] = $add_param3;
+            }
 
             $this->redirect($params);
         }
@@ -316,11 +326,13 @@ class ProductsController extends AppController {
 
         if( !empty($values) ) {
             foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'Product', 'id');
                 $product_unit_id = $this->MkCommon->filterEmptyField($value, 'Product', 'product_unit_id');
                 $product_category_id = $this->MkCommon->filterEmptyField($value, 'Product', 'product_category_id');
 
                 $value = $this->Product->ProductUnit->getMerge($value, $product_unit_id);
                 $value = $this->Product->ProductCategory->getMerge($value, $product_category_id);
+                $value['Product']['product_stock_cnt'] = $this->Product->ProductStock->_callStock($id);
                 $values[$key] = $value;
             }
         }
@@ -504,13 +516,53 @@ class ProductsController extends AppController {
         ));
 
         if( !empty($value) ) {
-            $value = $this->Product->ProductReceiptDetail->getMerge($value, $id);
+            // $value = $this->Product->ProductReceiptDetail->getMerge($value, $id);
             $value = $this->Product->ProductReceiptDetail->ProductReceipt->DocumentAuth->getMerge($value, $id, 'product_receipt');
 
             $user_id = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'user_id');
             $grandtotal = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'grandtotal');
             $nodoc = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'nodoc');
+            $document_type = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'document_type');
 
+            switch ($document_type) {
+                case 'spk':
+                    $documentModel = 'Spk';
+                    break;
+                
+                case 'wht':
+                    $documentModel = 'ProductExpenditure';
+                    break;
+
+                case 'production':
+                    $documentModel = 'Spk';
+                    break;
+                
+                default:
+                    $documentModel = 'PurchaseOrder';
+                    break;
+            }
+
+            $value = $this->Product->ProductReceiptDetail->ProductReceipt->getMergeList($value, array(
+                'contain' => array(
+                    'Document' => array(
+                        'uses' => $documentModel,
+                        'elements' => array(
+                            'branch' => false,
+                        ),
+                    ),
+                    'ProductReceiptDetail' => array(
+                        'contain' => array(
+                            'Product' => array(
+                                'contain' => array(
+                                    'ProductUnit',
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ));
+
+            $details = $this->MkCommon->filterEmptyField($value, 'ProductReceiptDetail');
             $value = $this->User->getMerge($value, $user_id);
             $user_position_id = $this->MkCommon->filterEmptyField($value, 'Employe', 'employe_position_id');
 
@@ -547,7 +599,7 @@ class ProductsController extends AppController {
                 ));
             }
 
-            $this->RjProduct->_callBeforeRenderReceipt($value);
+            $this->RjProduct->_callBeforeRenderReceipt(false, $value);
 
             $this->set('active_menu', 'receipts');
             $this->set('view', 'detail');
@@ -613,7 +665,16 @@ class ProductsController extends AppController {
 
     function receipt_choose_documents ( $type = false ) {
         switch ($type) {
-            case 'po':
+            case 'spk':
+                $vendors = $this->Product->SpkProduct->Spk->_callVendors('unreceipt_draft');
+                break;
+            case 'wht':
+                $vendors = $this->Product->ProductExpenditureDetail->ProductExpenditure->_callVendors('untransfer_draft');
+                break;
+            case 'production':
+                $vendors = $this->Product->SpkProduct->Spk->_callVendors('unreceipt_draft', false, 'production');
+                break;
+            default:
                 $vendors = $this->Product->PurchaseOrderDetail->PurchaseOrder->_callVendors('unreceipt_draft');
                 break;
         }
@@ -628,10 +689,28 @@ class ProductsController extends AppController {
         $vendor_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'vendor_id', $vendor_id);
         $receipt_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'receipt_id');
         $params = $this->MkCommon->_callRefineParams($this->params);
+        $render = __('receipt_documents_%s', $type);
 
         switch ($type) {
-            case 'po':
+            case 'spk':
+                $settings = $this->MkCommon->_callSettingGeneral('Product', 'spk_internal_policy', false);
+                $spk_internal_policy = $this->MkCommon->filterEmptyField($settings, 'Product', 'spk_internal_policy');
+
+                if( $spk_internal_policy == 'receipt' ) {
+                    $values = $this->RjProduct->_callSpkInternals($params, $vendor_id);
+                }
+                break;
+            case 'wht':
+                $values = $this->RjProduct->_callWHts($params, $vendor_id);
+                $render = 'receipt_documents_wht';
+                break;
+            case 'production':
+                $values = $this->RjProduct->_callProductions($params, $vendor_id);
+                $render = 'receipt_documents_spk';
+                break;
+            default:
                 $values = $this->RjProduct->_callPurchaseOrders($params, $vendor_id);
+                $render = 'receipt_documents';
                 break;
         }
 
@@ -640,33 +719,115 @@ class ProductsController extends AppController {
             'values', 'type',
             'receipt_id', 'vendor_id'
         ));
+        $this->render($render);
     }
 
-    function receipt_pick_document () {
+    // function receipt_pick_document () {
+    //     $data = $this->request->data;
+    //     $type = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_type');
+
+    //     switch ($type) {
+    //         case 'spk':
+    //             $value = $this->RjProduct->_callSpkInternal($data);
+    //             break;
+    //         case 'wht':
+    //             $value = $this->RjProduct->_callWht($data);
+    //             break;
+    //         default:
+    //             $value = $this->RjProduct->_callPurchaseOrder($data);
+    //             break;
+    //     }
+
+    //     $this->set(compact(
+    //         'value', 'type'
+    //     ));
+    // }
+
+    function receipt_document_products ( $transaction_id = false, $nodoc = null, $document_type = 'spk' ) {
         $data = $this->request->data;
-        $type = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_type');
-
-        switch ($type) {
-            case 'po':
-                $value = $this->RjProduct->_callPurchaseOrder($data);
-                break;
-        }
-
-        $this->set(compact(
-            'value', 'type'
-        ));
-    }
-
-    function receipt_document_products ( $transaction_id = false ) {
-        $data = $this->request->data;
-        $nodoc = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_number', 'PO001');
-        $document_type = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_type', 'po');
+        $nodoc = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_number', $nodoc);
+        $document_type = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_type', $document_type);
         $values = false;
 
         $params = $this->MkCommon->_callRefineParams($this->params);
+        $productCategories = $this->Product->ProductCategory->getData('list');
+
+        $this->set(array(
+            'nodoc' => $nodoc,
+            'transaction_id' => $transaction_id,
+            'document_type' => $document_type,
+            'productCategories' => $productCategories,
+        ));
 
         switch ($document_type) {
-            case 'po':
+            case 'spk':
+                $value = $this->Product->SpkProduct->Spk->getData('first', array(
+                    'conditions' => array(
+                        'Spk.nodoc' => $nodoc,
+                    ),
+                ), array(
+                    'status' => 'unreceipt_draft',
+                ));
+                $document_id = $this->MkCommon->filterEmptyField($value, 'Spk', 'id');
+
+                $options =  $this->Product->SpkProduct->_callRefineParams($params, array(
+                    'conditions' => array(
+                        'SpkProduct.spk_id' => $document_id,
+                    ),
+                    'limit' => 10,
+                ));
+                $this->paginate = $this->Product->SpkProduct->getData('paginate', $options);
+                $values = $this->paginate('SpkProduct');
+                $this->RjProduct->_callBeforeRenderReceiptSpkProducts($values, $transaction_id);
+                $this->render('receipt_spk_products');
+                break;
+            case 'wht':
+                $value = $this->Product->ProductExpenditureDetail->ProductExpenditure->getData('first', array(
+                    'conditions' => array(
+                        'ProductExpenditure.nodoc' => $nodoc,
+                    ),
+                ), array(
+                    'status' => 'untransfer_draft',
+                    'branch' => false,
+                ));
+                $document_id = $this->MkCommon->filterEmptyField($value, 'ProductExpenditure', 'id');
+
+                $options =  $this->Product->ProductExpenditureDetail->_callRefineParams($params, array(
+                    'conditions' => array(
+                        'ProductExpenditureDetail.product_expenditure_id' => $document_id,
+                    ),
+                    'limit' => 10,
+                ));
+                $this->paginate = $this->Product->ProductExpenditureDetail->getData('paginate', $options);
+                $values = $this->paginate('ProductExpenditureDetail');
+                $this->RjProduct->_callBeforeRenderReceiptSpkProducts($values, $transaction_id);
+                $this->render('receipt_spk_products');
+                break;
+            case 'production':
+                $value = $this->Product->SpkProduction->Spk->getData('first', array(
+                    'conditions' => array(
+                        'Spk.nodoc' => $nodoc,
+                    ),
+                ), array(
+                    'status' => 'unreceipt_draft',
+                    'type' => 'production',
+                ));
+                $document_id = $this->MkCommon->filterEmptyField($value, 'Spk', 'id');
+
+                $options =  $this->Product->SpkProduction->_callRefineParams($params, array(
+                    'conditions' => array(
+                        'SpkProduction.spk_id' => $document_id,
+                    ),
+                    'limit' => 10,
+                ));
+                $this->paginate = $this->Product->SpkProduction->getData('paginate', $options);
+                $values = $this->paginate('SpkProduction');
+                $this->RjProduct->_callBeforeRenderReceiptSpkProducts($values, $transaction_id);
+
+                $this->set('modelName', 'SpkProduction');
+                $this->render('receipt_spk_products');
+                break;
+            default:
                 $value = $this->Product->PurchaseOrderDetail->PurchaseOrder->getData('first', array(
                     'conditions' => array(
                         'PurchaseOrder.nodoc' => $nodoc,
@@ -800,7 +961,7 @@ class ProductsController extends AppController {
                 'ProductExpenditure.id' => $id,
             ),
         ), array(
-            'status' => 'commit-void',
+            'status' => 'all',
         ));
 
         if( !empty($value) ) {
@@ -876,9 +1037,10 @@ class ProductsController extends AppController {
         $this->paginate = $this->SpkProduct->getData('paginate', $options);
         $values = $this->paginate('SpkProduct');
 
+        $productCategories = $this->Product->ProductCategory->getData('list');
         $this->RjProduct->_callBeforeRenderSpkProducts($values, $transaction_id);
         $this->set(compact(
-            'nodoc'
+            'nodoc', 'productCategories'
         ));
     }
 }

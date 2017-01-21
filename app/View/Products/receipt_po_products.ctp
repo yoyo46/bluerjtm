@@ -101,8 +101,8 @@
                                 'class' => __('input_number text-center price_custom %s', $targetQty),
                                 'attributes' => array(
                                     'rel' => 'qty',
+                                    'value' => $qty,
                                 ),
-                                'value' => $qty,
                             )), array(
                                 'class' => 'hide',
                             ));

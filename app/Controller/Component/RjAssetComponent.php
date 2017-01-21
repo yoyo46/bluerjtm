@@ -425,14 +425,15 @@ class RjAssetComponent extends Component {
             $name = $this->MkCommon->filterEmptyField($value, 'Asset', 'name');
             $nilai_buku = $this->MkCommon->filterEmptyField($value, 'Asset', 'nilai_buku');
             $nilai_perolehan = $this->MkCommon->filterEmptyField($value, 'Asset', 'nilai_perolehan');
+            $depr_bulan = $this->MkCommon->filterEmptyField($value, 'Asset', 'depr_bulan');
 
             if( !empty($value['AssetDepreciation']['id']) ) {
-                $depr_bulan = $this->MkCommon->filterEmptyField($value, 'AssetDepreciation', 'depr_bulan');
-                $ak_penyusutan = $this->MkCommon->filterEmptyField($value, 'ak_penyusutan');
+                $last_depr_bulan = $this->MkCommon->filterEmptyField($value, 'AssetDepreciation', 'depr_bulan');
+                $ak_penyusutan = $this->MkCommon->filterEmptyField($value, 'AssetDepreciation', 'ak_penyusutan', 0) - $last_depr_bulan;
                 
+                $ak_penyusutan = $ak_penyusutan + $depr_bulan;
                 $nilai_buku = $nilai_perolehan - $ak_penyusutan;
             } else {
-                $depr_bulan = $this->MkCommon->filterEmptyField($value, 'Asset', 'depr_bulan');
                 $ak_penyusutan = $this->MkCommon->filterEmptyField($value, 'Asset', 'ak_penyusutan');
 
                 if( $depr_bulan > $nilai_buku  ) {

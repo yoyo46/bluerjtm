@@ -42,12 +42,7 @@
 							'label' => __('Jenis SPK *'),
 		                    'class' => 'form-control handle-toggle',
 		                    'empty' => __('Pilih Jenis SPK'),
-		                    'options' => array(
-						    	'internal' => __('Internal'),
-						    	'eksternal' => __('Eksternal'),
-						    	'wht' => __('WHT'),
-						    	'production' => __('Produksi'),
-					    	),
+		                    'options' => Configure::read('__Site.Spk.type'),
 					    	'data-match' => '[[\'.wrapper-mechanic\', [\'internal\',\'production\'], \'slide\'],[\'.wrapper-wht\', [\'wht\'], \'slide\'],[\'.wrapper-eksternal\', [\'eksternal\'], \'fade\']]',
 						));
 
@@ -131,6 +126,9 @@
 </div>
 <?php     	
         echo $this->element('blocks/spk/tables/detail_products');
+        echo $this->Html->tag('div', $this->element('blocks/spk/tables/detail_production'), array(
+			'class' => __('wrapper-wht %s', $whtClass),
+    	));
 ?>
 <div class="box-footer text-center action">
 	<?php

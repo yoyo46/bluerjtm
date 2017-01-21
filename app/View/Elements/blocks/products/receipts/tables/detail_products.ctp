@@ -5,6 +5,7 @@
         $dataDetail = $this->Common->filterEmptyField($data, 'ProductReceiptDetail');
         $nodoc = $this->Common->filterEmptyField($value, 'Document', 'nodoc');
         $id = $this->Common->filterEmptyField($value, 'ProductReceipt', 'id', 0);
+        $document_type = $this->Common->filterEmptyField($value, 'ProductReceipt', 'document_type');
 
 		$dataColumns = array(
             'code' => array(
@@ -20,21 +21,51 @@
                 'name' => __('Satuan'),
                 'class' => 'text-center',
             ),
-            'qty_doc' => array(
-                'name' => __('Qty Penerimaan'),
-                'class' => 'text-center',
-                'style' => 'width:5%;',
-            ),
-            'qty_in' => array(
-                'name' => __('Qty Diterima'),
-                'class' => 'text-center',
-                'style' => 'width:5%;',
-            ),
-            'qty' => array(
-                'name' => __('Qty'),
-                'class' => 'text-center',
-                'style' => 'width:5%;',
-            ),
+        );
+
+        if( empty($view) ) {
+            $dataColumns = array_merge($dataColumns, array(
+                'qty_doc' => array(
+                    'name' => __('Qty Penerimaan'),
+                    'class' => 'text-center',
+                    'style' => 'width:5%;',
+                ),
+                'qty_in' => array(
+                    'name' => __('Qty Diterima'),
+                    'class' => 'text-center',
+                    'style' => 'width:5%;',
+                ),
+                'qty' => array(
+                    'name' => __('Qty'),
+                    'class' => 'text-center',
+                    'style' => 'width:5%;',
+                ),
+            ));
+        } else {
+            switch ($document_type) {
+                case 'spk':
+                    $lblQty = __('SPK');
+                    break;
+                
+                default:
+                    $lblQty = __('PO');
+                    break;
+            }
+            $dataColumns = array_merge($dataColumns, array(
+                'qty_doc' => array(
+                    'name' => __('Qty %s', $lblQty),
+                    'class' => 'text-center',
+                    'style' => 'width:5%;',
+                ),
+                'qty' => array(
+                    'name' => __('Qty Diterima'),
+                    'class' => 'text-center',
+                    'style' => 'width:5%;',
+                ),
+            ));
+        }
+
+        $dataColumns = array_merge($dataColumns, array(
             'unit' => array(
                 'name' => __('Satuan'),
                 'class' => 'text-center',
@@ -45,12 +76,18 @@
                 'class' => 'text-center',
                 'style' => 'width:10%;',
             ),
-            'action' => array(
-                'name' => __('Action'),
-                'class' => 'text-center',
-                'style' => 'width:5%;',
-            ),
-        );
+        ));
+
+        if( empty($view) ) {
+            $dataColumns = array_merge($dataColumns, array(
+                'action' => array(
+                    'name' => __('Action'),
+                    'class' => 'text-center',
+                    'style' => 'width:5%;',
+                ),
+            ));
+        }
+
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
         if( empty($view) ) {
@@ -85,7 +122,7 @@
 	                        echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));
 	                    }
 	            ?>
-	        	<tbody class="wrapper-table-documents" rel="<?php echo $nodoc; ?>">
+	        	<tbody class="wrapper-table-documents" data-remove="true" rel="<?php echo $nodoc; ?>">
                     <?php
                             $grandtotal = 0;
                             $total_doc_qty = 0;
@@ -101,6 +138,8 @@
                                     $code = $this->Common->filterEmptyField($value, 'ProductReceiptDetail', 'code');
                                     $document_detail_id = $this->Common->filterEmptyField($value, 'ProductReceiptDetail', 'document_detail_id');
                                     $serial_number = $this->Common->filterEmptyField($value, 'ProductReceiptDetailSerialNumber');
+
+
                                     $grandtotal += $qty;
                                     $total_doc_qty += $doc_qty;
                                     $total_in_qty += $in_qty;
@@ -140,14 +179,20 @@
                                     'class' => 'text-center total_custom',
                                     'rel' => 'qty-doc',
                                 ));
-                                echo $this->Html->tag('td', $total_in_qty, array(
-                                    'class' => 'text-center total_custom',
-                                    'rel' => 'qty-in',
-                                ));
+                                
+                                if( empty($view) ) {
+                                    echo $this->Html->tag('td', $total_in_qty, array(
+                                        'class' => 'text-center total_custom',
+                                        'rel' => 'qty-in',
+                                    ));
+                                }
+
                                 echo $this->Html->tag('td', $grandtotal, array(
                                     'class' => 'text-center total_custom',
                                     'rel' => 'qty',
                                 ));
+
+                                echo $this->Html->tag('td', '&nbsp;');
                         ?>
                     </tr>
                 </tfoot>

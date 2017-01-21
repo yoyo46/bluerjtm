@@ -35,12 +35,6 @@
                                 $note = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'note');
 
                                 $transaction_date = $this->Common->formatDate($transaction_date, 'd/m/Y');
-
-                                $href = $this->Html->url(array(
-                                    'controller'=> 'products', 
-                                    'action' => 'receipt_pick_document',
-                                    'admin' => false,
-                                ));
                 ?>
                 <tr data-value="<?php echo $nodoc; ?>" data-change="#document-number" data-form=".receipt-form" data-wrapper-write=".wrapper-table-documents" data-duplicate="false" data-id="<?php echo $id; ?>" >
                     <?php
@@ -66,11 +60,13 @@
         </table>
     </div>
     <?php
-            echo $this->element('pagination', array(
-                'options' => array(
-                    'urlClass' => 'ajaxCustomModal',
-                    'urlTitle' => __('Daftar PO'),
-                ),
-            ));
+            if(!empty($values)){
+                echo $this->element('pagination', array(
+                    'options' => array(
+                        'urlClass' => 'ajaxCustomModal',
+                        'urlTitle' => __('Daftar PO'),
+                    ),
+                ));
+            }
     ?>
 </div>

@@ -6,7 +6,7 @@
             'url' => array(
                 'controller' => 'products',
                 'action' => 'search',
-                'receipt_documets',
+                'receipt_documents',
                 'admin' => false,
             ),
             'class' => 'ajax-form',
@@ -40,7 +40,7 @@
         echo $this->element('blocks/common/searchs/box_action', array(
             '_url' => array(
                 'controller' => 'products', 
-                'action' => 'receipt_documets', 
+                'action' => 'receipt_documents', 
                 'receipt_id' => $receipt_id,
                 'vendor_id' => $vendor_id,
                 'admin' => false,
