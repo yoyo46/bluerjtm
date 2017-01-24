@@ -27,7 +27,7 @@
                 $price_sold = $this->Common->filterEmptyField($value, 'Asset', 'price_sold', 0);
                 $nilai_sisa = $this->Common->filterEmptyField($value, 'AssetGroup', 'nilai_sisa', 0);
 
-                $umur_ekonomis = $this->Common->filterEmptyField($value, 'AssetGroup', 'umur_ekonomis', 0) * 12;
+                $umur_ekonomis = $this->Common->filterEmptyField($value, 'AssetGroup', 'umur_ekonomis', 0);
                 $no_contract = $this->Common->filterEmptyField($value, 'Leasing', 'no_contract', '-');
                 // $sisa_bulan = $umur_ekonomis - $month_use;
 

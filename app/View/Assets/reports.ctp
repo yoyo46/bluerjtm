@@ -6,11 +6,16 @@
 
         $full_name = $this->Common->filterEmptyField($User, 'Employe', 'full_name');
         $status = $this->Common->filterEmptyField($data, 'Search', 'status');
+        $periode_closing = Configure::read('__Site.Closing.periode');
+        $lastMonthYear = $this->Common->formatDate($periode_closing, 'M Y');
 
-        if( $year < $nowYear ) {
-            $lastYear = $this->Common->formatDate(sprintf('%s-12', $year), 't M Y');
+        // if( $year < $nowYear ) {
+        //     $lastYear = $this->Common->formatDate(sprintf('%s-12', $year), 't M Y');
+        // }
+        if( !empty($periode_closing) ) {
+            $closingDate = $this->Common->formatDate($periode_closing, 't M Y');
         } else {
-            $lastYear = date('d M Y');
+            $closingDate = date('d M Y');
         }
 
         if( !empty($data_action) ){
@@ -103,7 +108,7 @@
                 'rowspan' => 2,
             ),
             'ak_peyusutan' => array(
-                'name' => sprintf(__('Ak.Penyusutan s/d %s'), $lastYear),
+                'name' => sprintf(__('Ak.Penyusutan s/d %s'), $closingDate),
                 'style' => 'text-align: left;vertical-align: middle;',
                 'data-options' => 'field:\'ak_peyusutan\',width:120',
                 'align' => 'right',
@@ -111,7 +116,7 @@
                 'rowspan' => 2,
             ),
             'nilai_buku' => array(
-                'name' => sprintf(__('Nilai Buku PER. %s'), $year),
+                'name' => sprintf(__('Nilai Buku PER. %s'), $lastMonthYear),
                 'style' => 'text-align: left;vertical-align: middle;',
                 'data-options' => 'field:\'nilai_buku\',width:120',
                 'align' => 'right',
