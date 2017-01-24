@@ -64,6 +64,7 @@
                                 $group = $this->Common->filterEmptyField($product, 'ProductCategory', 'name');
 
                                 $customType = $this->Common->unSlug($type);
+                                $qty_remain = $qty - $out_qty;
                 ?>
                 <tr class="pick-document" rel="<?php echo $id; ?>" data-type="single-total">
                     <?php
@@ -100,7 +101,7 @@
                                 'class' => 'input_number text-center price_custom',
                                 'attributes' => array(
                                     'rel' => 'qty',
-                                    'value' => $qty,
+                                    'value' => $qty_remain,
                                 ),
                             )), array(
                                 'class' => 'hide',
@@ -112,21 +113,22 @@
                                     'frameClass' => false,
                                     'class' => 'chosen-select form-control full',
                                     'multiple' => true,
-                                    'data-url' => $this->Html->url(array(
-                                        'controller' => 'products',
-                                        'action' => 'scan',
-                                        'admin' => false,
-                                    )),
-                                    'options' => $serial_numbers,
+                                    'options' => array(),
+                                    // 'data-url' => $this->Html->url(array(
+                                    //     'controller' => 'products',
+                                    //     'action' => 'scan',
+                                    //     'admin' => false,
+                                    // )),
+                                    // 'options' => $serial_numbers,
                                 )).$this->Html->link($this->Common->icon('plus-square'), array(
-                                    'controller'=> 'ajax', 
-                                    'action' => 'getTrucks',
-                                    'cashbank',
+                                    'controller'=> 'products', 
+                                    'action' => 'stocks',
+                                    $id,
                                     'admin' => false,
                                 ), array(
                                     'escape' => false,
-                                    'class' => 'ajaxModal browse-docs',
-                                    'title' => __('Data Truk'),
+                                    'class' => 'ajaxCustomModal browse-docs',
+                                    'title' => __('Stok Barang'),
                                     'data-action' => 'browse-form',
                                 )), array(
                                     'class' => 'text-center pick-product-code hide',

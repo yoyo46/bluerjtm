@@ -31,6 +31,7 @@ class ProductStock extends AppModel {
 	function getData( $find, $options = false, $elements = false ){
         $status = isset($elements['status'])?$elements['status']:'active';
         $branch = isset($elements['branch'])?$elements['branch']:true;
+        $sort = isset($elements['sort'])?$elements['sort']:false;
 
         $default_options = array(
             'conditions'=> array(),
@@ -39,6 +40,7 @@ class ProductStock extends AppModel {
             ),
             'fields' => array(),
             'group' => array(),
+            'contain' => array(),
         );
 
         switch ($status) {
@@ -60,6 +62,15 @@ class ProductStock extends AppModel {
                 $default_options['conditions']['ProductStock.type'] = 'default';
         }
 
+        switch ($sort) {
+            case 'fifo':
+                $default_options['order'] = array(
+                    'ProductStock.transaction_date' => 'ASC',
+                    'ProductStock.id' => 'ASC',
+                );
+                break;
+        }
+
         if( !empty($branch) ) {
             $default_options['conditions']['ProductStock.branch_id'] = Configure::read('__Site.config_branch_id');
         }
@@ -72,6 +83,11 @@ class ProductStock extends AppModel {
         }
         if(!empty($options['fields'])){
             $default_options['fields'] = $options['fields'];
+        }
+        if( isset($options['contain']) && empty($options['contain']) ) {
+            $default_options['contain'] = false;
+        } else if(!empty($options['contain'])){
+            $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
         }
         if(!empty($options['limit'])){
             $default_options['limit'] = $options['limit'];
@@ -86,6 +102,16 @@ class ProductStock extends AppModel {
             $result = $this->find($find, $default_options);
         }
         return $result;
+    }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $serial_number = !empty($data['named']['serial_number'])?$data['named']['serial_number']:false;
+
+        if( !empty($serial_number) ) {
+            $default_options['conditions']['ProductStock.serial_number LIKE'] = '%'.$serial_number.'%';
+        }
+        
+        return $default_options;
     }
 
     function doSave( $data, $value = false, $id = false ) {
@@ -141,7 +167,7 @@ class ProductStock extends AppModel {
     }
 
     function _callStock ( $product_id ) {
-        $this->virtualFields['qty_cnt'] = 'SUM(ProductStock.qty)';
+        $this->virtualFields['qty_cnt'] = 'SUM(ProductStock.qty - ProductStock.qty_use)';
         $value = $this->getData('first', array(
             'conditions' => array(
                 'ProductStock.product_id' => $product_id,

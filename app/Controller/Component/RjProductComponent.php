@@ -635,8 +635,8 @@ class RjProductComponent extends Component {
                     
                     $out_qty = $this->controller->Product->ProductExpenditureDetail->getTotalExpenditure($id, $document_id, $product_id);
 
-                    if( !empty($is_serial_number) ) {
-                        $product_serial_numbers = $this->controller->Product->ProductStock->_callSerialNumbers($product_id, $id);
+                    // if( !empty($is_serial_number) ) {
+                    //     $product_serial_numbers = $this->controller->Product->ProductStock->_callSerialNumbers($product_id, $id);
 
                         // if( $transaction_status == 'posting' ) {
                         //     $product_serial_numbers = array_merge($product_serial_numbers, $this->controller->Product->ProductExpenditureDetailSerialNumber->getData('list', array(
@@ -654,8 +654,8 @@ class RjProductComponent extends Component {
                         //     )));
                         // }
 
-                        $data['ProductExpenditureDetail'][$key]['ProductExpenditureDetail']['serial_numbers'] = $product_serial_numbers;
-                    }
+                    //     $data['ProductExpenditureDetail'][$key]['ProductExpenditureDetail']['serial_numbers'] = $product_serial_numbers;
+                    // }
                     
                     $data['ProductExpenditureDetail'][$key]['ProductExpenditureDetail']['spk_qty'] = $spk_qty;
                     $data['ProductExpenditureDetail'][$key]['ProductExpenditureDetail']['out_qty'] = $out_qty;
@@ -668,12 +668,14 @@ class RjProductComponent extends Component {
         }
 
         if( !empty($serial_numbers) ) {
+            $data['ProductExpenditureDetailSerialNumber'] = array();
+            
             foreach ($serial_numbers as $key => $value) {
                 $product_id = $this->MkCommon->filterEmptyField($value, 'ProductExpenditureDetailSerialNumber', 'product_id');
                 $serial_number = $this->MkCommon->filterEmptyField($value, 'ProductExpenditureDetailSerialNumber', 'serial_number');
 
                 if( !empty($serial_number) ) {
-                    $data['ProductExpenditureDetailSerialNumber']['serial_numbers'][$product_id][] = $serial_number;
+                    $data['ProductExpenditureDetailSerialNumber']['serial_numbers'][$product_id][$serial_number] = $serial_number;
                 }
             }
         }
@@ -718,7 +720,7 @@ class RjProductComponent extends Component {
         
         $qty = $this->MkCommon->filterEmptyField($details, 'qty');
 
-        if( !empty($is_serial_number) ) {
+        // if( !empty($is_serial_number) ) {
             if( !empty($product_serial_numbers) ) {
                 $count_sn = count($product_serial_numbers);
 
@@ -732,10 +734,10 @@ class RjProductComponent extends Component {
                         'serial_number' => $serial_number,
                     );
                 }
-            } else {
+            } else if( !empty($is_serial_number) ) {
                 $details['sn_empty'] = true;
             }
-        }
+        // }
 
         return $details;
     }
@@ -786,11 +788,11 @@ class RjProductComponent extends Component {
                     $out_qty = $this->controller->Product->ProductExpenditureDetail->getTotalExpenditure($id, $document_id, $product_id);
                     $remain_qty = $spk_qty - $out_qty;
 
-                    if( !empty($is_serial_number) ) {
-                        $serial_numbers = $this->controller->Product->ProductStock->_callSerialNumbers($product_id, $id);
-                    } else {
-                        $serial_numbers = false;
-                    }
+                    // if( !empty($is_serial_number) ) {
+                    //     $serial_numbers = $this->controller->Product->ProductStock->_callSerialNumbers($product_id, $id);
+                    // } else {
+                    //     $serial_numbers = false;
+                    // }
 
                     if( $qty >= $remain_qty ) {
                         $status = 'full';
@@ -808,7 +810,7 @@ class RjProductComponent extends Component {
                         'out_qty' => $out_qty,
                         'qty' => $qty,
                         'is_serial_number' => $is_serial_number,
-                        'serial_numbers' => $serial_numbers,
+                        // 'serial_numbers' => $serial_numbers,
                         'qty_over' => ($qty > $remain_qty)?true:false,
                     );
                     $dataDetail[$key]['ProductExpenditureDetail'] = $this->_callExpenditureSN($data, $product, $dataDetail[$key]['ProductExpenditureDetail']);
@@ -854,7 +856,7 @@ class RjProductComponent extends Component {
                 $product_id = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'product_id');
                 $qty = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'qty');
                 $out_qty = $this->controller->Product->ProductExpenditureDetail->getTotalExpenditure($transaction_id, $document_id, $product_id);
-                $qty -= $out_qty;
+                // $qty -= $out_qty;
 
                 if( !empty($qty) ) {
                     $is_serial_number = $this->MkCommon->filterEmptyField($value, 'Product', 'is_serial_number');
@@ -862,10 +864,10 @@ class RjProductComponent extends Component {
                     $value['SpkProduct']['qty'] = $qty;
                     $value['SpkProduct']['out_qty'] = $out_qty;
 
-                    if( !empty($is_serial_number) ) {
-                        $serial_numbers = $this->controller->Product->ProductStock->_callSerialNumbers($product_id, $transaction_id);
-                        $value['Product']['serial_numbers'] = $serial_numbers;
-                    }
+                    // if( !empty($is_serial_number) ) {
+                    //     $serial_numbers = $this->controller->Product->ProductStock->_callSerialNumbers($product_id, $transaction_id);
+                    //     $value['Product']['serial_numbers'] = $serial_numbers;
+                    // }
                     
                     $values[$key] = $value;
                 } else {

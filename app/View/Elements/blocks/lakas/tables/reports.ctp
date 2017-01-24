@@ -7,6 +7,7 @@
                 $id = $this->Common->filterEmptyField($value, 'Laka', 'id');
                 $nodoc = $this->Common->filterEmptyField($value, 'Laka', 'nodoc');
                 $tgl_laka = $this->Common->filterEmptyField($value, 'Laka', 'tgl_laka');
+                $completed_date = $this->Common->filterEmptyField($value, 'Laka', 'completed_date');
                 $nopol = $this->Common->filterEmptyField($value, 'Laka', 'nopol');
                 $change_driver_name = $this->Common->filterEmptyField($value, 'Laka', 'change_driver_name');
                 $driver_name = $this->Common->filterEmptyField($value, 'Laka', 'driver_name', $change_driver_name);
@@ -35,13 +36,21 @@
                 if( !empty($completed) ) {
                     $statusCompleted = __('Selesai');
                     $lblClassComplated = 'success';
+                    
+                    $completed_date = $this->Common->customDate($completed_date, 'd M Y');
                 } else {
                     $statusCompleted = __('Aktif');
                     $lblClassComplated = 'primary';
+
+                    $completed_date = '-';
                 }
 
                 $customTglLaka = $this->Common->customDate($tgl_laka, 'd M Y');
                 $lblCompleted = !empty($completed)?'success':'danger';
+
+                if( !empty($completed) ) {
+                    $customTglLaka = $this->Common->customDate($tgl_laka, 'd M Y');
+                }
 
                 $insurance = $this->Html->tag('span', $insurance, array(
                     'class' => sprintf('label label-%s', $lblClass),
@@ -64,6 +73,9 @@
             }
 
             echo $this->Html->tag('td', $customTglLaka, array(
+                'style' => 'text-align:center;',
+            ));
+            echo $this->Html->tag('td', $completed_date, array(
                 'style' => 'text-align:center;',
             ));
             echo $this->Html->tag('td', $nopol, array(

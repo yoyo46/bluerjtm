@@ -2208,27 +2208,25 @@ class MkCommonComponent extends Component {
 
         $lbl = $this->filterEmptyField($value, 'SettingGeneral', 'name');
         $val = $this->filterEmptyField($value, 'SettingGeneral', 'value');
+        $closing = $this->controller->User->CoaClosing->getData('first', array(
+            'order' => array(
+                'CoaClosing.periode' => 'DESC',
+                'CoaClosing.id' => 'DESC',
+            ),
+        ));
+
+        $periode = $this->filterEmptyField($closing, 'CoaClosing', 'periode', false, array(
+            'date' => 'Y-m',
+        ));
 
         if( !empty($val) ) {
-            $closing = $this->controller->User->CoaClosing->getData('first', array(
-                'order' => array(
-                    'CoaClosing.periode' => 'DESC',
-                    'CoaClosing.id' => 'DESC',
-                ),
-            ));
-
-            $periode = $this->filterEmptyField($closing, 'CoaClosing', 'periode', false, array(
-                'date' => 'Y-m',
-            ));
-
             if( !empty($periode) ) {
                 $min_date = date('01/m/Y', strtotime($periode. ' + 1 Month'));
                 Configure::write('__Site.Closing.min_date', $min_date);
             }
-
-            Configure::write('__Site.Closing.periode', $periode);
         }
 
+        Configure::write('__Site.Closing.periode', $periode);
         Configure::write(sprintf('__Site.Setting.%s', $lbl), $val);
     }
 

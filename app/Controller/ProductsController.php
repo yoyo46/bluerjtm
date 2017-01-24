@@ -325,7 +325,7 @@ class ProductsController extends AppController {
         $values = $this->paginate('Product');
 
         if( !empty($values) ) {
-            foreach ($values as $key => $value) {
+            foreach ($values as $key => &$value) {
                 $id = $this->MkCommon->filterEmptyField($value, 'Product', 'id');
                 $product_unit_id = $this->MkCommon->filterEmptyField($value, 'Product', 'product_unit_id');
                 $product_category_id = $this->MkCommon->filterEmptyField($value, 'Product', 'product_category_id');
@@ -333,7 +333,6 @@ class ProductsController extends AppController {
                 $value = $this->Product->ProductUnit->getMerge($value, $product_unit_id);
                 $value = $this->Product->ProductCategory->getMerge($value, $product_category_id);
                 $value['Product']['product_stock_cnt'] = $this->Product->ProductStock->_callStock($id);
-                $values[$key] = $value;
             }
         }
 
@@ -1041,6 +1040,31 @@ class ProductsController extends AppController {
         $this->RjProduct->_callBeforeRenderSpkProducts($values, $transaction_id);
         $this->set(compact(
             'nodoc', 'productCategories'
+        ));
+    }
+
+    function stocks ( $id = false ) {
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Product->ProductStock->_callRefineParams($params, array(
+            'conditions' => array(
+                'ProductStock.product_id' => $id,
+            ),
+            'limit' => 10,
+        ));
+        $this->paginate = $this->Product->ProductStock->getData('paginate', $options, array(
+            'status' => 'in_stock',
+            'sort' => 'fifo',
+        ));
+        $values = $this->paginate('ProductStock');
+        $values = $this->Product->ProductStock->getMergeList($values, array(
+            'contain' => array(
+                'Product',
+            ),
+        ));
+
+        $productCategories = $this->Product->ProductCategory->getData('list');
+        $this->set(compact(
+            'values', 'productCategories', 'id'
         ));
     }
 }

@@ -113,6 +113,7 @@ class Product extends AppModel {
                 'Product.name' => 'ASC'
             ),
             'fields' => array(),
+            'contain' => array(),
         );
 
         switch ($status) {
@@ -137,6 +138,11 @@ class Product extends AppModel {
         }
         if(!empty($options['fields'])){
             $default_options['fields'] = $options['fields'];
+        }
+        if( isset($options['contain']) && empty($options['contain']) ) {
+            $default_options['contain'] = false;
+        } else if(!empty($options['contain'])){
+            $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
         }
         if(!empty($options['limit'])){
             $default_options['limit'] = $options['limit'];

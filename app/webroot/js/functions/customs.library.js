@@ -991,9 +991,12 @@
             });
 
             function check_option_coa(self){
+                var self_value = self.val();
                 var parent = self.parents('.pick-document');
                 var rel_id = parent.attr('rel');
                 var rel_table = $.checkUndefined(parent.attr('data-table'), null);
+                var data_type = $.checkUndefined(parent.attr('data-type'), null);
+
                 var pickDocumentStr = '.document-picker .pick-document[rel="'+rel_id+'"]';
                 var pickDocument = $(pickDocumentStr);
                 var chosenBuild = $('.document-picker td .chosen-select.select2-hidden-accessible');
@@ -1013,28 +1016,91 @@
                 }
 
                 if(self.is(':checked')){
-                    if(temp_picker.find('.pick-document[rel="'+rel_id+'"]').length <= 0){
-                        var html_content = '<tr class="pick-document" rel="'+rel_id+'">'+pickDocument.html()+'</tr>';
+                    switch (data_type) { 
+                        case 'select-multiple':
+                            var document_selected = temp_picker.find('.pick-document[rel="'+rel_id+'"]');
+                            var chosenBuild = document_selected.find('.chosen-select.select2-hidden-accessible');
+                            var existing_selected = document_selected.find('.chosen-select option[value="'+self_value+'"]:selected');
+                            var existing = document_selected.find('.chosen-select option[value="'+self_value+'"]');
 
-                        temp_picker.find('tbody').append(html_content);
+                            if(existing_selected.length <= 0){
+                                if( chosenBuild.length > 0 ) {
+                                    $.callChoosen({
+                                        obj: chosenBuild,
+                                        init: 'destroy',
+                                    });
+                                }
 
-                        temp_picker.find('.pick-document[rel="'+rel_id+'"] td.hide').removeClass('hide');
-                        temp_picker.find('.pick-document[rel="'+rel_id+'"] td[data-display="hide"]').addClass('hide');
-                        
-                        temp_picker.find('td.removed').remove();
+                                if( existing.length > 0 ) {
+                                    existing.remove();
+                                }
 
-                        calcItemTotal(temp_picker);
-                        temp_picker.removeClass('hide');
-                        
-                        if( chosen.length > 0 ) {
-                            $.callChoosen({
-                                obj: temp_picker.find('td .chosen-select'),
-                            });
-                        }
+                                var html_content = '<option selected="selected" value="'+self_value+'">'+self_value+'</tr>';
+                                document_selected.find('.chosen-select').append(html_content);
+                                
+                                var chosen = document_selected.find('.chosen-select');
+                                
+                                if( chosen.length > 0 ) {
+                                    $.callChoosen({
+                                        obj: chosen,
+                                    });
+                                }
+                            }
+                        break;
+
+                        default:
+                            if(temp_picker.find('.pick-document[rel="'+rel_id+'"]').length <= 0){
+                                var html_content = '<tr class="pick-document" rel="'+rel_id+'">'+pickDocument.html()+'</tr>';
+
+                                temp_picker.find('tbody').append(html_content);
+
+                                temp_picker.find('.pick-document[rel="'+rel_id+'"] td.hide').removeClass('hide');
+                                temp_picker.find('.pick-document[rel="'+rel_id+'"] td[data-display="hide"]').addClass('hide');
+                                
+                                temp_picker.find('td.removed').remove();
+
+                                calcItemTotal(temp_picker);
+                                temp_picker.removeClass('hide');
+                                
+                                if( chosen.length > 0 ) {
+                                    $.callChoosen({
+                                        obj: temp_picker.find('td .chosen-select'),
+                                    });
+                                }
+                            }
+                        break;
                     }
                 } else {
-                    temp_picker.find(pickDocumentStr).remove();
-                    calcItemTotal(temp_picker);
+                    switch (data_type) { 
+                        case 'select-multiple':
+                            var document_selected = temp_picker.find('.pick-document[rel="'+rel_id+'"]');
+                            var chosenBuild = document_selected.find('.chosen-select.select2-hidden-accessible');
+                            var existing = document_selected.find('.chosen-select option[value="'+self_value+'"]');
+
+                            if(existing.length > 0){
+                                if( chosenBuild.length > 0 ) {
+                                    $.callChoosen({
+                                        obj: chosenBuild,
+                                        init: 'destroy',
+                                    });
+                                }
+
+                                existing.remove();
+                                var chosen = document_selected.find('.chosen-select');
+
+                                if( chosen.length > 0 ) {
+                                    $.callChoosen({
+                                        obj: chosen,
+                                    });
+                                }
+                            }
+                        break;
+
+                        default:
+                            temp_picker.find(pickDocumentStr).remove();
+                            calcItemTotal(temp_picker);
+                        break;
+                    }
                 }
 
                 $.rebuildFunction();

@@ -2,7 +2,7 @@
         $id = !empty($id)?$id:false;
         $modelName = !empty($modelName)?$modelName:false;
         $qty = !empty($qty)?$qty:false;
-        $serial_numbers = !empty($serial_numbers)?$serial_numbers:false;
+        // $serial_numbers = !empty($serial_numbers)?$serial_numbers:false;
         $spk_product_id = !empty($spk_product_id)?$spk_product_id:false;
 
         $code = $this->Common->filterEmptyField($value, $modelName, 'code');
@@ -10,6 +10,9 @@
         $unit = $this->Common->filterEmptyField($value, $modelName, 'name');
         $is_serial_number = $this->Common->filterEmptyField($value, $modelName, 'is_serial_number');
 
+        $data = $this->request->data;
+        $serialNumbers = $this->Common->filterEmptyField($data, 'ProductExpenditureDetailSerialNumber');
+        $serial_numbers = $this->Common->filterEmptyField($serialNumbers, 'serial_numbers', $id, array());
 ?>
 <tr class="pick-document" rel="<?php echo $id; ?>">
     <?php
@@ -61,10 +64,6 @@
 
             // if( !empty($is_serial_number) ) {
                 if( !empty($view) ) {
-                    $data = $this->request->data;
-                    $serialNumbers = $this->Common->filterEmptyField($data, 'ProductExpenditureDetailSerialNumber');
-                    $serial_numbers = $this->Common->filterEmptyField($serialNumbers, 'serial_numbers', $id);
-
                     if( !empty($serial_numbers) ) {
                         $serial_number_text = implode(', ', $serial_numbers);
                     } else {
@@ -73,26 +72,37 @@
                 } else {
                     $serial_number_text = $this->Common->_callInputForm(__('ProductExpenditureDetailSerialNumber.serial_numbers.%s', $id), array(
                         'div' => false,
+                        'error' => false,
                         'class' => 'chosen-select form-control full',
                         'multiple' => true,
-                        'data-url' => $this->Html->url(array(
-                            'controller' => 'products',
-                            'action' => 'scan',
-                            'admin' => false,
-                        )),
                         'options' => $serial_numbers,
-                        'fieldError' => array(
-                            'ProductExpenditureDetail.'.$key.'.sn_match',
-                            'ProductExpenditureDetail.'.$key.'.sn_empty'
-                        ),
+                        // 'data-url' => $this->Html->url(array(
+                        //     'controller' => 'products',
+                        //     'action' => 'scan',
+                        //     'admin' => false,
+                        // )),
+                        // 'fieldError' => array(
+                        //     'ProductExpenditureDetail.'.$key.'.sn_match',
+                        //     'ProductExpenditureDetail.'.$key.'.sn_empty'
+                        // ),
+                    )).$this->Html->link($this->Common->icon('plus-square'), array(
+                        'controller'=> 'products', 
+                        'action' => 'stocks',
+                        $id,
+                        'admin' => false,
+                    ), array(
+                        'escape' => false,
+                        'class' => 'ajaxCustomModal browse-docs',
+                        'title' => __('Stok Barang'),
+                        'data-action' => 'browse-form',
                     ));
                 }
             // } else {
             //     $serial_number_text = '-';
             // }
 
-            echo $this->Html->tag('td', $serial_number_text, array(
-                'class' => 'text-center',
+            echo $this->Html->tag('td', $serial_number_text.$this->Form->error('ProductExpenditureDetail.'.$key.'.sn_match').$this->Form->error('ProductExpenditureDetail.'.$key.'.sn_empty'), array(
+                'class' => 'text-center pick-product-code',
             ));
 
             if( empty($view) ) {
