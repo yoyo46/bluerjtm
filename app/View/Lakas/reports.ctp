@@ -17,6 +17,11 @@
                 'field_model' => 'Laka.tgl_laka',
                 'display' => true,
             ),
+            'completed_date' => array(
+                'name' => __('Tgl Selesai'),
+                'field_model' => 'Laka.completed_date',
+                'display' => true,
+            ),
             'nopol' => array(
                 'name' => __('NO. POL'),
                 'field_model' => 'Laka.nopol',

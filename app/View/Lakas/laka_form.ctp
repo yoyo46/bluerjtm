@@ -8,7 +8,8 @@
 		}
 
 		$data = $this->request->data;
-		$id = $this->Common->filterEmptyField($data, 'Laka', 'id');
+		$id = !empty($id)?$id:false;
+		$id = $this->Common->filterEmptyField($data, 'Laka', 'id', $id);
 
 		$this->Html->addCrumb(__('LAKA'), array(
 			'controller' => 'lakas',
@@ -667,7 +668,7 @@
 				    </div>
 				</div>
 				<?php
-					if(!empty($id)){
+						if(!empty($id)){
 				?>
 				<div class="box">
 				    <div class="box-header">
@@ -720,7 +721,7 @@
 				    </div>
 				</div>
 				<?php
-					}
+						}
 				?>
 			</div>
 		</div>
