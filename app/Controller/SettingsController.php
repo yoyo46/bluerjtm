@@ -21,6 +21,7 @@ class SettingsController extends AppController {
             $refine = $this->RjSetting->processRefine($data);
             $params = $this->RjSetting->processRequest($data);
             $params = array_merge($params, $this->RjSetting->generateSearchURL($refine));
+            $params = $this->MkCommon->getRefineGroupBranch($params, $data);
             $params['action'] = $index;
 
             if( !empty($param_get) ) {
@@ -224,11 +225,20 @@ class SettingsController extends AppController {
                 $this->request->data['Customer']['customer_group_id'] = $value;
                 $options['conditions']['Customer.customer_group_id '] = $value;
             }
+
+            // Custom Otorisasi
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Customer', $options );
         }
         $this->paginate = $this->Customer->getData('paginate', $options, true, array(
             'status' => 'all',
         ));
         $truck_customers = $this->paginate('Customer');
+        $truck_customers = $this->Customer->getMergeList($truck_customers, array(
+            'contain' => array(
+                'Branch',
+            ),
+        ));
+
         $customerTypes  = $this->Customer->CustomerType->getData('list', false, true);
         $customerGroups  = $this->CustomerGroup->getData('list');
 
@@ -282,7 +292,7 @@ class SettingsController extends AppController {
             }else{
                 $this->Customer->create();
                 $msg = 'menambah';
-                $data['Customer']['branch_id'] = Configure::read('__Site.config_branch_id');
+                // $data['Customer']['branch_id'] = Configure::read('__Site.config_branch_id');
             }
                         
             $data['Customer']['bank_id'] = !empty($data['Customer']['bank_id'])?$data['Customer']['bank_id']:0;
@@ -315,6 +325,8 @@ class SettingsController extends AppController {
             if($id && $data_local){
                 
                 $this->request->data = $data_local;
+            } else {
+                $this->request->data['Customer']['branch_id'] = Configure::read('__Site.config_branch_id');
             }
         }
 
@@ -339,12 +351,14 @@ class SettingsController extends AppController {
                 'User',
             ),
         ));
+        $branches = $this->GroupBranch->Branch->getData('list');
 
         $this->set('active_menu', 'customers');
         $this->set('module_title', 'Data Master');
+        $this->MkCommon->_layout_file('select');
         $this->set(compact(
             'customerTypes', 'customerGroups', 'banks',
-            'billings'
+            'billings', 'branches'
         ));
         $this->render('customer_form');
     }

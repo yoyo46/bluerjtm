@@ -330,7 +330,7 @@ class ProductReceipt extends AppModel {
             default:
                 $purchaseOrderDetail = $this->PurchaseOrder->PurchaseOrderDetail->getData('first', array(
                     'conditions' => array(
-                        'purchaseOrderDetail.purchase_order_id' => $document_id,
+                        'PurchaseOrderDetail.purchase_order_id' => $document_id,
                     ),
                 ), array(
                     'status' => 'unreceipt',

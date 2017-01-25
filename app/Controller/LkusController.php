@@ -1030,6 +1030,7 @@ class LkusController extends AppController {
                     ),
                 ), true, array(
                     'status' => 'all',
+                    'branch' => false,
                 ));
 
                 if( !empty($dataCust) ) {
@@ -2038,6 +2039,7 @@ class LkusController extends AppController {
                     ),
                 ), true, array(
                     'status' => 'all',
+                    'branch' => false,
                 ));
 
                 if( !empty($dataCust) ) {

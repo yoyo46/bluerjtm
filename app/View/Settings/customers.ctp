@@ -1,10 +1,10 @@
 <?php 
         $dataColumns = array(
-            // 'branch' => array(
-            //     'name' => __('Cabang'),
-            //     'field_model' => false,
-            //     'display' => true,
-            // ),
+            'branch' => array(
+                'name' => __('Cabang'),
+                'field_model' => false,
+                'display' => true,
+            ),
             'code' => array(
                 'name' => __('Kode'),
                 'field_model' => 'Customer.code',
@@ -104,7 +104,7 @@
                             $created = $this->Common->filterEmptyField($value, 'Customer', 'created');
                             $branch_id = $this->Common->filterEmptyField($value, 'Customer', 'branch_id');
                             $status = $this->Common->filterEmptyField($value, 'Customer', 'status');
-                            // $city = $this->Common->filterEmptyField($value, 'City', 'name');
+                            $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
                             $activate = array(
                                 'controller' => 'settings',
                                 'action' => 'customer_toggle',
@@ -112,7 +112,7 @@
                             );
             ?>
                 <tr>
-                    <!-- <td><?php // echo $city;?></td> -->
+                    <td><?php echo $branch;?></td>
                     <td><?php echo $code;?></td>
                     <td><?php echo $type;?></td>
                     <td><?php echo $group;?></td>

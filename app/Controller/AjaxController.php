@@ -954,6 +954,7 @@ class AjaxController extends AppController {
             ),
         ), true, array(
             'status' => 'all',
+            'branch' => false,
         ));
 
         $elementRevenue = false;

@@ -610,6 +610,7 @@ class UangJalanKomisiPayment extends AppModel {
     			),
         	), true, array(
                 'status' => 'all',
+                'branch' => false,
             ));
             $default_options['conditions']['UangJalanKomisiPayment.customer_id'] = $customers;
         }

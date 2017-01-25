@@ -39,6 +39,12 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            // Custom Otorisasi
+                            echo $this->Common->getCheckboxBranch();
+                    ?>
+                </div>
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
