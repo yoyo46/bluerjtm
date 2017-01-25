@@ -60,6 +60,10 @@
                     'class' => 'text-center price_custom',
                     'rel' => 'qty',
                 ));
+                echo $this->Form->hidden($targetQty, array(
+                    'value' => $qty,
+                    'class' => $targetQty,
+                ));
             }
 
             if( !empty($is_serial_number) ) {
@@ -74,6 +78,7 @@
                     'controller'=> 'products', 
                     'action' => 'receipt_serial_numbers',
                     $id,
+                    'view' => true,
                     'admin' => false,
                     'bypass' => true,
                 ), array(

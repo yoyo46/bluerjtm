@@ -30,7 +30,9 @@
 						'class' => 'row',
 					));	
 		        	
-		        	echo $this->element('blocks/common/forms/submit_action');
+		        	if( empty($view) ) {
+		        		echo $this->element('blocks/common/forms/submit_action');
+		        	}
 				} else {
                      echo $this->Html->tag('p', __('Mohon masukan QTY'), array(
                         'class' => 'alert alert-warning text-center',

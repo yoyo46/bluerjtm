@@ -515,7 +515,7 @@ class ProductsController extends AppController {
         ));
 
         if( !empty($value) ) {
-            // $value = $this->Product->ProductReceiptDetail->getMerge($value, $id);
+            $value = $this->Product->ProductReceiptDetail->getMerge($value, $id);
             $value = $this->Product->ProductReceiptDetail->ProductReceipt->DocumentAuth->getMerge($value, $id, 'product_receipt');
 
             $user_id = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'user_id');
@@ -547,15 +547,6 @@ class ProductsController extends AppController {
                         'uses' => $documentModel,
                         'elements' => array(
                             'branch' => false,
-                        ),
-                    ),
-                    'ProductReceiptDetail' => array(
-                        'contain' => array(
-                            'Product' => array(
-                                'contain' => array(
-                                    'ProductUnit',
-                                ),
-                            ),
                         ),
                     ),
                 ),
@@ -621,6 +612,7 @@ class ProductsController extends AppController {
         $data = $this->request->data;
         $session_id = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'session_id');
         $number = $this->MkCommon->filterEmptyField($this->params, 'named', 'picker', 0);
+        $view = $this->MkCommon->filterEmptyField($this->params, 'named', 'view', 0);
         $value = $this->Product->getData('first', array(
             'conditions' => array(
                 'Product.id' => $id,
@@ -651,7 +643,7 @@ class ProductsController extends AppController {
             $this->set('_flash', false);
             $this->set(compact(
                 'number', 'value', 'id',
-                'result'
+                'result', 'view'
             ));
         } else {
             if( empty($value) ) {
