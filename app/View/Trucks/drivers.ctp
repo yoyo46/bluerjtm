@@ -6,11 +6,11 @@
         echo $this->element('blocks/trucks/search_supir');
 
         $dataColumns = array(
-            // 'cabang' => array(
-            //     'name' => __('Cabang'),
-            //     'field_model' => 'City.id',
-            //     'display' => true,
-            // ),
+            'cabang' => array(
+                'name' => __('Cabang'),
+                'field_model' => 'Branch.name',
+                'display' => true,
+            ),
             'no_id' => array(
                 'name' => __('No. ID'),
                 'field_model' => 'Driver.no_id',
@@ -116,7 +116,7 @@
                             $status = $this->Common->filterEmptyField($value, 'Driver', 'status');
                             $created = $this->Common->filterEmptyField($value, 'Driver', 'created');
                             $is_resign = $this->Common->filterEmptyField($value, 'Driver', 'is_resign');
-                            // $city = $this->Common->filterEmptyField($value, 'City', 'name');
+                            $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
                             $branch_id = $this->Common->filterEmptyField($value, 'Driver', 'branch_id');
                             $activate = array(
                                 'controller' => 'trucks',
@@ -125,7 +125,7 @@
                             );
             ?>
             <tr>
-                <!-- <td><?php // echo $city;?></td> -->
+                <td><?php echo $branch;?></td>
                 <td><?php echo $no_id;?></td>
                 <td><?php echo $name;?></td>
                 <td><?php echo $alias;?></td>

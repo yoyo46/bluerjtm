@@ -101,6 +101,7 @@ class PurchaseOrderPaymentDetail extends AppModel {
 
                 $paid = $this->_callPaidPO($purchase_order_id, $id);
                 $value['PurchaseOrder']['total_remain'] = $grandtotal - $paid;
+                $value['PurchaseOrder']['total_paid'] = $paid;
                 $values[$key] = $value;
             }
             $data['PurchaseOrderPaymentDetail'] = $values;

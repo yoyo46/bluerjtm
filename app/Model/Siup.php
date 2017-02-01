@@ -138,6 +138,8 @@ class Siup extends AppModel {
                 'fields' => array(
                     'Driver.id', 'Driver.id'
                 ),
+            ), array(
+                'branch' => false,
             ));
            $default_options['conditions']['Truck.driver_id'] = $drivers;
         }

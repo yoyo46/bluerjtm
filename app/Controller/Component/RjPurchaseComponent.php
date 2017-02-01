@@ -261,7 +261,9 @@ class RjPurchaseComponent extends Component {
                         ),
                         'PurchaseOrder' => array(
                             'id' => $purchase_order_id,
+                            'grandtotal' => $total_po,
                             'total_remain' => $total_remain,
+                            'total_paid' => $paid,
                             'nodoc' => $nodoc,
                             'transaction_date' => $transaction_date,
                             'note' => $note,
@@ -312,6 +314,26 @@ class RjPurchaseComponent extends Component {
         ));
 
         return $data;
+    }
+
+    function _callBeforeViewReport( $params ) {
+        $vendors = $this->controller->PurchaseOrder->_callVendors('unpaid');
+
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom', false, array(
+            'date' => 'd M Y',
+        ));
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo', false, array(
+            'date' => 'd M Y',
+        ));
+
+        $period_text = __('Periode %s - %s', $dateFrom, $dateTo);
+
+        $title = __('Laporan PO');
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('active_menu', $title);
+        $this->controller->set(compact(
+            'period_text', 'vendors'
+        ));
     }
 }
 ?>

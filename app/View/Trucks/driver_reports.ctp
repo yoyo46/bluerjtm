@@ -1,6 +1,11 @@
 <?php 
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $dataColumns = array(
+            'branch' => array(
+                'name' => __('Cabang'),
+                'field_model' => 'Branch.name',
+                'display' => true,
+            ),
             'nomor_id' => array(
                 'name' => __('No. ID'),
                 'field_model' => 'Driver.id',

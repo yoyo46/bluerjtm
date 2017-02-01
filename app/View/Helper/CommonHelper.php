@@ -2051,8 +2051,8 @@ class CommonHelper extends AppHelper {
         $_caret = $this->filterEmptyField($options, 'data-caret', false, false, false);
         $_slug = $this->filterEmptyField($options, 'data-slug', false, $text);
 
-        $_add_class = !empty($options['class'])?$options['class']:false;
         $_tolower_text = strtolower($_slug);
+        $_lbl_active = strtolower($_lbl_active);
         $options['escape'] = false;
 
         if( !empty($_icon) ) {
@@ -2061,8 +2061,15 @@ class CommonHelper extends AppHelper {
             unset($options['data-icon']);
         }
         if( $_lbl_active == $_tolower_text ) {
-            $_add_class .= ' active';
-            $options['class'] = $_add_class;
+            if( !empty($_wrapper) ) {
+                $_add_class = !empty($_wrapper_options['class'])?$_wrapper_options['class']:false;
+                $_add_class .= ' active';
+                $_wrapper_options['class'] = $_add_class;
+            } else {
+                $_add_class = !empty($options['class'])?$options['class']:false;
+                $_add_class .= ' active';
+                $options['class'] = $_add_class;
+            }
 
             if( isset($options['aria-expanded']) ) {
                 $options['aria-expanded'] = 'true';

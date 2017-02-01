@@ -535,7 +535,8 @@ class PurchasesController extends AppController {
 
         if( !empty($value) ) {
             $value = $this->PurchaseOrder->PurchaseOrderPaymentDetail->PurchaseOrderPayment->PurchaseOrderPaymentDetail->getMerge($value, $id);
-            $this->request->data = $this->RjPurchase->_callBeforeRenderPayment($value);
+            $purchase_order_id = Set::extract('/PurchaseOrderPaymentDetail/PurchaseOrderPaymentDetail/purchase_order_id', $value);
+            $this->request->data = $this->RjPurchase->_callBeforeRenderPayment($value, $purchase_order_id);
 
             $this->set('view', 'detail');
             $this->set('active_menu', 'Purchase Order');
@@ -626,6 +627,76 @@ class PurchasesController extends AppController {
         $this->set('module_title', __('Purchase Order'));
         $this->set(compact(
             'values', 'payment_id', 'vendor_id'
+        ));
+    }
+
+    public function reports( $data_action = false ) {
+        $dateFrom = date('Y-m-01');
+        $dateTo = date('Y-m-t');
+
+        $options = array(
+            'order'=> array(
+                'PurchaseOrder.transaction_date' => 'DESC',
+                'PurchaseOrder.id' => 'DESC',
+            ),
+        );
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->PurchaseOrder->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'PurchaseOrder', $options );
+
+        if( !empty($data_action) ){
+            $values = $this->PurchaseOrder->getData('all', $options, array(
+                'status' => false,
+                'branch' => false,
+            ));
+        } else {
+            $this->paginate = $this->PurchaseOrder->getData('paginate', array_merge($options, array(
+                'limit' => Configure::read('__Site.config_pagination'),
+            )), array(
+                'status' => false,
+                'branch' => false,
+            ));
+            $values = $this->paginate('PurchaseOrder');
+        }
+
+        $this->PurchaseOrder->PurchaseOrderDetail->virtualFields['total_qty'] = 'SUM(PurchaseOrderDetail.qty)';
+        $this->PurchaseOrder->PurchaseOrderDetail->virtualFields['total_price'] = 'SUM(PurchaseOrderDetail.price)';
+        $this->PurchaseOrder->PurchaseOrderDetail->virtualFields['total_disc'] = 'SUM(PurchaseOrderDetail.disc)';
+        $this->PurchaseOrder->PurchaseOrderDetail->virtualFields['total_ppn'] = 'SUM(PurchaseOrderDetail.ppn)';
+        $this->PurchaseOrder->PurchaseOrderDetail->virtualFields['total_total'] = 'SUM(PurchaseOrderDetail.total)';
+        $values = $this->PurchaseOrder->getMergeList($values, array(
+            'contain' => array(
+                'Vendor' => array(
+                    'elements' => array(
+                        'branch' => false,
+                        'status' => 'all',
+                    ),
+                ),
+                'SupplierQuotation' => array(
+                    'elements' => array(
+                        'branch' => false,
+                        'status' => false,
+                    ),
+                ),
+                'PurchaseOrderDetail' => array(
+                    'type' => 'first',
+                ),
+            ),
+        ));
+
+        $this->RjPurchase->_callBeforeViewReport($params);
+        $this->MkCommon->_callBeforeViewReport($data_action, array(
+            'layout_file' => array(
+                'select',
+                'freeze',
+            ),
+        ));
+        $this->set(compact(
+            'values', 'data_action'
         ));
     }
 }

@@ -308,6 +308,7 @@ class LakasController extends AppController {
                     )
                 ), array(
                     'status' => 'all',
+                    'branch' => false,
                 ));
 
                 if(!empty($driver_change['Driver']['driver_name'])){

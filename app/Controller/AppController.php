@@ -20,6 +20,7 @@
  */
 
 App::uses('Controller', 'Controller');
+App::uses('Common', 'Utility');
 
 /**
  * Application Controller

@@ -75,6 +75,11 @@ class PurchaseOrder extends AppModel {
         ),
 	);
 
+    public function __construct($id = false, $table = NULL, $ds = NULL){
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['ppn_type'] = __('CASE WHEN PurchaseOrder.ppn_include = 1 THEN \'PPN Include\' ELSE \'Normal\' END');
+    }
+
 	function getData( $find, $options = false, $elements = false ){
         $branch = isset($elements['branch'])?$elements['branch']:true;
         $status = isset($elements['status'])?$elements['status']:'active';
@@ -310,6 +315,7 @@ class PurchaseOrder extends AppModel {
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $vendor_id = !empty($data['named']['vendor_id'])?$data['named']['vendor_id']:false;
         $status = !empty($data['named']['status'])?$data['named']['status']:false;
+        $receipt_status = !empty($data['named']['receipt_status'])?$data['named']['receipt_status']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -325,6 +331,19 @@ class PurchaseOrder extends AppModel {
         }
         if( !empty($vendor_id) ) {
             $default_options['conditions']['PurchaseOrder.vendor_id'] = $vendor_id;
+        }
+        if( !empty($receipt_status) ) {
+            switch ($receipt_status) {
+                case 'none':
+                    $default_options['conditions']['PurchaseOrder.draft_receipt_status'] = 'none';
+                    break;
+                case 'half':
+                    $default_options['conditions']['PurchaseOrder.draft_receipt_status'] = 'half';
+                    break;
+                case 'full':
+                    $default_options['conditions']['PurchaseOrder.draft_receipt_status'] = 'full';
+                    break;
+            }
         }
         if( !empty($status) ) {
             switch ($status) {

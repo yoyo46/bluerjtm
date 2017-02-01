@@ -4,14 +4,17 @@
         $purchase_order_id = $this->Common->filterEmptyField($value, 'PurchaseOrderPaymentDetail', 'purchase_order_id');
         $price = $this->Common->filterEmptyField($value, 'PurchaseOrderPaymentDetail', 'price');
 
-        $note = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'note');
-        $total_remain = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'total_remain');
+        $note = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'note', '-');
+        $grandtotal = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'grandtotal');
+        // $total_remain = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'total_remain');
+        $total_paid = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'total_paid');
         $nodoc = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'nodoc');
         $transaction_date = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'transaction_date');
 
-        $customTotal = !empty($total)?$total:0;
         $transaction_date = $this->Common->formatDate($transaction_date, 'd/m/Y');
-        $totalRemainFormat = $this->Common->getFormatPrice($total_remain, 0, 2);
+        $grandtotal = $this->Common->getFormatPrice($grandtotal, 0, 2);
+        // $totalRemainFormat = $this->Common->getFormatPrice($total_remain, 0, 2);
+        $total_paid = $this->Common->getFormatPrice($total_paid, 0, 2);
         $priceFormat = $this->Common->getFormatPrice($price, 0, 2);
 
         $hiddenContent = $this->Form->hidden('PurchaseOrderPaymentDetail.id.', array(
@@ -27,17 +30,21 @@
                 'class' => 'text-center',
             ));
             echo $this->Html->tag('td', $note);
-            echo $this->Html->tag('td', $totalRemainFormat, array(
+            echo $this->Html->tag('td', $grandtotal, array(
+                'class' => 'text-right',
+            ));
+            echo $this->Html->tag('td', $total_paid, array(
                 'class' => 'text-right',
             ));
             echo $this->Html->tag('td', $this->Common->buildInputForm('PurchaseOrderPaymentDetail.price.', false, array(
                 'type' => 'text',
                 'frameClass' => false,
-                'class' => 'text-right price',
+                'class' => 'text-right price_custom',
                 'fieldError' => 'PurchaseOrderPaymentDetail.'.$idx.'.price',
                 'attributes' => array(
                     'data-type' => 'input_price_coma',
                     'value' => $priceFormat,
+                    'rel' => 'price',
                 ),
             )));
             if( empty($view) ) {

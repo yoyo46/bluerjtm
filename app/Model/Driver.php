@@ -158,6 +158,10 @@ class Driver extends AppModel {
             'className' => 'JenisSim',
             'foreignKey' => 'jenis_sim_id',
         ),
+        'Branch' => array(
+            'className' => 'Branch',
+            'foreignKey' => 'branch_id',
+        ),
     );
 
     function __construct($id = false, $table = null, $ds = null) {

@@ -59,12 +59,14 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('UangJalan.title', __('Nama'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('FromCity.name', __('Kota Asal'), array(
-                            'escape' => false
-                        )));
-                        echo $this->Html->tag('th', $this->Paginator->sort('ToCity.name', __('Kota Tujuan'), array(
-                            'escape' => false
-                        )));
+                        // echo $this->Html->tag('th', $this->Paginator->sort('FromCity.name', __('Kota Asal'), array(
+                        //     'escape' => false
+                        // )));
+                        // echo $this->Html->tag('th', $this->Paginator->sort('ToCity.name', __('Kota Tujuan'), array(
+                        //     'escape' => false
+                        // )));
+                        echo $this->Html->tag('th', __('Kota Asal'));
+                        echo $this->Html->tag('th', __('Kota Tujuan'));
                         echo $this->Html->tag('th', $this->Paginator->sort('UangJalan.capacity', __('Kapasitas'), array(
                             'escape' => false
                         )));

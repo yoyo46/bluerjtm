@@ -1445,7 +1445,7 @@
                     $dataMenu = array(
                         'purchases' => array(
                             'supplier_quotations', 'purchase_orders',
-                            'payments',
+                            'payments', 'reports',
                         ),
                     );
 
@@ -1454,9 +1454,11 @@
                         $lblQuotation = __('Supplier Quotation');
                         $lblPO = __('Purchase Order');
                         $lblPOPayment = __('Pembayaran PO');
+                        $lblPOReport = __('Laporan PO');
                         
                         $settingMenu = array(
                             $lblQuotation, $lblPO, $lblPOPayment,
+                            $lblPOReport,
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1493,6 +1495,15 @@
                             echo $this->Common->link($lblPOPayment , array(
                                 'controller' => 'purchases',
                                 'action' => 'payments',
+                                'admin' => false,
+                            ), array(
+                                'data-wrapper' => 'li',
+                                'data-icon' => 'angle-double-right',
+                                'data-active' => $active_menu,
+                            ));
+                            echo $this->Common->link($lblPOReport , array(
+                                'controller' => 'purchases',
+                                'action' => 'reports',
                                 'admin' => false,
                             ), array(
                                 'data-wrapper' => 'li',

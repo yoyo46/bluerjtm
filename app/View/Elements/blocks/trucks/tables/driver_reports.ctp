@@ -26,6 +26,7 @@
                 $relation = $this->Common->filterEmptyField($value, 'DriverRelation', 'name');
                 $sim = $this->Common->filterEmptyField($value, 'JenisSim', 'name');
                 $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
+                $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
 
                 $customExpireDate = $this->Common->customDate($expired_date_sim, 'd/m/Y');
                 $customBirthDate = $this->Common->customDate($birth_date, 'd/m/Y');
@@ -48,7 +49,11 @@
                     $lblStatus = '-';
                 }
                 
-                $content = $this->Common->_getDataColumn($no_id, 'Driver', 'no_id', array(
+                $content = $this->Common->_getDataColumn($branch, 'Branch', 'name', array(
+                    'style' => 'text-align: left;',
+                    'class' => 'branch',
+                ));
+                $content .= $this->Common->_getDataColumn($no_id, 'Driver', 'id', array(
                     'class' => 'nomor_id',
                     'style' => 'text-align: left;',
                 ));

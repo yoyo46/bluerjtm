@@ -17,7 +17,7 @@
                     'name' => __('Keterangan'),
                 ),
                 'total' => array(
-                    'name' => __('Total'),
+                    'name' => __('Total PO'),
                     'class' => 'text-center',
                 ),
                 'paid' => array(
@@ -71,23 +71,19 @@
                             ));
                             echo $this->Html->tag('td', $note);
                             echo $this->Html->tag('td', $grandtotal, array(
-                                'class' => 'removed text-right',
+                                'class' => 'text-right',
                             ));
                             echo $this->Html->tag('td', $total_paid, array(
-                                'class' => 'removed text-right',
+                                'class' => 'text-right',
                             ));
-                            echo $this->Html->tag('td', $totalRemainFormat.$this->Form->hidden('PurchaseOrder.total_remain.', array(
-                                'value' => $total_remain,
-                            )), array(
-                                'class' => 'hide text-right',
-                            ));
-
                             echo $this->Html->tag('td', $this->Common->buildInputForm('PurchaseOrderPaymentDetail.price.', false, array(
                                 'type' => 'text',
                                 'frameClass' => false,
-                                'class' => 'text-right price',
+                                'class' => 'text-right price_custom',
                                 'attributes' => array(
                                     'data-type' => 'input_price_coma',
+                                    'value' => $total_remain,
+                                    'rel' => 'price',
                                 ),
                             )), array(
                                 'class' => 'text-center hide',

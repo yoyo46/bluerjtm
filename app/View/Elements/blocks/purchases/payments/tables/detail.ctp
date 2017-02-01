@@ -17,12 +17,17 @@
                 'name' => __('Keterangan'),
             ),
             'total' => array(
-                'name' => __('Total'),
+                'name' => __('Total PO'),
                 'class' => 'text-center',
                 'style' => 'width:15%;',
             ),
             'paid' => array(
-                'name' => __('Pembayaran'),
+                'name' => __('Telah Dibayar'),
+                'class' => 'text-center',
+                'style' => 'width:15%;',
+            ),
+            'unpaid' => array(
+                'name' => __('Total'),
                 'class' => 'text-center',
                 'style' => 'width:15%;',
             ),
@@ -101,12 +106,13 @@
                                     $customGrandtotal = $this->Common->getFormatPrice($grandtotal, 0, 2);
 
                                     echo $this->Html->tag('td', __('Grand Total'), array(
-                                        'colspan' => 4,
+                                        'colspan' => 5,
                                         'class' => 'text-right',
                                     ));
                                     echo $this->Html->tag('td', $customGrandtotal, array(
-                                        'class' => 'text-right total',
+                                        'class' => 'text-right total_custom',
                                         'data-decimal' => 2,
+                                        'rel' => 'price',
                                     ));
                             ?>
                         </tr>

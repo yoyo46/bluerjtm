@@ -802,7 +802,13 @@ class TrucksController extends AppController {
     function drivers(){
         $this->loadModel('Driver');
 
-        $conditions = array();
+        $options = array(
+            'conditions' => array(),
+            'order' => array(
+                'Driver.status' => 'DESC',
+                'Driver.name' => 'ASC',
+            ),
+        );
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -810,26 +816,37 @@ class TrucksController extends AppController {
             if(!empty($refine['name'])){
                 $name = urldecode($refine['name']);
                 $this->request->data['Driver']['name'] = $name;
-                $conditions['Driver.name LIKE '] = '%'.$name.'%';
+                $options['conditions']['Driver.name LIKE '] = '%'.$name.'%';
             }
 
             if(!empty($refine['no_id'])){
                 $value = urldecode($refine['no_id']);
                 $this->request->data['Driver']['no_id'] = $value;
-                $conditions['Driver.no_id LIKE '] = '%'.$value.'%';
+                $options['conditions']['Driver.no_id LIKE '] = '%'.$value.'%';
+            }
+
+            // Custom Otorisasi
+            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Driver', $options );
+
+            if(!empty($refine['sort'])){
+                $sort = urldecode($refine['sort']);
+
+                if( $sort == 'Branch.name' ) {
+                    $options['contain'][] = 'Branch';
+                }
             }
         }
 
-        $this->paginate = $this->Driver->getData('paginate', array(
-            'conditions' => $conditions,
-            'order' => array(
-                'Driver.status' => 'DESC',
-                'Driver.name' => 'ASC',
-            ),
-        ), array(
+        $this->paginate = $this->Driver->getData('paginate', $options, array(
             'status' => 'all',
+            'branch' => false,
         ));
         $truck_drivers = $this->paginate('Driver');
+        $truck_drivers = $this->Driver->getMergeList($truck_drivers, array(
+            'contain' => array(
+                'Branch',
+            ),
+        ));
 
         $this->set('active_menu', 'drivers');
         $this->set('sub_module_title', __('Supir Truk'));
@@ -853,7 +870,7 @@ class TrucksController extends AppController {
             ),
         ), array(
             'status' => 'all',
-            // 'branch' => false,
+            'branch' => false,
         ));
 
         if(!empty($driver)){
@@ -879,7 +896,7 @@ class TrucksController extends AppController {
             $data['Driver']['birth_date'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_lahir']);
             $data['Driver']['join_date'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_penerimaan']);
             $data['Driver']['expired_date_sim'] = $this->MkCommon->getDateSelectbox($data['Driver']['tgl_expire_sim']);
-            $data['Driver']['branch_id'] = Configure::read('__Site.config_branch_id');
+            // $data['Driver']['branch_id'] = Configure::read('__Site.config_branch_id');
             
             if(!empty($data['Driver']['photo']['name']) && is_array($data['Driver']['photo'])){
                 $temp_image = $data['Driver']['photo'];
@@ -996,10 +1013,12 @@ class TrucksController extends AppController {
                 'JenisSim.id', 'JenisSim.name'
             )
         ));
+        $branches = $this->GroupBranch->Branch->getData('list');
 
         $this->set('active_menu', 'drivers');
         $this->set(compact(
-            'driverRelations', 'jenisSims', 'id'
+            'driverRelations', 'jenisSims', 'id',
+            'branches'
         ));
         $this->render('driver_form');
     }
@@ -1013,7 +1032,7 @@ class TrucksController extends AppController {
             ),
         ), array(
             'status' => 'all',
-            // 'branch' => false,
+            'branch' => false,
         ));
 
         if( !empty($locale) ){
@@ -5264,6 +5283,14 @@ class TrucksController extends AppController {
 
             // Custom Otorisasi
             $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Driver', $options );
+
+            if(!empty($refine['sort'])){
+                $sort = urldecode($refine['sort']);
+
+                if( $sort == 'Branch.name' ) {
+                    $options['contain'][] = 'Branch';
+                }
+            }
         }
 
         if( !empty($data_action) ) {
@@ -5287,10 +5314,12 @@ class TrucksController extends AppController {
                 $id = $this->MkCommon->filterEmptyField($value, 'Driver', 'id');
                 $jenis_sim_id = $this->MkCommon->filterEmptyField($value, 'Driver', 'jenis_sim_id');
                 $driver_relation_id = $this->MkCommon->filterEmptyField($value, 'Driver', 'driver_relation_id');
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Driver', 'branch_id');
 
                 $value = $this->Truck->Driver->JenisSim->getMerge( $value, $jenis_sim_id );
                 $value = $this->Truck->Driver->DriverRelation->getMerge( $value, $driver_relation_id );
                 $value = $this->Truck->getByDriver( $value, $id );
+                $value = $this->Truck->Driver->Branch->getMerge( $value, $branch_id );
                 $drivers[$key] = $value;
             }
         }

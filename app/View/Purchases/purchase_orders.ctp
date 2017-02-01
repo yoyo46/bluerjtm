@@ -16,12 +16,12 @@
                 'name' => __('Grandtotal'),
                 'class' => 'text-center',
             ),
-            'penerimaan' => array(
-                'name' => __('Penerimaan'),
-                'class' => 'text-center',
-            ),
             'status' => array(
                 'name' => __('Status'),
+                'class' => 'text-center',
+            ),
+            'penerimaan' => array(
+                'name' => __('Penerimaan'),
                 'class' => 'text-center',
             ),
             'action' => array(
@@ -136,10 +136,10 @@
                         echo $this->Html->tag('td', $grandtotal, array(
                             'class' => 'text-right',
                         ));
-                        echo $this->Html->tag('td', $customReceipt, array(
+                        echo $this->Html->tag('td', $customStatus, array(
                             'class' => 'text-center',
                         ));
-                        echo $this->Html->tag('td', $customStatus, array(
+                        echo $this->Html->tag('td', $customReceipt, array(
                             'class' => 'text-center',
                         ));
                         echo $this->Html->tag('td', $customAction, array(

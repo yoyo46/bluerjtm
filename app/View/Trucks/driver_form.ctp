@@ -64,6 +64,14 @@
 		        </div>
 		        <?php 
 		        		}
+						echo $this->Html->tag('div', $this->Form->input('branch_id',array(
+							'label'=> __('Cabang *'), 
+							'class' => 'form-control chosen-select',
+							'required' => false,
+							'empty' => __('Pilih Cabang')
+						)), array(
+							'class' => 'form-group'
+						));
 		        ?>
 		        <div class="form-group">
 		        	<?php 
