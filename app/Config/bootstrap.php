@@ -108,3 +108,4 @@ CakeLog::config('error', array(
 ));
 CakePlugin::load('AclManager', array('bootstrap' => true));
 CakePlugin::load('MeioUpload');
+CakePlugin::loadAll();

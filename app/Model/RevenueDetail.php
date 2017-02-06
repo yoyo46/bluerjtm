@@ -272,11 +272,11 @@ class RevenueDetail extends AppModel {
             foreach ($revenue_detail as $key => $value) {
                 if(!empty($value['RevenueDetail'])){
                     $date_revenue = !empty($value['Revenue']['date_revenue'])?$value['Revenue']['date_revenue']:false;
-                    $from_city_id = !empty($value['Revenue']['Ttuj']['from_city_id'])?$value['Revenue']['Ttuj']['from_city_id']:false;
+                    // $from_city_id = !empty($value['Revenue']['Ttuj']['from_city_id'])?$value['Revenue']['Ttuj']['from_city_id']:false;
                     $truck_id = !empty($value['Revenue']['truck_id'])?$value['Revenue']['truck_id']:false;
 
-                    $fromCity = $this->City->getMerge($value, $from_city_id);
-                    $value['FromCity'] = !empty($fromCity['City'])?$fromCity['City']:false;
+                    // $fromCity = $this->City->getMerge($value, $from_city_id);
+                    // $value['FromCity'] = !empty($fromCity['City'])?$fromCity['City']:false;
                     
                     $value = $this->Revenue->Ttuj->TtujTipeMotor->TipeMotor->getMerge($value, $value['RevenueDetail']['group_motor_id']);
                     $value = $this->City->getMerge($value, $value['RevenueDetail']['city_id']);
@@ -291,9 +291,9 @@ class RevenueDetail extends AppModel {
                         $value['Revenue']['Ttuj'] = array();;
                     }
 
-                    if( empty($value['Revenue']['ttuj_id']) ) {
-                        $value = $this->Revenue->Ttuj->Truck->getMerge($value, $value['Revenue']['truck_id']);
-                    }
+                    // if( empty($value['Revenue']['ttuj_id']) ) {
+                    //     $value = $this->Revenue->Ttuj->Truck->getMerge($value, $value['Revenue']['truck_id']);
+                    // }
 
                     if(in_array($action, array( 'tarif', 'tarif_name' )) && in_array($data_action, array( 'invoice', 'preview' ))){
                         if( $action == 'tarif_name' ) {

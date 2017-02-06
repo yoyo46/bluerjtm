@@ -134,6 +134,7 @@
                     'class' => 'ajaxLink',
                     'data-request' => '#form-report',
                 ),
+                '_ajax' => true,
             ), $showHideColumn);
     ?>
     <div class="table-responsive center-table">

@@ -1194,8 +1194,9 @@ class CommonHelper extends AppHelper {
     }
 
     function _getPrint ( $options = false, $showHideColumn = false ) {
+        $_ajax = isset($options['_ajax'])?$options['_ajax']:true;
         $_excel = isset($options['_excel'])?$options['_excel']:true;
-        $_pdf = isset($options['_pdf'])?$options['_pdf']:true;
+        // $_pdf = isset($options['_pdf'])?$options['_pdf']:true;
         $_attr = isset($options['_attr'])?$options['_attr']:array();
         $_excel_url = isset($options['url_excel'])?$options['url_excel']:false;
         $result = false;
@@ -1203,6 +1204,8 @@ class CommonHelper extends AppHelper {
         $default_attr = array(
             'escape' => false,
             'class' => false,
+            'data-form' => '.form-search',
+            'data-wrapper-write' => '.wrapper-download',
         );
         $urlDefault['controller'] = !empty($this->params['controller'])?$this->params['controller']:false;
         $urlDefault['action'] = $this->action;
@@ -1213,9 +1216,14 @@ class CommonHelper extends AppHelper {
         $named = $this->_callUnset(array(
             'page',
         ), $named);
+        $sorted = Common::_callSet($named, array(
+            'sort',
+            'direction',
+        ));
         
         $urlDefault = array_merge($urlDefault, $pass);
         $urlDefault = array_merge($urlDefault, $named);
+        $wrapperDownload = '';
 
         if( !empty($_attr) ) {
             $default_attr = array_merge($default_attr, $_attr);
@@ -1225,21 +1233,38 @@ class CommonHelper extends AppHelper {
             if( !empty($_excel_url) ) {
                 $urlExcel = $_excel_url;
             } else {
-                $urlExcel = $urlDefault;
-                $urlExcel[] = 'excel';
+                if( !empty($_ajax) ) {
+                    $urlExcel = array_merge(array(
+                        'controller' => 'reports',
+                        'action' => 'generate_excel',
+                        $this->action,
+                    ), $sorted);
+                } else {
+                    $urlExcel = $urlDefault;
+                    $urlExcel[] = 'excel';
+                }
             }
             
             $_excel_attr = $default_attr;
-            $_excel_attr['class'] = $default_attr['class'].' btn btn-success pull-right';
-            $result .= $this->Html->link('<i class="fa fa-download"></i> Download Excel', $urlExcel, $_excel_attr);
+
+            if( !empty($_ajax) ) {
+                $_excel_attr['class'] = $default_attr['class'].' btn btn-success pull-right ajax-link';
+            } else {
+                $_excel_attr['class'] = $default_attr['class'].' btn btn-success pull-right';
+            }
+
+            $result .= $this->Html->link('<i class="fa fa-download"></i> Generate Excel', $urlExcel, $_excel_attr);
+            $wrapperDownload = $this->Html->tag('div', '', array(
+                'class' => 'wrapper-download',
+            ));
         }
-        if( !empty($_pdf) ) {
-            $urlPdf = $urlDefault;
-            $urlPdf[] = 'pdf';
-            $_pdf_attr = $default_attr;
-            $_pdf_attr['class'] = $default_attr['class'].' btn btn-primary pull-right';
-            $result .= $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, $_pdf_attr);
-        }
+        // if( !empty($_pdf) ) {
+        //     $urlPdf = $urlDefault;
+        //     $urlPdf[] = 'pdf';
+        //     $_pdf_attr = $default_attr;
+        //     $_pdf_attr['class'] = $default_attr['class'].' btn btn-primary pull-right';
+        //     $result .= $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, $_pdf_attr);
+        // }
 
         if( !empty($showHideColumn) ) {
             $resultContent .= $this->_getShowHideColumn('Truck', $showHideColumn, array(
@@ -1256,7 +1281,7 @@ class CommonHelper extends AppHelper {
 
         return $this->Html->tag('div', $resultContent.$this->Html->tag('div', '', array(
             'class' => 'clear',
-        )), array(
+        )).$wrapperDownload, array(
             'class' => 'no-print print-action',
         ));
     }
@@ -2736,5 +2761,34 @@ class CommonHelper extends AppHelper {
         $driver = $this->filterEmptyField($value, 'DriverPengganti', 'driver_name', $driver);
 
         return $driver;
+    }
+
+    function _callGetExt ( $file = false ) {
+        $fileArr = explode('.', $file);
+        return end($fileArr);
+    }
+
+    function _getContentType ( $ext = false ) {
+        $default_mime = array(
+            'gif' => 'image/gif',
+            'jpg' => 'image/jpeg', 
+            'jpeg' => 'image/jpeg', 
+            'png' => 'image/png',
+            'pjpeg' => 'image/pjpeg',
+            'x-png' => 'image/x-png',
+            'pdf' => 'application/pdf',
+            'xls' => 'application/vnd.ms-excel',
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        );
+
+        if( !empty($ext) ) {
+            if( !empty($default_mime[$ext]) ) {
+                return $default_mime[$ext];
+            } else {
+                return 'application/octet-stream';
+            }
+        } else {
+            return $default_mime;
+        }
     }
 }

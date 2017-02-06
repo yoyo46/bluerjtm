@@ -5258,19 +5258,19 @@ class TrucksController extends AppController {
                     'branch' => false,
                 ));
                 $options['conditions']['Driver.id'] = $truckSearch;
-                $this->request->data['Truck']['nopol'] = $data;
-                $this->request->data['Truck']['type'] = $typeTruck;
+                $this->request->data['Search']['nopol'] = $data;
+                $this->request->data['Search']['type'] = $typeTruck;
             }
 
             if(!empty($refine['no_id'])){
                 $value = urldecode($refine['no_id']);
                 $options['conditions']['Driver.no_id LIKE'] = '%'.$value.'%';
-                $this->request->data['Driver']['no_id'] = $value;
+                $this->request->data['Search']['no_id'] = $value;
             }
             if(!empty($refine['name'])){
                 $value = urldecode($refine['name']);
                 $options['conditions']['Driver.driver_name LIKE'] = '%'.$value.'%';
-                $this->request->data['Driver']['name'] = $value;
+                $this->request->data['Search']['name'] = $value;
             }
             if(!empty($refine['no_truck'])){
                 $value = urldecode($refine['no_truck']);
@@ -5278,7 +5278,7 @@ class TrucksController extends AppController {
                 $options['conditions']['Truck.id'] = NULL;
                 $options['contain'][] = 'Truck';
 
-                $this->request->data['Truck']['no_truck'] = $value;
+                $this->request->data['Search']['no_truck'] = $value;
             }
 
             // Custom Otorisasi

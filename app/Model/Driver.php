@@ -240,6 +240,9 @@ class Driver extends AppModel {
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
             }
+            if(!empty($options['offset'])){
+                $default_options['offset'] = $options['offset'];
+            }
             if(!empty($options['group'])){
                 $default_options['group'] = $options['group'];
             }
@@ -402,6 +405,11 @@ class Driver extends AppModel {
         $alias = !empty($data['named']['alias'])?$data['named']['alias']:false;
         $number = !empty($data['named']['number'])?$data['named']['number']:false;
         $phone = !empty($data['named']['phone'])?$data['named']['phone']:false;
+        $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
+        $type = !empty($data['named']['type'])?$data['named']['type']:1;
+        $no_truck = !empty($data['named']['no_truck'])?$data['named']['no_truck']:false;
+        $sort = !empty($data['named']['sort'])?$data['named']['sort']:false;
+        $direction = !empty($data['named']['direction'])?$data['named']['direction']:false;
 
         if(!empty($name)){
             $default_options['conditions']['Driver.name LIKE'] = '%'.$name.'%';
@@ -414,6 +422,43 @@ class Driver extends AppModel {
         }
         if(!empty($phone)){
             $default_options['conditions']['Driver.phone LIKE'] = '%'.$phone.'%';
+        }
+        if(!empty($nopol)){
+            if( $type == 2 ) {
+                $default_options['conditions']['Truck.id'] = $nopol;
+            } else {
+                $default_options['conditions']['Truck.nopol LIKE'] = '%'.$nopol.'%';
+            }
+
+            $default_options['contain'][] = 'Truck';
+        }
+        if(!empty($no_truck)){
+            $default_options['conditions']['Truck.id'] = null;
+            $default_options['contain'][] = 'Truck';
+        }
+
+        if( !empty($sort) ) {
+            $branch = strpos($sort, 'Branch.');
+            $truck = strpos($sort, 'Truck.');
+            $jenisSim = strpos($sort, 'JenisSim.');
+            $driverRelation = strpos($sort, 'DriverRelation.');
+
+            if( is_numeric($branch) ) {
+                $default_options['contain'][] = 'Branch';
+            }
+            if( is_numeric($truck) ) {
+                $default_options['contain'][] = 'Truck';
+            }
+            if( is_numeric($jenisSim) ) {
+                $default_options['contain'][] = 'JenisSim';
+            }
+            if( is_numeric($jenisSim) ) {
+                $default_options['contain'][] = 'DriverRelation';
+            }
+
+            $default_options['order'] = array(
+                $sort => $direction,
+            );
         }
         
         return $default_options;

@@ -7,7 +7,7 @@
     </div>
     <div class="box-body">
         <?php 
-                echo $this->Form->create('Driver', array(
+                echo $this->Form->create('Search', array(
                     'url'=> $this->Html->url( array(
                         'controller' => 'trucks',
                         'action' => 'search',
@@ -15,18 +15,19 @@
                     )), 
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
+                    'class' => 'form-search',
                 ));
         ?>
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->label('Truck.type', __('Truk'));
+                            echo $this->Form->label('type', __('Truk'));
                     ?>
                     <div class="row">
                         <div class="col-sm-4">
                             <?php 
-                                    echo $this->Form->input('Truck.type',array(
+                                    echo $this->Form->input('type',array(
                                         'label'=> false,
                                         'class'=>'form-control',
                                         'required' => false,
@@ -40,7 +41,7 @@
                         </div>
                         <div class="col-sm-8">
                             <?php 
-                                    echo $this->Form->input('Truck.nopol',array(
+                                    echo $this->Form->input('nopol',array(
                                         'label'=> false,
                                         'class'=>'form-control',
                                         'required' => false,
@@ -51,7 +52,7 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('Driver.no_id',array(
+                            echo $this->Form->input('no_id',array(
                                 'type' => 'text',
                                 'label'=> __('No. ID'),
                                 'class'=>'form-control',
@@ -61,7 +62,7 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('Driver.no_truck', array(
+                            echo $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('no_truck', array(
                                 'type' => 'checkbox',
                                 'label'=> false,
                                 'required' => false,
@@ -91,7 +92,7 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('Driver.name',array(
+                            echo $this->Form->input('name',array(
                                 'label'=> __('Nama Supir'),
                                 'class'=>'form-control',
                                 'required' => false,
@@ -105,6 +106,9 @@
             </div>
         </div>
         <?php 
+                echo $this->Form->hidden('title',array(
+                    'value'=> __('Laporan Supir'),
+                ));
                 echo $this->Form->end();
         ?>
     </div>

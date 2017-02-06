@@ -783,5 +783,46 @@ class RjImageComponent extends Component {
 
     	return $result;
     }
+
+	function generatePathFolder ( $filename, $path, $subpath = false ) {
+		$baseuploadpath = Configure::read('__Site.upload_path');
+		$upload_path = $baseuploadpath.DS.$path;
+
+		if( empty($subpath) ) {
+			$subpath = $this->generateSubPathFolder($filename);
+			$subpath = $this->makeDir( $upload_path.DS, false, $subpath );
+			$subpath =  $this->replaceSlash($subpath);
+			
+			$uploadFilename =  DS.$this->replaceSlash($subpath.$filename);
+		} else {
+			$uploadFilename =  DS.$filename;
+		}
+
+		$uploadPhotoPath = $this->replaceSlash($upload_path);
+		$uploadSource = $uploadPhotoPath.$uploadFilename;
+
+		return array(
+			'filename' => $this->replaceSlash($uploadFilename, 'reverse'),
+			'filename_path' => $uploadSource,
+		);
+	}
+
+	function _callGetFolderUploadPath ( $filename, $path ) {
+		$baseuploadpath = Configure::read('__Site.upload_path');
+		$upload_path = $baseuploadpath.DS.$path;
+		$uploadPhotoPath = $this->replaceSlash($upload_path.$filename);
+
+		return $uploadPhotoPath;
+	}
+
+    function replaceSlash ( $file, $action = false ) {
+    	if( $action == 'reverse' ) {
+    		return str_replace(DS, '/', $file);
+    	} else if( $action == 'remove' ) {
+    		return str_replace(array( '/', DS ), array( '', '' ), $file);
+    	} else {
+    		return str_replace('/', DS, $file);
+    	}
+    }
 }
 ?>
