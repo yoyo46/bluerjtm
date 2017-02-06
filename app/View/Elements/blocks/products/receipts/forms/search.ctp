@@ -15,8 +15,8 @@
         <div class="row">
             <div class="col-sm-6">
                 <?php 
-                        echo $this->Common->buildInputForm('nodoc', __('No Dokumen'));
-                        // echo $this->Common->buildInputForm('noref', __('No. Ref'));
+                        echo $this->Common->buildInputForm('nodoc', __('No. Dokumen'));
+                        echo $this->Common->buildInputForm('nodocref', __('No. Dok Ref'));
                         echo $this->Common->buildInputForm('vendor_id', __('Vendor'), array(
                             'empty' => __('- Pilih Vendor -'),
                             'class' => 'form-control chosen-select',

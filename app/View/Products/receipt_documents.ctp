@@ -12,6 +12,14 @@
                 'note' => array(
                     'name' => __('Keterangan'),
                 ),
+                'qty' => array(
+                    'name' => __('Total Qty'),
+                    'class' => 'text-center',
+                ),
+                'total' => array(
+                    'name' => __('Grandtotal'),
+                    'class' => 'text-center',
+                ),
             );
 
             $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
@@ -33,6 +41,10 @@
                                 $nodoc = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'nodoc');
                                 $transaction_date = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'transaction_date');
                                 $note = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'note');
+                                $total_qty = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'total_qty');
+                                $grandtotal = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'grandtotal', 0, false, array(
+                                    'price' => true,
+                                ));
 
                                 $transaction_date = $this->Common->formatDate($transaction_date, 'd/m/Y');
                 ?>
@@ -45,6 +57,12 @@
                                 'class' => 'text-center',
                             ));
                             echo $this->Html->tag('td', $note);
+                            echo $this->Html->tag('td', $total_qty, array(
+                                'class' => 'text-center',
+                            ));
+                            echo $this->Html->tag('td', $grandtotal, array(
+                                'class' => 'text-right',
+                            ));
                     ?>
                 </tr>
                 <?php

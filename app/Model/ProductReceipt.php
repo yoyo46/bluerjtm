@@ -365,6 +365,10 @@ class ProductReceipt extends AppModel {
             ));
 
             if( !empty($flag) ) {
+                if( empty($id) ){
+                    $data['ProductReceipt']['nodoc'] = $this->generateNoId();
+                }
+
                 $this->ProductReceiptDetail->deleteAll(array(
                     'ProductReceiptDetail.product_receipt_id' => $id,
                 ));
@@ -428,7 +432,7 @@ class ProductReceipt extends AppModel {
     }
 
     public function _callRefineParams( $data = '', $default_options = false ) {
-        $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
+        $nodocref = !empty($data['named']['nodocref'])?$data['named']['nodocref']:false;
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
@@ -449,11 +453,14 @@ class ProductReceipt extends AppModel {
         if( !empty($vendor_id) ) {
             $default_options['conditions']['ProductReceipt.vendor_id'] = $vendor_id;
         }
+        if( !empty($nodocref) ) {
+            $default_options['conditions']['ProductReceipt.document_number LIKE'] = '%'.$nodocref.'%';
+        }
         
         return $default_options;
     }
 
-    function doDelete( $id ) {
+    function doDelete( $id, $type = null ) {
         $result = false;
         $value = $this->getData('first', array(
             'conditions' => array(
@@ -465,7 +472,16 @@ class ProductReceipt extends AppModel {
             $document_id = $this->filterEmptyField($value, 'ProductReceipt', 'document_id');
             $nodoc = $this->filterEmptyField($value, 'ProductReceipt', 'nodoc');
             $document_type = $this->filterEmptyField($value, 'ProductReceipt', 'document_type');
-            $default_msg = sprintf(__('menghapus penerimaan barang #%s'), $id);
+
+            switch ($type) {
+                case 'void':
+                    $default_msg = sprintf(__('membatalkan penerimaan barang #%s'), $id);
+                    break;
+                
+                default:
+                    $default_msg = sprintf(__('menghapus penerimaan barang #%s'), $id);
+                    break;
+            }
 
             $this->id = $id;
             $this->set('status', 0);
@@ -558,7 +574,7 @@ class ProductReceipt extends AppModel {
     function generateNoId(){
         $default_id = 1;
         $branch_code = Configure::read('__Site.Branch.code');
-        $format_id = sprintf('RR-%s-%s-', $branch_code, date('y'));
+        $format_id = sprintf('SN-%s-%s-', $branch_code, date('y'));
 
         $last_data = $this->getData('first', array(
             'order' => array(

@@ -503,6 +503,15 @@ class RjProductComponent extends Component {
         ));
         $values = $this->controller->paginate('PurchaseOrder');
 
+        $this->controller->PurchaseOrder->PurchaseOrderDetail->virtualFields['total_qty'] = 'SUM(PurchaseOrderDetail.qty)';
+        $values = $this->controller->PurchaseOrder->getMergeList($values, array(
+            'contain' => array(
+                'PurchaseOrderDetail' => array(
+                    'type' => 'first',
+                ),
+            ),
+        ));
+
         return $values;
     }
 

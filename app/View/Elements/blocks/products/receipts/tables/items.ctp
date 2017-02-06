@@ -78,7 +78,7 @@
                     'controller'=> 'products', 
                     'action' => 'receipt_serial_numbers',
                     $id,
-                    'view' => true,
+                    'view' => !empty($view)?$view:false,
                     'admin' => false,
                     'bypass' => true,
                 ), array(

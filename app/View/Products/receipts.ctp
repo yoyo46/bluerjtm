@@ -1,25 +1,22 @@
 <?php 
         $dataColumns = array(
-            // 'noref' => array(
-            //     'name' => __('No. Ref'),
-            // ),
+            'noreceipt' => array(
+                'name' => __('No. Dokumen'),
+            ),
+            'nodoc' => array(
+                'name' => __('No. Dok Ref'),
+            ),
             'transaction_date' => array(
                 'name' => __('Tgl Penerimaan'),
             ),
-            // 'code' => array(
-            //     'name' => __('No Penerimaan'),
-            // ),
             'supplier' => array(
                 'name' => __('Supplier'),
             ),
             'employe' => array(
                 'name' => __('Diterima Oleh'),
             ),
-            'nodoc' => array(
-                'name' => __('No Dokumen'),
-            ),
             'branch' => array(
-                'name' => __('Gudang Penerimaan'),
+                'name' => __('Gudang Masuk'),
             ),
             'note' => array(
                 'name' => __('Keterangan'),
@@ -66,8 +63,8 @@
                             $transactionDate = $this->Common->filterEmptyField($value, 'ProductReceipt', 'transaction_date');
                             $note = $this->Common->filterEmptyField($value, 'ProductReceipt', 'note');
                             $transaction_status = $this->Common->filterEmptyField($value, 'ProductReceipt', 'transaction_status');
+                            $document_number = $this->Common->filterEmptyField($value, 'ProductReceipt', 'document_number', '-');
 
-                            $document_number = $this->Common->filterEmptyField($value, 'Document', 'nodoc');
                             $warehouse = $this->Common->filterEmptyField($value, 'Warehouse', 'name');
 
                             $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
@@ -104,16 +101,27 @@
                                     'class' => 'btn btn-danger btn-xs trigger-disabled',
                                     'data-alert' => __('Anda yakin ingin menghapus Penerimaan ini?'),
                                 ));
+                            } else if( in_array($transaction_status, array( 'posting', 'approved' )) ){
+                                $customAction .= $this->Html->link(__('Void'), array(
+                                    'controller' => 'products',
+                                    'action' => 'receipt_toggle',
+                                    $id,
+                                    'void',
+                                    'admin' => false,
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs trigger-disabled',
+                                    'data-alert' => __('Anda yakin ingin membatalkan Penerimaan ini?'),
+                                ));
                             }
             ?>
             <tr>
                 <?php 
                         // echo $this->Html->tag('td', $noref);
+                        echo $this->Html->tag('td', $nodoc);
+                        echo $this->Html->tag('td', $document_number);
                         echo $this->Html->tag('td', $customDate);
-                        // echo $this->Html->tag('td', $nodoc);
                         echo $this->Html->tag('td', $vendor);
                         echo $this->Html->tag('td', $employe);
-                        echo $this->Html->tag('td', $document_number);
                         echo $this->Html->tag('td', $warehouse);
                         echo $this->Html->tag('td', $note);
                         echo $this->Html->tag('td', $customStatus, array(

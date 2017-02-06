@@ -14,7 +14,7 @@
 	?>
 	<div class="form-group">
 		<?php
-			echo $this->Form->label('document_number', __('No. Dokumen *'));
+			echo $this->Form->label('document_number', __('No. Dok Ref *'));
 		?>
 		<div class="row">
 			<div class="col-sm-10">
@@ -23,7 +23,7 @@
 							'frameClass' => false,
 							'id' => 'document-number',
 							'attributes' => array(
-								'placeholder' => __('No. Dokumen'),
+								'placeholder' => __('No. Dok Ref'),
 								'readonly' => true,
 							),
 							'fieldError' => 'ProductReceipt.document_id',

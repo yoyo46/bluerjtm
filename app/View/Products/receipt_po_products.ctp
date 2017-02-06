@@ -1,5 +1,7 @@
 <?php 
         $data = $this->request->data;
+        $nodoc = !empty($nodoc)?$nodoc:false;
+        $transaction_id = !empty($transaction_id)?$transaction_id:0;
 ?>
 <div id="wrapper-modal-write" class="document-picker">
     <?php 
@@ -34,7 +36,25 @@
 
             $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
-            echo $this->element('blocks/products/expenditures/forms/search_products');
+            echo $this->element('blocks/products/expenditures/forms/search_products', array(
+                'urlForm' => array(
+                    'controller' => 'products',
+                    'action' => 'search',
+                    'receipt_document_products',
+                    $transaction_id,
+                    $nodoc,
+                    'po',
+                    'admin' => false,
+                ),
+                'urlReset' => array(
+                    'controller' => 'products',
+                    'action' => 'receipt_document_products',
+                    $transaction_id,
+                    $nodoc,
+                    'po',
+                    'admin' => false,
+                ),
+            ));
     ?>
     <div class="box-body table-responsive">
         <table class="table table-hover">

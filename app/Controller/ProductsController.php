@@ -417,7 +417,12 @@ class ProductsController extends AppController {
         $values = $this->paginate('ProductReceipt');
         $values = $this->ProductReceipt->getMergeList($values, array(
             'contain' => array(
-                'Vendor',
+                'Vendor' => array(
+                    'elements' => array(
+                        'status' => 'all',
+                        'branch' => false,
+                    ),
+                ),
                 'Employe',
                 'Warehouse' => array(
                     'uses' => 'Branch',
@@ -512,6 +517,8 @@ class ProductsController extends AppController {
             'conditions' => array(
                 'ProductReceipt.id' => $id,
             ),
+        ), array(
+            'status' => false,
         ));
 
         if( !empty($value) ) {
@@ -603,8 +610,8 @@ class ProductsController extends AppController {
         }
     }
 
-    public function receipt_toggle( $id ) {
-        $result = $this->Product->ProductReceiptDetail->ProductReceipt->doDelete( $id );
+    public function receipt_toggle( $id, $type = null ) {
+        $result = $this->Product->ProductReceiptDetail->ProductReceipt->doDelete( $id, $type );
         $this->MkCommon->setProcessParams($result);
     }
 

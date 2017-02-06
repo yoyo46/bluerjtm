@@ -98,6 +98,9 @@ class PurchaseOrderDetail extends AppModel {
         if(!empty($options['group'])){
             $default_options['group'] = $options['group'];
         }
+        if(!empty($options['contain'])){
+            $default_options['contain'] = $options['contain'];
+        }
 
         if( $find == 'paginate' ) {
             $result = $default_options;
@@ -229,31 +232,23 @@ class PurchaseOrderDetail extends AppModel {
     }
 
     public function _callRefineParams( $data = '', $default_options = false ) {
-        // $noref = $this->filterEmptyField($data, 'named', 'noref');
-        // $document_type = $this->filterEmptyField($data, 'named', 'document_type');
-        // $nodoc = $this->filterEmptyField($data, 'named', 'nodoc');
-        // $dateFrom = $this->filterEmptyField($data, 'named', 'DateFrom');
-        // $dateTo = $this->filterEmptyField($data, 'named', 'DateTo');
-        // $vendor_id = $this->filterEmptyField($data, 'named', 'vendor_id');
+        $keyword = !empty($data['named']['keyword'])?$data['named']['keyword']:false;
+        $code = !empty($data['named']['code'])?$data['named']['code']:false;
+        $name = !empty($data['named']['name'])?$data['named']['name']:false;
+        $group = !empty($data['named']['group'])?$data['named']['group']:false;
 
-        // if( !empty($dateFrom) || !empty($dateTo) ) {
-        //     if( !empty($dateFrom) ) {
-        //         $default_options['conditions']['DATE_FORMAT(Spk.transaction_date, \'%Y-%m-%d\') >='] = $dateFrom;
-        //     }
-
-        //     if( !empty($dateTo) ) {
-        //         $default_options['conditions']['DATE_FORMAT(Spk.transaction_date, \'%Y-%m-%d\') <='] = $dateTo;
-        //     }
-        // }
-        // if( !empty($nodoc) ) {
-        //     $default_options['conditions']['Spk.nodoc LIKE'] = '%'.$nodoc.'%';
-        // }
-        // if( !empty($vendor_id) ) {
-        //     $default_options['conditions']['Spk.vendor_id'] = $vendor_id;
-        // }
-        // if( !empty($document_type) ) {
-        //     $default_options['conditions']['Spk.document_type'] = $document_type;
-        // }
+        if( !empty($code) ) {
+            $default_options['conditions']['Product.code LIKE'] = '%'.$code.'%';
+            $default_options['contain'][] = 'Product';
+        }
+        if( !empty($name) ) {
+            $default_options['conditions']['Product.name LIKE'] = '%'.$name.'%';
+            $default_options['contain'][] = 'Product';
+        }
+        if( !empty($group) ) {
+            $default_options['conditions']['Product.product_category_id'] = $group;
+            $default_options['contain'][] = 'Product';
+        }
         
         return $default_options;
     }

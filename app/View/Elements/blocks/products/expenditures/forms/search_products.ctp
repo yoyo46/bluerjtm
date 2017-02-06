@@ -1,15 +1,18 @@
 <?php 
         $nodoc = !empty($nodoc)?$nodoc:false;
+        $transaction_id = !empty($transaction_id)?$transaction_id:0;
         $urlForm = !empty($urlForm)?$urlForm:array(
             'controller' => 'products',
             'action' => 'search',
             'spk_products',
+            $transaction_id,
             $nodoc,
             'admin' => false,
         );
         $urlReset = !empty($urlReset)?$urlReset:array(
             'controller' => 'products', 
             'action' => 'spk_products', 
+            $transaction_id,
             $nodoc,
             'admin' => false,
         );
