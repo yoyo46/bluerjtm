@@ -371,8 +371,14 @@ class ProductExpenditure extends AppModel {
                 switch ($document_type) {
                     case 'po':
                         $this->PurchaseOrder->id = $document_id;
-                        $this->PurchaseOrder->set('Expenditure_status', 'none');
+                        $this->PurchaseOrder->set('transaction_status', 'none');
                         $this->PurchaseOrder->save();
+                        break;
+                    case 'spk':
+                        $this->Spk->id = $document_id;
+                        $this->Spk->set('transaction_status', 'open');
+                        $this->Spk->set('draft_document_status', 'none');
+                        $this->Spk->save();
                         break;
                 }
 
