@@ -574,7 +574,7 @@ class ProductReceipt extends AppModel {
     function generateNoId(){
         $default_id = 1;
         $branch_code = Configure::read('__Site.Branch.code');
-        $format_id = sprintf('SN-%s-%s-', $branch_code, date('y'));
+        $format_id = sprintf('RR-%s-%s-', $branch_code, date('y'));
 
         $last_data = $this->getData('first', array(
             'order' => array(

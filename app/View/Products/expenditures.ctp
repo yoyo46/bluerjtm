@@ -97,14 +97,17 @@
                                 ), array(
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
-                                $customAction .= $this->Html->link(__('Hapus'), array(
+                            }
+                            if( in_array($transaction_status, array( 'unposting', 'revised', 'posting', 'approved' )) ){
+                                $customAction .= $this->Html->link(__('Void'), array(
                                     'controller' => 'products',
                                     'action' => 'expenditure_toggle',
                                     $id,
+                                    'void',
                                     'admin' => false,
                                 ), array(
                                     'class' => 'btn btn-danger btn-xs trigger-disabled',
-                                    'data-alert' => __('Anda yakin ingin menghapus Pengeluaran ini?'),
+                                    'data-alert' => __('Anda yakin ingin membatalkan Pengeluaran ini?'),
                                 ));
                             }
             ?>

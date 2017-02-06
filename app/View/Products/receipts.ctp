@@ -92,16 +92,8 @@
                                 ), array(
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
-                                $customAction .= $this->Html->link(__('Hapus'), array(
-                                    'controller' => 'products',
-                                    'action' => 'receipt_toggle',
-                                    $id,
-                                    'admin' => false,
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs trigger-disabled',
-                                    'data-alert' => __('Anda yakin ingin menghapus Penerimaan ini?'),
-                                ));
-                            } else if( in_array($transaction_status, array( 'posting', 'approved' )) ){
+                            }
+                            if( in_array($transaction_status, array( 'unposting', 'revised', 'posting', 'approved' )) ){
                                 $customAction .= $this->Html->link(__('Void'), array(
                                     'controller' => 'products',
                                     'action' => 'receipt_toggle',

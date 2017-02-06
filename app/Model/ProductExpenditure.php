@@ -358,7 +358,7 @@ class ProductExpenditure extends AppModel {
             $document_id = $this->filterEmptyField($value, 'ProductExpenditure', 'document_id');
             $nodoc = $this->filterEmptyField($value, 'ProductExpenditure', 'nodoc');
             $document_type = $this->filterEmptyField($value, 'ProductExpenditure', 'document_type');
-            $default_msg = sprintf(__('menghapus pengeluaran barang #%s'), $id);
+            $default_msg = sprintf(__('membatalkan pengeluaran barang #%s'), $id);
 
             $this->id = $id;
             $this->set('status', 0);
@@ -408,7 +408,7 @@ class ProductExpenditure extends AppModel {
     function generateNoId(){
         $default_id = 1;
         $branch_code = Configure::read('__Site.Branch.code');
-        $format_id = sprintf('RR-%s-%s-', $branch_code, date('y'));
+        $format_id = sprintf('SN-%s-%s-', $branch_code, date('y'));
 
         $last_data = $this->getData('first', array(
             'order' => array(

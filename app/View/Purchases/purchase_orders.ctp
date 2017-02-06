@@ -114,18 +114,8 @@
                                     'closing' => true,
                                     'periode' => $periode,
                                 ));
-                                $customAction .= $this->Html->link(__('Hapus'), array(
-                                    'controller' => 'purchases',
-                                    'action' => 'purchase_order_toggle',
-                                    $id,
-                                    'admin' => false,
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs trigger-disabled',
-                                    'closing' => true,
-                                    'periode' => $periode,
-                                    'data-alert' => __('Anda yakin ingin menghapus PO ini?'),
-                                ));
-                            } else if( in_array($transaction_status, array( 'posting', 'approved' )) ){
+                            }
+                            if( in_array($transaction_status, array( 'unposting', 'revised', 'posting', 'approved' )) ){
                                 $customAction .= $this->Html->link(__('Void'), array(
                                     'controller' => 'purchases',
                                     'action' => 'purchase_order_toggle',
