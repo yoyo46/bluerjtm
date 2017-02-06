@@ -114,7 +114,7 @@
 							'textGroup' => __('Hari'),
 							'column' => 'col-sm-6',
 						));
-						echo $this->Common->buildInputForm('etd', __('T.O.P'), array(
+						echo $this->Common->buildInputForm('top', __('T.O.P'), array(
 							'type' => 'text',
 							'textGroup' => __('Hari'),
 							'column' => 'col-sm-6',

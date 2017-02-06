@@ -4466,6 +4466,7 @@ $(function() {
     $.rebuildFunction();
     $.onFocused();
     $.Autocomplete();
+    $.callInterval();
 
     // $('#ppn-total-invoice').blur(function(){
     //     var self = $(this);

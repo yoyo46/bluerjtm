@@ -101,4 +101,14 @@ class PurchaseHelper extends AppHelper {
 
         return $total;
     }
+
+    public function _callDisabledNoSq($is_sq = null, $sq_id = null) {
+        if( !empty($is_sq) && empty($sq_id) ) {
+            $disabled = true;
+        } else {
+            $disabled = false;
+        }
+
+        return $disabled;
+    }
 }

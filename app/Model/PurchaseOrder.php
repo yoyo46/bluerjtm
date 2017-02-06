@@ -376,7 +376,7 @@ class PurchaseOrder extends AppModel {
         return !empty($value['PurchaseOrderDetail']['price'])?$value['PurchaseOrderDetail']['price']:$empty;
     }
 
-    function doDelete( $id ) {
+    function doDelete( $id, $type = null ) {
         $result = false;
         $value = $this->getData('first', array(
             'conditions' => array(
@@ -387,7 +387,16 @@ class PurchaseOrder extends AppModel {
         if ( !empty($value) ) {
             $sq_id = !empty($value['PurchaseOrder']['supplier_quotation_id'])?$value['PurchaseOrder']['supplier_quotation_id']:false;
             $nodoc = !empty($value['PurchaseOrder']['nodoc'])?$value['PurchaseOrder']['nodoc']:false;
-            $default_msg = sprintf(__('menghapus PO #%s'), $nodoc);
+
+            switch ($type) {
+                case 'void':
+                    $default_msg = __('membatalkan PO #%s', $nodoc);
+                    break;
+                
+                default:
+                    $default_msg = __('menghapus PO #%s', $nodoc);
+                    break;
+            }
 
             $this->id = $id;
             $this->set('status', 0);
@@ -395,7 +404,7 @@ class PurchaseOrder extends AppModel {
 
             if( $this->save() ) {
                 $this->SupplierQuotation->id = $sq_id;
-                $this->SupplierQuotation->set('transaction_status', 'po');
+                $this->SupplierQuotation->set('transaction_status', 'approved');
                 $this->SupplierQuotation->save();
 
                 $msg = sprintf(__('Berhasil %s'), $default_msg);

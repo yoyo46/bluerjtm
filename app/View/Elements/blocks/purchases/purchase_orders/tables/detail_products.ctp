@@ -25,6 +25,11 @@
                 'class' => 'text-center',
                 'style' => 'width:7%;',
             ),
+            'note' => array(
+                'name' => __('Ket.'),
+                'class' => 'text-center',
+                'style' => 'width:15%;',
+            ),
             'qty' => array(
                 'name' => __('Qty'),
                 'class' => 'text-center',
@@ -68,6 +73,8 @@
                     'escape' => false,
                     'title' => __('Daftar Barang'),
                     'class' => 'btn bg-maroon ajaxCustomModal',
+                    'data-check' => '#supplier-quotation',
+                    'data-check-named' => 'no_sq',
                 )), array(
                 'class' => "form-group",
             ));
@@ -104,9 +111,11 @@
                                         $code = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'code');
                                         $name = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'name');
                                         $unit = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'unit');
+                                        $is_supplier_quotation = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'is_supplier_quotation');
                                     } else {
                                         $code = $this->Common->filterEmptyField($value, 'Product', 'code');
                                         $name = $this->Common->filterEmptyField($value, 'Product', 'name');
+                                        $is_supplier_quotation = $this->Common->filterEmptyField($value, 'Product', 'is_supplier_quotation');
                                         $unit = $this->Common->filterEmptyField($value, 'ProductUnit', 'name');
                                     }
 
@@ -119,6 +128,7 @@
                                         'name' => $name,
                                         'unit' => $unit,
                                         'idx' => $key,
+                                        'disabled' => $this->Purchase->_callDisabledNoSq($is_supplier_quotation, $supplier_quotation_detail_id),
                                     ));
                                 }
                             }
@@ -130,7 +140,7 @@
                                 $customGrandtotal = $this->Common->getFormatPrice($grandtotal, '', 2);
 
                                 echo $this->Html->tag('td', __('Grand Total'), array(
-                                    'colspan' => 7,
+                                    'colspan' => 8,
                                     'class' => 'text-right',
                                 ));
                                 echo $this->Html->tag('td', $customGrandtotal, array(

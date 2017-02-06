@@ -1136,8 +1136,8 @@
 
         var decimal = $.checkUndefined(objGrandTotal.attr('data-decimal'), 0);
 
-        if( $('.pick-document').length > 0 ) {
-            $.each( $('.pick-document'), function( i, val ) {
+        if( $('.document-calc .pick-document').length > 0 ) {
+            $.each( $('.document-calc .pick-document'), function( i, val ) {
                 var self = $(this);
                 grandtotal += calculate(self);
             });
@@ -1182,7 +1182,7 @@
         var grandtotal = 0;
         var decimal = $.checkUndefined(objGrandTotal.attr('data-decimal'), 0);
 
-        $.each( $('.pick-document .qty'), function( i, val ) {
+        $.each( $('document-calc .pick-document .qty'), function( i, val ) {
             var self = $(this);
             grandtotal += $.convertNumber(self.val());
         });
@@ -1305,7 +1305,7 @@
         if( settings.objClick.length > 0 ) {
             settings.objClick.off('click');
             settings.objClick.click(function(){
-                $.each( $('.pick-document'), function( i, val ) {
+                $.each( $('.document-calc .pick-document'), function( i, val ) {
                     var parent = $(this);
                     var objTotal = parent.find('.total');
 
@@ -1576,6 +1576,9 @@
         $.callChoosen({
             obj: obj.find('.chosen-select'),
         });
+        $.callInterval({
+            obj: obj.find('.call-interval'),
+        });
     }
 
     $.ajaxLink = function( options ) {
@@ -1588,6 +1591,7 @@
         settings.obj.off('click');
         settings.obj.click(function(){
             var self = $(this);
+            disableAjax = false;
             
             $.directAjaxLink({
                 obj: self,
@@ -1738,7 +1742,7 @@
                 return false;
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
-                alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                console.log('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
                 return false;
             }
         });
@@ -1949,5 +1953,29 @@
                 });
             }
         });
+    }
+    
+    $.callInterval = function(options){
+        var settings = $.extend({
+            obj: $('.call-interval'),
+            init: false,
+        }, options );
+
+        if( settings.obj.length > 0 ) {
+            var self = settings.obj;
+            var interval = $.checkUndefined(self.attr('data-interval'), 5000);
+
+            setInterval(function(){
+                var trigger = $.checkUndefined($('.trigger-interval').val(), 'true');
+                
+                if( trigger == 'true' ) {
+                    disableAjax = true;
+
+                     $.directAjaxLink({
+                        obj: self,
+                    });
+                 }
+            }, interval);
+        }
     }
 }( jQuery ));

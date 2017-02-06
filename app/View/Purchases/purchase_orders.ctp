@@ -125,6 +125,19 @@
                                     'periode' => $periode,
                                     'data-alert' => __('Anda yakin ingin menghapus PO ini?'),
                                 ));
+                            } else if( in_array($transaction_status, array( 'posting', 'approved' )) ){
+                                $customAction .= $this->Html->link(__('Void'), array(
+                                    'controller' => 'purchases',
+                                    'action' => 'purchase_order_toggle',
+                                    $id,
+                                    'void',
+                                    'admin' => false,
+                                ), array(
+                                    'class' => 'btn btn-danger btn-xs trigger-disabled',
+                                    'closing' => true,
+                                    'periode' => $periode,
+                                    'data-alert' => __('Anda yakin ingin membatalkan PO ini?'),
+                                ));
                             }
             ?>
             <tr>

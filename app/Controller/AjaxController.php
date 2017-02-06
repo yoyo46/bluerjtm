@@ -2562,6 +2562,7 @@ class AjaxController extends AppController {
 	function products ( $action_type = 'sq' ) {
         $this->loadModel('Product');
         $wrapper = $this->MkCommon->filterEmptyField($this->params, 'named', 'wrapper');
+        $no_sq = $this->MkCommon->filterEmptyField($this->params, 'named', 'no_sq');
 
 		$render = 'products';
         $params = $this->MkCommon->_callRefineParams($this->params);
@@ -2571,7 +2572,9 @@ class AjaxController extends AppController {
 
         switch ($action_type) {
         	case 'po':
-        		$status = 'no-sq';
+        		// $status = 'no-sq';
+        		$status = 'active';
+        		$render = '/Purchases/products';
         		break;
         	case 'spk':
         		$status = 'active';
@@ -2600,6 +2603,22 @@ class AjaxController extends AppController {
                 $value = $this->Product->ProductUnit->getMerge($value, $product_unit_id);
                 $value = $this->Product->ProductCategory->getMerge($value, $product_category_id);
                 $value['Product']['rate'] = $this->Product->SupplierQuotationDetail->SupplierQuotation->_callRatePrice($id, false, '-');
+
+                if( !empty($no_sq) ) {
+                	$value = $this->Product->SupplierQuotationDetail->SupplierQuotation->getMerge($value, $no_sq, 'SupplierQuotation.nodoc');
+                	$supplier_quotation_id = Common::hashEmptyField($value, 'SupplierQuotation.id');
+
+                	$sqDetail = $this->Product->SupplierQuotationDetail->getData('first', array(
+			            'conditions' => array(
+			                'SupplierQuotationDetail.product_id' => $id,
+			                'SupplierQuotationDetail.supplier_quotation_id' => $supplier_quotation_id,
+			            ),
+			        ));
+
+			        if( !empty($sqDetail) ) {
+			        	$value = array_merge($value, $sqDetail);
+			        }
+                }
 
                 if( $action_type == 'spk' ) {
         			$value['Product']['product_stock_cnt'] = $this->Product->ProductStock->_callStock($id);

@@ -128,6 +128,13 @@ class RjPurchaseComponent extends Component {
             $data['PurchaseOrder']['transaction_date'] = $transaction_date;
             $data['PurchaseOrder']['supplier_quotation_id'] = $supplier_quotation_id;
 
+            if( !empty($supplier_quotation_id) ) {
+                $data['SupplierQuotation'] = array(
+                    'id' => $supplier_quotation_id,
+                    'transaction_status' => 'po',
+                );
+            }
+
             if( !empty($dataDetailProduct) ) {
                 $grandtotal = 0;
                 $values = array_filter($dataDetailProduct);
@@ -136,7 +143,12 @@ class RjPurchaseComponent extends Component {
                 foreach ($values as $key => $product_id) {
                     $dataPODetail = array();
                     $supplier_quotation_detail_id = $this->MkCommon->filterEmptyField($dataDetail, 'supplier_quotation_detail_id', $key);
+
                     $qty = $this->MkCommon->filterEmptyField($dataDetail, 'qty', $key);
+                    $note = $this->MkCommon->filterEmptyField($dataDetail, 'note', $key);
+
+                    $product = $this->controller->PurchaseOrder->PurchaseOrderDetail->Product->getMerge(array(), $product_id);
+                    $is_supplier_quotation = $this->MkCommon->filterEmptyField($product, 'Product', 'is_supplier_quotation');
 
                     if( !empty($supplier_quotation_detail_id) ) {
                         $sqDetail = $this->controller->User->SupplierQuotation->SupplierQuotationDetail->getData('first', array(
@@ -150,19 +162,23 @@ class RjPurchaseComponent extends Component {
                         $price = $this->MkCommon->filterEmptyField($sqDetail, 'SupplierQuotationDetail', 'price');
                         $disc = $this->MkCommon->filterEmptyField($sqDetail, 'SupplierQuotationDetail', 'disc');
                         $ppn = $this->MkCommon->filterEmptyField($sqDetail, 'SupplierQuotationDetail', 'ppn');
-                    } else {
+                    } else if( empty($is_supplier_quotation) ) {
                         $price = $this->MkCommon->filterEmptyField($dataDetail, 'price', $key);
                         $disc = $this->MkCommon->filterEmptyField($dataDetail, 'disc', $key);
                         $ppn = $this->MkCommon->filterEmptyField($dataDetail, 'ppn', $key);
+                    } else {
+                        $price = null;
+                        $disc = null;
+                        $ppn = null;
                     }
 
                     $ppn = $this->MkCommon->_callPriceConverter($ppn);
                     $disc = $this->MkCommon->_callPriceConverter($disc);
                     $price = $this->MkCommon->_callPriceConverter($price) * 1;
 
-                    $product = $this->controller->PurchaseOrder->PurchaseOrderDetail->Product->getMerge(array(), $product_id);
                     $code = $this->MkCommon->filterEmptyField($product, 'Product', 'code');
                     $name = $this->MkCommon->filterEmptyField($product, 'Product', 'name');
+                    $is_supplier_quotation = $this->MkCommon->filterEmptyField($product, 'Product', 'is_supplier_quotation');
                     $unit = $this->MkCommon->filterEmptyField($product, 'ProductUnit', 'name');
 
                     $dataPODetail['PurchaseOrderDetail'] = array(
@@ -170,7 +186,9 @@ class RjPurchaseComponent extends Component {
                         'code' => $code,
                         'name' => $name,
                         'unit' => $unit,
+                        'is_supplier_quotation' => $is_supplier_quotation,
                         'supplier_quotation_detail_id' => $supplier_quotation_detail_id,
+                        'note' => $note,
                         'price' => $price,
                         'ppn' => $ppn,
                         'disc' => $disc,

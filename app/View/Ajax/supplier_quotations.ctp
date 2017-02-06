@@ -47,7 +47,8 @@
 
                                 $availableText = sprintf(__('Tgl Berlaku SQ: %s'), $customAvailable);
                 ?>
-                <tr data-value="<?php echo $nodoc; ?>" data-text="<?php echo $nodoc; ?>" data-change="#supplier-quotation" href="<?php echo $urlAjax; ?>" data-show=".temp-document-picker" data-change-extra="#available-date" data-extra-text="<?php echo $availableText; ?>">
+                <?php /* <tr data-value="<?php echo $nodoc; ?>" data-text="<?php echo $nodoc; ?>" data-change="#supplier-quotation" href="<?php echo $urlAjax; ?>" data-show=".temp-document-picker" data-change-extra="#available-date" data-extra-text="<?php echo $availableText; ?>"> */ ?>
+                <tr data-value="<?php echo $nodoc; ?>" data-text="<?php echo $nodoc; ?>" data-change="#supplier-quotation">
                     <?php
                             echo $this->Html->tag('td', $nodoc);
                             echo $this->Html->tag('td', $customDate);

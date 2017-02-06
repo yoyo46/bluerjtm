@@ -286,7 +286,7 @@ class PurchasesController extends AppController {
             $this->MkCommon->_layout_file('select');
             $this->set('active_menu', 'Purchase Order');
             $this->set(compact(
-                'vendors', 'value'
+                'vendors', 'value', 'id'
             ));
             $this->render('purchase_order_add');
         } else {
@@ -353,7 +353,8 @@ class PurchasesController extends AppController {
             $this->set('view', 'detail');
             $this->set(compact(
                 'vendors', 'value',
-                'user_otorisasi_approvals', 'show_approval'
+                'user_otorisasi_approvals', 'show_approval',
+                'id'
             ));
             $this->render('purchase_order_add');
         } else {
@@ -361,8 +362,8 @@ class PurchasesController extends AppController {
         }
     }
 
-    public function purchase_order_toggle( $id ) {
-        $result = $this->PurchaseOrder->doDelete( $id );
+    public function purchase_order_toggle( $id, $type = null ) {
+        $result = $this->PurchaseOrder->doDelete( $id, $type );
         $this->MkCommon->setProcessParams($result);
     }
 

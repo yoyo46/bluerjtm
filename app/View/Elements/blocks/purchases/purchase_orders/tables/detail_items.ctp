@@ -4,13 +4,16 @@
         $disc = $this->Common->filterEmptyField($value, $modelName, 'disc');
         $ppn = $this->Common->filterEmptyField($value, $modelName, 'ppn');
         $qty = $this->Common->filterEmptyField($value, $modelName, 'qty');
+        $note = $this->Common->filterEmptyField($value, $modelName, 'note');
 
         $customTotal = !empty($total)?$total:0;
 
-        if( !empty($supplier_quotation_detail_id) ) {
-            $disabled = true;
-        } else {
-            $disabled = false;
+        if( empty($disabled) ) {
+            if( !empty($supplier_quotation_detail_id) ) {
+                $disabled = true;
+            } else {
+                $disabled = false;
+            }
         }
 ?>
 <tr class="pick-document" rel="<?php echo $product_id; ?>">
@@ -24,6 +27,13 @@
             echo $this->Html->tag('td', $unit, array(
                 'class' => 'text-center',
             ));
+            echo $this->Html->tag('td', $this->Common->buildInputForm('PurchaseOrderDetail.note.'.$product_id, false, array(
+                'type' => 'text',
+                'frameClass' => false,
+                'attributes' => array(
+                    'value' => $note,
+                ),
+            )));
             echo $this->Html->tag('td', $this->Common->buildInputForm('PurchaseOrderDetail.qty.'.$product_id, false, array(
                 'type' => 'text',
                 'fieldError' => 'PurchaseOrderDetail.'.$idx.'.qty',
@@ -70,6 +80,8 @@
             echo $this->Html->tag('td', $this->Html->link($this->Common->icon('times'), '#', array(
                 'class' => 'delete-document btn btn-danger btn-xs',
                 'escape' => false,
-            )));
+            )), array(
+                'class' => 'actions text-center',
+            ));
     ?>
 </tr>
