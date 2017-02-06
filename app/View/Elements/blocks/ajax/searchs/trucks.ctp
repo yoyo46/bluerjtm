@@ -1,10 +1,12 @@
 <?php 
         $title = !empty($title)?$title:false;
+        $return_value = !empty($return_value)?$return_value:false;
         echo $this->Form->create('Search', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'ajax',
                 'action' => 'search',
                 'truck_picker',
+                'return_value' => $return_value,
                 'admin' => false,
             )), 
             'role' => 'form',
@@ -25,6 +27,7 @@
                     'urlBack' => array(
                         'controller' => 'ajax',
                         'action' => 'truck_picker',
+                        'return_value' => $return_value,
                     ),
                     'submitOptions' => array(
                         'class'=> 'btn btn-success btn-sm ajaxModal',

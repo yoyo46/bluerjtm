@@ -24,6 +24,11 @@ class SpkHelper extends AppHelper {
                     $result = 'hide';
                 }
                 break;
+            case 'production':
+                if( !in_array($document_type, array( 'production' )) ) {
+                    $result = 'hide';
+                }
+                break;
         }
 
         return $result;

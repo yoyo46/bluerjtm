@@ -212,6 +212,7 @@ class ProductExpenditure extends AppModel {
         $document_id = $this->filterEmptyField($data, 'ProductExpenditure', 'document_id');
         $transaction_status = $this->filterEmptyField($data, 'ProductExpenditure', 'transaction_status');
         $document_type = $this->filterEmptyField($data, 'ProductExpenditure', 'document_type');
+        $transaction_date = $this->filterEmptyField($data, 'ProductExpenditure', 'transaction_date');
 
         $detail = $this->Spk->SpkProduct->getData('first', array(
             'conditions' => array(
@@ -242,6 +243,7 @@ class ProductExpenditure extends AppModel {
                 default:
                     if( $spk_internal_status == 'closed_expenditured' ) {
                         $this->Spk->set('transaction_status', 'closed');
+                        $this->Spk->set('complete_date', $transaction_date);
                     } else {
                         $this->Spk->set('transaction_status', 'finish');
                     }

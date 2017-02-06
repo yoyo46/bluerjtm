@@ -11,6 +11,8 @@
 
 		$mechanicClass = $this->Spk->_callDisplayToggle('mechanic', $data);
 		$whtClass = $this->Spk->_callDisplayToggle('wht', $data);
+		$extClass = $this->Spk->_callDisplayToggle('eksternal', $data);
+		$prodClass = $this->Spk->_callDisplayToggle('production', $data);
 
 		$this->Html->addCrumb($title, $urlRoot);
 		$this->Html->addCrumb($sub_module_title);
@@ -43,7 +45,7 @@
 		                    'class' => 'form-control handle-toggle',
 		                    'empty' => __('Pilih Jenis SPK'),
 		                    'options' => Configure::read('__Site.Spk.type'),
-					    	'data-match' => '[[\'.wrapper-mechanic\', [\'internal\',\'production\'], \'slide\'],[\'.wrapper-wht\', [\'wht\'], \'slide\'],[\'.wrapper-eksternal\', [\'eksternal\'], \'fade\']]',
+					    	'data-match' => '[[\'.wrapper-mechanic\', [\'internal\',\'production\'], \'slide\'],[\'.wrapper-wht\', [\'wht\'], \'slide\'],[\'.wrapper-eksternal\', [\'eksternal\'], \'slide\'], [\'.wrapper-production\', [\'production\'], \'slide\']]',
 						));
 
 						echo $this->Html->tag('div',
@@ -71,10 +73,10 @@
 							'type' => 'datetime',
 							'label' => __('Estimasi Penyelesaian *'),
 						));
-						echo $this->Common->_callInputForm('complete', array(
-							'type' => 'datetime',
-							'label' => __('Tgl Selesai *'),
-						));
+						// echo $this->Common->_callInputForm('complete', array(
+						// 	'type' => 'datetime',
+						// 	'label' => __('Tgl Selesai *'),
+						// ));
 				?>
 			</div>
 		</div>
@@ -110,13 +112,14 @@
 							'label' => __('Vendor *'),
 							'empty' => __('- Pilih Vendor -'),
                             'class'=>'form-control chosen-select',
+                            'frameClass' => __('form-group chosen-full wrapper-eksternal %s', $extClass),
 						));
 						echo $this->Common->_callInputForm('to_branch_id', array(
 							'label' => __('Gudang Penerima *'),
 							'empty' => __('- Pilih Gudang Penerima -'),
                             'class'=>'form-control chosen-select',
                             'div' => 'form-group select-block',
-                            'frameClass' => __('wrapper-wht %s', $whtClass),
+                            'frameClass' => __('form-group wrapper-wht %s', $whtClass),
 						));
 						echo $this->Common->buildInputForm('note', __('Keterangan'));
 			    ?>
@@ -127,7 +130,7 @@
 <?php     	
         echo $this->element('blocks/spk/tables/detail_products');
         echo $this->Html->tag('div', $this->element('blocks/spk/tables/detail_production'), array(
-			'class' => __('wrapper-wht %s', $whtClass),
+			'class' => __('wrapper-production %s', $prodClass),
     	));
 ?>
 <div class="box-footer text-center action">

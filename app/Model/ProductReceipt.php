@@ -204,6 +204,7 @@ class ProductReceipt extends AppModel {
         $document_id = $this->filterEmptyField($data, 'ProductReceipt', 'document_id');
         $document_type = $this->filterEmptyField($data, 'ProductReceipt', 'document_type');
         $transaction_status = $this->filterEmptyField($data, 'ProductReceipt', 'transaction_status');
+        $transaction_date = $this->filterEmptyField($data, 'ProductReceipt', 'transaction_date');
 
         switch ($document_type) {
             case 'spk':
@@ -232,6 +233,7 @@ class ProductReceipt extends AppModel {
 
                     if( $receipt_status == 'full' ) {
                         $this->Spk->set('transaction_status', 'closed');
+                        $this->Spk->set('complete_date', $transaction_date);
                     }
                 }
 
@@ -294,6 +296,7 @@ class ProductReceipt extends AppModel {
                     if( empty($outstanding) && $spk_status == 'out' ) {
                         $dataSave['Spk']['id'] = $spk_id;
                         $dataSave['Spk']['transaction_status'] = 'closed';
+                        $dataSave['Spk']['complete_date'] = $transaction_date;
                     }
                 }
 
@@ -322,6 +325,7 @@ class ProductReceipt extends AppModel {
 
                     if( $receipt_status == 'full' ) {
                         $this->Spk->set('transaction_status', 'closed');
+                        $this->Spk->set('complete_date', $transaction_date);
                     }
                 }
 

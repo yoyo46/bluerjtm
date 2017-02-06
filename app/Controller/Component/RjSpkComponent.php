@@ -225,6 +225,13 @@ class RjSpkComponent extends Component {
 
             if( empty($value) ) {
                 $data['Spk']['transaction_date'] = date('Y-m-d');
+            } else {
+                $data['Spk']['start_time'] = Common::hashEmptyField($data, 'Spk.start_date', null, array(
+                    'date' => 'H:i',
+                ));
+                $data['Spk']['estimation_time'] = Common::hashEmptyField($data, 'Spk.estimation_date', null, array(
+                    'date' => 'H:i',
+                ));
             }
         }
 
@@ -237,7 +244,6 @@ class RjSpkComponent extends Component {
                 'Spk' => array(
                     'start_date',
                     'estimation_date',
-                    'complete_date',
                     'transaction_date',
                 ),
             )

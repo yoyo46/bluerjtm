@@ -20,12 +20,17 @@
                 ),
                 'unit' => array(
                     'name' => __('Satuan'),
+                    'class' => 'text-center',
                 ),
                 'group' => array(
                     'name' => __('Grup'),
                 ),
                 'type' => array(
                     'name' => __('Tipe'),
+                ),
+                'stock' => array(
+                    'name' => __('Stok'),
+                    'class' => 'text-center',
                 ),
             );
 
@@ -78,6 +83,9 @@
                             ));
                             echo $this->Html->tag('td', $customType, array(
                                 'class' => 'removed',
+                            ));
+                            echo $this->Html->tag('td', $stock, array(
+                                'class' => 'removed text-center',
                             ));
                             echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.qty.%s', $modelName, $id), false, array(
                                 'type' => 'text',

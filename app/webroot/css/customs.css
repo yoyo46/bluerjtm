@@ -3,6 +3,7 @@
   - Label
   - Table
   - SPK
+  - Chosen
 */
 
 /*Notification*/
@@ -599,4 +600,9 @@ tbody.wrapper-table-documents td {
 }
 #header-download span.text-only {
   margin-right: 5px;
+}
+
+/*- Chosen*/
+.chosen-full span.select2 {
+  width: 100% !important;
 }

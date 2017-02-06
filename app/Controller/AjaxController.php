@@ -30,7 +30,9 @@ class AjaxController extends AppController {
             			case 'payment_id':
             				$params[$key] = $value;
             				break;
-            			
+            			case 'return_value':
+            				$params[$key] = $value;
+            				break;
             			default:
             				$params[] = $value;
             				break;

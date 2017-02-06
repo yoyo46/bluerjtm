@@ -33,7 +33,7 @@
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
         
         if( $view != 'detail' ) {
-            echo $this->Form->error('Spk.product', null, array(
+            echo $this->Form->error('Spk.production', null, array(
                 'class' => 'error-message form-group',
             ));
         }

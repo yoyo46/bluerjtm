@@ -351,6 +351,11 @@ class CommonBehavior extends ModelBehavior {
                     $result = false;
                 }
                 break;
+            case 'production':
+                if( !in_array($document_type, array( 'production' )) ) {
+                    $result = false;
+                }
+                break;
         }
 
         return $result;

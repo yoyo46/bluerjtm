@@ -52,12 +52,8 @@ class Spk extends AppModel {
             ),
         ),
         'vendor_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Vendor harap dipilih'
-            ),
-            'numeric' => array(
-                'rule' => array('numeric'),
+            'eksValidate' => array(
+                'rule' => array('eksValidate'),
                 'message' => 'Vendor harap dipilih'
             ),
         ),
@@ -174,6 +170,16 @@ class Spk extends AppModel {
         $employe_id = $this->filterEmptyField($data, 'Spk', 'employe_id');
         
         if( $this->callDisplayToggle('mechanic', $data) && empty($employe_id) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    function eksValidate () {
+        $data = $this->data;
+        $vendor_id = $this->filterEmptyField($data, 'Spk', 'vendor_id');
+        
+        if( $this->callDisplayToggle('eksternal', $data) && empty($vendor_id) ) {
             return false;
         } else {
             return true;
@@ -323,6 +329,18 @@ class Spk extends AppModel {
         $defaul_msg = __('menyimpan SPK');
 
         if ( !empty($data) ) {
+            $start_date = Common::hashEmptyField($data, 'Spk.start_date');
+            $start_time = Common::hashEmptyField($data, 'Spk.start_time');
+            $estimation_date = Common::hashEmptyField($data, 'Spk.estimation_date');
+            $estimation_time = Common::hashEmptyField($data, 'Spk.estimation_time');
+
+            if( !empty($start_time) ) {
+                $data['Spk']['start_date'] = __('%s %s', $start_date, $start_time);
+            }
+            if( !empty($estimation_time) ) {
+                $data['Spk']['estimation_date'] = __('%s %s', $estimation_date, $estimation_time);
+            }
+
             if( !empty($id) ) {
                 $data['Spk']['id'] = $id;
             }

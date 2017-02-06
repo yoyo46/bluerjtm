@@ -91,7 +91,7 @@
                             $transaction_status = $this->Common->filterEmptyField($value, 'Spk', 'transaction_status');
 
                             $document_type = ucwords($document_type);
-                            $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
+                            $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name', '-');
 
                             $customStatus = $this->Common->_callTransactionStatus($value, 'Spk');
                             // $statusReceipt = $this->Common->_callStatusReceipt($value, 'Spk');
