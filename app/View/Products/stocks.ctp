@@ -18,7 +18,7 @@
                     'class' => 'text-center',
                 ),
                 'price' => array(
-                    'name' => __('Harga Beli'),
+                    'name' => __('Harga/Unit'),
                     'class' => 'text-right',
                 ),
                 'qty' => array(
