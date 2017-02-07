@@ -180,10 +180,16 @@ class RevenueHelper extends AppHelper {
         $status = $this->Common->filterIssetField($value, 'Ttuj', 'status', true);
         $allowEdit = true;
 
-        if( !empty($is_invoice) && !empty($alert) ) {
-            echo $this->Html->tag('p', __('Invoice untuk TTUJ ini telah terbentuk. Segala perubahan data tidak diperbolehkan.'), array(
-                'class' => 'alert alert-warning text-center',
-            ));
+        if( !empty($alert) ) {
+            if( !empty($is_invoice) ) {
+                echo $this->Html->tag('p', __('Invoice untuk TTUJ ini telah terbentuk. Segala perubahan tidak diperbolehkan.'), array(
+                    'class' => 'alert alert-warning text-center',
+                ));
+            } else if( !empty($paid) ) {
+                echo $this->Html->tag('p', __('Uang jalan/Komisi atau biaya TTUJ ini telah dibayar. Segala perubahan tidak diperbolehkan.'), array(
+                    'class' => 'alert alert-warning text-center',
+                ));
+            }
         }
 
         // if( $group_id != 1 ) {

@@ -769,6 +769,7 @@
 		</div>
 		<div class="box-footer text-center action">
 			<?php
+					$this->Revenue->_callTtujPaid($data_local, true);
 		    		echo $this->Html->link(__('Kembali'), $backUrl, array(
 						'class'=> 'btn btn-default',
 					));

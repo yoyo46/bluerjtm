@@ -173,7 +173,6 @@ class Journal extends AppModel {
                 $default_options['conditions']['Journal.status'] = 1;
                 $default_options['conditions']['Journal.type NOT like'] = '%void%';
                 break;
-                break;
         }
 
         switch ($type) {

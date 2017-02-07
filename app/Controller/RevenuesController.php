@@ -1892,6 +1892,7 @@ class RevenuesController extends AppController {
         ));
 
         if( !empty($data_local) ){
+            $data_local = $this->Ttuj->TtujPaymentDetail->TtujPayment->_callTtujPaid($data_local, $ttuj_id);
             $data_local = $this->Ttuj->getMergeContain( $data_local, $ttuj_id );
             $data_local['Ttuj']['ttuj_date'] = date('d/m/Y', strtotime($data_local['Ttuj']['ttuj_date']));
             $data_local = $this->MkCommon->getTtujTipeMotor($data_local);
