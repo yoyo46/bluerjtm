@@ -655,6 +655,16 @@
     }
 
     $.pickData = function() {
+        $('.browse-form table tr a').off('click');
+        $('.browse-form table tr a').click(function(){
+            var href = $(this).attr('href');
+            var target = $(this).attr('target');
+            
+            window.open(href, target);
+
+            return false;
+        });
+
         $('.browse-form table tr').off('click');
         $('.browse-form table tr').click(function(){
             var vthis = $(this);

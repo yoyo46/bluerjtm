@@ -27,6 +27,9 @@
             'nilai_buku' => array(
                 'name' => __('Pemilik'),
             ),
+            'action' => array(
+                'name' => __('Action'),
+            ),
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
@@ -81,6 +84,13 @@
                                     ),
                                 ),
                                 $company,
+                                $this->Html->link(__('History Perbaikan'), array(
+                                    'controller' => 'spk',
+                                    'action' => 'history',
+                                    $id,
+                                ), array(
+                                    'target' => '_blank',
+                                )),
                             )
                         ), $attr, $attr);
                     }

@@ -173,4 +173,44 @@ class SpkController extends AppController {
         $result = $this->Spk->doDelete( $id );
         $this->MkCommon->setProcessParams($result);
     }
+
+    public function history( $id = null ) {
+        $value = $this->Spk->Truck->getData('first', array(
+            'conditions' => array(
+                'Truck.id' => $id,
+            )
+        ));
+
+        if( !empty($value) ) {
+            $this->paginate = $this->Spk->getData('paginate', array(
+                'conditions' => array(
+                    'Spk.truck_id' => $id,
+                ),
+            ), array(
+                'status' => 'active',
+            ));
+            $values = $this->paginate('Spk');
+            $values = $this->Spk->getMergeList($values, array(
+                'contain' => array(
+                    'Vendor' => array(
+                        'elements' => array(
+                            'status' => 'all',
+                        ),
+                    ),
+                    'Employe',
+                    'Truck',
+                    'SpkMechanic' => array(
+                        'Employe',
+                    ),
+                ),
+            ));
+
+            $this->set('sub_module_title', __('History perbaikan Truk - %s', Common::hashEmptyField($value, 'Truck.nopol')));
+            $this->set('active_menu', 'spk');
+            $this->set('values', $values);
+        } else {
+            $this->MkCommon->setCustomFlash(__('Truk tidak ditemukan.'), 'error');
+            $this->redirect($this->referer());
+        }
+    }
 }
