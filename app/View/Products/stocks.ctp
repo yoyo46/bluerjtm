@@ -17,13 +17,13 @@
                     'name' => __('Tgl Masuk'),
                     'class' => 'text-center',
                 ),
-                'price' => array(
-                    'name' => __('Harga/Unit'),
-                    'class' => 'text-right',
-                ),
                 'qty' => array(
                     'name' => __('Qty'),
                     'class' => 'text-center',
+                ),
+                'price' => array(
+                    'name' => __('Harga/Unit'),
+                    'class' => 'text-right',
                 ),
             );
 
@@ -82,11 +82,11 @@
                             echo $this->Html->tag('td', $transaction_date, array(
                                 'class' => 'text-center',
                             ));
-                            echo $this->Html->tag('td', $price, array(
-                                'class' => 'text-right',
-                            ));
                             echo $this->Html->tag('td', $qty, array(
                                 'class' => 'text-center',
+                            ));
+                            echo $this->Html->tag('td', $price, array(
+                                'class' => 'text-right',
                             ));
                     ?>
                 </tr>
