@@ -1474,6 +1474,8 @@ class CashbanksController extends AppController {
                 $coa_name = $this->MkCommon->filterEmptyField($coa, 'Coa', 'coa_name');
                 $balance = $this->MkCommon->filterEmptyField($coa, 'Coa', 'balance', 0);
 
+                $this->User->Journal->virtualFields['credit'] = 'SUM(Journal.credit)';
+                $this->User->Journal->virtualFields['debit'] = 'SUM(Journal.debit)';
                 $options =  $this->User->Journal->_callRefineParams($params, array(
                     'conditions' => $conditions,
                     'group' => array(
