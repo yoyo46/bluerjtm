@@ -64,6 +64,15 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
+                            echo $this->Form->input('title',array(
+                                'label'=> __('Keterangan'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
                             echo $this->Form->input('sort',array(
                                 'label'=> __('Urutkan'),
                                 'class'=>'form-control',

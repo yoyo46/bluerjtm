@@ -235,6 +235,7 @@ class Journal extends AppModel {
     }
 
     public function _callRefineParams( $data = '', $default_options = false ) {
+        $title = !empty($data['named']['title'])?$data['named']['title']:false;
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $coa = !empty($data['named']['coa'])?$data['named']['coa']:false;
@@ -288,6 +289,9 @@ class Journal extends AppModel {
         }
         if( !empty($nodoc) ) {
             $default_options['conditions']['Journal.document_no LIKE'] = '%'.$nodoc.'%';
+        }
+        if( !empty($title) ) {
+            $default_options['conditions']['Journal.title LIKE'] = '%'.$title.'%';
         }
         if( !empty($journalcoa) && $journalcoa != 'all' ) {
             $default_options['conditions']['Journal.coa_id'] = $journalcoa;
