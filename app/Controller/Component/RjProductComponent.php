@@ -1060,5 +1060,17 @@ class RjProductComponent extends Component {
 
         return $values;
     }
+
+    function _callBeforeViewCurrentStockReports( $params ) {
+        $productUnits = $this->controller->Product->ProductUnit->getData('list');
+        $productCategories = $this->controller->Product->ProductCategory->getData('list');
+
+        $title = __('Laporan Current Stok Per %s', date('d F Y'));
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('active_menu', $title);
+        $this->controller->set(compact(
+            'productUnits', 'productCategories'
+        ));
+    }
 }
 ?>

@@ -1362,6 +1362,7 @@
                         'products' => array(
                             'categories', 'product_units',
                             'receipts', 'expenditures',
+                            'current_stock_reports'
                         ),
                         'spk' => array(
                             'index',
@@ -1373,6 +1374,7 @@
                         $settingMenu = array(
                             'spk', 'product_categories', 'products',
                             'receipts', 'product_units', 'expenditures',
+                            'current_stock_reports',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1434,6 +1436,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'receipts' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Laporan Current Stok', $this->Common->icon('angle-double-right')), array(
+                                'controller' => 'products',
+                                'action' => 'current_stock_reports'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'current_stock_reports' )?'active':'',
                             ));
                     ?>
                 </ul>

@@ -2264,5 +2264,14 @@ class MkCommonComponent extends Component {
 
         return $driver;
     }
+
+    function getFormatPrice ($price, $empty = 0) {
+        App::uses('CakeNumber', 'Utility'); 
+        if( !empty($price) ) {
+            return CakeNumber::currency($price, '', array('places' => 0));
+        } else {
+            return $empty;
+        }
+    }
 }
 ?>

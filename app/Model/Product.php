@@ -130,23 +130,7 @@ class Product extends AppModel {
                 break;
         }
 
-        if(!empty($options['conditions'])){
-            $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
-        }
-        if(!empty($options['order'])){
-            $default_options['order'] = array_merge($default_options['order'], $options['order']);
-        }
-        if(!empty($options['fields'])){
-            $default_options['fields'] = $options['fields'];
-        }
-        if( isset($options['contain']) && empty($options['contain']) ) {
-            $default_options['contain'] = false;
-        } else if(!empty($options['contain'])){
-            $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
-        }
-        if(!empty($options['limit'])){
-            $default_options['limit'] = $options['limit'];
-        }
+        $default_options = $this->merge_options($default_options, $options);
 
         if( $find == 'paginate' ) {
             $result = $default_options;
@@ -274,6 +258,7 @@ class Product extends AppModel {
         $code = !empty($data['named']['code'])?$data['named']['code']:false;
         $name = !empty($data['named']['name'])?$data['named']['name']:false;
         $group = !empty($data['named']['group'])?$data['named']['group']:false;
+        $unit = !empty($data['named']['unit'])?$data['named']['unit']:false;
 
         // if( !empty($keyword) ) {
         //     $default_options['conditions']['OR'] = array(
@@ -290,6 +275,9 @@ class Product extends AppModel {
         }
         if( !empty($group) ) {
             $default_options['conditions']['Product.product_category_id'] = $group;
+        }
+        if( !empty($unit) ) {
+            $default_options['conditions']['Product.product_unit_id'] = $unit;
         }
         
         return $default_options;

@@ -312,6 +312,164 @@ class RmReportComponent extends Component {
 		);
 	}
 
+	function _callDataCurrent_stock_reports ( $params, $limit = 30, $offset = 0 ) {
+		$this->controller->loadModel('Product');
+		$params = $this->controller->params->params;
+
+        $params_named = Common::hashEmptyField($params, 'named', array());
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+
+		$options = array(
+            'contain' => array(
+                'ProductStock',
+            ),
+            'group' => array(
+                'Product.id',
+            ),
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+
+        $this->controller->Product->unBindModel(array(
+            'hasMany' => array(
+                'ProductStock'
+            )
+        ));
+        $this->controller->Product->bindModel(array(
+            'hasOne' => array(
+                'ProductStock' => array(
+                    'className' => 'ProductStock',
+                    'foreignKey' => 'product_id',
+                ),
+            )
+        ), false);
+        $this->controller->Product->ProductStock->virtualFields['total_qty'] = 'SUM(ProductStock.qty - ProductStock.qty_use)';
+        $this->controller->Product->ProductStock->virtualFields['avg_price'] = 'SUM(ProductStock.price) / SUM(ProductStock.qty - ProductStock.qty_use)';
+
+		$options = $this->controller->Product->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'ProductStock', $options );
+
+		$this->controller->paginate	= $this->controller->Product->getData('paginate', $options, array(
+            'branch' => false,
+		));
+		$data = $this->controller->paginate('Product');
+		$result = array();
+
+		$last_data = end($data);
+		$last_id = Common::hashEmptyField($last_data, 'Product.id');
+
+		$paging = $this->controller->params->paging;
+        $nextPage = Common::hashEmptyField($paging, 'Product.nextPage');
+
+        $totalQty = 0;
+        $totalPrice = 0;
+        $grandtotal = 0;
+
+		if( !empty($data) ) {
+			foreach ($data as $key => $value) {
+		        $value = $this->controller->Product->getMergeList($value, array(
+		            'contain' => array(
+		                'ProductUnit',
+		            ),
+		        ));
+
+                $id = Common::hashEmptyField($value, 'Product.id');
+                $code = Common::hashEmptyField($value, 'Product.code');
+                $name = Common::hashEmptyField($value, 'Product.name');
+                $unit = Common::hashEmptyField($value, 'ProductUnit.name');
+                $qty = Common::hashEmptyField($value, 'ProductStock.total_qty', 0);
+                $price = Common::hashEmptyField($value, 'ProductStock.avg_price', 0);
+                $total = $qty * $price;
+
+                $totalQty += $qty;
+                $totalPrice += $price;
+                $grandtotal += $total;
+
+				$result[$key] = array(
+					__('Kode Barang') => array(
+						'text' => $code,
+                		'field_model' => 'Product.code',
+					),
+					__('Nama Barang') => array(
+						'text' => $name,
+                		'field_model' => 'Product.name',
+					),
+					__('Satuan') => array(
+						'text' => $unit,
+                		'field_model' => 'ProductUnit.name',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('QTY') => array(
+						'text' => $qty,
+                		'field_model' => 'ProductStock.total_qty',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Harga Satuan') => array(
+						'text' => $this->MkCommon->getFormatPrice($price, 0, 2),
+                		'field_model' => 'ProductStock.avg_price',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Total Harga') => array(
+						'text' => $this->MkCommon->getFormatPrice($total, 0, 2),
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+				);
+			}
+
+			if( empty($nextPage) ) {
+				$result[$key+1] = array(
+					__('Kode Barang') => array(
+                		'field_model' => 'Product.code',
+					),
+					__('Nama Barang') => array(
+                		'field_model' => 'Product.name',
+					),
+					__('Satuan') => array(
+						'text' => __('Total'),
+                		'field_model' => 'ProductUnit.name',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('QTY') => array(
+						'text' => $totalQty,
+                		'field_model' => 'ProductStock.total_qty',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Harga Satuan') => array(
+						'text' => $this->MkCommon->getFormatPrice($totalPrice, 0, 2),
+                		'field_model' => 'ProductStock.avg_price',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Total Harga') => array(
+						'text' => $this->MkCommon->getFormatPrice($grandtotal, 0, 2),
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+				);
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'last_id' => $last_id,
+			'model' => 'Product',
+		);
+	}
+
 	function _callProcess( $modelName, $id, $value, $data ) {
 		$dataSave = false;
 		$file = false;

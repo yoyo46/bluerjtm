@@ -174,7 +174,7 @@ class RevenueHelper extends AppHelper {
 
     function _callTtujPaid ( $value, $alert = false ) {
         $group_id = Configure::read('__Site.config_group_id');
-        $paid = $this->Common->filterEmptyField($value, 'TtujPayment', 'paid');
+        // $paid = $this->Common->filterEmptyField($value, 'TtujPayment', 'paid');
         $status_sj = $this->Common->filterEmptyField($value, 'Ttuj', 'status_sj', 'none');
         $is_invoice = $this->Common->filterEmptyField($value, 'Ttuj', 'is_invoice');
         $status = $this->Common->filterIssetField($value, 'Ttuj', 'status', true);
@@ -185,15 +185,17 @@ class RevenueHelper extends AppHelper {
                 echo $this->Html->tag('p', __('Invoice untuk TTUJ ini telah terbentuk. Segala perubahan tidak diperbolehkan.'), array(
                     'class' => 'alert alert-warning text-center',
                 ));
-            } else if( !empty($paid) ) {
-                echo $this->Html->tag('p', __('Uang jalan/Komisi atau biaya TTUJ ini telah dibayar. Segala perubahan tidak diperbolehkan.'), array(
-                    'class' => 'alert alert-warning text-center',
-                ));
             }
+            // else if( !empty($paid) ) {
+            //     echo $this->Html->tag('p', __('Uang jalan/Komisi atau biaya TTUJ ini telah dibayar. Segala perubahan tidak diperbolehkan.'), array(
+            //         'class' => 'alert alert-warning text-center',
+            //     ));
+            // }
         }
 
         // if( $group_id != 1 ) {
-            if( $status_sj != 'none' || !empty($paid) || !empty($is_invoice) || empty($status) ) {
+            // if( $status_sj != 'none' || !empty($paid) || !empty($is_invoice) || empty($status) ) {
+            if( $status_sj != 'none' || !empty($is_invoice) || empty($status) ) {
                 $allowEdit = false;
             }
         // }

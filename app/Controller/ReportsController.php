@@ -28,6 +28,7 @@ class ReportsController extends AppController {
 			$funcName = __('_callData%s', $type);
 
 			$dataReport = $this->RmReport->$funcName($dataSave, $this->limit);
+			$modelName = Common::hashEmptyField($dataReport, 'model');
 			$result = $this->Report->doSave($dataSave, $dataReport);
 
 			$id = Common::hashEmptyField($result, 'id');
@@ -35,7 +36,7 @@ class ReportsController extends AppController {
 			$title = Common::hashEmptyField($result, 'title', __('Laporan'));
 
 			if( $status == 'success' ) {
-				$resultReport = $this->RmReport->_callProcess( 'Driver', $id, $dataSave, $dataReport );
+				$resultReport = $this->RmReport->_callProcess( $modelName, $id, $dataSave, $dataReport );
 				$this->RmReport->_callSaveDataExport( $title, $dataSave, $dataReport, $resultReport );
 			}
 
