@@ -69,7 +69,7 @@ class RjProductComponent extends Component {
 
                 $result[$key] = $data;
                 $result[$key]['qty'] = 1;
-                $result[$key]['serial_number'] = $serial_number;
+                $result[$key]['serial_number'] = strtoupper($serial_number);
             }
         }
 
@@ -121,7 +121,7 @@ class RjProductComponent extends Component {
             return $result;   
         } else {
             $serial_number = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'serial_number');
-            $result['serial_number'] = $serial_number;
+            $result['serial_number'] = strtoupper($serial_number);
 
             return array(
                 'price' => $price,
@@ -603,7 +603,7 @@ class RjProductComponent extends Component {
                     $dataSave[]['ProductReceiptDetailSerialNumber'] = array(
                         'product_id' => $id,
                         'session_id' => $session_id,
-                        'serial_number' => $serial_number,
+                        'serial_number' => strtoupper($serial_number),
                     );
                 }
             }
@@ -618,7 +618,7 @@ class RjProductComponent extends Component {
 
             foreach ($values as $key => $value) {
                 $serial_number = $this->MkCommon->filterEmptyField($value, 'ProductReceiptDetailSerialNumber', 'serial_number');
-                $dataRequest['ProductReceiptDetailSerialNumber']['serial_number'][$key] = $serial_number;
+                $dataRequest['ProductReceiptDetailSerialNumber']['serial_number'][$key] = strtoupper($serial_number);
             }
 
             $this->controller->request->data = $dataRequest;
@@ -761,6 +761,7 @@ class RjProductComponent extends Component {
                 }
 
                 if( !empty($serial_number) ) {
+                    $serial_number = strtoupper($serial_number);
                     $data['ProductExpenditureDetailSerialNumber']['serial_numbers'][$product_id][$serial_number] = $serial_number;
                 }
             }
@@ -817,7 +818,7 @@ class RjProductComponent extends Component {
                 foreach ($product_serial_numbers as $idx => $serial_number) {
                     $details['ProductExpenditureDetailSerialNumber'][] = array(
                         'product_id' => $product_id,
-                        'serial_number' => $serial_number,
+                        'serial_number' => strtoupper($serial_number),
                         'qty' => 1,
                     );
                 }
