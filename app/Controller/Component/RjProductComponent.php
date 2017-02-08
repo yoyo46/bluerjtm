@@ -76,9 +76,10 @@ class RjProductComponent extends Component {
         return $result;
     }
 
-    function _callOutStock ( $product_id, $qty, $serial_number = false ) {
+    function _callCheckStock ( $product_id, $qty, $serial_number = false, $stock_id = false ) {
         $conditions = array(
             'conditions' => array(
+                'ProductStock.id <>' => $stock_id,
                 'ProductStock.product_id' => $product_id,
             ),
         );
@@ -93,13 +94,16 @@ class RjProductComponent extends Component {
 
         $id = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'id');
         $product_history_id = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'product_history_id');
-        $qty_total = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'qty_total');
+        $stok_awal = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'qty');
+        $qty_remain = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'qty_total');
         $qty_use = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'qty_use');
         $price = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'price');
-        $qty_total -= $qty;
+        $qty_total = $qty_remain - $qty;
+        $qty_use += $qty;
 
         if( $qty_total < 0 ) {
             $status = false;
+            $qty_use = $stok_awal;
         } else {
             $status = true;
         }
@@ -108,18 +112,53 @@ class RjProductComponent extends Component {
             'id' => $id,
             'product_history_id' => $product_history_id,
             'product_id' => $product_id,
-            'qty_use' => $qty_use + $qty,
+            'qty_use' => $qty_use,
+            'qty_remain' => $qty_remain,
             'status' => $status,
         );
 
         if( !empty($serial_number) ) {
             return $result;   
         } else {
+            $serial_number = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'serial_number');
+            $result['serial_number'] = $serial_number;
+
             return array(
                 'price' => $price,
                 'ProductStock' => $result,
             );   
         }
+    }
+
+    function _callOutStock ( $product_id, $qty, $serial_number = false ) {
+        $flag = true;
+        $result = array();
+
+        if( !empty($serial_number) ) {
+            $result = $this->_callCheckStock($product_id, $qty, $serial_number);
+        } else {
+            $stock_id = false;
+
+            while ($flag) {
+                $resultTmp = $this->_callCheckStock($product_id, $qty, false, $stock_id);
+                $stock_id = Common::hashEmptyField($resultTmp, 'ProductStock.id');
+                $status = Common::hashEmptyField($resultTmp, 'ProductStock.status');
+                $qty_remain = Common::hashEmptyField($resultTmp, 'ProductStock.qty_remain');
+
+                if( !empty($status) ) {
+                    $flag = false;
+                    $qty_out = $qty;
+                } else {
+                    $qty -= $qty_remain;
+                    $qty_out = $qty_remain;
+                }
+
+                $resultTmp['ProductStock']['qty_out'] = $qty_out;
+                $result[] = $resultTmp;
+            }
+        }
+
+        return $result;
     }
 
     function _callOutStockSerialNumber ( $serial_numbers ) {
@@ -199,8 +238,29 @@ class RjProductComponent extends Component {
                         $detail['ProductHistory']['ProductStock'] = $this->_callOutStockSerialNumber( $serial_numbers );
                     } else {
                         $result = $this->_callOutStock($product_id, $qty);
-                        $detail['ProductHistory']['price'] = $this->MkCommon->filterEmptyField($result, 'price', false, $price);
-                        $detail['ProductHistory']['ProductStock'][] = $this->MkCommon->filterEmptyField($result, 'ProductStock');
+
+                        if( !empty($result) ) {
+                            $total_price = 0;
+
+                            foreach ($result as $key => $val) {
+                                $serial_number = Common::hashEmptyField($val, 'ProductStock.serial_number');
+                                $qty_out = Common::hashEmptyField($val, 'ProductStock.qty_out');
+                                $price = Common::hashEmptyField($val, 'price');
+                                $total_price += $price;
+
+                                $detail['ProductHistory']['ProductStock'][] = $this->MkCommon->filterEmptyField($val, 'ProductStock');
+                                $detail['ProductExpenditureDetail']['ProductExpenditureDetailSerialNumber'][] = array(
+                                    'serial_number' => $serial_number,
+                                    'product_id' => $product_id,
+                                    'qty' => $qty_out,
+                                    'price' => $price,
+                                );
+                                $detail['ProductExpenditureDetail']['without_serial_number'] = true;
+                            }
+
+                            $total_price = $total_price / count($result);
+                            $detail['ProductHistory']['price'] = $total_price;
+                        }
                     }
                     break;
             }
@@ -673,15 +733,32 @@ class RjProductComponent extends Component {
         } else {
             $type = $this->MkCommon->filterEmptyField($data, 'ProductExpenditure', 'document_type');
             $document_id = $this->MkCommon->filterEmptyField($data, 'ProductExpenditure', 'document_id');
-            $serial_numbers = Set::extract('/ProductExpenditureDetail/ProductExpenditureDetail/ProductExpenditureDetailSerialNumber', $data);
+            $details = $this->MkCommon->filterEmptyField($data, 'ProductExpenditureDetail');
+            $serial_numbers = array();
+
+            if( !empty($details) ) {
+                foreach ($details as $key => $detail) {
+                    $without_serial_number = $this->MkCommon->filterEmptyField($detail, 'ProductExpenditureDetail', 'without_serial_number');
+                    $detail_serial_numbers = Common::hashEmptyField($detail, 'ProductExpenditureDetail.ProductExpenditureDetailSerialNumber');
+
+                    if( empty($without_serial_number) ) {
+                        $serial_numbers = array_merge($serial_numbers, $detail_serial_numbers);
+                    }
+                }
+            }
         }
 
         if( !empty($serial_numbers) ) {
             $data['ProductExpenditureDetailSerialNumber'] = array();
             
             foreach ($serial_numbers as $key => $value) {
-                $product_id = $this->MkCommon->filterEmptyField($value, 'ProductExpenditureDetailSerialNumber', 'product_id');
-                $serial_number = $this->MkCommon->filterEmptyField($value, 'ProductExpenditureDetailSerialNumber', 'serial_number');
+                if( !empty($value['ProductExpenditureDetailSerialNumber']) ) {
+                    $product_id = Common::hashEmptyField($value, 'ProductExpenditureDetailSerialNumber.product_id');
+                    $serial_number = Common::hashEmptyField($value, 'ProductExpenditureDetailSerialNumber.serial_number');
+                } else {
+                    $product_id = Common::hashEmptyField($value, 'product_id');
+                    $serial_number = Common::hashEmptyField($value, 'serial_number');
+                }
 
                 if( !empty($serial_number) ) {
                     $data['ProductExpenditureDetailSerialNumber']['serial_numbers'][$product_id][$serial_number] = $serial_number;
@@ -741,6 +818,7 @@ class RjProductComponent extends Component {
                     $details['ProductExpenditureDetailSerialNumber'][] = array(
                         'product_id' => $product_id,
                         'serial_number' => $serial_number,
+                        'qty' => 1,
                     );
                 }
             } else if( !empty($is_serial_number) ) {
@@ -1026,15 +1104,18 @@ class RjProductComponent extends Component {
 
     function _callWHts( $params, $vendor_id = false ) {
         $this->controller->loadModel('ProductExpenditure');
-        $options =  $this->controller->ProductExpenditure->_callRefineParams($params, array(
-            'conditions' => array(
-                'Spk.vendor_id' => $vendor_id,
-            ),
+        $options = array(
             'contain' => array(
                 'Spk',
             ),
             'limit' => 10,
-        ));
+        );
+
+        if( !empty($vendor_id) ) {
+            $options['conditions']['Spk.vendor_id'] = $vendor_id;
+        }
+
+        $options =  $this->controller->ProductExpenditure->_callRefineParams($params, $options);
         $this->controller->paginate = $this->controller->ProductExpenditure->getData('paginate', $options, array(
             'status' => 'untransfer_draft',
             'branch' => false,
@@ -1051,7 +1132,7 @@ class RjProductComponent extends Component {
         );
 
         if( !empty($vendor_id) ) {
-            $options['conditions']['vendor_id'] = $vendor_id;
+            $options['conditions']['Spk.vendor_id'] = $vendor_id;
         }
 
         $options =  $this->controller->Spk->_callRefineParams($params, $options);
