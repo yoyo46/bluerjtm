@@ -11,8 +11,6 @@
         $is_serial_number = $this->Common->filterEmptyField($value, $modelName, 'is_serial_number');
 
         $data = $this->request->data;
-        $serialNumbers = $this->Common->filterEmptyField($data, 'ProductExpenditureDetailSerialNumber');
-        $serial_numbers = $this->Common->filterEmptyField($serialNumbers, 'serial_numbers', $id, array());
 ?>
 <tr class="pick-document" rel="<?php echo $id; ?>">
     <?php
@@ -64,12 +62,29 @@
 
             // if( !empty($is_serial_number) ) {
                 if( !empty($view) ) {
-                    if( !empty($serial_numbers) ) {
+                    $serialNumbers = Common::hashEmptyField($value, 'ProductExpenditureDetailSerialNumber');
+                    $serial_numbers = array();
+
+                    if( !empty($serialNumbers) ) {
+                        foreach ($serialNumbers as $key => $sn) {
+                            $qty = Common::hashEmptyField($sn, 'ProductExpenditureDetailSerialNumber.qty');
+                            $serial_number = Common::hashEmptyField($sn, 'ProductExpenditureDetailSerialNumber.serial_number');
+
+                            if( $qty > 1 ) {
+                                $serial_numbers[] = __('%s(%s)', $serial_number, $qty);
+                            } else {
+                                $serial_numbers[] = $serial_number;
+                            }
+                        }
+                        
                         $serial_number_text = implode(', ', $serial_numbers);
                     } else {
                         $serial_number_text = '-';
                     }
                 } else {
+                    $serialNumbers = $this->Common->filterEmptyField($data, 'ProductExpenditureDetailSerialNumber');
+                    $serial_numbers = $this->Common->filterEmptyField($serialNumbers, 'serial_numbers', $id, array());
+
                     $serial_number_text = $this->Common->_callInputForm(__('ProductExpenditureDetailSerialNumber.serial_numbers.%s', $id), array(
                         'div' => false,
                         'error' => false,
