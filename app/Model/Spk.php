@@ -140,8 +140,8 @@ class Spk extends AppModel {
             ),
         ),
         'nopol' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
+            'nopolValidate' => array(
+                'rule' => array('nopolValidate'),
                 'message' => 'No. Pol harap dipilih'
             ),
         ),
@@ -169,7 +169,7 @@ class Spk extends AppModel {
         $data = $this->data;
         $employe_id = $this->filterEmptyField($data, 'Spk', 'employe_id');
         
-        if( $this->callDisplayToggle('mechanic', $data) && empty($employe_id) ) {
+        if( Common::_callDisplayToggle('mechanic', $data, true) && empty($employe_id) ) {
             return false;
         } else {
             return true;
@@ -179,7 +179,7 @@ class Spk extends AppModel {
         $data = $this->data;
         $vendor_id = $this->filterEmptyField($data, 'Spk', 'vendor_id');
         
-        if( $this->callDisplayToggle('eksternal', $data) && empty($vendor_id) ) {
+        if( Common::_callDisplayToggle('eksternal', $data, true) && empty($vendor_id) ) {
             return false;
         } else {
             return true;
@@ -189,7 +189,17 @@ class Spk extends AppModel {
         $data = $this->data;
         $to_branch_id = $this->filterEmptyField($data, 'Spk', 'to_branch_id');
 
-        if( $this->callDisplayToggle('wht', $data) && empty($to_branch_id) ) {
+        if( Common::_callDisplayToggle('wht', $data, true) && empty($to_branch_id) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    function nopolValidate () {
+        $data = $this->data;
+        $nopol = Common::hashEmptyField($data, 'Spk.nopol');
+
+        if( Common::_callDisplayToggle('non-production', $data, true) && empty($nopol) ) {
             return false;
         } else {
             return true;

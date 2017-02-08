@@ -3,7 +3,7 @@
         $data = $this->request->data;
 
         $dataDetail = $this->Common->filterEmptyField($data, 'SpkProduct');
-        $eksternalClass = $this->Spk->_callDisplayToggle('eksternal', $data);
+        $eksternalClass = Common::_callDisplayToggle('eksternal', $data);
 
 		$dataColumns = array(
             'code' => array(

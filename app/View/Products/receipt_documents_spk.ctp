@@ -32,7 +32,7 @@
                                 $id = $this->Common->filterEmptyField($value, 'Spk', 'id');
                                 $nodoc = $this->Common->filterEmptyField($value, 'Spk', 'nodoc');
                                 $transaction_date = $this->Common->filterEmptyField($value, 'Spk', 'transaction_date');
-                                $note = $this->Common->filterEmptyField($value, 'Spk', 'note');
+                                $note = $this->Common->filterEmptyField($value, 'Spk', 'note', '-');
 
                                 $transaction_date = $this->Common->formatDate($transaction_date, 'd/m/Y');
                 ?>

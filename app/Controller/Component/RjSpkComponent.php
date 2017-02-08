@@ -12,7 +12,7 @@ class RjSpkComponent extends Component {
     function _callMechanicBeforeSave ( $data ) {
         $spkMechanic = $this->MkCommon->filterEmptyField($data, 'SpkMechanic', false, array());
         $spkMechanic = array_filter($spkMechanic);
-        $mechanic = $this->_callDisplayToggle('mechanic', $data);
+        $mechanic = Common::_callDisplayToggle('mechanic', $data, true);
 
         if( !empty($mechanic) ) {
             if( !empty($spkMechanic['employe_id']) ) {
@@ -271,31 +271,6 @@ class RjSpkComponent extends Component {
     		'employes', 'toBranches',
             'vendors', 'value'
 		));
-    }
-
-    function _callDisplayToggle ( $type, $value ) {
-        $document_type = $this->MkCommon->filterEmptyField($value, 'Spk', 'document_type');
-        $result = true;
-        
-        switch ($type) {
-            case 'mechanic':
-                if( !in_array($document_type, array( 'internal', 'production' )) ) {
-                    $result = false;
-                }
-                break;
-            case 'wht':
-                if( !in_array($document_type, array( 'wht' )) ) {
-                    $result = false;
-                }
-                break;
-            case 'eksternal':
-                if( !in_array($document_type, array( 'eksternal' )) ) {
-                    $result = false;
-                }
-                break;
-        }
-
-        return $result;
     }
 }
 ?>

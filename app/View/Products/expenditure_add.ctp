@@ -83,7 +83,9 @@
 			</div>
 		</div>
     	<?php 
-				echo $this->Common->buildInputForm('note', __('Keterangan'));
+				echo $this->Common->buildInputForm('note', __('Keterangan'), array(
+					'type' => 'textarea',
+				));
 		?>
 	</div>
 </div>

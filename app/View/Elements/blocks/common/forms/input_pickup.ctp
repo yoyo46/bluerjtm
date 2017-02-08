@@ -6,7 +6,7 @@
             'escape' => false,
             'data-action' => 'browse-form',
             'data-change' => 'document-id',
-            'title' => $label,
+            'title' => strip_tags($label),
         );
 ?>
 <div class="form-group">

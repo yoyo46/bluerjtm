@@ -24,7 +24,7 @@ class SpkMechanic extends AppModel {
         $data = $this->data;
         $employe_id = $this->filterEmptyField($data, 'SpkMechanic', 'employe_id');
 
-        if( $this->callDisplayToggle('mechanic', $data) && empty($to_branch_id) ) {
+        if( Common::_callDisplayToggle('mechanic', $data, true) && empty($to_branch_id) ) {
             return false;
         } else {
             return true;

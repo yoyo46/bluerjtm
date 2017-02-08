@@ -78,13 +78,13 @@
                             $id = $this->Common->filterEmptyField($value, 'Spk', 'id');
                             $nodoc = $this->Common->filterEmptyField($value, 'Spk', 'nodoc', '-');
                             $transactionDate = $this->Common->filterEmptyField($value, 'Spk', 'transaction_date');
-                            $note = $this->Common->filterEmptyField($value, 'Spk', 'note');
+                            $note = $this->Common->filterEmptyField($value, 'Spk', 'note', '-');
                             $document_type = $this->Common->filterEmptyField($value, 'Spk', 'document_type');
-                            $nopol = $this->Common->filterEmptyField($value, 'Spk', 'nopol');
-                            $estimation_date = $this->Common->filterEmptyField($value, 'Spk', 'estimation_date', false, true, array(
+                            $nopol = $this->Common->filterEmptyField($value, 'Spk', 'nopol', '-');
+                            $estimation_date = $this->Common->filterEmptyField($value, 'Spk', 'estimation_date', '-', true, array(
                                 'date' => 'd/m/Y',
                             ));
-                            $complete_date = $this->Common->filterEmptyField($value, 'Spk', 'complete_date', false, true, array(
+                            $complete_date = $this->Common->filterEmptyField($value, 'Spk', 'complete_date', '-', true, array(
                                 'date' => 'd/m/Y',
                             ));
                             $receipt_status = $this->Common->filterEmptyField($value, 'Spk', 'receipt_status', 'none');

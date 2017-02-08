@@ -568,4 +568,47 @@ class Common {
         }
         return false;
     }
+
+    public static function _callDisplayToggle ( $type, $value, $boolean = null ) {
+        $document_type = Common::hashEmptyField($value, 'Spk.document_type');
+        $result = '';
+        
+        switch ($type) {
+            case 'mechanic':
+                if( !in_array($document_type, array( 'internal', 'production' )) ) {
+                    $result = 'hide';
+                }
+                break;
+            case 'wht':
+                if( !in_array($document_type, array( 'wht' )) ) {
+                    $result = 'hide';
+                }
+                break;
+            case 'eksternal':
+                if( !in_array($document_type, array( 'eksternal' )) ) {
+                    $result = 'hide';
+                }
+                break;
+            case 'production':
+                if( !in_array($document_type, array( 'production' )) ) {
+                    $result = 'hide';
+                }
+                break;
+            case 'non-production':
+                if( !in_array($document_type, array( 'internal', 'eksternal', 'wht' )) ) {
+                    $result = 'hide';
+                }
+                break;
+        }
+
+        if( !empty($boolean) ) {
+        	if( $result == 'hide' ) {
+        		$result = false;
+        	} else {
+        		$result = true;
+        	}
+        }
+
+        return $result;
+    }
 }

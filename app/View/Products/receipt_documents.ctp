@@ -40,7 +40,7 @@
                                 $id = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'id');
                                 $nodoc = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'nodoc');
                                 $transaction_date = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'transaction_date');
-                                $note = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'note');
+                                $note = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'note', '-');
                                 $total_qty = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'total_qty');
                                 $grandtotal = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'grandtotal', 0, false, array(
                                     'price' => true,

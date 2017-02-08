@@ -1046,12 +1046,15 @@ class RjProductComponent extends Component {
 
     function _callProductions( $params, $vendor_id = false ) {
         $this->controller->loadModel('Spk');
-        $options =  $this->controller->Spk->_callRefineParams($params, array(
-            'conditions' => array(
-                'Spk.vendor_id' => $vendor_id,
-            ),
+        $options = array(
             'limit' => 10,
-        ));
+        );
+
+        if( !empty($vendor_id) ) {
+            $options['conditions']['vendor_id'] = $vendor_id;
+        }
+
+        $options =  $this->controller->Spk->_callRefineParams($params, $options);
         $this->controller->paginate = $this->controller->Spk->getData('paginate', $options, array(
             'status' => 'unreceipt_draft',
             'type' => 'production',

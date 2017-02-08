@@ -39,7 +39,7 @@
                                 $id = $this->Common->filterEmptyField($value, 'ProductExpenditure', 'id');
                                 $nodoc = $this->Common->filterEmptyField($value, 'ProductExpenditure', 'nodoc');
                                 $transaction_date = $this->Common->filterEmptyField($value, 'ProductExpenditure', 'transaction_date');
-                                $note = $this->Common->filterEmptyField($value, 'ProductExpenditure', 'note');
+                                $note = $this->Common->filterEmptyField($value, 'ProductExpenditure', 'note', '-');
 
                                 $spk_nodoc = $this->Common->filterEmptyField($value, 'Spk', 'nodoc');
                                 $spk_date = $this->Common->filterEmptyField($value, 'Spk', 'transaction_date');

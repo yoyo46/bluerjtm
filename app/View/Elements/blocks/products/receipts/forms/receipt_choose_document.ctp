@@ -1,16 +1,19 @@
 <?php 
 		$vendors = !empty($vendors)?$vendors:false;
 		$type = !empty($type)?$type:false;
+		$flag = in_array($type, array( 'wht', 'production' ))?false:true;
 ?>
 <div class="wrapper-write-document">
 	<?php 
-			echo $this->Common->buildInputForm('ProductReceipt.vendor_id', __('Supplier *'), array(
-				'type' => 'select',
-				'empty' => __('- Pilih Supplier -'),
-				'id' => 'supplier-val',
-				'class' => 'form-control chosen-select',
-				'options' => $vendors,
-			));
+			if( !empty($flag) ) {
+				echo $this->Common->buildInputForm('ProductReceipt.vendor_id', __('Supplier'), array(
+					'type' => 'select',
+					'empty' => __('- Pilih Supplier -'),
+					'id' => 'supplier-val',
+					'class' => 'form-control chosen-select',
+					'options' => $vendors,
+				));
+			}
 	?>
 	<div class="form-group">
 		<?php
@@ -39,7 +42,7 @@
                             'class' => 'ajaxCustomModal btn bg-maroon',
                             'escape' => false,
                             'title' => __('Ambil Data'),
-                            'data-check' => '#supplier-val',
+                            'data-check' => ( $flag )?'#supplier-val':false,
                             'data-check-title' => 'supplier',
                     		'data-check-alert' => __('Mohon pilih supplier terlebih dahulu'),
                         );

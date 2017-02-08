@@ -699,11 +699,11 @@ class ProductsController extends AppController {
                 }
                 break;
             case 'wht':
-                $values = $this->RjProduct->_callWHts($params, $vendor_id);
+                $values = $this->RjProduct->_callWHts($params);
                 $render = 'receipt_documents_wht';
                 break;
             case 'production':
-                $values = $this->RjProduct->_callProductions($params, $vendor_id);
+                $values = $this->RjProduct->_callProductions($params);
                 $render = 'receipt_documents_spk';
                 break;
             default:

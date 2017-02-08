@@ -9,10 +9,11 @@
         $data = $this->request->data;
 		$view = !empty($view)?$view:false;
 
-		$mechanicClass = $this->Spk->_callDisplayToggle('mechanic', $data);
-		$whtClass = $this->Spk->_callDisplayToggle('wht', $data);
-		$extClass = $this->Spk->_callDisplayToggle('eksternal', $data);
-		$prodClass = $this->Spk->_callDisplayToggle('production', $data);
+		$mechanicClass = Common::_callDisplayToggle('mechanic', $data);
+		$whtClass = Common::_callDisplayToggle('wht', $data);
+		$extClass = Common::_callDisplayToggle('eksternal', $data);
+		$prodClass = Common::_callDisplayToggle('production', $data);
+		$nonprodClass = Common::_callDisplayToggle('non-production', $data);
 
 		$this->Html->addCrumb($title, $urlRoot);
 		$this->Html->addCrumb($sub_module_title);
@@ -45,7 +46,7 @@
 		                    'class' => 'form-control handle-toggle',
 		                    'empty' => __('Pilih Jenis SPK'),
 		                    'options' => Configure::read('__Site.Spk.type'),
-					    	'data-match' => '[[\'.wrapper-mechanic\', [\'internal\',\'production\'], \'slide\'],[\'.wrapper-wht\', [\'wht\'], \'slide\'],[\'.wrapper-eksternal\', [\'eksternal\'], \'slide\'], [\'.wrapper-production\', [\'production\'], \'slide\']]',
+					    	'data-match' => '[[\'.wrapper-mechanic\', [\'internal\',\'production\'], \'slide\'],[\'.wrapper-wht\', [\'wht\'], \'slide\'],[\'.wrapper-eksternal\', [\'eksternal\'], \'slide\'], [\'.wrapper-production\', [\'production\'], \'slide\'], [\'.wrapper-non-production\', [\'internal\',\'eksternal\',\'wht\'], \'slide\']]',
 						));
 
 						echo $this->Html->tag('div',
@@ -100,7 +101,9 @@
 						// ));
 						echo $this->element('blocks/common/forms/input_pickup', array(
 							'fieldName' => 'nopol',
-							'label' => __('No. Pol *'),
+							'label' => __('No. Pol %s', $this->Html->tag('span', '*', array(
+								'class' => __('wrapper-non-production %s', $nonprodClass),
+							))),
 							'dataUrl' => array(
 								'controller' => 'ajax',
 								'action' => 'truck_picker',

@@ -1,6 +1,6 @@
 <?php 
         $data = $this->request->data;
-        $eksternalClass = $this->Spk->_callDisplayToggle('eksternal', $data);
+        $eksternalClass = Common::_callDisplayToggle('eksternal', $data);
 ?>
 <div id="wrapper-modal-write" class="document-picker">
     <?php 
