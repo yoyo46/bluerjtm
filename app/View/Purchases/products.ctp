@@ -53,7 +53,6 @@
                                 $supplier_quotation_id = $this->Common->filterEmptyField($value, 'SupplierQuotationDetail', 'supplier_quotation_id');
 
                                 $customType = $this->Common->unSlug($type);
-                                $customRate = $this->Common->getFormatPrice($rate, '-');
                                 $price = '';
                                 $disc = '';
                                 $ppn = '';
@@ -64,8 +63,8 @@
                                     if( !empty($supplier_quotation_id) ) {
                                         $disabled = true;
                                         $price = Common::hashEmptyField($value, 'SupplierQuotationDetail.price');
-                                        $disc = Common::hashEmptyField($value, 'SupplierQuotationDetail.price');
-                                        $ppn = Common::hashEmptyField($value, 'SupplierQuotationDetail.price');
+                                        $disc = Common::hashEmptyField($value, 'SupplierQuotationDetail.disc');
+                                        $ppn = Common::hashEmptyField($value, 'SupplierQuotationDetail.ppn');
                                     } else {
                                         $disabled = false;
                                     }
@@ -128,7 +127,7 @@
                                 'class' => 'disc text-right',
                                 'attributes' => array(
                                     'data-type' => 'input_price_coma',
-                                    'value' => $disc,
+                                    'value' => $this->Common->getFormatPrice($disc, 0, 2),
                                 ),
                                 'disabled' => $disabled,
                             )), array(
@@ -140,7 +139,7 @@
                                 'class' => 'ppn text-right',
                                 'attributes' => array(
                                     'data-type' => 'input_price_coma',
-                                    'value' => $ppn,
+                                    'value' => $this->Common->getFormatPrice($ppn, 0, 2),
                                 ),
                                 'disabled' => $disabled,
                             )), array(

@@ -75,6 +75,7 @@
                     'class' => 'btn bg-maroon ajaxCustomModal',
                     'data-check' => '#supplier-quotation',
                     'data-check-named' => 'no_sq',
+                    'data-check-empty' => 'true',
                 )), array(
                 'class' => "form-group",
             ));
