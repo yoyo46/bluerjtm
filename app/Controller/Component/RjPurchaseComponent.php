@@ -128,12 +128,12 @@ class RjPurchaseComponent extends Component {
             $data['PurchaseOrder']['transaction_date'] = $transaction_date;
             $data['PurchaseOrder']['supplier_quotation_id'] = $supplier_quotation_id;
 
-            if( !empty($supplier_quotation_id) ) {
-                $data['SupplierQuotation'] = array(
-                    'id' => $supplier_quotation_id,
-                    'transaction_status' => 'po',
-                );
-            }
+            // if( !empty($supplier_quotation_id) ) {
+            //     $data['SupplierQuotation'] = array(
+            //         'id' => $supplier_quotation_id,
+            //         'transaction_status' => 'po',
+            //     );
+            // }
 
             if( !empty($dataDetailProduct) ) {
                 $grandtotal = 0;

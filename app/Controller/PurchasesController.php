@@ -69,7 +69,7 @@ class PurchasesController extends AppController {
 
             $nodoc = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'nodoc');
             $grandtotal = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'grandtotal', 0);
-            $userApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval('po', $grandtotal);
+            $userApprovals = $this->User->Employe->EmployePosition->Approval->_callNeedApproval('sq', $grandtotal);
 
             $result = $this->SupplierQuotation->doSave($data);
             $document_id = $this->MkCommon->filterEmptyField($result, 'id');

@@ -28,6 +28,18 @@
             <div class="col-sm-6">
                 <?php 
                         echo $this->Common->buildInputForm('nodoc', __('No Dokumen'));
+                        echo $this->Common->buildInputForm('status', __('Status'), array(
+                            'empty' => __('- Pilih Status -'),
+                            'options' => array(
+                                'unposting' => __('Draft'),
+                                'posting' => __('Commit'),
+                                'approved' => __('Approved'),
+                                'rejected' => __('Ditolak'),
+                                'revised' => __('Direvisi'),
+                                'expired' => __('Expired'),
+                                'void' => __('Void'),
+                            ),
+                        ));
                 ?>
             </div>
         </div>

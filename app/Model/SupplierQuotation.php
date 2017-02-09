@@ -98,10 +98,10 @@ class SupplierQuotation extends AppModel {
                 $default_options['conditions']['SupplierQuotation.status'] = 1;
                 $default_options['conditions']['DATE_FORMAT(SupplierQuotation.available_to, \'%Y-%m-%d\') >='] = date('Y-m-d');
                 break;
-            case 'po':
-                $default_options['conditions']['SupplierQuotation.status'] = 1;
-                $default_options['conditions']['SupplierQuotation.transaction_status'] = 'po';
-                break;
+            // case 'po':
+            //     $default_options['conditions']['SupplierQuotation.status'] = 1;
+            //     $default_options['conditions']['SupplierQuotation.transaction_status'] = 'po';
+            //     break;
             case 'pending-po':
                 $default_options['conditions']['SupplierQuotation.status'] = 1;
                 $default_options['conditions']['SupplierQuotation.transaction_status'] = array( 'approved' );
@@ -264,6 +264,7 @@ class SupplierQuotation extends AppModel {
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $vendor_id = !empty($data['named']['vendor_id'])?$data['named']['vendor_id']:false;
+        $status = !empty($data['named']['status'])?$data['named']['status']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -279,6 +280,22 @@ class SupplierQuotation extends AppModel {
         }
         if( !empty($vendor_id) ) {
             $default_options['conditions']['SupplierQuotation.vendor_id'] = $vendor_id;
+        }
+
+        if( !empty($status) ) {
+            switch ($status) {
+                case 'expired':
+                    $default_options['conditions']['SupplierQuotation.transaction_status'] = 'approved';
+                    $default_options['conditions']['SupplierQuotation.available_to <'] = date('Y-m-d');
+                    break;
+                case 'approved':
+                    $default_options['conditions']['SupplierQuotation.transaction_status'] = 'approved';
+                    $default_options['conditions']['SupplierQuotation.available_to >='] = date('Y-m-d');
+                    break;
+                default:
+                    $default_options['conditions']['SupplierQuotation.transaction_status'] = $status;
+                    break;
+            }
         }
         
         return $default_options;
