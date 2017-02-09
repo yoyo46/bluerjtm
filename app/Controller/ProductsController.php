@@ -1067,7 +1067,7 @@ class ProductsController extends AppController {
         ));
     }
 
-    public function current_stock_reports( $data_action = false ) {
+    public function current_stock_reports() {
         $this->Product->unBindModel(array(
             'hasMany' => array(
                 'ProductStock'
@@ -1097,18 +1097,12 @@ class ProductsController extends AppController {
         $options =  $this->Product->_callRefineParams($params, $options);
         $options = $this->MkCommon->getConditionGroupBranch( $params, 'ProductStock', $options );
 
-        if( !empty($data_action) ){
-            $values = $this->Product->getData('all', $options, array(
-                'branch' => false,
-            ));
-        } else {
-            $this->paginate = $this->Product->getData('paginate', array_merge($options, array(
-                'limit' => Configure::read('__Site.config_pagination'),
-            )), array(
-                'branch' => false,
-            ));
-            $values = $this->paginate('Product');
-        }
+        $this->paginate = $this->Product->getData('paginate', array_merge($options, array(
+            'limit' => Configure::read('__Site.config_pagination'),
+        )), array(
+            'branch' => false,
+        ));
+        $values = $this->paginate('Product');
 
         $values = $this->Product->getMergeList($values, array(
             'contain' => array(
@@ -1117,13 +1111,65 @@ class ProductsController extends AppController {
         ));
 
         $this->RjProduct->_callBeforeViewCurrentStockReports($params);
-        $this->MkCommon->_callBeforeViewReport($data_action, array(
-            'layout_file' => array(
-                'select',
-            ),
+        $this->MkCommon->_layout_file(array(
+            'select',
+            'freeze',
         ));
         $this->set(compact(
-            'values', 'data_action'
+            'values'
+        ));
+    }
+
+    public function stock_cards() {
+        $this->Product->unBindModel(array(
+            'hasMany' => array(
+                'ProductStock'
+            )
+        ));
+        $this->Product->bindModel(array(
+            'hasOne' => array(
+                'ProductStock' => array(
+                    'className' => 'ProductStock',
+                    'foreignKey' => 'product_id',
+                ),
+            )
+        ), false);
+        $this->Product->ProductStock->virtualFields['total_qty'] = 'SUM(ProductStock.qty - ProductStock.qty_use)';
+        $this->Product->ProductStock->virtualFields['avg_price'] = 'SUM(ProductStock.price) / SUM(ProductStock.qty - ProductStock.qty_use)';
+
+        $options = array(
+            'contain' => array(
+                'ProductStock',
+            ),
+            'group' => array(
+                'Product.id',
+            ),
+        );
+
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Product->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'ProductStock', $options );
+
+        $this->paginate = $this->Product->getData('paginate', array_merge($options, array(
+            'limit' => Configure::read('__Site.config_pagination'),
+        )), array(
+            'branch' => false,
+        ));
+        $values = $this->paginate('Product');
+
+        $values = $this->Product->getMergeList($values, array(
+            'contain' => array(
+                'ProductUnit',
+            ),
+        ));
+
+        $this->RjProduct->_callBeforeViewCurrentStockReports($params);
+        $this->MkCommon->_layout_file(array(
+            'select',
+            'freeze',
+        ));
+        $this->set(compact(
+            'values'
         ));
     }
 }

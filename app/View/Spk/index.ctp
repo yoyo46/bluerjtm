@@ -116,14 +116,14 @@
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
 
-                                $customAction .= $this->Html->link(__('Hapus'), array(
+                                $customAction .= $this->Html->link(__('Void'), array(
                                     'controller' => 'spk',
                                     'action' => 'toggle',
                                     $id,
                                     'admin' => false,
                                 ), array(
                                     'class' => 'btn btn-danger btn-xs trigger-disabled',
-                                    'data-alert' => __('Anda yakin ingin menghapus SPK ini?'),
+                                    'data-alert' => __('Anda yakin ingin membatalkan SPK ini?'),
                                 ));
                             }
             ?>

@@ -41,8 +41,8 @@ class ProductReceiptDetail extends AppModel {
             ),
         ),
         'serial_number' => array(
-            'notMatch' => array(
-                'rule' => array('serial_number'),
+            'validateSn' => array(
+                'rule' => array('validateSn'),
                 'message' => 'Mohon pilih no. seri'
             ),
         ),
@@ -53,6 +53,18 @@ class ProductReceiptDetail extends AppModel {
             ),
         ),
 	);
+
+    function validateSn () {
+        $data = $this->ProductReceipt->data;
+        $document_type = Common::hashEmptyField($data, 'ProductReceipt.document_type');
+        $serial_number = Common::hashEmptyField($this->data, 'ProductReceiptDetail.serial_number');
+
+        if( $document_type != 'wht' && empty($serial_number) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     function validateOverReceipt() {
         $over_receipt = $this->filterEmptyField($this->data, 'ProductReceiptDetail', 'over_receipt');

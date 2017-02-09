@@ -227,9 +227,51 @@ class RjProductComponent extends Component {
                     if( !empty($serial_number) ) {
                         $detail['ProductHistory']['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock );
                     } else {
-                        $detail['ProductHistory']['ProductStock'][] = array_merge($stock, array(
-                            'serial_number' => sprintf('%s-%s', $this->MkCommon->getNoRef($product_id), date('ymdHis')),
-                        ));
+                        switch ($document_type) {
+                            case 'wht':
+                                $product_expenditure_detail_id = Set::extract('/ProductReceiptDetail/Product/ProductExpenditureDetail/id', $detail);
+                                $serial_numbers = $this->controller->Product->ProductExpenditureDetailSerialNumber->getMergeAll(array(), 'all', $product_id, $product_expenditure_detail_id, 'ProductExpenditureDetailSerialNumber.product_expenditure_detail_id');
+
+                                if( !empty($serial_numbers['ProductExpenditureDetailSerialNumber']) ) {
+                                    $total_price = 0;
+                                    $totalQtyExpenditure = 0;
+
+                                    foreach ($serial_numbers['ProductExpenditureDetailSerialNumber'] as $key => $val) {
+                                        $sn_id = Common::hashEmptyField($val, 'ProductExpenditureDetailSerialNumber.id');
+                                        $serial_number = Common::hashEmptyField($val, 'ProductExpenditureDetailSerialNumber.serial_number');
+                                        $qtyExpenditure = Common::hashEmptyField($val, 'ProductExpenditureDetailSerialNumber.qty');
+                                        $price = Common::hashEmptyField($val, 'ProductExpenditureDetailSerialNumber.price');
+                                        
+                                        $total_price += $price;
+                                        $totalQtyExpenditure += $qtyExpenditure;
+
+                                        if( $totalQtyExpenditure > $qty ) {
+                                            $qtyExpenditure = $qty;
+                                            break;
+                                        }
+
+                                        $detail['ProductHistory']['ProductStock'][] = array_merge($stock, array(
+                                            'serial_number' => $serial_number,
+                                            'qty' => $qtyExpenditure,
+                                            'price' => $price,
+                                        ));
+                                        $detail['ProductReceiptDetail']['Product']['ProductExpenditureDetailSerialNumber'][] = array(
+                                            'id' => $sn_id,
+                                            'qty_use' => $qtyExpenditure,
+                                        );
+                                    }
+                                    
+                                    $total_price = $total_price / count($serial_numbers['ProductExpenditureDetailSerialNumber']);
+                                    $detail['ProductHistory']['price'] = $total_price;
+                                }
+                                break;
+                            
+                            default:
+                                $detail['ProductHistory']['ProductStock'][] = array_merge($stock, array(
+                                    'serial_number' => sprintf('%s-%s', $this->MkCommon->getNoRef($product_id), date('ymdHis')),
+                                ));
+                                break;
+                        }
                     }
                     break;
                 
@@ -816,9 +858,17 @@ class RjProductComponent extends Component {
                 }
 
                 foreach ($product_serial_numbers as $idx => $serial_number) {
+                    $stock = $this->controller->Product->ProductStock->getData('first', array(
+                        'conditions' => array(
+                            'ProductStock.product_id' => $product_id,
+                            'ProductStock.serial_number' => $serial_number,
+                        ),
+                    ));
+
                     $details['ProductExpenditureDetailSerialNumber'][] = array(
                         'product_id' => $product_id,
                         'serial_number' => strtoupper($serial_number),
+                        'price' => Common::hashEmptyField($stock, 'ProductStock.price', 0),
                         'qty' => 1,
                     );
                 }

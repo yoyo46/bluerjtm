@@ -368,18 +368,15 @@ class ProductExpenditure extends AppModel {
 
             if( $this->save() ) {
 
-                switch ($document_type) {
-                    case 'po':
-                        $this->PurchaseOrder->id = $document_id;
-                        $this->PurchaseOrder->set('transaction_status', 'none');
-                        $this->PurchaseOrder->save();
-                        break;
-                    case 'spk':
-                        $this->Spk->id = $document_id;
-                        $this->Spk->set('transaction_status', 'open');
-                        $this->Spk->set('draft_document_status', 'none');
-                        $this->Spk->save();
-                        break;
+                if( $document_type == 'po' ) {
+                    $this->PurchaseOrder->id = $document_id;
+                    $this->PurchaseOrder->set('transaction_status', 'none');
+                    $this->PurchaseOrder->save();
+                } else if( in_array($document_type, array( 'spk', 'wht' )) ) {
+                    $this->Spk->id = $document_id;
+                    $this->Spk->set('transaction_status', 'open');
+                    $this->Spk->set('draft_document_status', 'none');
+                    $this->Spk->save();
                 }
 
                 $msg = sprintf(__('Berhasil %s'), $default_msg);

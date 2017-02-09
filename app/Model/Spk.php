@@ -344,10 +344,10 @@ class Spk extends AppModel {
             $estimation_date = Common::hashEmptyField($data, 'Spk.estimation_date');
             $estimation_time = Common::hashEmptyField($data, 'Spk.estimation_time');
 
-            if( !empty($start_time) ) {
+            if( !empty($start_date) && !empty($start_time) ) {
                 $data['Spk']['start_date'] = __('%s %s', $start_date, $start_time);
             }
-            if( !empty($estimation_time) ) {
+            if( !empty($estimation_date) && !empty($estimation_time) ) {
                 $data['Spk']['estimation_date'] = __('%s %s', $estimation_date, $estimation_time);
             }
 

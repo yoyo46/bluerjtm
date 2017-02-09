@@ -1362,7 +1362,8 @@
                         'products' => array(
                             'categories', 'product_units',
                             'receipts', 'expenditures',
-                            'current_stock_reports'
+                            'current_stock_reports',
+                            'stock_cards',
                         ),
                         'spk' => array(
                             'index',
@@ -1374,7 +1375,7 @@
                         $settingMenu = array(
                             'spk', 'product_categories', 'products',
                             'receipts', 'product_units', 'expenditures',
-                            'current_stock_reports',
+                            'current_stock_reports', 'stock_cards',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1444,6 +1445,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'current_stock_reports' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Kartu Stok', $this->Common->icon('angle-double-right')), array(
+                                'controller' => 'products',
+                                'action' => 'stock_cards'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'stock_cards' )?'active':'',
                             ));
                     ?>
                 </ul>

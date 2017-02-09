@@ -97,8 +97,6 @@
                                 ), array(
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
-                            }
-                            if( in_array($transaction_status, array( 'unposting', 'revised', 'posting', 'approved' )) ){
                                 $customAction .= $this->Html->link(__('Void'), array(
                                     'controller' => 'products',
                                     'action' => 'expenditure_toggle',
