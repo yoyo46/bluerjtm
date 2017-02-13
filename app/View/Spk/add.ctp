@@ -8,6 +8,8 @@
 
         $data = $this->request->data;
 		$view = !empty($view)?$view:false;
+		$value = !empty($value)?$value:false;
+        $transaction_status = Common::hashEmptyField($value, 'Spk.transaction_status');
 
 		$mechanicClass = Common::_callDisplayToggle('mechanic', $data);
 		$whtClass = Common::_callDisplayToggle('wht', $data);
@@ -74,10 +76,13 @@
 							'type' => 'datetime',
 							'label' => __('Estimasi Penyelesaian *'),
 						));
-						// echo $this->Common->_callInputForm('complete', array(
-						// 	'type' => 'datetime',
-						// 	'label' => __('Tgl Selesai *'),
-						// ));
+
+						if( in_array($transaction_status, array( 'finish' )) ) {
+							echo $this->Common->_callInputForm('complete', array(
+								'type' => 'datetime',
+								'label' => __('Tgl Selesai *'),
+							));
+						}
 				?>
 			</div>
 		</div>

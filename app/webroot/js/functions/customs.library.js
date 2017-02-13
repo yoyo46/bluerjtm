@@ -826,14 +826,14 @@
                                 contentHtml = $(content).find(data_wrapper_write).html();
                             }
 
-                            if( $(data_wrapper_write).length > 0 ) {
-                                if( status == 'success' && data_reload == 'true' ) {
-                                    if(typeof data_reload_url == 'undefined' ) {
-                                        window.location.reload();
-                                    } else {
-                                        location.href = data_reload_url;
-                                    }
-                                } else if(status == 'success' && typeof data_wrapper_success != 'undefined' && $(data_wrapper_success).length > 0 ) {
+                            if( status == 'success' && data_reload == 'true' ) {
+                                if(typeof data_reload_url == 'undefined' ) {
+                                    window.location.reload();
+                                } else {
+                                    location.href = data_reload_url;
+                                }
+                            } else if( $(data_wrapper_write).length > 0 ) {
+                                if(status == 'success' && typeof data_wrapper_success != 'undefined' && $(data_wrapper_success).length > 0 ) {
                                     contentHtml = $(content).filter(data_wrapper_success).html();
 
                                     if(typeof contentHtml == 'undefined' ) {
@@ -1006,7 +1006,7 @@
             function check_option_coa(self){
                 var self_value = self.val();
                 var parent = self.parents('.pick-document');
-                var rel_id = parent.attr('rel');
+                var rel_id = $.checkUndefined(parent.attr('rel'), null);
                 var rel_table = $.checkUndefined(parent.attr('data-table'), null);
                 var data_type = $.checkUndefined(parent.attr('data-type'), null);
 
@@ -1032,6 +1032,11 @@
                     switch (data_type) { 
                         case 'select-multiple':
                             var document_selected = temp_picker.find('.pick-document[rel="'+rel_id+'"]');
+
+                            if( document_selected.length == 0 ) {
+                                document_selected = temp_picker;
+                            }
+
                             var chosenBuild = document_selected.find('.chosen-select.select2-hidden-accessible');
                             var existing_selected = document_selected.find('.chosen-select option[value="'+self_value+'"]:selected');
                             var existing = document_selected.find('.chosen-select option[value="'+self_value+'"]');

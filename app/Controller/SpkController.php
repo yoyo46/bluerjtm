@@ -174,6 +174,71 @@ class SpkController extends AppController {
         $this->MkCommon->setProcessParams($result);
     }
 
+    function completed($id = null){
+        $is_ajax = $this->RequestHandler->isAjax();
+        $msg = array(
+            'msg' => '',
+            'type' => 'error'
+        );
+        $value = $this->Spk->getData('first', array(
+            'conditions' => array(
+                'Spk.id' => $id
+            ),
+        ));
+
+        if( !empty($value) ){
+            $data = $this->request->data;
+
+            if(!empty($data['Spk']['complete_date'])){
+                $data = $this->MkCommon->dataConverter($data, array(
+                    'date' => array(
+                        'Spk' => array(
+                            'complete_date',
+                        ),
+                    )
+                ));
+                $complete_date = Common::hashEmptyField($data, 'Spk.complete_date');
+                $complete_time = Common::hashEmptyField($data, 'Spk.complete_time');
+
+                if( !empty($complete_date) && !empty($complete_time) ) {
+                    $this->Spk->set('complete_date', __('%s %s', $complete_date, $complete_time));
+                }
+
+                $this->Spk->id = $id;
+                $this->Spk->set('transaction_status', 'finish');
+
+                if($this->Spk->save()){
+                    $msg = array(
+                        'msg' => __('Berhasil mengubah status SPK menjadi selesai.'),
+                        'type' => 'success'
+                    );
+                    $this->MkCommon->setCustomFlash( $msg['msg'], $msg['type']);  
+                    $this->Log->logActivity( sprintf(__('Berhasil mengubah status SPK menjadi selesai #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
+                }else{
+                    $this->Log->logActivity( sprintf(__('Gagal mengubah status SPK menjadi selesai #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+                }
+            } else {
+                $this->request->data['Spk']['complete_date'] = date('d/m/Y');
+            }
+        }else{
+            $msg = array(
+                'msg' => __('SPK tidak ditemukan'),
+                'type' => 'error'
+            );
+        }
+
+        $modelName = 'Spk';
+        $this->set(array(
+            'message_alert' => __('Mohon masukan tanggal SPK ini selesai.'),
+            '_flash' => false,
+        ));
+        $this->set(compact(
+            'msg', 'is_ajax',
+            'modelName'
+        ));
+        $this->render('/Elements/blocks/common/only_date');
+    }
+
     public function history( $id = null ) {
         $value = $this->Spk->Truck->getData('first', array(
             'conditions' => array(

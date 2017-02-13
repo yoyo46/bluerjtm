@@ -126,6 +126,18 @@
                                     'data-alert' => __('Anda yakin ingin membatalkan SPK ini?'),
                                 ));
                             }
+
+                            if( in_array($transaction_status, array( 'closed' )) ) {
+                                $customAction .= $this->Html->link(__('Selesai'), array(
+                                    'controller' => 'spk',
+                                    'action' => 'completed',
+                                    $id,
+                                    'admin' => false,
+                                ), array(
+                                    'class' => 'btn btn-success btn-xs ajaxCustomModal',
+                                    'title' => __('SPK Telah Selesai'),
+                                ));
+                            }
             ?>
             <tr>
                 <?php 
