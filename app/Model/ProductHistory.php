@@ -21,6 +21,10 @@ class ProductHistory extends AppModel {
                 'ProductHistory.transaction_type' => 'product_expenditure',
             ),
         ),
+        'Branch' => array(
+            'className' => 'Branch',
+            'foreignKey' => 'branch_id',
+        ),
     );
 
     var $hasMany = array(
@@ -39,6 +43,7 @@ class ProductHistory extends AppModel {
             'order'=> array(
                 'ProductHistory.id' => 'DESC'
             ),
+            'contain' => array(),
             'fields' => array(),
             'group' => array(),
         );
@@ -52,21 +57,7 @@ class ProductHistory extends AppModel {
             $default_options['conditions']['ProductHistory.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
-        if(!empty($options['conditions'])){
-            $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
-        }
-        if(!empty($options['order'])){
-            $default_options['order'] = array_merge($default_options['order'], $options['order']);
-        }
-        if(!empty($options['fields'])){
-            $default_options['fields'] = $options['fields'];
-        }
-        if(!empty($options['limit'])){
-            $default_options['limit'] = $options['limit'];
-        }
-        if(!empty($options['group'])){
-            $default_options['group'] = $options['group'];
-        }
+        $default_options = $this->merge_options($default_options, $options);
 
         if( $find == 'paginate' ) {
             $result = $default_options;
@@ -183,6 +174,33 @@ class ProductHistory extends AppModel {
         }
 
         return $data;
+    }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+        $code = !empty($data['named']['code'])?$data['named']['code']:false;
+        $group = !empty($data['named']['group'])?$data['named']['group']:false;
+
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
+        if( !empty($code) ) {
+            $default_options['conditions']['Product.code LIKE'] = '%'.$code.'%';
+            $default_options['contain'][] = 'Product';
+        }
+        if( !empty($group) ) {
+            $default_options['conditions']['Product.product_category_id'] = $group;
+            $default_options['contain'][] = 'Product';
+        }
+        
+        return $default_options;
     }
 }
 ?>

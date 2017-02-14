@@ -241,12 +241,12 @@ class ProductExpenditure extends AppModel {
                     break;
                 
                 default:
-                    if( $spk_internal_status == 'closed_expenditured' ) {
+                    // if( $spk_internal_status == 'closed_expenditured' ) {
                         $this->Spk->set('transaction_status', 'closed');
-                        $this->Spk->set('complete_date', $transaction_date);
-                    } else {
-                        $this->Spk->set('transaction_status', 'finish');
-                    }
+                        // $this->Spk->set('complete_date', $transaction_date);
+                    // } else {
+                        // $this->Spk->set('transaction_status', 'finish');
+                    // }
                     break;
             }
         }

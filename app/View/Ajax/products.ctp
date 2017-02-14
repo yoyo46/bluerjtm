@@ -1,6 +1,9 @@
+<?php 
+        $modelName = false;
+        $data_type = !empty($type)?$type:false;
+?>
 <div id="wrapper-modal-write" class="document-picker">
     <?php 
-            $modelName = false;
             $dataColumns = array(
                 'check-box' => array(
                     'name' => $this->Form->checkbox('checkbox_all', array(
@@ -65,12 +68,22 @@
 
                                 $customType = $this->Common->unSlug($type);
                                 $customRate = $this->Common->getFormatPrice($rate, '-');
+
+                                switch ($data_type) {
+                                    case 'select-multiple':
+                                        $data_value = $code;
+                                        break;
+                                    
+                                    default:
+                                        $data_value = $id;
+                                        break;
+                                }
                 ?>
-                <tr class="pick-document" rel="<?php echo $id; ?>" data-table="<?php echo $action_type ?>">
+                <tr class="pick-document" rel="<?php echo $id; ?>" data-table="<?php echo $action_type ?>" data-type="<?php echo $data_type; ?>">
                     <?php
                             echo $this->Html->tag('td', $this->Form->checkbox('document_id.'.$id, array(
                                 'class' => 'check-option',
-                                'value' => $id,
+                                'value' => $data_value,
                             )), array(
                                 'class' => 'removed check-box text-center',
                             ));

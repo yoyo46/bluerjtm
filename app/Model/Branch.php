@@ -74,6 +74,11 @@ class Branch extends AppModel {
         ),
     );
 
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['full_name'] = 'CONCAT(Branch.code, " - ", Branch.name)';
+    }
+
 	function getData($find, $options = false){
         $default_options = array(
             'conditions'=> array(

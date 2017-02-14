@@ -1438,14 +1438,6 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'receipts' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link(__('%s Laporan Current Stok', $this->Common->icon('angle-double-right')), array(
-                                'controller' => 'products',
-                                'action' => 'current_stock_reports'
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'current_stock_reports' )?'active':'',
-                            ));
                             echo $this->Html->tag('li', $this->Html->link(__('%s Kartu Stok', $this->Common->icon('angle-double-right')), array(
                                 'controller' => 'products',
                                 'action' => 'stock_cards'
@@ -1453,6 +1445,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'stock_cards' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Laporan Current Stok', $this->Common->icon('angle-double-right')), array(
+                                'controller' => 'products',
+                                'action' => 'current_stock_reports'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'current_stock_reports' )?'active':'',
                             ));
                     ?>
                 </ul>

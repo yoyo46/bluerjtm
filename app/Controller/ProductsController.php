@@ -1113,63 +1113,149 @@ class ProductsController extends AppController {
         $this->RjProduct->_callBeforeViewCurrentStockReports($params);
         $this->MkCommon->_layout_file(array(
             'select',
-            'freeze',
         ));
-        $this->set(compact(
-            'values'
+        $this->set(array(
+            'values' => $values,
+            'active_menu' => 'current_stock_reports',
         ));
     }
 
     public function stock_cards() {
-        $this->Product->unBindModel(array(
-            'hasMany' => array(
-                'ProductStock'
-            )
+        $dateFrom = date('Y-m-01');
+        $dateTo = date('Y-m-t');
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
         ));
-        $this->Product->bindModel(array(
-            'hasOne' => array(
-                'ProductStock' => array(
-                    'className' => 'ProductStock',
-                    'foreignKey' => 'product_id',
-                ),
-            )
-        ), false);
-        $this->Product->ProductStock->virtualFields['total_qty'] = 'SUM(ProductStock.qty - ProductStock.qty_use)';
-        $this->Product->ProductStock->virtualFields['avg_price'] = 'SUM(ProductStock.price) / SUM(ProductStock.qty - ProductStock.qty_use)';
-
-        $options = array(
+        $options =  $this->Product->ProductHistory->_callRefineParams($params, array(
             'contain' => array(
-                'ProductStock',
+                'Product',
             ),
-            'group' => array(
-                'Product.id',
+            'order'=> array(
+                'ProductHistory.product_id' => 'ASC',
+                'ProductHistory.branch_id' => 'ASC',
+                'ProductHistory.transaction_date' => 'ASC',
+                'ProductHistory.created' => 'ASC',
             ),
-        );
-
-        $params = $this->MkCommon->_callRefineParams($this->params);
-        $options =  $this->Product->_callRefineParams($params, $options);
-        $options = $this->MkCommon->getConditionGroupBranch( $params, 'ProductStock', $options );
-
-        $this->paginate = $this->Product->getData('paginate', array_merge($options, array(
-            'limit' => Configure::read('__Site.config_pagination'),
-        )), array(
+        ));
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'ProductHistory', $options );
+        $options = $this->Product->ProductHistory->getData('paginate', $options, array(
             'branch' => false,
         ));
-        $values = $this->paginate('Product');
+        $this->paginate = $options;
+        $values = $this->paginate('ProductHistory');
+        $result = array();
 
-        $values = $this->Product->getMergeList($values, array(
-            'contain' => array(
-                'ProductUnit',
-            ),
-        ));
+        if( !empty($values) ) {
+            foreach ($values as $key => &$value) {
+                $product_id = Common::hashEmptyField($value, 'ProductHistory.product_id');
+                $transaction_type = Common::hashEmptyField($value, 'ProductHistory.transaction_type');
+                $transaction_id = Common::hashEmptyField($value, 'ProductHistory.transaction_id');
+                $branch_id = Common::hashEmptyField($value, 'ProductHistory.branch_id');
 
-        $this->RjProduct->_callBeforeViewCurrentStockReports($params);
+                $value = $this->Product->getMergeList($value, array(
+                    'contain' => array(
+                        'ProductUnit',
+                    ),
+                ));
+                $value = $this->Product->ProductHistory->getMergeList($value, array(
+                    'contain' => array(
+                        'Branch',
+                    ),
+                ));
+
+                switch ($transaction_type) {
+                    case 'product_receipt':
+                        $value = $this->Product->ProductHistory->getMergeList($value, array(
+                            'contain' => array(
+                                'DocumentDetail' => array(
+                                    'uses' => 'ProductReceiptDetail',
+                                    'contain' => array(
+                                        'Document' => array(
+                                            'uses' => 'ProductReceipt',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ));
+                        break;
+                    case 'product_expenditure':
+                        $value = $this->Product->ProductHistory->getMergeList($value, array(
+                            'contain' => array(
+                                'DocumentDetail' => array(
+                                    'uses' => 'ProductExpenditureDetail',
+                                    'contain' => array(
+                                        'Document' => array(
+                                            'uses' => 'ProductExpenditure',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ));
+                        break;
+                }
+
+                $result[$product_id][$branch_id]['Branch'] = Common::hashEmptyField($value, 'Branch');
+                $result[$product_id][$branch_id]['Product'] = Common::hashEmptyField($value, 'Product');
+                $result[$product_id][$branch_id]['ProductHistory'][] = $value;
+            }
+
+            $values = $result;
+        }
+
+        if(!empty($values)){
+            foreach ($values as $key => &$product) {
+                if(!empty($product)){
+                    foreach ($product as $key => &$branch) {
+                        $product_id = Common::hashEmptyField($branch, 'Product.id');
+                        $branch_id = Common::hashEmptyField($branch, 'Branch.id');
+
+                        $dateFrom = Common::hashEmptyField($params, 'named.DateFrom');
+                        $options = Common::_callUnset($options, array(
+                            'conditions' => array(
+                                'ProductHistory.product_id',
+                                'ProductHistory.branch_id',
+                                'DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') >=',
+                                'DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') <=',
+                            ),
+                        ));
+                        $options['conditions']['DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') <'] = $dateFrom;
+                        $options['conditions']['ProductHistory.product_id'] = $product_id;
+                        $options['conditions']['ProductHistory.branch_id'] = $branch_id;
+                        $options['order'] = array(
+                            'ProductHistory.transaction_date' => 'DESC',
+                            'ProductHistory.created' => 'DESC',
+                        );
+
+                        $productHistory = $this->Product->ProductHistory->getData('first', $options, array(
+                            'branch' => false,
+                        ));
+
+                        $this->Product->ProductHistory->virtualFields['total_begining_balance'] = 'SUM(CASE WHEN ProductHistory.transaction_type = \'product_receipt\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.transaction_type = \'product_expenditure\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END)';
+
+                        $lastHistory = $this->Product->ProductHistory->getData('first', $options, array(
+                            'branch' => false,
+                        ));
+                        $lastHistory['ProductHistory']['ending'] = Common::hashEmptyField($productHistory, 'ProductHistory.ending');
+
+                        $branch['LastHistory'] = $this->Product->getMergeList($lastHistory, array(
+                            'contain' => array(
+                                'ProductUnit',
+                            ),
+                        ));
+                    }
+                }
+            }
+        }
+
+        $this->RjProduct->_callBeforeViewStockCards($params);
         $this->MkCommon->_layout_file(array(
             'select',
             'freeze',
         ));
         $this->set(compact(
-            'values'
+            'values', 'lastHistory'
         ));
     }
 }

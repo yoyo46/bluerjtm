@@ -191,6 +191,11 @@ class RevenueHelper extends AppHelper {
             //         'class' => 'alert alert-warning text-center',
             //     ));
             // }
+            else if( !empty($status_sj != 'none') ) {
+                echo $this->Html->tag('p', __('Status surat jalan TTUJ ini sudah diterima. Segala perubahan tidak diperbolehkan.'), array(
+                    'class' => 'alert alert-warning text-center',
+                ));
+            }
         }
 
         // if( $group_id != 1 ) {

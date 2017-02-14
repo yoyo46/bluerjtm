@@ -1207,5 +1207,16 @@ class RjProductComponent extends Component {
             'productUnits', 'productCategories'
         ));
     }
+
+    function _callBeforeViewStockCards( $params ) {
+        $productCategories = $this->controller->Product->ProductCategory->getData('list');
+        
+        $title = __('Kartu Stok Per %s', date('d F Y'));
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('active_menu', $title);
+        $this->controller->set(compact(
+            'productCategories'
+        ));
+    }
 }
 ?>

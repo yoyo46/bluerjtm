@@ -2565,6 +2565,7 @@ class AjaxController extends AppController {
         $this->loadModel('Product');
         $wrapper = $this->MkCommon->filterEmptyField($this->params, 'named', 'wrapper');
         $no_sq = $this->MkCommon->filterEmptyField($this->params, 'named', 'no_sq');
+        $type = $this->MkCommon->filterEmptyField($this->params, 'named', 'type');
 
 		$render = 'products';
         $params = $this->MkCommon->_callRefineParams($this->params);
@@ -2634,7 +2635,7 @@ class AjaxController extends AppController {
         $this->set('module_title', __('Barang'));
         $this->set(compact(
         	'values', 'groups', 'action_type',
-        	'wrapper'
+        	'wrapper', 'type'
     	));
     	$this->render($render);
 	}
