@@ -133,7 +133,7 @@
 				'functions/app',
 				'functions/functions',
 				'functions/dashboard',
-				'functions/demo',
+				// 'functions/demo',
 			)).PHP_EOL;
 
 			if( !empty($this->params['controller']) && $this->params['controller'] == 'user_permissions' ) {
