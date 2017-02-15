@@ -20,14 +20,21 @@ class ReportsController extends AppController {
 
 	function generate_excel ( $type = null ) {
 		$data = $this->request->data;
+		$limit = $this->limit;
 
 		if( !empty($data) ) {
 			$dataSave = $this->RmReport->_callAddBeforeSave($data, $type);
 
+			switch ($type) {
+				case 'stock_cards':
+					$limit = 30;
+					break;
+			}
+
 			$type = ucwords($type);
 			$funcName = __('_callData%s', $type);
 
-			$dataReport = $this->RmReport->$funcName($dataSave, $this->limit);
+			$dataReport = $this->RmReport->$funcName($dataSave, $limit);
 			$modelName = Common::hashEmptyField($dataReport, 'model');
 			$result = $this->Report->doSave($dataSave, $dataReport);
 
@@ -100,6 +107,7 @@ class ReportsController extends AppController {
 			), array(
 				'Report.id' => $reports_id,
 			));
+			$limit = $this->limit;
 
 			foreach ($values as $key => $value) {
 				$value = $this->Report->getMergeList($value, array(
@@ -127,8 +135,15 @@ class ReportsController extends AppController {
 
 				$params = $this->RmReport->_callDataSearch($value);
 
+				switch ($type) {
+					case 'stock_cards':
+						$limit = 30;
+						break;
+				}
+
+				$type = ucwords($type);
 				$funcName = __('_callData%s', $type);
-				$dataReport = $this->RmReport->$funcName($params, $this->limit, $fetched_data);
+				$dataReport = $this->RmReport->$funcName($params, $limit, $fetched_data);
 				
 				$modelName = $this->MkCommon->filterEmptyField($dataReport, 'model');
 				$resultReport = $this->RmReport->_callProcess( $modelName, $id, $value, $dataReport );

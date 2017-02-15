@@ -302,12 +302,16 @@ class PhpExcelComponent extends Component {
      * @return $this for method chaining
      */
     public function addTableRow($data, $params = array()) {
-        $offset = $this->_tableParams['offset'];
+        if( !empty($this->_tableParams['offset']) ) {
+            $offset = $this->_tableParams['offset'];
+        } else {
+            $offset = 0;
+        }
 
         foreach ($data as $d) {
 
             if( is_array($d) ) {
-                $text = !empty($d['text'])?$d['text']:null;
+                $text = isset($d['text'])?$d['text']:null;
                 $options = !empty($d['options'])?$d['options']:null;
             } else {
                 $text = $d;
@@ -318,6 +322,7 @@ class PhpExcelComponent extends Component {
             if( !empty($options) ) {
                 $type = !empty($options['type'])?$options['type']:PHPExcel_Cell_DataType::TYPE_STRING;
                 $align = !empty($options['align'])?$options['align']:PHPExcel_Style_Alignment::HORIZONTAL_LEFT;
+                $colspan = !empty($options['colspan'])?$options['colspan']:null;
 
                 switch ($type) {
                     case 'string':
@@ -336,6 +341,26 @@ class PhpExcelComponent extends Component {
 
                 $this->_xls->getActiveSheet()->getStyle($this->_row)->getAlignment()->setHorizontal($align);
                 $this->_xls->getActiveSheet()->getCellByColumnAndRow($offset, $this->_row)->setValueExplicit($text, $type);
+
+                if( !empty($options['bold']) ) {
+                    $this->_xls->getActiveSheet()->getStyle($this->_row)->getFont()->setBold(true);
+                }
+                if( !empty($colspan) ) {
+                    $default = 65+$offset;
+                    $dimensi = $default+($colspan-1); // Acii A
+                    $row = $this->_row;
+
+                    $default = chr($default);
+                    $cell_end = chr($dimensi);
+
+                    // if( $text == 'OPENING BALANCE' ) {
+                    //     debug(__('%s%s:%s%s', $default, $row, $cell_end, $row));die();
+                    // }
+
+                    $this->_xls->getActiveSheet()->mergeCells(__('%s%s:%s%s', $default, $row, $cell_end, $row));
+                    
+                    $offset += $colspan-1;
+                }
             } else {
                 $this->_xls->getActiveSheet()->getStyle($this->_row)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
                 $this->_xls->getActiveSheet()->setCellValueByColumnAndRow($offset, $this->_row, $text);
@@ -348,8 +373,14 @@ class PhpExcelComponent extends Component {
             $offset++;
         }
 
+        if( !empty($this->_tableParams['row_count']) ) {
+            $row_count = $this->_tableParams['row_count'];
+        } else {
+            $row_count = 0;
+        }
+
         $this->_row++;
-        $this->_tableParams['row_count']++;
+        $this->_tableParams['row_count'] = $row_count+1;
 
         return $this;
     }

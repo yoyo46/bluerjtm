@@ -4,6 +4,7 @@
   - Table
   - SPK
   - Chosen
+  - Product
 */
 
 /*Notification*/
@@ -605,4 +606,16 @@ tbody.wrapper-table-documents td {
 /*- Chosen*/
 .chosen-full span.select2 {
   width: 100% !important;
+}
+
+/*- Product*/
+.wrapper-product {
+  margin-bottom: 10px;
+}
+.wrapper-product .product-branch {
+  text-transform: uppercase;
+}
+.wrapper-product .product-branch,
+.wrapper-product .product-name {
+  font-weight: bold;
 }

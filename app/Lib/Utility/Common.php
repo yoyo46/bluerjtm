@@ -217,7 +217,7 @@ class Common {
 		return $data;
     }
 
-    function getDate ( $date, $reverse = false ) {
+    public static function getDate ( $date, $reverse = false ) {
 		$dtString = false;
 		$date = trim($date);
 		if( !empty($date) && $date != '0000-00-00' ) {
@@ -277,7 +277,7 @@ class Common {
 		return $result;
 	}
 
-	function _callDateRangeConverter ( $daterange, $fieldName = 'date', $fromName = 'start_date', $toName = 'end_date' ) {
+	public static function _callDateRangeConverter ( $daterange, $fieldName = 'date', $fromName = 'start_date', $toName = 'end_date' ) {
     	$result = array();
 
         if( !empty($daterange) ) {

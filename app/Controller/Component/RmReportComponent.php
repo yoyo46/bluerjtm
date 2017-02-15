@@ -68,21 +68,19 @@ class RmReportComponent extends Component {
 					}
 
 					if( !empty($value) ) {
-						// switch ($field) {
-						// 	case 'date':
-						// 		$values = Common::dataConverter($values,array(
-						// 			'daterange' => array(
-						// 				'date',
-						// 			),
-						// 		), true);
+						switch ($field) {
+							case 'date':
+								$tmp = Common::_callDateRangeConverter($value);
 
-						// 		$start_date = Common::hashEmptyField($values, 'date.start_date');
-						// 		$end_date = Common::hashEmptyField($values, 'date.end_date');
-						// 		$date = Common::getCombineDate($start_date, $end_date);
+								$start_date = Common::hashEmptyField($tmp, 'start_date');
+								$end_date = Common::hashEmptyField($tmp, 'end_date');
+								$date = Common::getCombineDate($start_date, $end_date);
+								$dataSave['Report']['start_date'] = $start_date;
+								$dataSave['Report']['end_date'] = $end_date;
 
-						// 		$title = str_replace(array( '[%periode_date%]' ), array( $date ), $title);
-						// 		break;
-						// }
+								$title = str_replace(array( '[%periode_date%]' ), array( $date ), $title);
+								break;
+						}
 
 						$dataSave['ReportDetail'][] = array(
 							// 'title' => $titleField,
@@ -470,6 +468,484 @@ class RmReportComponent extends Component {
 		);
 	}
 
+	function _callDataStock_cards ( $params, $limit = 30, $offset = 0 ) {
+		$this->controller->loadModel('ProductHistory');
+		$params = $this->controller->params->params;
+
+        $params_named = Common::hashEmptyField($params, 'named', array());
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+
+		$options = array(
+            'contain' => array(
+                'Product',
+            ),
+            'order'=> array(
+                'ProductHistory.product_id' => 'ASC',
+                'ProductHistory.branch_id' => 'ASC',
+                'ProductHistory.transaction_date' => 'ASC',
+                'ProductHistory.created' => 'ASC',
+            ),
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+
+        $options = $this->controller->ProductHistory->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'ProductHistory', $options );
+
+        $this->controller->paginate = $this->controller->ProductHistory->getData('paginate', $options, array(
+            'branch' => false,
+        ));
+		$data = $this->controller->paginate('ProductHistory');
+		$result = array();
+
+		$last_data = end($data);
+		$last_id = Common::hashEmptyField($last_data, 'ProductHistory.id');
+
+		$paging = $this->controller->params->paging;
+        $nextPage = Common::hashEmptyField($paging, 'ProductHistory.nextPage');
+
+        $totalQty = 0;
+        $totalPrice = 0;
+        $grandtotal = 0;
+
+		if( !empty($data) ) {
+			$tmpResult = array();
+
+			foreach ($data as $key => $value) {
+                $product_id = Common::hashEmptyField($value, 'ProductHistory.product_id');
+                $transaction_type = Common::hashEmptyField($value, 'ProductHistory.transaction_type');
+                $transaction_id = Common::hashEmptyField($value, 'ProductHistory.transaction_id');
+                $branch_id = Common::hashEmptyField($value, 'ProductHistory.branch_id');
+
+                $value = $this->controller->ProductHistory->Product->getMergeList($value, array(
+                    'contain' => array(
+                        'ProductUnit',
+                    ),
+                ));
+                $value = $this->controller->ProductHistory->getMergeList($value, array(
+                    'contain' => array(
+                        'Branch',
+                    ),
+                ));
+
+                switch ($transaction_type) {
+                    case 'product_receipt':
+                        $value = $this->controller->ProductHistory->getMergeList($value, array(
+                            'contain' => array(
+                                'DocumentDetail' => array(
+                                    'uses' => 'ProductReceiptDetail',
+                                    'contain' => array(
+                                        'Document' => array(
+                                            'uses' => 'ProductReceipt',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ));
+                        break;
+                    case 'product_expenditure':
+                        $value = $this->controller->ProductHistory->getMergeList($value, array(
+                            'contain' => array(
+                                'DocumentDetail' => array(
+                                    'uses' => 'ProductExpenditureDetail',
+                                    'contain' => array(
+                                        'Document' => array(
+                                            'uses' => 'ProductExpenditure',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ));
+                        break;
+                }
+
+                $tmpResult[$product_id][$branch_id]['Branch'] = Common::hashEmptyField($value, 'Branch');
+                $tmpResult[$product_id][$branch_id]['Product'] = Common::hashEmptyField($value, 'Product');
+                $tmpResult[$product_id][$branch_id]['ProductHistory'][] = $value;
+			}
+		}
+
+        if(!empty($tmpResult)){
+        	$idx = 0;
+
+            foreach ($tmpResult as $key => &$product) {
+                if(!empty($product)){
+                    foreach ($product as $key => &$branch) {
+                        $product_id = Common::hashEmptyField($branch, 'Product.id');
+                        $branch_id = Common::hashEmptyField($branch, 'Branch.id');
+
+                        $branch_name = Common::hashEmptyField($branch, 'Branch.full_name');
+                        $product_name = Common::hashEmptyField($branch, 'Product.full_name');
+
+                        $dateFrom = Common::hashEmptyField($params, 'named.DateFrom');
+                        $options = Common::_callUnset($options, array(
+                            'conditions' => array(
+                                'ProductHistory.product_id',
+                                'ProductHistory.branch_id',
+                                'DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') >=',
+                                'DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') <=',
+                            ),
+                        ));
+                        $options['conditions']['DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') <'] = $dateFrom;
+                        $options['conditions']['ProductHistory.product_id'] = $product_id;
+                        $options['conditions']['ProductHistory.branch_id'] = $branch_id;
+                        $options['order'] = array(
+                            'ProductHistory.transaction_date' => 'DESC',
+                            'ProductHistory.created' => 'DESC',
+                        );
+
+                        $productHistory = $this->controller->ProductHistory->getData('first', $options, array(
+                            'branch' => false,
+                        ));
+
+                        $this->controller->ProductHistory->virtualFields['total_begining_balance'] = 'SUM(CASE WHEN ProductHistory.transaction_type = \'product_receipt\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.transaction_type = \'product_expenditure\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END)';
+
+                        $lastHistory = $this->controller->ProductHistory->getData('first', $options, array(
+                            'branch' => false,
+                        ));
+                        $lastHistory['ProductHistory']['ending'] = Common::hashEmptyField($productHistory, 'ProductHistory.ending');
+                        $lastHistory = $this->controller->ProductHistory->Product->getMergeList($lastHistory, array(
+                            'contain' => array(
+                                'ProductUnit',
+                            ),
+                        ));
+
+				        if( !empty($lastHistory) ) {
+				            $unit = Common::hashEmptyField($lastHistory, 'ProductUnit.name');
+				            $start_balance = Common::hashEmptyField($lastHistory, 'ProductHistory.ending', 0);
+				            $total_begining_balance = Common::hashEmptyField($lastHistory, 'ProductHistory.total_begining_balance');
+
+				            if( !empty($start_balance) ) {
+				                $total_begining_price = $total_begining_balance / $start_balance;
+				            } else {
+				                $total_begining_price = 0;
+				            }
+				        } else {
+				            $unit = '';
+				            $start_balance = 0;
+				            $total_begining_balance = 0;
+				            $total_begining_price = 0;
+				        }
+
+				        $idxKey = 0;
+						$result['multiple'][$product_id][$branch_id]['detail'][$idxKey] = $cntTmp = array(
+							__('Tanggal') => array(
+								'text' => __('OPENING BALANCE'),
+		                		'excel' => array(
+									'colspan' => 2,
+		            			),
+							),
+							__('Satuan') => array(
+								'text' => $unit,
+		                		'excel' => array(
+									'align' => 'center',
+		            			),
+							),
+							__('Masuk') => array(
+		                		'excel' => array(
+									'colspan' => 6,
+		            			),
+							),
+							__('Saldo') => array(
+								'text' => !empty($start_balance)?$start_balance:0,
+		                		'excel' => array(
+		                			'align' => 'center',
+		            			),
+							),
+							__('Harga Satuan Saldo') => array(
+								'text' => $this->MkCommon->getFormatPrice($total_begining_price, 0, 2),
+                				'label' => __('Harga Satuan'),
+		                		'excel' => array(
+		                			'align' => 'right',
+		            			),
+							),
+							__('Total Saldo') => array(
+								'text' => $this->MkCommon->getFormatPrice($total_begining_balance, 0, 2),
+                				'label' => __('Total'),
+		                		'excel' => array(
+		                			'align' => 'right',
+		            			),
+							),
+						);
+
+                        $result['multiple'][$product_id][$branch_id]['header'] = array(
+							__('Cabang') => array(
+								'text' => $branch_name,
+								'excel' => array(
+									'colspan' => count($cntTmp),
+								),
+							),
+							__('Product') => array(
+								'text' => $product_name,
+								'excel' => array(
+									'colspan' => count($cntTmp),
+								),
+							),
+						);
+
+				        if(!empty($branch['ProductHistory'])){
+				            foreach ($branch['ProductHistory'] as $key => $value) {
+				                $qty_in = '';
+				                $price_in = '';
+				                $total_in = '';
+
+				                $qty_out = '';
+				                $price_out = '';
+				                $total_out = '';
+
+				                $url = null;
+				                $price = null;
+				                $id = Common::hashEmptyField($value, 'Product.id');
+				                $unit = Common::hashEmptyField($value, 'ProductUnit.name');
+
+				                $transaction_id = Common::hashEmptyField($value, 'ProductHistory.transaction_id');
+				                $transaction_type = Common::hashEmptyField($value, 'ProductHistory.transaction_type');
+				                $ending = Common::hashEmptyField($value, 'ProductHistory.ending');
+				                $balance = Common::hashEmptyField($value, 'ProductHistory.balance');
+				                $transaction_date = Common::hashEmptyField($value, 'ProductHistory.transaction_date', null, array(
+				                    'date' => 'd/m/Y',
+				                ));
+
+				                $nodoc = Common::hashEmptyField($value, 'DocumentDetail.Document.nodoc');
+				                $qty = Common::hashEmptyField($value, 'ProductHistory.qty');
+				                $total_balance_price = $total_begining_price*$balance;
+
+				                switch ($transaction_type) {
+				                    case 'product_receipt':
+				                        $qty_in = Common::hashEmptyField($value, 'ProductHistory.qty');
+				                        $price = $price_in = Common::hashEmptyField($value, 'ProductHistory.price');
+				                        $total_in = $qty_in * $price_in;
+				                        $total_ending_price = $price*$qty;
+				                        $grandtotal_ending = $total_balance_price + $total_ending_price;
+				                        break;
+				                    case 'product_expenditure':
+				                        $qty_out = Common::hashEmptyField($value, 'ProductHistory.qty');
+				                        $price = $price_out = Common::hashEmptyField($value, 'ProductHistory.price');
+				                        $total_out = $qty_out * $price_out;
+				                        $total_ending_price = $price*$qty;
+				                        $grandtotal_ending = $total_balance_price - $total_ending_price;
+				                        break;
+				                }
+
+				                if( !empty($ending) ) {
+				                    $grandtotal_ending_price = $grandtotal_ending / $ending;
+				                } else {
+				                    $grandtotal_ending_price = 0;
+				                }
+
+								$result['multiple'][$product_id][$branch_id]['detail'][$idxKey+=1] = array(
+									__('Tanggal') => array(
+										'text' => $transaction_date,
+									),
+									__('No. Referensi') => array(
+		                				'text' => $nodoc,
+									),
+									__('Satuan') => array(
+										'text' => $unit,
+				                		'excel' => array(
+				                			'align' => 'center',
+				            			),
+									),
+									__('Masuk') => array(
+										'text' => $qty_in,
+				                		'excel' => array(
+				                			'align' => 'center',
+				            			),
+									),
+									__('Harga Satuan Masuk') => array(
+		                				'text' => is_numeric($price_in)?$this->MkCommon->getFormatPrice($price_in, 0, 2):'',
+		                				'label' => __('Harga Satuan'),
+				                		'excel' => array(
+				                			'align' => 'right',
+				            			),
+									),
+									__('Total Masuk') => array(
+		                				'text' => is_numeric($total_in)?$this->MkCommon->getFormatPrice($total_in, 0, 2):'',
+		                				'label' => __('Total'),
+				                		'excel' => array(
+				                			'align' => 'right',
+				            			),
+									),
+									__('Keluar') => array(
+		                				'text' => $qty_out,
+				                		'excel' => array(
+				                			'align' => 'center',
+				            			),
+									),
+									__('Harga Satuan Keluar') => array(
+		                				'text' => is_numeric($price_out)?$this->MkCommon->getFormatPrice($price_out, 0, 2):'',
+		                				'label' => __('Harga Satuan'),
+				                		'excel' => array(
+				                			'align' => 'right',
+				            			),
+									),
+									__('Total Keluar') => array(
+										'text' => is_numeric($total_out)?$this->MkCommon->getFormatPrice($total_out, 0, 2):'',
+		                				'label' => __('Total'),
+				                		'excel' => array(
+				                			'align' => 'right',
+				            			),
+									),
+									__('Saldo') => array(
+										'text' => $balance,
+				                		'excel' => array(
+				                			'align' => 'center',
+				            			),
+									),
+									__('Harga Satuan Saldo') => array(
+										'text' => $this->MkCommon->getFormatPrice($total_begining_price, 0, 2),
+		                				'label' => __('Harga Satuan'),
+				                		'excel' => array(
+				                			'align' => 'right',
+				            			),
+									),
+									__('Total Saldo') => array(
+										'text' => $this->MkCommon->getFormatPrice($total_balance_price, 0, 2),
+		                				'label' => __('Total'),
+				                		'excel' => array(
+				                			'align' => 'right',
+				            			),
+									),
+								);
+
+								$result['multiple'][$product_id][$branch_id]['detail'][$idxKey+=1] = array(
+									__('Tanggal') => array(
+		                				'field_model' => 'ProductHistory.transaction_date',
+									),
+									__('No. Referensi') => array(
+		                				'field_model' => 'ProductHistory.transaction_id',
+									),
+									__('Satuan') => array(
+		                				'field_model' => 'ProductHistory.transaction_id',
+									),
+									__('Masuk') => array(
+		                				'field_model' => 'ProductUnit.name',
+									),
+									__('Harga Satuan Masuk') => array(
+                						'label' => __('Harga Satuan'),
+		                				'field_model' => 'ProductHistory.price',
+									),
+									__('Total Masuk') => array(
+                						'label' => __('Total'),
+		                				'field_model' => 'ProductHistory.total',
+									),
+									__('Keluar') => array(
+		                				'field_model' => 'ProductHistory.qty',
+									),
+									__('Harga Satuan Keluar') => array(
+                						'label' => __('Harga Satuan'),
+		                				'field_model' => 'ProductHistory.price',
+									),
+									__('Total Keluar') => array(
+                						'label' => __('Total'),
+		                				'field_model' => 'ProductHistory.total',
+									),
+									__('Saldo') => array(
+										'text' => $qty,
+				                		'excel' => array(
+				                			'align' => 'center',
+				            			),
+									),
+									__('Harga Satuan Saldo') => array(
+                						'label' => __('Harga Satuan'),
+										'text' => $this->MkCommon->getFormatPrice($price, 0, 2),
+				                		'excel' => array(
+				                			'align' => 'right',
+				            			),
+									),
+									__('Total Saldo') => array(
+                						'label' => __('Total'),
+										'text' => $this->MkCommon->getFormatPrice($total_ending_price, 0, 2),
+				                		'excel' => array(
+				                			'align' => 'right',
+				            			),
+									),
+								);
+
+								$result['multiple'][$product_id][$branch_id]['detail'][$idxKey+=1] = $cntTmp = array(
+									__('Tanggal') => array(
+		                				'field_model' => 'ProductHistory.transaction_date',
+									),
+									__('No. Referensi') => array(
+		                				'field_model' => 'ProductHistory.transaction_id',
+									),
+									__('Satuan') => array(
+		                				'field_model' => 'ProductHistory.transaction_id',
+									),
+									__('Masuk') => array(
+		                				'field_model' => 'ProductUnit.name',
+									),
+									__('Harga Satuan Masuk') => array(
+                						'label' => __('Harga Satuan'),
+		                				'field_model' => 'ProductHistory.price',
+									),
+									__('Total Masuk') => array(
+                						'label' => __('Total'),
+		                				'field_model' => 'ProductHistory.total',
+									),
+									__('Keluar') => array(
+		                				'field_model' => 'ProductHistory.qty',
+									),
+									__('Harga Satuan Keluar') => array(
+                						'label' => __('Harga Satuan'),
+		                				'field_model' => 'ProductHistory.price',
+				                		'excel' => array(
+				                			'bold' => true,
+				            			),
+									),
+									__('Total Keluar') => array(
+										'text' => __('Total'),
+                						'label' => __('Total'),
+		                				'field_model' => 'ProductHistory.total',
+				                		'excel' => array(
+				                			'bold' => true,
+				                			'align' => 'right',
+				            			),
+									),
+									__('Saldo') => array(
+										'text' => $ending,
+				                		'excel' => array(
+				                			'align' => 'center',
+				                			'bold' => true,
+				            			),
+									),
+									__('Harga Satuan Saldo') => array(
+                						'label' => __('Harga Satuan'),
+										'text' => $this->MkCommon->getFormatPrice($grandtotal_ending_price, 0, 2),
+				                		'excel' => array(
+				                			'align' => 'right',
+				                			'bold' => true,
+				            			),
+									),
+									__('Total Saldo') => array(
+                						'label' => __('Total'),
+										'text' => $this->MkCommon->getFormatPrice($grandtotal_ending, 0, 2),
+				                		'excel' => array(
+				                			'align' => 'right',
+				                			'bold' => true,
+				            			),
+									),
+								);
+
+								$result['multiple_column'] = $cntTmp;
+
+				                $total_begining_price = $grandtotal_ending_price;
+				            }
+       					}
+                    }
+                }
+        		
+        		$idx++;
+            }
+        }
+
+		return array(
+			'data' => $result,
+			'last_id' => $last_id,
+			'model' => 'ProductHistory',
+		);
+	}
+
 	function _callProcess( $modelName, $id, $value, $data ) {
 		$dataSave = false;
 		$file = false;
@@ -588,10 +1064,18 @@ class RmReportComponent extends Component {
 		$table = array();
 		$idx = 64; // Acii A
 		$dimensi = 64; // Acii A
+		$column = null;
 
-		if( !empty($data[0]) ) {
-			foreach ($data[0] as $label => $value) {
+		if( !empty($data['multiple_column']) ) {
+			$column = $data['multiple_column'];
+		} else if( !empty($data[0]) ) {
+			$column = $data[0];
+		}
+
+		if( !empty($column) ) {
+			foreach ($column as $label => $value) {
 				$text = Common::hashEmptyField($value, 'text');
+				$label = Common::hashEmptyField($value, 'label', $label);
 				// $width = Common::hashEmptyField($value, 'width');
 
 				$dataArr = Common::_callUnset($value, array(
@@ -630,40 +1114,147 @@ class RmReportComponent extends Component {
 			$bold = false;
 		}
 
-		// add heading with different font and bold text
-		$this->PhpExcel->addTableHeader($table, array(
-			'name' => 'Calibri',
-			'bold' => $bold,
-			'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-			'fill_color' => 'd70601',
-			'text_color' => 'FFFFFF',
-		), $cell_end);
+		if( !empty($data['multiple_column']) ) {
+			if( !empty($data['multiple']) ) {
+				$tmpResult = $data['multiple'];
 
-		if( !empty($data) ) {
-			foreach ($data as $label => $values) {
-				$dataTable = array();
+				if(!empty($tmpResult)){
+		            foreach ($tmpResult as $key => $product) {
+		                if(!empty($product)){
+		                    foreach ($product as $key => $branch) {
+								$headers = Common::hashEmptyField($branch, 'header');
+								$details = Common::hashEmptyField($branch, 'detail');
+								
+								if( !empty($details) ) {
+									$this->PhpExcel->addTableRow(array(
+								    	array(
+											'text' => '',
+										)
+							    	));
+									
+									foreach ($headers as $label => $val) {
+										$text = Common::hashEmptyField($val, 'text');
+										$excel = Common::hashEmptyField($val, 'excel');
 
-				if( !empty($values) ) {
-					foreach ($values as $key => $value) {
-						$text = Common::hashEmptyField($value, 'text', '');
-						$excel = Common::hashEmptyField($value, 'excel');
+									    $this->PhpExcel->addTableRow(array(
+									    	array(
+												'text' => __('%s: %s', $label, $text),
+												'options' => $excel,
+											)
+								    	));
+									}
+									
+									$this->PhpExcel->addTableRow(array(
+								    	array(
+											'text' => '',
+										)
+							    	));
 
-						if( !empty($excel) ) {
-							$dataTable[] = array(
-								'text' => $text,
-								'options' => $excel,
-							);
-						} else {
-							$dataTable[] = $text;
-						}
+									// $idx += 3;
+
+									// if( $idx >= 90 ) {
+									// 	$dimensi++;
+									// }
+									
+									// $cell_end = chr($idx);
+
+									if( $dimensi > 64 ) {
+										$dimensi_chr = chr($dimensi);
+										$cell_end = __('A%s', $dimensi_chr);
+									}
+
+									$this->PhpExcel->addTableHeader($table, array(
+										'name' => 'Calibri',
+										'bold' => $bold,
+										'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+									));
+
+									foreach ($details as $label => $values) {
+										$dataTable = array();
+
+										if( !empty($values) ) {
+											foreach ($values as $key => $value) {
+												$text = Common::hashEmptyField($value, 'text', '');
+												$excel = Common::hashEmptyField($value, 'excel');
+
+												if( !empty($excel) ) {
+													$dataTable[] = array(
+														'text' => $text,
+														'options' => $excel,
+													);
+												} else {
+													$dataTable[] = $text;
+												}
+											}
+										}
+
+										if( !empty($dataTable) ) {
+										    $this->PhpExcel->addTableRow($dataTable);
+										}
+									}
+									
+									$this->PhpExcel->addTableRow(array(
+								    	array(
+											'text' => '',
+										)
+							    	));
+								}
+	                    	}
+	                    }
 					}
 				}
+			}
+		} else {
+			if( !empty($data) ) {
+				// add heading with different font and bold text
+				$this->PhpExcel->addTableHeader($table, array(
+					'name' => 'Calibri',
+					'bold' => $bold,
+					'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+					'fill_color' => 'd70601',
+					'text_color' => 'FFFFFF',
+				), $cell_end);
 
-				if( !empty($dataTable) ) {
-				    $this->PhpExcel->addTableRow($dataTable);
+				foreach ($data as $label => $values) {
+					$dataTable = array();
+
+					if( !empty($values) ) {
+						foreach ($values as $key => $value) {
+							$text = Common::hashEmptyField($value, 'text', '');
+							$excel = Common::hashEmptyField($value, 'excel');
+
+							if( !empty($excel) ) {
+								$dataTable[] = array(
+									'text' => $text,
+									'options' => $excel,
+								);
+							} else {
+								$dataTable[] = $text;
+							}
+						}
+					}
+
+					if( !empty($dataTable) ) {
+					    $this->PhpExcel->addTableRow($dataTable);
+					}
 				}
 			}
 		}
+
+        $full_name = Configure::read('__Site.config_user_data.Employe.full_name');
+		$this->PhpExcel->addTableRow(array(
+	    	array(
+				'text' => '',
+			)
+    	));
+		$this->PhpExcel->addTableRow(array(
+	    	array(
+				'text' => __('Printed on : %s, by : %s', date('d F Y'), $full_name),
+				'options' => array(
+					'colspan' => 5,
+				),
+			)
+    	));
 	}
 
 	function _callDetailBeforeView ( $value ) {

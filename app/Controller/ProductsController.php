@@ -1254,8 +1254,9 @@ class ProductsController extends AppController {
             'select',
             'freeze',
         ));
-        $this->set(compact(
-            'values', 'lastHistory'
+        $this->set(array(
+            'values' => $values,
+            'active_menu' => 'stock_cards',
         ));
     }
 }
