@@ -1082,7 +1082,7 @@ class ProductsController extends AppController {
             )
         ), false);
         $this->Product->ProductStock->virtualFields['total_qty'] = 'SUM(ProductStock.qty - ProductStock.qty_use)';
-        $this->Product->ProductStock->virtualFields['avg_price'] = 'SUM(ProductStock.price) / SUM(ProductStock.qty - ProductStock.qty_use)';
+        $this->Product->ProductStock->virtualFields['avg_price'] = 'SUM(ProductStock.price*ProductStock.qty) / SUM(ProductStock.qty - ProductStock.qty_use)';
 
         $options = array(
             'contain' => array(

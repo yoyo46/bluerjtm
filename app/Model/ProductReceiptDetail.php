@@ -59,7 +59,7 @@ class ProductReceiptDetail extends AppModel {
         $document_type = Common::hashEmptyField($data, 'ProductReceipt.document_type');
         $serial_number = Common::hashEmptyField($this->data, 'ProductReceiptDetail.serial_number');
 
-        if( $document_type != 'wht' && empty($serial_number) ) {
+        if( $document_type == 'wht' && empty($serial_number) ) {
             return false;
         } else {
             return true;
