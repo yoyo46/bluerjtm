@@ -93,11 +93,14 @@ class PurchaseHelper extends AppHelper {
         $disc = $this->Common->filterEmptyField($value, $modelName, 'disc');
         $ppn = $this->Common->filterEmptyField($value, $modelName, 'ppn');
 
-        $total = ( $price * $qty ) - $disc;
+        $total = $price - $disc;
+        // $total = ( $price * $qty ) - $disc;
 
         if( empty($ppn_include) ) {
             $total += $ppn;
         }
+        
+        $total = $total * $qty;
 
         return $total;
     }

@@ -98,11 +98,14 @@ class RjPurchaseComponent extends Component {
         $disc = $this->MkCommon->filterEmptyField($value, $modelName, 'disc');
         $ppn = $this->MkCommon->filterEmptyField($value, $modelName, 'ppn');
 
-        $total = ( $price * $qty ) - $disc;
+        // $total = ( $price * $qty ) - $disc;
+        $total = $price - $disc;
 
         if( empty($ppn_include) ) {
             $total += $ppn;
         }
+        
+        $total = $total * $qty;
 
         return $total;
     }
