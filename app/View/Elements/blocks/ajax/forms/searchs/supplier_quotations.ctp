@@ -41,6 +41,7 @@
             '_url' => array(
                 'controller' => 'ajax', 
                 'action' => 'supplier_quotations', 
+                !empty($vendor_id)?$vendor_id:false,
                 'admin' => false,
             ),
             'linkOptions' => array(

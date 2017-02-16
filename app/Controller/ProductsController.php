@@ -1135,7 +1135,7 @@ class ProductsController extends AppController {
             'order'=> array(
                 'ProductHistory.product_id' => 'ASC',
                 'ProductHistory.branch_id' => 'ASC',
-                'ProductHistory.transaction_date' => 'ASC',
+                'ProductHistory.id' => 'ASC',
                 'ProductHistory.created' => 'ASC',
             ),
         ));

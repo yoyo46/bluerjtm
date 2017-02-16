@@ -68,6 +68,7 @@
                 ));
 
                 $nodoc = Common::hashEmptyField($value, 'DocumentDetail.Document.nodoc');
+                $docid = Common::hashEmptyField($value, 'DocumentDetail.Document.id');
                 $qty = Common::hashEmptyField($value, 'ProductHistory.qty');
                 $total_balance_price = $total_begining_price*$balance;
 
@@ -79,7 +80,7 @@
                         $url = $this->Html->url(array(
                             'controller' => 'products',
                             'action' => 'receipt_detail',
-                            $transaction_id,
+                            $docid,
                         ), true);
                         $total_ending_price = $price*$qty;
                         $grandtotal_ending = $total_balance_price + $total_ending_price;
@@ -91,7 +92,7 @@
                         $url = $this->Html->url(array(
                             'controller' => 'products',
                             'action' => 'expenditure_detail',
-                            $transaction_id,
+                            $docid,
                         ), true);
                         $total_ending_price = $price*$qty;
                         $grandtotal_ending = $total_balance_price - $total_ending_price;
@@ -109,58 +110,83 @@
                 } else {
                     $grandtotal_ending_price = 0;
                 }
+
+                if( !empty($balance) && $total_begining_price != $price ) {
+                    $flag = true;
+                    $rowspan = 3;
+                } else {
+                    $flag = false;
+                    $rowspan = 2;
+                }
 ?>
 <tr>
     <?php 
             echo $this->Html->tag('td', $transaction_date, array(
                 'style' => $style,
-                'rowspan' => 3,
+                'rowspan' => $rowspan,
             ));
             echo $this->Html->tag('td', $this->Html->link($nodoc, $url, array(
                 'target' => '_blank',
             )), array(
                 'style' => $style,
-                'rowspan' => 3,
+                'rowspan' => $rowspan,
             ));
             echo $this->Html->tag('td', $unit, array(
                 'style' => 'text-align: center;'.$style,
-                'rowspan' => 3,
+                'rowspan' => $rowspan,
             ));
             echo $this->Html->tag('td', $qty_in, array(
                 'style' => 'text-align: center;'.$style,
-                'rowspan' => 3,
+                'rowspan' => $rowspan,
             ));
             echo $this->Html->tag('td', $this->Common->getFormatPrice($price_in, 0, 2), array(
                 'style' => 'text-align: right;'.$style,
-                'rowspan' => 3,
+                'rowspan' => $rowspan,
             ));
             echo $this->Html->tag('td', $this->Common->getFormatPrice($total_in, 0, 2), array(
                 'style' => 'text-align: right;'.$style,
-                'rowspan' => 3,
+                'rowspan' => $rowspan,
             ));
             echo $this->Html->tag('td', $qty_out, array(
                 'style' => 'text-align: center;'.$style,
-                'rowspan' => 3,
+                'rowspan' => $rowspan,
             ));
             echo $this->Html->tag('td', $this->Common->getFormatPrice($price_out, 0, 2), array(
                 'style' => 'text-align: right;'.$style,
-                'rowspan' => 3,
+                'rowspan' => $rowspan,
             ));
             echo $this->Html->tag('td', $this->Common->getFormatPrice($total_out, 0, 2), array(
                 'style' => 'text-align: right;'.$style,
-                'rowspan' => 3,
+                'rowspan' => $rowspan,
             ));
-            echo $this->Html->tag('td', $balance, array(
-                'style' => 'text-align: center;'.$style,
-            ));
-            echo $this->Html->tag('td', $this->Common->getFormatPrice($total_begining_price, 0, 2), array(
-                'style' => 'text-align: right;'.$style,
-            ));
-            echo $this->Html->tag('td', $this->Common->getFormatPrice($total_balance_price, 0, 2), array(
-                'style' => 'text-align: right;'.$style,
-            ));
+
+
+            if( !empty($flag) ) {
+                echo $this->Html->tag('td', $balance, array(
+                    'style' => 'text-align: center;'.$style,
+                ));
+                echo $this->Html->tag('td', $this->Common->getFormatPrice($total_begining_price, 0, 2), array(
+                    'style' => 'text-align: right;'.$style,
+                ));
+                echo $this->Html->tag('td', $this->Common->getFormatPrice($total_balance_price, 0, 2), array(
+                    'style' => 'text-align: right;'.$style,
+                ));
+            } else {
+                echo $this->Html->tag('td', $ending, array(
+                    'style' => 'text-align: center;border-bottom: 1px solid #000;'.$style,
+                ));
+                echo $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_ending_price, 0, 2), array(
+                    'style' => 'text-align: right;border-bottom: 1px solid #000;'.$style,
+                ));
+                echo $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_ending, 0, 2), array(
+                    'style' => 'text-align: right;border-bottom: 1px solid #000;'.$style,
+                ));
+            }
     ?>
 </tr>
+<?php
+        if( !empty($flag) ) {
+?>
 <tr>
     <?php 
             echo $this->Html->tag('td', $qty, array(
@@ -174,6 +200,9 @@
             ));
     ?>
 </tr>
+<?php 
+        }
+?>
 <tr>
     <?php 
             echo $this->Html->tag('td', $ending, array(

@@ -2655,7 +2655,7 @@ class AjaxController extends AppController {
 
         $this->set('module_title', __('Supplier Quotation'));
         $this->set(compact(
-        	'values'
+        	'values', 'vendor_id'
     	));
 	}
 
