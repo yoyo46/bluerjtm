@@ -65,6 +65,8 @@
 
                                 $customType = $this->Common->unSlug($type);
                                 $qty_remain = $qty - $out_qty;
+
+                                if( !empty($qty_remain) ) {
                 ?>
                 <tr class="pick-document" rel="<?php echo $id; ?>" data-type="single-total">
                     <?php
@@ -93,7 +95,7 @@
                             ));
                             echo $this->Html->tag('td', $out_qty, array(
                                 'class' => 'text-center hide price_custom',
-                                'rel' => 'qty-out',
+                                'rel' => 'qty-remain',
                             ));
                             echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('ProductExpenditureDetail.qty.%s', $id), false, array(
                                 'type' => 'text',
@@ -151,13 +153,14 @@
                     ?>
                 </tr>
                 <?php
+                                }
+                            }
+                        }else{
+                            echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan'), array(
+                                'colspan' => 7,
+                                'class' => 'text-center alert alert-warning',
+                            )));
                         }
-                    }else{
-                        echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan'), array(
-                            'colspan' => 7,
-                            'class' => 'text-center alert alert-warning',
-                        )));
-                    }
                 ?>
             </tbody>
         </table>

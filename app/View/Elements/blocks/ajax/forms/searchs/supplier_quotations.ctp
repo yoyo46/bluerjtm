@@ -47,7 +47,7 @@
             'linkOptions' => array(
                 'escape' => false, 
                 'class'=> 'btn btn-default btn-sm ajaxCustomModal',
-                'title' => __('Data Supplier Quotation'),
+                'title' => __('Data Penawaran Supplier'),
             ),
         ));
         echo $this->Form->end();

@@ -73,9 +73,11 @@
                     'escape' => false,
                     'title' => __('Daftar Barang'),
                     'class' => 'btn bg-maroon ajaxCustomModal',
-                    'data-check' => '#supplier-quotation',
-                    'data-check-named' => 'no_sq',
-                    'data-check-empty' => 'true',
+                    'data-check' => '#supplier-val',
+                    'data-check-title' => 'supplier',
+                    'data-check-alert' => __('Mohon pilih supplier terlebih dahulu'),
+                    // 'data-check-named' => 'no_sq',
+                    // 'data-check-empty' => 'true',
                 )), array(
                 'class' => "form-group",
             ));

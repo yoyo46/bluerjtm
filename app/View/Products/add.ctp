@@ -52,7 +52,7 @@
 										echo $this->Form->input('life_time',array(
 											'type' => 'text',
 											'label'=> false, 
-											'class'=>'form-control input_number',
+											'class'=>'form-control',
 											'required' => false,
 											'div' => false,
 										));
@@ -74,7 +74,7 @@
 									echo $this->Form->input('size',array(
 										'type' => 'text',
 										'label'=> false, 
-										'class'=>'form-control input_number',
+										'class'=>'form-control',
 										'required' => false,
 										'div' => false,
 									));
@@ -92,7 +92,7 @@
 									echo $this->Form->input('volume',array(
 										'type' => 'text',
 										'label'=> false, 
-										'class'=>'form-control input_number',
+										'class'=>'form-control',
 										'required' => false,
 										'div' => false,
 									));
@@ -110,7 +110,7 @@
 									echo $this->Form->input('weight',array(
 										'type' => 'text',
 										'label'=> false, 
-										'class'=>'form-control input_number',
+										'class'=>'form-control',
 										'required' => false,
 										'div' => false,
 									));
@@ -164,7 +164,7 @@
 											'label'=> false, 
 											'div' => false,
 										));
-										echo __('Harus ada Supplier quotation ?');
+										echo __('Harus ada Penawaran Supplier ?');
 								?>
 						  	</label>
 						</div>

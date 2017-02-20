@@ -55,7 +55,7 @@ class SpkProduct extends AppModel {
     function eksternalValidate ( $data, $field = false ) {
         $dataSpk = $this->Spk->data;
         $data = $this->data;
-        $price_service = Common::hashEmptyField($data, 'SpkProduct.%s'.$field);
+        $price_service = Common::hashEmptyField($data, 'SpkProduct.'.$field);
 
         if( Common::_callDisplayToggle('eksternal', $dataSpk, true) && empty($price_service) ) {
             return false;

@@ -1,5 +1,5 @@
 <?php
-		$title = __('Supplier Quotation');
+		$title = __('Penawaran Supplier');
 		$urlRoot = array(
 			'controller' => 'purchases',
 			'action' => 'supplier_quotations',
@@ -37,12 +37,43 @@
 					'empty' => __('- Pilih Supplier -'),
 					'class' => 'form-control chosen-select',
 				));
-				echo $this->Common->buildInputForm('available_date', __('Tgl Berlaku *'), array(
-					'type' => 'text',
-                    'textGroup' => $this->Common->icon('calendar'),
-                    'positionGroup' => 'right',
-                    'class' => 'form-control pull-right date-range',
-                ));
+				// echo $this->Common->buildInputForm('available_date', __('Tgl Berlaku *'), array(
+				// 	'type' => 'text',
+    //                 'textGroup' => $this->Common->icon('calendar'),
+    //                 'positionGroup' => 'right',
+    //                 'class' => 'form-control pull-right date-range',
+    //             ));
+		?>
+        <div class="form-group">
+            <?php
+                echo $this->Form->label('available_from', 'Tgl Berlaku'); 
+            ?>
+            <div class="row">
+                <div class="col-sm-6">
+                    <?php 
+                            echo $this->Form->input('available_from',array(
+                            	'type' => 'text',
+                                'label'=> false,
+                                'class'=>'form-control custom-date',
+                                'required' => false,
+                                'placeholder' => __('Dari')
+                            ));
+                    ?>
+                </div>
+                <div class="col-sm-6">
+                    <?php 
+                            echo $this->Form->input('available_to',array(
+                            	'type' => 'text',
+                                'label'=> false,
+                                'class'=>'form-control custom-date',
+                                'required' => false,
+                                'placeholder' => __('Sampai')
+                            ));
+                    ?>
+                </div>
+            </div>
+        </div>
+		<?php
 				echo $this->Common->buildInputForm('note', __('Keterangan'));
 
 				if( empty($view) ) {

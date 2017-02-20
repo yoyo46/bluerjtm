@@ -183,7 +183,7 @@
                                 if( empty($view) ) {
                                     echo $this->Html->tag('td', $total_in_qty, array(
                                         'class' => 'text-center total_custom',
-                                        'rel' => 'qty-in',
+                                        'rel' => 'qty-remain',
                                     ));
                                 }
 

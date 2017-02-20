@@ -57,6 +57,11 @@ class PurchaseOrderPayment extends AppModel {
         ),
 	);
 
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['order'] = 'CASE WHEN PurchaseOrderPayment.transaction_status = \'void\' THEN 2 WHEN PurchaseOrderPayment.transaction_status = \'posting\' THEN 1 ELSE 0 END';
+    }
+
 	function getData( $find, $options = false, $elements = false ){
         $branch = isset($elements['branch'])?$elements['branch']:true;
         $status = isset($elements['status'])?$elements['status']:'active';
@@ -64,6 +69,7 @@ class PurchaseOrderPayment extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
+                'PurchaseOrderPayment.order' => 'ASC',
                 'PurchaseOrderPayment.status' => 'DESC',
                 'PurchaseOrderPayment.created' => 'DESC',
                 'PurchaseOrderPayment.id' => 'DESC',
@@ -99,7 +105,7 @@ class PurchaseOrderPayment extends AppModel {
             $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
         }
         if(!empty($options['order'])){
-            $default_options['order'] = array_merge($default_options['order'], $options['order']);
+            $default_options['order'] = $options['order'];
         }
         if(!empty($options['fields'])){
             $default_options['fields'] = $options['fields'];
@@ -168,7 +174,7 @@ class PurchaseOrderPayment extends AppModel {
                 'PurchaseOrderPayment.nodoc'
             ),
             'conditions' => array(
-                'PurchaseOrderPayment.nodoc LIKE' => '%'.$format_id.'%',
+                'PurchaseOrderPayment.nodoc LIKE' => $format_id.'%',
             ),
         ), array(
             'status' => 'all',

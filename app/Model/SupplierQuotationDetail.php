@@ -60,29 +60,50 @@ class SupplierQuotationDetail extends AppModel {
             ),
             'fields' => array(),
             'group' => array(),
+            'contain' => array(),
         );
 
         switch ($status) {
             case 'active':
                 $default_options['conditions']['SupplierQuotationDetail.status'] = 1;
                 break;
+            case 'available':
+                $default_options['conditions']['SupplierQuotation.transaction_status'] = 'approved';
+                $default_options['conditions']['SupplierQuotation.status'] = 1;
+                $default_options['conditions'][]['OR'] = array(
+                    array(
+                        'SupplierQuotation.available_from' => NULL,
+                        'SupplierQuotation.available_to' => NULL,
+                    ),
+                    array(
+                        'SupplierQuotation.available_from' => '0000-00-00',
+                        'SupplierQuotation.available_to' => '0000-00-00',
+                    ),
+                    array(
+                        'SupplierQuotation.available_from <=' => date('Y-m-d'),
+                        'SupplierQuotation.available_to' => '0000-00-00',
+                    ),
+                    array(
+                        'SupplierQuotation.available_from' => '0000-00-00',
+                        'SupplierQuotation.available_to >=' => date('Y-m-d'),
+                    ),
+                    array(
+                        'SupplierQuotation.available_from <=' => date('Y-m-d'),
+                        'SupplierQuotation.available_to' => NULL,
+                    ),
+                    array(
+                        'SupplierQuotation.available_from' => NULL,
+                        'SupplierQuotation.available_to >=' => date('Y-m-d'),
+                    ),
+                    array(
+                        'SupplierQuotation.available_from <=' => date('Y-m-d'),
+                        'SupplierQuotation.available_to >=' => date('Y-m-d'),
+                    ),
+                );
+                break;
         }
 
-        if(!empty($options['conditions'])){
-            $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
-        }
-        if(!empty($options['order'])){
-            $default_options['order'] = $options['order'];
-        }
-        if(!empty($options['fields'])){
-            $default_options['fields'] = $options['fields'];
-        }
-        if(!empty($options['limit'])){
-            $default_options['limit'] = $options['limit'];
-        }
-        if(!empty($options['group'])){
-            $default_options['group'] = $options['group'];
-        }
+        $default_options = $this->merge_options($default_options, $options);
 
         if( $find == 'paginate' ) {
             $result = $default_options;

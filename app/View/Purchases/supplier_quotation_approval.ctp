@@ -1,5 +1,5 @@
 <?php
-        $this->Html->addCrumb(__('Supplier Quotation'), array(
+        $this->Html->addCrumb(__('Penawaran Supplier'), array(
             'action' => 'supplier_quotations',
         ));
         $this->Html->addCrumb($sub_module_title);
@@ -159,7 +159,7 @@
 </div>
 <?php
         echo $this->element('blocks/cashbanks/tables/list_approvals', array(
-            'title' => __('Supplier Quotation Approval'),
+            'title' => __('Penawaran Supplier Approval'),
             'user_otorisasi_approvals' => $user_approvals,
             'show_approval' => $show_approval,
             'completed' => $completed,

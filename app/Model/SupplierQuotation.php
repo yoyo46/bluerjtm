@@ -48,30 +48,30 @@ class SupplierQuotation extends AppModel {
                 'message' => 'Vendor harap dipilih'
             ),
         ),
-        'available_from' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tgl berlaku quotation harap dipilih'
-            ),
-        ),
-        'available_to' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tgl berlaku quotation harap dipilih'
-            ),
-        ),
+        // 'available_from' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Tgl berlaku quotation harap dipilih'
+        //     ),
+        // ),
+        // 'available_to' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Tgl berlaku quotation harap dipilih'
+        //     ),
+        // ),
         'transaction_date' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
                 'message' => 'Tgl quotation harap dipilih'
             ),
         ),
-        'available_date' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Tgl berlaku quotation harap dipilih'
-            ),
-        ),
+        // 'available_date' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Tgl berlaku quotation harap dipilih'
+        //     ),
+        // ),
 	);
 
 	function getData( $find, $options = false, $elements = false ){
@@ -87,6 +87,7 @@ class SupplierQuotation extends AppModel {
                 'SupplierQuotation.id' => 'DESC',
             ),
             'fields' => array(),
+            'contain' => array(),
         );
 
         switch ($status) {
@@ -96,7 +97,36 @@ class SupplierQuotation extends AppModel {
             case 'available':
                 $default_options['conditions']['SupplierQuotation.transaction_status'] = 'approved';
                 $default_options['conditions']['SupplierQuotation.status'] = 1;
-                $default_options['conditions']['DATE_FORMAT(SupplierQuotation.available_to, \'%Y-%m-%d\') >='] = date('Y-m-d');
+                $default_options['conditions'][]['OR'] = array(
+                    array(
+                        'SupplierQuotation.available_from' => NULL,
+                        'SupplierQuotation.available_to' => NULL,
+                    ),
+                    array(
+                        'SupplierQuotation.available_from' => '0000-00-00',
+                        'SupplierQuotation.available_to' => '0000-00-00',
+                    ),
+                    array(
+                        'SupplierQuotation.available_from <=' => date('Y-m-d'),
+                        'SupplierQuotation.available_to' => '0000-00-00',
+                    ),
+                    array(
+                        'SupplierQuotation.available_from' => '0000-00-00',
+                        'SupplierQuotation.available_to >=' => date('Y-m-d'),
+                    ),
+                    array(
+                        'SupplierQuotation.available_from <=' => date('Y-m-d'),
+                        'SupplierQuotation.available_to' => NULL,
+                    ),
+                    array(
+                        'SupplierQuotation.available_from' => NULL,
+                        'SupplierQuotation.available_to >=' => date('Y-m-d'),
+                    ),
+                    array(
+                        'SupplierQuotation.available_from <=' => date('Y-m-d'),
+                        'SupplierQuotation.available_to >=' => date('Y-m-d'),
+                    ),
+                );
                 break;
             // case 'po':
             //     $default_options['conditions']['SupplierQuotation.status'] = 1;
@@ -120,18 +150,7 @@ class SupplierQuotation extends AppModel {
             $default_options['conditions']['SupplierQuotation.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
-        if(!empty($options['conditions'])){
-            $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
-        }
-        if(!empty($options['order'])){
-            $default_options['order'] = array_merge($default_options['order'], $options['order']);
-        }
-        if(!empty($options['fields'])){
-            $default_options['fields'] = $options['fields'];
-        }
-        if(!empty($options['limit'])){
-            $default_options['limit'] = $options['limit'];
-        }
+        $default_options = $this->merge_options($default_options, $options);
 
         if( $find == 'paginate' ) {
             $result = $default_options;
@@ -159,7 +178,7 @@ class SupplierQuotation extends AppModel {
 
     function doSave( $data, $value = false, $id = false ) {
         $result = false;
-        $defaul_msg = __('supplier quotation');
+        $defaul_msg = __('Penawaran Supplier');
 
         if ( !empty($data) ) {
             $nodoc = $this->filterEmptyField($data, 'SupplierQuotation', 'nodoc');
@@ -218,7 +237,7 @@ class SupplierQuotation extends AppModel {
                         if( !empty($allowApprovals) ) {
                             $result['Notification'] = array(
                                 'user_id' => $allowApprovals,
-                                'name' => sprintf(__('Supplier Quotation dengan No Dokumen %s memerlukan ijin Approval'), $nodoc),
+                                'name' => sprintf(__('Penawaran Supplier dengan No Dokumen %s memerlukan ijin Approval'), $nodoc),
                                 'link' => array(
                                     'controller' => 'purchases',
                                     'action' => 'supplier_quotation_detail',

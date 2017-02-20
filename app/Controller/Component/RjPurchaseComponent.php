@@ -13,25 +13,34 @@ class RjPurchaseComponent extends Component {
         if( !empty($data) ) {
             $dataSave = array();
             $transaction_date = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'transaction_date');
-            $available_date = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'available_date');
+            // $available_date = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'available_date');
             $dataDetail = $this->MkCommon->filterEmptyField($data, 'SupplierQuotationDetail');
             $dataDetailPrice = $this->MkCommon->filterEmptyField($dataDetail, 'price');
 
-            $dateArr = $this->MkCommon->_callSplitDate($available_date);
+            // $dateArr = $this->MkCommon->_callSplitDate($available_date);
             $transaction_date = $this->MkCommon->getDate($transaction_date);
 
             $data['SupplierQuotation']['user_id'] = Configure::read('__Site.config_user_id');
             $data['SupplierQuotation']['transaction_date'] = $transaction_date;
 
-            if( !empty($dateArr) ) {
-                $availableFrom = $this->MkCommon->filterEmptyField($dateArr, 'DateFrom');
-                $availableTo = $this->MkCommon->filterEmptyField($dateArr, 'DateTo');
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'SupplierQuotation' => array(
+                        'available_from',
+                        'available_to',
+                    ),
+                )
+            ));
 
-                $data['SupplierQuotation']['available_from'] = $availableFrom;
-                $data['SupplierQuotation']['available_to'] = $availableTo;
+            // if( !empty($dateArr) ) {
+            //     $availableFrom = $this->MkCommon->filterEmptyField($dateArr, 'DateFrom');
+            //     $availableTo = $this->MkCommon->filterEmptyField($dateArr, 'DateTo');
 
-                unset($data['SupplierQuotation']['available_date']);
-            }
+            //     $data['SupplierQuotation']['available_from'] = $availableFrom;
+            //     $data['SupplierQuotation']['available_to'] = $availableTo;
+
+            //     unset($data['SupplierQuotation']['available_date']);
+            // }
 
             if( !empty($dataDetailPrice) ) {
                 $grandtotal = 0;
@@ -72,10 +81,18 @@ class RjPurchaseComponent extends Component {
 
     function _callBeforeRenderQuotation ( $data ) {
         if( !empty($data) ) {
-            $available_from = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'available_from');
-            $available_to = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'available_to');
+            // $available_from = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'available_from');
+            // $available_to = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'available_to');
 
-            $data['SupplierQuotation']['available_date'] = $this->MkCommon->_callUnSplitDate($available_from, $available_to);
+            // $data['SupplierQuotation']['available_date'] = $this->MkCommon->_callUnSplitDate($available_from, $available_to);
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'SupplierQuotation' => array(
+                        'available_from',
+                        'available_to',
+                    ),
+                )
+            ), true);
         }
         
         $transaction_date = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'transaction_date', date('Y-m-d'));
@@ -84,7 +101,7 @@ class RjPurchaseComponent extends Component {
         $vendors = $this->controller->SupplierQuotation->Vendor->getData('list');
         
         $this->MkCommon->_layout_file('select');
-        $this->controller->set('active_menu', 'Supplier Quotation');
+        $this->controller->set('active_menu', 'Penawaran Supplier');
         $this->controller->set(compact(
             'vendors'
         ));
@@ -260,7 +277,7 @@ class RjPurchaseComponent extends Component {
                     $priceArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPaymentDetail', 'price');
                     $totalRemainArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'total_remain');
                     
-                    $purchaseOrder = $this->controller->PurchaseOrder->getMerge(array(), $purchase_order_id, 'unpaid');
+                    $purchaseOrder = $this->controller->PurchaseOrder->getMerge(array(), $purchase_order_id);
                     $nodoc = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'nodoc');
                     $transaction_date = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'transaction_date');
                     $note = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'note');

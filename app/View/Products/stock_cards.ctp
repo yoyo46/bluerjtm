@@ -12,6 +12,11 @@
             'nodoc' => array(
                 'name' => __('No. Referensi'),
                 'field_model' => 'Document.nodoc',
+                'width' => '10%',
+            ),
+            'nopol' => array(
+                'name' => __('No. Pol'),
+                'field_model' => 'Document.nodoc',
             ),
             'unit' => array(
                 'name' => __('Satuan'),

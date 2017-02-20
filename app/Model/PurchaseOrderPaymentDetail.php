@@ -120,7 +120,7 @@ class PurchaseOrderPaymentDetail extends AppModel {
         ), array(
             'status' => 'paid',
         ));
-        $result = $this->PurchaseOrder->getMerge($result, $id, 'unpaid');
+        $result = $this->PurchaseOrder->getMerge($result, $id, 'PurchaseOrder.id', 'unpaid');
 
         $total_paid = $this->filterEmptyField($result, 'PurchaseOrderPaymentDetail', 'total_paid', 0);
         $total_po = $this->filterEmptyField($result, 'PurchaseOrder', 'grandtotal', 0);

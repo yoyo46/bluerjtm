@@ -318,7 +318,7 @@ class Spk extends AppModel {
         return $result;
     }
 
-    function getMerge( $data, $id, $fieldName = 'Spk.id', $status = false ){
+    function getMerge( $data, $id, $fieldName = 'Spk.id', $status = false, $modelName = 'Spk' ){
         $data_merge = $this->getData('first', array(
             'conditions' => array(
                 $fieldName => $id
@@ -328,7 +328,7 @@ class Spk extends AppModel {
         ));
 
         if(!empty($data_merge)){
-            $data = array_merge($data, $data_merge);
+            $data[$modelName] = Common::hashEmptyField($data_merge, 'Spk');
         }
 
         return $data;

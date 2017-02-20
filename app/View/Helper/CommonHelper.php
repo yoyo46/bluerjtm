@@ -1549,13 +1549,13 @@ class CommonHelper extends AppHelper {
     *   @return string
     */
     function getCombineDate ( $startDate, $endDate, $format = 'long' ) {
-        $startDate = strtotime($startDate);
-        $endDate = strtotime($endDate);
+        $startDate = !empty($startDate)?strtotime($startDate):null;
+        $endDate = !empty($endDate)?strtotime($endDate):null;
 
-        if( !empty($startDate) && !empty($endDate) ) {
+        if( !empty($startDate) ) {
             switch ($format) {
                 case 'short':
-                    if( $startDate == $endDate ) {
+                    if( $startDate == $endDate || empty($endDate) ) {
                         $customDate = date('M Y', $startDate);
                     } else if( date('Y', $startDate) == date('Y', $endDate) ) {
                         $customDate = sprintf('%s - %s', date('M', $startDate), date('M Y', $endDate));
@@ -1565,7 +1565,7 @@ class CommonHelper extends AppHelper {
                     break;
                 
                 default:
-                    if( $startDate == $endDate ) {
+                    if( $startDate == $endDate || empty($endDate) ) {
                         $customDate = date('d M Y', $startDate);
                     } else if( date('M Y', $startDate) == date('M Y', $endDate) ) {
                         $customDate = sprintf('%s - %s', date('d', $startDate), date('d M Y', $endDate));

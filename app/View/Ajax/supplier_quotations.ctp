@@ -78,7 +78,7 @@
             echo $this->element('pagination', array(
                 'options' => array(
                     'urlClass' => 'ajaxCustomModal',
-                    'urlTitle' => __('Data Supplier Quotation'),
+                    'urlTitle' => __('Data Penawaran Supplier'),
                 ),
             ));
     ?>

@@ -327,7 +327,7 @@ class RjProductComponent extends Component {
 
             switch ($document_type) {
                 case 'po':
-                    $value = $this->controller->Product->PurchaseOrderDetail->PurchaseOrder->getMerge(array(), $document_number, 'active', 'PurchaseOrder.nodoc');
+                    $value = $this->controller->Product->PurchaseOrderDetail->PurchaseOrder->getMerge(array(), $document_number, 'PurchaseOrder.nodoc', 'active');
                     $document_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'id');
                     break;
 
@@ -781,7 +781,7 @@ class RjProductComponent extends Component {
             if( !empty($details) ) {
                 foreach ($details as $key => $detail) {
                     $without_serial_number = $this->MkCommon->filterEmptyField($detail, 'ProductExpenditureDetail', 'without_serial_number');
-                    $detail_serial_numbers = Common::hashEmptyField($detail, 'ProductExpenditureDetail.ProductExpenditureDetailSerialNumber');
+                    $detail_serial_numbers = Common::hashEmptyField($detail, 'ProductExpenditureDetail.ProductExpenditureDetailSerialNumber', array());
 
                     if( empty($without_serial_number) ) {
                         $serial_numbers = array_merge($serial_numbers, $detail_serial_numbers);
@@ -1038,11 +1038,12 @@ class RjProductComponent extends Component {
                 ));
                 $document_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrderDetail', 'purchase_order_id');
                 $product_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrderDetail', 'product_id');
-                $qty = $this->MkCommon->filterEmptyField($value, 'PurchaseOrderDetail', 'qty');
+                $total_qty = $this->MkCommon->filterEmptyField($value, 'PurchaseOrderDetail', 'qty');
                 $in_qty = $this->controller->Product->ProductReceiptDetail->getTotalReceipt($transaction_id, $document_id, $document_type, $product_id);
-                $qty -= $in_qty;
+                $qty = $total_qty - $in_qty;
 
                 if( !empty($qty) ) {
+                    $value['PurchaseOrderDetail']['total_qty'] = $total_qty;
                     $value['PurchaseOrderDetail']['qty'] = $qty;
                     $value['PurchaseOrderDetail']['in_qty'] = $in_qty;
                     $values[$key] = $value;

@@ -34,7 +34,7 @@
             if( empty($view) ) {
                 echo $this->Html->tag('td', $out_qty, array(
                     'class' => 'text-center price_custom',
-                    'rel' => 'qty-out',
+                    'rel' => 'qty-remain',
                 ));
             }
 

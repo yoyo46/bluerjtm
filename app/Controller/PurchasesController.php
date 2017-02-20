@@ -37,7 +37,7 @@ class PurchasesController extends AppController {
 
     function supplier_quotations(){
         $this->loadModel('SupplierQuotation');
-        $this->set('sub_module_title', 'Supplier Quotation');
+        $this->set('sub_module_title', 'Penawaran Supplier');
         
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');
@@ -53,14 +53,14 @@ class PurchasesController extends AppController {
 
         $vendors = $this->SupplierQuotation->Vendor->getData('list');
 
-        $this->set('active_menu', 'Supplier Quotation');
+        $this->set('active_menu', 'Penawaran Supplier');
         $this->set(compact(
             'values', 'vendors'
         ));
     }
 
     function supplier_quotation_add(){
-        $this->set('sub_module_title', __('Tambah Supplier Quotation'));
+        $this->set('sub_module_title', __('Tambah Penawaran Supplier'));
 
         $data = $this->request->data;
 
@@ -76,8 +76,8 @@ class PurchasesController extends AppController {
 
             if( !empty($document_id) ) {
                 $this->MkCommon->_saveNotification(array(
-                    'action' => __('Supplier Quotation'),
-                    'name' => sprintf(__('Supplier Quotation dengan No Dokumen %s memerlukan ijin Approval'), $nodoc),
+                    'action' => __('Penawaran Supplier'),
+                    'name' => sprintf(__('Penawaran Supplier dengan No Dokumen %s memerlukan ijin Approval'), $nodoc),
                     'user_id' => $userApprovals,
                     'document_id' => $document_id, 
                     'url' => array(
@@ -100,7 +100,7 @@ class PurchasesController extends AppController {
     }
 
     public function supplier_quotation_edit( $id = false ) {
-        $this->set('sub_module_title', __('Edit Supplier Quotation'));
+        $this->set('sub_module_title', __('Edit Penawaran Supplier'));
 
         $value = $this->SupplierQuotation->getData('first', array(
             'conditions' => array(
@@ -140,7 +140,7 @@ class PurchasesController extends AppController {
     }
 
     public function supplier_quotation_detail( $id = false ) {
-        $this->set('sub_module_title', __('Detail Supplier Quotation'));
+        $this->set('sub_module_title', __('Detail Penawaran Supplier'));
 
         $value = $this->SupplierQuotation->getData('first', array(
             'conditions' => array(
@@ -369,7 +369,7 @@ class PurchasesController extends AppController {
 
     function supplier_quotation_approval($id = false){
         $this->loadModel('SupplierQuotation');
-        $this->set('sub_module_title', __('Supplier Quotation Approval'));
+        $this->set('sub_module_title', __('Penawaran Supplier Approval'));
 
         $conditions = array(
             'SupplierQuotation.id' => $id,
@@ -410,7 +410,7 @@ class PurchasesController extends AppController {
                         if( $this->SupplierQuotation->save() ) {
                             if( !empty($msgRevision) ) {
                                 $this->MkCommon->_saveNotification(array(
-                                    'action' => __('Supplier Quotation'),
+                                    'action' => __('Penawaran Supplier'),
                                     'name' => $msgRevision,
                                     'user_id' => $user_id,
                                     'document_id' => $id, 
@@ -440,7 +440,7 @@ class PurchasesController extends AppController {
                 'result_approval', 'value'
             ));
         } else {
-            $this->MkCommon->setCustomFlash(__('Supplier Quotation tidak ditemukan.'), 'error');
+            $this->MkCommon->setCustomFlash(__('Penawaran Supplier tidak ditemukan.'), 'error');
             $this->redirect($this->referer());
         }
     }

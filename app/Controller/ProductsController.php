@@ -1167,33 +1167,46 @@ class ProductsController extends AppController {
 
                 switch ($transaction_type) {
                     case 'product_receipt':
-                        $value = $this->Product->ProductHistory->getMergeList($value, array(
-                            'contain' => array(
-                                'DocumentDetail' => array(
-                                    'uses' => 'ProductReceiptDetail',
-                                    'contain' => array(
-                                        'Document' => array(
-                                            'uses' => 'ProductReceipt',
-                                        ),
-                                    ),
-                                ),
-                            ),
-                        ));
+                        $modelName = 'ProductReceipt';
                         break;
                     case 'product_expenditure':
-                        $value = $this->Product->ProductHistory->getMergeList($value, array(
+                        $modelName = 'ProductExpenditure';
+                        break;
+                }
+
+                $value = $this->Product->ProductHistory->getMergeList($value, array(
+                    'contain' => array(
+                        'DocumentDetail' => array(
+                            'uses' => $modelName.'Detail',
                             'contain' => array(
-                                'DocumentDetail' => array(
-                                    'uses' => 'ProductExpenditureDetail',
-                                    'contain' => array(
-                                        'Document' => array(
-                                            'uses' => 'ProductExpenditure',
-                                        ),
-                                    ),
+                                'Document' => array(
+                                    'uses' => $modelName,
                                 ),
                             ),
-                        ));
+                        ),
+                    ),
+                ));
+
+                $document_type = Common::hashEmptyField($value, 'DocumentDetail.Document.document_type');
+                $document_id = Common::hashEmptyField($value, 'DocumentDetail.Document.document_id');
+
+                switch ($document_type) {
+                    case 'po':
+                        $transactionName = 'PurchaseOrder';
                         break;
+                    
+                    default:
+                        $transactionName = 'Spk';
+                        break;
+                }
+
+                $modelNameDetail = $modelName.'Detail';
+                $value = $this->Product->ProductHistory->$modelNameDetail->$modelName->$transactionName->getMerge($value, $document_id, $transactionName.'.id', 'all', 'Transaction');
+                
+                $truck_id = Common::hashEmptyField($value, 'Transaction.truck_id');
+
+                if( !empty($truck_id) ) {
+                    $value = $this->Product->ProductHistory->$modelNameDetail->$modelName->$transactionName->Truck->getMerge($value, $truck_id);
                 }
 
                 $result[$product_id][$branch_id]['Branch'] = Common::hashEmptyField($value, 'Branch');

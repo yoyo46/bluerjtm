@@ -40,6 +40,8 @@
 							'id' => 'supplier-val',
 							'class' => 'form-control chosen-select',
 						));
+
+						/*
 				?>
 				<div class="form-group">
 					<?php
@@ -52,7 +54,7 @@
 										'frameClass' => false,
 										'id' => 'supplier-quotation',
 										'attributes' => array(
-											'placeholder' => __('No. Supplier Quotation'),
+											'placeholder' => __('No. Penawaran Supplier'),
 											'readonly' => true,
 										),
 									));
@@ -69,7 +71,7 @@
 									$attrBrowse = array(
 		                                'class' => 'ajaxModal visible-xs browse-docs',
 		                                'escape' => false,
-		                                'title' => __('Data Supplier Quotation'),
+		                                'title' => __('Data Penawaran Supplier'),
 		                                'data-action' => 'browse-form',
 		                                'data-check' => '#supplier-val',
 		                                'data-check-title' => 'supplier',
@@ -88,6 +90,8 @@
 					</div>
 				</div>
 				<?php 
+						*/
+				
 						echo $this->Common->buildRadioForm('ppn_include', __('Jenis Pajak'), array(
 							'options' => array(
 								0 => __('Normal'),

@@ -530,33 +530,46 @@ class RmReportComponent extends Component {
 
                 switch ($transaction_type) {
                     case 'product_receipt':
-                        $value = $this->controller->ProductHistory->getMergeList($value, array(
-                            'contain' => array(
-                                'DocumentDetail' => array(
-                                    'uses' => 'ProductReceiptDetail',
-                                    'contain' => array(
-                                        'Document' => array(
-                                            'uses' => 'ProductReceipt',
-                                        ),
-                                    ),
-                                ),
-                            ),
-                        ));
+                        $modelName = 'ProductReceipt';
                         break;
                     case 'product_expenditure':
-                        $value = $this->controller->ProductHistory->getMergeList($value, array(
+                        $modelName = 'ProductExpenditure';
+                        break;
+                }
+
+                $value = $this->controller->ProductHistory->getMergeList($value, array(
+                    'contain' => array(
+                        'DocumentDetail' => array(
+                            'uses' => $modelName.'Detail',
                             'contain' => array(
-                                'DocumentDetail' => array(
-                                    'uses' => 'ProductExpenditureDetail',
-                                    'contain' => array(
-                                        'Document' => array(
-                                            'uses' => 'ProductExpenditure',
-                                        ),
-                                    ),
+                                'Document' => array(
+                                    'uses' => $modelName,
                                 ),
                             ),
-                        ));
+                        ),
+                    ),
+                ));
+
+                $document_type = Common::hashEmptyField($value, 'DocumentDetail.Document.document_type');
+                $document_id = Common::hashEmptyField($value, 'DocumentDetail.Document.document_id');
+
+                switch ($document_type) {
+                    case 'po':
+                        $transactionName = 'PurchaseOrder';
                         break;
+                    
+                    default:
+                        $transactionName = 'Spk';
+                        break;
+                }
+
+                $modelNameDetail = $modelName.'Detail';
+                $value = $this->controller->ProductHistory->$modelNameDetail->$modelName->$transactionName->getMerge($value, $document_id, $transactionName.'.id', 'all', 'Transaction');
+                
+                $truck_id = Common::hashEmptyField($value, 'Transaction.truck_id');
+
+                if( !empty($truck_id) ) {
+                    $value = $this->controller->ProductHistory->$modelNameDetail->$modelName->$transactionName->Truck->getMerge($value, $truck_id);
                 }
 
                 $tmpResult[$product_id][$branch_id]['Branch'] = Common::hashEmptyField($value, 'Branch');
@@ -632,7 +645,7 @@ class RmReportComponent extends Component {
 							__('Tanggal') => array(
 								'text' => __('OPENING BALANCE'),
 		                		'excel' => array(
-									'colspan' => 2,
+									'colspan' => 3,
 		            			),
 							),
 							__('Satuan') => array(
@@ -706,6 +719,7 @@ class RmReportComponent extends Component {
 				                    'date' => 'd/m/Y',
 				                ));
 
+               					$nopol = Common::hashEmptyField($value, 'Truck.nopol', '-');
 				                $nodoc = Common::hashEmptyField($value, 'DocumentDetail.Document.nodoc');
 				                $qty = Common::hashEmptyField($value, 'ProductHistory.qty');
 				                $total_balance_price = $total_begining_price*$balance;
@@ -739,6 +753,9 @@ class RmReportComponent extends Component {
 									),
 									__('No. Referensi') => array(
 		                				'text' => $nodoc,
+									),
+									__('No. Pol') => array(
+		                				'text' => $nopol,
 									),
 									__('Satuan') => array(
 										'text' => $unit,
@@ -815,6 +832,9 @@ class RmReportComponent extends Component {
 									__('No. Referensi') => array(
 		                				'field_model' => 'ProductHistory.transaction_id',
 									),
+									__('No. Pol') => array(
+		                				'field_model' => 'Truck.nopol',
+									),
 									__('Satuan') => array(
 		                				'field_model' => 'ProductHistory.transaction_id',
 									),
@@ -868,6 +888,9 @@ class RmReportComponent extends Component {
 									),
 									__('No. Referensi') => array(
 		                				'field_model' => 'ProductHistory.transaction_id',
+									),
+									__('No. Pol') => array(
+		                				'field_model' => 'Truck.nopol',
 									),
 									__('Satuan') => array(
 		                				'field_model' => 'ProductHistory.transaction_id',

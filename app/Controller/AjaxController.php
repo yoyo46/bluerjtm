@@ -2561,7 +2561,7 @@ class AjaxController extends AppController {
 		}
 	}
 
-	function products ( $action_type = 'sq' ) {
+	function products ( $action_type = 'sq', $vendor_id = null ) {
         $this->loadModel('Product');
         $wrapper = $this->MkCommon->filterEmptyField($this->params, 'named', 'wrapper');
         $no_sq = $this->MkCommon->filterEmptyField($this->params, 'named', 'no_sq');
@@ -2607,25 +2607,32 @@ class AjaxController extends AppController {
                 $value = $this->Product->ProductCategory->getMerge($value, $product_category_id);
                 $value['Product']['rate'] = $this->Product->SupplierQuotationDetail->SupplierQuotation->_callRatePrice($id, false, '-');
 
-                if( !empty($no_sq) ) {
-                	$value = $this->Product->SupplierQuotationDetail->SupplierQuotation->getMerge($value, $no_sq, 'SupplierQuotation.nodoc');
-                	$supplier_quotation_id = Common::hashEmptyField($value, 'SupplierQuotation.id');
-
+                // if( !empty($no_sq) ) {
                 	$sqDetail = $this->Product->SupplierQuotationDetail->getData('first', array(
-			            'conditions' => array(
+                		'conditions' => array(
+                			'SupplierQuotation.vendor_id' => $vendor_id,
 			                'SupplierQuotationDetail.product_id' => $id,
-			                'SupplierQuotationDetail.supplier_quotation_id' => $supplier_quotation_id,
+            			),
+            			'contain' => array(
+            				'SupplierQuotation',
+        				),
+			            'order'=> array(
+			                'SupplierQuotation.status' => 'DESC',
+			                'SupplierQuotation.created' => 'DESC',
+			                'SupplierQuotation.id' => 'DESC',
 			            ),
+            		), array(
+			            'status' => 'available',
 			        ));
 
 			        if( !empty($sqDetail) ) {
 			        	$value = array_merge($value, $sqDetail);
 			        }
-                }
+                // }
 
-                if( $action_type == 'spk' ) {
+                // if( $action_type == 'spk' ) {
         			$value['Product']['product_stock_cnt'] = $this->Product->ProductStock->_callStock($id);
-                }
+                // }
 
                 $values[$key] = $value;
             }
@@ -2653,7 +2660,7 @@ class AjaxController extends AppController {
     	));
         $values = $this->paginate('SupplierQuotation');
 
-        $this->set('module_title', __('Supplier Quotation'));
+        $this->set('module_title', __('Penawaran Supplier'));
         $this->set(compact(
         	'values', 'vendor_id'
     	));
@@ -2673,7 +2680,7 @@ class AjaxController extends AppController {
             $values = $this->SupplierQuotation->SupplierQuotationDetail->Product->getMerge($values, false, 'SupplierQuotationDetail', $id);
     	}
 
-        $this->set('module_title', __('Supplier Quotation'));
+        $this->set('module_title', __('Penawaran Supplier'));
         $this->set(compact(
         	'values'
     	));

@@ -26,6 +26,10 @@
                 'type' => array(
                     'name' => __('Tipe'),
                 ),
+                'stock' => array(
+                    'name' => __('Stok'),
+                    'class' => 'text-center',
+                ),
             );
 
             switch ($action_type) {
@@ -62,6 +66,7 @@
                                 $name = $this->Common->filterEmptyField($value, 'Product', 'name');
                                 $type = $this->Common->filterEmptyField($value, 'Product', 'type');
                                 $rate = $this->Common->filterEmptyField($value, 'Product', 'rate');
+                                $stock = $this->Common->filterEmptyField($value, 'Product', 'product_stock_cnt', 0);
 
                                 $unit = $this->Common->filterEmptyField($value, 'ProductUnit', 'name');
                                 $group = $this->Common->filterEmptyField($value, 'ProductCategory', 'name');
@@ -97,6 +102,9 @@
                             ));
                             echo $this->Html->tag('td', $customType, array(
                                 'class' => 'removed',
+                            ));
+                            echo $this->Html->tag('td', $stock, array(
+                                'class' => 'removed text-center',
                             ));
 
                             switch ($action_type) {

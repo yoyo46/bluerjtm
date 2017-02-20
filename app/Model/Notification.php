@@ -9,7 +9,7 @@ class Notification extends AppModel {
             ),
         ),
 	);
-    var $approvalAction = array( 'Kas/Bank', 'Supplier Quotation' );
+    var $approvalAction = array( 'Kas/Bank', 'Penawaran Supplier' );
 
 	var $belongsTo = array(
 		'User' => array(

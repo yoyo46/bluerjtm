@@ -180,7 +180,7 @@ class PurchaseOrder extends AppModel {
         return $result;
     }
 
-    function getMerge( $data, $id, $status = 'active', $fieldName = 'PurchaseOrder.id' ){
+    function getMerge( $data, $id, $fieldName = 'PurchaseOrder.id', $status = 'active', $modelName = 'PurchaseOrder' ){
         $data_merge = $this->getData('first', array(
             'conditions' => array(
                 $fieldName => $id
@@ -190,7 +190,7 @@ class PurchaseOrder extends AppModel {
         ));
 
         if(!empty($data_merge)){
-            $data = array_merge($data, $data_merge);
+            $data[$modelName] = Common::hashEmptyField($data_merge, 'PurchaseOrder');
         }
 
         return $data;

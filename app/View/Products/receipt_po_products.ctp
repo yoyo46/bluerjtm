@@ -70,6 +70,7 @@
                                 $product = $this->Common->filterEmptyField($value, 'Product');
 
                                 $detail_id = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'id');
+                                $total_qty = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'total_qty');
                                 $qty = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'qty');
                                 $in_qty = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'in_qty', 0);
 
@@ -107,13 +108,13 @@
                             echo $this->Html->tag('td', $customType, array(
                                 'class' => 'removed',
                             ));
-                            echo $this->Html->tag('td', $qty, array(
+                            echo $this->Html->tag('td', $total_qty, array(
                                 'class' => 'text-center price_custom',
                                 'rel' => 'qty-doc',
                             ));
                             echo $this->Html->tag('td', $in_qty, array(
                                 'class' => 'text-center hide price_custom',
-                                'rel' => 'qty-out',
+                                'rel' => 'qty-remain',
                             ));
                             echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('ProductReceiptDetail.qty.%s', $id), false, array(
                                 'type' => 'text',

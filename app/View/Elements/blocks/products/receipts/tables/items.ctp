@@ -74,23 +74,29 @@
                     ));
                 }
 
-                echo $this->Html->tag('td', $this->Html->link($lblSerialNumber, array(
-                    'controller'=> 'products', 
-                    'action' => 'receipt_serial_numbers',
-                    $id,
-                    'view' => !empty($view)?$view:false,
-                    'admin' => false,
-                    'bypass' => true,
-                ), array(
-                    'escape' => false,
-                    'class' => __('ajaxCustomModal browse-docs serial-number-fill-%s', $id),
-                    'title' => __('Serial Number'),
-                    'data-action' => 'browse-form',
-                    'data-form' => '.receipt-form',
-                    'data-picker' => __('.%s', $targetQty),
-                )).$this->Form->error('ProductReceiptDetail.'.$key.'.serial_number'), array(
-                    'class' => 'text-center',
-                ));
+                if( !empty($view) && empty($serial_number) ) {
+                    echo $this->Html->tag('td', __('Automatic'), array(
+                        'class' => 'text-center',
+                    ));
+                } else {
+                    echo $this->Html->tag('td', $this->Html->link($lblSerialNumber, array(
+                        'controller'=> 'products', 
+                        'action' => 'receipt_serial_numbers',
+                        $id,
+                        'view' => !empty($view)?$view:false,
+                        'admin' => false,
+                        'bypass' => true,
+                    ), array(
+                        'escape' => false,
+                        'class' => __('ajaxCustomModal browse-docs serial-number-fill-%s', $id),
+                        'title' => __('Serial Number'),
+                        'data-action' => 'browse-form',
+                        'data-form' => '.receipt-form',
+                        'data-picker' => __('.%s', $targetQty),
+                    )).$this->Form->error('ProductReceiptDetail.'.$key.'.serial_number'), array(
+                        'class' => 'text-center',
+                    ));
+                }
             } else {
                 echo $this->Html->tag('td', __('Automatic'), array(
                     'class' => 'text-center',

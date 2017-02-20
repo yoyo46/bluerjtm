@@ -23,7 +23,7 @@
     <?php 
             echo $this->Html->tag('td', __('OPENING BALANCE'), array(
                 'style' => $style,
-                'colspan' => 2,
+                'colspan' => 3,
             ));
             echo $this->Html->tag('td', $unit, array(
                 'style' => 'text-align: center;'.$style,
@@ -67,6 +67,7 @@
                     'date' => 'd/m/Y',
                 ));
 
+                $nopol = Common::hashEmptyField($value, 'Truck.nopol', '-');
                 $nodoc = Common::hashEmptyField($value, 'DocumentDetail.Document.nodoc');
                 $docid = Common::hashEmptyField($value, 'DocumentDetail.Document.id');
                 $qty = Common::hashEmptyField($value, 'ProductHistory.qty');
@@ -128,6 +129,10 @@
             echo $this->Html->tag('td', $this->Html->link($nodoc, $url, array(
                 'target' => '_blank',
             )), array(
+                'style' => $style,
+                'rowspan' => $rowspan,
+            ));
+            echo $this->Html->tag('td', $nopol, array(
                 'style' => $style,
                 'rowspan' => $rowspan,
             ));

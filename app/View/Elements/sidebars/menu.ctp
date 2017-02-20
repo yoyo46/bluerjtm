@@ -1470,7 +1470,7 @@
 
                     if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeSetting = false;
-                        $lblQuotation = __('Supplier Quotation');
+                        $lblQuotation = __('Penawaran Supplier');
                         $lblPO = __('Purchase Order');
                         $lblPOPayment = __('Pembayaran PO');
                         $lblPOReport = __('Laporan PO');

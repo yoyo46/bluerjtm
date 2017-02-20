@@ -22,6 +22,10 @@
                 'type' => array(
                     'name' => __('Tipe'),
                 ),
+                'stock' => array(
+                    'name' => __('Stok'),
+                    'class' => 'text-center',
+                ),
             );
 
             $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
@@ -45,6 +49,7 @@
                                 $type = $this->Common->filterEmptyField($value, 'Product', 'type');
                                 $rate = $this->Common->filterEmptyField($value, 'Product', 'rate');
                                 $is_supplier_quotation = $this->Common->filterEmptyField($value, 'Product', 'is_supplier_quotation');
+                                $stock = $this->Common->filterEmptyField($value, 'Product', 'product_stock_cnt', 0);
 
                                 $unit = $this->Common->filterEmptyField($value, 'ProductUnit', 'name');
                                 $group = $this->Common->filterEmptyField($value, 'ProductCategory', 'name');
@@ -92,6 +97,9 @@
                             ));
                             echo $this->Html->tag('td', $customType, array(
                                 'class' => 'removed',
+                            ));
+                            echo $this->Html->tag('td', $stock, array(
+                                'class' => 'removed text-center',
                             ));
 
                             echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('PurchaseOrderDetail.note.%s', $id), false, array(
