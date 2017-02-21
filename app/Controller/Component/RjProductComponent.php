@@ -59,10 +59,10 @@ class RjProductComponent extends Component {
 		return $parameters;
 	}
 
-    function _callStockSerialNumber ( $session_id, $product_id, $data ) {
+    function _callStockSerialNumber ( $session_id, $product_id, $data, $price = null ) {
         $serial_numbers = $this->controller->Product->ProductReceiptDetailSerialNumber->getMergeAll(array(), 'all', $product_id, $session_id, 'ProductReceiptDetailSerialNumber.session_id');
         $result = array();
-        
+
         if( !empty($serial_numbers['ProductReceiptDetailSerialNumber']) ) {
             foreach ($serial_numbers['ProductReceiptDetailSerialNumber'] as $key => $value) {
                 $serial_number = $this->MkCommon->filterEmptyField($value, 'ProductReceiptDetailSerialNumber', 'serial_number');
@@ -70,6 +70,7 @@ class RjProductComponent extends Component {
                 $result[$key] = $data;
                 $result[$key]['qty'] = 1;
                 $result[$key]['serial_number'] = strtoupper($serial_number);
+                $result[$key]['price'] = $price;
             }
         }
 
@@ -176,7 +177,7 @@ class RjProductComponent extends Component {
         return $result;
     }
 
-    function _callStock ( $transaction_type, $data, $detail, $type = 'in', $model = 'ProductReceipt' ) {
+    function _callStock ( $transaction_type, $data, $detail, $type = 'in', $model = 'ProductReceipt', $documentDetail = null ) {
         $transaction_status = $this->MkCommon->filterEmptyField($data, $model, 'transaction_status');
         $document_type = $this->MkCommon->filterEmptyField($data, $model, 'document_type');
         $transaction_date = $this->MkCommon->filterEmptyField($data, $model, 'transaction_date');
@@ -225,7 +226,17 @@ class RjProductComponent extends Component {
             switch ($type) {
                 case 'in':
                     if( !empty($serial_number) ) {
-                        $detail['ProductHistory']['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock );
+                        switch ($document_type) {
+                            case 'production':
+                                $price = Common::hashEmptyField($documentDetail, 'SpkProduction.price');
+                                $detail['ProductHistory']['price'] = $price;
+                                $detail['ProductHistory']['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock, $price );
+                                break;
+                            
+                            default:
+                                $detail['ProductHistory']['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock, $price );
+                                break;
+                        }
                     } else {
                         switch ($document_type) {
                             case 'wht':
@@ -258,12 +269,21 @@ class RjProductComponent extends Component {
                                         $detail['ProductReceiptDetail']['Product']['ProductExpenditureDetailSerialNumber'][] = array(
                                             'id' => $sn_id,
                                             'qty_use' => $qtyExpenditure,
+                                            'serial_number' => $serial_number,
                                         );
                                     }
                                     
                                     $total_price = $total_price / count($serial_numbers['ProductExpenditureDetailSerialNumber']);
                                     $detail['ProductHistory']['price'] = $total_price;
                                 }
+                                break;
+                            case 'production':
+                                $price = Common::hashEmptyField($documentDetail, 'SpkProduction.price');
+                                $detail['ProductHistory']['price'] = $price;
+                                $detail['ProductHistory']['ProductStock'][] = array_merge($stock, array(
+                                    'serial_number' => sprintf('%s-%s', $this->MkCommon->getNoRef($product_id), date('ymdHis')),
+                                    'price' => $price,
+                                ));
                                 break;
                             
                             default:
@@ -469,7 +489,7 @@ class RjProductComponent extends Component {
                         ),
                     );
 
-                    $dataDetail[$key] = $this->_callStock('product_receipt', $data, $dataDetail[$key], 'in');
+                    $dataDetail[$key] = $this->_callStock('product_receipt', $data, $dataDetail[$key], 'in', 'ProductReceipt', $documentDetail);
 
                     $total += $qty;
                 }

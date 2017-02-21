@@ -68,7 +68,9 @@
                                 'value' => $id,
                             )));
                             echo $this->Html->tag('td', $name);
-                            echo $this->Html->tag('td', $unit);
+                            echo $this->Html->tag('td', $unit, array(
+                                'class' => 'text-center',
+                            ));
                             echo $this->Html->tag('td', $group, array(
                                 'class' => 'removed',
                             ));
@@ -85,6 +87,18 @@
                                 'class' => 'input_number text-center price_custom',
                                 'attributes' => array(
                                     'rel' => 'qty',
+                                ),
+                            )), array(
+                                'class' => 'hide',
+                            ));
+
+                            echo $this->Html->tag('td', $this->Common->buildInputForm(__('SpkProduction.price.%s', $id), false, array(
+                                'type' => 'text',
+                                'frameClass' => false,
+                                'class' => 'input_price_coma text-right price_custom',
+                                'attributes' => array(
+                                    'rel' => 'price',
+                                    'data-decimal' => 2,
                                 ),
                             )), array(
                                 'class' => 'hide',

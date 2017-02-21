@@ -24,6 +24,11 @@
                 'class' => 'text-center',
                 'style' => 'width:10%;',
             ),
+            'price' => array(
+                'name' => __('Harga Satuan'),
+                'class' => 'text-center',
+                'style' => 'width:15%;',
+            ),
             'action' => array(
                 'name' => __('Action'),
                 'class' => 'text-center',
@@ -73,6 +78,7 @@
     	        	<tbody>
                         <?php
                                 $total_qty = 0;
+                                $total_price = 0;
 
                                 if(!empty($dataDetail)){
                                     foreach ($dataDetail as $key => $value) {
@@ -84,8 +90,10 @@
                                         $unit = $this->Common->filterEmptyField($product, 'ProductUnit', 'name');
 
                                         $qty = $this->Common->filterEmptyField($value, 'SpkProduction', 'qty', 0);
+                                        $price = $this->Common->filterEmptyField($value, 'SpkProduction', 'price', 0);
 
                                         $total_qty += $qty;
+                                        $total_price += $price;
 
                         ?>
                         <tr class="pick-document" rel="<?php echo $product_id; ?>">
@@ -113,6 +121,23 @@
                                             'rel' => 'qty',
                                         ));
                                     }
+                                    
+                                    if( empty($view) ) {
+                                        echo $this->Html->tag('td', $this->Common->_callInputForm(__('SpkProduction.price.%s', $product_id), array(
+                                            'type' => 'text',
+                                            'frameClass' => false,
+                                            'class' => 'input_price_coma text-right price_custom',
+                                            'rel' => 'price',
+                                            'value' => $price,
+                                            'fieldError' => __('SpkProduction.%s.price', $key),
+                                            'data-decimal' => 2,
+                                        )));
+                                    } else {
+                                        echo $this->Html->tag('td', $price, array(
+                                            'class' => 'text-right',
+                                            'rel' => 'price',
+                                        ));
+                                    }
 
                                     echo $this->Html->tag('td', $this->Html->link($this->Common->icon('times'), '#', array(
                                         'class' => 'delete-document btn btn-danger btn-xs',
@@ -138,6 +163,11 @@
                                         'class' => 'text-center total_custom',
                                         'data-decimal' => 0,
                                         'rel' => 'qty',
+                                    ));
+                                    echo $this->Html->tag('td', $this->Common->getFormatPrice($total_price, 0, 2), array(
+                                        'class' => 'text-right total_custom',
+                                        'data-decimal' => 2,
+                                        'rel' => 'price',
                                     ));
                                     echo $this->Html->tag('td', '&nbsp;');
                             ?>

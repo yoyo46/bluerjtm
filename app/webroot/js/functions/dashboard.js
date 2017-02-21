@@ -133,11 +133,6 @@ $(function() {
         }
     });
 
-    //SLIMSCROLL FOR CHAT WIDGET
-    $('#chat-box').slimScroll({
-        height: '250px'
-    });
-
     if( $('.box ul.nav a').length > 0 || $("#loading-example").length > 0 || $(".chart").length > 0 ) {
         /* Morris.js Charts */
         // Sales chart

@@ -28,7 +28,7 @@ class Common {
 						$result = $this->toSlug($result);
 						break;
 					case 'strip_tags':
-						$result = $this->safeTagPrint($result);
+						$result = Common::safeTagPrint($result);
 						break;
 					case 'unserialize':
 						$result = unserialize($result);
@@ -241,8 +241,8 @@ class Common {
 		return $dtString;
 	}
 
-	function _callPriceConverter ($price) {
-		$price = $this->safeTagPrint($price);
+	public static function _callPriceConverter ($price) {
+		$price = Common::safeTagPrint($price);
 		return trim(str_replace(array( ',', '.', 'Rp ' ), array( '', '', '' ), $price));
 	}
 

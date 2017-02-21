@@ -180,6 +180,7 @@ class ProductHistory extends AppModel {
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $code = !empty($data['named']['code'])?$data['named']['code']:false;
+        $product_code = !empty($data['named']['product_code'])?$data['named']['product_code']:false;
         $group = !empty($data['named']['group'])?$data['named']['group']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
@@ -193,6 +194,10 @@ class ProductHistory extends AppModel {
         }
         if( !empty($code) ) {
             $default_options['conditions']['Product.code LIKE'] = '%'.$code.'%';
+            $default_options['contain'][] = 'Product';
+        }
+        if( !empty($product_code) ) {
+            $default_options['conditions']['Product.code'] = $product_code;
             $default_options['contain'][] = 'Product';
         }
         if( !empty($group) ) {

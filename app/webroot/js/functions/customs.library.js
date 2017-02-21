@@ -113,7 +113,19 @@
 
         if( settings.obj.length > 0 ) {
             if( settings.init == false ) {
-                settings.obj.select2();
+                settings.obj.each(function(i,item){
+                    var tag = $.checkUndefined($(item).attr('data-tag'), null);
+
+                    if( tag == 'true' ) {
+                        tag = true;
+                    } else {
+                        tag = false;
+                    }
+
+                    $(item).select2({
+                        tags: tag,
+                    });
+                });
             } else {
                 settings.obj.each(function(i,item){
                     $(item).select2(settings.init);
@@ -1053,7 +1065,7 @@
                                     existing.remove();
                                 }
 
-                                var html_content = '<option selected="selected" value="'+self_value+'">'+self_value+'</tr>';
+                                var html_content = '<option value="'+self_value+'" selected="selected">'+self_value+'</option>';
                                 document_selected.find('.chosen-select').append(html_content);
                                 
                                 var chosen = document_selected.find('.chosen-select');
@@ -1092,8 +1104,16 @@
                     switch (data_type) { 
                         case 'select-multiple':
                             var document_selected = temp_picker.find('.pick-document[rel="'+rel_id+'"]');
-                            var chosenBuild = document_selected.find('.chosen-select.select2-hidden-accessible');
-                            var existing = document_selected.find('.chosen-select option[value="'+self_value+'"]');
+                            var document_single_selected = $('#search-select-multiple');
+
+                            if( document_single_selected.length > 0 ) {
+                                var document_selected = document_single_selected;
+                                var chosenBuild = document_single_selected.find('.chosen-select.select2-hidden-accessible');
+                                var existing = document_single_selected.find('.chosen-select option[value="'+self_value+'"]');
+                            } else {
+                                var chosenBuild = document_selected.find('.chosen-select.select2-hidden-accessible');
+                                var existing = document_selected.find('.chosen-select option[value="'+self_value+'"]');
+                            }
 
                             if(existing.length > 0){
                                 if( chosenBuild.length > 0 ) {

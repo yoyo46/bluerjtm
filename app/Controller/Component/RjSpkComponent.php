@@ -86,10 +86,14 @@ class RjSpkComponent extends Component {
 
                 foreach ($spkProduction['product_id'] as $key => $product_id) {
                     $qty = !empty($spkProduction['qty'][$key])?$spkProduction['qty'][$key]:false;
+                    $price = !empty($spkProduction['price'][$key])?$spkProduction['price'][$key]:false;
+
+                    $price = Common::_callPriceConverter($price);
 
                     $dataProduct = array(
                         'product_id' => $product_id,
                         'qty' => $qty,
+                        'price' => $price,
                     );
 
                     $data['SpkProduction'][]['SpkProduction'] = $dataProduct;

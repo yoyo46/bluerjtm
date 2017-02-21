@@ -1585,6 +1585,7 @@ class MkCommonComponent extends Component {
         $daterange = $this->filterEmptyField($data, 'Search', 'daterange');
         $datettuj = $this->filterEmptyField($data, 'Search', 'datettuj');
         $journalcoa = $this->filterEmptyField($data, 'Search', 'journalcoa');
+        $product_code = $this->filterEmptyField($data, 'Search', 'product_code');
         $params = array();
 
         $dateFrom = $this->filterEmptyField($data, 'Search', 'from');
@@ -1602,6 +1603,7 @@ class MkCommonComponent extends Component {
                 'datettuj',
                 'from',
                 'journalcoa',
+                'product_code'
             ),
         ), $data);
         $dataSearch = $this->filterEmptyField($data, 'Search');
@@ -1659,6 +1661,13 @@ class MkCommonComponent extends Component {
         if( !empty($monthTo) && !empty($yearTo) ) {
             $params['monthTo'] = urlencode($monthTo);
             $params['yearTo'] = urlencode($yearTo);
+        }
+        if( !empty($product_code) ) {
+            if( is_array($product_code) ) {
+                $product_code = implode(',', $product_code);
+            }
+
+           $params['product_code'] = rawurlencode(urlencode($product_code));
         }
         
         return $params;
@@ -1745,6 +1754,7 @@ class MkCommonComponent extends Component {
         $daterange = $this->filterEmptyField($result, 'named', 'daterange');
         $dateritase = $this->filterEmptyField($result, 'named', 'dateritase');
         $journalcoa = $this->filterEmptyField($result, 'named', 'journalcoa');
+        $product_code = $this->filterEmptyField($result, 'named', 'product_code');
 
         $dataString = $this->_callUnset(array(
             'date',
@@ -1754,6 +1764,7 @@ class MkCommonComponent extends Component {
             'to',
             'from',
             'journalcoa',
+            'product_code',
         ), $result['named']);
 
         if( !empty($dataString) ) {
@@ -1774,6 +1785,21 @@ class MkCommonComponent extends Component {
             }
 
             $this->controller->request->data['Search']['journalcoa'] = $journalcoa;
+        }
+        if( !empty($product_code) ) {
+            $product_code = urldecode(rawurldecode($product_code));
+            $codeArr = explode(',', $product_code);
+            $code = $codeArr;
+
+            if( !empty($codeArr) && count($codeArr) > 1 ) {
+                $result['named']['product_code'] = $code;
+            } else {
+                $result['named']['product_code'] = $code;
+            }
+            
+            $codeTmp = array_combine($code, $code);
+            $this->controller->request->data['Search']['product_code'] = $code;
+            $this->controller->request->data['Search']['product_code_options'] = $codeTmp;
         }
 
         if( !empty($date) ) {

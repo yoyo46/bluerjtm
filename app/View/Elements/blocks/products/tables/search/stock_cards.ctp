@@ -1,4 +1,8 @@
-<div class="box">
+<?php 
+        $data = $this->request->data;
+        $optionCode = Common::hashEmptyField($data, 'Search.product_code_options');
+?>
+<div id="search-select-multiple" class="box">
     <?php
             echo $this->element('blocks/common/searchs/box_header');
     ?>
@@ -37,17 +41,19 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php
-                            echo $this->Form->label('code', __('Kode Barang'));
+                            echo $this->Form->label('product_code', __('Kode Barang'));
                     ?>
                     <div class="row temp-document-picker">
                         <div class="col-sm-10">
                             <?php
-                                    echo $this->Common->buildInputForm('code', false, array(
+                                    echo $this->Common->buildInputForm('product_code', false, array(
                                         'type' => 'select',
                                         'class' => 'chosen-select form-control full',
                                         'frameClass' => false,
                                         'attributes' => array(
+                                            'options' => $optionCode,
                                             'multiple' => true,
+                                            'data-tag' => 'true',
                                         ),
                                     ));
                             ?>
