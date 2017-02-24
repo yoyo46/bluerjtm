@@ -1602,6 +1602,27 @@ class SettingsController extends AppController {
         }
     }
 
+    function uang_jalan_detail($id){
+        $this->loadModel('UangJalan');
+        $this->set('sub_module_title', 'Rubah Uang Jalan');
+        $uangJalan = $this->UangJalan->getData('first', array(
+            'conditions' => array(
+                'UangJalan.id' => $id
+            )
+        ));
+
+        if(!empty($uangJalan)){
+            $this->set('view', true);
+            $this->doUangJalan($id, $uangJalan);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Uang jalan tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'uang_jalan'
+            ));
+        }
+    }
+
     function uang_jalan_toggle( $id = false ){
         $this->loadModel('UangJalan');
         $locale = $this->UangJalan->getData('first', array(

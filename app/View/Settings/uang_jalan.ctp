@@ -93,6 +93,13 @@
                 <td><?php echo $this->Common->customDate($value['UangJalan']['created']);?></td>
                 <td class="action">
                     <?php 
+                            echo $this->Html->link('Info', array(
+                                'controller' => 'settings',
+                                'action' => 'uang_jalan_detail',
+                                $id
+                            ), array(
+                                'class' => 'btn btn-info btn-xs'
+                            ));
                             echo $this->Html->link('Edit', array(
                                 'controller' => 'settings',
                                 'action' => 'uang_jalan_edit',
@@ -100,7 +107,6 @@
                             ), array(
                                 'class' => 'btn btn-primary btn-xs'
                             ));
-
                             echo $this->Html->link(__('Hapus'), array(
                                 'controller' => 'settings',
                                 'action' => 'uang_jalan_toggle',
