@@ -267,16 +267,6 @@ class ProductReceipt extends AppModel {
                 $spk_id = $this->filterEmptyField($expenditure, 'ProductExpenditure', 'document_id');
                 $spk_status = $this->filterEmptyField($expenditure, 'Spk', 'transaction_status');
 
-                $outstanding = $this->ProductExpenditure->getData('count', array(
-                    'conditions' => array(
-                        'ProductExpenditure.document_type' => 'wht',
-                        'ProductExpenditure.document_id' => $spk_id,
-                        'ProductExpenditure.receipt_status <>' => 'full',
-                    ),
-                ), array(
-                    'branch' => false,
-                ));
-
                 if( !empty($dataDetail) ) {
                     $receipt_status = 'half';
                 } else {
@@ -293,7 +283,7 @@ class ProductReceipt extends AppModel {
                 if( $transaction_status == 'posting' ) {
                     $dataSave['ProductExpenditure']['receipt_status'] = $receipt_status;
 
-                    if( empty($outstanding) && $spk_status == 'out' ) {
+                    if( $receipt_status == 'full' && $spk_status == 'out' ) {
                         $dataSave['Spk']['id'] = $spk_id;
                         $dataSave['Spk']['transaction_status'] = 'closed';
                         // $dataSave['Spk']['complete_date'] = $transaction_date;
