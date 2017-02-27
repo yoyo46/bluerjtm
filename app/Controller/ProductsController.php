@@ -796,7 +796,9 @@ class ProductsController extends AppController {
                     ),
                     'limit' => 10,
                 ));
-                $this->paginate = $this->Product->ProductExpenditureDetail->getData('paginate', $options);
+                $this->paginate = $this->Product->ProductExpenditureDetail->getData('paginate', $options, array(
+                    'status' => 'unreceipt',
+                ));
                 $values = $this->paginate('ProductExpenditureDetail');
                 $this->RjProduct->_callBeforeRenderReceiptSpkProducts($values, $transaction_id);
                 $this->render('receipt_spk_products');

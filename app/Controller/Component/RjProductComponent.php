@@ -232,7 +232,44 @@ class RjProductComponent extends Component {
                                 $detail['ProductHistory']['price'] = $price;
                                 $detail['ProductHistory']['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock, $price );
                                 break;
-                            
+                            case 'wht':
+                                $serial_numbers = $this->controller->Product->ProductReceiptDetailSerialNumber->getMergeAll(array(), 'all', $product_id, $session_id, 'ProductReceiptDetailSerialNumber.session_id');
+                                $product_expenditure_detail_id = Set::extract('/ProductReceiptDetail/Product/ProductExpenditureDetail/id', $detail);
+                                $detail_serial_numbers = $this->controller->Product->ProductExpenditureDetailSerialNumber->getMergeAll(array(), 'all', $product_id, $product_expenditure_detail_id, 'ProductExpenditureDetailSerialNumber.product_expenditure_detail_id');
+
+                                $result = array();
+                                $total_price = 0;
+                                
+                                if( !empty($detail_serial_numbers['ProductExpenditureDetailSerialNumber']) ) {
+                                    foreach ($detail_serial_numbers['ProductExpenditureDetailSerialNumber'] as $key => $val) {
+                                        $sn_id = Common::hashEmptyField($val, 'ProductExpenditureDetailSerialNumber.id');
+                                        $price = Common::hashEmptyField($val, 'ProductExpenditureDetailSerialNumber.price');
+                                        
+                                        if( !empty($serial_numbers['ProductReceiptDetailSerialNumber'][$key]) ) {
+                                            $snArr = $serial_numbers['ProductReceiptDetailSerialNumber'][$key];
+                                            $serial_number = Common::hashEmptyField($snArr, 'ProductReceiptDetailSerialNumber.serial_number');
+                                            $serial_number = strtoupper($serial_number);
+                                            
+                                            $total_price += $price;
+
+                                            $result[$key] = $stock;
+                                            $result[$key]['qty'] = 1;
+                                            $result[$key]['serial_number'] = $serial_number;
+                                            $result[$key]['price'] = $price;
+
+                                            $detail['ProductReceiptDetail']['Product']['ProductExpenditureDetailSerialNumber'][] = array(
+                                                'id' => $sn_id,
+                                                'qty_use' => 1,
+                                            );
+                                        }
+                                    }
+                                
+                                    $total_price = $total_price / count($detail_serial_numbers['ProductExpenditureDetailSerialNumber']);
+                                    $detail['ProductHistory']['price'] = $total_price;
+                                }
+
+                                $detail['ProductHistory']['ProductStock'] = $result;
+                                break;
                             default:
                                 $detail['ProductHistory']['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock, $price );
                                 break;
