@@ -1575,7 +1575,15 @@ class RevenuesController extends AppController {
         ));
         $ttujs = $this->paginate('Ttuj');
 
+        $customers = $this->Ttuj->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+
+        $this->MkCommon->_layout_file('select');
         $this->set('ttujs', $ttujs);
+        $this->set('customers', $customers);
         $this->render('ttuj');
     }
 
@@ -2024,6 +2032,15 @@ class RevenuesController extends AppController {
         ));
         $ttujs = $this->paginate('Ttuj');
 
+        $customers = $this->Ttuj->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+
+        $this->MkCommon->_layout_file('select');
+
+        $this->set('customers', $customers);
         $this->set('ttujs', $ttujs);
         $this->render('ttuj');
     }
@@ -2096,6 +2113,15 @@ class RevenuesController extends AppController {
         ));
         $ttujs = $this->paginate('Ttuj');
 
+        $customers = $this->Ttuj->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+
+        $this->MkCommon->_layout_file('select');
+
+        $this->set('customers', $customers);
         $this->set('ttujs', $ttujs);
         $this->render('ttuj');
     }
@@ -2180,7 +2206,15 @@ class RevenuesController extends AppController {
             }
         }
 
+        $customers = $this->Ttuj->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+
+        $this->MkCommon->_layout_file('select');
         $this->set('ttujs', $ttujs);
+        $this->set('customers', $customers);
         $this->render('ttuj');
     }
 
