@@ -13,8 +13,8 @@ class Truck extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'nopol truk harap diisi'
             ),
-            'isUnique' => array(
-                'rule' => array('isUnique'),
+            'checkUniq' => array(
+                'rule' => array('checkUniq'),
                 'message' => 'Nopol telah terdaftar',
             ),
         ),
@@ -274,6 +274,24 @@ class Truck extends AppModel {
             'foreignKey' => 'truck_id',
         ),
     );
+
+    function checkUniq() {
+        $id = $this->id;
+        $nopol = Common::hashEmptyField($this->data, 'Truck.nopol');
+        $check = $this->getData('first', array(
+            'conditions' => array(
+                'Truck.nopol' => $nopol,
+            ),
+        ), true, array(
+            'branch' => false,
+        ));
+
+        if( !empty($check) ) {
+            return false;
+        } else {
+            return true; 
+        }
+    }
 
     function uniqueUpdate($data, $id = false){
         $result = false;
