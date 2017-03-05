@@ -1075,7 +1075,7 @@ class RmReportComponent extends Component {
 					),
 					__('Cabang') => array(
 						'text' => $branch,
-                		'field_model' => 'Branch.branch',
+                		'field_model' => 'Branch.code',
 		                'style' => 'text-align: center;',
 		                'data-options' => 'field:\'branch\',width:100',
 					),
@@ -1277,7 +1277,9 @@ class RmReportComponent extends Component {
 		            'contain' => array(
 		            	'Branch',
                 		'Employe' => array(
-                			'contain' => false,
+                			'elements' => array(
+                				'branch' => false,
+            				),
             			),
 		                'Vendor' => array(
 		                    'elements' => array(

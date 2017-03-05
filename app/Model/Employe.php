@@ -76,6 +76,7 @@ class Employe extends AppModel {
     function getData($find, $options = false, $elements = array()){
         $status = isset($elements['status'])?$elements['status']:'active';
         $position = isset($elements['position'])?$elements['position']:false;
+        $branch = isset($elements['branch'])?$elements['branch']:true;
         $default_options = array(
             'conditions'=> array(
                 'Employe.status' => 1,
@@ -86,7 +87,6 @@ class Employe extends AppModel {
             ),
             'contain' => array(
                 'EmployePosition',
-                'Branch',
             ),
             'fields' => array(),
             'group' => array(),
@@ -104,6 +104,10 @@ class Employe extends AppModel {
             default:
                 $default_options['conditions']['Employe.status'] = 1;
                 break;
+        }
+
+        if( !empty($branch) ) {
+            $default_options['contain'][] = 'Branch';
         }
 
         if(!empty($options)){

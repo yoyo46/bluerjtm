@@ -243,6 +243,7 @@ class ProductExpenditureDetail extends AppModel {
             $spk = strpos($sort, 'Spk.');
             $truck = strpos($sort, 'Truck.');
             $product = strpos($sort, 'Product.');
+            $branch = strpos($sort, 'Branch.');
 
             if( is_numeric($spk) ) {
                 $default_options['contain'][] = 'Spk';
@@ -255,6 +256,22 @@ class ProductExpenditureDetail extends AppModel {
             }
             if( is_numeric($product) ) {
                 $default_options['contain'][] = 'Product';
+            }
+            if( is_numeric($branch) ) {
+                $this->bindModel(array(
+                    'hasOne' => array(
+                        'Branch' => array(
+                            'className' => 'Branch',
+                            'foreignKey' => false,
+                            'conditions' => array(
+                                'ProductExpenditure.branch_id = Branch.id'
+                            ),
+                        ),
+                    )
+                ), false);
+
+                $default_options['contain'][] = 'ProductExpenditure';
+                $default_options['contain'][] = 'Branch';
             }
 
             $default_options['order'] = array(
