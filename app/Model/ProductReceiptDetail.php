@@ -78,6 +78,7 @@ class ProductReceiptDetail extends AppModel {
     }
 
 	function getData( $find, $options = false, $elements = false ){
+        $header = isset($elements['header'])?$elements['header']:false;
         $status = isset($elements['status'])?$elements['status']:'active';
 
         $default_options = array(
@@ -95,21 +96,12 @@ class ProductReceiptDetail extends AppModel {
                 break;
         }
 
-        if(!empty($options['conditions'])){
-            $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
+        if( !empty($header) ) {
+            $default_options['conditions']['ProductReceipt.status'] = 1;
+            $default_options['contain'][] = 'ProductReceipt';
         }
-        if(!empty($options['order'])){
-            $default_options['order'] = $options['order'];
-        }
-        if(!empty($options['fields'])){
-            $default_options['fields'] = $options['fields'];
-        }
-        if(!empty($options['limit'])){
-            $default_options['limit'] = $options['limit'];
-        }
-        if(!empty($options['group'])){
-            $default_options['group'] = $options['group'];
-        }
+
+        $default_options = $this->merge_options($default_options, $options);
 
         if( $find == 'paginate' ) {
             $result = $default_options;
@@ -144,6 +136,55 @@ class ProductReceiptDetail extends AppModel {
         }
 
         return $data;
+    }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $code = $this->filterEmptyField($data, 'named', 'code');
+        $name = $this->filterEmptyField($data, 'named', 'name');
+        $group = $this->filterEmptyField($data, 'named', 'group');
+        $sort = $this->filterEmptyField($data, 'named', 'sort', false, array(
+            'addslashes' => true,
+        ));
+
+        if( !empty($code) ) {
+            $default_options['conditions']['Product.code LIKE'] = '%'.$code.'%';
+            $default_options['contain'][] = 'Product';
+        }
+        if( !empty($name) ) {
+            $default_options['conditions']['Product.name LIKE'] = '%'.$name.'%';
+            $default_options['contain'][] = 'Product';
+        }
+        if( !empty($group) ) {
+            $default_options['conditions']['Product.product_category_id'] = $group;
+            $default_options['contain'][] = 'Product';
+        }
+
+        if( !empty($sort) ) {
+            $sortBranch = strpos($sort, 'Branch.');
+            $sortProduct = strpos($sort, 'Product.');
+
+            if( is_numeric($sortBranch) ) {
+                $this->bindModel(array(
+                    'hasOne' => array(
+                        'Branch' => array(
+                            'className' => 'Branch',
+                            'foreignKey' => false,
+                            'conditions' => array(
+                                'ProductReceipt.branch_id = Branch.id'
+                            ),
+                        ),
+                    )
+                ), false);
+
+                $default_options['contain'][] = 'ProductReceipt';
+                $default_options['contain'][] = 'Branch';
+            }
+            if( is_numeric($sortProduct) ) {
+                $default_options['contain'][] = 'Product';
+            }
+        }
+        
+        return $default_options;
     }
 
     function doSave( $datas, $product_receipt_id, $is_validate = false ) {

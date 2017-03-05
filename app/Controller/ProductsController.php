@@ -6,7 +6,7 @@ class ProductsController extends AppController {
     );
 
     public $components = array(
-        'RjProduct'
+        'RjProduct', 'RmReport'
     );
 
     function beforeFilter() {
@@ -1272,6 +1272,52 @@ class ProductsController extends AppController {
         $this->set(array(
             'values' => $values,
             'active_menu' => 'stock_cards',
+        ));
+    }
+
+    public function expenditure_reports() {
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+
+        $dataReport = $this->RmReport->_callDataExpenditure_reports($params, 30, 0, true);
+        $values = Common::hashEmptyField($dataReport, 'data');
+
+        $this->RjProduct->_callBeforeViewExpenditureReports($params);
+        $this->MkCommon->_layout_file(array(
+            'select',
+            'freeze',
+        ));
+        $this->set(array(
+            'values' => $values,
+            'active_menu' => 'expenditure_reports',
+            '_freeze' => true,
+        ));
+    }
+
+    public function receipt_reports() {
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+
+        $dataReport = $this->RmReport->_callDataReceipt_reports($params, 30, 0, true);
+        $values = Common::hashEmptyField($dataReport, 'data');
+
+        $this->RjProduct->_callBeforeViewReceiptReports($params);
+        $this->MkCommon->_layout_file(array(
+            'select',
+            'freeze',
+        ));
+        $this->set(array(
+            'values' => $values,
+            'active_menu' => 'receipt_reports',
+            '_freeze' => true,
         ));
     }
 }

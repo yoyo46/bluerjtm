@@ -155,28 +155,7 @@ class ProductReceipt extends AppModel {
             $default_options['conditions']['ProductReceipt.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
-        if( !empty($options) ) {
-            if(!empty($options['conditions'])){
-                $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
-            }
-            if(!empty($options['order'])){
-                $default_options['order'] = $options['order'];
-            }
-            if( isset($options['contain']) && empty($options['contain']) ) {
-                $default_options['contain'] = false;
-            } else if(!empty($options['contain'])){
-                $default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
-            }
-            if(!empty($options['fields'])){
-                $default_options['fields'] = $options['fields'];
-            }
-            if(!empty($options['limit'])){
-                $default_options['limit'] = $options['limit'];
-            }
-            if(!empty($options['group'])){
-                $default_options['group'] = $options['group'];
-            }
-        }
+        $default_options = $this->merge_options($default_options, $options);
 
         if( $find == 'paginate' ) {
             $result = $default_options;

@@ -551,7 +551,9 @@ class Truck extends AppModel {
 
         if( empty($only_bind) ) {
             $trucks = $this->getData('list', array(
-                'conditions' => $conditions,
+                'conditions' => array_merge($conditions, array(
+                    'Truck.status' => 1,
+                )),
                 'fields' => array(
                     'Truck.id', 'Truck.nopol'
                 ),

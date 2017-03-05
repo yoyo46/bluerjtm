@@ -79,6 +79,7 @@ class ProductExpenditureDetail extends AppModel {
 	);
 
 	function getData( $find, $options = false, $elements = false ){
+        $header = isset($elements['header'])?$elements['header']:false;
         $status = isset($elements['status'])?$elements['status']:'active';
 
         $default_options = array(
@@ -104,21 +105,12 @@ class ProductExpenditureDetail extends AppModel {
                 break;
         }
 
-        if(!empty($options['conditions'])){
-            $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
+        if( !empty($header) ) {
+            $default_options['conditions']['ProductExpenditure.status'] = 1;
+            $default_options['contain'][] = 'ProductExpenditure';
         }
-        if(!empty($options['order'])){
-            $default_options['order'] = $options['order'];
-        }
-        if(!empty($options['fields'])){
-            $default_options['fields'] = $options['fields'];
-        }
-        if(!empty($options['limit'])){
-            $default_options['limit'] = $options['limit'];
-        }
-        if(!empty($options['group'])){
-            $default_options['group'] = $options['group'];
-        }
+
+        $default_options = $this->merge_options($default_options, $options);
 
         if( $find == 'paginate' ) {
             $result = $default_options;
@@ -223,6 +215,9 @@ class ProductExpenditureDetail extends AppModel {
         $code = $this->filterEmptyField($data, 'named', 'code');
         $name = $this->filterEmptyField($data, 'named', 'name');
         $group = $this->filterEmptyField($data, 'named', 'group');
+        $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
+        $sort = !empty($data['named']['sort'])?$data['named']['sort']:false;
+        $direction = !empty($data['named']['direction'])?$data['named']['direction']:false;
 
         if( !empty($code) ) {
             $default_options['conditions']['Product.code LIKE'] = '%'.$code.'%';
@@ -235,6 +230,69 @@ class ProductExpenditureDetail extends AppModel {
         if( !empty($group) ) {
             $default_options['conditions']['Product.product_category_id'] = $group;
             $default_options['contain'][] = 'Product';
+        }
+        if( !empty($nopol) ) {
+            $default_options['conditions']['Truck.nopol LIKE'] = '%'.$nopol.'%';
+            $default_options['contain'][] = 'ProductExpenditure';
+            $default_options['contain'][] = 'Spk';
+            $default_options['contain'][] = 'Truck';
+            $bind = true;
+        }
+
+        if( !empty($sort) ) {
+            $spk = strpos($sort, 'Spk.');
+            $truck = strpos($sort, 'Truck.');
+            $product = strpos($sort, 'Product.');
+
+            if( is_numeric($spk) ) {
+                $default_options['contain'][] = 'Spk';
+                $bind = true;
+            }
+            if( is_numeric($truck) ) {
+                $default_options['contain'][] = 'Spk';
+                $default_options['contain'][] = 'Truck';
+                $bind = true;
+            }
+            if( is_numeric($product) ) {
+                $default_options['contain'][] = 'Product';
+            }
+
+            $default_options['order'] = array(
+                $sort => $direction,
+            );
+        }
+
+        if( !empty($bind) ) {
+            $this->unBindModel(array(
+                'belongsTo' => array(
+                    'ProductExpenditure'
+                )
+            ));
+            $this->bindModel(array(
+                'hasOne' => array(
+                    'ProductExpenditure' => array(
+                        'className' => 'ProductExpenditure',
+                        'foreignKey' => false,
+                        'conditions' => array(
+                            'ProductExpenditure.id = ProductExpenditureDetail.product_expenditure_id'
+                        ),
+                    ),
+                    'Spk' => array(
+                        'className' => 'Spk',
+                        'foreignKey' => false,
+                        'conditions' => array(
+                            'Spk.id = ProductExpenditure.document_id'
+                        ),
+                    ),
+                    'Truck' => array(
+                        'className' => 'Truck',
+                        'foreignKey' => false,
+                        'conditions' => array(
+                            'Truck.id = Spk.truck_id'
+                        ),
+                    ),
+                ),
+            ), false);
         }
         
         return $default_options;

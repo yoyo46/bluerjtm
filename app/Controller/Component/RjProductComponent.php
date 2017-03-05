@@ -735,6 +735,7 @@ class RjProductComponent extends Component {
     }
 
     function _callGetDocReceipt ( $value ) {
+        $this->Product = ClassRegistry::init('Product'); 
         $document_id = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'document_id');
         $document_type = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'document_type');
 
@@ -753,7 +754,7 @@ class RjProductComponent extends Component {
                 break;
         }
 
-        $value = $this->controller->Product->ProductReceiptDetail->ProductReceipt->getMergeList($value, array(
+        $value = $this->Product->ProductReceiptDetail->ProductReceipt->getMergeList($value, array(
             'contain' => array(
                 'Document' => array(
                     'uses' => $modalName,
@@ -1281,6 +1282,38 @@ class RjProductComponent extends Component {
         $this->controller->set('active_menu', $title);
         $this->controller->set(compact(
             'productCategories', 'period_text'
+        ));
+    }
+
+    function _callBeforeViewExpenditureReports( $params ) {
+        $dateFrom = Common::hashEmptyField($params, 'named.DateFrom');
+        $dateTo = Common::hashEmptyField($params, 'named.DateTo');
+        $title = __('Laporan Pengeluaran');
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $period_text = __('Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+        
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('active_menu', $title);
+        $this->controller->set(compact(
+            'period_text'
+        ));
+    }
+
+    function _callBeforeViewReceiptReports( $params ) {
+        $dateFrom = Common::hashEmptyField($params, 'named.DateFrom');
+        $dateTo = Common::hashEmptyField($params, 'named.DateTo');
+        $title = __('Laporan Penerimaan');
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $period_text = __('Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+        
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('active_menu', $title);
+        $this->controller->set(compact(
+            'period_text'
         ));
     }
 }

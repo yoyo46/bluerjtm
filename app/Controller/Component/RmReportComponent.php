@@ -9,7 +9,7 @@ class RmReportComponent extends Component {
 	public $components = array(
 		'MkCommon',
 		'PhpExcel.PhpExcel',
-		'RjImage',
+		'RjImage', 'RjProduct',
 	);
 
 	function initialize(Controller $controller, $settings = array()) {
@@ -312,7 +312,6 @@ class RmReportComponent extends Component {
 
 	function _callDataCurrent_stock_reports ( $params, $limit = 30, $offset = 0 ) {
 		$this->controller->loadModel('Product');
-		$params = $this->controller->params->params;
 
         $params_named = Common::hashEmptyField($params, 'named', array());
 		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
@@ -966,6 +965,517 @@ class RmReportComponent extends Component {
 			'data' => $result,
 			'last_id' => $last_id,
 			'model' => 'ProductHistory',
+		);
+	}
+
+	function _callDataExpenditure_reports ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('ProductExpenditureDetail');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+
+        $this->controller->ProductExpenditureDetail->unBindModel(array(
+            'hasMany' => array(
+                'ProductExpenditureDetailSerialNumber'
+            )
+        ));
+        $this->controller->ProductExpenditureDetail->bindModel(array(
+            'hasOne' => array(
+                'ProductExpenditureDetailSerialNumber' => array(
+                    'className' => 'ProductExpenditureDetailSerialNumber',
+                    'foreignKey' => 'product_expenditure_detail_id',
+                ),
+            )
+        ), false);
+
+		$options = array(
+			'contain' => array(
+				'ProductExpenditureDetailSerialNumber',
+			),
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+		$options = $this->controller->ProductExpenditureDetail->ProductExpenditure->_callRefineParams($params, $options);
+		$options = $this->controller->ProductExpenditureDetail->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'ProductExpenditure', $options );
+
+		$this->controller->paginate	= $this->controller->ProductExpenditureDetail->getData('paginate', $options, array(
+			'branch' => false,
+			'header' => true,
+		));
+		$data = $this->controller->paginate('ProductExpenditureDetail');
+		$result = array();
+
+		$last_data = end($data);
+		$last_id = Common::hashEmptyField($last_data, 'ProductExpenditureDetail.id');
+
+		$paging = $this->controller->params->paging;
+        $nextPage = Common::hashEmptyField($paging, 'ProductExpenditureDetail.nextPage');
+
+        $totalQty = 0;
+        $totalPrice = 0;
+        $grandtotal = 0;
+
+		if( !empty($data) ) {
+            $types = Configure::read('__Site.Spk.type');
+            $totalQty = 0;
+
+			foreach ($data as $key => $value) {
+                $value = $this->RjProduct->_callGetDocReceipt($value);
+		        $value = $this->controller->ProductExpenditureDetail->getMergeList($value, array(
+		            'contain' => array(
+		            	'Product' => array(
+		                	'ProductUnit',
+	            		),
+		            ),
+		        ));
+		        $value = $this->controller->ProductExpenditureDetail->ProductExpenditure->getMergeList($value, array(
+		            'contain' => array(
+		            	'Branch',
+		                'Spk' => array(
+		                    'Truck',
+		                ),
+		            ),
+		        ));
+
+                $nodoc = Common::hashEmptyField($value, 'ProductExpenditure.nodoc');
+                $transaction_date = Common::hashEmptyField($value, 'ProductExpenditure.transaction_date', null, array(
+                	'date' => 'd M Y',
+            	));
+                $document_type = Common::hashEmptyField($value, 'ProductExpenditure.document_type');
+                $note = Common::hashEmptyField($value, 'ProductExpenditure.note', '-', array(
+                	'strict' => true,
+            	));
+                
+                $qty = Common::hashEmptyField($value, 'ProductExpenditureDetailSerialNumber.qty', 0, array(
+                	'strict' => true,
+            	));
+                $serial_number = Common::hashEmptyField($value, 'ProductExpenditureDetailSerialNumber.serial_number');
+
+                $spk_nodoc = Common::hashEmptyField($value, 'Spk.nodoc');
+                $nopol = Common::hashEmptyField($value, 'Spk.Truck.nopol');
+                $branch = Common::hashEmptyField($value, 'Branch.code');
+
+                $code = Common::hashEmptyField($value, 'Product.code');
+                $name = Common::hashEmptyField($value, 'Product.name');
+                $unit = Common::hashEmptyField($value, 'Product.ProductUnit.name');
+
+                $type = Common::hashEmptyField($types, $document_type);
+            	$totalQty += $qty;
+
+				$result[$key] = array(
+					__('No Dokumen') => array(
+						'text' => $nodoc,
+                		'field_model' => 'ProductExpenditure.nodoc',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'nodoc\',width:120',
+		                'align' => 'left',
+					),
+					__('Cabang') => array(
+						'text' => $branch,
+                		'field_model' => 'Branch.branch',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'branch\',width:100',
+					),
+					__('Tgl Pengeluaran') => array(
+						'text' => $transaction_date,
+                		'field_model' => 'ProductExpenditure.transaction_date',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'transaction_date\',width:120',
+		                'align' => 'left',
+					),
+					__('No. SPK') => array(
+						'text' => $spk_nodoc,
+                		'fix_column' => true,
+                		'field_model' => 'Spk.nodoc',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'spk\',width:120',
+		                'align' => 'left',
+					),
+					__('Jenis') => array(
+						'text' => $type,
+                		'field_model' => 'ProductExpenditure.document_type',
+		                'align' => 'center',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'document_type\',width:100',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('NoPol') => array(
+						'text' => $nopol,
+                		'field_model' => 'Truck.nopol',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'nopol\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Keterangan') => array(
+						'text' => $note,
+                		'field_model' => 'ProductExpenditure.note',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'note\',width:150',
+					),
+					__('Kode Barang') => array(
+						'text' => $code,
+                		'field_model' => 'Product.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'code\',width:100',
+					),
+					__('Nama Barang') => array(
+						'text' => $name,
+                		'field_model' => 'Product.name',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'name\',width:100',
+					),
+					__('Satuan') => array(
+						'text' => $unit,
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'unit\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Serial Number') => array(
+						'text' => $serial_number,
+                		'field_model' => 'ProductExpenditureDetailSerialNumber.serial_number',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'serial_number\',width:120',
+					),
+					__('QTY') => array(
+						'text' => $qty,
+                		'field_model' => 'ProductExpenditureDetailSerialNumber.qty',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'qty\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+				);
+			}
+
+			if( empty($nextPage) ) {
+				$result[$key+1] = array(
+					__('No Dokumen') => array(
+                		'field_model' => 'ProductExpenditure.nodoc',
+					),
+					__('Cabang') => array(
+                		'field_model' => 'Branch.branch',
+					),
+					__('Tgl Pengeluaran') => array(
+                		'field_model' => 'ProductExpenditure.transaction_date',
+					),
+					__('No. SPK') => array(
+                		'field_model' => 'Spk.nodoc',
+					),
+					__('Jenis') => array(
+                		'field_model' => 'ProductExpenditure.document_type',
+					),
+					__('NoPol') => array(
+                		'field_model' => 'Truck.nopol',
+					),
+					__('Keterangan') => array(
+                		'field_model' => 'ProductExpenditure.note',
+					),
+					__('Kode Barang') => array(
+                		'field_model' => 'Product.code',
+					),
+					__('Nama Barang') => array(
+                		'field_model' => 'Product.name',
+					),
+					__('Satuan') => array(
+                		'field_model' => 'ProductUnit.name',
+					),
+					__('Serial Number') => array(
+						'text' => __('Total'),
+                		'field_model' => 'ProductExpenditureDetailSerialNumber.serial_number',
+		                'style' => 'font-weight: bold;',
+                		'excel' => array(
+                			'bold' => true,
+            			),
+					),
+					__('QTY') => array(
+						'text' => $totalQty,
+                		'field_model' => 'ProductExpenditureDetailSerialNumber.qty',
+		                'style' => 'text-align: center;font-weight: bold;',
+		                'data-options' => 'field:\'qty\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+                			'bold' => true,
+            			),
+					),
+				);
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'last_id' => $last_id,
+			'model' => 'ProductExpenditureDetail',
+		);
+	}
+
+	function _callDataReceipt_reports ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('ProductReceiptDetail');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+
+		$options = array(
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+		$options = $this->controller->ProductReceiptDetail->ProductReceipt->_callRefineParams($params, $options);
+		$options = $this->controller->ProductReceiptDetail->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'ProductReceipt', $options );
+
+		$this->controller->paginate	= $this->controller->ProductReceiptDetail->getData('paginate', $options, array(
+			'branch' => false,
+			'header' => true,
+		));
+		$data = $this->controller->paginate('ProductReceiptDetail');
+		$result = array();
+
+		$last_data = end($data);
+		$last_id = Common::hashEmptyField($last_data, 'ProductReceiptDetail.id');
+
+		$paging = $this->controller->params->paging;
+        $nextPage = Common::hashEmptyField($paging, 'ProductReceiptDetail.nextPage');
+
+        $totalQty = 0;
+        $totalPrice = 0;
+        $grandtotal = 0;
+
+		if( !empty($data) ) {
+            $types = Configure::read('__Site.Spk.type');
+            $totalQty = 0;
+
+			foreach ($data as $key => $value) {
+                $value = $this->RjProduct->_callGetDocReceipt($value);
+		        $value = $this->controller->ProductReceiptDetail->getMergeList($value, array(
+		            'contain' => array(
+		            	'Product' => array(
+		                	'ProductUnit',
+	            		),
+		            ),
+		        ));
+		        $value = $this->controller->ProductReceiptDetail->ProductReceipt->getMergeList($value, array(
+		            'contain' => array(
+		            	'Branch',
+                		'Employe' => array(
+                			'contain' => false,
+            			),
+		                'Vendor' => array(
+		                    'elements' => array(
+		                        'status' => 'all',
+		                        'branch' => false,
+		                    ),
+		                ),
+		                'Warehouse' => array(
+		                    'uses' => 'Branch',
+		                    'primaryKey' => 'id',
+		                    'foreignKey' => 'to_branch_id',
+		                    'type' => 'first',
+		                ),
+		            ),
+		        ));
+
+                $nodoc = Common::hashEmptyField($value, 'ProductReceipt.nodoc');
+                $transaction_date = Common::hashEmptyField($value, 'ProductReceipt.transaction_date', null, array(
+                	'date' => 'd M Y',
+            	));
+                $note = Common::hashEmptyField($value, 'ProductReceipt.note', '-', array(
+                	'strict' => true,
+            	));
+                $document_type = Common::hashEmptyField($value, 'ProductReceipt.document_type');
+                
+                $qty = Common::hashEmptyField($value, 'ProductReceiptDetail.qty', 0, array(
+                	'strict' => true,
+            	));
+
+                $document_nodoc = Common::hashEmptyField($value, 'Document.nodoc');
+                $branch = Common::hashEmptyField($value, 'Branch.code');
+                $vendor = Common::hashEmptyField($value, 'Vendor.name');
+                $employe = Common::hashEmptyField($value, 'Employe.full_name');
+                $warehouse = Common::hashEmptyField($value, 'Warehouse.name');
+
+                $code = Common::hashEmptyField($value, 'Product.code');
+                $name = Common::hashEmptyField($value, 'Product.name');
+                $unit = Common::hashEmptyField($value, 'Product.ProductUnit.name');
+
+            	$totalQty += $qty;
+
+				$result[$key] = array(
+					__('No Dokumen') => array(
+						'text' => $nodoc,
+                		'field_model' => 'ProductReceipt.nodoc',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'nodoc\',width:120',
+		                'align' => 'left',
+					),
+					__('Cabang') => array(
+						'text' => $branch,
+                		'field_model' => 'Branch.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'branch\',width:100',
+					),
+					__('Tgl Penerimaan') => array(
+						'text' => $transaction_date,
+                		'field_model' => 'ProductReceipt.transaction_date',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'transaction_date\',width:120',
+		                'align' => 'left',
+					),
+					__('No. Transaksi') => array(
+						'text' => $document_nodoc,
+                		'fix_column' => true,
+                		// 'field_model' => 'Document.nodoc',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'document_nodoc\',width:120',
+		                'align' => 'left',
+					),
+					__('Jenis Transaksi') => array(
+						'text' => ucwords($document_type),
+                		'field_model' => 'ProductReceipt.document_type',
+		                'align' => 'center',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'document_type\',width:100',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Supplier') => array(
+						'text' => $vendor,
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'supplier\',width:120',
+		                'align' => 'left',
+					),
+					__('Diterima Oleh') => array(
+						'text' => $employe,
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'employe\',width:120',
+		                'align' => 'left',
+					),
+					__('Gudang Masuk') => array(
+						'text' => $warehouse,
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'warehouse\',width:150',
+					),
+					__('Keterangan') => array(
+						'text' => $note,
+                		'field_model' => 'ProductReceipt.note',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'note\',width:150',
+					),
+					__('Kode Barang') => array(
+						'text' => $code,
+                		'field_model' => 'Product.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'code\',width:100',
+					),
+					__('Nama Barang') => array(
+						'text' => $name,
+                		'field_model' => 'Product.name',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'name\',width:100',
+					),
+					__('Satuan') => array(
+						'text' => $unit,
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'unit\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('QTY') => array(
+						'text' => $qty,
+                		'field_model' => 'ProductReceiptDetail.qty',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'qty\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+				);
+			}
+
+			if( empty($nextPage) || !empty($view) ) {
+				$result[$key+1] = array(
+					__('No Dokumen') => array(
+                		'field_model' => 'ProductReceipt.nodoc',
+					),
+					__('Cabang') => array(
+                		'field_model' => 'Branch.branch',
+					),
+					__('Tgl Penerimaan') => array(
+                		'field_model' => 'ProductReceipt.transaction_date',
+					),
+					__('No. Dokumen') => array(
+                		'field_model' => 'Document.nodoc',
+					),
+					__('Jenis') => array(
+                		'field_model' => 'ProductReceipt.document_type',
+					),
+					__('Supplier') => array(
+                		'field_model' => 'Supplier.name',
+					),
+					__('Diterima Oleh') => array(
+                		'field_model' => 'Employe.full_name',
+					),
+					__('Gudang Masuk') => array(
+                		'field_model' => 'Warehouse.name',
+					),
+					__('Keterangan') => array(
+                		'field_model' => 'ProductReceipt.note',
+					),
+					__('Kode Barang') => array(
+                		'field_model' => 'Product.code',
+					),
+					__('Nama Barang') => array(
+                		'field_model' => 'Product.name',
+					),
+					__('Satuan') => array(
+                		'field_model' => 'ProductUnit.name',
+					),
+					__('QTY') => array(
+						'text' => $totalQty,
+                		'field_model' => 'ProductReceiptDetail.qty',
+		                'style' => 'text-align: center;font-weight: bold;',
+		                'data-options' => 'field:\'qty\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+                			'bold' => true,
+            			),
+					),
+				);
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'last_id' => $last_id,
+			'model' => 'ProductReceiptDetail',
 		);
 	}
 

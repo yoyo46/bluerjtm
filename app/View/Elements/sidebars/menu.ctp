@@ -1364,6 +1364,8 @@
                             'receipts', 'expenditures',
                             'current_stock_reports',
                             'stock_cards',
+                            'expenditure_reports',
+                            'receipt_reports',
                         ),
                         'spk' => array(
                             'index',
@@ -1376,6 +1378,8 @@
                             'spk', 'product_categories', 'products',
                             'receipts', 'product_units', 'expenditures',
                             'current_stock_reports', 'stock_cards',
+                            'expenditure_reports',
+                            'receipt_reports',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1453,6 +1457,22 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'current_stock_reports' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Laporan Pengeluaran', $this->Common->icon('angle-double-right')), array(
+                                'controller' => 'products',
+                                'action' => 'expenditure_reports'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'expenditure_reports' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Laporan Penerimaan', $this->Common->icon('angle-double-right')), array(
+                                'controller' => 'products',
+                                'action' => 'receipt_reports'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'receipt_reports' )?'active':'',
                             ));
                     ?>
                 </ul>
