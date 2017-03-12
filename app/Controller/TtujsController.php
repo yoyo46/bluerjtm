@@ -20,6 +20,8 @@ class TtujsController extends AppController {
         $refine = array();
         if(!empty($this->request->data)) {
             $data = $this->request->data;
+            $result = $this->MkCommon->getRefineGroupBranch(array(), $data);
+
             $params = $this->MkCommon->processFilter($data);
 
             if(!empty($id)){
@@ -29,6 +31,7 @@ class TtujsController extends AppController {
                 array_push($params, $data_action);
             }
 
+            $params = array_merge($params, $result);
             $params['action'] = $index;
             $this->redirect($params);
         }
@@ -133,8 +136,20 @@ class TtujsController extends AppController {
                 'freeze',
             ),
         ));
-        $this->set(compact(
-            'values', 'data_action'
+        
+        $module_title = __('Laporan Rekap Penerimaan Surat Jalan');
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $period_text = sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        } else {
+            $period_text = '';
+        }
+
+        $this->set(array(
+            'values' => $values,
+            'data_action' => $data_action,
+            'module_title' => $module_title,
+            'sub_module_title' => $period_text,
         ));
     }
 }

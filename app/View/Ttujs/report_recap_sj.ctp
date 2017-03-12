@@ -74,11 +74,11 @@
             echo $this->element(sprintf('blocks/common/tables/export_%s', $data_action), array(
                 'tableHead' => $fieldColumn,
                 'tableBody' => $this->element($element),
-                'sub_module_title' => sprintf('%s - %s', $sub_module_title, $period_text),
+                'sub_module_title' => sprintf('%s - %s', $module_title, $period_text),
                 'contentTr' => false,
             ));
         } else {
-            $this->Html->addCrumb($sub_module_title);
+            $this->Html->addCrumb($module_title);
 
             $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
@@ -87,7 +87,7 @@
 <section class="content invoice">
     <?php 
             echo $this->element('blocks/common/box_header', array(
-                'title' => sprintf('%s - %s', $sub_module_title, $period_text),
+                'title' => sprintf('%s - %s', $module_title, $period_text),
             ));
             echo $this->Common->_getPrint(array(
                 '_attr' => array(
