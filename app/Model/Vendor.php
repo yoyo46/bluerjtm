@@ -34,6 +34,13 @@ class Vendor extends AppModel {
         )
 	);
 
+    var $belongsTo = array(
+        'Branch' => array(
+            'className' => 'Branch',
+            'foreignKey' => 'branch_id',
+        ),
+    );
+
     function getData( $find, $options = false, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
         $branch = isset($elements['branch'])?$elements['branch']:true;
@@ -94,13 +101,13 @@ class Vendor extends AppModel {
         return $result;
     }
 
-    function getMerge( $data, $id = false, $modelName = 'SupplierQuotation' ){
+    function getMerge( $data, $id = false, $modelName = 'SupplierQuotation', $field = 'Vendor.id' ){
         if( !empty($data[0]) ) {
             foreach ($data as $key => $value) {
                 $id = !empty($value[$modelName]['vendor_id'])?$value[$modelName]['vendor_id']:false;
                 $value = $this->getData('first', array(
                     'conditions' => array(
-                        'Vendor.id' => $id,
+                        $field => $id,
                     ),
                 ), array(
                     'branch' => false,
@@ -113,7 +120,7 @@ class Vendor extends AppModel {
         } else if( empty($data['Vendor']) && !empty($id) ) {
             $value = $this->getData('first', array(
                 'conditions' => array(
-                    'Vendor.id' => $id,
+                    $field => $id,
                 ),
             ), array(
                 'branch' => false,

@@ -3,20 +3,29 @@
         echo $this->element('blocks/settings/search_vendors');
 ?>
 <div class="box">
-    <div class="box-header">
-        <h3 class="box-title"><?php echo $sub_module_title;?></h3>
-        <div class="box-tools">
-            <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah Vendor', array(
-                    'controller' => 'settings',
-                    'action' => 'vendor_add'
-                ), array(
-                    'escape' => false,
-                    'class' => 'btn btn-app pull-right'
-                ));
-            ?>
-        </div>
-    </div><!-- /.box-header -->
+    <?php 
+            echo $this->element('blocks/common/box_header', array(
+                'title' => $sub_module_title,
+                '_label_multiple' => __('Tambah'),
+                '_add_multiple' => array(
+                    array(
+                        'label' => __('Vendor'),
+                        'url' => array(
+                            'controller' => 'settings',
+                            'action' => 'vendor_add'
+                        ),
+                    ),
+                    array(
+                        'label' => __('Import'),
+                        'url' => array(
+                            'controller' => 'settings',
+                            'action' => 'vendor_import',
+                            'admin' => false,
+                        ),
+                    ),
+                ),
+            ));
+    ?>
     <div class="box-body table-responsive">
         <table class="table table-hover">
             <tr>

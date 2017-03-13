@@ -48,10 +48,10 @@ class ProductCategory extends AppModel {
         return $result;
     }
 
-    function getMerge( $data, $id, $fieldName = 'ProductCategory' ){
+    function getMerge( $data, $id, $fieldName = 'ProductCategory', $field = 'ProductCategory.id' ){
         $data_merge = $this->find('first', array(
             'conditions' => array(
-                'ProductCategory.id' => $id
+                $field => $id
             ),
         ));
 

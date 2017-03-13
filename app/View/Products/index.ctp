@@ -48,20 +48,30 @@
         echo $this->element('blocks/products/search');
 ?>
 <div class="box">
-    <div class="box-header">
-        <h3 class="box-title"><?php echo $sub_module_title;?></h3>
-        <div class="box-tools">
-            <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
-                    'controller' => 'products',
-                    'action' => 'add'
-                ), array(
-                    'escape' => false,
-                    'class' => 'btn btn-app pull-right'
-                ));
-            ?>
-        </div>
-    </div><!-- /.box-header -->
+    <?php 
+            echo $this->element('blocks/common/box_header', array(
+                'title' => $sub_module_title,
+                '_label_multiple' => __('Tambah'),
+                '_add_multiple' => array(
+                    array(
+                        'label' => __('Produk'),
+                        'url' => array(
+                            'controller' => 'products',
+                            'action' => 'add',
+                            'admin' => false,
+                        ),
+                    ),
+                    array(
+                        'label' => __('Import'),
+                        'url' => array(
+                            'controller' => 'products',
+                            'action' => 'import',
+                            'admin' => false,
+                        ),
+                    ),
+                ),
+            ));
+    ?>
     <div class="box-body table-responsive">
         <table class="table table-hover sorting">
             <?php

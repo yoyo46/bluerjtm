@@ -46,11 +46,11 @@ class ProductUnit extends AppModel {
         return $result;
     }
 
-    function getMerge( $data, $id, $with_contain = false ){
+    function getMerge( $data, $id, $field = 'ProductUnit.id' ){
         if(empty($data['ProductUnit'])){
             $data_merge = $this->find('first', array(
                 'conditions' => array(
-                    'ProductUnit.id' => $id
+                    $field => $id
                 ),
             ));
 

@@ -5996,4 +5996,179 @@ class SettingsController extends AppController {
             }
         }
     }
+
+    public function vendor_import( $download = false ) {
+        if(!empty($download)){
+            $link_url = FULL_BASE_URL . '/files/vendors.xls';
+            $this->redirect($link_url);
+            exit;
+        } else {
+            App::import('Vendor', 'excelreader'.DS.'excel_reader2');
+            $this->loadModel('Vendor');
+
+            $this->set('module_title', __('Vendor'));
+            $this->set('active_menu', 'vendors');
+            $this->set('sub_module_title', __('Import Vendor'));
+
+            if(!empty($this->request->data)) { 
+                $Zipped = $this->request->data['Import']['importdata'];
+
+                if($Zipped["name"]) {
+                    $filename = $Zipped["name"];
+                    $source = $Zipped["tmp_name"];
+                    $type = $Zipped["type"];
+                    $name = explode(".", $filename);
+                    $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
+
+                    if(!empty($accepted_types)) {
+                        foreach($accepted_types as $mime_type) {
+                            if($mime_type == $type) {
+                                $okay = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+
+                    if(!$continue) {
+                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
+                        $this->redirect(array('action'=>'import'));
+                    } else {
+                        $path = APP.'webroot'.DS.'files'.DS.date('Y').DS.date('m').DS;
+                        $filenoext = basename ($filename, '.xls');
+                        $filenoext = basename ($filenoext, '.XLS');
+                        $fileunique = uniqid() . '_' . $filenoext;
+
+                        if( !file_exists($path) ) {
+                            mkdir($path, 0755, true);
+                        }
+
+                        $targetdir = $path . $fileunique . $filename;
+                         
+                        ini_set('memory_limit', '96M');
+                        ini_set('post_max_size', '64M');
+                        ini_set('upload_max_filesize', '64M');
+
+                        if(!move_uploaded_file($source, $targetdir)) {
+                            $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                            $this->redirect(array('action'=>'import'));
+                        }
+                    }
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                    $this->redirect(array('action'=>'import'));
+                }
+
+                $xls_files = glob( $targetdir );
+
+                if(empty($xls_files)) {
+                    $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
+                    $this->redirect(array('action'=>'import'));
+                } else {
+                    $uploadedXls = $this->MkCommon->addToFiles('xls', $xls_files[0]);
+                    $uploaded_file = $uploadedXls['xls'];
+                    $file = explode(".", $uploaded_file['name']);
+                    $extension = array_pop($file);
+                    
+                    if($extension == 'xls') {
+                        $dataimport = new Spreadsheet_Excel_Reader();
+                        $dataimport->setUTFEncoder('iconv');
+                        $dataimport->setOutputEncoding('UTF-8');
+                        $dataimport->read($uploaded_file['tmp_name']);
+                        
+                        if(!empty($dataimport)) {
+                            $successfull_row = 0;
+                            $failed_row = 0;
+                            $row_submitted = 1;
+                            $error_message = '';
+                            $textError = array();
+                            $data = $dataimport;
+
+                            for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
+                                $datavar = array();
+                                $flag = true;
+                                $i = 1;
+
+                                while ($flag) {
+                                    if( !empty($data->sheets[0]["cells"][1][$i]) ) {
+                                        $variable = $this->MkCommon->toSlug($data->sheets[0]["cells"][1][$i], '_');
+                                        $thedata = !empty($data->sheets[0]["cells"][$x][$i])?$data->sheets[0]["cells"][$x][$i]:NULL;
+                                        $$variable = trim($thedata);
+                                        $datavar[] = trim($thedata);
+                                    } else {
+                                        $flag = false;
+                                    }
+                                    $i++;
+                                }
+
+                                if(array_filter($datavar)) {
+                                    $cabang = !empty($cabang)?$cabang:false;
+                                    $kode = !empty($kode)?trim($kode):false;
+                                    $nama = !empty($nama)?trim($nama):false;
+                                    $alamat = !empty($alamat)?$alamat:false;
+                                    $telp = !empty($telp)?$telp:false;
+                                    $nama_pic = !empty($nama_pic)?$nama_pic:null;
+                                    $telp_pic = !empty($telp_pic)?$telp_pic:false;
+                                    
+                                    $vendor = $this->Vendor->getMerge(array(), $nama, 'Vendor', 'Vendor.name');
+                                    $branch = $this->Vendor->Branch->getMerge(array(), $cabang, 'Branch.code');
+
+                                    $dataArr = array(
+                                        'Vendor' => array(
+                                            'id' => Common::hashEmptyField($vendor, 'Vendor.id'),
+                                            'code' => $kode,
+                                            'name' => $nama,
+                                            'address' => $alamat,
+                                            'phone_number' => $telp,
+                                            'pic_phone' => $telp_pic,
+                                        ),
+                                    );
+
+                                    if( !empty($nama_pic) ) {
+                                        $dataArr['Vendor']['pic'] = $nama_pic;
+                                    }
+                                    if( empty($id) ) {
+                                        $dataArr['Vendor']['branch_id'] = Common::hashEmptyField($branch, 'Branch.id', 0);
+                                    }
+
+                                    $result = $this->Vendor->saveAll($dataArr, array(
+                                        'validate' => false,
+                                    ));
+                                    $status = $this->MkCommon->filterEmptyField($result, 'status');
+                                    $validationErrors = $this->MkCommon->filterEmptyField($result, 'validationErrors');
+                                    $textError = $this->MkCommon->_callMsgValidationErrors($validationErrors, 'string');
+
+                                    $this->MkCommon->setProcessParams($result, false, array(
+                                        'flash' => false,
+                                        'noRedirect' => true,
+                                    ));
+
+                                    if( $status == 'error' ) {
+                                        $failed_row++;
+                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data. %s'), $row_submitted, $textError) . '<br>';
+                                    } else {
+                                        $successfull_row++;
+                                    }
+                                    
+                                    $row_submitted++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(!empty($successfull_row)) {
+                    $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, $row_submitted-1);
+                    $this->MkCommon->setCustomFlash($message_import1, 'success');
+                }
+                
+                if(!empty($error_message)) {
+                    $this->MkCommon->setCustomFlash($error_message, 'error');
+                }
+
+                $this->redirect(array('action'=>'vendor_import'));
+            }
+        }
+    }
 }
