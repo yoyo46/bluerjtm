@@ -23,22 +23,26 @@ class AjaxController extends AppController {
                 'action' => $index,
                 'false' => false,
             );
-            
+
             if( !empty($named) ) {
-            	foreach ($named as $key => $value) {
-            		switch ($key) {
-            			case 'payment_id':
-            				$params[$key] = $value;
-            				break;
-            			case 'return_value':
-            				$params[$key] = $value;
-            				break;
-            			default:
-            				$params[] = $value;
-            				break;
-            		}
-            	}
+            	$params = array_merge($params, $named);
             }
+
+            // if( !empty($named) ) {
+            // 	foreach ($named as $key => $value) {
+            // 		switch ($key) {
+            // 			case 'payment_id':
+            // 				$params[$key] = $value;
+            // 				break;
+            // 			case 'return_value':
+            // 				$params[$key] = $value;
+            // 				break;
+            // 			default:
+            // 				$params[] = $value;
+            // 				break;
+            // 		}
+            // 	}
+            // }
 
             $result = $this->MkCommon->processFilter($data);
             $params = array_merge($params, $result);
@@ -312,8 +316,10 @@ class AjaxController extends AppController {
 
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');
+
         $named = $this->MkCommon->filterEmptyField($this->params, 'named');
         $payment_id = $this->MkCommon->filterEmptyField($named, 'payment_id');
+        $customer_id = $this->MkCommon->filterEmptyField($named, 'customer_id', false, $customer_id);
 
 		$options = array(
 			'conditions' => array(
@@ -437,6 +443,7 @@ class AjaxController extends AppController {
         $dateTo = date('Y-m-d');
         $named = $this->MkCommon->filterEmptyField($this->params, 'named');
         $payment_id = $this->MkCommon->filterEmptyField($named, 'payment_id');
+        $customer_id = $this->MkCommon->filterEmptyField($named, 'customer_id', false, $customer_id);
 
 		$options = array(
 			'conditions' => array(
@@ -1119,6 +1126,9 @@ class AjaxController extends AppController {
 	function getDrivers ( $id = false, $action_type = false ) {
 		$this->loadModel('Driver');
 
+        $id = $this->MkCommon->filterEmptyField($this->params, 'named', 'driver_id', $id);
+        $action_type = $this->MkCommon->filterEmptyField($this->params, 'named', 'action_type', $action_type);
+
 		$title = __('Supir Truk');
 		$data_action = 'browse-form';
 		$data_change = 'driverID';
@@ -1183,6 +1193,9 @@ class AjaxController extends AppController {
 	function getTrucks ( $action_type = false, $action_id = false ) {
 		$this->loadModel('Truck');
     	$this->loadModel('City');
+
+        $action_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'action_id', $action_id);
+        $action_type = $this->MkCommon->filterEmptyField($this->params, 'named', 'action_type', $action_type);
 
 		$title = __('Data Truk');
 		$data_action = 'browse-form';
@@ -1586,8 +1599,10 @@ class AjaxController extends AppController {
 	function getInfoInvoicePaymentDetail($id = false){
 		$this->loadModel('Invoice');
 		$invoices = array();
+
         $named = $this->MkCommon->filterEmptyField($this->params, 'named');
         $payment_id = $this->MkCommon->filterEmptyField($named, 'payment_id');
+        $id = $this->MkCommon->filterEmptyField($named, 'customer_id', false, $id);
         
         $dateFrom = date('Y-m-d', strtotime('-6 Month'));
         $dateTo = date('Y-m-d');
@@ -2134,6 +2149,7 @@ class AjaxController extends AppController {
 		$document_type = false;
         $named = $this->MkCommon->filterEmptyField($this->params, 'named');
         $payment_id = $this->MkCommon->filterEmptyField($named, 'payment_id');
+        $action_type = $this->MkCommon->filterEmptyField($named, 'action_type', false, $action_type);
 
         switch ($action_type) {
         	case 'biaya_ttuj':
@@ -2563,9 +2579,12 @@ class AjaxController extends AppController {
 
 	function products ( $action_type = 'sq', $vendor_id = null ) {
         $this->loadModel('Product');
+
         $wrapper = $this->MkCommon->filterEmptyField($this->params, 'named', 'wrapper');
         $no_sq = $this->MkCommon->filterEmptyField($this->params, 'named', 'no_sq');
         $type = $this->MkCommon->filterEmptyField($this->params, 'named', 'type');
+        $action_type = $this->MkCommon->filterEmptyField($this->params, 'named', 'action_type', $action_type);
+        $vendor_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'vendor_id', $vendor_id);
 
 		$render = 'products';
         $params = $this->MkCommon->_callRefineParams($this->params);
@@ -2642,7 +2661,7 @@ class AjaxController extends AppController {
         $this->set('module_title', __('Barang'));
         $this->set(compact(
         	'values', 'groups', 'action_type',
-        	'wrapper', 'type'
+        	'wrapper', 'type', 'vendor_id'
     	));
     	$this->render($render);
 	}

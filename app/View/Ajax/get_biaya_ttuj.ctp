@@ -249,7 +249,7 @@
                     echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
                         'controller' => 'ajax',
                         'action' => 'getBiayaTtuj',
-                        $action_type,
+                        'action_type' => $action_type,
                         'payment_id' => $payment_id,
                     ), array(
                         'escape' => false, 
