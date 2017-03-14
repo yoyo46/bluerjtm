@@ -1235,7 +1235,15 @@ class ProductsController extends AppController {
                                 'DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') <=',
                             ),
                         ));
-                        $options['conditions']['DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') <'] = $dateFrom;
+
+                        if( !empty($branch['ProductHistory']) ) {
+                            $firstArr = reset($branch['ProductHistory']);
+                            $last_history_id = Common::hashEmptyField($firstArr, 'ProductHistory.id');
+                            $options['conditions']['ProductHistory.id <'] = $last_history_id;
+                        } else {
+                            $options['conditions']['DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') <'] = $dateFrom;
+                        }
+
                         $options['conditions']['ProductHistory.product_id'] = $product_id;
                         $options['conditions']['ProductHistory.branch_id'] = $branch_id;
                         $options['order'] = array(
