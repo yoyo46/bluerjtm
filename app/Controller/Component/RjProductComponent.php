@@ -494,7 +494,7 @@ class RjProductComponent extends Component {
                         $receipt_detail_status = 'half';
                     }
 
-                    if( $qty > $detailQty ) {
+                    if( $total_receipt > $detailQty ) {
                         $over_receipt = true;
                     } else {
                         $over_receipt = false;
