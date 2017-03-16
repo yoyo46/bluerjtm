@@ -1137,8 +1137,8 @@ class ProductsController extends AppController {
             'order'=> array(
                 'ProductHistory.product_id' => 'ASC',
                 'ProductHistory.branch_id' => 'ASC',
+                'ProductHistory.transaction_date' => 'ASC',
                 'ProductHistory.id' => 'ASC',
-                'ProductHistory.created' => 'ASC',
             ),
         ));
         $options = $this->MkCommon->getConditionGroupBranch( $params, 'ProductHistory', $options );
@@ -1220,6 +1220,10 @@ class ProductsController extends AppController {
         }
 
         if(!empty($values)){
+            $this->Product->ProductHistory->virtualFields['total_begining_balance'] = 'SUM(CASE WHEN ProductHistory.transaction_type = \'product_receipt\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.transaction_type = \'product_expenditure\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END)';
+            $this->Product->ProductHistory->virtualFields['total_qty_in'] = 'SUM(CASE WHEN ProductHistory.type = \'in\' THEN ProductHistory.qty ELSE 0 END)';
+            $this->Product->ProductHistory->virtualFields['total_qty_out'] = 'SUM(CASE WHEN ProductHistory.type = \'out\' THEN ProductHistory.qty ELSE 0 END)';
+                    
             foreach ($values as $key => &$product) {
                 if(!empty($product)){
                     foreach ($product as $key => &$branch) {
@@ -1236,14 +1240,7 @@ class ProductsController extends AppController {
                             ),
                         ));
 
-                        if( !empty($branch['ProductHistory']) ) {
-                            $firstArr = reset($branch['ProductHistory']);
-                            $last_history_id = Common::hashEmptyField($firstArr, 'ProductHistory.id');
-                            $options['conditions']['ProductHistory.id <'] = $last_history_id;
-                        } else {
-                            $options['conditions']['DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') <'] = $dateFrom;
-                        }
-
+                        $options['conditions']['DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') <'] = $dateFrom;
                         $options['conditions']['ProductHistory.product_id'] = $product_id;
                         $options['conditions']['ProductHistory.branch_id'] = $branch_id;
                         $options['order'] = array(
@@ -1251,16 +1248,15 @@ class ProductsController extends AppController {
                             'ProductHistory.created' => 'DESC',
                         );
 
-                        $productHistory = $this->Product->ProductHistory->getData('first', $options, array(
-                            'branch' => false,
-                        ));
-
-                        $this->Product->ProductHistory->virtualFields['total_begining_balance'] = 'SUM(CASE WHEN ProductHistory.transaction_type = \'product_receipt\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.transaction_type = \'product_expenditure\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END)';
-
                         $lastHistory = $this->Product->ProductHistory->getData('first', $options, array(
                             'branch' => false,
                         ));
-                        $lastHistory['ProductHistory']['ending'] = Common::hashEmptyField($productHistory, 'ProductHistory.ending');
+
+                        $total_qty_in = Common::hashEmptyField($lastHistory, 'ProductHistory.total_qty_in', 0);
+                        $total_qty_out = Common::hashEmptyField($lastHistory, 'ProductHistory.total_qty_out', 0);
+                        $total_qty = $total_qty_in - $total_qty_out;
+
+                        $lastHistory['ProductHistory']['ending'] = $total_qty;
 
                         $branch['LastHistory'] = $this->Product->getMergeList($lastHistory, array(
                             'contain' => array(

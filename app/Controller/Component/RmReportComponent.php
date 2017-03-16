@@ -482,7 +482,7 @@ class RmReportComponent extends Component {
                 'ProductHistory.product_id' => 'ASC',
                 'ProductHistory.branch_id' => 'ASC',
                 'ProductHistory.transaction_date' => 'ASC',
-                'ProductHistory.created' => 'ASC',
+                'ProductHistory.id' => 'ASC',
             ),
         	'offset' => $offset,
         	'limit' => $limit,
@@ -579,6 +579,9 @@ class RmReportComponent extends Component {
 
         if(!empty($tmpResult)){
         	$idx = 0;
+            $this->Product->ProductHistory->virtualFields['total_begining_balance'] = 'SUM(CASE WHEN ProductHistory.transaction_type = \'product_receipt\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.transaction_type = \'product_expenditure\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END)';
+            $this->Product->ProductHistory->virtualFields['total_qty_in'] = 'SUM(CASE WHEN ProductHistory.type = \'in\' THEN ProductHistory.qty ELSE 0 END)';
+            $this->Product->ProductHistory->virtualFields['total_qty_out'] = 'SUM(CASE WHEN ProductHistory.type = \'out\' THEN ProductHistory.qty ELSE 0 END)';
 
             foreach ($tmpResult as $key => &$product) {
                 if(!empty($product)){
@@ -610,17 +613,20 @@ class RmReportComponent extends Component {
                             'branch' => false,
                         ));
 
-                        $this->controller->ProductHistory->virtualFields['total_begining_balance'] = 'SUM(CASE WHEN ProductHistory.transaction_type = \'product_receipt\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.transaction_type = \'product_expenditure\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END)';
-
                         $lastHistory = $this->controller->ProductHistory->getData('first', $options, array(
                             'branch' => false,
                         ));
-                        $lastHistory['ProductHistory']['ending'] = Common::hashEmptyField($productHistory, 'ProductHistory.ending');
+
+                        $total_qty_in = Common::hashEmptyField($lastHistory, 'ProductHistory.total_qty_in', 0);
+                        $total_qty_out = Common::hashEmptyField($lastHistory, 'ProductHistory.total_qty_out', 0);
+                        $total_qty = $total_qty_in - $total_qty_out;
+                        
                         $lastHistory = $this->controller->ProductHistory->Product->getMergeList($lastHistory, array(
                             'contain' => array(
                                 'ProductUnit',
                             ),
                         ));
+                        $lastHistory['ProductHistory']['ending'] = $total_qty;
 
 				        if( !empty($lastHistory) ) {
 				            $unit = Common::hashEmptyField($lastHistory, 'ProductUnit.name');

@@ -1,6 +1,7 @@
 <?php 
         $action_type = !empty($action_type)?$action_type:false;
         $vendor_id = !empty($vendor_id)?$vendor_id:false;
+        $data_type = !empty($type)?$type:false;
         
         echo $this->Form->create('Search', array(
             'url' => array(
@@ -9,6 +10,7 @@
                 'products',
                 'action_type' => $action_type,
                 'vendor_id' => $vendor_id,
+                'type' => $data_type,
                 'admin' => false,
             ),
             'class' => 'ajax-form',
@@ -35,7 +37,9 @@
             '_url' => array(
                 'controller' => 'ajax', 
                 'action' => 'products', 
-                $action_type,
+                'action_type' => $action_type,
+                'vendor_id' => $vendor_id,
+                'type' => $data_type,
                 'admin' => false,
             ),
             'linkOptions' => array(

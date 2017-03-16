@@ -1,7 +1,8 @@
 <?php
         $style = 'background-color: #f5f5f5;';
+        $ending_stock = array();
 
-        if( !empty($values['LastHistory']) ) {
+        if( !empty($values['LastHistory']['id']) ) {
             $lastHistory = $values['LastHistory'];
             $unit = Common::hashEmptyField($lastHistory, 'ProductUnit.name');
             $start_balance = Common::hashEmptyField($lastHistory, 'ProductHistory.ending', 0);
@@ -12,6 +13,8 @@
             } else {
                 $total_begining_price = 0;
             }
+    
+            $ending_stock[$total_begining_price]['qty'] = $start_balance;
         } else {
             $unit = '';
             $start_balance = 0;
@@ -53,6 +56,9 @@
                 $qty_out = 0;
                 $price_out = 0;
                 $total_out = 0;
+                
+                $ending = 0;
+                $grandtotal_ending = 0;
 
                 $url = null;
                 $price = null;
@@ -61,8 +67,7 @@
 
                 $transaction_id = Common::hashEmptyField($value, 'ProductHistory.transaction_id');
                 $transaction_type = Common::hashEmptyField($value, 'ProductHistory.transaction_type');
-                $ending = Common::hashEmptyField($value, 'ProductHistory.ending');
-                $balance = Common::hashEmptyField($value, 'ProductHistory.balance');
+                // $balance = Common::hashEmptyField($value, 'ProductHistory.balance');
                 $transaction_date = Common::hashEmptyField($value, 'ProductHistory.transaction_date', null, array(
                     'date' => 'd/m/Y',
                 ));
@@ -71,7 +76,7 @@
                 $nodoc = Common::hashEmptyField($value, 'DocumentDetail.Document.nodoc');
                 $docid = Common::hashEmptyField($value, 'DocumentDetail.Document.id');
                 $qty = Common::hashEmptyField($value, 'ProductHistory.qty');
-                $total_balance_price = $total_begining_price*$balance;
+                // $total_balance_price = $total_begining_price*$balance;
 
                 switch ($transaction_type) {
                     case 'product_receipt':
@@ -84,10 +89,19 @@
                             $docid,
                         ), true);
                         $total_ending_price = $price*$qty;
-                        $grandtotal_ending = $total_balance_price + $total_ending_price;
+                        // $grandtotal_ending = $total_balance_price + $total_ending_price;
+                
+                        if( !empty($ending_stock[$price]['qty']) ) {
+                            $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
+                        } else {
+                            $ending_stock[$price] = array(
+                                'qty' => $qty,
+                                'price' => $price,
+                            );
+                        }
                         break;
                     case 'product_expenditure':
-                        $qty_out = Common::hashEmptyField($value, 'ProductHistory.qty');
+                        $qty_out_tmp = $qty_out = Common::hashEmptyField($value, 'ProductHistory.qty');
                         $price = $price_out = Common::hashEmptyField($value, 'ProductHistory.price');
                         $total_out = $qty_out * $price_out;
                         $url = $this->Html->url(array(
@@ -96,7 +110,24 @@
                             $docid,
                         ), true);
                         $total_ending_price = $price*$qty;
-                        $grandtotal_ending = $total_balance_price - $total_ending_price;
+                        // $grandtotal_ending = $total_balance_price - $total_ending_price;
+                
+                        if( !empty($ending_stock) ) {
+                            foreach ($ending_stock as $key => &$stock) {
+                                $ending_qty = Common::hashEmptyField($stock, 'qty', 0) - $qty_out_tmp;
+
+                                if( empty($ending_qty) ) {
+                                    unset($ending_stock[$key]);
+                                    break;
+                                } else if( $ending_qty < 0 ) {
+                                    unset($ending_stock[$key]);
+                                    $qty_out_tmp = abs($ending_qty);
+                                } else {
+                                    $ending_stock = Hash::insert($ending_stock, 'qty', $ending_qty);
+                                    break;
+                                }
+                            }
+                        }
                         break;
                 }
 
@@ -106,17 +137,22 @@
                     $style = 'background-color: #f5f5f5;';
                 }
 
-                if( !empty($ending) ) {
-                    $grandtotal_ending_price = $grandtotal_ending / $ending;
-                } else {
-                    $grandtotal_ending_price = 0;
-                }
+                // if( !empty($ending) ) {
+                //     $grandtotal_ending_price = $grandtotal_ending / $ending;
+                // } else {
+                //     $grandtotal_ending_price = 0;
+                // }
 
-                if( !empty($balance) && $total_begining_price != $price ) {
-                    $flag = true;
-                    $rowspan = 3;
+                // if( !empty($balance) && $total_begining_price != $price ) {
+                //     $flag = true;
+                //     $rowspan = 3;
+                // } else {
+                //     $flag = false;
+                //     $rowspan = 2;
+                // }
+                if( !empty($ending_stock) ) {
+                    $rowspan = count($ending_stock)+1;
                 } else {
-                    $flag = false;
                     $rowspan = 2;
                 }
 ?>
@@ -165,31 +201,68 @@
                 'rowspan' => $rowspan,
             ));
 
+            if( !empty($ending_stock) ) {
+                $firstArr = reset($ending_stock);
+                $lastArr = $ending_stock;
+                array_splice($lastArr, 0, 1);
 
-            if( !empty($flag) ) {
-                echo $this->Html->tag('td', $balance, array(
+                $ending_qty = Common::hashEmptyField($firstArr, 'qty', 0);
+                $ending_price = Common::hashEmptyField($firstArr, 'price', 0);
+                $ending_total = $ending_qty*$ending_price;
+                
+                $ending += $ending_qty;
+                $grandtotal_ending += $ending_total;
+
+                echo $this->Html->tag('td', $ending_qty, array(
                     'style' => 'text-align: center;'.$style,
                 ));
-                echo $this->Html->tag('td', $this->Common->getFormatPrice($total_begining_price, 0, 2), array(
+                echo $this->Html->tag('td', $this->Common->getFormatPrice($ending_price, 0, 2), array(
                     'style' => 'text-align: right;'.$style,
                 ));
-                echo $this->Html->tag('td', $this->Common->getFormatPrice($total_balance_price, 0, 2), array(
+                echo $this->Html->tag('td', $this->Common->getFormatPrice($ending_total, 0, 2), array(
                     'style' => 'text-align: right;'.$style,
                 ));
             } else {
-                echo $this->Html->tag('td', $ending, array(
+                $ending += $start_balance;
+                $grandtotal_ending += $total_begining_balance;
+
+                echo $this->Html->tag('td', $start_balance, array(
                     'style' => 'text-align: center;border-bottom: 1px solid #000;'.$style,
                 ));
-                echo $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_ending_price, 0, 2), array(
+                echo $this->Html->tag('td', $this->Common->getFormatPrice($total_begining_price, 0, 2), array(
                     'style' => 'text-align: right;border-bottom: 1px solid #000;'.$style,
                 ));
-                echo $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_ending, 0, 2), array(
+                echo $this->Html->tag('td', $this->Common->getFormatPrice($total_begining_balance, 0, 2), array(
                     'style' => 'text-align: right;border-bottom: 1px solid #000;'.$style,
                 ));
             }
+
+
+            // if( !empty($flag) ) {
+            //     echo $this->Html->tag('td', $balance, array(
+            //         'style' => 'text-align: center;'.$style,
+            //     ));
+            //     echo $this->Html->tag('td', $this->Common->getFormatPrice($total_begining_price, 0, 2), array(
+            //         'style' => 'text-align: right;'.$style,
+            //     ));
+            //     echo $this->Html->tag('td', $this->Common->getFormatPrice($total_balance_price, 0, 2), array(
+            //         'style' => 'text-align: right;'.$style,
+            //     ));
+            // } else {
+            //     echo $this->Html->tag('td', $ending, array(
+            //         'style' => 'text-align: center;border-bottom: 1px solid #000;'.$style,
+            //     ));
+            //     echo $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_ending_price, 0, 2), array(
+            //         'style' => 'text-align: right;border-bottom: 1px solid #000;'.$style,
+            //     ));
+            //     echo $this->Html->tag('td', $this->Common->getFormatPrice($grandtotal_ending, 0, 2), array(
+            //         'style' => 'text-align: right;border-bottom: 1px solid #000;'.$style,
+            //     ));
+            // }
     ?>
 </tr>
 <?php
+        /*
         if( !empty($flag) ) {
 ?>
 <tr>
@@ -207,9 +280,43 @@
 </tr>
 <?php 
         }
+        */
+?>
+<?php
+        if( !empty($lastArr) ) {
+            foreach ($lastArr as $key => &$stock) {
+                $ending_qty = Common::hashEmptyField($stock, 'qty', 0);
+                $ending_price = Common::hashEmptyField($stock, 'price', 0);
+                $ending_total = $ending_qty*$ending_price;
+
+                $ending += $ending_qty;
+                $grandtotal_ending += $ending_total;
+?>
+<tr>
+    <?php
+            echo $this->Html->tag('td', $ending_qty, array(
+                'style' => 'text-align: center;'.$style,
+            ));
+            echo $this->Html->tag('td', $this->Common->getFormatPrice($ending_price, 0, 2), array(
+                'style' => 'text-align: right;'.$style,
+            ));
+            echo $this->Html->tag('td', $this->Common->getFormatPrice($ending_total, 0, 2), array(
+                'style' => 'text-align: right;'.$style,
+            ));
+    ?>
+</tr>
+<?php
+            }
+        }
 ?>
 <tr>
     <?php 
+            if( !empty($ending) ) {
+                $grandtotal_ending_price = $grandtotal_ending / $ending;
+            } else {
+                $grandtotal_ending_price = 0;
+            }
+
             echo $this->Html->tag('td', $ending, array(
                 'style' => 'text-align: center;font-weight:bold;'.$style,
             ));
