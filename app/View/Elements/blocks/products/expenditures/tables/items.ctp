@@ -4,11 +4,19 @@
         $qty = !empty($qty)?$qty:false;
         // $serial_numbers = !empty($serial_numbers)?$serial_numbers:false;
         $spk_product_id = !empty($spk_product_id)?$spk_product_id:false;
+        $data = $this->request->data;
 
         $code = $this->Common->filterEmptyField($value, $modelName, 'code');
         $name = $this->Common->filterEmptyField($value, $modelName, 'name');
         $unit = $this->Common->filterEmptyField($value, $modelName, 'name');
         $is_serial_number = $this->Common->filterEmptyField($value, $modelName, 'is_serial_number');
+        $transaction_date = Common::hashEmptyField($data, 'ProductExpenditure.transaction_date');
+
+        if( !empty($transaction_date) && $transaction_date != '-' ) {
+            $error_stock = __('Jml qty melebihi stok barang per tgl %s', $transaction_date);
+        } else {
+            $error_stock = __('Jml qty melebihi stok barang');
+        }
 
         $data = $this->request->data;
 ?>
@@ -44,7 +52,10 @@
                     'fieldError' => array(
                         'ProductExpenditureDetail.'.$key.'.qty',
                         'ProductExpenditureDetail.'.$key.'.qty_over',
-                        'ProductExpenditureDetail.'.$key.'.out_stock',
+                         array(
+                            'error' => 'ProductExpenditureDetail.'.$key.'.out_stock',
+                            'text' => $error_stock,
+                        ),
                     ),
                     'frameClass' => false,
                     'class' => 'price_custom input_number serial-number-input text-center',

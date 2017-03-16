@@ -25,8 +25,15 @@
             }
 
             foreach ($fieldError as $key => $error) {
+                if( is_array($error) ) {
+                    $error_text = Common::hashEmptyField($error, 'text');
+                    $error = Common::hashEmptyField($error, 'error');
+                } else {
+                    $error_text = null;
+                }
+
                 if( $this->Form->isFieldError($error) ) {
-                    $errorMsg = $this->Form->error($error, null, array(
+                    $errorMsg = $this->Form->error($error, $error_text, array(
                         'class' => 'error-message'
                     ));
                     break;

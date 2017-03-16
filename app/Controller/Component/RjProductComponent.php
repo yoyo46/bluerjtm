@@ -183,6 +183,7 @@ class RjProductComponent extends Component {
             $history = $this->controller->Product->ProductHistory->getMerge(array(), $product_id);
             $balance = $this->MkCommon->filterEmptyField($history, 'ProductHistory', 'ending', 0);
             $ending = $balance;
+            $stock_qty = $this->controller->Product->ProductHistory->_callStockTransaction($product_id, $transaction_date);
 
             if( $type == 'out' ) {
                 $ending -= $qty;
@@ -209,7 +210,7 @@ class RjProductComponent extends Component {
             $detail['ProductHistory'] = $stock;
             $stock['type'] = in_array($document_type, array( 'spk' ))?'barang_bekas':'default';
 
-            if( $ending < 0 ) {
+            if($qty > $stock_qty ) {
                 $detail['ProductExpenditureDetail']['out_stock'] = true;
             }
 

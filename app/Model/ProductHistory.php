@@ -207,5 +207,23 @@ class ProductHistory extends AppModel {
         
         return $default_options;
     }
+
+    function _callStockTransaction ( $product_id, $transaction_date = null ) {
+        $this->virtualFields['qty_cnt'] = 'SUM(CASE WHEN ProductHistory.type = \'in\' THEN ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.type = \'out\' THEN ProductHistory.qty ELSE 0 END)';
+        $conditions = array(
+            'ProductHistory.product_id' => $product_id,
+        );
+
+        if( !empty($transaction_date) ) {
+            $conditions['ProductHistory.transaction_date <='] = $transaction_date;
+        }
+
+        $value = $this->getData('first', array(
+            'conditions' => $conditions,
+        ));
+        $total_stock = $this->filterEmptyField($value, 'ProductHistory', 'qty_cnt');
+
+        return $total_stock;
+    }
 }
 ?>

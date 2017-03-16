@@ -227,6 +227,10 @@
                 $ending += $start_balance;
                 $grandtotal_ending += $total_begining_balance;
 
+                if( empty($start_balance) ) {
+                    $total_begining_price = 0;
+                }
+
                 echo $this->Html->tag('td', $start_balance, array(
                     'style' => 'text-align: center;border-bottom: 1px solid #000;'.$style,
                 ));
