@@ -9,8 +9,8 @@
                 $code = Common::hashEmptyField($value, 'Product.code');
                 $name = Common::hashEmptyField($value, 'Product.name');
                 $unit = Common::hashEmptyField($value, 'ProductUnit.name');
-                $qty = Common::hashEmptyField($value, 'ProductHistory.total_qty', 0);
-                $total = Common::hashEmptyField($value, 'ProductHistory.total_balance', 0);
+                $qty = Common::hashEmptyField($value, 'ProductStock.total_qty', 0);
+                $total = Common::hashEmptyField($value, 'ProductStock.total_balance', 0);
 
                 if( !empty($qty) ) {
                     $price = $total / $qty;

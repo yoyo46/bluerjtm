@@ -30,7 +30,7 @@
             ),
             'total_qty' => array(
                 'name' => __('QTY'),
-                'field_model' => 'ProductHistory.total_qty',
+                'field_model' => 'ProductStock.total_qty',
                 'style' => 'text-align: center;',
                 'data-options' => 'field:\'total_qty\',width:100',
                 'mainalign' => 'center',
@@ -38,7 +38,6 @@
             ),
             'total_balance' => array(
                 'name' => __('Harga Satuan'),
-                'field_model' => 'ProductHistory.total_balance',
                 'style' => 'text-align: center;',
                 'data-options' => 'field:\'total_balance\',width:100',
                 'mainalign' => 'center',

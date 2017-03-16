@@ -341,7 +341,7 @@ class RmReportComponent extends Component {
             )
         ), false);
         $this->controller->Product->ProductStock->virtualFields['total_qty'] = 'SUM(ProductStock.qty - ProductStock.qty_use)';
-        $this->controller->Product->ProductStock->virtualFields['avg_price'] = 'SUM(ProductStock.price) / SUM(ProductStock.qty - ProductStock.qty_use)';
+        $this->controller->Product->ProductStock->virtualFields['total_balance'] = 'SUM(ProductStock.price*(ProductStock.qty - ProductStock.qty_use))';
 
 		$options = $this->controller->Product->_callRefineParams($params, $options);
         $options = $this->MkCommon->getConditionGroupBranch( $params, 'ProductStock', $options );
@@ -375,8 +375,13 @@ class RmReportComponent extends Component {
                 $name = Common::hashEmptyField($value, 'Product.name');
                 $unit = Common::hashEmptyField($value, 'ProductUnit.name');
                 $qty = Common::hashEmptyField($value, 'ProductStock.total_qty', 0);
-                $price = Common::hashEmptyField($value, 'ProductStock.avg_price', 0);
-                $total = $qty * $price;
+                $total = Common::hashEmptyField($value, 'ProductStock.total_balance', 0);
+
+                if( !empty($qty) ) {
+                    $price = $total / $qty;
+                } else {
+                    $price = 0;
+                }
 
                 $totalQty += $qty;
                 $totalPrice += $price;
@@ -407,7 +412,6 @@ class RmReportComponent extends Component {
 					),
 					__('Harga Satuan') => array(
 						'text' => $this->MkCommon->getFormatPrice($price, 0, 2),
-                		'field_model' => 'ProductStock.avg_price',
                 		'excel' => array(
                 			'align' => 'right',
             			),
@@ -445,7 +449,6 @@ class RmReportComponent extends Component {
 					),
 					__('Harga Satuan') => array(
 						'text' => $this->MkCommon->getFormatPrice($totalPrice, 0, 2),
-                		'field_model' => 'ProductStock.avg_price',
                 		'excel' => array(
                 			'align' => 'right',
             			),
