@@ -15,6 +15,7 @@
             }
     
             $ending_stock[$total_begining_price]['qty'] = $start_balance;
+            $ending_stock[$total_begining_price]['price'] = $total_begining_price;
         } else {
             $unit = '';
             $start_balance = 0;
@@ -113,7 +114,7 @@
                         // $grandtotal_ending = $total_balance_price - $total_ending_price;
                 
                         if( !empty($ending_stock) ) {
-                            foreach ($ending_stock as $key => &$stock) {
+                            foreach ($ending_stock as $key => $stock) {
                                 $ending_qty = Common::hashEmptyField($stock, 'qty', 0) - $qty_out_tmp;
 
                                 if( empty($ending_qty) ) {
@@ -123,7 +124,7 @@
                                     unset($ending_stock[$key]);
                                     $qty_out_tmp = abs($ending_qty);
                                 } else {
-                                    $ending_stock = Hash::insert($ending_stock, 'qty', $ending_qty);
+                                    $ending_stock[$key]['qty'] = $ending_qty;
                                     break;
                                 }
                             }
@@ -284,7 +285,7 @@
 ?>
 <?php
         if( !empty($lastArr) ) {
-            foreach ($lastArr as $key => &$stock) {
+            foreach ($lastArr as $key => $stock) {
                 $ending_qty = Common::hashEmptyField($stock, 'qty', 0);
                 $ending_price = Common::hashEmptyField($stock, 'price', 0);
                 $ending_total = $ending_qty*$ending_price;

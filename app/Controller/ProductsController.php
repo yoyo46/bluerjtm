@@ -1072,23 +1072,26 @@ class ProductsController extends AppController {
     public function current_stock_reports() {
         $this->Product->unBindModel(array(
             'hasMany' => array(
-                'ProductStock'
+                'ProductHistory'
             )
         ));
         $this->Product->bindModel(array(
             'hasOne' => array(
-                'ProductStock' => array(
-                    'className' => 'ProductStock',
+                'ProductHistory' => array(
+                    'className' => 'ProductHistory',
                     'foreignKey' => 'product_id',
                 ),
             )
         ), false);
-        $this->Product->ProductStock->virtualFields['total_qty'] = 'SUM(ProductStock.qty - ProductStock.qty_use)';
-        $this->Product->ProductStock->virtualFields['avg_price'] = 'SUM(ProductStock.price*ProductStock.qty) / SUM(ProductStock.qty - ProductStock.qty_use)';
+        $this->Product->ProductHistory->virtualFields['total_balance'] = 'SUM(CASE WHEN ProductHistory.transaction_type = \'product_receipt\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.transaction_type = \'product_expenditure\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END)';
+        $this->Product->ProductHistory->virtualFields['total_qty'] = 'SUM(CASE WHEN ProductHistory.type = \'in\' THEN ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.type = \'out\' THEN ProductHistory.qty ELSE 0 END)';
+
+        // $this->Product->ProductHistory->virtualFields['total_qty_in'] = 'SUM(ProductHistory.qty - ProductStock.qty_use)';
+        // $this->Product->ProductHistory->virtualFields['avg_price'] = 'SUM(ProductStock.price*ProductStock.qty) / SUM(ProductStock.qty - ProductStock.qty_use)';
 
         $options = array(
             'contain' => array(
-                'ProductStock',
+                'ProductHistory',
             ),
             'group' => array(
                 'Product.id',
@@ -1097,7 +1100,7 @@ class ProductsController extends AppController {
 
         $params = $this->MkCommon->_callRefineParams($this->params);
         $options =  $this->Product->_callRefineParams($params, $options);
-        $options = $this->MkCommon->getConditionGroupBranch( $params, 'ProductStock', $options );
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'ProductHistory', $options );
 
         $this->paginate = $this->Product->getData('paginate', array_merge($options, array(
             'limit' => Configure::read('__Site.config_pagination'),
