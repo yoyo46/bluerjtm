@@ -17,21 +17,18 @@ class ProductExpenditureDetail extends AppModel {
         ),
     );
 
-    var $hasOne = array(
+    var $hasMany = array(
+        'ProductExpenditureDetailSerialNumber' => array(
+            'className' => 'ProductExpenditureDetailSerialNumber',
+            'foreignKey' => 'product_expenditure_detail_id',
+            'dependent' => true,
+        ),
         'ProductHistory' => array(
             'className' => 'ProductHistory',
             'foreignKey' => 'transaction_id',
             'conditions' => array(
                 'ProductHistory.transaction_type' => 'product_expenditures',
             ),
-        ),
-    );
-
-    var $hasMany = array(
-        'ProductExpenditureDetailSerialNumber' => array(
-            'className' => 'ProductExpenditureDetailSerialNumber',
-            'foreignKey' => 'product_expenditure_detail_id',
-            'dependent' => true,
         ),
     );
 

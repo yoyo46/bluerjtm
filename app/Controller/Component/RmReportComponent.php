@@ -579,9 +579,9 @@ class RmReportComponent extends Component {
 
         if(!empty($tmpResult)){
         	$idx = 0;
-            $this->Product->ProductHistory->virtualFields['total_begining_balance'] = 'SUM(CASE WHEN ProductHistory.transaction_type = \'product_receipt\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.transaction_type = \'product_expenditure\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END)';
-            $this->Product->ProductHistory->virtualFields['total_qty_in'] = 'SUM(CASE WHEN ProductHistory.type = \'in\' THEN ProductHistory.qty ELSE 0 END)';
-            $this->Product->ProductHistory->virtualFields['total_qty_out'] = 'SUM(CASE WHEN ProductHistory.type = \'out\' THEN ProductHistory.qty ELSE 0 END)';
+            $this->controller->ProductHistory->virtualFields['total_begining_balance'] = 'SUM(CASE WHEN ProductHistory.transaction_type = \'product_receipt\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.transaction_type = \'product_expenditure\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END)';
+            $this->controller->ProductHistory->virtualFields['total_qty_in'] = 'SUM(CASE WHEN ProductHistory.type = \'in\' THEN ProductHistory.qty ELSE 0 END)';
+            $this->controller->ProductHistory->virtualFields['total_qty_out'] = 'SUM(CASE WHEN ProductHistory.type = \'out\' THEN ProductHistory.qty ELSE 0 END)';
 
             foreach ($tmpResult as $key => &$product) {
                 if(!empty($product)){
@@ -627,8 +627,9 @@ class RmReportComponent extends Component {
                             ),
                         ));
                         $lastHistory['ProductHistory']['ending'] = $total_qty;
+        				$ending_stock = array();
 
-				        if( !empty($lastHistory) ) {
+				        if( !empty($lastHistory['ProductHistory']['id']) ) {
 				            $unit = Common::hashEmptyField($lastHistory, 'ProductUnit.name');
 				            $start_balance = Common::hashEmptyField($lastHistory, 'ProductHistory.ending', 0);
 				            $total_begining_balance = Common::hashEmptyField($lastHistory, 'ProductHistory.total_begining_balance');
@@ -638,6 +639,9 @@ class RmReportComponent extends Component {
 				            } else {
 				                $total_begining_price = 0;
 				            }
+				    
+				            $ending_stock[$total_begining_price]['qty'] = $start_balance;
+				            $ending_stock[$total_begining_price]['price'] = $total_begining_price;
 				        } else {
 				            $unit = '';
 				            $start_balance = 0;
@@ -710,6 +714,9 @@ class RmReportComponent extends Component {
 				                $qty_out = '';
 				                $price_out = '';
 				                $total_out = '';
+                
+				                $ending = 0;
+				                $grandtotal_ending = 0;
 
 				                $url = null;
 				                $price = null;
@@ -718,8 +725,8 @@ class RmReportComponent extends Component {
 
 				                $transaction_id = Common::hashEmptyField($value, 'ProductHistory.transaction_id');
 				                $transaction_type = Common::hashEmptyField($value, 'ProductHistory.transaction_type');
-				                $ending = Common::hashEmptyField($value, 'ProductHistory.ending');
-				                $balance = Common::hashEmptyField($value, 'ProductHistory.balance');
+				                // $ending = Common::hashEmptyField($value, 'ProductHistory.ending');
+				                // $balance = Common::hashEmptyField($value, 'ProductHistory.balance');
 				                $transaction_date = Common::hashEmptyField($value, 'ProductHistory.transaction_date', null, array(
 				                    'date' => 'd/m/Y',
 				                ));
@@ -727,7 +734,7 @@ class RmReportComponent extends Component {
                					$nopol = Common::hashEmptyField($value, 'Truck.nopol', '-');
 				                $nodoc = Common::hashEmptyField($value, 'DocumentDetail.Document.nodoc');
 				                $qty = Common::hashEmptyField($value, 'ProductHistory.qty');
-				                $total_balance_price = $total_begining_price*$balance;
+				                // $total_balance_price = $total_begining_price*$balance;
 
 				                switch ($transaction_type) {
 				                    case 'product_receipt':
@@ -735,22 +742,76 @@ class RmReportComponent extends Component {
 				                        $price = $price_in = Common::hashEmptyField($value, 'ProductHistory.price');
 				                        $total_in = $qty_in * $price_in;
 				                        $total_ending_price = $price*$qty;
-				                        $grandtotal_ending = $total_balance_price + $total_ending_price;
+				                        // $grandtotal_ending = $total_balance_price + $total_ending_price;
+                
+				                        if( !empty($ending_stock[$price]['qty']) ) {
+				                            $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
+				                        } else {
+				                            $ending_stock[$price] = array(
+				                                'qty' => $qty,
+				                                'price' => $price,
+				                            );
+				                        }
 				                        break;
 				                    case 'product_expenditure':
-				                        $qty_out = Common::hashEmptyField($value, 'ProductHistory.qty');
+				                        $qty_out_tmp = $qty_out = Common::hashEmptyField($value, 'ProductHistory.qty');
 				                        $price = $price_out = Common::hashEmptyField($value, 'ProductHistory.price');
 				                        $total_out = $qty_out * $price_out;
 				                        $total_ending_price = $price*$qty;
-				                        $grandtotal_ending = $total_balance_price - $total_ending_price;
+				                        // $grandtotal_ending = $total_balance_price - $total_ending_price;
+                
+				                        if( !empty($ending_stock) ) {
+				                            foreach ($ending_stock as $key => $stock) {
+				                                $ending_qty = Common::hashEmptyField($stock, 'qty', 0) - $qty_out_tmp;
+
+				                                if( empty($ending_qty) ) {
+				                                    unset($ending_stock[$key]);
+				                                    break;
+				                                } else if( $ending_qty < 0 ) {
+				                                    unset($ending_stock[$key]);
+				                                    $qty_out_tmp = abs($ending_qty);
+				                                } else {
+				                                    $ending_stock[$key]['qty'] = $ending_qty;
+				                                    break;
+				                                }
+				                            }
+				                        }
 				                        break;
 				                }
 
-				                if( !empty($ending) ) {
-				                    $grandtotal_ending_price = $grandtotal_ending / $ending;
-				                } else {
-				                    $grandtotal_ending_price = 0;
-				                }
+				                // if( !empty($ending) ) {
+				                //     $grandtotal_ending_price = $grandtotal_ending / $ending;
+				                // } else {
+				                //     $grandtotal_ending_price = 0;
+				                // }
+
+					            if( !empty($ending_stock) ) {
+					                $firstArr = reset($ending_stock);
+					                $lastArr = $ending_stock;
+					                array_splice($lastArr, 0, 1);
+
+					                $ending_qty = Common::hashEmptyField($firstArr, 'qty', 0);
+					                $ending_price = Common::hashEmptyField($firstArr, 'price', 0);
+					                $ending_total = $ending_qty*$ending_price;
+					                
+					                $ending += $ending_qty;
+					                $grandtotal_ending += $ending_total;
+
+					                $balance = $ending_qty;
+					                $balance_price = $ending_price;
+					                $balance_total = $ending_total;
+					            } else {
+					                $ending += $start_balance;
+					                $grandtotal_ending += $total_begining_balance;
+
+					                if( empty($start_balance) ) {
+					                    $total_begining_price = 0;
+					                }
+
+					                $balance = $start_balance;
+					                $balance_price = $total_begining_price;
+					                $balance_total = $total_begining_balance;
+					            }
 
 								$result['multiple'][$product_id][$branch_id]['detail'][$idxKey+=1] = array(
 									__('Tanggal') => array(
@@ -815,14 +876,14 @@ class RmReportComponent extends Component {
 				            			),
 									),
 									__('Harga Satuan Saldo') => array(
-										'text' => $this->MkCommon->getFormatPrice($total_begining_price, 0, 2),
+										'text' => $this->MkCommon->getFormatPrice($balance_price, 0, 2),
 		                				'label' => __('Harga Satuan'),
 				                		'excel' => array(
 				                			'align' => 'right',
 				            			),
 									),
 									__('Total Saldo') => array(
-										'text' => $this->MkCommon->getFormatPrice($total_balance_price, 0, 2),
+										'text' => $this->MkCommon->getFormatPrice($balance_total, 0, 2),
 		                				'label' => __('Total'),
 				                		'excel' => array(
 				                			'align' => 'right',
@@ -830,62 +891,80 @@ class RmReportComponent extends Component {
 									),
 								);
 
-								$result['multiple'][$product_id][$branch_id]['detail'][$idxKey+=1] = array(
-									__('Tanggal') => array(
-		                				'field_model' => 'ProductHistory.transaction_date',
-									),
-									__('No. Referensi') => array(
-		                				'field_model' => 'ProductHistory.transaction_id',
-									),
-									__('No. Pol') => array(
-		                				'field_model' => 'Truck.nopol',
-									),
-									__('Satuan') => array(
-		                				'field_model' => 'ProductHistory.transaction_id',
-									),
-									__('Masuk') => array(
-		                				'field_model' => 'ProductUnit.name',
-									),
-									__('Harga Satuan Masuk') => array(
-                						'label' => __('Harga Satuan'),
-		                				'field_model' => 'ProductHistory.price',
-									),
-									__('Total Masuk') => array(
-                						'label' => __('Total'),
-		                				'field_model' => 'ProductHistory.total',
-									),
-									__('Keluar') => array(
-		                				'field_model' => 'ProductHistory.qty',
-									),
-									__('Harga Satuan Keluar') => array(
-                						'label' => __('Harga Satuan'),
-		                				'field_model' => 'ProductHistory.price',
-									),
-									__('Total Keluar') => array(
-                						'label' => __('Total'),
-		                				'field_model' => 'ProductHistory.total',
-									),
-									__('Saldo') => array(
-										'text' => $qty,
-				                		'excel' => array(
-				                			'align' => 'center',
-				            			),
-									),
-									__('Harga Satuan Saldo') => array(
-                						'label' => __('Harga Satuan'),
-										'text' => $this->MkCommon->getFormatPrice($price, 0, 2),
-				                		'excel' => array(
-				                			'align' => 'right',
-				            			),
-									),
-									__('Total Saldo') => array(
-                						'label' => __('Total'),
-										'text' => $this->MkCommon->getFormatPrice($total_ending_price, 0, 2),
-				                		'excel' => array(
-				                			'align' => 'right',
-				            			),
-									),
-								);
+								
+						        if( !empty($lastArr) ) {
+						            foreach ($lastArr as $key => $stock) {
+						                $ending_qty = Common::hashEmptyField($stock, 'qty', 0);
+						                $ending_price = Common::hashEmptyField($stock, 'price', 0);
+						                $ending_total = $ending_qty*$ending_price;
+
+						                $ending += $ending_qty;
+						                $grandtotal_ending += $ending_total;
+										
+										$result['multiple'][$product_id][$branch_id]['detail'][$idxKey+=1] = array(
+											__('Tanggal') => array(
+				                				'field_model' => 'ProductHistory.transaction_date',
+											),
+											__('No. Referensi') => array(
+				                				'field_model' => 'ProductHistory.transaction_id',
+											),
+											__('No. Pol') => array(
+				                				'field_model' => 'Truck.nopol',
+											),
+											__('Satuan') => array(
+				                				'field_model' => 'ProductHistory.transaction_id',
+											),
+											__('Masuk') => array(
+				                				'field_model' => 'ProductUnit.name',
+											),
+											__('Harga Satuan Masuk') => array(
+		                						'label' => __('Harga Satuan'),
+				                				'field_model' => 'ProductHistory.price',
+											),
+											__('Total Masuk') => array(
+		                						'label' => __('Total'),
+				                				'field_model' => 'ProductHistory.total',
+											),
+											__('Keluar') => array(
+				                				'field_model' => 'ProductHistory.qty',
+											),
+											__('Harga Satuan Keluar') => array(
+		                						'label' => __('Harga Satuan'),
+				                				'field_model' => 'ProductHistory.price',
+											),
+											__('Total Keluar') => array(
+		                						'label' => __('Total'),
+				                				'field_model' => 'ProductHistory.total',
+											),
+											__('Saldo') => array(
+												'text' => $ending_qty,
+						                		'excel' => array(
+						                			'align' => 'center',
+						            			),
+											),
+											__('Harga Satuan Saldo') => array(
+		                						'label' => __('Harga Satuan'),
+												'text' => $this->MkCommon->getFormatPrice($ending_price, 0, 2),
+						                		'excel' => array(
+						                			'align' => 'right',
+						            			),
+											),
+											__('Total Saldo') => array(
+		                						'label' => __('Total'),
+												'text' => $this->MkCommon->getFormatPrice($ending_total, 0, 2),
+						                		'excel' => array(
+						                			'align' => 'right',
+						            			),
+											),
+										);
+						            }
+						        }
+
+					            if( !empty($ending) ) {
+					                $grandtotal_ending_price = $grandtotal_ending / $ending;
+					            } else {
+					                $grandtotal_ending_price = 0;
+					            }
 
 								$result['multiple'][$product_id][$branch_id]['detail'][$idxKey+=1] = $cntTmp = array(
 									__('Tanggal') => array(
