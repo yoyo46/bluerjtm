@@ -1191,6 +1191,9 @@ class ProductsController extends AppController {
                             'contain' => array(
                                 'Document' => array(
                                     'uses' => $modelName,
+                                    'elements' => array(
+                                        'branch' => false,
+                                    ),
                                 ),
                             ),
                         ),

@@ -128,24 +128,30 @@ class RjProductComponent extends Component {
         if( !empty($serial_number) ) {
             $result = $this->_callCheckStock($product_id, $qty, $serial_number);
         } else {
-            $stock_id = array();
+            $stocks = array();
 
             while ($flag) {
-                $resultTmp = $this->_callCheckStock($product_id, $qty, false, $stock_id);
-                $stock_id[] = Common::hashEmptyField($resultTmp, 'ProductStock.id');
-                $status = Common::hashEmptyField($resultTmp, 'ProductStock.status');
-                $qty_remain = Common::hashEmptyField($resultTmp, 'ProductStock.qty_remain');
+                $resultTmp = $this->_callCheckStock($product_id, $qty, false, $stocks);
+                $stock_id = Common::hashEmptyField($resultTmp, 'ProductStock.id');
 
-                if( !empty($status) ) {
-                    $flag = false;
-                    $qty_out = $qty;
+                if( !empty($stock_id) ) {
+                    $stocks[] = $stock_id;
+                    $status = Common::hashEmptyField($resultTmp, 'ProductStock.status');
+                    $qty_remain = Common::hashEmptyField($resultTmp, 'ProductStock.qty_remain');
+
+                    if( !empty($status) ) {
+                        $flag = false;
+                        $qty_out = $qty;
+                    } else {
+                        $qty -= $qty_remain;
+                        $qty_out = $qty_remain;
+                    }
+
+                    $resultTmp['ProductStock']['qty_out'] = $qty_out;
+                    $result[] = $resultTmp;
                 } else {
-                    $qty -= $qty_remain;
-                    $qty_out = $qty_remain;
+                    $flag = false;
                 }
-
-                $resultTmp['ProductStock']['qty_out'] = $qty_out;
-                $result[] = $resultTmp;
             }
         }
 
@@ -297,7 +303,6 @@ class RjProductComponent extends Component {
 
                                         if( $totalQtyExpenditure > $qty ) {
                                             $qtyExpenditure = $qty;
-                                            break;
                                         }
 
                                         $detail['ProductHistory']['ProductStock'][] = array_merge($stock, array(
@@ -310,6 +315,10 @@ class RjProductComponent extends Component {
                                             'qty_use' => $qtyExpenditure,
                                             'serial_number' => $serial_number,
                                         );
+
+                                        if( $totalQtyExpenditure > $qty ) {
+                                            break;
+                                        }
                                     }
                                     
                                     $total_price = $total_price / count($serial_numbers['ProductExpenditureDetailSerialNumber']);

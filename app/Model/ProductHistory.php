@@ -221,7 +221,7 @@ class ProductHistory extends AppModel {
         $value = $this->getData('first', array(
             'conditions' => $conditions,
         ));
-        $total_stock = $this->filterEmptyField($value, 'ProductHistory', 'qty_cnt');
+        $total_stock = $this->filterEmptyField($value, 'ProductHistory', 'qty_cnt', 0);
 
         return $total_stock;
     }
