@@ -99,10 +99,10 @@ class Common {
 		return date($formatDate);
 	}
 
-	public static function getFormatPrice($price, $empty = 0){
+	public static function getFormatPrice($price, $places = 0, $empty = 0){
 		App::uses('CakeNumber', 'Utility'); 
 		if( !empty($price) ) {
-			return CakeNumber::currency($price, '', array('places' => 0));
+			return CakeNumber::currency($price, '', array('places' => $places));
 		} else {
 			return $empty;
 		}
@@ -248,7 +248,7 @@ class Common {
 
 	public static function _callPriceConverter ($price) {
 		$price = Common::safeTagPrint($price);
-		return trim(str_replace(array( ',', '.', 'Rp ' ), array( '', '', '' ), $price));
+		return trim(str_replace(array( ',', 'Rp.', 'Rp ' ), array( '', '', '' ), $price));
 	}
 
 	function _callRoundPrice($price, $round = 0){

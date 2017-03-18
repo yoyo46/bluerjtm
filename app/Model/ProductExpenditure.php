@@ -152,6 +152,21 @@ class ProductExpenditure extends AppModel {
                 
                 $default_options['contain'][] = 'Spk';
                 break;
+            case 'unproduction_draft':
+                $default_options['conditions']['ProductExpenditure.status'] = 1;
+                $default_options['conditions']['ProductExpenditure.document_type'] = array( 'production' );
+                $default_options['conditions']['ProductExpenditure.transaction_status'] = 'posting';
+                $default_options['conditions']['Spk.document_type'] = 'production';
+
+                if( !empty($special_id) ) {
+                    $default_options['conditions']['OR']['ProductExpenditure.id'] = $special_id;
+                    $default_options['conditions']['OR']['ProductExpenditure.draft_receipt_status'] = array( 'none', 'half' );
+                } else {
+                    $default_options['conditions']['Spk.draft_receipt_status'] = array( 'none', 'half' );
+                }
+                
+                $default_options['contain'][] = 'Spk';
+                break;
             default:
                 $default_options['conditions']['ProductExpenditure.status'] = array( 0, 1 );
                 break;

@@ -126,14 +126,15 @@
                                         echo $this->Html->tag('td', $this->Common->_callInputForm(__('SpkProduction.price.%s', $product_id), array(
                                             'type' => 'text',
                                             'frameClass' => false,
-                                            'class' => 'input_price_coma text-right price_custom',
+                                            'class' => 'text-right price_custom',
                                             'rel' => 'price',
-                                            'value' => $price,
+                                            'value' => Common::getFormatPrice($price, 2),
                                             'fieldError' => __('SpkProduction.%s.price', $key),
                                             'data-decimal' => 2,
+                                            'data-type' => 'input_price_coma',
                                         )));
                                     } else {
-                                        echo $this->Html->tag('td', $price, array(
+                                        echo $this->Html->tag('td', Common::getFormatPrice($price, 2), array(
                                             'class' => 'text-right',
                                             'rel' => 'price',
                                         ));

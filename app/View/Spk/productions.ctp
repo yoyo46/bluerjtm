@@ -95,10 +95,11 @@
                             echo $this->Html->tag('td', $this->Common->buildInputForm(__('SpkProduction.price.%s', $id), false, array(
                                 'type' => 'text',
                                 'frameClass' => false,
-                                'class' => 'input_price_coma text-right price_custom',
+                                'class' => 'price_custom text-right',
                                 'attributes' => array(
                                     'rel' => 'price',
                                     'data-decimal' => 2,
+                                    'data-type' => 'input_price_coma',
                                 ),
                             )), array(
                                 'class' => 'hide',

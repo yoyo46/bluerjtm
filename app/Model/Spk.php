@@ -241,7 +241,7 @@ class Spk extends AppModel {
                 break;
             case 'pending-out':
                 $default_options['conditions']['Spk.status'] = 1;
-                $default_options['conditions']['Spk.document_type'] = array( 'internal', 'wht', 'production' );
+                $default_options['conditions']['Spk.document_type'] = array( 'internal', 'wht', 'production', 'eksternal' );
                 $default_options['conditions']['Spk.transaction_status'] = array( 'open' );
                 break;
             case 'unreceipt':
@@ -251,7 +251,7 @@ class Spk extends AppModel {
                 break;
             case 'unreceipt_draft':
                 $default_options['conditions']['Spk.status'] = 1;
-                $default_options['conditions']['Spk.document_type'] = array( 'internal' );
+                $default_options['conditions']['Spk.document_type'] = array( 'internal', 'eksternal' );
 
                 if( !empty($special_id) ) {
                     $default_options['conditions']['OR']['Spk.id'] = $special_id;
@@ -276,6 +276,9 @@ class Spk extends AppModel {
         switch ($type) {
             case 'production':
                 $default_options['conditions']['Spk.document_type'] = 'production';
+                break;
+            case 'eksternal':
+                $default_options['conditions']['Spk.document_type'] = 'eksternal';
                 break;
         }
 

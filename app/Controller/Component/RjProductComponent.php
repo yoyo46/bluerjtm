@@ -506,7 +506,7 @@ class RjProductComponent extends Component {
                             
                             $detailId = $this->MkCommon->filterEmptyField($documentDetail, 'SpkProduction', 'id');
                             $detailQty = $this->MkCommon->filterEmptyField($documentDetail, 'SpkProduction', 'qty');
-                            $detailPrice = 0;
+                            $detailPrice = $this->MkCommon->filterEmptyField($documentDetail, 'SpkProduction', 'price');
 
                             $model = 'SpkProduction';
                             break;
@@ -1147,6 +1147,8 @@ class RjProductComponent extends Component {
         $document_type = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_type', 'spk');
 
         if( !empty($values) ) {
+            $nodelProduct = 'SpkProduct';
+
             foreach ($values as $key => $value) {
                 switch ($document_type) {
                     case 'wht':
@@ -1161,7 +1163,7 @@ class RjProductComponent extends Component {
                         $product_id = $this->MkCommon->filterEmptyField($value, 'SpkProduction', 'product_id');
                         $qty = $this->MkCommon->filterEmptyField($value, 'SpkProduction', 'qty');
 
-                        $nodelName = 'SpkProduction';
+                        $nodelProduct = $nodelName = 'SpkProduction';
                         break;
                     default:
                         $document_id = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'spk_id');
@@ -1187,8 +1189,8 @@ class RjProductComponent extends Component {
                 // $qty -= $in_qty;
 
                 if( !empty($qty) ) {
-                    $value['SpkProduct']['qty'] = $qty;
-                    $value['SpkProduct']['in_qty'] = $in_qty;
+                    $value[$nodelProduct]['qty'] = $qty;
+                    $value[$nodelProduct]['in_qty'] = $in_qty;
                     $values[$key] = $value;
                 } else {
                     unset($values[$key]);
@@ -1261,8 +1263,11 @@ class RjProductComponent extends Component {
     }
 
     function _callProductions( $params, $vendor_id = false ) {
-        $this->controller->loadModel('Spk');
+        $this->controller->loadModel('ProductExpenditure');
         $options = array(
+            'contain' => array(
+                'Spk',
+            ),
             'limit' => 10,
         );
 
@@ -1270,14 +1275,32 @@ class RjProductComponent extends Component {
             $options['conditions']['Spk.vendor_id'] = $vendor_id;
         }
 
-        $options =  $this->controller->Spk->_callRefineParams($params, $options);
-        $this->controller->paginate = $this->controller->Spk->getData('paginate', $options, array(
-            'status' => 'unreceipt_draft',
-            'type' => 'production',
+        $options =  $this->controller->ProductExpenditure->_callRefineParams($params, $options);
+        $this->controller->paginate = $this->controller->ProductExpenditure->getData('paginate', $options, array(
+            'status' => 'unproduction_draft',
+            'branch' => false,
         ));
-        $values = $this->controller->paginate('Spk');
+        $values = $this->controller->paginate('ProductExpenditure');
 
         return $values;
+
+        // $this->controller->loadModel('Spk');
+        // $options = array(
+        //     'limit' => 10,
+        // );
+
+        // if( !empty($vendor_id) ) {
+        //     $options['conditions']['Spk.vendor_id'] = $vendor_id;
+        // }
+
+        // $options =  $this->controller->Spk->_callRefineParams($params, $options);
+        // $this->controller->paginate = $this->controller->Spk->getData('paginate', $options, array(
+        //     'status' => 'unreceipt_draft',
+        //     'type' => 'production',
+        // ));
+        // $values = $this->controller->paginate('Spk');
+
+        // return $values;
     }
 
     function _callBeforeViewCurrentStockReports( $params ) {
