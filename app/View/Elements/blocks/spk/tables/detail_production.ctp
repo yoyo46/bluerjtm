@@ -60,6 +60,7 @@
                                 'admin' => false,
                             )), array(
                                 'escape' => false,
+                                'allow' => true,
                                 'title' => __('Daftar Barang'),
                                 'class' => 'btn bg-maroon ajaxCustomModal',
                                 'data-form' => '#form-spk',
