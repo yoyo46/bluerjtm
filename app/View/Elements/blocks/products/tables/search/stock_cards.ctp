@@ -63,6 +63,7 @@
                                     $attrBrowse = array(
                                         'class' => 'ajaxCustomModal btn bg-maroon',
                                         'escape' => false,
+                                        'allow' => true,
                                         'title' => __('List Barang'),
                                     );
                                     $urlBrowse = array(

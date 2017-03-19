@@ -692,6 +692,7 @@ class CommonHelper extends AppHelper {
                     'admin' => false,
                 ), array(
                     'escape' => false,
+                    'allow' => true,
                     'class' => 'ajaxModal browse-docs',
                     'title' => __('Data Truk'),
                     'data-action' => 'browse-form',

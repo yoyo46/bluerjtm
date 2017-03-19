@@ -193,6 +193,9 @@ class AppController extends Controller {
 					'generate_excel', 'report_execute',
 					'admin_download', 'download',
 				),
+				'products' => array(
+					'expenditure_documents', 'spk_products',
+				),
 			);
 			Configure::write('__Site.allowed_module', $_allowedModule);
 

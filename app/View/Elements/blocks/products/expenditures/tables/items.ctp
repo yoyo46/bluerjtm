@@ -118,6 +118,7 @@
                         'admin' => false,
                     ), array(
                         'escape' => false,
+                        'allow' => true,
                         'class' => 'ajaxCustomModal browse-docs',
                         'title' => __('Stok Barang'),
                         'data-action' => 'browse-form',

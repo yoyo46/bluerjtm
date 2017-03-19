@@ -88,6 +88,7 @@
                         'bypass' => true,
                     ), array(
                         'escape' => false,
+                        'allow' => true,
                         'class' => __('ajaxCustomModal browse-docs serial-number-fill-%s', $id),
                         'title' => __('Serial Number'),
                         'data-action' => 'browse-form',
