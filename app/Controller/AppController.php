@@ -189,6 +189,9 @@ class AppController extends Controller {
 				'ttujs' => array(
 					'search',
 				),
+				'reports' => array(
+					'generate_excel', 'report_execute',
+				),
 			);
 			Configure::write('__Site.allowed_module', $_allowedModule);
 

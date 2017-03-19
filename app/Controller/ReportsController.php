@@ -50,6 +50,7 @@ class ReportsController extends AppController {
 			$this->admin_detail($id);
 		} else {
 			echo __('Gagal generate laporan');
+			die();
 		}
 	}
 
@@ -74,6 +75,7 @@ class ReportsController extends AppController {
 			));
 		} else {
 			echo __('Gagal generate laporan');
+			die();
 		}
 	}
 

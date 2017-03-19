@@ -1194,7 +1194,7 @@ class CommonHelper extends AppHelper {
     }
 
     function _getPrint ( $options = false, $showHideColumn = false ) {
-        $_ajax = isset($options['_ajax'])?$options['_ajax']:true;
+        $_ajax = isset($options['_ajax'])?$options['_ajax']:false;
         $_excel = isset($options['_excel'])?$options['_excel']:true;
         // $_pdf = isset($options['_pdf'])?$options['_pdf']:true;
         $_attr = isset($options['_attr'])?$options['_attr']:array();

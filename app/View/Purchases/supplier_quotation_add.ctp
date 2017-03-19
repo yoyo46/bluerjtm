@@ -82,7 +82,8 @@
 	                        'action' => 'products',
 	                        'admin' => false,
 	                    )), array(
-		                    'escape' => false,
+                            'escape' => false,
+		                    'allow' => true,
 		                    'title' => __('Daftar Barang'),
 							'class' => 'btn bg-maroon ajaxCustomModal',
 		                )), array(
