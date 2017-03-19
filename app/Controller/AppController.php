@@ -194,7 +194,14 @@ class AppController extends Controller {
 					'admin_download', 'download',
 				),
 				'products' => array(
-					'expenditure_documents', 'spk_products',
+					'expenditure_documents', 'spk_products', 'stocks',
+					'receipt_documents', 'receipt_document_products',
+					'receipt_choose_documents', 'bypass_receipt_serial_numbers',
+					'search',
+
+				),
+				'purchases' => array(
+					'po_documents', 'search',
 				),
 			);
 			Configure::write('__Site.allowed_module', $_allowedModule);
