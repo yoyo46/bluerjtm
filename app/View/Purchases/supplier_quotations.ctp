@@ -66,7 +66,7 @@
                             $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
                             $customStatus = $this->Common->_callTransactionStatus($value, 'SupplierQuotation');
 
-                            if( date('Y-m-d') > $availableTo && $transaction_status == 'approved' ) {
+                            if( !empty($availableTo) && date('Y-m-d') > $availableTo && $transaction_status == 'approved' ) {
                                 $customStatus = $this->Html->tag('span', __('Expired'), array(
                                     'class' => 'label label-warning',
                                 ));;

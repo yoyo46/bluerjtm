@@ -5,6 +5,7 @@
 			'action' => 'receipts',
 			'admin' => false,
 		);
+		$data = $this->request->data;
 		$value = !empty($value)?$value:false;
 		$view = !empty($view)?$view:false;
 		$documentTypes = array(
@@ -12,6 +13,10 @@
 	    	'wht' => __('WHT'),
 	    	'production' => __('Produksi'),
     	);
+
+    	$last_transaction_date = Common::hashEmptyField($data, 'ProductReceipt.last_transaction_date', null, array(
+    		'date' => 'd/m/Y',
+		));
 
     	if( !empty($spk_internal_policy) && $spk_internal_policy == 'receipt' ) {
     		$documentTypes['spk'] = __('SPK External');
@@ -43,6 +48,11 @@
 							'type' => 'text',
 		                    'textGroup' => $this->Common->icon('calendar'),
 		                    'class' => 'form-control pull-right custom-date',
+		                    'attributes' => array(
+								'error' => array(
+									'checkDocDate' => __('Tgl penerimaan tidak boleh lebih kecil dari tgl penerimaan selebumnya - %s', $last_transaction_date),
+								),
+	                    	),
 						));
 				?>
 				<div class="form-group">

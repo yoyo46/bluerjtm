@@ -433,6 +433,26 @@ class RjProductComponent extends Component {
                     break;
             }
 
+            $last_doc = $this->controller->Product->ProductReceiptDetail->ProductReceipt->getData('first', array(
+                'conditions' => array(
+                    'ProductReceipt.id <>' => $id,
+                    'ProductReceipt.document_id' => $document_id,
+                    'ProductReceipt.document_type' => $document_type,
+                ),
+                'order' => array(
+                    'ProductReceipt.transaction_date' => 'DESC',
+                    'ProductReceipt.id' => 'DESC',
+                ),
+            ));
+
+            $transaction_date = Common::hashEmptyField($data, 'ProductReceipt.transaction_date');
+            $last_transaction_date = Common::hashEmptyField($last_doc, 'ProductReceipt.transaction_date');
+            $data['ProductReceipt']['last_transaction_date'] = $last_transaction_date;
+
+            if( $transaction_date < $last_transaction_date ) {
+                $data['ProductReceipt']['invalid_date'] = true;
+            }
+
             $data['ProductReceipt']['id'] = $id;
             $data['ProductReceipt']['user_id'] = Configure::read('__Site.config_user_id');
             $data['ProductReceipt']['document_id'] = $document_id;

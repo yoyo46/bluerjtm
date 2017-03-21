@@ -7,6 +7,7 @@ class Common {
 		$date = !empty($options['date'])?$options['date']:false;
 		$urldecode = isset($options['urldecode'])?$options['urldecode']:true;
 		$addslashes = isset($options['addslashes'])?$options['addslashes']:false;
+		$isset = isset($options['isset'])?$options['isset']:false;
 		$strict = isset($options['strict'])?$options['strict']:false;
 		$result = $empty;
 
@@ -18,7 +19,15 @@ class Common {
 			}
 
 			if( !empty($value) ) {
-				$result = Hash::get($value, $path, $empty);
+				if( !empty($isset) ) {
+					$resultTmp = $result = Hash::get($value, $path, $empty);
+				} else {
+					$resultTmp = $result = Hash::get($value, $path);
+
+					if( empty($result) ) {
+						$result = $empty;
+					}
+				}
 
 				if( !empty($strict) && empty($result) ) {
 					$result = $empty;

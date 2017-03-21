@@ -116,8 +116,23 @@ class ProductReceipt extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Tgl penerimaan harap dipilih'
             ),
+            'checkDocDate' => array(
+                'rule' => array('checkDocDate'),
+            ),
         ),
 	);
+
+    function checkDocDate () {
+        $invalid_date = Common::hashEmptyField($this->data, 'ProductReceipt.invalid_date', null, array(
+            'isset' => true,
+        ));
+
+        if( !empty($invalid_date) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
 	function getData( $find, $options = false, $elements = false ){
         $branch = isset($elements['branch'])?$elements['branch']:true;
