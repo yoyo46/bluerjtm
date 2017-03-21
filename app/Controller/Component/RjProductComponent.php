@@ -282,6 +282,7 @@ class RjProductComponent extends Component {
                                 $detail['ProductHistory']['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock, $price );
                                 break;
                         }
+                        debug($detail);die();
                     } else {
                         switch ($document_type) {
                             case 'wht':
@@ -291,6 +292,7 @@ class RjProductComponent extends Component {
                                 if( !empty($serial_numbers['ProductExpenditureDetailSerialNumber']) ) {
                                     $total_price = 0;
                                     $totalQtyExpenditure = 0;
+                                    $detail['ProductReceiptDetail']['serial_number'] = true;
 
                                     foreach ($serial_numbers['ProductExpenditureDetailSerialNumber'] as $key => $val) {
                                         $sn_id = Common::hashEmptyField($val, 'ProductExpenditureDetailSerialNumber.id');
