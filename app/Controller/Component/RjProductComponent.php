@@ -420,7 +420,17 @@ class RjProductComponent extends Component {
 
                 case 'wht':
                     $value = $this->controller->Product->ProductExpenditureDetail->ProductExpenditure->getMerge(array(), $document_number, 'ProductExpenditure.nodoc');
+                    $value = $this->controller->Product->ProductExpenditureDetail->ProductExpenditure->getMergeList($value, array(
+                        'contain' => array(
+                            'Spk' => array(
+                                'elements' => array(
+                                    'branch' => false,
+                                ),
+                            ),
+                        ),
+                    ));
                     $document_id = $this->MkCommon->filterEmptyField($value, 'ProductExpenditure', 'id');
+                    $data['ProductReceipt']['to_branch_id'] = Common::hashEmptyField($value, 'Spk.to_branch_id');
                     break;
 
                 case 'production':

@@ -14,6 +14,7 @@
 	    	'production' => __('Produksi'),
     	);
 
+    	$document_type = Common::hashEmptyField($data, 'ProductReceipt.document_type');
     	$last_transaction_date = Common::hashEmptyField($data, 'ProductReceipt.last_transaction_date', null, array(
     		'date' => 'd/m/Y',
 		));
@@ -50,7 +51,7 @@
 		                    'class' => 'form-control pull-right custom-date',
 		                    'attributes' => array(
 								'error' => array(
-									'checkDocDate' => __('Tgl penerimaan tidak boleh lebih kecil dari tgl penerimaan selebumnya - %s', $last_transaction_date),
+									'checkDocDate' => __('Tgl penerimaan tidak boleh lebih kecil dari tgl penerimaan sebelumnya - %s', $last_transaction_date),
 								),
 	                    	),
 						));
@@ -75,6 +76,8 @@
 								    			'data-wrapper-write' => '.wrapper-write-document',
 						    					'legend' => false,
 											    'separator' => '</label></div></div><div class="col-sm-3"><div class="radio"><label>',
+					    						'data-match' => '[[\'.wrapper-warehouse\', [\'po\',\'production\',\'spk\'], \'slide\']]',
+					    						'data-trigger' => 'handle-toggle',
 											));
 						    		?>
 			    				</label>
@@ -88,10 +91,12 @@
 							'empty' => __('- Pilih Penerima -'),
 							'class' => 'form-control chosen-select',
 						));
-						echo $this->Common->buildInputForm('to_branch_id', __('Gudang Penerima *'), array(
+						echo $this->Html->tag('div', $this->Common->buildInputForm('to_branch_id', __('Gudang Penerima *'), array(
 							'type' => 'select',
 							'empty' => __('- Pilih Gudang -'),
 							'class' => 'form-control chosen-select',
+						)), array(
+							'class' => 'wrapper-warehouse',
 						));
 				?>
 			</div>

@@ -1580,20 +1580,45 @@
             return false;
         });
 
-        settings.objChange.off('change');
-        settings.objChange.change(function(){
-            var self = $(this);
-            var href = self.attr('href');
+        if( settings.objChange.length > 0 ) {
+            var data_trigger = settings.objChange.attr('data-trigger');
+            var type = settings.objChange.attr('type');
 
-            href += '/' + self.val();
+            if( type == 'radio' ) {
+                settings.objChange.each(function(){
+                    var self = $(this);
 
-            $.directAjaxLink({
-                obj: self,
-                url: href,
+                    if(self.is(':checked')){
+                        switch (data_trigger) { 
+                            case 'handle-toggle':
+                                handle_toggle(self);
+                            break;
+                        }
+                    }
+                });
+            }
+
+            settings.objChange.off('change').change(function(){
+                var self = $(this);
+                var href = self.attr('href');
+                var data_trigger = self.attr('data-trigger');
+
+                href += '/' + self.val();
+
+                switch (data_trigger) { 
+                    case 'handle-toggle':
+                        handle_toggle(self);
+                    break;
+                }
+
+                $.directAjaxLink({
+                    obj: self,
+                    url: href,
+                });
+
+                return false;
             });
-
-            return false;
-        });
+        }
 
         settings.objBlur.off('blur');
         settings.objBlur.blur(function(){
@@ -1879,59 +1904,62 @@
         }
     }
 
+    function handle_toggle (self) {
+        var match = self.attr('data-match');
+        var value = self.val();
+        var result = false;
+
+        match = eval(match);
+
+        if( $.isArray(match) ) {
+            $.each( match, function( i, val ) {
+                target = val[0];
+                dataMatch = val[1];
+                type = val[2];
+
+                var key = $.inArray( value, dataMatch );
+
+                if( key >= 0 ) {
+                    result = true;
+                    $(target).removeClass('hide');
+                } else {
+                    result = false;
+                }
+
+                switch (type) { 
+                    case 'fade':
+                        if( result ) {
+                            $(target).fadeIn();
+                        } else {
+                            $(target).fadeOut();
+                        }
+                    break;
+                    case 'slide':
+                        if( result ) {
+                            $(target).slideDown();
+                        } else {
+                            $(target).slideUp();
+                        }
+                    break;
+                }
+
+                if( !result ) {
+                    $(target).find('input,select').val('');
+                    $.callChoosen({
+                        obj: $(target).find('.chosen-select'),
+                    });
+                }
+            });
+        }
+    }
+
     $.handle_toggle = function(options){
         var settings = $.extend({
             obj: '.handle-toggle',
         }, options );
         
         $( "body" ).delegate( settings.obj, "change", function() {
-            var self = $(this);
-            var match = self.attr('data-match');
-            var value = self.val();
-            var result = false;
-
-            match = eval(match);
-
-            if( $.isArray(match) ) {
-                $.each( match, function( i, val ) {
-                    target = val[0];
-                    dataMatch = val[1];
-                    type = val[2];
-
-                    var key = $.inArray( value, dataMatch );
-
-                    if( key >= 0 ) {
-                        result = true;
-                        $(target).removeClass('hide');
-                    } else {
-                        result = false;
-                    }
-
-                    switch (type) { 
-                        case 'fade':
-                            if( result ) {
-                                $(target).fadeIn();
-                            } else {
-                                $(target).fadeOut();
-                            }
-                        break;
-                        case 'slide':
-                            if( result ) {
-                                $(target).slideDown();
-                            } else {
-                                $(target).slideUp();
-                            }
-                        break;
-                    }
-
-                    if( !result ) {
-                        $(target).find('input,select').val('');
-                        $.callChoosen({
-                            obj: $(target).find('.chosen-select'),
-                        });
-                    }
-                });
-            }
+            handle_toggle($(this));
         });
     }
     
