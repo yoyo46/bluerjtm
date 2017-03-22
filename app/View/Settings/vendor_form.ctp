@@ -58,6 +58,11 @@
 				)), array(
 					'class' => 'form-group'
 				));
+				echo $this->Common->buildInputForm('top', __('T.O.P'), array(
+					'type' => 'text',
+					'textGroup' => __('Hari'),
+					'column' => 'col-sm-6',
+				));
 		?>
     </div>
 

@@ -38,7 +38,14 @@
 						echo $this->Common->buildInputForm('vendor_id', __('Supplier *'), array(
 							'empty' => __('- Pilih Supplier -'),
 							'id' => 'supplier-val',
-							'class' => 'form-control chosen-select',
+							'class' => 'form-control chosen-select ajax-change',
+							'attributes' => array(
+								'data-wrapper-write' => '.wrapper-supplier',
+								'href' => $this->Html->url(array(
+									'controller' => 'ajax',
+									'action' => 'get_supplier_top',
+								)),
+							),
 						));
 
 						/*
@@ -118,11 +125,7 @@
 							'textGroup' => __('Hari'),
 							'column' => 'col-sm-6',
 						));
-						echo $this->Common->buildInputForm('top', __('T.O.P'), array(
-							'type' => 'text',
-							'textGroup' => __('Hari'),
-							'column' => 'col-sm-6',
-						));
+						echo $this->element('blocks/purchases/purchase_orders/get_supplier_top');
 						echo $this->Common->buildInputForm('note', __('Keterangan'));
 			    ?>
 		    </div>

@@ -2950,5 +2950,17 @@ class AjaxController extends AppController {
 				break;
 		}
 	}
+
+	function get_supplier_top ( $id = null ) {
+		$this->loadModel('Vendor');
+        $vendor = $this->Vendor->getData('first', array(
+            'conditions' => array(
+                'Vendor.id' => $id
+            )
+        ));
+
+        $this->set('vendor', $vendor);
+        $this->render('/Elements/blocks/purchases/purchase_orders/get_supplier_top');
+	}
 }
 ?>
