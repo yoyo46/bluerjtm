@@ -4,7 +4,7 @@
                 'name' => __('Tgl Quotation'),
             ),
             'code' => array(
-                'name' => __('No Dokumen'),
+                'name' => __('No Penawaran'),
             ),
             'supplier' => array(
                 'name' => __('Supplier'),

@@ -15,7 +15,7 @@
         <div class="row">
             <div class="col-sm-6">
                 <?php 
-                        echo $this->Common->buildInputForm('nodoc', __('No Dokumen'));
+                        echo $this->Common->buildInputForm('nodoc', __('No SPK'));
                         echo $this->Common->buildInputForm('document_type', __('Jenis SPK'), array(
                             'empty' => __('- Pilih Jenis -'),
                             'class' => 'form-control chosen-select',

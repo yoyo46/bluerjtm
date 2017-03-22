@@ -27,7 +27,7 @@
             </div>
             <div class="col-sm-6">
                 <?php 
-                        echo $this->Common->buildInputForm('nodoc', __('No Dokumen'));
+                        echo $this->Common->buildInputForm('nodoc', __('No Penawaran'));
                         echo $this->Common->buildInputForm('status', __('Status'), array(
                             'empty' => __('- Pilih Status -'),
                             'options' => array(

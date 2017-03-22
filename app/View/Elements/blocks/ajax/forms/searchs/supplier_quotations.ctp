@@ -13,7 +13,7 @@
 <div class="row">
     <div class="col-sm-6">
         <?php 
-                echo $this->Common->buildInputForm('nodoc', __('No Dokumen'));
+                echo $this->Common->buildInputForm('nodoc', __('No Penawaran'));
         ?>
     </div>
     <div class="col-sm-6">

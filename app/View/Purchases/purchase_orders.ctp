@@ -4,7 +4,7 @@
                 'name' => __('Tgl PO'),
             ),
             'code' => array(
-                'name' => __('No Dokumen'),
+                'name' => __('No PO'),
             ),
             'supplier' => array(
                 'name' => __('Supplier'),

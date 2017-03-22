@@ -30,7 +30,7 @@
     <div class="box-body">
     	<?php 
 				echo $this->Common->_callInputForm('nodoc', array(
-					'label' => 'No. Dokumen *',
+					'label' => 'No. Pengeluaran *',
 				));
 				echo $this->Common->buildInputForm('transaction_date', __('Tgl Pengeluaran *'), array(
 					'type' => 'text',

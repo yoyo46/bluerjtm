@@ -29,7 +29,7 @@
 		    ?>
 		    <div class="box-body">
 		    	<?php 
-						echo $this->Common->buildInputForm('nodoc', __('No Dokumen *'));
+						echo $this->Common->buildInputForm('nodoc', __('No PO *'));
 						echo $this->Common->buildInputForm('transaction_date', __('Tgl PO *'), array(
 							'type' => 'text',
 		                    'textGroup' => $this->Common->icon('calendar'),
