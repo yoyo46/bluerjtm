@@ -76,9 +76,9 @@
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('vendor_id',array(
-                                'label'=> __('Vendor'),
+                                'label'=> __('Supplier'),
                                 'class'=>'form-control',
-                                'empty' => __('Pilih Vendor'),
+                                'empty' => __('Pilih Supplier'),
                                 'required' => false,
                             ));
                     ?>

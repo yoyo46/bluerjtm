@@ -69,7 +69,7 @@
                             echo $this->Html->tag('dt', __('No. Dokumen'));
                             echo $this->Html->tag('dd', $nodoc);
 
-                            echo $this->Html->tag('dt', __('Vendor'));
+                            echo $this->Html->tag('dt', __('Supplier'));
                             echo $this->Html->tag('dd', $vendor);
 
                             echo $this->Html->tag('dt', __('Tgl SQ'));

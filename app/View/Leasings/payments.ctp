@@ -20,7 +20,7 @@
                 'display' => true,
             ),
             'vendor' => array(
-                'name' => __('Vendor'),
+                'name' => __('Supplier'),
                 'field_model' => false,
                 'display' => true,
             ),

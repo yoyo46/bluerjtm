@@ -1733,7 +1733,7 @@ class AjaxController extends AppController {
 		
 		$listReceivers = array(
         	'Customer' => __('Customer'),
-        	'Vendor' => __('Vendor'),
+        	'Supplier' => __('Supplier'),
         	'Employe' => __('karyawan'),
         	'Driver' => __('Supir'),
         );

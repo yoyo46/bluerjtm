@@ -61,7 +61,7 @@ class Client extends AppModel {
 		    array(
 		        'fields'     => array(
 		        	'Client.id', 'Client.name', 'Client.address', 
-		        	"'Vendor' AS type", "'Vendor' AS model",
+		        	"'Supplier' AS type", "'Supplier' AS model",
 	        	),
 		        'table'      => $db->fullTableName($this->Vendor),
 		        'alias'      => 'Client',
@@ -175,7 +175,7 @@ class Client extends AppModel {
 		    array(
 		        'fields'     => array(
 		        	'Client.id', 'Client.name', 'Client.address', 
-		        	"'Vendor' AS type", "'Vendor' AS model",
+		        	"'Supplier' AS type", "'Supplier' AS model",
 	        	),
 		        'table'      => $db->fullTableName($this->Vendor),
 		        'alias'      => 'Client',
@@ -252,7 +252,7 @@ class Client extends AppModel {
 			$default_options['conditions']['Client.type'][] = 'Customer';
 		}
 		if(!empty($is_vendor)){
-			$default_options['conditions']['Client.type'][] = 'Vendor';
+			$default_options['conditions']['Client.type'][] = 'Supplier';
 		}
 		if(!empty($is_driver)){
 			$default_options['conditions']['Client.type'][] = 'Supir';

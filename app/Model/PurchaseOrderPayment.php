@@ -34,7 +34,7 @@ class PurchaseOrderPayment extends AppModel {
         'vendor_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Vendor harap dipilih'
+                'message' => 'Supplier harap dipilih'
             ),
         ),
         'canceled_date' => array(
@@ -279,7 +279,7 @@ class PurchaseOrderPayment extends AppModel {
                 'po_payment',
             ));
 
-            $titleJournal = sprintf(__('Pembayaran PO kepada vendor %s '), $vendor_name);
+            $titleJournal = sprintf(__('Pembayaran PO kepada supplier %s '), $vendor_name);
             $titleJournal = $this->filterEmptyField($data, 'PurchaseOrderPayment', 'note', $titleJournal);
 
             $this->User->Journal->setJournal($grandtotal, array(

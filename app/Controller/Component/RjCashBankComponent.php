@@ -81,8 +81,9 @@ class RjCashBankComponent extends Component {
 		$labelName = 'Customer';
 
         switch ($model) {
-            case 'Vendor':
-				$labelName = 'Vendor';
+            case 'Supplier':
+				$labelName = 'Supplier';
+                $model = 'Vendor';
                 $value = $this->controller->CashBank->Vendor->getData('first', array(
                     'conditions' => array(
                         'Vendor.id' => $receiver_id,

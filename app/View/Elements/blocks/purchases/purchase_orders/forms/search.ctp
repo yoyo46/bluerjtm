@@ -21,8 +21,8 @@
                             'class' => 'form-control pull-right date-range',
                         ));
                         echo $this->Common->buildInputForm('nodoc', __('No PO'));
-                        echo $this->Common->buildInputForm('vendor_id', __('Vendor'), array(
-                            'empty' => __('- Pilih Vendor -'),
+                        echo $this->Common->buildInputForm('vendor_id', __('Supplier'), array(
+                            'empty' => __('- Pilih Supplier -'),
                             'class' => 'form-control chosen-select',
                         ));
                 ?>

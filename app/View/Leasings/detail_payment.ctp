@@ -35,7 +35,7 @@
 				<td><?php echo $coa_name;?></td>
 			</tr>
 			<tr>
-				<th><?php echo __('Vendor');?></th>
+				<th><?php echo __('Supplier');?></th>
 				<td><?php echo $vendor;?></td>
 			</tr>
 			<tr>

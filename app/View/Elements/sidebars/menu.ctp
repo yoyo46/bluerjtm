@@ -1633,7 +1633,7 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'companies' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Vendor', array(
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Supplier', array(
                                 'controller' => 'settings',
                                 'action' => 'vendors',
                             ), array(

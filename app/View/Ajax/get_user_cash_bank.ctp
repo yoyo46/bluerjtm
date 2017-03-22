@@ -86,7 +86,7 @@
                             'required' => false,
                             'value' => 1,
                             'div' => false,
-                        )).__('Vendor')), array(
+                        )).__('Supplier')), array(
                             'class' => 'checkbox',
                         )), array(
                             'class' => 'col-sm-3',

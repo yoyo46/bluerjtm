@@ -68,10 +68,10 @@
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('vendor_id',array(
-										'label'=> __('Vendor *'), 
+										'label'=> __('Supplier *'), 
 										'class'=>'form-control',
 										'required' => false,
-										'empty' => __('Pilih Vendor'),
+										'empty' => __('Pilih Supplier'),
 										'id' => 'id-choosen',
 										'data-reset' => '.document-pick-info-detail tbody .child'
 									));
@@ -104,7 +104,7 @@
 			                            'title' => __('Detail Pembayaran'),
 			                            'data-action' => 'browse-invoice',
 			                            'data-trigger' => '#id-choosen',
-			                            'data-change-message' => __('Mohon pilih vendor terlebih dahulu'),
+			                            'data-change-message' => __('Mohon pilih supplier terlebih dahulu'),
 			                            'url' => $this->Html->url( array(
 				                            'controller'=> 'leasings', 
 				                            'action' => 'leasings_unpaid',

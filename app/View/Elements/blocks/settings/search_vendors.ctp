@@ -20,10 +20,10 @@
         <div class="form-group">
             <?php 
                 echo $this->Form->input('name',array(
-                    'label'=> __('Nama Vendor'),
+                    'label'=> __('Nama Supplier'),
                     'class'=>'form-control',
                     'required' => false,
-                    'placeholder' => __('Nama Vendor')
+                    'placeholder' => __('Nama Supplier')
                 ));
             ?>
         </div>

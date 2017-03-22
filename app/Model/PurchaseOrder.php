@@ -60,11 +60,11 @@ class PurchaseOrder extends AppModel {
         'vendor_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Vendor harap dipilih'
+                'message' => 'Supplier harap dipilih'
             ),
             'numeric' => array(
                 'rule' => array('numeric'),
-                'message' => 'Vendor harap dipilih'
+                'message' => 'Supplier harap dipilih'
             ),
         ),
         'transaction_date' => array(
@@ -493,7 +493,7 @@ class PurchaseOrder extends AppModel {
                 $coa_id = !empty($value['PurchaseOrderAsset']['coa_id'])?$value['PurchaseOrderAsset']['coa_id']:false;
                 $name = !empty($value['PurchaseOrderAsset']['name'])?$value['PurchaseOrderAsset']['name']:false;
 
-                $titleJournal = sprintf(__('Pembelian Asset dari vendor %s '), $vendor_name);
+                $titleJournal = sprintf(__('Pembelian Asset dari supplier %s '), $vendor_name);
                 $titleJournal = $this->filterEmptyField($data, 'PurchaseOrder', 'note', $titleJournal);
 
                 $this->User->Journal->setJournal($price, array(

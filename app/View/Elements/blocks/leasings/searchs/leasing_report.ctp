@@ -25,11 +25,11 @@
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('vendor_id',array(
-                                'label'=> __('Vendor'),
+                                'label'=> __('Supplier'),
                                 'class'=>'form-control chosen-select',
                                 'required' => false,
                                 'options' => !empty($vendors)?$vendors:false,
-                                'empty' => __('Pilih Vendor'),
+                                'empty' => __('Pilih Supplier'),
                             ));
                     ?>
                 </div>

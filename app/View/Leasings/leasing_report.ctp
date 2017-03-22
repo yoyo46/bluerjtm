@@ -16,7 +16,7 @@
                 'rowspan' => $headerRowspan,
             ),
             'vendor' => array(
-                'name' => __('Vendor'),
+                'name' => __('Supplier'),
                 'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'vendor\',width:120',
                 'align' => 'center',

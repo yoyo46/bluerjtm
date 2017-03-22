@@ -117,8 +117,8 @@
 							'onchange' => 'false',
 						));
 						echo $this->Common->_callInputForm('vendor_id', array(
-							'label' => __('Vendor *'),
-							'empty' => __('- Pilih Vendor -'),
+							'label' => __('Supplier *'),
+							'empty' => __('- Pilih Supplier -'),
                             'class'=>'form-control chosen-select',
                             'frameClass' => __('form-group chosen-full wrapper-eksternal %s', $extClass),
 						));

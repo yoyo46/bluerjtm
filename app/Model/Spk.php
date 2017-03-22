@@ -54,7 +54,7 @@ class Spk extends AppModel {
         'vendor_id' => array(
             'eksValidate' => array(
                 'rule' => array('eksValidate'),
-                'message' => 'Vendor harap dipilih'
+                'message' => 'Supplier harap dipilih'
             ),
         ),
         'to_branch_id' => array(

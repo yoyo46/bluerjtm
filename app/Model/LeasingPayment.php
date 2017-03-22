@@ -27,7 +27,7 @@ class LeasingPayment extends AppModel {
         'vendor_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Vendor harap dipilih'
+                'message' => 'Supplier harap dipilih'
             ),
         ),
 	);

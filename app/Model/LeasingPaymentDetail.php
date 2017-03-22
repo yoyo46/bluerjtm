@@ -226,7 +226,7 @@ class LeasingPaymentDetail extends AppModel {
         if( !empty($note) ) {
             $title = $note;
         } else {
-            $title = sprintf(__('Pembayaran Leasing #%s kepada vendor %s'), $no_doc, $vendor_name);
+            $title = sprintf(__('Pembayaran Leasing #%s kepada supplier %s'), $no_doc, $vendor_name);
         }
 
         if( !empty($leasing_payment_id) && empty($is_validate) ) {

@@ -1,5 +1,5 @@
 <?php
-		$this->Html->addCrumb(__('Vendor'), array(
+		$this->Html->addCrumb(__('Supplier'), array(
 			'controller' => 'settings',
 			'action' => 'vendors'
 		));
@@ -19,10 +19,10 @@
     <div class="box-body">
     	<?php 
 				echo $this->Html->tag('div', $this->Form->input('name',array(
-					'label'=> __('Nama Vendor *'), 
+					'label'=> __('Nama Supplier *'), 
 					'class'=>'form-control',
 					'required' => false,
-					'placeholder' => __('Nama Vendor')
+					'placeholder' => __('Nama Supplier')
 				)), array(
 					'class' => 'form-group'
 				));

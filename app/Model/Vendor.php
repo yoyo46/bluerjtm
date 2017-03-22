@@ -5,7 +5,7 @@ class Vendor extends AppModel {
         'name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Nama Vendor harap diisi'
+                'message' => 'Nama Supplier harap diisi'
             ),
         ),
         'address' => array(

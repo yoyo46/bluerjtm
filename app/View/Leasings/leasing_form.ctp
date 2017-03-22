@@ -33,10 +33,10 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('vendor_id',array(
-								'label'=> __('Vendor Leasing *'), 
+								'label'=> __('Supplier Leasing *'), 
 								'class'=>'form-control',
 								'required' => false,
-								'empty' => __('Pilih Vendor'),
+								'empty' => __('Pilih Supplier'),
 								'options' => $leasing_companies
 							));
 					?>

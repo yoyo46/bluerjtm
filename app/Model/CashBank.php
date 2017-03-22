@@ -384,7 +384,7 @@ class CashBank extends AppModel {
 
             $default_options['conditions']['OR'] = array(
                 array(
-                    'CashBank.receiver_type' => 'Vendor',
+                    'CashBank.receiver_type' => 'Supplier',
                     'CashBank.receiver_id' => $vendors,
                 ),
                 array(
@@ -509,7 +509,7 @@ class CashBank extends AppModel {
 
             $options['conditions']['OR'] = array(
                 array(
-                    'CashBank.receiver_type' => 'Vendor',
+                    'CashBank.receiver_type' => 'Supplier',
                     'CashBank.receiver_id' => $vendors,
                 ),
                 array(

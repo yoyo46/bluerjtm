@@ -1,5 +1,5 @@
 <?php
-		$this->Html->addCrumb(__('Vendor'), array(
+		$this->Html->addCrumb(__('Supplier'), array(
 			'action' => 'vendors'
 		));
 		$this->Html->addCrumb($sub_module_title);

@@ -9,7 +9,7 @@
                 '_label_multiple' => __('Tambah'),
                 '_add_multiple' => array(
                     array(
-                        'label' => __('Vendor'),
+                        'label' => __('Supplier'),
                         'url' => array(
                             'controller' => 'settings',
                             'action' => 'vendor_add'
@@ -30,7 +30,7 @@
         <table class="table table-hover">
             <tr>
                 <?php
-                        echo $this->Html->tag('th', $this->Paginator->sort('Vendor.name', __('Nama Vendor'), array(
+                        echo $this->Html->tag('th', $this->Paginator->sort('Vendor.name', __('Nama Supplier'), array(
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', $this->Paginator->sort('Vendor.address', __('Alamat'), array(
@@ -77,7 +77,7 @@
                             ), array(
                                 'class' => 'btn btn-danger btn-xs trigger-disabled',
                                 'title' => 'disable status brand',
-                                'data-alert' => __('Anda yakin ingin menghapus data Vendor ini?'),
+                                'data-alert' => __('Anda yakin ingin menghapus data supplier ini?'),
                             ));
                     ?>
                 </td>

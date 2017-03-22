@@ -542,7 +542,7 @@ class SettingsController extends AppController {
 
         $this->set('active_menu', 'vendors');
         $this->set('module_title', 'Data Master');
-        $this->set('sub_module_title', 'Vendor');
+        $this->set('sub_module_title', 'Supplier');
         $this->set(compact(
             'vendors'
         ));
@@ -550,13 +550,13 @@ class SettingsController extends AppController {
 
     function vendor_add(){
         $this->loadModel('Vendor');
-        $this->set('sub_module_title', 'Tambah Vendor');
+        $this->set('sub_module_title', 'Tambah Supplier');
         $this->doVendor();
     }
 
     function vendor_edit($id){
         $this->loadModel('Vendor');
-        $this->set('sub_module_title', 'Rubah Vendor');
+        $this->set('sub_module_title', 'Rubah Supplier');
         $vendor = $this->Vendor->getData('first', array(
             'conditions' => array(
                 'Vendor.id' => $id
@@ -566,7 +566,7 @@ class SettingsController extends AppController {
         if(!empty($vendor)){
             $this->doVendor($id, $vendor);
         }else{
-            $this->MkCommon->setCustomFlash(__('Vendor tidak ditemukan'), 'error');  
+            $this->MkCommon->setCustomFlash(__('Supplier tidak ditemukan'), 'error');  
             $this->redirect(array(
                 'controller' => 'settings',
                 'action' => 'vendors'
@@ -596,18 +596,18 @@ class SettingsController extends AppController {
                     $this->params['old_data'] = $data_local;
                     $this->params['data'] = $data;
 
-                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Vendor'), $msg), 'success');
-                    $this->Log->logActivity( sprintf(__('Sukses %s Vendor #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );  
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s supplier'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s supplier #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );  
                     $this->redirect(array(
                         'controller' => 'settings',
                         'action' => 'vendors'
                     ));
                 }else{
-                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Vendor'), $msg), 'error'); 
-                    $this->Log->logActivity( sprintf(__('Gagal %s Vendor #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );   
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s supplier'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s supplier #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );   
                 }
             }else{
-                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Vendor'), $msg), 'error');
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s supplier'), $msg), 'error');
             }
         }else{
             if($id && $data_local){
@@ -638,13 +638,13 @@ class SettingsController extends AppController {
             $this->Vendor->set('status', $value);
             if($this->Vendor->save()){
                 $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses merubah status vendor ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );   
+                $this->Log->logActivity( sprintf(__('Sukses merubah status supplier ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );   
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal merubah status vendor ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );   
+                $this->Log->logActivity( sprintf(__('Gagal merubah status supplier ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );   
             }
         }else{
-            $this->MkCommon->setCustomFlash(__('Vendor tidak ditemukan.'), 'error');
+            $this->MkCommon->setCustomFlash(__('Supplier tidak ditemukan.'), 'error');
         }
 
         $this->redirect($this->referer());
@@ -6006,9 +6006,9 @@ class SettingsController extends AppController {
             App::import('Vendor', 'excelreader'.DS.'excel_reader2');
             $this->loadModel('Vendor');
 
-            $this->set('module_title', __('Vendor'));
+            $this->set('module_title', __('Supplier'));
             $this->set('active_menu', 'vendors');
-            $this->set('sub_module_title', __('Import Vendor'));
+            $this->set('sub_module_title', __('Import Supplier'));
 
             if(!empty($this->request->data)) { 
                 $Zipped = $this->request->data['Import']['importdata'];

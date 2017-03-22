@@ -74,11 +74,11 @@ class ProductReceipt extends AppModel {
         'vendor_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Vendor harap dipilih'
+                'message' => 'Supplier harap dipilih'
             ),
             'numeric' => array(
                 'rule' => array('numeric'),
-                'message' => 'Vendor harap dipilih'
+                'message' => 'Supplier harap dipilih'
             ),
         ),
         'to_branch_id' => array(
