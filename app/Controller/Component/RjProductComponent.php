@@ -1007,7 +1007,7 @@ class RjProductComponent extends Component {
             $transaction_status = $this->MkCommon->filterEmptyField($data, 'ProductExpenditure', 'transaction_status');
             $document_number = $this->MkCommon->filterEmptyField($data, 'ProductExpenditure', 'document_number');
 
-            $value = $this->controller->Product->ProductExpenditureDetail->ProductExpenditure->Spk->getMerge(array(), $document_number, 'Spk.nodoc', 'pending-out');
+            $value = $this->controller->Product->ProductExpenditureDetail->ProductExpenditure->Spk->getMerge(array(), $document_number, 'Spk.nodoc', 'open');
             $document_id = $this->MkCommon->filterEmptyField($value, 'Spk', 'id');
             $document_type = $this->MkCommon->filterEmptyField($value, 'Spk', 'document_type');
 
@@ -1075,8 +1075,13 @@ class RjProductComponent extends Component {
                         );
                         $dataDetail[$key]['ProductExpenditureDetail']['SpkProduct'] = array(
                             'id' => $spk_product_id,
-                            'document_status' => $status,
+                            'draft_document_status' => $status,
                         );
+
+                        if( $transaction_status == 'posting' ) {
+                            $dataDetail[$key]['ProductExpenditureDetail']['SpkProduct']['document_status'] = $status;
+                        }
+
                         $dataDetail[$key] = $this->_callStock('product_expenditure', $data, $dataDetail[$key], 'out', 'ProductExpenditure');
                     }
 

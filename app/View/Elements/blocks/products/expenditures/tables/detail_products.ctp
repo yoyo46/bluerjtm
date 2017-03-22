@@ -82,6 +82,7 @@
                     'title' => __('Daftar Barang'),
                     'class' => 'btn bg-maroon ajaxCustomModal',
                     'data-check' => '#document-number',
+                    'data-check-encode' => 'true',
                     'data-check-alert' => __('Mohon pilih No. SPK terlebih dahulu'),
                 )), array(
                 'class' => "form-group",

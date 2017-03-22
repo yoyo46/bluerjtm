@@ -1018,6 +1018,8 @@ class ProductsController extends AppController {
         $this->loadModel('SpkProduct');
 
         $nodoc = urldecode($nodoc);
+        $nodoc = str_replace('[slash]', '/', $nodoc);
+
         $value = $this->SpkProduct->Spk->getData('first', array(
             'conditions' => array(
                 'Spk.nodoc' => $nodoc,

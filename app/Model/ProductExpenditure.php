@@ -274,6 +274,8 @@ class ProductExpenditure extends AppModel {
         $defaul_msg = __('pengeluaran barang');
 
         if ( !empty($data) ) {
+            $document_id = Common::hashEmptyField($data, 'ProductExpenditure.document_id');
+            $spk_product_id = Set::extract('/ProductExpenditureDetail/ProductExpenditureDetail/SpkProduct/id', $data);
             $flag = $this->saveAll($data, array(
                 'deep' => true,
                 'validate' => 'only',

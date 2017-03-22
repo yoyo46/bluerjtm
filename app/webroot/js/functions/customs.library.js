@@ -897,6 +897,7 @@
         var data_check_named = $.checkUndefined(vthis.attr('data-check-named'), false);
         var data_check_alert = $.checkUndefined(vthis.attr('data-check-alert'), false);
         var data_check_empty = $.checkUndefined(vthis.attr('data-check-empty'), null);
+        var data_check_encode = $.checkUndefined(vthis.attr('data-check-encode'), null);
         var modalSize = $.checkUndefined(vthis.attr('data-size'), '');
         var data_form = $.checkUndefined(vthis.attr('data-form'), false);
         var data_picker = $.checkUndefined(vthis.attr('data-picker'), false);
@@ -911,6 +912,10 @@
 
         if( data_check != false ) {
             dataUrl = $(data_check).val();
+
+            if( data_check_encode == 'true' ) {
+                dataUrl = dataUrl.replace(/\//gi, "[slash]");
+            }
 
             if( dataUrl == '' ) {
                 if( data_check_empty != 'true' ) {
