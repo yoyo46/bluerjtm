@@ -85,7 +85,7 @@ class SpkProduct extends AppModel {
                 break;
             case 'unexit':
                 $default_options['conditions']['SpkProduct.status'] = 1;
-                $default_options['conditions']['SpkProduct.document_status <>'] = 'full';
+                $default_options['conditions']['SpkProduct.draft_document_status <>'] = 'full';
                 break;
             case 'unreceipt':
                 $default_options['conditions']['SpkProduct.status'] = 1;

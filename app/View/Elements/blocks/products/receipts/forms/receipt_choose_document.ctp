@@ -1,6 +1,6 @@
 <?php 
 		$vendors = !empty($vendors)?$vendors:false;
-		$type = !empty($type)?$type:false;
+		$type = !empty($type)?$type:'po';
 		$flag = in_array($type, array( 'wht', 'production' ))?false:true;
 ?>
 <div class="wrapper-write-document">

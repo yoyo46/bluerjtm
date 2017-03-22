@@ -602,6 +602,10 @@ class RjProductComponent extends Component {
         if( empty($data) ) {
             $data = $value;
 
+            if( empty($data) ) {
+                $data['ProductReceipt']['document_type'] = 'po';
+            }
+
             $id = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'id');
             $type = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'document_type');
             $document_id = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'document_id');

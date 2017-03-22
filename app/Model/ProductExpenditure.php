@@ -274,8 +274,8 @@ class ProductExpenditure extends AppModel {
         $defaul_msg = __('pengeluaran barang');
 
         if ( !empty($data) ) {
-            $document_id = Common::hashEmptyField($data, 'ProductExpenditure.document_id');
-            $spk_product_id = Set::extract('/ProductExpenditureDetail/ProductExpenditureDetail/SpkProduct/id', $data);
+            // $document_id = Common::hashEmptyField($data, 'ProductExpenditure.document_id');
+            // $spk_product_id = Set::extract('/ProductExpenditureDetail/ProductExpenditureDetail/SpkProduct/id', $data);
             $flag = $this->saveAll($data, array(
                 'deep' => true,
                 'validate' => 'only',
@@ -285,6 +285,12 @@ class ProductExpenditure extends AppModel {
                 $this->ProductExpenditureDetail->deleteAll(array(
                     'ProductExpenditureDetail.product_expenditure_id' => $id,
                 ));
+                // $this->ProductExpenditureDetail->SpkProduct->updateAll(array(
+                //     'SpkProduct.draft_document_status' => "'none'",
+                // ), array(
+                //     'SpkProduct.spk_id' => $document_id,
+                //     'SpkProduct.id NOT' => $spk_product_id,
+                // ));
 
                 $flag = $this->saveAll($data, array(
                     'deep' => true,
@@ -375,6 +381,13 @@ class ProductExpenditure extends AppModel {
         ));
 
         if ( !empty($value) ) {
+            $value = $this->getMergeList($value, array(
+                'contain' => array(
+                    'ProductExpenditureDetail',
+                ),
+            ));
+            $spk_product_id = Set::extract('/ProductExpenditureDetail/ProductExpenditureDetail/spk_product_id', $value);
+
             $document_id = $this->filterEmptyField($value, 'ProductExpenditure', 'document_id');
             $nodoc = $this->filterEmptyField($value, 'ProductExpenditure', 'nodoc');
             $document_type = $this->filterEmptyField($value, 'ProductExpenditure', 'document_type');
@@ -385,16 +398,21 @@ class ProductExpenditure extends AppModel {
             $this->set('transaction_status', 'void');
 
             if( $this->save() ) {
-
                 if( $document_type == 'po' ) {
                     $this->PurchaseOrder->id = $document_id;
                     $this->PurchaseOrder->set('transaction_status', 'none');
                     $this->PurchaseOrder->save();
-                } else if( in_array($document_type, array( 'spk', 'wht' )) ) {
+                } else {
                     $this->Spk->id = $document_id;
                     $this->Spk->set('transaction_status', 'open');
                     $this->Spk->set('draft_document_status', 'none');
                     $this->Spk->save();
+
+                    $this->Spk->SpkProduct->updateAll(array(
+                        'SpkProduct.draft_document_status' => "'none'",
+                    ), array(
+                        'SpkProduct.id' => $spk_product_id,
+                    ));
                 }
 
                 $msg = sprintf(__('Berhasil %s'), $default_msg);
