@@ -609,7 +609,7 @@ class Common {
                 }
                 break;
             case 'non-production':
-                if( !in_array($document_type, array( 'internal', 'eksternal' )) ) {
+                if( !in_array($document_type, array( 'internal' )) ) {
                     $result = 'hide';
                 }
                 break;

@@ -2,7 +2,7 @@
         $view = !empty($view)?$view:false;
         $data = $this->request->data;
 
-        $dataDetail = $this->Common->filterEmptyField($data, 'SpkProduct');
+        $dataDetail = Common::hashEmptyField($data, 'SpkProduct');
         $eksternalClass = Common::_callDisplayToggle('eksternal', $data);
 
 		$dataColumns = array(
@@ -36,7 +36,7 @@
                 'style' => 'width:15%;',
             ),
             'price' => array(
-                'name' => __('Harga Barang'),
+                'name' => __('Harga Satuan'),
                 'class' => __('text-center wrapper-eksternal %s', $eksternalClass),
                 'style' => 'width:15%;',
             ),
@@ -95,17 +95,17 @@
 
                                 if(!empty($dataDetail)){
                                     foreach ($dataDetail as $key => $value) {
-                                        $product = $this->Common->filterEmptyField($value, 'Product');
+                                        $product = Common::hashEmptyField($value, 'Product');
 
-                                        $product_id = $this->Common->filterEmptyField($product, 'id');
-                                        $code = $this->Common->filterEmptyField($product, 'code');
-                                        $name = $this->Common->filterEmptyField($product, 'name');
-                                        $stock = $this->Common->filterEmptyField($product, 'product_stock_cnt', 0);
-                                        $unit = $this->Common->filterEmptyField($product, 'ProductUnit', 'name');
+                                        $product_id = Common::hashEmptyField($product, 'id');
+                                        $code = Common::hashEmptyField($product, 'code');
+                                        $name = Common::hashEmptyField($product, 'name');
+                                        $unit = Common::hashEmptyField($product, 'ProductUnit.name');
+                                        $stock = Common::hashEmptyField($product, 'product_stock_cnt', 0);
 
-                                        $qty = $this->Common->filterEmptyField($value, 'SpkProduct', 'qty', 0);
-                                        $price_service = $this->Common->filterEmptyField($value, 'SpkProduct', 'price_service', 0);
-                                        $price = $this->Common->filterEmptyField($value, 'SpkProduct', 'price', 0);
+                                        $qty = Common::hashEmptyField($value, 'SpkProduct.qty', 0);
+                                        $price_service = Common::hashEmptyField($value, 'SpkProduct.price_service', 0);
+                                        $price = Common::hashEmptyField($value, 'SpkProduct.price', 0);
 
                                         $total_qty += $qty;
                                         $total_price_service += $price_service;
