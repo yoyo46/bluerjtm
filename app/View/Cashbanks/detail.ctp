@@ -44,9 +44,16 @@
                                         echo $this->Html->tag('dd', str_pad($revenue_id, 5, '0', STR_PAD_LEFT));
                                     }
                                     break;
-                                
-                                default:
-                                    # code...
+                                case 'prepayment_in':
+                                    if( !empty($cashbank['PrepaymentOut']) ) {
+                                        echo $this->Html->tag('dt', __('No. Prepayment IN'));
+                                        echo $this->Html->tag('dd', $this->Html->link($cashbank['PrepaymentOut']['nodoc'], array(
+                                            'action' => 'detail',
+                                            $cashbank['PrepaymentOut']['id'],
+                                        ), array(
+                                            'target' => '_blank',
+                                        )));
+                                    }
                                     break;
                             }
                     ?>

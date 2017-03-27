@@ -155,16 +155,16 @@ class CashBank extends AppModel {
         return $result;
     }
 
-    function getMerge($data, $id){
-        if(empty($data['CashBank'])){
+    function getMerge($data, $id, $modelName = 'CashBank'){
+        if(empty($data[$modelName])){
             $data_merge = $this->getData('first', array(
                 'conditions' => array(
                     'id' => $id
                 )
             ));
 
-            if(!empty($data_merge)){
-                $data = array_merge($data, $data_merge);
+            if(!empty($data_merge['CashBank'])){
+                $data[$modelName] = $data_merge['CashBank'];
             }
         }
 

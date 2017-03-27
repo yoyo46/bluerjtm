@@ -873,6 +873,10 @@ class CashbanksController extends AppController {
                 ),
             ));
 
+            if( $receiving_cash_type == 'prepayment_in' ) {
+                $cashbank = $this->CashBank->getMerge($cashbank, $document_id, 'PrepaymentOut');
+            }
+
             if( !empty($allow_closing) ) {
                 $user_position_id = $this->MkCommon->filterEmptyField($cashbank, 'Employe', 'employe_position_id');
 
