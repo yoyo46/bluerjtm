@@ -12,7 +12,11 @@
 
                 $customer = $this->Common->filterEmptyField($value, 'Customer', 'code');
                 $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
+                
                 $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
+                $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol', $nopol);
+                $nopol = $this->Common->filterEmptyField($value, 'Revenue', 'nopol', $nopol);
+
                 $from_city_name = $this->Common->filterEmptyField($value, 'FromCity', 'name');
                 $to_city_name = $this->Common->filterEmptyField($value, 'ToCity', 'name');
                 $no_invoice = $this->Common->filterEmptyField($value, 'Invoice', 'no_invoice');

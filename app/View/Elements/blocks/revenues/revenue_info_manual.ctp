@@ -1,24 +1,27 @@
 <?php 
         $data_local = !empty($data_local)?$data_local:false;
+		$allow_closing = !empty($allow_closing)?$allow_closing:false;
+
         $ttuj_id = $this->Common->filterEmptyField($data_local, 'Revenue', 'ttuj_id');
 ?>
 <div class="form-group">
     <?php 
-			$attrBrowse = array(
-                'class' => 'ajaxModal visible-xs browse-docs',
-                'escape' => false,
-                'title' => __('Data Truk'),
-                'data-action' => 'browse-form',
-                'data-change' => 'truckID',
-                'id' => 'truckBrowse',
-            );
-			$urlBrowse = array(
-                'controller'=> 'ajax', 
-                'action' => 'getTrucks',
-                'revenue_manual',
-                $ttuj_id,
-            );
-            echo $this->Form->label('Revenue.truck_id', __('No. Pol * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
+    		if( $this->Common->_getAllowSave($allow_closing, $data_local) ) {
+				$attrBrowse = array(
+	                'class' => 'ajaxModal visible-xs browse-docs',
+	                'escape' => false,
+	                'title' => __('Data Truk'),
+	                'data-action' => 'browse-form',
+	                'data-change' => 'truckID',
+	                'id' => 'truckBrowse',
+	            );
+				$urlBrowse = array(
+	                'controller'=> 'ajax', 
+	                'action' => 'getTrucks',
+	                'revenue_manual',
+	                $ttuj_id,
+	            );
+	            echo $this->Form->label('Revenue.truck_id', __('No. Pol * ').$this->Html->link('<i class="fa fa-plus-square"></i>', $urlBrowse, $attrBrowse));
     ?>
     <div class="row">
         <div class="col-sm-10">
@@ -38,6 +41,24 @@
             ?>
         </div>
     </div>
+    <?php 
+    		} else {
+        		$nopol = Common::hashEmptyField($data_local, 'Ttuj.nopol');
+        		$nopol = Common::hashEmptyField($data_local, 'Revenue.nopol', $nopol);
+        		$truck_id = Common::hashEmptyField($data_local, 'Revenue.truck_id');
+
+				echo $this->Form->input('Revenue.nopol',array(
+					'label'=> false, 
+					'class'=>'form-control',
+					'required' => false,
+					'disabled' => true,
+					'value' => $nopol,
+				));
+				echo $this->Form->hidden('Revenue.truck_id', array(
+					'value' => $truck_id,
+				));
+    		}
+    ?>
 </div>
 <div class="form-group">
 	<?php 

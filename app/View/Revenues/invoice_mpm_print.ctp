@@ -115,6 +115,8 @@ if($action_print == 'pdf'){
         			}
 
 					$nopol = !empty($value['Revenue']['Ttuj']['nopol'])?$value['Revenue']['Ttuj']['nopol']:false;
+    				$nopol = $this->Common->filterEmptyField($value, 'Revenue', 'nopol', $nopol);
+
 					$grandTotalUnit += $qty = $this->Common->filterEmptyField($value, 'RevenueDetail', 'qty_unit');
 					$payment_type = $this->Common->filterEmptyField($value, 'RevenueDetail', 'payment_type');
 

@@ -115,7 +115,9 @@
 							$priceFormat = '';
 						}
 
-						if( !empty($value['Revenue']['Ttuj']['nopol']) ) {
+						if( !empty($value['Revenue']['nopol']) ) {
+							$nopol = $value['Revenue']['nopol'];
+						} else if( !empty($value['Revenue']['Ttuj']['nopol']) ) {
 							$nopol = $value['Revenue']['Ttuj']['nopol'];
 						} else if( !empty($value['Truck']['nopol']) ) {
 							$nopol = $value['Truck']['nopol'];

@@ -148,6 +148,7 @@ if($action_print == 'pdf'){
                 	$nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
 					$revenue_id = !empty($value['Revenue']['id'])?$value['Revenue']['id']:false;
 					$nopol = !empty($value['Revenue']['Ttuj']['nopol'])?$value['Revenue']['Ttuj']['nopol']:$nopol;
+                	$nopol = $this->Common->filterEmptyField($value, 'Revenue', 'nopol', $nopol);
 
 					$grandTotalUnit += $qty = $value['RevenueDetail']['qty_unit'];
 					$date_revenue = '-';

@@ -84,9 +84,11 @@ if($action_print == 'pdf'){
 				foreach ($val_detail as $key => $value) {
                 	$is_charge = $this->Common->filterEmptyField($value, 'RevenueDetail', 'is_charge');
                 	$total_price_unit = $this->Common->filterEmptyField($value, 'RevenueDetail', 'total_price_unit');
+                	
                 	$nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
-
 					$nopol = !empty($value['Revenue']['Ttuj']['nopol'])?$value['Revenue']['Ttuj']['nopol']:$nopol;
+                	$nopol = $this->Common->filterEmptyField($value, 'Revenue', 'nopol', $nopol);
+
 					$grandTotalUnit += $qty = $value['RevenueDetail']['qty_unit'];
 					$price = $value['RevenueDetail']['price_unit'];
 					$date_revenue = '-';

@@ -6,8 +6,9 @@
 			$noDoc = !empty($revenue['Revenue']['no_doc'])?$revenue['Revenue']['no_doc']:'-';
 
             $nopol = $this->Common->filterEmptyField($revenue, 'Truck', 'nopol');
-
             $nopol = $this->Common->filterEmptyField($revenue, 'Ttuj', 'nopol', $nopol);
+            $nopol = $this->Common->filterEmptyField($revenue, 'Revenue', 'nopol', $nopol);
+
 			// $total_price = !empty($revenue['total_price'])?$revenue['total_price']:0;
 			$price = 0;
 

@@ -166,7 +166,9 @@
                 <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
                 <td>
                     <?php
-                            if( !empty($value['Ttuj']['nopol']) ) {
+                            if( !empty($value['Revenue']['nopol']) ) {
+                                echo $value['Revenue']['nopol'];
+                            } elseif( !empty($value['Ttuj']['nopol']) ) {
                                 echo $value['Ttuj']['nopol'];
                             } elseif( !empty($value['Truck']['nopol']) ) {
                                 echo $value['Truck']['nopol'];

@@ -1176,6 +1176,30 @@ class CommonHelper extends AppHelper {
         }
     }
 
+    function _getAllowSave ( $allow_closing, $value = false, $modelName = 'Revenue' ) {
+        $posting = false;
+        $invoiced = false;
+        $_status = true;
+
+        if( !empty($value[$modelName]['transaction_status']) && $value[$modelName]['transaction_status'] == 'posting' ) {
+            $posting = true;
+        }
+        if( !empty($value[$modelName]['transaction_status']) && in_array($value[$modelName]['transaction_status'], array( 'invoiced', 'half_invoiced', 'paid', 'half_paid' )) ) {
+            $invoiced = true;
+        }
+        if( isset($value[$modelName]['status']) && empty($value[$modelName]['status']) ) {
+            $_status = false;
+        }
+
+        if( !$invoiced && $_status ) {
+            if( empty($posting) ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     function _callUnset( $fieldArr, $data ) {
         if( !empty($fieldArr) ) {
             foreach ($fieldArr as $key => $value) {

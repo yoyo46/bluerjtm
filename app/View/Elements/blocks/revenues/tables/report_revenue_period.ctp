@@ -21,6 +21,8 @@
                 $to_city_name = $this->Common->filterEmptyField($value, 'ToCity', 'name');
                 
                 $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
+                $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol', $nopol);
+                $nopol = $this->Common->filterEmptyField($value, 'Revenue', 'nopol', $nopol);
 
                 $status = $this->Revenue->_callStatus($value, 'Ttuj', 'nodoc');
                 $customTotal = $this->Common->getFormatPrice($total);

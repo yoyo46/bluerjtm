@@ -11,7 +11,7 @@
                     'url'=> $this->Html->url( array(
                         'controller' => 'cashbanks',
                         'action' => 'search',
-                        'profit_loss',
+                        'balance_sheets',
                     )), 
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
@@ -56,7 +56,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'profit_loss', 
+                                'action' => 'balance_sheets', 
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',

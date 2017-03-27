@@ -9,9 +9,11 @@
 
             foreach ($invDetails as $key => $value) {
                 $capacity = $this->Common->filterEmptyField($value, 'Truck', 'capacity');
-                $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
 
+                $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
                 $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol', $nopol);
+                $nopol = $this->Common->filterEmptyField($value, 'Revenue', 'nopol', $nopol);
+
                 $capacity = $this->Common->filterEmptyField($value, 'Ttuj', 'truck_capacity', $capacity);
 
                 $revenue_id = $this->Common->filterEmptyField($value, 'Revenue', 'id');

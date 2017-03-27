@@ -442,10 +442,18 @@ class RevenueDetail extends AppModel {
                             'Revenue.ttuj_id = Ttuj.id',
                         ),
                     ),
+                    'Truck' => array(
+                        'className' => 'Truck',
+                        'foreignKey' => false,
+                        'conditions' => array(
+                            'Revenue.truck_id = Truck.id',
+                        ),
+                    ),
                 ),
             ), false);
             
             $default_options['contain'][] = 'Ttuj';
+            $default_options['contain'][] = 'Truck';
         }
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
@@ -458,28 +466,40 @@ class RevenueDetail extends AppModel {
             }
         }
         if(!empty($nopol)){
+            // if( $type == 2 ) {
+            //     $conditionsNopol = array(
+            //         'Truck.id' => $nopol,
+            //     );
+            // } else {
+            //     $conditionsNopol = array(
+            //         'Truck.nopol LIKE' => '%'.$nopol.'%',
+            //     );
+            // }
+
+            // $truckSearch = $this->Revenue->Truck->getData('list', array(
+            //     'conditions' => $conditionsNopol,
+            //     'fields' => array(
+            //         'Truck.id', 'Truck.id',
+            //     ),
+            // ), true, array(
+            //     'status' => 'all',
+            //     'branch' => false,
+            // ));
             if( $type == 2 ) {
                 $conditionsNopol = array(
                     'Truck.id' => $nopol,
+                    'Ttuj.truck_id' => $nopol,
+                    'Revenue.truck_id' => $nopol,
                 );
             } else {
                 $conditionsNopol = array(
                     'Truck.nopol LIKE' => '%'.$nopol.'%',
+                    'Ttuj.nopol LIKE' => '%'.$nopol.'%',
+                    'Revenue.nopol LIKE' => '%'.$nopol.'%',
                 );
             }
 
-            $truckSearch = $this->Revenue->Truck->getData('list', array(
-                'conditions' => $conditionsNopol,
-                'fields' => array(
-                    'Truck.id', 'Truck.id',
-                ),
-            ), true, array(
-                'status' => 'all',
-                'branch' => false,
-            ));
-
-            $default_options['conditions'][0]['OR']['Ttuj.truck_id'] = $truckSearch;
-            $default_options['conditions'][0]['OR']['Revenue.truck_id'] = $truckSearch;
+            $default_options['conditions'][0]['OR'] = $conditionsNopol;
         }
         if(!empty($customer)){
             $default_options['conditions']['Revenue.customer_id'] = $customer;
