@@ -68,6 +68,32 @@ class Vendor extends AppModel {
                 'message' => 'Min Digit harus berupa angka',
             ),
         ),
+        'pattern_po' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Pattern harap diisi'
+            ),
+        ),
+        'last_number_po' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'No awal dokumen harap diisi'
+            ),
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'No awal dokumen harus berupa angka',
+            ),
+        ),
+        'min_digit_po' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Min Digit harap diisi'
+            ),
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'Min Digit harus berupa angka',
+            ),
+        ),
 	);
 
     var $belongsTo = array(

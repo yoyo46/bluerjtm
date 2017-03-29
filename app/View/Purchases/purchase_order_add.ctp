@@ -29,7 +29,7 @@
 		    ?>
 		    <div class="box-body">
 		    	<?php 
-						echo $this->Common->buildInputForm('nodoc', __('No PO *'));
+						echo $this->Common->buildInputForm('nodoc', __('No PO'));
 						echo $this->Common->buildInputForm('transaction_date', __('Tgl PO *'), array(
 							'type' => 'text',
 		                    'textGroup' => $this->Common->icon('calendar'),
@@ -44,6 +44,7 @@
 								'href' => $this->Html->url(array(
 									'controller' => 'ajax',
 									'action' => 'get_supplier_top',
+									'model_name' => 'PurchaseOrder',
 								)),
 							),
 						));
@@ -125,7 +126,9 @@
 							'textGroup' => __('Hari'),
 							'column' => 'col-sm-6',
 						));
-						echo $this->element('blocks/purchases/purchase_orders/get_supplier_top');
+						echo $this->element('blocks/purchases/purchase_orders/get_supplier_top', array(
+							'model_name' => 'PurchaseOrder',
+						));
 						echo $this->Common->buildInputForm('note', __('Keterangan'));
 			    ?>
 		    </div>

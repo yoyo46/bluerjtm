@@ -19,11 +19,13 @@ class RjPurchaseComponent extends Component {
             $dataDetail = $this->MkCommon->filterEmptyField($data, 'SupplierQuotationDetail');
             $dataDetailPrice = $this->MkCommon->filterEmptyField($dataDetail, 'price');
 
-            if( empty($nodoc) ) {
+            if( empty($nodoc) && !empty($vendor_id) ) {
                 $vendor = $this->controller->SupplierQuotation->Vendor->getMerge(array(), $vendor_id);
 
                 if( !empty($vendor) ) {
-                    $data['SupplierQuotation']['nodoc'] = Common::_callGeneratePatternCode($vendor, 'Vendor');
+                    $nodoc_tmp = Common::_callGeneratePatternCode($vendor, 'Vendor');
+                    $data['SupplierQuotation']['nodoc'] = $nodoc_tmp;
+                    $data['SupplierQuotation']['nodoc_tmp'] = $nodoc_tmp;
 
                     $last_number = Common::hashEmptyField($vendor, 'Vendor.last_number');
 
@@ -96,6 +98,7 @@ class RjPurchaseComponent extends Component {
 
     function _callBeforeRenderQuotation ( $data ) {
         if( !empty($data) ) {
+            $nodoc_tmp = Common::hashEmptyField($data, 'SupplierQuotation.nodoc_tmp');
             // $available_from = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'available_from');
             // $available_to = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'available_to');
 
@@ -108,6 +111,10 @@ class RjPurchaseComponent extends Component {
                     ),
                 )
             ), true);
+
+            if( !empty($nodoc_tmp) ) {
+                unset($data['SupplierQuotation']['nodoc']);
+            }
         }
         
         $transaction_date = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'transaction_date', date('Y-m-d'));
@@ -157,6 +164,24 @@ class RjPurchaseComponent extends Component {
 
             $transaction_date = $this->MkCommon->getDate($transaction_date);
             $supplier_quotation_id = $this->MkCommon->filterEmptyField($supplierQuotation, 'SupplierQuotation', 'id');
+           
+            $nodoc = Common::hashEmptyField($data, 'PurchaseOrder.nodoc');
+            $vendor_id = Common::hashEmptyField($data, 'PurchaseOrder.vendor_id');
+
+            if( empty($nodoc) && !empty($vendor_id) ) {
+                $vendor = $this->controller->SupplierQuotation->Vendor->getMerge(array(), $vendor_id);
+
+                if( !empty($vendor) ) {
+                    $nodoc_tmp = Common::_callGeneratePatternCode($vendor, 'Vendor', '_po');
+                    $data['PurchaseOrder']['nodoc'] = $nodoc_tmp;
+                    $data['PurchaseOrder']['nodoc_tmp'] = $nodoc_tmp;
+
+                    $last_number = Common::hashEmptyField($vendor, 'Vendor.last_number_po');
+
+                    $data['Vendor']['id'] = $vendor_id;
+                    $data['Vendor']['last_number_po'] = $last_number+1;
+                }
+            }
 
             $data['PurchaseOrder']['id'] = $id;
             $data['PurchaseOrder']['user_id'] = Configure::read('__Site.config_user_id');
@@ -238,6 +263,8 @@ class RjPurchaseComponent extends Component {
                 }
 
                 $data['PurchaseOrder']['grandtotal'] = $grandtotal;
+            } else {
+                $data['PurchaseOrder']['invalid_detail_po'] = true;
             }
 
             if( !empty($dataSave) ) {
@@ -249,6 +276,14 @@ class RjPurchaseComponent extends Component {
     }
 
     function _callBeforeRenderPO ( $data ) {
+        if( !empty($data) ) {
+            $nodoc_tmp = Common::hashEmptyField($data, 'PurchaseOrder.nodoc_tmp');
+
+            if( !empty($nodoc_tmp) ) {
+                unset($data['PurchaseOrder']['nodoc']);
+            }
+        }
+
         $transaction_date = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'transaction_date', date('Y-m-d'));
         $supplier_quotation_id = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'supplier_quotation_id');
         $data = $this->controller->PurchaseOrder->SupplierQuotation->getMerge($data, $supplier_quotation_id);

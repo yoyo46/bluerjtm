@@ -1621,6 +1621,16 @@
                     url: href,
                 });
 
+                if( self.hasClass('chosen-select') ) {
+                    $.callChoosen({
+                        obj: self,
+                        init: 'destroy',
+                    });
+                    $.callChoosen({
+                        obj: self,
+                    });
+                }
+
                 return false;
             });
         }

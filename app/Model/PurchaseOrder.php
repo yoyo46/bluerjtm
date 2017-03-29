@@ -73,11 +73,27 @@ class PurchaseOrder extends AppModel {
                 'message' => 'Tgl PO harap dipilih'
             ),
         ),
+        'invalid_detail_po' => array(
+            'checkDetailPO' => array(
+                'rule' => array('checkDetailPO'),
+                'message' => 'Mohon pilih barang yang akan dibeli'
+            ),
+        ),
 	);
 
     public function __construct($id = false, $table = NULL, $ds = NULL){
         parent::__construct($id, $table, $ds);
         $this->virtualFields['ppn_type'] = __('CASE WHEN PurchaseOrder.ppn_include = 1 THEN \'PPN Include\' ELSE \'Normal\' END');
+    }
+
+    function checkDetailPO () {
+        $invalid_detail_po = Common::hashEmptyField($this->data, 'PurchaseOrder.invalid_detail_po');
+
+        if( !empty($invalid_detail_po) ) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 	function getData( $find, $options = false, $elements = false ){

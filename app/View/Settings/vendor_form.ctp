@@ -73,37 +73,75 @@
 		?>
     </div>
 </div>
-<div class="box box-success">
-    <div class="box-header">
-        <h3 class="box-title"><?php echo __('Pattern Supplier'); ?></h3>
-    </div>
-    <div class="box-body">
-		<?php 
-				echo $this->Html->tag('div', $this->Form->input('pattern',array(
-					'label'=> __('Kode Pattern *'), 
-					'class'=>'form-control',
-					'required' => false,
-					'placeholder' => __('Kode Pattern')
-				)), array(
-					'class' => 'form-group'
-				));
-				echo $this->Html->tag('div', $this->Form->input('last_number',array(
-					'label'=> __('No Awal Dokumen *'), 
-					'class'=>'form-control input_number',
-					'required' => false,
-					'placeholder' => __('No Awal Dokumen')
-				)), array(
-					'class' => 'form-group'
-				));
-				echo $this->Html->tag('div', $this->Form->input('min_digit',array(
-					'label'=> __('Min Digit No Dokumen *'), 
-					'class'=>'form-control input_number',
-					'required' => false,
-				)), array(
-					'class' => 'form-group'
-				));
-		?>
-    </div>
+<div class="row">
+	<div class="col-sm-6">
+		<div class="box box-success">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Pattern Penawaran Supplier'); ?></h3>
+		    </div>
+		    <div class="box-body">
+				<?php 
+						echo $this->Html->tag('div', $this->Form->input('pattern',array(
+							'label'=> __('Kode Pattern *'), 
+							'class'=>'form-control',
+							'required' => false,
+							'placeholder' => __('Kode Pattern')
+						)), array(
+							'class' => 'form-group'
+						));
+						echo $this->Html->tag('div', $this->Form->input('last_number',array(
+							'label'=> __('No Awal Dokumen *'), 
+							'class'=>'form-control input_number',
+							'required' => false,
+							'placeholder' => __('No Awal Dokumen')
+						)), array(
+							'class' => 'form-group'
+						));
+						echo $this->Html->tag('div', $this->Form->input('min_digit',array(
+							'label'=> __('Min Digit No Dokumen *'), 
+							'class'=>'form-control input_number',
+							'required' => false,
+						)), array(
+							'class' => 'form-group'
+						));
+				?>
+		    </div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="box box-success">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Pattern PO'); ?></h3>
+		    </div>
+		    <div class="box-body">
+				<?php 
+						echo $this->Html->tag('div', $this->Form->input('pattern_po',array(
+							'label'=> __('Kode Pattern *'), 
+							'class'=>'form-control',
+							'required' => false,
+							'placeholder' => __('Kode Pattern')
+						)), array(
+							'class' => 'form-group'
+						));
+						echo $this->Html->tag('div', $this->Form->input('last_number_po',array(
+							'label'=> __('No Awal Dokumen *'), 
+							'class'=>'form-control input_number',
+							'required' => false,
+							'placeholder' => __('No Awal Dokumen')
+						)), array(
+							'class' => 'form-group'
+						));
+						echo $this->Html->tag('div', $this->Form->input('min_digit_po',array(
+							'label'=> __('Min Digit No Dokumen *'), 
+							'class'=>'form-control input_number',
+							'required' => false,
+						)), array(
+							'class' => 'form-group'
+						));
+				?>
+		    </div>
+		</div>
+	</div>
 </div>
 <div class="box-footer text-center action">
 	<?php

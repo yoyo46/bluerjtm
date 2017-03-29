@@ -82,6 +82,9 @@
                 )), array(
                 'class' => "form-group",
             ));
+            echo $this->Form->error('invalid_detail_po', null, array(
+                'class' => 'error-message mb15',
+            ));
         }
 ?>
 <div class="temp-document-picker document-calc <?php echo $tableClass; ?>">

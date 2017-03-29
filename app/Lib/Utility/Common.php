@@ -626,10 +626,10 @@ class Common {
         return $result;
     }
 
-    public static function _callGeneratePatternCode ( $value, $modelName ) {
-        $pattern = Common::hashEmptyField($value, $modelName.'.pattern');
-        $last_number = Common::hashEmptyField($value, $modelName.'.last_number');
-        $min_digit = Common::hashEmptyField($value, $modelName.'.min_digit');
+    public static function _callGeneratePatternCode ( $value, $modelName, $extra_text = '' ) {
+        $pattern = Common::hashEmptyField($value, $modelName.'.pattern'.$extra_text);
+        $last_number = Common::hashEmptyField($value, $modelName.'.last_number'.$extra_text);
+        $min_digit = Common::hashEmptyField($value, $modelName.'.min_digit'.$extra_text);
 
         return __('%s%s', str_pad($last_number, $min_digit, '0', STR_PAD_LEFT), $pattern);
     }

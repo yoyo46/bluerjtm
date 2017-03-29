@@ -2958,8 +2958,10 @@ class AjaxController extends AppController {
                 'Vendor.id' => $id
             )
         ));
+		$model_name = Common::hashEmptyField($this->params->params, 'named.model_name', 'Vendor');
 
         $this->set('vendor', $vendor);
+        $this->set('model_name', $model_name);
         $this->render('/Elements/blocks/purchases/purchase_orders/get_supplier_top');
 	}
 }
