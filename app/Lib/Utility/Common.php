@@ -625,4 +625,12 @@ class Common {
 
         return $result;
     }
+
+    public static function _callGeneratePatternCode ( $value, $modelName ) {
+        $pattern = Common::hashEmptyField($value, $modelName.'.pattern');
+        $last_number = Common::hashEmptyField($value, $modelName.'.last_number');
+        $min_digit = Common::hashEmptyField($value, $modelName.'.min_digit');
+
+        return __('%s%s', str_pad($last_number, $min_digit, '0', STR_PAD_LEFT), $pattern);
+    }
 }

@@ -212,7 +212,11 @@ class SupplierQuotation extends AppModel {
             $detailValidates = $this->SupplierQuotationDetail->doSave($data, false, true);
 
             if( $validates && $detailValidates ) {
-                if( $this->save($data) ) {
+                $data = Common::_callUnset($data, array(
+                    'SupplierQuotationDetail',
+                ));
+
+                if( $this->saveAll($data) ) {
                     $id = $this->id;
                     $this->DocumentAuth->deleteAll(array(
                         'DocumentAuth.document_id' => $id,

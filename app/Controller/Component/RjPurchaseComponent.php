@@ -12,10 +12,25 @@ class RjPurchaseComponent extends Component {
     function _callBeforeSaveQuotation ( $data ) {
         if( !empty($data) ) {
             $dataSave = array();
+            $nodoc = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'nodoc');
+            $vendor_id = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'vendor_id');
             $transaction_date = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'transaction_date');
             // $available_date = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'available_date');
             $dataDetail = $this->MkCommon->filterEmptyField($data, 'SupplierQuotationDetail');
             $dataDetailPrice = $this->MkCommon->filterEmptyField($dataDetail, 'price');
+
+            if( empty($nodoc) ) {
+                $vendor = $this->controller->SupplierQuotation->Vendor->getMerge(array(), $vendor_id);
+
+                if( !empty($vendor) ) {
+                    $data['SupplierQuotation']['nodoc'] = Common::_callGeneratePatternCode($vendor, 'Vendor');
+
+                    $last_number = Common::hashEmptyField($vendor, 'Vendor.last_number');
+
+                    $data['Vendor']['id'] = $vendor_id;
+                    $data['Vendor']['last_number'] = $last_number+1;
+                }
+            }
 
             // $dateArr = $this->MkCommon->_callSplitDate($available_date);
             $transaction_date = $this->MkCommon->getDate($transaction_date);

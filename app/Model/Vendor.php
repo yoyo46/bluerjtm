@@ -2,6 +2,16 @@
 class Vendor extends AppModel {
 	var $name = 'Vendor';
 	var $validate = array(
+        'code' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Kode Supplier harap diisi'
+            ),
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+                'message' => 'Kode Supplier telah terdaftar',
+            ),
+        ),
         'name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -31,7 +41,33 @@ class Vendor extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Nomor telepon PIC harap diisi'
             ),
-        )
+        ),
+        'pattern' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Pattern harap diisi'
+            ),
+        ),
+        'last_number' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'No awal dokumen harap diisi'
+            ),
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'No awal dokumen harus berupa angka',
+            ),
+        ),
+        'min_digit' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Min Digit harap diisi'
+            ),
+            'numeric' => array(
+                'rule' => array('numeric'),
+                'message' => 'Min Digit harus berupa angka',
+            ),
+        ),
 	);
 
     var $belongsTo = array(
