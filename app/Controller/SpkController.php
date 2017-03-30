@@ -35,7 +35,7 @@ class SpkController extends AppController {
     public function index() {
         $this->set('sub_module_title', __('SPK'));
         
-        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateFrom = date('Y-m-01', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');
 
         $params = $this->MkCommon->_callRefineParams($this->params, array(

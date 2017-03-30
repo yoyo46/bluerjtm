@@ -282,7 +282,6 @@ class RjProductComponent extends Component {
                                 $detail['ProductHistory']['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock, $price );
                                 break;
                         }
-                        debug($detail);die();
                     } else {
                         switch ($document_type) {
                             case 'wht':
