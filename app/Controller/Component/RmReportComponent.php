@@ -1136,6 +1136,7 @@ class RmReportComponent extends Component {
                 $note = Common::hashEmptyField($value, 'ProductExpenditure.note', '-', array(
                 	'strict' => true,
             	));
+                $customStatus = $this->MkCommon->_callTransactionStatus($value, 'ProductExpenditure', 'transaction_status', $view);
                 
                 $qty = Common::hashEmptyField($value, 'ProductExpenditureDetailSerialNumber.qty', 0, array(
                 	'strict' => true,
@@ -1243,6 +1244,17 @@ class RmReportComponent extends Component {
                 		'field_model' => 'ProductExpenditureDetailSerialNumber.qty',
 		                'style' => 'text-align: center;',
 		                'data-options' => 'field:\'qty\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Status') => array(
+						'text' => $customStatus,
+                		'field_model' => 'ProductExpenditure.transaction_status',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'status\',width:100',
 		                'align' => 'center',
 		                'mainalign' => 'center',
                 		'excel' => array(
@@ -1392,6 +1404,7 @@ class RmReportComponent extends Component {
                 	'strict' => true,
             	));
                 $document_type = Common::hashEmptyField($value, 'ProductReceipt.document_type');
+                $customStatus = $this->MkCommon->_callTransactionStatus($value, 'ProductReceipt', 'transaction_status', $view);
                 
                 $qty = Common::hashEmptyField($value, 'ProductReceiptDetail.qty', 0, array(
                 	'strict' => true,
@@ -1499,6 +1512,17 @@ class RmReportComponent extends Component {
                 		'field_model' => 'ProductReceiptDetail.qty',
 		                'style' => 'text-align: center;',
 		                'data-options' => 'field:\'qty\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Status') => array(
+						'text' => $customStatus,
+                		'field_model' => 'ProductReceipt.transaction_status',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'status\',width:100',
 		                'align' => 'center',
 		                'mainalign' => 'center',
                 		'excel' => array(

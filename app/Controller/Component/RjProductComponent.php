@@ -330,14 +330,14 @@ class RjProductComponent extends Component {
                                 $price = Common::hashEmptyField($documentDetail, 'SpkProduction.price');
                                 $detail['ProductHistory']['price'] = $price;
                                 $detail['ProductHistory']['ProductStock'][] = array_merge($stock, array(
-                                    'serial_number' => sprintf('%s-%s', $this->MkCommon->getNoRef($product_id), date('ymdHis')),
+                                    'serial_number' => sprintf('%s-%s', Common::getNoRef($product_id), date('ymdHis')),
                                     'price' => $price,
                                 ));
                                 break;
                             
                             default:
                                 $detail['ProductHistory']['ProductStock'][] = array_merge($stock, array(
-                                    'serial_number' => sprintf('%s-%s', $this->MkCommon->getNoRef($product_id), date('ymdHis')),
+                                    'serial_number' => sprintf('%s-%s', Common::getNoRef($product_id), date('ymdHis')),
                                 ));
                                 break;
                         }

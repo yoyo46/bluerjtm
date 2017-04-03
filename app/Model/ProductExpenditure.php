@@ -30,7 +30,7 @@ class ProductExpenditure extends AppModel {
             'className' => 'DocumentAuth',
             'foreignKey' => 'document_id',
             'conditions' => array(
-                'DocumentAuth.document_type' => 'product_expenditure',
+                'DocumentAuth.document_type' => array( 'product_expenditure', 'product_expenditure_void' ),
             ),
         ),
     );
@@ -397,6 +397,22 @@ class ProductExpenditure extends AppModel {
             $this->set('status', 0);
             $this->set('transaction_status', 'void');
 
+            $value = $this->getMergeList($value, array(
+                'contain' => array(
+                    'ProductExpenditureDetail' => array(
+                        'contain' => array(
+                            'ProductExpenditureDetailSerialNumber',
+                            'ProductHistory',
+                        ),
+                    ),
+                ),
+            ));
+
+            $branch_id = Common::hashEmptyField($value, 'ProductExpenditure.branch_id');
+            $transaction_date = Common::hashEmptyField($value, 'ProductExpenditure.transaction_date');
+            $product_histories = Set::extract('/ProductExpenditureDetail/ProductHistory', $value);
+            $product_serial_numbers = Set::extract('/ProductExpenditureDetail/ProductExpenditureDetailSerialNumber', $value);
+
             if( $this->save() ) {
                 if( $document_type == 'po' ) {
                     $this->PurchaseOrder->id = $document_id;
@@ -412,6 +428,73 @@ class ProductExpenditure extends AppModel {
                         'SpkProduct.draft_document_status' => "'none'",
                     ), array(
                         'SpkProduct.id' => $spk_product_id,
+                    ));
+                }
+
+                $dataHistory = array();
+
+                if( !empty($product_serial_numbers) ) {
+                    foreach ($product_serial_numbers as $key => $detail) {
+                        $arrDetail = Common::hashEmptyField($detail, 'ProductExpenditureDetailSerialNumber');
+                        $product_id = Common::hashEmptyField($arrDetail, 'ProductExpenditureDetailSerialNumber.product_id');
+                        $qty = Common::hashEmptyField($arrDetail, 'ProductExpenditureDetailSerialNumber.qty');
+                        $price = Common::hashEmptyField($arrDetail, 'ProductExpenditureDetailSerialNumber.price');
+
+                        $arrHistory['ProductHistory'] = array(
+                            'branch_id' => $branch_id,
+                            'product_id' => $product_id,
+                            'transaction_id' => Common::hashEmptyField($arrDetail, 'ProductExpenditureDetailSerialNumber.product_expenditure_detail_id'),
+                            'transaction_type' => 'product_expenditure_void',
+                            'transaction_date' => $transaction_date,
+                            'qty' => $qty,
+                            'price' => $price,
+                            'type' => 'in',
+                            'ProductStock' => array(
+                                array(
+                                    'product_id' => $product_id,
+                                    'branch_id' => $branch_id,
+                                    'transaction_date' => $transaction_date,
+                                    'qty' => $qty,
+                                    'price' => $price,
+                                    'serial_number' => Common::hashEmptyField($arrDetail, 'ProductExpenditureDetailSerialNumber.serial_number'),
+                                ),
+                            ),
+                        );
+                        $dataHistory[] = $arrHistory;
+                    }
+                } else if( !empty($product_histories) ) {
+                    foreach ($product_histories as $key => $history) {
+                        $arrHistory = Common::hashEmptyField($history, 'ProductHistory');
+                        $product_id = Common::hashEmptyField($arrHistory, 'ProductHistory.product_id');
+                        $history_id = Common::hashEmptyField($arrHistory, 'ProductHistory.ProductHistory.id');
+
+                        $arrHistory = Common::_callUnset($arrHistory, array(
+                            'ProductHistory' => array(
+                                'id',
+                                'created',
+                                'modified',
+                                'status',
+                            ),
+                        ));
+                        $arrHistory['ProductHistory']['transaction_type'] = 'product_expenditure_void';
+                        $arrHistory['ProductHistory']['type'] = 'in';
+                        $arrHistory['ProductHistory']['ProductStock'] = array(
+                            'product_id' => $product_id,
+                            'product_history_id' => $history_id,
+                            'branch_id' => Common::hashEmptyField($arrHistory, 'ProductHistory.branch_id'),
+                            'transaction_date' => Common::hashEmptyField($arrHistory, 'ProductHistory.transaction_date'),
+                            'qty' => Common::hashEmptyField($arrHistory, 'ProductHistory.qty'),
+                            'price' => Common::hashEmptyField($arrHistory, 'ProductHistory.price'),
+                            'serial_number' => sprintf('%s-%s', Common::getNoRef($product_id), date('ymdHis')),
+                        );
+
+                        $dataHistory[] = $arrHistory;
+                    }
+                }
+
+                if( !empty($dataHistory) ) {
+                    $this->ProductExpenditureDetail->ProductHistory->saveAll($dataHistory, array(
+                        'deep' => true,
                     ));
                 }
 

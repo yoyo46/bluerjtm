@@ -474,9 +474,26 @@ class ProductReceipt extends AppModel {
             $this->id = $id;
             $this->set('status', 0);
             $this->set('transaction_status', 'void');
+            
+            $value = $this->getMergeList($value, array(
+                'contain' => array(
+                    'ProductReceiptDetail' => array(
+                        'contain' => array(
+                            'ProductHistory' => array(
+                                'contain' => array(
+                                    'ProductStock',
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ));
+            $product_history_id = Set::extract('/ProductReceiptDetail/ProductHistory/id', $value);
+            $product_stock_id = Set::extract('/ProductReceiptDetail/ProductHistory/ProductStock/ProductStock/id', $value);
+            $qty_use = Set::extract('/ProductReceiptDetail/ProductHistory/ProductStock/ProductStock/qty_use', $value);
+            $qty_use = array_filter($qty_use);
 
             if( $this->save() ) {
-
                 switch ($document_type) {
                     case 'spk':
                         $this->Spk->id = $document_id;
@@ -526,6 +543,23 @@ class ProductReceipt extends AppModel {
                         $this->PurchaseOrder->set('draft_receipt_status', 'none');
                         $this->PurchaseOrder->save();
                         break;
+                }
+
+                if( empty($qty_use) ) {
+                    if( !empty($product_history_id) ) {
+                        $this->ProductReceiptDetail->ProductHistory->updateAll(array(
+                            'status' => false,
+                        ), array(
+                            'ProductHistory.id' => $product_history_id,
+                        ));
+                    }
+                    if( !empty($product_stock_id) ) {
+                        $this->ProductReceiptDetail->Product->ProductStock->updateAll(array(
+                            'status' => false,
+                        ), array(
+                            'ProductStock.id' => $product_stock_id,
+                        ));
+                    }
                 }
 
                 $msg = sprintf(__('Berhasil %s'), $default_msg);

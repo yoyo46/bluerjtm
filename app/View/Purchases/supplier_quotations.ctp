@@ -90,14 +90,17 @@
                                 ), array(
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
-                                $customAction .= $this->Html->link(__('Hapus'), array(
+                            }
+
+                            if( $transaction_status != 'void' ) {
+                                $customAction .= $this->Html->link(__('Void'), array(
                                     'controller' => 'purchases',
                                     'action' => 'supplier_quotation_toggle',
                                     $id,
                                     'admin' => false,
                                 ), array(
                                     'class' => 'btn btn-danger btn-xs trigger-disabled',
-                                    'data-alert' => __('Anda yakin ingin menghapus quotation ini?'),
+                                    'data-alert' => __('Anda yakin ingin membatalkan quotation ini?'),
                                 ));
                             }
             ?>

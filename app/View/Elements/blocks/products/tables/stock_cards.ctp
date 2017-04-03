@@ -79,57 +79,59 @@
                 $qty = Common::hashEmptyField($value, 'ProductHistory.qty');
                 // $total_balance_price = $total_begining_price*$balance;
 
-                switch ($transaction_type) {
-                    case 'product_receipt':
-                        $qty_in = Common::hashEmptyField($value, 'ProductHistory.qty');
-                        $price = $price_in = Common::hashEmptyField($value, 'ProductHistory.price');
-                        $total_in = $qty_in * $price_in;
-                        $url = $this->Html->url(array(
-                            'controller' => 'products',
-                            'action' => 'receipt_detail',
-                            $docid,
-                        ), true);
-                        $total_ending_price = $price*$qty;
-                        // $grandtotal_ending = $total_balance_price + $total_ending_price;
-                
-                        if( !empty($ending_stock[$price]['qty']) ) {
-                            $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
-                        } else {
-                            $ending_stock[$price] = array(
-                                'qty' => $qty,
-                                'price' => $price,
-                            );
-                        }
-                        break;
-                    case 'product_expenditure':
-                        $qty_out_tmp = $qty_out = Common::hashEmptyField($value, 'ProductHistory.qty');
-                        $price = $price_out = Common::hashEmptyField($value, 'ProductHistory.price');
-                        $total_out = $qty_out * $price_out;
-                        $url = $this->Html->url(array(
-                            'controller' => 'products',
-                            'action' => 'expenditure_detail',
-                            $docid,
-                        ), true);
-                        $total_ending_price = $price*$qty;
-                        // $grandtotal_ending = $total_balance_price - $total_ending_price;
-                
-                        if( !empty($ending_stock) ) {
-                            foreach ($ending_stock as $key => $stock) {
-                                $ending_qty = Common::hashEmptyField($stock, 'qty', 0) - $qty_out_tmp;
+                if( in_array($transaction_type, array( 'product_receipt', 'product_expenditure_void' )) ) {
+                    $qty_in = Common::hashEmptyField($value, 'ProductHistory.qty');
+                    $price = $price_in = Common::hashEmptyField($value, 'ProductHistory.price');
+                    $total_in = $qty_in * $price_in;
+                    $url = $this->Html->url(array(
+                        'controller' => 'products',
+                        'action' => 'receipt_detail',
+                        $docid,
+                    ), true);
+                    $total_ending_price = $price*$qty;
+                    // $grandtotal_ending = $total_balance_price + $total_ending_price;
+            
+                    if( !empty($ending_stock[$price]['qty']) ) {
+                        $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
+                    } else {
+                        $ending_stock[$price] = array(
+                            'qty' => $qty,
+                            'price' => $price,
+                        );
+                    }
 
-                                if( empty($ending_qty) ) {
-                                    unset($ending_stock[$key]);
-                                    break;
-                                } else if( $ending_qty < 0 ) {
-                                    unset($ending_stock[$key]);
-                                    $qty_out_tmp = abs($ending_qty);
-                                } else {
-                                    $ending_stock[$key]['qty'] = $ending_qty;
-                                    break;
-                                }
+
+                    if( $transaction_type == 'product_expenditure_void' ) {
+                        $nodoc = __('%s (Void)', $nodoc);
+                    }
+                } else if( $transaction_type == 'product_expenditure' ) {
+                    $qty_out_tmp = $qty_out = Common::hashEmptyField($value, 'ProductHistory.qty');
+                    $price = $price_out = Common::hashEmptyField($value, 'ProductHistory.price');
+                    $total_out = $qty_out * $price_out;
+                    $url = $this->Html->url(array(
+                        'controller' => 'products',
+                        'action' => 'expenditure_detail',
+                        $docid,
+                    ), true);
+                    $total_ending_price = $price*$qty;
+                    // $grandtotal_ending = $total_balance_price - $total_ending_price;
+            
+                    if( !empty($ending_stock) ) {
+                        foreach ($ending_stock as $key => $stock) {
+                            $ending_qty = Common::hashEmptyField($stock, 'qty', 0) - $qty_out_tmp;
+
+                            if( empty($ending_qty) ) {
+                                unset($ending_stock[$key]);
+                                break;
+                            } else if( $ending_qty < 0 ) {
+                                unset($ending_stock[$key]);
+                                $qty_out_tmp = abs($ending_qty);
+                            } else {
+                                $ending_stock[$key]['qty'] = $ending_qty;
+                                break;
                             }
                         }
-                        break;
+                    }
                 }
 
                 if( $key%2 == 0 ) {

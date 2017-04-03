@@ -97,6 +97,9 @@
                                 ), array(
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
+                            }
+
+                            if( $transaction_status <> 'void' ) {
                                 $customAction .= $this->Html->link(__('Void'), array(
                                     'controller' => 'products',
                                     'action' => 'expenditure_toggle',

@@ -103,7 +103,7 @@ class ProductExpenditureDetail extends AppModel {
         }
 
         if( !empty($header) ) {
-            $default_options['conditions']['ProductExpenditure.status'] = 1;
+            // $default_options['conditions']['ProductExpenditure.status'] = 1;
             $default_options['contain'][] = 'ProductExpenditure';
         }
 

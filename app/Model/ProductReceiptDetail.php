@@ -97,7 +97,7 @@ class ProductReceiptDetail extends AppModel {
         }
 
         if( !empty($header) ) {
-            $default_options['conditions']['ProductReceipt.status'] = 1;
+            // $default_options['conditions']['ProductReceipt.status'] = 1;
             $default_options['contain'][] = 'ProductReceipt';
         }
 

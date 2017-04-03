@@ -206,7 +206,7 @@ class PurchasesController extends AppController {
     }
 
     public function supplier_quotation_toggle( $id ) {
-        $result = $this->SupplierQuotation->doDelete( $id );
+        $result = $this->SupplierQuotation->doChangeStatus( $id, 'void', __('membatalkan') );
         $this->MkCommon->setProcessParams($result);
     }
 

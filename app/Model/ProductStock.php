@@ -7,20 +7,20 @@ class ProductStock extends AppModel {
             'className' => 'Product',
             'foreignKey' => 'product_id',
         ),
-        'ProductReceiptDetail' => array(
-            'className' => 'ProductReceiptDetail',
-            'foreignKey' => 'transaction_id',
-            'conditions' => array(
-                'ProductStock.transaction_type' => 'product_receipts',
-            ),
-        ),
-        'ProductExpenditureDetail' => array(
-            'className' => 'ProductExpenditureDetail',
-            'foreignKey' => 'transaction_id',
-            'conditions' => array(
-                'ProductStock.transaction_type' => 'product_expenditure',
-            ),
-        ),
+        // 'ProductReceiptDetail' => array(
+        //     'className' => 'ProductReceiptDetail',
+        //     'foreignKey' => 'transaction_id',
+        //     'conditions' => array(
+        //         'ProductStock.transaction_type' => 'product_receipts',
+        //     ),
+        // ),
+        // 'ProductExpenditureDetail' => array(
+        //     'className' => 'ProductExpenditureDetail',
+        //     'foreignKey' => 'transaction_id',
+        //     'conditions' => array(
+        //         'ProductStock.transaction_type' => 'product_expenditure',
+        //     ),
+        // ),
     )
     ;
     public function __construct($id = false, $table = NULL, $ds = NULL){

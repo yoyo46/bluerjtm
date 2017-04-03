@@ -80,6 +80,7 @@
                             $grandtotal = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'grandtotal');
                             $is_asset = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'is_asset');
                             $transaction_status = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'transaction_status');
+                            $receipt_status = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'receipt_status');
 
                             $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
 
@@ -115,7 +116,7 @@
                                     'periode' => $periode,
                                 ));
                             }
-                            if( in_array($transaction_status, array( 'unposting', 'revised', 'posting', 'approved' )) ){
+                            if( in_array($transaction_status, array( 'unposting', 'revised', 'posting', 'approved' )) && $receipt_status == 'none' ){
                                 $customAction .= $this->Html->link(__('Void'), array(
                                     'controller' => 'purchases',
                                     'action' => 'purchase_order_toggle',

@@ -633,4 +633,8 @@ class Common {
 
         return __('%s%s', str_pad($last_number, $min_digit, '0', STR_PAD_LEFT), $pattern);
     }
+
+    public static function getNoRef ( $id, $length = 5, $op = '0', $position = STR_PAD_LEFT ) {
+        return str_pad($id, $length, $op, $position);
+    }
 }

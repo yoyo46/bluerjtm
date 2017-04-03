@@ -73,6 +73,9 @@
                             $customStatus = $this->Common->_callTransactionStatus($value, 'ProductReceipt');
                             $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
                             $noref = $this->Common->getNoRef($id);
+                            
+                            $qty_use = Set::extract('/ProductReceiptDetail/ProductHistory/ProductStock/ProductStock/qty_use', $value);
+                            $qty_use = array_filter($qty_use);
 
                             $customAction = $this->Html->link(__('Detail'), array(
                                 'controller' => 'products',
@@ -92,6 +95,9 @@
                                 ), array(
                                     'class' => 'btn btn-primary btn-xs'
                                 ));
+                            }
+
+                            if( empty($qty_use) && $transaction_status <> 'void' ) {
                                 $customAction .= $this->Html->link(__('Void'), array(
                                     'controller' => 'products',
                                     'action' => 'receipt_toggle',

@@ -18,7 +18,7 @@ class ProductHistory extends AppModel {
             'className' => 'ProductExpenditureDetail',
             'foreignKey' => 'transaction_id',
             'conditions' => array(
-                'ProductHistory.transaction_type' => 'product_expenditure',
+                'ProductHistory.transaction_type' => array( 'product_expenditure', 'product_expenditure_void' ),
             ),
         ),
         'Branch' => array(

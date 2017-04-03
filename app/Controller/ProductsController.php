@@ -430,6 +430,15 @@ class ProductsController extends AppController {
                     'foreignKey' => 'to_branch_id',
                     'type' => 'first',
                 ),
+                'ProductReceiptDetail' => array(
+                    'contain' => array(
+                        'ProductHistory' => array(
+                            'contain' => array(
+                                'ProductStock',
+                            ),
+                        ),
+                    ),
+                ),
             ),
         ));
 
@@ -1184,6 +1193,9 @@ class ProductsController extends AppController {
                     case 'product_expenditure':
                         $modelName = 'ProductExpenditure';
                         break;
+                    case 'product_expenditure_void':
+                        $modelName = 'ProductExpenditure';
+                        break;
                 }
 
                 $value = $this->Product->ProductHistory->getMergeList($value, array(
@@ -1195,6 +1207,7 @@ class ProductsController extends AppController {
                                     'uses' => $modelName,
                                     'elements' => array(
                                         'branch' => false,
+                                        'status' => false,
                                     ),
                                 ),
                             ),

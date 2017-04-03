@@ -2280,10 +2280,6 @@ class MkCommonComponent extends Component {
         }
     }
 
-    function getNoRef ( $id, $length = 5, $op = '0', $position = STR_PAD_LEFT ) {
-        return str_pad($id, $length, $op, $position);
-    }
-
     function _callGetDriver ( $value ) {
         $driver = $this->filterEmptyField($value, 'Driver', 'driver_name');
         $driver = $this->filterEmptyField($value, 'DriverPengganti', 'driver_name', $driver);
@@ -2298,6 +2294,130 @@ class MkCommonComponent extends Component {
         } else {
             return $empty;
         }
+    }
+
+    function _callTransactionStatus ( $data, $modelName = false, $fieldName = 'transaction_status', $view = null ) {
+        $transaction_status = Common::hashEmptyField($data, $modelName.'.'.$fieldName);
+        $canceled_date = Common::hashEmptyField($data, $modelName.'.canceled_date');
+
+        App::import('Helper', 'Html');
+        $this->Html = new HtmlHelper(new View(null));
+
+        switch ($transaction_status) {
+            case 'paid':
+                $status_text = __('Sudah Dibayar');
+                $status_class = 'label label-paid';
+                break;
+
+            case 'half_paid':
+                $status_text = __('Dibayar Sebagian');
+                $status_class = 'label label-paid disabled';
+                break;
+
+            case 'void':
+                $status_text = __('Void');
+                $status_class = 'label label-danger';
+
+                if(!empty($canceled_date)){
+                    $canceled_date = $this->formatDate($canceled_date, 'd/m/Y', false);
+                    $status_text .= '<br>'.$canceled_date;
+                }
+                break;
+
+            case 'sold':
+                $status_text = __('Sold');
+                $status_class = 'label label-danger';
+                break;
+
+            case 'posting':
+                $status_text = __('Commit');
+                $status_class = 'label label-primary';
+                break;
+
+            case 'available':
+                $status_text = __('Available');
+                $status_class = 'label label-success';
+                break;
+
+            case 'unposting':
+                $status_text = __('Draft');
+                $status_class = 'label label-default';
+                break;
+
+            case 'completed':
+                $status_text = __('Complete');
+                $status_class = 'label label-success';
+
+            case 'finish':
+                $status_text = __('Finish');
+                $status_class = 'label label-success';
+                break;
+
+            case 'out':
+                $status_text = __('Proses');
+                $status_class = 'label label-warning';
+                break;
+
+            case 'progress':
+                $status_text = __('Pending');
+                $status_class = 'label label-warning';
+                break;
+
+            case 'pending':
+                $status_text = __('Pending');
+                $status_class = 'label label-default';
+                break;
+
+            case 'canceled':
+                $status_text = __('Batal');
+                $status_class = 'label label-danger';
+                break;
+
+            case 'revised':
+                $status_text = __('Direvisi');
+                $status_class = 'label label-warning';
+                break;
+
+            case 'rejected':
+                $status_text = __('Ditolak');
+                $status_class = 'label label-danger';
+                break;
+
+            case 'closed':
+                $status_text = __('Closed');
+                $status_class = 'label label-dark';
+                break;
+
+            case 'approved':
+                $status_text = __('Disetujui');
+                $status_class = 'label label-success';
+                break;
+
+            case 'po':
+                $status_text = __('PO');
+                $status_class = 'label label-pink';
+                break;
+
+            case 'open':
+                $status_text = __('Open');
+                $status_class = 'label label-default';
+                break;
+            
+            default:
+                $status_text = __('Belum Dibayar');
+                $status_class = 'label label-default';
+                break;
+        }
+
+        if( !empty($view) ) {
+            $customStatus = $this->Html->tag('span', $status_text, array(
+                'class' => $status_class,
+            ));
+        } else {
+            $customStatus = $status_text;
+        }
+
+        return $customStatus;
     }
 }
 ?>

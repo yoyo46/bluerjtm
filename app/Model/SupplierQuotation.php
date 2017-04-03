@@ -63,7 +63,7 @@ class SupplierQuotation extends AppModel {
         'transaction_date' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Tgl quotation harap dipilih'
+                'message' => 'Tgl penawaran harap dipilih'
             ),
         ),
         // 'available_date' => array(
@@ -377,7 +377,7 @@ class SupplierQuotation extends AppModel {
             }
         } else {
             $result = array(
-                'msg' => __('Gagal menghapus quotation. Data tidak ditemukan'),
+                'msg' => __('Gagal menghapus penawaran. Data tidak ditemukan'),
                 'status' => 'error',
             );
         }
@@ -397,6 +397,53 @@ class SupplierQuotation extends AppModel {
         } else {
             return $value;
         }
+    }
+
+    function doChangeStatus( $id, $transaction_status = null, $msg = null ) {
+        $result = false;
+        $value = $this->getData('first', array(
+            'conditions' => array(
+                'SupplierQuotation.id' => $id,
+            ),
+        ));
+
+        if ( !empty($value) ) {
+            $nodoc = !empty($value['SupplierQuotation']['nodoc'])?$value['SupplierQuotation']['nodoc']:false;
+            $default_msg = sprintf(__('%s penawaran #%s'), $msg, $nodoc);
+
+            $this->id = $id;
+            $this->set('transaction_status', $transaction_status);
+
+            if( $this->save() ) {
+                $msg = sprintf(__('Berhasil %s'), $default_msg);
+                $result = array(
+                    'msg' => $msg,
+                    'status' => 'success',
+                    'Log' => array(
+                        'activity' => $msg,
+                        'old_data' => $value,
+                    ),
+                );
+            } else {
+                $msg = sprintf(__('Gagal %s'), $default_msg);
+                $result = array(
+                    'msg' => $msg,
+                    'status' => 'error',
+                    'Log' => array(
+                        'activity' => $msg,
+                        'old_data' => $value,
+                        'error' => 1,
+                    ),
+                );
+            }
+        } else {
+            $result = array(
+                'msg' => __('Gagal %s penawaran. Data tidak ditemukan', $msg),
+                'status' => 'error',
+            );
+        }
+
+        return $result;
     }
 }
 ?>
