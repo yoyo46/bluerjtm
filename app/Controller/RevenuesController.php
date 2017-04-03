@@ -8723,6 +8723,9 @@ class RevenuesController extends AppController {
             $value = $this->Invoice->InvoiceDetail->getMerge($value, $id);
             $value = $this->User->getMerge($value, $billing_id);
 
+            $employe_position_id = $this->MkCommon->filterEmptyField($value, 'Employe', 'employe_position_id');
+            $value = $this->User->Employe->EmployePosition->getMerge($value, $employe_position_id);
+
             $invDetails = $this->MkCommon->filterEmptyField($value, 'InvoiceDetail');
 
             if( !empty($invDetails) ) {
@@ -8788,6 +8791,9 @@ class RevenuesController extends AppController {
             $value = $this->Invoice->Customer->getMerge($value, $customer_id);
             $value = $this->Invoice->InvoiceDetail->getMerge($value, $id);
             $value = $this->User->getMerge($value, $billing_id);
+            
+            $employe_position_id = $this->MkCommon->filterEmptyField($value, 'Employe', 'employe_position_id');
+            $value = $this->User->Employe->EmployePosition->getMerge($value, $employe_position_id);
 
             $invDetails = $this->MkCommon->filterEmptyField($value, 'InvoiceDetail');
 

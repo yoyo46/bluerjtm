@@ -1,5 +1,6 @@
 <?php
         $full_name = $this->Common->filterEmptyField($value, 'Employe', 'full_name');
+        $position = $this->Common->filterEmptyField($value, 'EmployePosition', 'name');
 
         if(!empty($invDetails)){
             $idx = 1;
@@ -177,7 +178,7 @@
                     echo $this->Html->tag('p', $full_name, array(
                         'style' => 'margin: 70px 0 0;border-bottom: 1px solid #000;display: inline-block;text-align: center;font-weight: bold;',
                     ));
-                    echo $this->Html->tag('p', __('Billing Officer'), array(
+                    echo $this->Html->tag('p', $position, array(
                         'style' => 'text-align: center;font-weight: 600;'
                     ));
             ?>
