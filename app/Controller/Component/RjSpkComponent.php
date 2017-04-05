@@ -274,11 +274,18 @@ class RjSpkComponent extends Component {
     		'contain' => false,
     	));
         $vendors = $this->controller->Spk->Vendor->getData('list');
+        $drivers = $this->controller->Spk->Driver->getData('list', array(
+            'fields' => array(
+                'Driver.id', 'Driver.driver_name'
+            ),
+        ), array(
+            'branch' => false,
+        ));
 
         $this->MkCommon->_layout_file('select');
     	$this->controller->set(compact(
     		'employes', 'toBranches',
-            'vendors', 'value'
+            'vendors', 'value', 'drivers'
 		));
     }
 }

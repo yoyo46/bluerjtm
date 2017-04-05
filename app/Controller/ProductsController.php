@@ -1014,6 +1014,11 @@ class ProductsController extends AppController {
         $values = $this->Spk->getMergeList($values, array(
             'contain' => array(
                 'Truck',
+                'Driver' => array(
+                    'elements' => array(
+                        'branch' => false,
+                    ),
+                ),
             ),
         ));
 

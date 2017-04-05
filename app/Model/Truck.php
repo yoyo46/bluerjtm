@@ -433,9 +433,9 @@ class Truck extends AppModel {
         return $truck;
     }
 
-    function getInfoTruck( $truck_id, $branch_id = false ) {
+    function getInfoTruck( $truck_id, $branch_id = false, $fieldName = 'Truck.id' ) {
         $conditions = array(
-            'Truck.id' => $truck_id,
+            $fieldName => $truck_id,
         );
 
         if( !empty($branch_id) ) {

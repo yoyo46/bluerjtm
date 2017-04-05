@@ -203,6 +203,9 @@ class AppController extends Controller {
 				'purchases' => array(
 					'po_documents', 'search',
 				),
+				'spk' => array(
+					'search',
+				),
 			);
 			Configure::write('__Site.allowed_module', $_allowedModule);
 

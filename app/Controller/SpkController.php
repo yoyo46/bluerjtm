@@ -278,4 +278,23 @@ class SpkController extends AppController {
             $this->redirect($this->referer());
         }
     }
+
+    function driver_truck($nopol = null ) {
+        $nopol = urldecode($nopol);
+        $value = $this->Spk->Truck->getInfoTruck($nopol, null, 'Truck.nopol');
+
+        $this->request->data['Spk']['driver_id'] = Common::hashEmptyField($value, 'Truck.driver_id');
+
+        $drivers = $this->Spk->Driver->getData('list', array(
+            'fields' => array(
+                'Driver.id', 'Driver.driver_name'
+            ),
+        ), array(
+            'branch' => false,
+        ));
+        $this->set(compact(
+            'value', 'drivers'
+        ));
+        $this->render('/Elements/blocks/spk/forms/driver');
+    }
 }

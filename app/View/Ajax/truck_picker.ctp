@@ -57,6 +57,7 @@
                         $attr = array(
                             'data-value' => $$return_value,
                             'data-change' => $target,
+                            'data-trigger' => 'change',
                         );
 
                         echo $this->Html->tableCells(array(

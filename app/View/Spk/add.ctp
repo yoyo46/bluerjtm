@@ -115,7 +115,16 @@
 								'return_value' => 'nopol',
 							),
 							'onchange' => 'false',
+							'attributes' => array(
+								'class' => 'ajax-change form-control',
+								'href' => $this->Html->url(array(
+									'controller' => 'spk',
+									'action' => 'driver_truck',
+								)),
+								'data-wrapper-write' => '.wrapper-driver',
+							),
 						));
+        				echo $this->element('blocks/spk/forms/driver');
 						echo $this->Common->_callInputForm('vendor_id', array(
 							'label' => __('Supplier *'),
 							'empty' => __('- Pilih Supplier -'),

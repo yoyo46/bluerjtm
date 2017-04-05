@@ -23,6 +23,10 @@ class Spk extends AppModel {
             'className' => 'Truck',
             'foreignKey' => 'truck_id',
         ),
+        'Driver' => array(
+            'className' => 'Driver',
+            'foreignKey' => 'driver_id',
+        ),
     );
 
     var $hasMany = array(

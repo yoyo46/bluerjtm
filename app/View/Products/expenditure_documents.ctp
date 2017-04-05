@@ -15,6 +15,9 @@
                 'nopol' => array(
                     'name' => __('No Pol'),
                 ),
+                'driver' => array(
+                    'name' => __('Supir'),
+                ),
             );
 
             $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
@@ -39,6 +42,7 @@
                                 ));
                                 $document_type = $this->Common->filterEmptyField($value, 'Spk', 'document_type');
                                 $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol', '-');
+                                $driver = $this->Common->filterEmptyField($value, 'Driver', 'name', '-');
                                 $document_type = ucwords($document_type);
                 ?>
                 <tr data-value="<?php echo $nodoc; ?>" data-change="#document-number" data-form=".expenditure-form" data-wrapper-write=".wrapper-table-documents" data-duplicate="false" data-id="<?php echo $id; ?>" >
@@ -49,6 +53,7 @@
                             ));
                             echo $this->Html->tag('td', $document_type);
                             echo $this->Html->tag('td', $nopol);
+                            echo $this->Html->tag('td', $driver);
                     ?>
                 </tr>
                 <?php

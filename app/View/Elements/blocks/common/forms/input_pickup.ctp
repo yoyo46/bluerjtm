@@ -1,6 +1,7 @@
 <?php
 		$readonly = isset($readonly)?$readonly:true;
 		$onchange = !empty($onchange)?$onchange:false;
+		$attributes = !empty($attributes)?$attributes:array();
 		$attrBrowse = array(
             'class' => 'ajaxModal visible-xs browse-docs',
             'escape' => false,
@@ -22,9 +23,9 @@
 						'placeholder' => $label,
 						'readonly' => $readonly,
 						'frameClass' => false,
-						'attributes' => array(
+						'attributes' => array_merge(array(
 							'data-change' => $onchange,
-						),
+						), $attributes),
 					));
 			?>
 		</div>
