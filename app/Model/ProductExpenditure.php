@@ -83,8 +83,27 @@ class ProductExpenditure extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Tgl keluar harap dipilih'
             ),
+            'validateDate' => array(
+                'rule' => array('validateDate'),
+                'message' => 'Tgl pengeluaran tidak bole lebih kecil dari tgl SPK'
+            ),
         ),
 	);
+
+    function validateDate () {
+        $transaction_date = Common::hashEmptyField($this->data, 'ProductExpenditure.transaction_date');
+        $spk_date = Common::hashEmptyField($this->data, 'ProductExpenditure.spk_date');
+        
+        if( !empty($spk_date) ) {
+            if( $transaction_date < $spk_date ) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
 
 	function getData( $find, $options = false, $elements = false ){
         $branch = isset($elements['branch'])?$elements['branch']:true;

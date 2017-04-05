@@ -412,11 +412,13 @@ class RjProductComponent extends Component {
                 case 'po':
                     $value = $this->controller->Product->PurchaseOrderDetail->PurchaseOrder->getMerge(array(), $document_number, 'PurchaseOrder.nodoc', 'active');
                     $document_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'id');
+                    $reference_date = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'transaction_date');
                     break;
 
                 case 'spk':
                     $value = $this->controller->Product->SpkProduct->Spk->getMerge(array(), $document_number, 'Spk.nodoc', 'active');
                     $document_id = $this->MkCommon->filterEmptyField($value, 'Spk', 'id');
+                    $reference_date = $this->MkCommon->filterEmptyField($value, 'Spk', 'transaction_date');
                     break;
 
                 case 'wht':
@@ -431,12 +433,14 @@ class RjProductComponent extends Component {
                         ),
                     ));
                     $document_id = $this->MkCommon->filterEmptyField($value, 'ProductExpenditure', 'id');
+                    $reference_date = $this->MkCommon->filterEmptyField($value, 'ProductExpenditure', 'transaction_date');
                     $data['ProductReceipt']['to_branch_id'] = Common::hashEmptyField($value, 'Spk.to_branch_id');
                     break;
 
                 case 'production':
                     $value = $this->controller->Product->SpkProduction->Spk->getMerge(array(), $document_number, 'Spk.nodoc', 'active');
                     $document_id = $this->MkCommon->filterEmptyField($value, 'Spk', 'id');
+                    $reference_date = $this->MkCommon->filterEmptyField($value, 'Spk', 'transaction_date');
                     break;
                 
                 default:
@@ -468,6 +472,8 @@ class RjProductComponent extends Component {
             $data['ProductReceipt']['user_id'] = Configure::read('__Site.config_user_id');
             $data['ProductReceipt']['document_id'] = $document_id;
             $data['ProductReceipt']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['ProductReceipt']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['ProductReceipt']['reference_date'] = $reference_date;
 
             $details = $this->MkCommon->filterEmptyField($data, 'ProductReceiptDetail', 'product_id');
             $receiptQty = $this->MkCommon->filterEmptyField($data, 'ProductReceiptDetail', 'qty');
@@ -1019,6 +1025,7 @@ class RjProductComponent extends Component {
             $data['ProductExpenditure']['document_id'] = $document_id;
             $data['ProductExpenditure']['document_type'] = $document_type;
             $data['ProductExpenditure']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['ProductExpenditure']['spk_date'] = $this->MkCommon->filterEmptyField($value, 'Spk', 'transaction_date');
 
             $details = $this->MkCommon->filterEmptyField($data, 'ProductExpenditureDetail', 'product_id');
             $qtys = $this->MkCommon->filterEmptyField($data, 'ProductExpenditureDetail', 'qty');

@@ -52,6 +52,7 @@
 		                    'attributes' => array(
 								'error' => array(
 									'checkDocDate' => __('Tgl penerimaan tidak boleh lebih kecil dari tgl penerimaan sebelumnya - %s', $last_transaction_date),
+									'validateDate' => __('Tgl penerimaan tidak boleh lebih kecil dari tgl %s', Common::hashEmptyField($documentTypes, $document_type)),
 								),
 	                    	),
 						));

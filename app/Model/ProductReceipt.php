@@ -119,6 +119,9 @@ class ProductReceipt extends AppModel {
             'checkDocDate' => array(
                 'rule' => array('checkDocDate'),
             ),
+            'validateDate' => array(
+                'rule' => array('validateDate'),
+            ),
         ),
 	);
 
@@ -131,6 +134,21 @@ class ProductReceipt extends AppModel {
             return false;
         } else {
             return true;
+        }
+    }
+
+    function validateDate () {
+        $transaction_date = Common::hashEmptyField($this->data, 'ProductReceipt.transaction_date');
+        $reference_date = Common::hashEmptyField($this->data, 'ProductReceipt.reference_date');
+        
+        if( !empty($reference_date) ) {
+            if( $transaction_date < $reference_date ) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
 
