@@ -51,6 +51,7 @@ class ProductHistory extends AppModel {
         switch ($status) {
             case 'active':
                 $default_options['conditions']['ProductHistory.status'] = 1;
+                $default_options['conditions']['ProductHistory.transaction_type <>'] = 'product_expenditure_void';
         }
 
         if( !empty($branch) ) {

@@ -566,7 +566,7 @@ class ProductReceipt extends AppModel {
                 if( empty($qty_use) ) {
                     if( !empty($product_history_id) ) {
                         $this->ProductReceiptDetail->ProductHistory->updateAll(array(
-                            'status' => false,
+                            'ProductHistory.status' => false,
                         ), array(
                             'ProductHistory.id' => $product_history_id,
                         ));

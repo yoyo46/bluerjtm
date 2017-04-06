@@ -430,6 +430,7 @@ class ProductExpenditure extends AppModel {
             $branch_id = Common::hashEmptyField($value, 'ProductExpenditure.branch_id');
             $transaction_date = Common::hashEmptyField($value, 'ProductExpenditure.transaction_date');
             $product_histories = Set::extract('/ProductExpenditureDetail/ProductHistory', $value);
+            $product_history_id = Set::extract('/ProductExpenditureDetail/ProductHistory/ProductHistory/id', $value);
             $product_serial_numbers = Set::extract('/ProductExpenditureDetail/ProductExpenditureDetailSerialNumber', $value);
 
             if( $this->save() ) {
@@ -514,6 +515,13 @@ class ProductExpenditure extends AppModel {
                 if( !empty($dataHistory) ) {
                     $this->ProductExpenditureDetail->ProductHistory->saveAll($dataHistory, array(
                         'deep' => true,
+                    ));
+                }
+                if( !empty($product_history_id) ) {
+                    $this->ProductExpenditureDetail->ProductHistory->updateAll(array(
+                        'ProductHistory.status' => 0,
+                    ), array(
+                        'ProductHistory.id' => $product_history_id,
                     ));
                 }
 
