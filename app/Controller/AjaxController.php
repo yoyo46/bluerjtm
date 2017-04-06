@@ -2599,6 +2599,8 @@ class AjaxController extends AppController {
         		$render = '/Purchases/products';
         		break;
         	case 'spk':
+        		$this->request->data['Spk']['document_type'] = Common::hashEmptyField($this->params->params, 'named.document_type');
+
         		$status = 'active';
         		$render = '/Spk/products';
         		break;

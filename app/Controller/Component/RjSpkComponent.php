@@ -50,12 +50,14 @@ class RjSpkComponent extends Component {
                 $qty = !empty($spkProduct['qty'][$key])?$spkProduct['qty'][$key]:false;
                 $price_service = !empty($spkProduct['price_service'][$key])?$spkProduct['price_service'][$key]:false;
                 $price = !empty($spkProduct['price'][$key])?$spkProduct['price'][$key]:false;
+                $price_service_type = !empty($spkProduct['price_service_type'][$key])?$spkProduct['price_service_type'][$key]:false;
 
                 $dataProduct = array(
                     'product_id' => $product_id,
                     'qty' => $qty,
                     'price_service' => $price_service,
                     'price' => $price,
+                    'price_service_type' => $price_service_type,
                 );
                 $dataProduct = $this->MkCommon->dataConverter($dataProduct, array(
                     'price' => array(

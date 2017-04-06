@@ -49,6 +49,7 @@
 		                    'empty' => __('Pilih Jenis SPK'),
 		                    'options' => Configure::read('__Site.Spk.type'),
 					    	'data-match' => '[[\'.wrapper-mechanic\', [\'internal\',\'production\'], \'slide\'],[\'.wrapper-wht\', [\'wht\'], \'slide\'],[\'.wrapper-eksternal\', [\'eksternal\'], \'slide\'], [\'.wrapper-production\', [\'production\'], \'slide\'], [\'.wrapper-non-production\', [\'internal\',\'eksternal\'], \'slide\']]',
+					    	'id' => 'spk-document-type',
 						));
 
 						echo $this->Html->tag('div',

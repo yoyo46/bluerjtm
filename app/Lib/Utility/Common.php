@@ -637,4 +637,11 @@ class Common {
     public static function getNoRef ( $id, $length = 5, $op = '0', $position = STR_PAD_LEFT ) {
         return str_pad($id, $length, $op, $position);
     }
+
+    public static function _callPriceServiceType () {
+        return array(
+            'borongan' => __('Borongan'),
+            'satuan' => __('Satuan'),
+        );
+    }
 }

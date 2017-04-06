@@ -87,29 +87,6 @@
                             echo $this->Html->tag('td', $stock, array(
                                 'class' => 'removed text-center',
                             ));
-                            echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.qty.%s', $modelName, $id), false, array(
-                                'type' => 'text',
-                                'frameClass' => false,
-                                'class' => 'input_number text-center price_custom',
-                                'attributes' => array(
-                                    'rel' => 'qty',
-                                ),
-                            )), array(
-                                'class' => 'hide',
-                            ));
-
-                            echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.price_service.%s', $modelName, $id), false, array(
-                                'type' => 'text',
-                                'frameClass' => false,
-                                'class' => 'text-right price_custom',
-                                'attributes' => array(
-                                    'data-type' => 'input_price_coma',
-                                    'rel' => 1,
-                                ),
-                            )), array(
-                                'data-display' => $eksternalClass,
-                                'class' => 'hide wrapper-eksternal',
-                            ));
                             echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.price.%s', $modelName, $id), false, array(
                                 'type' => 'text',
                                 'frameClass' => false,
@@ -121,6 +98,42 @@
                             )), array(
                                 'data-display' => $eksternalClass,
                                 'class' => 'hide wrapper-eksternal',
+                            ));
+                            echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.qty.%s', $modelName, $id), false, array(
+                                'type' => 'text',
+                                'frameClass' => false,
+                                'class' => 'input_number text-center price_custom qty',
+                                'attributes' => array(
+                                    'rel' => 'qty',
+                                ),
+                            )), array(
+                                'class' => 'hide',
+                            ));
+                            echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.price_service_type.%s', $modelName, $id), false, array(
+                                'frameClass' => false,
+                                'class' => 'td-select calc-type',
+                                'options' => Common::_callPriceServiceType(),
+                            )), array(
+                                'data-display' => $eksternalClass,
+                                'class' => 'hide wrapper-eksternal',
+                            ));
+                            echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.price_service.%s', $modelName, $id), false, array(
+                                'type' => 'text',
+                                'frameClass' => false,
+                                'class' => 'text-right price_custom price',
+                                'attributes' => array(
+                                    'data-type' => 'input_price_coma',
+                                    'rel' => 1,
+                                ),
+                            )), array(
+                                'data-display' => $eksternalClass,
+                                'class' => 'hide wrapper-eksternal',
+                            ));
+                            echo $this->Html->tag('td', '0', array(
+                                'rel' => 'grandtotal',
+                                'class' => 'total text-right total_row price_custom hide wrapper-eksternal',
+                                'data-type' => 'input_price_coma',
+                                'data-display' => $eksternalClass,
                             ));
                             echo $this->Html->tag('td', $this->Html->link($this->Common->icon('times'), '#', array(
                                 'class' => 'delete-document btn btn-danger btn-xs',

@@ -1200,10 +1200,12 @@
         var disc = $.convertNumber(parent.find('.disc').val());
         var ppn = $.convertNumber(parent.find('.ppn').val());
         var qty = $.convertNumber(parent.find('.qty').val(), 'int', 1);
+        var calc_type = $.checkUndefined(parent.find('.calc-type').val(), null);
+
         var ppn_include = $('.ppn_include:checked').val();
         var format_type = self.attr('data-type');
 
-        if( type == 'single-total' ) {
+        if( type == 'single-total' || calc_type == 'borongan' ) {
             total = price;
         } else {
             // total = ( ( price * qty ) - disc );
@@ -1275,6 +1277,36 @@
         });
     }
 
+    function _callTotalCustom (self) {
+        var rel = self.attr('rel');
+        var parent = self.parents('.pick-document');
+        var objTotal = parent.find('.total_custom[rel="'+rel+'"]');
+        var objTotalRow = parent.find('.total_row');
+        
+        var input = $.convertNumber(self.val(), self.html());
+        var price = $.convertNumber(input);
+
+        var data_max = $.convertNumber(self.attr('data-max'), 'float', false);
+        var data_max_alert = $.checkUndefined(self.attr('data-max-alert'), false);
+
+        if( data_max != false ) {
+            if( price > data_max ) {
+                alert(data_max_alert);
+                total = data_max;
+
+                self.val( $.formatDecimal(total) );
+            } else {
+                total = calculate(parent, self);
+            }
+        } else {
+            total = calculate(parent, self);
+        }
+
+        objTotal.html( $.formatDecimal(total, 2) );
+        objTotalRow.html( $.formatDecimal(total, 2) );
+        calcGrandTotalCustom();
+    }
+
     $.calcTotal = function(options){
         var settings = $.extend({
             obj: $('.document-calc .price,.document-calc .disc,.document-calc .ppn,.document-calc .total,.document-calc .qty'),
@@ -1282,6 +1314,7 @@
             objClick: $('.ppn_include'),
             objDelete: $('.delete-document'),
             objCustom: $('.document-calc .price_custom'),
+            objCalc: $('.document-calc .calc-type'),
             // objPpnCustom: $('.document-calc .ppn_trigger'),
         }, options );
 
@@ -1381,34 +1414,11 @@
             });
         }
 
-        settings.objCustom.off('blur');
-        settings.objCustom.blur(function(){
-            var self = $(this);
-            var rel = self.attr('rel');
-            var parent = self.parents('.pick-document');
-            var objTotal = parent.find('.total_custom[rel="'+rel+'"]');
-            
-            var input = $.convertNumber(self.val(), self.html());
-            var price = $.convertNumber(input);
-
-            var data_max = $.convertNumber(self.attr('data-max'), 'float', false);
-            var data_max_alert = $.checkUndefined(self.attr('data-max-alert'), false);
-
-            if( data_max != false ) {
-                if( price > data_max ) {
-                    alert(data_max_alert);
-                    total = data_max;
-
-                    self.val( $.formatDecimal(total) );
-                } else {
-                    total = calculate(parent, self);
-                }
-            } else {
-                total = calculate(parent, self);
-            }
-
-            objTotal.html( $.formatDecimal(total, 2) );
-            calcGrandTotalCustom();
+        settings.objCustom.off('blur').blur(function(){
+            _callTotalCustom($(this));
+        });
+        settings.objCalc.off('change').change(function(){
+            _callTotalCustom($(this));
         });
 
         calcGrandTotal();
@@ -1960,6 +1970,8 @@
 
                 if( !result ) {
                     $(target).find('input,select').val('');
+                    $(target).find('select.calc-type').val('borongan');
+
                     $.callChoosen({
                         obj: $(target).find('.chosen-select'),
                     });
