@@ -24,6 +24,10 @@
                 'name' => __('Penerimaan'),
                 'class' => 'text-center',
             ),
+            'retur' => array(
+                'name' => __('Retur'),
+                'class' => 'text-center',
+            ),
             'action' => array(
                 'name' => __('Action'),
                 'width' => '15%',
@@ -86,6 +90,7 @@
 
                             $customStatus = $this->Common->_callTransactionStatus($value, 'PurchaseOrder');
                             $customReceipt = $this->Common->_callStatusReceipt($value, 'PurchaseOrder');
+                            $customRetur = $this->Common->_callStatusRetur($value, 'PurchaseOrder');
                             $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
                             $grandtotal = $this->Common->getFormatPrice($grandtotal, 0, 2);
 
@@ -146,6 +151,9 @@
                         echo $this->Html->tag('td', $customReceipt, array(
                             'class' => 'text-center',
                         ));
+                        echo $this->Html->tag('td', $customRetur, array(
+                            'class' => 'text-center',
+                        ));
                         echo $this->Html->tag('td', $customAction, array(
                             'class' => 'action',
                         ));
@@ -156,7 +164,7 @@
                     } else {
                          echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '8'
+                            'colspan' => '9'
                         )));
                     }
             ?>

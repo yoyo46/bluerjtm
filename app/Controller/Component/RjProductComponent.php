@@ -715,7 +715,7 @@ class RjProductComponent extends Component {
 		));
     }
 
-    function _callPurchaseOrders( $params, $vendor_id = false ) {
+    function _callPurchaseOrders( $params, $vendor_id = false, $status = 'unreceipt_draft' ) {
     	$this->controller->loadModel('PurchaseOrder');
         $options =  $this->controller->PurchaseOrder->_callRefineParams($params, array(
             'conditions' => array(
@@ -724,7 +724,7 @@ class RjProductComponent extends Component {
             'limit' => 10,
         ));
         $this->controller->paginate = $this->controller->PurchaseOrder->getData('paginate', $options, array(
-            'status' => 'unreceipt_draft',
+            'status' => $status,
         ));
         $values = $this->controller->paginate('PurchaseOrder');
 
@@ -1170,6 +1170,9 @@ class RjProductComponent extends Component {
                 $product_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrderDetail', 'product_id');
                 $total_qty = $this->MkCommon->filterEmptyField($value, 'PurchaseOrderDetail', 'qty');
                 $in_qty = $this->controller->Product->ProductReceiptDetail->getTotalReceipt($transaction_id, $document_id, $document_type, $product_id);
+                $qty_retur = $this->controller->Product->ProductReturDetail->getTotalRetur(false, $document_id, 'po', $product_id);
+
+                $total_qty -= $qty_retur;
                 $qty = $total_qty - $in_qty;
 
                 if( !empty($qty) ) {
@@ -1410,6 +1413,280 @@ class RjProductComponent extends Component {
         $this->controller->set(compact(
             'period_text'
         ));
+    }
+
+    function _callBeforeSaveRetur ( $data, $id = false ) {
+        if( !empty($data) ) {
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'ProductRetur' => array(
+                        'transaction_date',
+                    ),
+                )
+            ));
+            $document_number = $this->MkCommon->filterEmptyField($data, 'ProductRetur', 'document_number');
+            $document_type = $this->MkCommon->filterEmptyField($data, 'ProductRetur', 'document_type');
+            $transaction_status = $this->MkCommon->filterEmptyField($data, 'ProductRetur', 'transaction_status');
+
+            switch ($document_type) {
+                case 'po':
+                    $value = $this->controller->Product->PurchaseOrderDetail->PurchaseOrder->getMerge(array(), $document_number, 'PurchaseOrder.nodoc', 'active');
+                    $document_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'id');
+                    $reference_date = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'transaction_date');
+                    break;
+                
+                default:
+                    $document_id = '';
+                    break;
+            }
+
+            $last_doc = $this->controller->Product->ProductReturDetail->ProductRetur->getData('first', array(
+                'conditions' => array(
+                    'ProductRetur.id <>' => $id,
+                    'ProductRetur.document_id' => $document_id,
+                    'ProductRetur.document_type' => $document_type,
+                ),
+                'order' => array(
+                    'ProductRetur.transaction_date' => 'DESC',
+                    'ProductRetur.id' => 'DESC',
+                ),
+            ));
+
+            $transaction_date = Common::hashEmptyField($data, 'ProductRetur.transaction_date');
+            $last_transaction_date = Common::hashEmptyField($last_doc, 'ProductRetur.transaction_date');
+            $data['ProductRetur']['last_transaction_date'] = $last_transaction_date;
+
+            if( $transaction_date < $last_transaction_date ) {
+                $data['ProductRetur']['invalid_date'] = true;
+            }
+
+            $data['ProductRetur']['id'] = $id;
+            $data['ProductRetur']['user_id'] = Configure::read('__Site.config_user_id');
+            $data['ProductRetur']['document_id'] = $document_id;
+            $data['ProductRetur']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['ProductRetur']['reference_date'] = $reference_date;
+
+            $details = $this->MkCommon->filterEmptyField($data, 'ProductReturDetail', 'product_id');
+            $returQty = $this->MkCommon->filterEmptyField($data, 'ProductReturDetail', 'qty');
+
+            if( !empty($details) ) {
+                $total = 0;
+                $dataDetail = array();
+                $values = array_filter($details);
+
+                foreach ($values as $key => $product_id) {
+                    $qty = $this->MkCommon->filterIssetField($returQty, $key);
+
+                    $product = $this->controller->Product->getMerge(array(), $product_id);
+
+                    $code = $this->MkCommon->filterEmptyField($product, 'Product', 'code');
+                    $name = $this->MkCommon->filterEmptyField($product, 'Product', 'name');
+                    $unit = $this->MkCommon->filterEmptyField($product, 'ProductUnit', 'name');
+
+                    $dataDetail[$key]['ProductReturDetail'] = array(
+                        'product_id' => $product_id,
+                        'code' => $code,
+                        'name' => $name,
+                        'unit' => $unit,
+                        'qty' => $qty,
+                    );
+
+                    switch ($document_type) {
+                        default:
+                            $documentDetail = $this->controller->Product->PurchaseOrderDetail->getMergeData(array(), $document_id, $product_id);
+                            $qty_retur = $this->controller->Product->ProductReturDetail->getTotalRetur($id, $document_id, $document_type, $product_id);
+                            $total_retur = $qty_retur + $qty;
+                            
+                            $detailId = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'id');
+                            $detailQty = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'qty');
+                            $detailPrice = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'price');
+                            
+                            $model = 'PurchaseOrderDetail';
+                            break;
+                    }
+
+                    if( $total_retur >= $detailQty ) {
+                        $retur_detail_status = 'full';
+                    } else {
+                        $retur_detail_status = 'half';
+                    }
+
+                    if( $total_retur > $detailQty ) {
+                        $over_retur = true;
+                    } else {
+                        $over_retur = false;
+                    }
+
+                    $dataDetail[$key]['ProductReturDetail']['document_detail_id'] = $detailId;
+                    $dataDetail[$key]['ProductReturDetail']['doc_qty'] = $detailQty;
+                    $dataDetail[$key]['ProductReturDetail']['retur_qty'] = $qty_retur;
+                    $dataDetail[$key]['ProductReturDetail']['over_retur'] = $over_retur;
+                    $dataDetail[$key]['ProductReturDetail']['price'] = $detailPrice;
+                    $dataDetail[$key]['ProductReturDetail']['Product'] = array(
+                        'id' => $product_id,
+                        'truck_category_id' => 1,
+                        $model => array(
+                            array(
+                                'id' => $detailId,
+                                'retur_status' => $retur_detail_status,
+                            ),
+                        ),
+                    );
+
+                    $total += $qty;
+                }
+
+                $data['ProductRetur']['total'] = $total;
+                $data['ProductReturDetail'] = $dataDetail;
+            }
+        }
+
+        return $data;
+    }
+
+    function _callBeforeRenderRetur ( $data, $value = false ) {
+        $document_id = false;
+
+        if( empty($data) ) {
+            $data = $value;
+
+            if( empty($data) ) {
+                $data['ProductRetur']['document_type'] = 'po';
+            }
+
+            $id = $this->MkCommon->filterEmptyField($value, 'ProductRetur', 'id');
+            $type = $this->MkCommon->filterEmptyField($value, 'ProductRetur', 'document_type');
+            $document_id = $this->MkCommon->filterEmptyField($value, 'ProductRetur', 'document_id');
+            $details = $this->MkCommon->filterEmptyField($value, 'ProductReturDetail');
+
+            $data['ProductRetur']['document_number'] = $this->MkCommon->filterEmptyField($data, 'Document', 'nodoc');
+
+            if( empty($value) ) {
+                $data['ProductRetur']['transaction_date'] = date('Y-m-d');
+            }
+
+            if( !empty($details) ) {
+                foreach ($details as $key => &$detail) {
+                    $product = $this->MkCommon->filterEmptyField($detail, 'Product');
+                    $product_id = $this->MkCommon->filterEmptyField($detail, 'ProductReturDetail', 'product_id');
+
+                    $unit = $this->MkCommon->filterEmptyField($product, 'ProductUnit', 'name');
+                    $detail['Product']['unit'] = $this->MkCommon->filterEmptyField($detail, 'ProductUnit', 'name', $unit);
+
+                    switch ($type) {
+                        default:
+                            $documentDetail = $this->controller->Product->PurchaseOrderDetail->getMergeData(array(), $document_id, $product_id);
+                            $qty_retur = $this->controller->Product->ProductReturDetail->getTotalRetur($id, $document_id, $type, $product_id);
+                            $detailQty = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'qty');
+                            break;
+                    }
+                            
+                    $detail['ProductReturDetail']['doc_qty'] = $detailQty;
+                    $detail['ProductReturDetail']['retur_qty'] = $qty_retur;
+                }
+
+                $data['ProductReturDetail'] = $details;
+            }
+        } else {
+            $type = $this->MkCommon->filterEmptyField($data, 'ProductRetur', 'document_type');
+            $document_id = $this->MkCommon->filterEmptyField($data, 'ProductRetur', 'document_id');
+        }
+
+        $data = $this->MkCommon->dataConverter($data, array(
+            'date' => array(
+                'ProductRetur' => array(
+                    'transaction_date',
+                ),
+            )
+        ), true);
+        $document_type = $this->MkCommon->filterEmptyField($data, 'ProductRetur', 'document_type');
+
+        switch ($document_type) {
+            default:
+                $vendors = $this->controller->Product->PurchaseOrderDetail->PurchaseOrder->_callVendors('unretur_draft', $document_id);
+                break;
+        }
+
+        $this->controller->request->data = $data;
+
+        $employes = $this->controller->User->Employe->getData('list', array(
+            'fields' => array(
+                'Employe.id', 'Employe.full_name',
+            ),
+            'contain' => false,
+        ));
+
+        $this->MkCommon->_layout_file('select');
+        $this->controller->set(compact(
+            'employes', 'vendors', 'type'
+        ));
+    }
+
+    function _callBeforeRenderReturPODetails ( $values, $transaction_id = false ) {
+        $data = $this->controller->request->data;
+        $document_type = $this->MkCommon->filterEmptyField($data, 'ProductRetur', 'document_type', 'po');
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $value = $this->controller->Product->PurchaseOrderDetail->getMergeList($value, array(
+                    'contain' => array(
+                        'Product' => array(
+                            'contain' => array(
+                                'ProductUnit',
+                                'ProductCategory',
+                            ),
+                        ),
+                    ),
+                ));
+                $document_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrderDetail', 'purchase_order_id');
+                $product_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrderDetail', 'product_id');
+                $total_qty = $this->MkCommon->filterEmptyField($value, 'PurchaseOrderDetail', 'qty');
+                $retur_qty = $this->controller->Product->ProductReturDetail->getTotalRetur($transaction_id, $document_id, $document_type, $product_id);
+                $qty = $total_qty - $retur_qty;
+
+                if( !empty($qty) ) {
+                    $value['PurchaseOrderDetail']['total_qty'] = $total_qty;
+                    $value['PurchaseOrderDetail']['qty'] = $qty;
+                    $value['PurchaseOrderDetail']['retur_qty'] = $retur_qty;
+                    $values[$key] = $value;
+                } else {
+                    unset($values[$key]);
+                }
+            }
+        }
+
+        $this->controller->set('module_title', __('Barang'));
+        $this->controller->set(compact(
+            'values'
+        ));
+    }
+
+    function _callGetDocRetur ( $value ) {
+        $this->Product = ClassRegistry::init('Product'); 
+        $document_id = $this->MkCommon->filterEmptyField($value, 'ProductRetur', 'document_id');
+        $document_type = $this->MkCommon->filterEmptyField($value, 'ProductRetur', 'document_type');
+
+        switch ($document_type) {
+            default:
+                $modalName = 'PurchaseOrder';
+                break;
+        }
+
+        $value = $this->Product->ProductReturDetail->ProductRetur->getMergeList($value, array(
+            'contain' => array(
+                'Document' => array(
+                    'uses' => $modalName,
+                    'primaryKey' => 'id',
+                    'foreignKey' => 'document_id',
+                    'type' => 'first',
+                    'elements' => array(
+                        'branch' => false,
+                    ),
+                ),
+            ),
+        ));
+
+        return $value;
     }
 }
 ?>

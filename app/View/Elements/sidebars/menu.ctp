@@ -1442,6 +1442,14 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'receipts' )?'active':'',
                             ));
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Retur', $this->Common->icon('angle-double-right')), array(
+                                'controller' => 'products',
+                                'action' => 'retur'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'receipts' )?'active':'',
+                            ));
                             echo $this->Html->tag('li', $this->Html->link(__('%s Kartu Stok', $this->Common->icon('angle-double-right')), array(
                                 'controller' => 'products',
                                 'action' => 'stock_cards'

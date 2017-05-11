@@ -44,6 +44,13 @@ class PurchaseOrder extends AppModel {
                 'ProductReceipt.document_type' => 'po',
             ),
         ),
+        'ProductRetur' => array(
+            'className' => 'ProductRetur',
+            'foreignKey' => 'purchase_order_id',
+            'conditions' => array(
+                'ProductRetur.document_type' => 'po',
+            ),
+        ),
     );
 
 	var $validate = array(
@@ -155,6 +162,28 @@ class PurchaseOrder extends AppModel {
                 } else {
                     $default_options['conditions']['PurchaseOrder.draft_receipt_status'] = array( 'none', 'half' );
                 }
+                break;
+            case 'unretur':
+                $default_options['conditions']['PurchaseOrder.transaction_status'] = array( 'approved', 'paid', 'half_paid' );
+                $default_options['conditions']['PurchaseOrder.retur_status'] = array( 'none', 'half' );
+                $default_options['conditions']['PurchaseOrder.is_asset'] = 0;
+                $default_options['conditions']['PurchaseOrder.status'] = 1;
+                
+                $default_options['conditions']['PurchaseOrder.receipt_status'] = array( 'none', 'half' );
+                break;
+            case 'unretur_draft':
+                $default_options['conditions']['PurchaseOrder.transaction_status'] = array( 'approved', 'paid', 'half_paid' );
+                $default_options['conditions']['PurchaseOrder.is_asset'] = 0;
+                $default_options['conditions']['PurchaseOrder.status'] = 1;
+
+                if( !empty($special_id) ) {
+                    $default_options['conditions']['OR']['PurchaseOrder.id'] = $special_id;
+                    $default_options['conditions']['OR']['PurchaseOrder.draft_retur_status'] = array( 'none', 'half' );
+                } else {
+                    $default_options['conditions']['PurchaseOrder.draft_retur_status'] = array( 'none', 'half' );
+                }
+
+                $default_options['conditions']['PurchaseOrder.draft_receipt_status'] = array( 'none', 'half' );
                 break;
             default:
                 $default_options['conditions']['PurchaseOrder.status'] = array( 0, 1 );
@@ -332,6 +361,7 @@ class PurchaseOrder extends AppModel {
         $vendor_id = !empty($data['named']['vendor_id'])?$data['named']['vendor_id']:false;
         $status = !empty($data['named']['status'])?$data['named']['status']:false;
         $receipt_status = !empty($data['named']['receipt_status'])?$data['named']['receipt_status']:false;
+        $retur_status = !empty($data['named']['retur_status'])?$data['named']['retur_status']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -358,6 +388,19 @@ class PurchaseOrder extends AppModel {
                     break;
                 case 'full':
                     $default_options['conditions']['PurchaseOrder.draft_receipt_status'] = 'full';
+                    break;
+            }
+        }
+        if( !empty($retur_status) ) {
+            switch ($retur_status) {
+                case 'none':
+                    $default_options['conditions']['PurchaseOrder.draft_retur_status'] = 'none';
+                    break;
+                case 'half':
+                    $default_options['conditions']['PurchaseOrder.draft_retur_status'] = 'half';
+                    break;
+                case 'full':
+                    $default_options['conditions']['PurchaseOrder.draft_retur_status'] = 'full';
                     break;
             }
         }

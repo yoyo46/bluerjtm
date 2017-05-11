@@ -181,6 +181,17 @@ class PurchaseOrderDetail extends AppModel {
         ));
 
         if(!empty($value)){
+            $qty_retur = $this->Product->ProductReturDetail->getTotalRetur(false, $id, 'po', $product_id);
+            $qty = Common::hashEmptyField($value, 'PurchaseOrderDetail.qty');
+
+            $total_qty = $qty - $qty_retur;
+
+            if( $total_qty <= 0 ) {
+                $total_qty = 0;
+            }
+
+            $value['PurchaseOrderDetail']['qty'] = $total_qty;
+
             $data = array_merge($data, $value);
         }
 

@@ -259,17 +259,23 @@ class CashbanksController extends AppController {
                 $cashBankTagihan = $this->CashBank->getData('first', array(
                     'conditions' => array(
                         'CashBank.id' => $document_id,
+                        'CashBank.prepayment_status <>' => 'full_paid',
                     ),
                 ));
-                $totalTagihanDebit = !empty($cashBankTagihan['CashBank']['debit_total'])?$cashBankTagihan['CashBank']['debit_total']:0;
-                $totalTagihanCredit = !empty($cashBankTagihan['CashBank']['credit_total'])?$cashBankTagihan['CashBank']['credit_total']:0;
-                $totalDibayar = $this->CashBank->totalPrepaymentDibayar($document_id);
-                $totalTagihanCashBank = ($totalTagihanDebit + $totalTagihanCredit) - $totalDibayar;
 
-                if( $totalTagihanCashBank > $totalCashBank ) {
-                    $prepayment_status = 'half_paid';
-                } else if( $totalTagihanCashBank <= $totalCashBank ) {
-                    $prepayment_status = 'full_paid';
+                if( !empty($cashBankTagihan) ) {
+                    $totalTagihanDebit = !empty($cashBankTagihan['CashBank']['debit_total'])?$cashBankTagihan['CashBank']['debit_total']:0;
+                    $totalTagihanCredit = !empty($cashBankTagihan['CashBank']['credit_total'])?$cashBankTagihan['CashBank']['credit_total']:0;
+                    $totalDibayar = $this->CashBank->totalPrepaymentDibayar($document_id);
+                    $totalTagihanCashBank = ($totalTagihanDebit + $totalTagihanCredit) - $totalDibayar;
+
+                    if( $totalTagihanCashBank > $totalCashBank ) {
+                        $prepayment_status = 'half_paid';
+                    } else if( $totalTagihanCashBank <= $totalCashBank ) {
+                        $prepayment_status = 'full_paid';
+                    }
+                } else {
+                    $data['CashBank']['document_id'] = false;
                 }
             }
 

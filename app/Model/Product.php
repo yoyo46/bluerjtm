@@ -26,6 +26,10 @@ class Product extends AppModel {
             'className' => 'ProductReceiptDetail',
             'foreignKey' => 'product_id',
         ),
+        'ProductReturDetail' => array(
+            'className' => 'ProductReturDetail',
+            'foreignKey' => 'product_id',
+        ),
         'PurchaseOrderDetail' => array(
             'className' => 'PurchaseOrderDetail',
             'foreignKey' => 'product_id',

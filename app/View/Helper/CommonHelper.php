@@ -2751,6 +2751,28 @@ class CommonHelper extends AppHelper {
         }
     }
 
+    function _callStatusRetur ( $value, $modelName ) {
+        $retur_status = $this->filterEmptyField($value, $modelName, 'retur_status');
+
+        switch ($retur_status) {
+            case 'half':
+                return $this->Html->tag('span', __('Sebagian'), array(
+                    'class' => 'text-orange',
+                ));
+                break;
+            case 'full':
+                return $this->Html->tag('span', __('Retur Semua'), array(
+                    'class' => 'text-green',
+                ));
+                break;
+            default:
+                return $this->Html->tag('span', __('Belum'), array(
+                    'class' => 'text-grey',
+                ));
+                break;
+        }
+    }
+
     // New Input Form - Nanti semua akan diganti kesini
     function _callInputForm ($fieldName, $options = false) {
         $default_options = array(

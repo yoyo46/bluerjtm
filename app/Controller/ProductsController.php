@@ -1570,4 +1570,236 @@ class ProductsController extends AppController {
             }
         }
     }
+
+    public function retur() {
+        $this->loadModel('ProductRetur');
+        $this->set('sub_module_title', __('Retur Barang'));
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->ProductRetur->_callRefineParams($params);
+        $this->paginate = $this->ProductRetur->getData('paginate', $options, array(
+            'status' => 'all',
+        ));
+        $values = $this->paginate('ProductRetur');
+        $values = $this->ProductRetur->getMergeList($values, array(
+            'contain' => array(
+                'Vendor' => array(
+                    'elements' => array(
+                        'status' => 'all',
+                        'branch' => false,
+                    ),
+                ),
+                'Employe',
+                'ProductReturDetail' => array(
+                    'contain' => array(
+                        'ProductHistory' => array(
+                            'contain' => array(
+                                'ProductStock',
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ));
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $value = $this->RjProduct->_callGetDocRetur($value);
+                $values[$key] = $value;
+            }
+        }
+
+        $this->RjProduct->_callBeforeRenderReceipts();
+
+        $this->MkCommon->_layout_file('select');
+        $this->set('active_menu', 'retur');
+        $this->set(compact(
+            'values'
+        ));
+    }
+
+    function retur_add(){
+        $this->set('sub_module_title', __('Retur Barang'));
+
+        $data = $this->request->data;
+
+        if( !empty($data) ) {
+            $data = $this->RjProduct->_callBeforeSaveRetur($data);
+            $result = $this->Product->ProductReturDetail->ProductRetur->doSave($data);
+            $this->MkCommon->setProcessParams($result, array(
+                'controller' => 'products',
+                'action' => 'retur',
+                'admin' => false,
+            ));
+        }
+
+        $this->RjProduct->_callBeforeRenderRetur($data);
+
+        $this->set(array(
+            'active_menu' => 'receipts',
+        ));
+    }
+
+    public function retur_edit( $id = false ) {
+        $this->set('sub_module_title', __('Edit Retur'));
+
+        $value = $this->Product->ProductReturDetail->ProductRetur->getData('first', array(
+            'conditions' => array(
+                'ProductRetur.id' => $id,
+            ),
+        ), array(
+            'status' => 'pending',
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->RjProduct->_callGetDocRetur($value);
+            $value = $this->Product->ProductReturDetail->getMerge($value, $id);
+
+            $data = $this->request->data;
+
+            if( !empty($data) ) {
+                $data = $this->RjProduct->_callBeforeSaveRetur($data, $id);
+                $result = $this->Product->ProductReturDetail->ProductRetur->doSave($data, $value, $id);
+                $this->MkCommon->setProcessParams($result, array(
+                    'controller' => 'products',
+                    'action' => 'retur',
+                    'admin' => false,
+                ));
+            }
+
+            $this->RjProduct->_callBeforeRenderRetur($data, $value);
+
+            $this->set(array(
+                'value' => $value,
+                'active_menu' => 'retur',
+            ));
+            $this->render('retur_add');
+        } else {
+            $this->MkCommon->redirectReferer(__('Retur tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function retur_detail( $id = false ) {
+        $this->set('sub_module_title', __('Detail Retur Barang'));
+        $value = $this->Product->ProductReturDetail->ProductRetur->getData('first', array(
+            'conditions' => array(
+                'ProductRetur.id' => $id,
+            ),
+        ), array(
+            'status' => false,
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->Product->ProductReturDetail->getMerge($value, $id);
+
+            $user_id = $this->MkCommon->filterEmptyField($value, 'ProductRetur', 'user_id');
+            $grandtotal = $this->MkCommon->filterEmptyField($value, 'ProductRetur', 'grandtotal');
+            $nodoc = $this->MkCommon->filterEmptyField($value, 'ProductRetur', 'nodoc');
+            $document_type = $this->MkCommon->filterEmptyField($value, 'ProductRetur', 'document_type');
+
+            switch ($document_type) {
+                default:
+                    $documentModel = 'PurchaseOrder';
+                    break;
+            }
+
+            $value = $this->Product->ProductReturDetail->ProductRetur->getMergeList($value, array(
+                'contain' => array(
+                    'Document' => array(
+                        'uses' => $documentModel,
+                        'elements' => array(
+                            'branch' => false,
+                        ),
+                    ),
+                ),
+            ));
+
+            $details = $this->MkCommon->filterEmptyField($value, 'ProductReturDetail');
+            $value = $this->User->getMerge($value, $user_id);
+            $this->RjProduct->_callBeforeRenderRetur(false, $value);
+
+            $this->set('active_menu', 'retur');
+            $this->set('view', 'detail');
+            $this->set(compact(
+                'vendors', 'value',
+                'user_otorisasi_approvals', 'show_approval'
+            ));
+            $this->render('retur_add');
+        } else {
+            $this->MkCommon->redirectReferer(__('Retur barang tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function retur_toggle( $id, $type = null ) {
+        $result = $this->Product->ProductReceiptDetail->ProductReceipt->doDelete( $id, $type );
+        $this->MkCommon->setProcessParams($result);
+    }
+
+    function retur_documents ( $type = false, $vendor_id = false ) {
+        $vendor_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'vendor_id', $vendor_id);
+        $retur_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'retur_id');
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $render = __('retur_documents_%s', $type);
+
+        switch ($type) {
+            default:
+                $values = $this->RjProduct->_callPurchaseOrders($params, $vendor_id, 'unretur_draft');
+                $render = 'retur_documents';
+                break;
+        }
+
+        $this->MkCommon->_layout_file('select');
+        $this->set(compact(
+            'values', 'type',
+            'retur_id', 'vendor_id'
+        ));
+        $this->render($render);
+    }
+
+    function retur_document_products ( $transaction_id = false, $nodoc = null, $document_type = 'spk' ) {
+        $data = $this->request->data;
+        $nodoc = $this->MkCommon->filterEmptyField($data, 'ProductRetur', 'document_number', $nodoc);
+        $document_type = $this->MkCommon->filterEmptyField($data, 'ProductRetur', 'document_type', $document_type);
+        $values = false;
+
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $productCategories = $this->Product->ProductCategory->getData('list');
+
+        $this->set(array(
+            'nodoc' => $nodoc,
+            'transaction_id' => $transaction_id,
+            'document_type' => $document_type,
+            'productCategories' => $productCategories,
+        ));
+
+        switch ($document_type) {
+            default:
+                $value = $this->Product->PurchaseOrderDetail->PurchaseOrder->getData('first', array(
+                    'conditions' => array(
+                        'PurchaseOrder.nodoc' => $nodoc,
+                    ),
+                ), array(
+                    'status' => 'unretur_draft',
+                ));
+                $document_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'id');
+
+                $options =  $this->Product->PurchaseOrderDetail->_callRefineParams($params, array(
+                    'conditions' => array(
+                        'PurchaseOrderDetail.purchase_order_id' => $document_id,
+                    ),
+                    'limit' => 10,
+                ));
+                $this->paginate = $this->Product->PurchaseOrderDetail->getData('paginate', $options);
+                $values = $this->paginate('PurchaseOrderDetail');
+                $this->RjProduct->_callBeforeRenderReturPODetails($values, $transaction_id);
+                $this->render('retur_po_products');
+                break;
+        }
+    }
 }
