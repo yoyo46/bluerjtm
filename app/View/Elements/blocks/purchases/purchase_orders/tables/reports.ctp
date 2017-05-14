@@ -1,6 +1,8 @@
 <?php
         if(!empty($values)){
             $totalQty = 0;
+            $totalQtyRetur = 0;
+            $totalQtyFinal = 0;
             $totalPrice = 0;
             $totalDisc = 0;
             $totalPpn = 0;
@@ -17,7 +19,9 @@
                 $top = Common::hashEmptyField($value, 'PurchaseOrder.top');
                 $note = Common::hashEmptyField($value, 'PurchaseOrder.note', '-');
 
-                $total_qty = Common::hashEmptyField($value, 'PurchaseOrderDetail.total_qty');
+                $qty_retur = Common::hashEmptyField($value, 'PurchaseOrderDetail.qty_retur', 0);
+                $total_qty = Common::hashEmptyField($value, 'PurchaseOrderDetail.total_qty', 0);
+                $total_qty_final = Common::hashEmptyField($value, 'PurchaseOrderDetail.total_qty_final', 0);
                 $total_price = Common::hashEmptyField($value, 'PurchaseOrderDetail.total_price');
                 $total_disc = Common::hashEmptyField($value, 'PurchaseOrderDetail.total_disc');
                 $total_ppn = Common::hashEmptyField($value, 'PurchaseOrderDetail.total_ppn');
@@ -27,9 +31,12 @@
                 $supplier = Common::hashEmptyField($value, 'Vendor.name');
 
                 $draft_receipt_status = $this->Common->_callStatusReceipt($value, 'PurchaseOrder');
+                $draft_retur_status = $this->Common->_callStatusRetur($value, 'PurchaseOrder');
                 $transaction_status = $this->Common->_callTransactionStatus($value, 'PurchaseOrder');
 
                 $totalQty += $total_qty;
+                $totalQtyFinal += $total_qty_final;
+                $totalQtyRetur += $qty_retur;
                 $totalPrice += $total_price;
                 $totalDisc += $total_disc;
                 $totalPpn += $total_ppn;
@@ -104,6 +111,18 @@
                             ),
                         ),
                         array(
+                            $qty_retur,
+                            array(
+                                'style' => 'text-align: center;'.$style,
+                            ),
+                        ),
+                        array(
+                            $total_qty_final,
+                            array(
+                                'style' => 'text-align: center;'.$style,
+                            ),
+                        ),
+                        array(
                             $this->Common->getFormatPrice($total_price, 0, 2),
                             array(
                                 'style' => 'text-align: right;'.$style,
@@ -135,6 +154,12 @@
                         ),
                         array(
                             $draft_receipt_status,
+                            array(
+                                'style' => 'text-align: center;'.$style,
+                            ),
+                        ),
+                        array(
+                            $draft_retur_status,
                             array(
                                 'style' => 'text-align: center;'.$style,
                             ),
@@ -171,6 +196,18 @@
                         ),
                     ),
                     array(
+                        $this->Html->tag('strong', $totalQtyRetur),
+                        array(
+                            'style' => 'text-align: center;'.$style,
+                        ),
+                    ),
+                    array(
+                        $this->Html->tag('strong', $totalQtyFinal),
+                        array(
+                            'style' => 'text-align: center;'.$style,
+                        ),
+                    ),
+                    array(
                         $this->Html->tag('strong', $this->Common->getFormatPrice($totalPrice, 0, 2)),
                         array(
                             'style' => 'text-align: right;'.$style,
@@ -194,6 +231,7 @@
                             'style' => 'text-align: right;'.$style,
                         ),
                     ),
+                    '&nbsp;',
                     '&nbsp;',
                     '&nbsp;',
                 ),

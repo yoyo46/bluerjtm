@@ -5,7 +5,10 @@
         $price = $this->Common->filterEmptyField($value, 'PurchaseOrderPaymentDetail', 'price');
 
         $note = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'note', '-');
-        $grandtotal = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'grandtotal');
+        
+        $grandtotal = Common::hashEmptyField($value, 'PurchaseOrder.grandtotal');
+        $grandtotal = Common::hashEmptyField($value, 'PurchaseOrder.total_po', $grandtotal);
+
         // $total_remain = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'total_remain');
         $total_paid = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'total_paid');
         $nodoc = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'nodoc');

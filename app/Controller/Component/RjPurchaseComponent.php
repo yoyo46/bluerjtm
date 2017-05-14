@@ -332,7 +332,9 @@ class RjPurchaseComponent extends Component {
                     $transaction_date = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'transaction_date');
                     $note = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'note');
                     $is_asset = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'is_asset');
-                    $total_po = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'grandtotal');
+                    
+                    $total_po = $this->controller->PurchaseOrder->PurchaseOrderDetail->_callGrandtotal($purchase_order_id);
+                    // $total_po = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'grandtotal');
 
                     $idDetail = !empty($idArr[$key])?$idArr[$key]:false;
                     $price = !empty($priceArr[$key])?$this->MkCommon->_callPriceConverter($priceArr[$key])*1:false;
@@ -349,7 +351,7 @@ class RjPurchaseComponent extends Component {
                         ),
                         'PurchaseOrder' => array(
                             'id' => $purchase_order_id,
-                            'grandtotal' => $total_po,
+                            'total_po' => $total_po,
                             'total_remain' => $total_remain,
                             'total_paid' => $paid,
                             'nodoc' => $nodoc,

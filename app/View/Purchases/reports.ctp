@@ -69,9 +69,21 @@
                 'align' => 'left',
             ),
             'qty' => array(
-                'name' => __('Total Qty'),
+                'name' => __('Qty'),
                 'style' => 'text-align: center;',
                 'data-options' => 'field:\'qty\',width:80',
+                'align' => 'center',
+            ),
+            'qty_retur' => array(
+                'name' => __('Qty Retur'),
+                'style' => 'text-align: center;',
+                'data-options' => 'field:\'qty_retur\',width:80',
+                'align' => 'center',
+            ),
+            'total_qty' => array(
+                'name' => __('Total Qty'),
+                'style' => 'text-align: center;',
+                'data-options' => 'field:\'total_qty\',width:80',
                 'align' => 'center',
             ),
             'price' => array(
@@ -114,6 +126,13 @@
                 'field_model' => 'PurchaseOrder.draft_receipt_status',
                 'style' => 'text-align: center;',
                 'data-options' => 'field:\'receipt_status\',width:100',
+                'align' => 'center',
+            ),
+            'retur_status' => array(
+                'name' => __('Retur'),
+                'field_model' => 'PurchaseOrder.draft_retur_status',
+                'style' => 'text-align: center;',
+                'data-options' => 'field:\'retur_status\',width:100',
                 'align' => 'center',
             ),
         );

@@ -613,12 +613,14 @@ class PurchasesController extends AppController {
             foreach ($values as $key => $value) {
                 $id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'id');
                 $vendor_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'vendor_id');
-                $grandtotal = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'grandtotal');
+
+                $grandtotal = $this->PurchaseOrder->PurchaseOrderDetail->_callGrandtotal($id);
 
                 $paid = $this->PurchaseOrder->PurchaseOrderPaymentDetail->_callPaidPO($id, $payment_id);
                 $total_remain = $grandtotal - $paid;
                 $value['PurchaseOrder']['total_paid'] = ($paid <= 0)?0:$paid;
                 $value['PurchaseOrder']['total_remain'] = ($total_remain <= 0)?0:$total_remain;
+                $value['PurchaseOrder']['grandtotal'] = $grandtotal;
 
                 $value = $this->PurchaseOrder->Vendor->getMerge($value, $vendor_id);
                 $values[$key] = $value;
@@ -664,30 +666,51 @@ class PurchasesController extends AppController {
             $values = $this->paginate('PurchaseOrder');
         }
 
-        $this->PurchaseOrder->PurchaseOrderDetail->virtualFields['total_qty'] = 'SUM(PurchaseOrderDetail.qty)';
-        $this->PurchaseOrder->PurchaseOrderDetail->virtualFields['total_price'] = 'SUM(PurchaseOrderDetail.price)';
-        $this->PurchaseOrder->PurchaseOrderDetail->virtualFields['total_disc'] = 'SUM(PurchaseOrderDetail.disc)';
-        $this->PurchaseOrder->PurchaseOrderDetail->virtualFields['total_ppn'] = 'SUM(PurchaseOrderDetail.ppn)';
-        $this->PurchaseOrder->PurchaseOrderDetail->virtualFields['total_total'] = 'SUM(PurchaseOrderDetail.total)';
-        $values = $this->PurchaseOrder->getMergeList($values, array(
-            'contain' => array(
-                'Vendor' => array(
-                    'elements' => array(
-                        'branch' => false,
-                        'status' => 'all',
+        if( !empty($values) ) {
+            $this->PurchaseOrder->PurchaseOrderDetail->virtualFields['total_qty'] = 'SUM(PurchaseOrderDetail.qty)';
+            $this->PurchaseOrder->PurchaseOrderDetail->virtualFields['total_price'] = 'SUM(PurchaseOrderDetail.price)';
+            $this->PurchaseOrder->PurchaseOrderDetail->virtualFields['total_disc'] = 'SUM(PurchaseOrderDetail.disc)';
+            $this->PurchaseOrder->PurchaseOrderDetail->virtualFields['total_ppn'] = 'SUM(PurchaseOrderDetail.ppn)';
+            $this->PurchaseOrder->PurchaseOrderDetail->virtualFields['total_total'] = 'SUM(PurchaseOrderDetail.total)';
+            
+            foreach ($values as $key => &$value) {
+                $value = $this->PurchaseOrder->getMergeList($value, array(
+                    'contain' => array(
+                        'Vendor' => array(
+                            'elements' => array(
+                                'branch' => false,
+                                'status' => 'all',
+                            ),
+                        ),
+                        'SupplierQuotation' => array(
+                            'elements' => array(
+                                'branch' => false,
+                                'status' => false,
+                            ),
+                        ),
+                        'PurchaseOrderDetail' => array(
+                            'type' => 'first',
+                        ),
                     ),
-                ),
-                'SupplierQuotation' => array(
-                    'elements' => array(
-                        'branch' => false,
-                        'status' => false,
-                    ),
-                ),
-                'PurchaseOrderDetail' => array(
-                    'type' => 'first',
-                ),
-            ),
-        ));
+                ));
+
+                $id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'id');
+                $details = $this->MkCommon->filterEmptyField($value, 'PurchaseOrderDetail');
+
+                if( !empty($details) ) {
+                    $total_qty = $this->MkCommon->filterEmptyField($value, 'PurchaseOrderDetail', 'total_qty');
+                    $qty_retur = $this->PurchaseOrder->PurchaseOrderDetail->Product->ProductReturDetail->getTotalRetur(false, $id, 'po');
+                    $total_qty = $total_qty - $qty_retur;
+
+                    if( $total_qty < 0 ) {
+                        $total_qty = 0;
+                    }
+
+                    $value['PurchaseOrderDetail']['total_qty_final'] = $total_qty;
+                    $value['PurchaseOrderDetail']['qty_retur'] = $qty_retur;
+                }
+            }
+        }
 
         $this->RjPurchase->_callBeforeViewReport($params);
         $this->MkCommon->_callBeforeViewReport($data_action, array(

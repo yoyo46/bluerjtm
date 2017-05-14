@@ -81,6 +81,10 @@ class PurchaseOrderDetail extends AppModel {
                 $default_options['conditions']['PurchaseOrderDetail.status'] = 1;
                 $default_options['conditions']['PurchaseOrderDetail.receipt_status <>'] = 'full';
                 break;
+            case 'unretur':
+                $default_options['conditions']['PurchaseOrderDetail.status'] = 1;
+                $default_options['conditions']['PurchaseOrderDetail.retur_status <>'] = 'full';
+                break;
         }
 
         if(!empty($options['conditions'])){
@@ -262,6 +266,47 @@ class PurchaseOrderDetail extends AppModel {
         }
         
         return $default_options;
+    }
+
+    function _callGrandtotal( $id ){
+        $values = $this->getData('all', array(
+            'conditions' => array(
+                'PurchaseOrderDetail.purchase_order_id' => $id,
+            ),
+        ), array(
+            'status' => 'status',
+        ));
+        $grandtotal = 0;
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $value = $this->getMergeList($value, array(
+                    'contain' => array(
+                        'PurchaseOrder',
+                    ),
+                ));
+
+                $ppn_include = Common::hashEmptyField($value, 'PurchaseOrder.ppn_include');
+                $product_id = Common::hashEmptyField($value, 'PurchaseOrderDetail.product_id');
+                $qty = Common::hashEmptyField($value, 'PurchaseOrderDetail.qty');
+                $price = Common::hashEmptyField($value, 'PurchaseOrderDetail.price');
+                $disc = Common::hashEmptyField($value, 'PurchaseOrderDetail.disc');
+                $ppn = Common::hashEmptyField($value, 'PurchaseOrderDetail.ppn');
+
+                $qty_retur = $this->Product->ProductReturDetail->getTotalRetur(false, $id, 'po', $product_id);
+                $qty -= $qty_retur;
+
+                $total = ($qty*$price) - $disc;
+
+                if( empty($ppn_include) ) {
+                    $total += $ppn;
+                }
+                
+                $grandtotal += $total;
+            }
+        }
+
+        return $grandtotal;
     }
 }
 ?>

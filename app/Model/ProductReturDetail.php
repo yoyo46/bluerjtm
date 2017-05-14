@@ -211,7 +211,7 @@ class ProductReturDetail extends AppModel {
         return $result;
     }
 
-    function getTotalRetur( $id, $document_id, $document_type, $product_id ){
+    function getTotalRetur( $id, $document_id, $document_type, $product_id = null ){
         $values = $this->ProductRetur->getData('list', array(
             'conditions' => array(
                 'ProductRetur.document_id' => $document_id,
@@ -223,12 +223,17 @@ class ProductReturDetail extends AppModel {
         ));
 
         $this->virtualFields['total'] = 'SUM(ProductReturDetail.qty)';
+        $conditions = array(
+            'ProductReturDetail.product_retur_id' => $values,
+            'ProductReturDetail.product_retur_id <>' => $id,
+        );
+
+        if( !empty($product_id) ) {
+            $conditions['ProductReturDetail.product_id'] = $product_id;
+        }
+
         $value = $this->getData('first', array(
-            'conditions' => array(
-                'ProductReturDetail.product_retur_id' => $values,
-                'ProductReturDetail.product_retur_id <>' => $id,
-                'ProductReturDetail.product_id' => $product_id,
-            ),
+            'conditions' => $conditions,
         ));
         return $this->filterEmptyField($value, 'ProductReturDetail', 'total', 0);
     }

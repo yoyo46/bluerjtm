@@ -97,11 +97,14 @@ class PurchaseOrderPaymentDetail extends AppModel {
                 $price = $this->filterEmptyField($value, 'PurchaseOrderPaymentDetail', 'price');
 
                 $value = $this->PurchaseOrder->getMerge($value, $purchase_order_id);
-                $grandtotal = $this->filterEmptyField($value, 'PurchaseOrder', 'grandtotal');
+
+                $grandtotal = $this->PurchaseOrder->PurchaseOrderDetail->_callGrandtotal($purchase_order_id);
+                // $grandtotal = $this->filterEmptyField($value, 'PurchaseOrder', 'grandtotal');
 
                 $paid = $this->_callPaidPO($purchase_order_id, $id);
                 $value['PurchaseOrder']['total_remain'] = $grandtotal - $paid;
                 $value['PurchaseOrder']['total_paid'] = $paid;
+                $value['PurchaseOrder']['grandtotal'] = $grandtotal;
                 $values[$key] = $value;
             }
             $data['PurchaseOrderPaymentDetail'] = $values;

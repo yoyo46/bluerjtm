@@ -45,6 +45,14 @@
                                 'full' => __('Sudah Diterima'),
                             ),
                         ));
+                        echo $this->Common->buildInputForm('retur_status', __('Status Retur'), array(
+                            'empty' => __('Pilih Status'),
+                            'options' => array(
+                                'none' => __('Belum diretur'),
+                                'half' => __('Diretur sebagian'),
+                                'full' => __('Sudah Diretur'),
+                            ),
+                        ));
                         echo $this->element('blocks/common/searchs/box_action', array(
                             '_url' => array(
                                 'controller' => 'purchases', 
