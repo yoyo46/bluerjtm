@@ -297,4 +297,7 @@ class SpkController extends AppController {
         ));
         $this->render('/Elements/blocks/spk/forms/driver');
     }
+
+    function wheel_position() {
+    }
 }

@@ -26,13 +26,17 @@
             ));
             echo $this->Html->tag('td', $doc_qty, array(
                 'class' => 'text-center price_custom',
-                'rel' => 'qty-dic',
+                'rel' => 'qty-doc',
             ));
 
             if( empty($view) ) {
                 echo $this->Html->tag('td', $in_qty, array(
                     'class' => 'text-center price_custom',
-                    'rel' => 'qty-in',
+                    'rel' => 'qty-receipt',
+                ));
+                echo $this->Html->tag('td', $retur_qty, array(
+                    'class' => 'text-center price_custom',
+                    'rel' => 'qty-remain',
                 ));
             }
 

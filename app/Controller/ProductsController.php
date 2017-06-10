@@ -1618,7 +1618,7 @@ class ProductsController extends AppController {
         $this->RjProduct->_callBeforeRenderReceipts();
 
         $this->MkCommon->_layout_file('select');
-        $this->set('active_menu', 'retur');
+        $this->set('active_menu', 'receipts');
         $this->set(compact(
             'values'
         ));
@@ -1677,7 +1677,7 @@ class ProductsController extends AppController {
 
             $this->set(array(
                 'value' => $value,
-                'active_menu' => 'retur',
+                'active_menu' => 'receipts',
             ));
             $this->render('retur_add');
         } else {
@@ -1724,7 +1724,7 @@ class ProductsController extends AppController {
             $value = $this->User->getMerge($value, $user_id);
             $this->RjProduct->_callBeforeRenderRetur(false, $value);
 
-            $this->set('active_menu', 'retur');
+            $this->set('active_menu', 'receipts');
             $this->set('view', 'detail');
             $this->set(compact(
                 'vendors', 'value',
@@ -1737,7 +1737,7 @@ class ProductsController extends AppController {
     }
 
     public function retur_toggle( $id, $type = null ) {
-        $result = $this->Product->ProductReceiptDetail->ProductReceipt->doDelete( $id, $type );
+        $result = $this->Product->ProductReturDetail->ProductRetur->doDelete( $id, $type );
         $this->MkCommon->setProcessParams($result);
     }
 

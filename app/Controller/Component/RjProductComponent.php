@@ -1493,14 +1493,17 @@ class RjProductComponent extends Component {
 
                     switch ($document_type) {
                         default:
-                            $documentDetail = $this->controller->Product->PurchaseOrderDetail->getMergeData(array(), $document_id, $product_id);
+                            $documentDetail = $this->controller->Product->PurchaseOrderDetail->getMergeData(array(), $document_id, $product_id, $id);
                             $qty_retur = $this->controller->Product->ProductReturDetail->getTotalRetur($id, $document_id, $document_type, $product_id);
+                            $in_qty = $this->controller->Product->ProductReceiptDetail->getTotalReceipt(null, $document_id, $document_type, $product_id);
+                            
                             $total_retur = $qty_retur + $qty;
-                            
+
                             $detailId = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'id');
-                            $detailQty = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'qty');
+                            $detailQty = $poQty = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'qty');
                             $detailPrice = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'price');
-                            
+                            $detailQty = $detailQty - $in_qty;
+
                             $model = 'PurchaseOrderDetail';
                             break;
                     }
@@ -1518,8 +1521,9 @@ class RjProductComponent extends Component {
                     }
 
                     $dataDetail[$key]['ProductReturDetail']['document_detail_id'] = $detailId;
-                    $dataDetail[$key]['ProductReturDetail']['doc_qty'] = $detailQty;
+                    $dataDetail[$key]['ProductReturDetail']['doc_qty'] = $poQty;
                     $dataDetail[$key]['ProductReturDetail']['retur_qty'] = $qty_retur;
+                    $dataDetail[$key]['ProductReturDetail']['in_qty'] = $in_qty;
                     $dataDetail[$key]['ProductReturDetail']['over_retur'] = $over_retur;
                     $dataDetail[$key]['ProductReturDetail']['price'] = $detailPrice;
                     $dataDetail[$key]['ProductReturDetail']['Product'] = array(
@@ -1575,14 +1579,16 @@ class RjProductComponent extends Component {
 
                     switch ($type) {
                         default:
-                            $documentDetail = $this->controller->Product->PurchaseOrderDetail->getMergeData(array(), $document_id, $product_id);
+                            $documentDetail = $this->controller->Product->PurchaseOrderDetail->getMergeData(array(), $document_id, $product_id, $id);
                             $qty_retur = $this->controller->Product->ProductReturDetail->getTotalRetur($id, $document_id, $type, $product_id);
                             $detailQty = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'qty');
+                            $in_qty = $this->controller->Product->ProductReceiptDetail->getTotalReceipt(null, $document_id, $type, $product_id);
                             break;
                     }
                             
                     $detail['ProductReturDetail']['doc_qty'] = $detailQty;
                     $detail['ProductReturDetail']['retur_qty'] = $qty_retur;
+                    $detail['ProductReturDetail']['in_qty'] = $in_qty;
                 }
 
                 $data['ProductReturDetail'] = $details;
@@ -1642,12 +1648,20 @@ class RjProductComponent extends Component {
                 $product_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrderDetail', 'product_id');
                 $total_qty = $this->MkCommon->filterEmptyField($value, 'PurchaseOrderDetail', 'qty');
                 $retur_qty = $this->controller->Product->ProductReturDetail->getTotalRetur($transaction_id, $document_id, $document_type, $product_id);
+                $in_qty = $this->controller->Product->ProductReceiptDetail->getTotalReceipt(null, $document_id, $document_type, $product_id);
+
                 $qty = $total_qty - $retur_qty;
+                $qty = $qty - $in_qty;
+
+                if( $qty < 0 ) {
+                    $qty = 0;
+                }
 
                 if( !empty($qty) ) {
                     $value['PurchaseOrderDetail']['total_qty'] = $total_qty;
                     $value['PurchaseOrderDetail']['qty'] = $qty;
                     $value['PurchaseOrderDetail']['retur_qty'] = $retur_qty;
+                    $value['PurchaseOrderDetail']['in_qty'] = $in_qty;
                     $values[$key] = $value;
                 } else {
                     unset($values[$key]);

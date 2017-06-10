@@ -37,6 +37,11 @@
                     'style' => 'width:5%;',
                 ),
                 'qty_in' => array(
+                    'name' => __('Qty Diterima'),
+                    'class' => 'text-center',
+                    'style' => 'width:5%;',
+                ),
+                'qty_retur' => array(
                     'name' => __('Qty Retur'),
                     'class' => 'text-center',
                     'style' => 'width:5%;',
@@ -119,13 +124,14 @@
                     <?php
                             $grandtotal = 0;
                             $total_doc_qty = 0;
+                            $total_retur_qty = 0;
                             $total_in_qty = 0;
-
 
                             if(!empty($dataDetail)){
                                 foreach ($dataDetail as $key => $value) {
                                     $id = $this->Common->filterEmptyField($value, 'ProductReturDetail', 'product_id');
                                     $doc_qty = $this->Common->filterEmptyField($value, 'ProductReturDetail', 'doc_qty', 0);
+                                    $retur_qty = $this->Common->filterEmptyField($value, 'ProductReturDetail', 'retur_qty', 0);
                                     $in_qty = $this->Common->filterEmptyField($value, 'ProductReturDetail', 'in_qty', 0);
                                     $qty = $this->Common->filterEmptyField($value, 'ProductReturDetail', 'qty');
                                     $code = $this->Common->filterEmptyField($value, 'ProductReturDetail', 'code');
@@ -134,6 +140,7 @@
 
                                     $grandtotal += $qty;
                                     $total_doc_qty += $doc_qty;
+                                    $total_retur_qty += $retur_qty;
                                     $total_in_qty += $in_qty;
 
                                     if( !empty($code) ) {
@@ -147,6 +154,7 @@
                                         'modelName' => $modelName,
                                         'value' => $value,
                                         'doc_qty' => $doc_qty,
+                                        'retur_qty' => $retur_qty,
                                         'in_qty' => $in_qty,
                                         'qty' => $qty,
                                         'key' => $key,
@@ -170,6 +178,10 @@
                                 
                                 if( empty($view) ) {
                                     echo $this->Html->tag('td', $total_in_qty, array(
+                                        'class' => 'text-center total_custom',
+                                        'rel' => 'qty-receipt',
+                                    ));
+                                    echo $this->Html->tag('td', $total_retur_qty, array(
                                         'class' => 'text-center total_custom',
                                         'rel' => 'qty-remain',
                                     ));

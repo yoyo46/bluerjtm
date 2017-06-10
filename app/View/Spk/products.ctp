@@ -57,6 +57,7 @@
 
                                 $unit = $this->Common->filterEmptyField($value, 'ProductUnit', 'name');
                                 $group = $this->Common->filterEmptyField($value, 'ProductCategory', 'name');
+                                $group_slug = Common::toSlug($group);
 
                                 $customType = $this->Common->unSlug($type);
                 ?>
@@ -71,7 +72,23 @@
                             echo $this->Html->tag('td', $code.$this->Form->hidden(sprintf('%s.product_id.%s', $modelName, $id), array(
                                 'value' => $id,
                             )));
-                            echo $this->Html->tag('td', $name);
+
+                            if( $group_slug == 'ban' ) {
+                                echo $this->Html->tag('td', $name, array(
+                                    'class' => 'removed',
+                                ));
+                                echo $this->Html->tag('td', $name.$this->Html->link(__('Posisi'), array(
+                                    'controller' => 'spk',
+                                    'action' => 'wheel_position',
+                                ), array(
+                                    'class' => 'ajaxCustomModal wheel-position',
+                                )), array(
+                                    'class' => 'hide',
+                                ));
+                            } else {
+                                echo $this->Html->tag('td', $name);
+                            }
+
                             echo $this->Html->tag('td', $stock, array(
                                 'class' => 'hide text-center',
                             ));

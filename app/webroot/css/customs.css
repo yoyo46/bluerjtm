@@ -556,6 +556,255 @@ tbody.wrapper-table-documents td {
   display: inline-block;
   padding: 7px 10px;
 }
+.wheel-position {
+  margin-left: 10px;
+}
+.wrapper-wheel-position .wheel-1,
+.wrapper-wheel-position .wheel-2 {
+  width: 60%;
+  margin: 0 auto;
+  display: block;
+  position: relative;
+}
+.wrapper-wheel-position .wheel-1 img,
+.wrapper-wheel-position .wheel-2 img {
+  max-width: 100%;
+}
+.colt-diesel-engkel {
+  position: absolute;
+  top: 0;
+  height: 175px;
+  width: 119px;
+  left: 23px;
+}
+.colt-diesel-engkel .front-left {
+  position: absolute;
+  top: 35px;
+  left: 18px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.colt-diesel-engkel .front-right {
+  position: absolute;
+  top: 35px;
+  right: 18px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.colt-diesel-engkel .back-left {
+  position: absolute;
+  top: 128px;
+  left: 15px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.colt-diesel-engkel .back-right {
+  position: absolute;
+  top: 128px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.colt-diesel-double {
+  position: absolute;
+  top: 0;
+  height: 195px;
+  width: 119px;
+  left: 178px;
+}
+.colt-diesel-double .front-left {
+  position: absolute;
+  top: 41px;
+  left: 15px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.colt-diesel-double .front-right {
+  position: absolute;
+  top: 38px;
+  right: 13px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.colt-diesel-double .back-left {
+  position: absolute;
+  top: 142px;
+  left: 10px;
+  width: 45px;
+  height: 45px;
+  cursor: pointer;
+}
+.colt-diesel-double .back-right {
+  position: absolute;
+  top: 141px;
+  right: 8px;
+  width: 45px;
+  height: 45px;
+  cursor: pointer;
+}
+.fuzo-hino {
+  position: absolute;
+  top: 0;
+  height: 225px;
+  width: 119px;
+  right: 42px;
+}
+.fuzo-hino .front-left {
+  position: absolute;
+  top: 40px;
+  left: 7px;
+  width: 30px;
+  height: 35px;
+  cursor: pointer;
+}
+.fuzo-hino .front-right {
+  position: absolute;
+  top: 38px;
+  right: 7px;
+  width: 30px;
+  height: 35px;
+  cursor: pointer;
+}
+.fuzo-hino .back-left {
+  position: absolute;
+  top: 165px;
+  left: 0px;
+  width: 50px;
+  height: 45px;
+  cursor: pointer;
+}
+.fuzo-hino .back-right {
+  position: absolute;
+  top: 165px;
+  right: 0;
+  width: 50px;
+  height: 45px;
+  cursor: pointer;
+}
+
+.colt-diesel-engkel {
+  position: absolute;
+  top: 0;
+  height: 175px;
+  width: 119px;
+  left: 23px;
+}
+.colt-diesel-engkel .front-left {
+  position: absolute;
+  top: 35px;
+  left: 18px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.colt-diesel-engkel .front-right {
+  position: absolute;
+  top: 35px;
+  right: 18px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.colt-diesel-engkel .back-left {
+  position: absolute;
+  top: 128px;
+  left: 15px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.colt-diesel-engkel .back-right {
+  position: absolute;
+  top: 128px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.colt-diesel-double {
+  position: absolute;
+  top: 0;
+  height: 195px;
+  width: 119px;
+  left: 178px;
+}
+.colt-diesel-double .front-left {
+  position: absolute;
+  top: 41px;
+  left: 15px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.colt-diesel-double .front-right {
+  position: absolute;
+  top: 38px;
+  right: 13px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.colt-diesel-double .back-left {
+  position: absolute;
+  top: 142px;
+  left: 10px;
+  width: 45px;
+  height: 45px;
+  cursor: pointer;
+}
+.colt-diesel-double .back-right {
+  position: absolute;
+  top: 141px;
+  right: 8px;
+  width: 45px;
+  height: 45px;
+  cursor: pointer;
+}
+.fuzo-hino {
+  position: absolute;
+  top: 0;
+  height: 225px;
+  width: 119px;
+  right: 42px;
+}
+.fuzo-hino .front-left {
+  position: absolute;
+  top: 40px;
+  left: 7px;
+  width: 30px;
+  height: 35px;
+  cursor: pointer;
+}
+.fuzo-hino .front-right {
+  position: absolute;
+  top: 38px;
+  right: 7px;
+  width: 30px;
+  height: 35px;
+  cursor: pointer;
+}
+.fuzo-hino .back-left {
+  position: absolute;
+  top: 165px;
+  left: 0px;
+  width: 50px;
+  height: 45px;
+  cursor: pointer;
+}
+.fuzo-hino .back-right {
+  position: absolute;
+  top: 165px;
+  right: 0;
+  width: 50px;
+  height: 45px;
+  cursor: pointer;
+}
 
 /*FileUpload*/
 .progress {

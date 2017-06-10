@@ -155,6 +155,7 @@ class PurchaseOrder extends AppModel {
                 $default_options['conditions']['PurchaseOrder.transaction_status'] = array( 'approved', 'paid', 'half_paid' );
                 $default_options['conditions']['PurchaseOrder.is_asset'] = 0;
                 $default_options['conditions']['PurchaseOrder.status'] = 1;
+                $default_options['conditions']['PurchaseOrder.draft_retur_status'] = array( 'none', 'half' );
 
                 if( !empty($special_id) ) {
                     $default_options['conditions']['OR']['PurchaseOrder.id'] = $special_id;

@@ -174,7 +174,7 @@ class PurchaseOrderDetail extends AppModel {
         return $data;
     }
 
-    function getMergeData( $data, $id, $product_id ){
+    function getMergeData( $data, $id, $product_id, $exclude_id = null ){
         $value = $this->getData('first', array(
             'conditions' => array(
                 'PurchaseOrderDetail.purchase_order_id' => $id,
@@ -185,7 +185,7 @@ class PurchaseOrderDetail extends AppModel {
         ));
 
         if(!empty($value)){
-            $qty_retur = $this->Product->ProductReturDetail->getTotalRetur(false, $id, 'po', $product_id);
+            $qty_retur = $this->Product->ProductReturDetail->getTotalRetur($exclude_id, $id, 'po', $product_id);
             $qty = Common::hashEmptyField($value, 'PurchaseOrderDetail.qty');
 
             $total_qty = $qty - $qty_retur;
