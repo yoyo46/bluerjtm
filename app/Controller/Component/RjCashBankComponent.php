@@ -162,8 +162,10 @@ class RjCashBankComponent extends Component {
 				                'group' => array(
 				                    'Journal.coa_id',
 				                ),
-				                'contain' => false,
-				            ));
+				                // 'contain' => false,
+				            ), true, array(
+                                'type' => 'active',
+                            ));
 
 				            $balancing = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'balancing', 0);
 

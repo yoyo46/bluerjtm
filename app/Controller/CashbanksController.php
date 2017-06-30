@@ -1514,7 +1514,7 @@ class CashbanksController extends AppController {
                         'Journal.coa_id',
                     ),
                 ), true, array(
-                    // 'type' => $type,
+                    'type' => $type,
                 ));
 
                 $balance_credit = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'begining_balance_credit', 0);
