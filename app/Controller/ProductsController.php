@@ -1462,90 +1462,129 @@ class ProductsController extends AppController {
 
                                 if(array_filter($datavar)) {
                                     $kode = !empty($kode)?$kode:false;
-                                    $grup = !empty($grup)?$grup:false;
-                                    $nama = !empty($nama)?$nama:false;
-                                    $satuan = !empty($satuan)?$satuan:false;
-                                    $penawaran_supplier = !empty($penawaran_supplier)?$penawaran_supplier:false;
-                                    $nomor_seri = !empty($nomor_seri)?$nomor_seri:false;
-                                    $tipe_barang = !empty($tipe_barang)?$this->MkCommon->toSlug($tipe_barang, '_'):false;
+                                    // $grup = !empty($grup)?$grup:false;
+                                    // $nama = !empty($nama)?$nama:false;
+                                    // $satuan = !empty($satuan)?$satuan:false;
+                                    // $penawaran_supplier = !empty($penawaran_supplier)?$penawaran_supplier:false;
+                                    // $nomor_seri = !empty($nomor_seri)?$nomor_seri:false;
+                                    // $tipe_barang = !empty($tipe_barang)?$this->MkCommon->toSlug($tipe_barang, '_'):false;
+                                    $jumlah = !empty($jumlah)?$jumlah:0;
+                                    $min_order = !empty($min_order)?$min_order:0;
+                                    $max_order = !empty($max_order)?$max_order:0;
 
-                                    $penawaran_supplier = strtolower($penawaran_supplier);
-                                    $nomor_seri = strtolower($nomor_seri);
+                                    // $penawaran_supplier = strtolower($penawaran_supplier);
+                                    // $nomor_seri = strtolower($nomor_seri);
 
-                                    $unit = $this->Product->ProductUnit->getMerge(array(), $satuan, 'ProductUnit.name');
-                                    $grupmodel = $this->Product->ProductCategory->getMerge(array(), $grup, 'ProductCategory', 'ProductCategory.name');
+                                    // $unit = $this->Product->ProductUnit->getMerge(array(), $satuan, 'ProductUnit.name');
+                                    // $grupmodel = $this->Product->ProductCategory->getMerge(array(), $grup, 'ProductCategory', 'ProductCategory.name');
 
-                                    switch ($penawaran_supplier) {
-                                        case 'ya':
-                                            $penawaran_supplier = true;
-                                            break;
-                                        default:
-                                            $penawaran_supplier = false;
-                                            break;
-                                    }
+                                    // switch ($penawaran_supplier) {
+                                    //     case 'ya':
+                                    //         $penawaran_supplier = true;
+                                    //         break;
+                                    //     default:
+                                    //         $penawaran_supplier = false;
+                                    //         break;
+                                    // }
 
-                                    switch ($nomor_seri) {
-                                        case 'ya':
-                                            $nomor_seri = true;
-                                            break;
-                                        default:
-                                            $nomor_seri = false;
-                                            break;
-                                    }
+                                    // switch ($nomor_seri) {
+                                    //     case 'ya':
+                                    //         $nomor_seri = true;
+                                    //         break;
+                                    //     default:
+                                    //         $nomor_seri = false;
+                                    //         break;
+                                    // }
 
-                                    $dataArr = array(
-                                        'Product' => array(
-                                            'code' => $kode,
-                                            'name' => $nama,
-                                            'product_unit_id' => Common::hashEmptyField($unit, 'ProductUnit.id', 0),
-                                            'product_category_id' => Common::hashEmptyField($grupmodel, 'ProductCategory.id', 0),
-                                            'is_supplier_quotation' => $penawaran_supplier,
-                                            'is_serial_number' => $nomor_seri,
-                                            'type' => $tipe_barang,
+                                    $product = $this->Product->find('first', array(
+                                        'conditions' => array(
+                                            'Product.code' => $kode,
                                         ),
-                                    );
-
-                                    if( empty($unit) ) {
-                                        $dataArr['ProductUnit'] = array(
-                                            'name' => $satuan,
-                                        );
-                                    }
-
-                                    if( empty($grupmodel) ) {
-                                        $dataArr['ProductCategory'] = array(
-                                            'name' => $grup,
-                                        );
-                                    }
-
-                                    $result = $this->Product->saveAll($dataArr);
-                                    $status = $this->MkCommon->filterEmptyField($result, 'status');
-
-                                    if( $status == 'success' ) {
-                                        $dataUpdate = array();
-
-                                        if( !empty($this->Product->ProductUnit->id) ) {
-                                            $dataUpdate['Product.product_unit_id'] = $this->Product->ProductUnit->id;
-                                        }
-                                        if( !empty($this->Product->ProductCategory->id) ) {
-                                            $dataUpdate['Product.product_category_id'] = $this->Product->ProductCategory->id;
-                                        }
-
-                                        $this->Product->updateAll($dataUpdate, array(
-                                            'Product.id' => $this->Product->id,
-                                        ));
-                                    }
-
-                                    $validationErrors = $this->MkCommon->filterEmptyField($result, 'validationErrors');
-                                    $textError = $this->MkCommon->_callMsgValidationErrors($validationErrors, 'string');
-
-                                    $this->MkCommon->setProcessParams($result, false, array(
-                                        'flash' => false,
-                                        'noRedirect' => true,
                                     ));
+
+                                    // $dataArr = array(
+                                    //     'Product' => array(
+                                    //         'code' => $kode,
+                                    //         'name' => $nama,
+                                    //         'product_unit_id' => Common::hashEmptyField($unit, 'ProductUnit.id', 0),
+                                    //         'product_category_id' => Common::hashEmptyField($grupmodel, 'ProductCategory.id', 0),
+                                    //         'is_supplier_quotation' => $penawaran_supplier,
+                                    //         'is_serial_number' => $nomor_seri,
+                                    //         'type' => $tipe_barang,
+                                    //     ),
+                                    // );
+
+                                    if( !empty($product) ) {
+                                        $dataArr = array(
+                                            'id' => Common::hashEmptyField($product, 'Product.id'),
+                                            'product_stock_cnt' => $jumlah,
+                                            'ProductHistory' => array(
+                                                array(
+                                                    'branch_id' => Configure::read('__Site.config_branch_id'),
+                                                    'balance' => 0,
+                                                    'transaction_type' => 'stok_awal',
+                                                    'transaction_date' => date('Y-m-d'),
+                                                    'qty' => $jumlah,
+                                                    'price' => 0,
+                                                    'type' => 'in',
+                                                    'ending' => $jumlah,
+                                                ),
+                                            ),
+                                            'ProductStock' => array(
+                                                array(
+                                                    'branch_id' => Configure::read('__Site.config_branch_id'),
+                                                    'transaction_date' => date('Y-m-d'),
+                                                    'qty' => $jumlah,
+                                                    'qty_use' => 0,
+                                                    'price' => 0,
+                                                ),
+                                            ),
+                                        );
+
+                                        // if( empty($unit) ) {
+                                        //     $dataArr['ProductUnit'] = array(
+                                        //         'name' => $satuan,
+                                        //     );
+                                        // }
+
+                                        // if( empty($grupmodel) ) {
+                                        //     $dataArr['ProductCategory'] = array(
+                                        //         'name' => $grup,
+                                        //     );
+                                        // }
+
+                                        $result = $this->Product->saveAll($dataArr);
+                                        $status = $this->MkCommon->filterEmptyField($result, 'status');
+
+                                        // if( $status == 'success' ) {
+                                        //     $dataUpdate = array();
+
+                                        //     if( !empty($this->Product->ProductUnit->id) ) {
+                                        //         $dataUpdate['Product.product_unit_id'] = $this->Product->ProductUnit->id;
+                                        //     }
+                                        //     if( !empty($this->Product->ProductCategory->id) ) {
+                                        //         $dataUpdate['Product.product_category_id'] = $this->Product->ProductCategory->id;
+                                        //     }
+
+                                        //     $this->Product->updateAll($dataUpdate, array(
+                                        //         'Product.id' => $this->Product->id,
+                                        //     ));
+                                        // }
+
+                                        $validationErrors = $this->MkCommon->filterEmptyField($result, 'validationErrors');
+                                        $textError = $this->MkCommon->_callMsgValidationErrors($validationErrors, 'string');
+
+                                        $this->MkCommon->setProcessParams($result, false, array(
+                                            'flash' => false,
+                                            'noRedirect' => true,
+                                        ));
+                                    } else {
+                                        $status = 'error';
+                                    }
 
                                     if( $status == 'error' ) {
                                         $failed_row++;
-                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data. %s'), $row_submitted, $textError) . '<br>';
+                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data %s'), $row_submitted, $kode) . '<br>';
                                     } else {
                                         $successfull_row++;
                                     }
