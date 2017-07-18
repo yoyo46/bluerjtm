@@ -15,6 +15,10 @@ class SpkProduct extends AppModel {
             'className' => 'ProductExpenditureDetail',
             'foreignKey' => 'product_id',
         ),
+        'SpkProductTire' => array(
+            'className' => 'SpkProductTire',
+            'foreignKey' => 'spk_product_id',
+        ),
     );
 
 	var $validate = array(
@@ -50,7 +54,25 @@ class SpkProduct extends AppModel {
                 'message' => 'Harga barang harap diisi'
             ),
         ),
+        'empty_tire' => array(
+            'checkEmptyTire' => array(
+                'rule' => array('checkEmptyTire'),
+                'message' => 'Posisi Ban diganti harap dipilih'
+            ),
+        ),
 	);
+
+    function checkEmptyTire () {
+        $data = $this->data;
+        
+        $empty_tire = Common::hashEmptyField($data, 'SpkProduct.empty_tire');
+
+        if( !empty($empty_tire) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     function eksternalValidate ( $data, $field = false ) {
         $dataSpk = $this->Spk->data;

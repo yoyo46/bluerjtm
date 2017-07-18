@@ -122,7 +122,8 @@
                                         $price = Common::hashEmptyField($value, 'SpkProduct.price', 0);
 
                                         $price_service_type = Common::hashEmptyField($value, 'SpkProduct.price_service_type', 'borongan');
-                                        
+                                        $group = Common::hashEmptyField($value, 'Product.ProductCategory.name');
+                                        $group_slug = Common::toSlug($group);
 
                                         switch ($price_service_type) {
                                             case 'satuan':
@@ -145,7 +146,37 @@
                                     echo $this->Html->tag('td', $code.$this->Form->hidden('SpkProduct.product_id.'.$product_id, array(
                                         'value' => $product_id,
                                     )));
-                                    echo $this->Html->tag('td', $name);
+
+                                    if( $group_slug == 'ban' ) {
+                                        $tires = Common::hashEmptyField($value, 'SpkProductTire', array());
+                                        $tires = Common::hashEmptyField($value, 'SpkProduct.SpkProductTire', $tires);
+                                        $tire_count = count($tires);
+
+                                        echo $this->Html->tag('td', $name.$this->Html->link(!empty($tire_count)?__('Set (%s Ban)', $tire_count):__('Posisi'), array(
+                                            'controller' => 'spk',
+                                            'action' => 'wheel_position',
+                                            $product_id,
+                                        ), array(
+                                            'class' => 'wheel-position',
+                                            'title' => __('Pilih Posisi Ban'),
+                                            'rel' => $product_id,
+                                        )).$this->Form->error(__('SpkProduct.%s.empty_tire', $key)));
+
+                                        if( !empty($tires) ) {
+                                            foreach ($tires as $key => $tire) {
+                                                $position = Common::hashEmptyField($tire, 'SpkProductTire.position');
+                                                $position = Common::hashEmptyField($tire, 'position', $position);
+
+                                                echo $this->Form->hidden('SpkProduct.tire_position.'.$product_id.'.', array(
+                                                    'value' => $position,
+                                                    'class'=> 'wheel-position-input',
+                                                    'rel' => $product_id,
+                                                ));
+                                            }
+                                        }
+                                    } else {
+                                        echo $this->Html->tag('td', $name);
+                                    }
 
                                     echo $this->Html->tag('td', $stock, array(
                                         'class' => 'text-center',

@@ -80,8 +80,11 @@
                                 echo $this->Html->tag('td', $name.$this->Html->link(__('Posisi'), array(
                                     'controller' => 'spk',
                                     'action' => 'wheel_position',
+                                    $id,
                                 ), array(
-                                    'class' => 'ajaxCustomModal wheel-position',
+                                    'class' => 'wheel-position',
+                                    'title' => __('Pilih Posisi Ban'),
+                                    'rel' => $id,
                                 )), array(
                                     'class' => 'hide',
                                 ));

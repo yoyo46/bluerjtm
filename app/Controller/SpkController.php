@@ -109,7 +109,11 @@ class SpkController extends AppController {
         if( !empty($value) ) {
             $value = $this->Spk->getMergeList($value, array(
                 'contain' => array(
-                    'SpkProduct',
+                    'SpkProduct' => array(
+                        'contain' => array(
+                            'SpkProductTire',
+                        ),
+                    ),
                     'SpkProduction',
                     'SpkMechanic',
                 ),
@@ -298,6 +302,10 @@ class SpkController extends AppController {
         $this->render('/Elements/blocks/spk/forms/driver');
     }
 
-    function wheel_position() {
+    function wheel_position( $id = null, $qty = null ) {
+        $this->set(array(
+            'id' => $id,
+            'qty' => $qty,
+        ));
     }
 }

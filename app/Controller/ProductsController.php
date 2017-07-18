@@ -1514,7 +1514,7 @@ class ProductsController extends AppController {
                                     //     ),
                                     // );
 
-                                    if( !empty($product) ) {
+                                    if( !empty($product) && !empty($jumlah) ) {
                                         $dataArr = array(
                                             'id' => Common::hashEmptyField($product, 'Product.id'),
                                             'product_stock_cnt' => $jumlah,

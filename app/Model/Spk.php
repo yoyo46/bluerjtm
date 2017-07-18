@@ -374,6 +374,8 @@ class Spk extends AppModel {
             ));
 
             if( !empty($flag) ) {
+                $spk_product_id = Set::extract('/SpkProduct/SpkProduct/id', $value);
+
                 $this->SpkProduct->deleteAll(array(
                     'SpkProduct.spk_id' => $id,
                 ));
@@ -383,6 +385,12 @@ class Spk extends AppModel {
                 $this->SpkProduction->deleteAll(array(
                     'SpkProduction.spk_id' => $id,
                 ));
+
+                if( !empty($spk_product_id) ) {
+                    $this->SpkProduct->SpkProductTire->deleteAll(array(
+                        'SpkProductTire.spk_product_id' => $spk_product_id,
+                    ));
+                }
 
                 $flag = $this->saveAll($data, array(
                     'deep' => true,

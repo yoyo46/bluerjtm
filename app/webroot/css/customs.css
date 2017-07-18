@@ -579,35 +579,58 @@ tbody.wrapper-table-documents td {
 }
 .colt-diesel-engkel .front-left {
   position: absolute;
-  top: 35px;
-  left: 18px;
-  width: 30px;
-  height: 30px;
+  top: 39px;
+  left: 26px;
+  width: 11px;
+  height: 21px;
   cursor: pointer;
+  -moz-border-radius: 5px 0 0 5px;
+  -webkit-border-radius: 5px 0 0 5px;
+  border-radius: 5px 0 0 5px;
 }
 .colt-diesel-engkel .front-right {
   position: absolute;
-  top: 35px;
-  right: 18px;
-  width: 30px;
-  height: 30px;
+  top: 40px;
+  right: 23px;
+  width: 11px;
+  height: 20px;
   cursor: pointer;
+  -moz-border-radius: 0 5px 5px 0;
+  -webkit-border-radius: 0 5px 5px 0;
+  border-radius: 0 5px 5px 0;
+}
+.colt-diesel-engkel .spare-tire {
+  position: absolute;
+  top: 94px;
+  left: 52px;
+  width: 15px;
+  height: 25px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
 }
 .colt-diesel-engkel .back-left {
   position: absolute;
-  top: 128px;
-  left: 15px;
-  width: 30px;
-  height: 30px;
+  top: 130px;
+  left: 21px;
+  width: 14px;
+  height: 25px;
   cursor: pointer;
+  -moz-border-radius: 5px 0 0 5px;
+  -webkit-border-radius: 5px 0 0 5px;
+  border-radius: 5px 0 0 5px;
 }
 .colt-diesel-engkel .back-right {
   position: absolute;
-  top: 128px;
-  right: 10px;
-  width: 30px;
-  height: 30px;
+  top: 131px;
+  right: 18px;
+  width: 14px;
+  height: 25px;
   cursor: pointer;
+  -moz-border-radius: 0 5px 5px 0;
+  -webkit-border-radius: 0 5px 5px 0;
+  border-radius: 0 5px 5px 0;
 }
 .colt-diesel-double {
   position: absolute;
@@ -618,35 +641,80 @@ tbody.wrapper-table-documents td {
 }
 .colt-diesel-double .front-left {
   position: absolute;
-  top: 41px;
-  left: 15px;
-  width: 30px;
-  height: 30px;
+  top: 44px;
+  left: 22px;
+  width: 12px;
+  height: 24px;
   cursor: pointer;
+  -moz-border-radius: 5px 0 0 5px;
+  -webkit-border-radius: 5px 0 0 5px;
+  border-radius: 5px 0 0 5px;
 }
 .colt-diesel-double .front-right {
   position: absolute;
-  top: 38px;
+  top: 42px;
+  right: 19px;
+  width: 12px;
+  height: 23px;
+  cursor: pointer;
+  -moz-border-radius: 0 5px 5px 0;
+  -webkit-border-radius: 0 5px 5px 0;
+  border-radius: 0 5px 5px 0;
+}
+.colt-diesel-double .spare-tire {
+  position: absolute;
+  top: 100px;
+  left: 52px;
+  width: 18px;
+  height: 31px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.colt-diesel-double .back-left-outside {
+  position: absolute;
+  top: 150px;
+  left: 16px;
+  width: 16px;
+  height: 29px;
+  cursor: pointer;
+  -moz-border-radius: 5px 0 0 5px;
+  -webkit-border-radius: 5px 0 0 5px;
+  border-radius: 5px 0 0 5px;
+}
+.colt-diesel-double .back-left-inside {
+  position: absolute;
+  top: 150px;
+  left: 33px;
+  width: 17px;
+  height: 29px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.colt-diesel-double .back-right-outside {
+  position: absolute;
+  top: 150px;
   right: 13px;
-  width: 30px;
+  width: 15px;
+  height: 28px;
+  cursor: pointer;
+  -moz-border-radius: 0 5px 5px 0;
+  -webkit-border-radius: 0 5px 5px 0;
+  border-radius: 0 5px 5px 0;
+}
+.colt-diesel-double .back-right-inside {
+  position: absolute;
+  top: 149px;
+  right: 30px;
+  width: 16px;
   height: 30px;
   cursor: pointer;
-}
-.colt-diesel-double .back-left {
-  position: absolute;
-  top: 142px;
-  left: 10px;
-  width: 45px;
-  height: 45px;
-  cursor: pointer;
-}
-.colt-diesel-double .back-right {
-  position: absolute;
-  top: 141px;
-  right: 8px;
-  width: 45px;
-  height: 45px;
-  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
 }
 .fuzo-hino {
   position: absolute;
@@ -657,153 +725,556 @@ tbody.wrapper-table-documents td {
 }
 .fuzo-hino .front-left {
   position: absolute;
-  top: 40px;
-  left: 7px;
-  width: 30px;
-  height: 35px;
+  top: 45px;
+  left: 12px;
+  width: 15px;
+  height: 27px;
   cursor: pointer;
+  -moz-border-radius: 5px 0 0 5px;
+  -webkit-border-radius: 5px 0 0 5px;
+  border-radius: 5px 0 0 5px;
 }
 .fuzo-hino .front-right {
   position: absolute;
-  top: 38px;
-  right: 7px;
-  width: 30px;
+  top: 42px;
+  right: 12px;
+  width: 15px;
+  height: 28px;
+  cursor: pointer;
+  -moz-border-radius: 0 5px 5px 0;
+  -webkit-border-radius: 0 5px 5px 0;
+  border-radius: 0 5px 5px 0;
+}
+.fuzo-hino .spare-tire {
+  position: absolute;
+  top: 111px;
+  left: 49px;
+  width: 21px;
   height: 35px;
   cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
 }
-.fuzo-hino .back-left {
+.fuzo-hino .back-left-outside {
   position: absolute;
-  top: 165px;
-  left: 0px;
-  width: 50px;
-  height: 45px;
+  top: 171px;
+  left: 7px;
+  width: 18px;
+  height: 35px;
   cursor: pointer;
+  -moz-border-radius: 5px 0 0 5px;
+  -webkit-border-radius: 5px 0 0 5px;
+  border-radius: 5px 0 0 5px;
 }
-.fuzo-hino .back-right {
+.fuzo-hino .back-left-inside {
   position: absolute;
-  top: 165px;
-  right: 0;
-  width: 50px;
-  height: 45px;
+  top: 171px;
+  left: 27px;
+  width: 19px;
+  height: 35px;
   cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.fuzo-hino .back-right-outside {
+  position: absolute;
+  top: 170px;
+  right: 5px;
+  width: 19px;
+  height: 34px;
+  cursor: pointer;
+  -moz-border-radius: 0 5px 5px 0;
+  -webkit-border-radius: 0 5px 5px 0;
+  border-radius: 0 5px 5px 0;
+}
+.fuzo-hino .back-right-inside {
+  position: absolute;
+  top: 170px;
+  right: 26px;
+  width: 18px;
+  height: 35px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
 }
 
-.colt-diesel-engkel {
+.trintin {
   position: absolute;
   top: 0;
   height: 175px;
   width: 119px;
   left: 23px;
 }
-.colt-diesel-engkel .front-left {
+.trintin .front-left {
   position: absolute;
-  top: 35px;
-  left: 18px;
-  width: 30px;
+  top: 48px;
+  left: 14px;
+  width: 13px;
+  height: 24px;
+  cursor: pointer;
+  -moz-border-radius: 5px 0 0 5px;
+  -webkit-border-radius: 5px 0 0 5px;
+  border-radius: 5px 0 0 5px;
+}
+.trintin .front-right {
+  position: absolute;
+  top: 46px;
+  right: 21px;
+  width: 13px;
+  height: 24px;
+  cursor: pointer;
+  -moz-border-radius: 0 5px 5px 0;
+  -webkit-border-radius: 0 5px 5px 0;
+  border-radius: 0 5px 5px 0;
+}
+.trintin .mid-left {
+  position: absolute;
+  top: 84px;
+  left: 9px;
+  width: 16px;
   height: 30px;
   cursor: pointer;
+  -moz-border-radius: 5px 0 0 5px;
+  -webkit-border-radius: 5px 0 0 5px;
+  border-radius: 5px 0 0 5px;
 }
-.colt-diesel-engkel .front-right {
+.trintin .mid-right {
   position: absolute;
-  top: 35px;
-  right: 18px;
-  width: 30px;
+  top: 83px;
+  right: 15px;
+  width: 17px;
   height: 30px;
   cursor: pointer;
+  -moz-border-radius: 0 5px 5px 0;
+  -webkit-border-radius: 0 5px 5px 0;
+  border-radius: 0 5px 5px 0;
 }
-.colt-diesel-engkel .back-left {
+.trintin .spare-tire {
   position: absolute;
-  top: 128px;
-  left: 15px;
-  width: 30px;
+  top: 112px;
+  left: 46px;
+  width: 19px;
+  height: 31px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.trintin .back-left-outside {
+  position: absolute;
+  top: 161px;
+  left: 10px;
+  width: 16px;
   height: 30px;
   cursor: pointer;
+  -moz-border-radius: 5px 0 0 5px;
+  -webkit-border-radius: 5px 0 0 5px;
+  border-radius: 5px 0 0 5px;
 }
-.colt-diesel-engkel .back-right {
+.trintin .back-left-inside {
   position: absolute;
-  top: 128px;
-  right: 10px;
-  width: 30px;
+  top: 161px;
+  left: 27px;
+  width: 17px;
   height: 30px;
   cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
 }
-.colt-diesel-double {
+.trintin .back-right-outside {
+  position: absolute;
+  top: 160px;
+  right: 14px;
+  width: 17px;
+  height: 30px;
+  cursor: pointer;
+  -moz-border-radius: 0 5px 5px 0;
+  -webkit-border-radius: 0 5px 5px 0;
+  border-radius: 0 5px 5px 0;
+}
+.trintin .back-right-inside {
+  position: absolute;
+  top: 160px;
+  right: 32px;
+  width: 16px;
+  height: 31px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.trailer {
   position: absolute;
   top: 0;
-  height: 195px;
-  width: 119px;
-  left: 178px;
+  height: 275px;
+  width: 140px;
+  left: 186px;
 }
-.colt-diesel-double .front-left {
+.trailer .front-left {
   position: absolute;
-  top: 41px;
+  top: 47px;
+  left: 20px;
+  width: 15px;
+  height: 26px;
+  cursor: pointer;
+  -moz-border-radius: 5px 0 0 5px;
+  -webkit-border-radius: 5px 0 0 5px;
+  border-radius: 5px 0 0 5px;
+}
+.trailer .front-right {
+  position: absolute;
+  top: 44px;
+  right: 25px;
+  width: 14px;
+  height: 27px;
+  cursor: pointer;
+  -moz-border-radius: 0 5px 5px 0;
+  -webkit-border-radius: 0 5px 5px 0;
+  border-radius: 0 5px 5px 0;
+}
+.trailer .mid-left-outside {
+  position: absolute;
+  top: 87px;
   left: 15px;
-  width: 30px;
-  height: 30px;
+  width: 18px;
+  height: 34px;
   cursor: pointer;
+  -moz-border-radius: 5px 0 0 5px;
+  -webkit-border-radius: 5px 0 0 5px;
+  border-radius: 5px 0 0 5px;
 }
-.colt-diesel-double .front-right {
+.trailer .mid-left-inside {
   position: absolute;
-  top: 38px;
-  right: 13px;
-  width: 30px;
-  height: 30px;
+  top: 87px;
+  left: 35px;
+  width: 19px;
+  height: 34px;
   cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
 }
-.colt-diesel-double .back-left {
+.trailer .mid-right-outside {
   position: absolute;
-  top: 142px;
-  left: 10px;
-  width: 45px;
-  height: 45px;
+  top: 85px;
+  right: 18px;
+  width: 18px;
+  height: 34px;
   cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
 }
-.colt-diesel-double .back-right {
+.trailer .mid-right-inside {
   position: absolute;
-  top: 141px;
-  right: 8px;
-  width: 45px;
-  height: 45px;
+  top: 86px;
+  right: 38px;
+  width: 18px;
+  height: 34px;
   cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
 }
-.fuzo-hino {
+.trailer .spare-tire-first {
+  position: absolute;
+  top: 122px;
+  left: 59px;
+  width: 21px;
+  height: 32px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.trailer .spare-tire-second {
+  position: absolute;
+  top: 157px;
+  left: 60px;
+  width: 20px;
+  height: 33px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.trailer .first-back-left-outside {
+  position: absolute;
+  top: 195px;
+  left: 16px;
+  width: 19px;
+  height: 33px;
+  cursor: pointer;
+  -moz-border-radius: 5px 0 0 5px;
+  -webkit-border-radius: 5px 0 0 5px;
+  border-radius: 5px 0 0 5px;
+}
+.trailer .first-back-left-inside {
+  position: absolute;
+  top: 194px;
+  left: 36px;
+  width: 19px;
+  height: 34px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.trailer .first-back-right-outside {
+  position: absolute;
+  top: 194px;
+  right: 16px;
+  width: 19px;
+  height: 33px;
+  cursor: pointer;
+  -moz-border-radius: 0 5px 5px 0;
+  -webkit-border-radius: 0 5px 5px 0;
+  border-radius: 0 5px 5px 0;
+}
+.trailer .first-back-right-inside {
+  position: absolute;
+  top: 193px;
+  right: 36px;
+  width: 19px;
+  height: 35px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.trailer .second-back-left-outside {
+  position: absolute;
+  top: 232px;
+  left: 17px;
+  width: 18px;
+  height: 34px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.trailer .second-back-left-inside {
+  position: absolute;
+  top: 232px;
+  left: 37px;
+  width: 18px;
+  height: 34px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.trailer .second-back-right-outside {
+  position: absolute;
+  top: 231px;
+  right: 16px;
+  width: 18px;
+  height: 34px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.trailer .second-back-right-inside {
+  position: absolute;
+  top: 231px;
+  right: 36px;
+  width: 19px;
+  height: 34px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.gandengan {
   position: absolute;
   top: 0;
   height: 225px;
   width: 119px;
   right: 42px;
 }
-.fuzo-hino .front-left {
+.gandengan .first-front-left {
   position: absolute;
-  top: 40px;
-  left: 7px;
-  width: 30px;
-  height: 35px;
+  top: 41px;
+  left: 31px;
+  width: 13px;
+  height: 24px;
   cursor: pointer;
+  -moz-border-radius: 5px 0 0 5px;
+  -webkit-border-radius: 5px 0 0 5px;
+  border-radius: 5px 0 0 5px;
 }
-.fuzo-hino .front-right {
+.gandengan .first-front-right {
   position: absolute;
   top: 38px;
-  right: 7px;
-  width: 30px;
-  height: 35px;
+  right: 0px;
+  width: 14px;
+  height: 24px;
   cursor: pointer;
+  -moz-border-radius: 0 5px 5px 0;
+  -webkit-border-radius: 0 5px 5px 0;
+  border-radius: 0 5px 5px 0;
 }
-.fuzo-hino .back-left {
+.gandengan .first-spare-tire {
   position: absolute;
-  top: 165px;
-  left: 0px;
-  width: 50px;
-  height: 45px;
+  top: 108px;
+  left: 64px;
+  width: 22px;
+  height: 36px;
   cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
 }
-.fuzo-hino .back-right {
+.gandengan .first-back-left-outside {
   position: absolute;
-  top: 165px;
-  right: 0;
-  width: 50px;
-  height: 45px;
+  top: 156px;
+  left: 26px;
+  width: 17px;
+  height: 31px;
   cursor: pointer;
+  -moz-border-radius: 5px 0 0 5px;
+  -webkit-border-radius: 5px 0 0 5px;
+  border-radius: 5px 0 0 5px;
+}
+.gandengan .first-back-left-inside {
+  position: absolute;
+  top: 155px;
+  left: 45px;
+  width: 17px;
+  height: 33px;
+  cursor: pointer;
+  -moz-border-radius: 5px 0 0 5px;
+  -webkit-border-radius: 5px 0 0 5px;
+  border-radius: 5px 0 0 5px;
+}
+.gandengan .first-back-right-outside {
+  position: absolute;
+  top: 155px;
+  right: -6px;
+  width: 17px;
+  height: 32px;
+  cursor: pointer;
+  -moz-border-radius: 0 5px 5px 0;
+  -webkit-border-radius: 0 5px 5px 0;
+  border-radius: 0 5px 5px 0;
+}
+.gandengan .first-back-right-inside {
+  position: absolute;
+  top: 155px;
+  right: 12px;
+  width: 18px;
+  height: 31px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.gandengan .second-front-left-outside {
+  position: absolute;
+  top: 214px;
+  left: 27px;
+  width: 17px;
+  height: 32px;
+  cursor: pointer;
+  -moz-border-radius: 5px 0 0 5px;
+  -webkit-border-radius: 5px 0 0 5px;
+  border-radius: 5px 0 0 5px;
+}
+.gandengan .second-front-left-inside {
+  position: absolute;
+  top: 214px;
+  left: 45px;
+  width: 18px;
+  height: 32px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.gandengan .second-front-right-outside {
+  position: absolute;
+  top: 214px;
+  right: -6px;
+  width: 17px;
+  height: 31px;
+  cursor: pointer;
+  -moz-border-radius: 0 5px 5px 0;
+  -webkit-border-radius: 0 5px 5px 0;
+  border-radius: 0 5px 5px 0;
+}
+.gandengan .second-front-right-inside {
+  position: absolute;
+  top: 214px;
+  right: 12px;
+  width: 17px;
+  height: 32px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.gandengan .second-spare-tire {
+  position: absolute;
+  top: 263px;
+  left: 66px;
+  width: 21px;
+  height: 36px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.gandengan .second-back-left-outside {
+  position: absolute;
+  top: 318px;
+  left: 28px;
+  width: 17px;
+  height: 31px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.gandengan .second-back-left-inside {
+  position: absolute;
+  top: 317px;
+  left: 46px;
+  width: 18px;
+  height: 32px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.gandengan .second-back-right-outside {
+  position: absolute;
+  top: 317px;
+  right: -7px;
+  width: 17px;
+  height: 31px;
+  cursor: pointer;
+  -moz-border-radius: 0 5px 5px 0;
+  -webkit-border-radius: 0 5px 5px 0;
+  border-radius: 0 5px 5px 0;
+}
+.gandengan .second-back-right-inside {
+  position: absolute;
+  top: 317px;
+  right: 11px;
+  width: 18px;
+  height: 31px;
+  cursor: pointer;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.wrapper-wheel-position .truck-item .tire.active {
+  background-color: #f4543c;
 }
 
 /*FileUpload*/

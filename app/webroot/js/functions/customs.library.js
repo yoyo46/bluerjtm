@@ -887,12 +887,13 @@
         var settings = $.extend({
             obj: $('.ajaxCustomModal'),
             objId: $('#myModal'),
+            defaultTitle: null,
+            defaultUrl: null,
         }, options );
 
         var vthis = settings.obj;
         var url = vthis.attr('href');
         var alert_msg = vthis.attr('alert');
-        var title = vthis.attr('title');
         var data_check = $.checkUndefined(vthis.attr('data-check'), false);
         var data_check_named = $.checkUndefined(vthis.attr('data-check-named'), false);
         var data_check_alert = $.checkUndefined(vthis.attr('data-check-alert'), false);
@@ -901,7 +902,16 @@
         var modalSize = $.checkUndefined(vthis.attr('data-size'), '');
         var data_form = $.checkUndefined(vthis.attr('data-form'), false);
         var data_picker = $.checkUndefined(vthis.attr('data-picker'), false);
+        var title = vthis.attr('title');
         var formData = false;
+
+        if( settings.defaultTitle != null ) {
+            title = settings.defaultTitle;
+        }
+
+        if( settings.defaultUrl != null ) {
+            url = settings.defaultUrl;
+        }
 
         if( data_form != false ) {
             formData = $(data_form).serialize(); 
@@ -960,6 +970,25 @@
                     show: true,
                 });
                 $.rebuildFunctionAjax( settings.objId );
+
+                if( vthis.hasClass('wheel-position') ) {
+                    var product_id = vthis.attr('rel');
+                    var objWheel = $('.wheel-position-input[rel="'+product_id+'"]');
+                    var tire_qty = 0;
+
+                    objWheel.each(function(i,item){
+                        var val = $(item).val();
+                        var position = val.split('|');
+
+                        var position_name = $.filterEmptyField(position[0]);
+                        var truck_name = $.filterEmptyField(position[1]);
+                        
+                        $('.truck-item[rel="'+truck_name+'"] .'+position_name).addClass('active');
+                        tire_qty++;
+                    });
+
+                    $('.wheel-position-qty').val(tire_qty)
+                }
 
                 return false;
             },
@@ -1151,6 +1180,11 @@
                     obj: temp_picker.find('.input_price'),
                 });
                 $.inputNumber();
+                $.wheelPosition({
+                    obj: temp_picker.find('.wrapper-wheel-position .truck-item .tire'),
+                    objTire: temp_picker.find('.wheel-position'),
+                    objSubmit: temp_picker.find('.wheel-position-submit'),
+                });
             }
         }
     }
@@ -1573,6 +1607,11 @@
         });
         $.callInterval({
             obj: obj.find('.call-interval'),
+        });
+        $.wheelPosition({
+            obj: obj.find('.wrapper-wheel-position .truck-item .tire'),
+            objTire: obj.find('.wheel-position'),
+            objSubmit: obj.find('.wheel-position-submit'),
         });
     }
 
@@ -2011,6 +2050,101 @@
                     });
                  }
             }, interval);
+        }
+    }
+    
+    $.wheelPosition = function(options){
+        var settings = $.extend({
+            obj: $('.wrapper-wheel-position .truck-item .tire'),
+            objTire: $('.wheel-position'),
+            objSubmit: $('.wheel-position-submit'),
+        }, options );
+
+        if( settings.obj.length > 0 ) {
+            settings.obj.off('click').click(function(e){
+                var self = $(this);
+                var max_qty = $.convertNumber($('.wheel-position-max-qty').val(), 'float');
+                var tire_qty = $.convertNumber($('.wheel-position-qty').val(), 'int');
+
+                if( self.hasClass('active') ) {
+                    self.removeClass('active');
+                    tire_qty--;
+                } else {
+                    self.addClass('active');
+                    tire_qty++;
+                }
+
+                if( tire_qty > max_qty ) {
+                    alert('Qty telah habis terpakai, klik tombol submit untuk melanjutkan');
+                    self.removeClass('active');
+                    tire_qty--;
+                }
+
+                $('.wheel-position-qty').val(tire_qty)
+            });
+        }
+
+        if( settings.objTire.length > 0 ) {
+            settings.objTire.off('click').click(function(e){
+                var self = $(this);
+                var parents = self.parents('tr');
+                var href = self.attr('href');
+                var title = self.attr('title');
+
+                var objQty = parents.find('input[rel="qty"]');
+                var product_id = parents.attr('rel');
+                var qty = $.convertNumber(objQty.val(), 'float');
+
+                if( qty != 0 ) {
+                    href += '/' + qty;
+
+                    $.directAjaxModal({
+                        obj: self,
+                        defaultTitle: title + ' ('+qty+' Ban)',
+                        defaultUrl: href,
+                    });
+                } else {
+                    alert('Mohon masukan qty terlebih dahulu');
+                    objQty.focus();
+                }
+
+                return false
+            });
+        }
+
+        if( settings.objSubmit.length > 0 ) {
+            settings.objSubmit.off('click').click(function(e){
+                var self = $('.wrapper-wheel-position .truck-item .tire.active');
+                var product_id = $('.wheel-position-product-id').val();
+                var product_qty = $('.wheel-position-max-qty').val();
+                var tmp = '';
+
+                if( self.length == 0 ) {
+                    alert('Mohon pilih ban roda truk yang akan diganti');
+                } else if( self.length < product_qty ) {
+                    alert('Mohon pilih '+product_qty+' ban roda truk yang akan diganti');
+                } else {
+                    $('.wheel-position-input[rel="'+product_id+'"]').remove();
+
+                    self.each(function(i,item){
+                        var name = $.checkUndefined($(item).attr('class'), null);
+                        name = name.replace(/tire/gi, "").replace(/active/gi, "");
+
+                        var parents = $(item).parents('.truck-item');
+                        truck_name = parents.attr('rel');
+                        
+                        name = $.trim(name) + '|' + truck_name;
+
+                        tmp += '<input name="data[SpkProduct][tire_position]['+product_id+'][]" type="hidden" value="'+name+'" class="wheel-position-input" rel="'+product_id+'">';
+                    });
+                    
+                    $('.pick-document[rel="'+product_id+'"]').append(tmp);
+                    $('.pick-document[rel="'+product_id+'"] .wheel-position').html('Set ('+product_qty+' Ban)');
+                    $('.pick-document[rel="'+product_id+'"] .error-message').remove();
+                    $('#myModal .close.btn,#myModal button.close').trigger("click");
+                }
+                return false
+            });
         }
     }
 }( jQuery ));

@@ -51,6 +51,20 @@ class RjSpkComponent extends Component {
                 $price_service = !empty($spkProduct['price_service'][$key])?$spkProduct['price_service'][$key]:false;
                 $price = !empty($spkProduct['price'][$key])?$spkProduct['price'][$key]:false;
                 $price_service_type = !empty($spkProduct['price_service_type'][$key])?$spkProduct['price_service_type'][$key]:false;
+                $tire_position = !empty($spkProduct['tire_position'][$key])?$spkProduct['tire_position'][$key]:false;
+
+                $product = $this->controller->Spk->SpkProduct->Product->getData('first', array(
+                    'conditions' => array(
+                        'Product.id' => $product_id,
+                    ),
+                ));
+                $product = $this->controller->Spk->SpkProduct->Product->getMergeList($product, array(
+                    'contain' => array(
+                        'ProductCategory',
+                    ),
+                ));
+                $category = Common::hashEmptyField($product, 'ProductCategory.name');
+                $category = Common::toSlug($category);
 
                 $dataProduct = array(
                     'product_id' => $product_id,
@@ -65,6 +79,19 @@ class RjSpkComponent extends Component {
                         'price',
                     )
                 ));
+
+                if( $category == 'ban' ) {
+                    if( !empty($tire_position) ) {
+                        foreach ($tire_position as $key => $position) {
+                            $dataProduct['SpkProductTire'][] = array(
+                                'product_id' => $product_id,
+                                'position' => $position,
+                            );
+                        }
+                    } else {
+                        $dataProduct['empty_tire'] = true;
+                    }
+                }
 
                 $data['SpkProduct'][]['SpkProduct'] = $dataProduct;
             }
@@ -170,6 +197,7 @@ class RjSpkComponent extends Component {
                         'Product' => array(
                             'contain' => array(
                                 'ProductUnit',
+                                'ProductCategory',
                             ),
                         ),
                     ),
