@@ -644,4 +644,105 @@ class Common {
             'satuan' => __('Satuan'),
         );
     }
+
+    public static function _callTransactionStatus ( $data, $modelName = false, $fieldName = 'transaction_status' ) {
+        $transaction_status = Common::hashEmptyField($data, $modelName.'.'.$fieldName);
+        $canceled_date = Common::hashEmptyField($data, $modelName.'.canceled_date');
+
+        switch ($transaction_status) {
+            case 'paid':
+                $customStatus = __('Sudah Dibayar');
+                break;
+
+            case 'half_paid':
+                $customStatus = __('Dibayar Sebagian');
+                break;
+
+            case 'void':
+                $customStatus = __('Void');
+
+                if(!empty($canceled_date)){
+                    $canceled_date = Common::formatDate($canceled_date, 'd/m/Y', false);
+                    $customStatus .= ' - '.$canceled_date;
+                }
+                break;
+
+            case 'sold':
+                $customStatus = __('Sold');
+                break;
+
+            case 'posting':
+                $customStatus = __('Commit');
+                break;
+
+            case 'available':
+                $customStatus = __('Available');
+                break;
+
+            case 'unposting':
+                $customStatus = __('Draft');
+                break;
+
+            case 'completed':
+                $customStatus = __('Complete');
+                break;
+
+            case 'finish':
+                $customStatus = __('Finish');
+                break;
+
+            case 'out':
+                $customStatus = __('Proses');
+                break;
+
+            case 'progress':
+                $customStatus = __('Pending');
+                break;
+
+            case 'pending':
+                $customStatus = __('Pending');
+                break;
+
+            case 'canceled':
+                $customStatus = __('Batal');
+                break;
+
+            case 'revised':
+                $customStatus = __('Direvisi');
+                break;
+
+            case 'rejected':
+                $customStatus = __('Ditolak');
+                break;
+
+            case 'closed':
+                $customStatus = __('Closed');
+                break;
+
+            case 'approved':
+                $customStatus = __('Disetujui');
+                break;
+
+            case 'po':
+                $customStatus = __('PO');
+                break;
+
+            case 'open':
+                $customStatus = __('Open');
+                break;
+            
+            default:
+                $customStatus = __('Belum Dibayar');
+                break;
+        }
+
+        return $customStatus;
+    }
+
+    public static function _callGetDriver ( $value ) {
+        $driver = Common::hashEmptyField($value, 'Driver.driver_name');
+        $driver = Common::hashEmptyField($value, 'DriverPengganti.driver_name', $driver);
+
+        return $driver;
+    }
 }

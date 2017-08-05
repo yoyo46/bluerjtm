@@ -1,3 +1,7 @@
+<?php
+		$params = $this->params->params;
+		$view = Common::hashEmptyField($params, 'named.view');
+?>
 <div class="wrapper-wheel-position">
 	<div class="wheel-1">
 		<img src="/img/wheel/wheel1.jpg">
@@ -91,22 +95,24 @@
 	</div>
 	<div class="box-footer text-center action">
 		<?php
-				echo $this->Form->hidden('SpkProduct.max_qty', array(
-					'value' => $qty,
-					'class'=> 'wheel-position-max-qty',
-				));
-				echo $this->Form->hidden('SpkProduct.product_id', array(
-					'value' => $id,
-					'class'=> 'wheel-position-product-id',
-				));
-				echo $this->Form->hidden('SpkProduct.qty', array(
-					'value' => $qty,
-					'class'=> 'wheel-position-qty',
-				));
-				echo $this->Form->button(__('Submit'), array(
-					'type' => 'submit',
-					'class'=> 'btn btn-success submit-form btn-lg wheel-position-submit',
-				));
+				if( empty($view) ) {
+					echo $this->Form->hidden('SpkProduct.max_qty', array(
+						'value' => $qty,
+						'class'=> 'wheel-position-max-qty',
+					));
+					echo $this->Form->hidden('SpkProduct.product_id', array(
+						'value' => $id,
+						'class'=> 'wheel-position-product-id',
+					));
+					echo $this->Form->hidden('SpkProduct.qty', array(
+						'value' => $qty,
+						'class'=> 'wheel-position-qty',
+					));
+					echo $this->Form->button(__('Submit'), array(
+						'type' => 'submit',
+						'class'=> 'btn btn-success submit-form btn-lg wheel-position-submit',
+					));
+				}
 		?>
 	</div>
 </div>

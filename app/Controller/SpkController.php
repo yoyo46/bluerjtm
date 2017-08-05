@@ -5,7 +5,7 @@ class SpkController extends AppController {
         'Spk',
     );
     public $components = array(
-        'RjSpk'
+        'RjSpk', 'RmReport'
     );
     public $helpers = array(
         'Spk'
@@ -155,7 +155,11 @@ class SpkController extends AppController {
         if( !empty($value) ) {
             $value = $this->Spk->getMergeList($value, array(
                 'contain' => array(
-                    'SpkProduct',
+                    'SpkProduct' => array(
+                        'contain' => array(
+                            'SpkProductTire',
+                        ),
+                    ),
                     'SpkProduction',
                     'SpkMechanic',
                 ),
@@ -306,6 +310,52 @@ class SpkController extends AppController {
         $this->set(array(
             'id' => $id,
             'qty' => $qty,
+        ));
+    }
+
+    public function tire_reports() {
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+
+        $dataReport = $this->RmReport->_callDataTire_reports($params, 30, 0, true);
+        $values = Common::hashEmptyField($dataReport, 'data');
+
+        $this->RjSpk->_callBeforeViewTireReports($params);
+        $this->MkCommon->_layout_file(array(
+            'select',
+            'freeze',
+        ));
+        $this->set(array(
+            'values' => $values,
+            'active_menu' => 'tire_reports',
+            '_freeze' => true,
+        ));
+    }
+
+    public function spk_reports() {
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+
+        $dataReport = $this->RmReport->_callDataSpk_reports($params, 30, 0, true);
+        $values = Common::hashEmptyField($dataReport, 'data');
+
+        $this->RjSpk->_callBeforeViewSpkReports($params);
+        $this->MkCommon->_layout_file(array(
+            'select',
+            'freeze',
+        ));
+        $this->set(array(
+            'values' => $values,
+            'active_menu' => 'spk_reports',
+            '_freeze' => true,
         ));
     }
 }

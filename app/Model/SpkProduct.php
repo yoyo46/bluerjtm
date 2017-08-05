@@ -175,6 +175,62 @@ class SpkProduct extends AppModel {
         $code = $this->filterEmptyField($data, 'named', 'code');
         $name = $this->filterEmptyField($data, 'named', 'name');
         $group = $this->filterEmptyField($data, 'named', 'group');
+        $nopol = $this->filterEmptyField($data, 'named', 'nopol');
+        $sort = $this->filterEmptyField($data, 'named', 'sort', false, array(
+            'addslashes' => true,
+        ));
+        $sortTruck = strpos($sort, 'Truck.');
+        $sortDriver = strpos($sort, 'Driver.');
+        $sortTruckBrand = strpos($sort, 'TruckBrand.');
+        $sortTruckCategory = strpos($sort, 'TruckCategory.');
+        $sortProduct = strpos($sort, 'Product.');
+        $sortProductUnit = strpos($sort, 'ProductUnit.');
+        $bindArr = array();
+
+        if( is_numeric($sortTruck) || is_numeric($sortTruckBrand) || is_numeric($sortTruckCategory) || !empty($nopol) ) {
+            $bindArr['hasOne']['Truck'] = array(
+                'foreignKey' => FALSE, 
+                'conditions' => array(
+                    'Spk.truck_id = Truck.id', 
+                ), 
+            );
+        }
+        if( is_numeric($sortDriver) ) {
+            $bindArr['hasOne']['Driver'] = array(
+                'foreignKey' => FALSE, 
+                'conditions' => array(
+                    'Spk.driver_id = Driver.id', 
+                ), 
+            );
+        }
+        if( is_numeric($sortTruckBrand) ) {
+            $bindArr['hasOne']['TruckBrand'] = array(
+                'foreignKey' => FALSE, 
+                'conditions' => array(
+                    'Truck.truck_brand_id = TruckBrand.id', 
+                ), 
+            );
+        }
+        if( is_numeric($sortTruckCategory) ) {
+            $bindArr['hasOne']['TruckCategory'] = array(
+                'foreignKey' => FALSE, 
+                'conditions' => array(
+                    'Truck.truck_category_id = TruckCategory.id', 
+                ), 
+            );
+        }
+        if( is_numeric($sortProductUnit) ) {
+            $bindArr['hasOne']['ProductUnit'] = array(
+                'foreignKey' => FALSE, 
+                'conditions' => array(
+                    'Product.product_unit_id = ProductUnit.id', 
+                ), 
+            );
+        }
+
+        if( !empty($bindArr) ) {
+            $this->bindModel($bindArr, false);
+        }
 
         if( !empty($code) ) {
             $default_options['conditions']['Product.code LIKE'] = '%'.$code.'%';
@@ -187,6 +243,66 @@ class SpkProduct extends AppModel {
         if( !empty($group) ) {
             $default_options['conditions']['Product.product_category_id'] = $group;
             $default_options['contain'][] = 'Product';
+        }
+
+        $default_options = $this->defaultOptionParams($data, $default_options, array(
+            'nodoc' => array(
+                'field' => 'Spk.nodoc',
+                'type' => 'like',
+                'contain' => array(
+                    'Spk',
+                ),
+            ),
+            'document_type' => array(
+                'field' => 'Spk.document_type',
+                'type' => 'like',
+                'contain' => array(
+                    'Spk',
+                ),
+            ),
+            'product_code' => array(
+                'field' => 'Product.code',
+                'type' => 'like',
+                'contain' => array(
+                    'Product',
+                ),
+            ),
+            'nopol' => array(
+                'field' => 'Truck.nopol',
+                'type' => 'like',
+                'contain' => array(
+                    'Spk',
+                    'Truck',
+                ),
+            ),
+        ));
+
+        if( !empty($sort) ) {
+            if( is_numeric($sortTruck) ) {
+                $default_options['contain'][] = 'Spk';
+                $default_options['contain'][] = 'Truck';
+            }
+            if( is_numeric($sortDriver) ) {
+                $default_options['contain'][] = 'Spk';
+                $default_options['contain'][] = 'Driver';
+            }
+            if( is_numeric($sortTruckBrand) ) {
+                $default_options['contain'][] = 'Spk';
+                $default_options['contain'][] = 'Truck';
+                $default_options['contain'][] = 'TruckBrand';
+            }
+            if( is_numeric($sortTruckCategory) ) {
+                $default_options['contain'][] = 'Spk';
+                $default_options['contain'][] = 'Truck';
+                $default_options['contain'][] = 'TruckCategory';
+            }
+            if( is_numeric($sortProduct) ) {
+                $default_options['contain'][] = 'Product';
+            }
+            if( is_numeric($sortProductUnit) ) {
+                $default_options['contain'][] = 'Product';
+                $default_options['contain'][] = 'ProductUnit';
+            }
         }
         
         return $default_options;

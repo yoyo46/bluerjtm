@@ -1368,7 +1368,7 @@
                             'receipt_reports',
                         ),
                         'spk' => array(
-                            'index',
+                            'index', 'tire_reports', 'spk_reports'
                         ),
                     );
 
@@ -1379,7 +1379,7 @@
                             'receipts', 'product_units', 'expenditures',
                             'current_stock_reports', 'stock_cards',
                             'expenditure_reports',
-                            'receipt_reports',
+                            'receipt_reports', 'tire_reports', 'spk_reports'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1482,6 +1482,22 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'receipt_reports' )?'active':'',
                             ));
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Laporan SPK', $this->Common->icon('angle-double-right')), array(
+                                'controller' => 'spk',
+                                'action' => 'spk_reports'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'spk_reports' )?'active':'',
+                            ));
+                            // echo $this->Html->tag('li', $this->Html->link(__('%s Laporan Pergantian Ban', $this->Common->icon('angle-double-right')), array(
+                            //     'controller' => 'spk',
+                            //     'action' => 'tire_reports'
+                            // ), array(
+                            //     'escape' => false
+                            // )), array(
+                            //     'class' => ( !empty($active_menu) && $active_menu == 'tire_reports' )?'active':'',
+                            // ));
                     ?>
                 </ul>
             </li>

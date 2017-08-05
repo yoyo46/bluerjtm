@@ -390,4 +390,173 @@ class CommonBehavior extends ModelBehavior {
 		}
 		return $default_options;
 	}
+
+	function callFieldOr($field, $value){
+		if( !empty($field['OR']) ) {
+			$fieldOr = $field['OR'];
+			$fields = array();
+
+			unset($field['OR']);
+
+			foreach ($fieldOr as $key => $fieldName) {
+				$fields[sprintf('%s LIKE', $fieldName)] = $value;
+			}
+
+			$field['OR'] = $fields;
+		}
+
+		return $field;
+	}
+	
+	function typeOptionParams($model, $named, $slug, $option){
+		$flag = $code = false;
+		$type = Common::hashEmptyField($option, 'type');
+		$field = Common::hashEmptyField($option, 'field');
+		$value = Common::hashEmptyField($named, $slug, false, array(
+        	'addslashes' => true,
+        	'urldecode_double' => false,
+    	));
+
+		if($value){
+			switch ($type) {
+				case 'like':
+					$value = '%'.$value.'%';
+
+					if( !empty($field['OR']) ) {
+						$field = $this->callFieldOr($field, $value);
+					} else {
+						$field = sprintf('%s LIKE', $field);
+					}
+					break;
+
+				case 'boolean':
+
+					if($value == 'active'){
+						$value = true;
+						$flag = true;
+					}else if($value == 'inactive'){
+						$value = false;
+						$flag = true;
+					}else{
+						$value = false;
+					}
+					break;
+
+				case 'operator':
+					$select_field = Common::hashEmptyField($option, 'select_field');
+					// $select = Common::hashEmptyField($named, $select_field, false, array(
+			  //       	'addslashes' => true,
+			  //   	));
+			    	
+			    	switch ($select_field) {
+			    		case 'notequal':
+			    			$code = '<>';
+			    			break;
+			    		case 'more':
+			    			$code = '>=';
+			    			break;
+			    		case 'less':
+			    			$code = '<=';
+			    			break;
+			    	}
+
+					break;
+				case 'equal':
+					if( !empty($field['OR']) ) {
+						$field = $this->callFieldOr($field, $value);
+					}
+					break;
+				case 'parent':
+					$sourceField = Common::hashEmptyField($option, 'use.sourceField');
+					$val = $value;
+					$value = $model->getData('list', array(
+						'conditions' => array(
+							sprintf('%s like', $sourceField) => '%'.$val.'%',
+						),
+						'fields' => array('id', 'id'),
+					));
+
+					if(!empty($val) && empty($value)){
+						$value = $model->getData('list', array(
+							'fields' => array('id', 'id'),
+						));
+
+						$field = sprintf('%s <>', $field);
+					}
+					break;
+			}
+		}
+
+		return array_merge($option, array(
+			'flag' => $flag,
+			'field' => $field,
+			'value' => $value,
+			'code' => $code,
+		));
+	}
+
+	function defaultOptionParams(model $model, $data, $default_options = false, $options = array()){
+		$modelName = $model->name;
+		$named = Common::hashEmptyField($data, 'named');
+
+		if(!empty($options) && !empty($named)){
+			foreach ($options as $slug => $option) {
+				$contain_arr = Common::hashEmptyField($option, 'contain');
+				$type = Common::hashEmptyField($option, 'type');
+				$contain = array();
+
+				if($contain_arr){
+					if(!is_array($contain_arr)){
+						$contain[] = $contain_arr;
+					}else{
+						$contain = $contain_arr;
+					}
+				}
+
+		    	$option = $this->typeOptionParams($model, $named, $slug, $option);
+				$field = Common::hashEmptyField($option, 'field');
+				$code = Common::hashEmptyField($option, 'code');
+				$flag = Common::hashEmptyField($option, 'flag');
+				$value = Common::hashEmptyField($option, 'value', false, array(
+		        	'addslashes' => true,
+		        	'urldecode' => false,
+		    	));
+				$virtualFields = Common::hashEmptyField($option, 'virtualFields');
+
+		    	if($value || (in_array($type, array('boolean')) && !empty($flag))){
+		    		if( is_array($field) ) {
+		    			$default_options['conditions'][] = $field;
+		    		} else {
+		    			if($code){
+		    				$field = sprintf('%s %s', $field, $code);	
+		    			}
+		    			$default_options['conditions'][$field] = $value;
+		    		}
+
+			    	if($contain){
+			    		if(!empty($default_options['contain'])){
+			    			$default_options['contain'] = array_merge($default_options['contain'], $contain);
+			    		}else{
+			    			$default_options['contain'] = $contain;
+			    		}
+			    	}
+
+			    	if( !empty($virtualFields) ) {
+			    		foreach ($virtualFields as $modelName => $virtuals) {
+			    			if( !empty($virtuals) ) {
+			    				foreach ($virtuals as $vfield => $nvirtual) {
+					    			if( $model->name == $modelName ) {
+					    				$model->virtualFields[$vfield] = $nvirtual;
+					    			} else {
+					    				$model->$modelName->virtualFields[$vfield] = $nvirtual;
+					    			}
+			    				}
+			    			}
+			    		}
+			    	}
+		    	}
+			}
+		}
+		return $default_options;
+	}
 }

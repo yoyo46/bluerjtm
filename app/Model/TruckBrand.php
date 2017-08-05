@@ -14,7 +14,7 @@ class TruckBrand extends AppModel {
 		'Truck' => array(
 			'className' => 'Truck',
 			'foreignKey' => 'truck_brand_id',
-		)
+		),
 	);
 
 	function getData($find, $options = false){

@@ -1593,6 +1593,587 @@ class RmReportComponent extends Component {
 		);
 	}
 
+	function _callDataTire_reports ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('Spk');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+
+		$options = array(
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+		$options = $this->controller->Spk->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'Spk', $options );
+
+		$this->controller->paginate	= $this->controller->Spk->getData('paginate', $options, array(
+			'branch' => false,
+		));
+		$data = $this->controller->paginate('Spk');
+		$result = array();
+
+		$last_data = end($data);
+		$last_id = Common::hashEmptyField($last_data, 'Spk.id');
+
+		$paging = $this->controller->params->paging;
+        $nextPage = Common::hashEmptyField($paging, 'Spk.nextPage');
+
+        $totalQty = 0;
+        $totalPrice = 0;
+        $grandtotal = 0;
+
+		if( !empty($data) ) {
+			foreach ($data as $key => $value) {
+		        $value = $this->controller->Spk->getMergeList($value, array(
+		            'contain' => array(
+		            	'Branch',
+		                'Employe',
+		                'Truck',
+	                    'SpkProduct' => array(
+	                        'contain' => array(
+	                            'SpkProductTire',
+	                        ),
+	                    ),
+                    	'SpkMechanic',
+		            ),
+		        ));
+
+                $nopol = Common::hashEmptyField($value, 'Truck.NoPol');
+                $transaction_date = Common::hashEmptyField($value, 'Spk.transaction_date', null, array(
+                	'date' => 'd M Y',
+            	));
+                $estimation_date = Common::hashEmptyField($value, 'Spk.estimation_date', null, array(
+                	'date' => 'd M Y H:i',
+            	));
+            	$complete_date = Common::hashEmptyField($value, 'Spk.complete_date', null, array(
+                	'date' => 'd M Y H:i',
+            	));
+                $note = Common::hashEmptyField($value, 'Spk.note', '-', array(
+                	'strict' => true,
+            	));
+                $customStatus = Common::_callTransactionStatus($value, 'Spk', 'transaction_status');
+
+				$result[$key] = array(
+					__('No. SPK') => array(
+						'text' => Common::hashEmptyField($value, 'Spk.nodoc'),
+                		'field_model' => 'Spk.nodoc',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'nodoc\',width:120',
+		                'align' => 'left',
+					),
+					__('Cabang') => array(
+						'text' => Common::hashEmptyField($value, 'Branch.code'),
+                		'field_model' => 'Branch.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'branch\',width:100',
+					),
+					__('No Pol') => array(
+						'text' => Common::hashEmptyField($value, 'Branch.code'),
+                		'field_model' => 'Branch.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'branch\',width:100',
+					),
+					__('Kepala Mekanik') => array(
+						'text' => $transaction_date,
+                		'field_model' => 'Spk.transaction_date',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'transaction_date\',width:120',
+		                'align' => 'left',
+					),
+					__('Mekanik') => array(
+						'text' => $spk_nodoc,
+                		'fix_column' => true,
+                		'field_model' => 'Spk.nodoc',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'spk\',width:120',
+		                'align' => 'left',
+					),
+					__('Estimasi Penyelesaian') => array(
+						'text' => $type,
+                		'field_model' => 'ProductExpenditure.document_type',
+		                'align' => 'center',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'document_type\',width:100',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Tgl Selesai') => array(
+						'text' => $nopol,
+                		'field_model' => 'Truck.nopol',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'nopol\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('QTY') => array(
+						'text' => $qty,
+                		'field_model' => 'ProductExpenditureDetailSerialNumber.qty',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'qty\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Ban Diganti') => array(
+						'text' => $note,
+                		'field_model' => 'ProductExpenditure.note',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'note\',width:150',
+					),
+					__('Keterangan') => array(
+						'text' => $code,
+                		'field_model' => 'Product.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'code\',width:100',
+					),
+					__('Status') => array(
+						'text' => $customStatus,
+                		'field_model' => 'ProductExpenditure.transaction_status',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'status\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+				);
+			}
+
+			if( empty($nextPage) ) {
+				$result[$key+1] = array(
+					__('No Dokumen') => array(
+                		'field_model' => 'ProductExpenditure.nodoc',
+					),
+					__('Cabang') => array(
+                		'field_model' => 'Branch.branch',
+					),
+					__('Tgl Pengeluaran') => array(
+                		'field_model' => 'ProductExpenditure.transaction_date',
+					),
+					__('No. SPK') => array(
+                		'field_model' => 'Spk.nodoc',
+					),
+					__('Jenis') => array(
+                		'field_model' => 'ProductExpenditure.document_type',
+					),
+					__('NoPol') => array(
+                		'field_model' => 'Truck.nopol',
+					),
+					__('Keterangan') => array(
+                		'field_model' => 'ProductExpenditure.note',
+					),
+					__('Kode Barang') => array(
+                		'field_model' => 'Product.code',
+					),
+					__('Nama Barang') => array(
+                		'field_model' => 'Product.name',
+					),
+					__('Satuan') => array(
+                		'field_model' => 'ProductUnit.name',
+					),
+					__('Serial Number') => array(
+						'text' => __('Total'),
+                		'field_model' => 'ProductExpenditureDetailSerialNumber.serial_number',
+		                'style' => 'font-weight: bold;',
+                		'excel' => array(
+                			'bold' => true,
+            			),
+					),
+					__('QTY') => array(
+						'text' => $totalQty,
+                		'field_model' => 'ProductExpenditureDetailSerialNumber.qty',
+		                'style' => 'text-align: center;font-weight: bold;',
+		                'data-options' => 'field:\'qty\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+                			'bold' => true,
+            			),
+					),
+				);
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'last_id' => $last_id,
+			'model' => 'ProductExpenditureDetail',
+		);
+	}
+
+	function _callDataSpk_reports ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('SpkProduct');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+
+		$options = array(
+			'contain' => array(
+				'Spk',
+			),
+            'order'=> array(
+                'Spk.status' => 'DESC',
+                'Spk.created' => 'DESC',
+                'Spk.id' => 'DESC',
+            ),
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+		$options = $this->controller->SpkProduct->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'Spk', $options );
+
+		$this->controller->paginate	= $this->controller->SpkProduct->getData('paginate', $options, array(
+			'branch' => false,
+		));
+		$data = $this->controller->paginate('SpkProduct');
+		$result = array();
+
+		$last_data = end($data);
+		$last_id = Common::hashEmptyField($last_data, 'SpkProduct.id');
+
+		$paging = $this->controller->params->paging;
+        $nextPage = Common::hashEmptyField($paging, 'SpkProduct.nextPage');
+
+        $totalQty = 0;
+        $totalPrice = 0;
+        $grandtotal = 0;
+
+        App::import('Helper', 'Html');
+        $this->Html = new HtmlHelper(new View(null));
+
+		if( !empty($data) ) {
+			$grandtotal_price = 0;
+
+			foreach ($data as $key => $value) {
+		        $value = $this->controller->SpkProduct->getMergeList($value, array(
+		            'contain' => array(
+                        'Product' => array(
+                            'contain' => array(
+                                'ProductUnit',
+                                'ProductCategory',
+                            ),
+                        ),
+		            ),
+		        ));
+		        $value = $this->controller->SpkProduct->Spk->getMergeList($value, array(
+		            'contain' => array(
+		            	'Branch',
+		                'Employe',
+		                'Driver',
+                        'Driver' => array(
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
+		                'Truck' => array(
+		                	'contain' => array(
+		                		'TruckBrand',
+		                		'TruckCategory',
+	                		),
+	                	),
+                    	// 'SpkMechanic',
+		            ),
+		        ));
+		        // debug($value);
+		        // die();
+
+                $id = Common::hashEmptyField($value, 'Spk.id');
+                $branch_id = Common::hashEmptyField($value, 'Spk.branch_id');
+                $nodoc = Common::hashEmptyField($value, 'Spk.nodoc');
+                $document_type = Common::hashEmptyField($value, 'Spk.document_type');
+                $document_type = ucwords($document_type);
+                $transaction_date = Common::hashEmptyField($value, 'Spk.transaction_date', null, array(
+                	'date' => 'd M Y',
+            	));
+                $estimation_date = Common::hashEmptyField($value, 'Spk.estimation_date', null, array(
+                	'date' => 'd M Y H:i',
+            	));
+            	$complete_date = Common::hashEmptyField($value, 'Spk.complete_date', null, array(
+                	'date' => 'd M Y H:i',
+            	));
+                $note = Common::hashEmptyField($value, 'Spk.note', '-', array(
+                	'strict' => true,
+            	));
+                $customStatus = Common::_callTransactionStatus($value, 'Spk', 'transaction_status');
+
+                $brand = Common::hashEmptyField($value, 'Truck.TruckBrand.name', '-');
+                $brand = Common::hashEmptyField($value, 'TruckBrand.name', $brand);
+
+                $category = Common::hashEmptyField($value, 'Truck.TruckCategory.name', '-');
+                $category = Common::hashEmptyField($value, 'TruckCategory.name', $category);
+                
+                $spk_product_id = Common::hashEmptyField($value, 'SpkProduct.id');
+                $product_id = Common::hashEmptyField($value, 'Product.id');
+                $productExpenditure = $this->controller->SpkProduct->ProductExpenditureDetail->getExpenditureByProduct($id, $product_id, $spk_product_id, $branch_id);
+                $qty_out = Common::hashEmptyField($productExpenditure, 'ProductExpenditureDetailSerialNumber.total_qty');
+                $price = Common::hashEmptyField($productExpenditure, 'ProductExpenditureDetailSerialNumber.total_price')/$qty_out;
+                $total_price = $qty_out * $price;
+
+				$grandtotal_price += $total_price;
+
+				$result[$key] = array(
+					__('Cabang') => array(
+						'text' => Common::hashEmptyField($value, 'Branch.code'),
+                		'field_model' => 'Branch.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'branch\',width:100',
+					),
+					__('Tgl') => array(
+						'text' => Common::hashEmptyField($value, 'Spk.transaction_date', null, array(
+		                	'date' => 'd M Y',
+		            	)),
+                		'field_model' => 'Spk.transaction_date',
+		                'align' => 'center',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'transaction_date\',width:100',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('No. SPK') => array(
+						'text' => !empty($view)?$this->Html->link($nodoc, array(
+							'controller' => 'spk',
+							'action' => 'detail',
+							$id,
+							'admin' => false,
+							'full_base' => true,
+						), array(
+							'target' => '_blank',
+						)):$nodoc,
+                		'field_model' => 'Spk.nodoc',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'nodoc\',width:120',
+		                'align' => 'left',
+                		'fix_column' => true,
+					),
+					__('Jenis SPK') => array(
+						'text' => $document_type,
+                		'field_model' => 'Spk.document_type',
+		                'data-options' => 'field:\'spk_document_type\',width:100',
+					),
+					__('Estimasi') => array(
+						'text' => $estimation_date,
+                		'field_model' => 'Spk.estimation_date',
+		                'data-options' => 'field:\'estimation_date\',width:100',
+					),
+					__('Tgl Selesai') => array(
+						'text' => $complete_date,
+                		'field_model' => 'Spk.complete_date',
+		                'data-options' => 'field:\'complete_date\',width:100',
+					),
+					__('No Pol') => array(
+						'text' => Common::hashEmptyField($value, 'Truck.nopol', '-'),
+                		'field_model' => 'Truck.nopol',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'nopol\',width:100',
+					),
+					__('Supir') => array(
+						'text' => Common::hashEmptyField($value, 'Driver.driver_name'),
+                		'field_model' => 'Driver.driver_name',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'driver\',width:120',
+		                'align' => 'left',
+					),
+					__('Merek') => array(
+						'text' => $brand,
+                		'field_model' => 'TruckBrand.name',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'brand\',width:100',
+		                'align' => 'left',
+					),
+					__('Jenis') => array(
+						'text' => $category,
+                		'field_model' => 'TruckCategory.name',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'category\',width:100',
+		                'align' => 'left',
+					),
+					__('Kapasitas') => array(
+						'text' => Common::hashEmptyField($value, 'Truck.capacity', '-'),
+                		'field_model' => 'Truck.capacity',
+		                'align' => 'center',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'capacity\',width:100',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Kode Barang') => array(
+						'text' => Common::hashEmptyField($value, 'Product.code'),
+                		'field_model' => 'Product.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'code\',width:100',
+		                'align' => 'left',
+					),
+					__('Nama Barang') => array(
+						'text' => Common::hashEmptyField($value, 'Product.name'),
+                		'field_model' => 'Product.name',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'product\',width:150',
+		                'align' => 'left',
+					),
+					__('QTY') => array(
+						'text' => Common::hashEmptyField($value, 'SpkProduct.qty'),
+                		'field_model' => 'SpkProduct.qty',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'qty\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('QTY Keluar') => array(
+						'text' => $qty_out,
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'qty_out\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Satuan') => array(
+						'text' => Common::hashEmptyField($value, 'Product.ProductUnit.name', '-'),
+                		'field_model' => 'ProductUnit.name',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'unit\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Harga') => array(
+						'text' => !empty($price)?Common::getFormatPrice($price):'-',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'price\',width:120',
+		                'align' => 'right',
+		                'mainalign' => 'right',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Total Harga') => array(
+						'text' => !empty($total_price)?Common::getFormatPrice($total_price):'-',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'total_price\',width:120',
+		                'align' => 'right',
+		                'mainalign' => 'right',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Keterangan') => array(
+						'text' => Common::hashEmptyField($value, 'Spk.note', '-'),
+                		'field_model' => 'Spk.note',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'note\',width:100',
+					),
+					__('Status') => array(
+						'text' => $customStatus,
+                		'field_model' => 'Spk.transaction_status',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'status\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+				);
+			}
+
+			if( empty($nextPage) ) {
+				$result[$key+1] = array(
+					__('Cabang') => array(
+                		'field_model' => 'Branch.code',
+					),
+					__('Tgl') => array(
+                		'field_model' => 'Spk.transaction_date',
+					),
+					__('No. SPK') => array(
+                		'field_model' => 'Spk.nodoc',
+					),
+					__('Jenis SPK') => array(
+                		'field_model' => 'Spk.document_type',
+					),
+					__('Estimasi') => array(
+                		'field_model' => 'Spk.estimation_date',
+					),
+					__('Tgl Selesai') => array(
+                		'field_model' => 'Spk.complete_date',
+					),
+					__('No Pol') => array(
+                		'field_model' => 'Truck.nopol',
+					),
+					__('Supir') => array(
+                		'field_model' => 'Driver.driver_name',
+					),
+					__('Merek') => array(
+                		'field_model' => 'TruckBrand.name',
+					),
+					__('Jenis') => array(
+                		'field_model' => 'TruckCategory.name',
+					),
+					__('Kapasitas') => array(
+                		'field_model' => 'Truck.capacity',
+					),
+					__('Kode Barang') => array(
+                		'field_model' => 'Product.code',
+					),
+					__('Nama Barang') => array(
+                		'field_model' => 'Product.name',
+					),
+					__('QTY') => array(
+                		'field_model' => 'SpkProduct.qty',
+					),
+					__('QTY Keluar') => array(
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Satuan') => array(
+                		'field_model' => 'ProductUnit.name',
+					),
+					__('Harga') => array(
+						'text' => __('Total'),
+					),
+					__('Total Harga') => array(
+						'text' => !empty($grandtotal_price)?Common::getFormatPrice($grandtotal_price):'-',
+					),
+					__('Keterangan') => array(
+                		'field_model' => 'Spk.note',
+					),
+					__('Status') => array(
+                		'field_model' => 'Spk.transaction_status',
+					),
+				);
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'last_id' => $last_id,
+			'model' => 'SpkProduct',
+		);
+	}
+
 	function _callProcess( $modelName, $id, $value, $data ) {
 		$dataSave = false;
 		$file = false;
@@ -1606,7 +2187,7 @@ class RmReportComponent extends Component {
 			$last_data = end($data);
 			$currency_total_data = Common::hashEmptyField($value, 'Report.total_data');
 			$previously_fetched_data = Common::hashEmptyField($value, 'Report.fetched_data');
-			
+
 			$paging = Common::hashEmptyField($this->controller->params->params, 'paging.'.$modelName);
 			$total_current = Common::hashEmptyField($paging, 'current');
 			$total_data = Common::hashEmptyField($paging, 'count');

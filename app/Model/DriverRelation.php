@@ -21,7 +21,6 @@ class DriverRelation extends AppModel {
         } else {
             $result = $this->find($find, $default_options);
         }
-
         return $result;
     }
 

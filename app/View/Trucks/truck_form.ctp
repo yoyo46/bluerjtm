@@ -14,6 +14,8 @@
 
 		$data = $this->request->data;
         $is_asset = $this->Common->filterEmptyField($data, 'Truck', 'is_asset');
+        $truck_category_id = $this->Common->filterEmptyField($data, 'Truck', 'truck_category_id');
+        $truck_facility_id = $this->Common->filterEmptyField($data, 'Truck', 'truck_facility_id');
         $asset_id = $this->Common->filterEmptyField($data, 'Asset', 'id');
 
 		if( !empty($id) ) {
@@ -45,7 +47,7 @@
 								'class'=>'form-control',
 								'required' => false,
 								'type' => 'text',
-								'disabled' => true,
+								'readonly' => true,
 								'value' => str_pad($data_local['Truck']['id'], 4, '0', STR_PAD_LEFT),
 							));
 					?>
@@ -56,7 +58,7 @@
 		    	<div class="form-group">
 		        	<?php 
 		    				echo $this->Common->buildForm('nopol', __('Nopol *'), array(
-		    					'disabled' => $disabled,
+		    					'readonly' => $disabled,
 	    					));
 					?>
 		        </div>
@@ -73,7 +75,7 @@
 		    				echo $this->Common->buildForm('truck_category_id', __('Jenis Truk *'), array(
 								'options' => $truck_categories,
 								'empty' => __('Pilih Jenis Truk'),
-		    					'disabled' => $disabled,
+		    					'readonly' => empty($truck_category_id)?false:$disabled,
 	    					));
 					?>
 		        </div>
@@ -82,7 +84,7 @@
 		    				echo $this->Common->buildForm('truck_facility_id', __('Fasilitas Truk *'), array(
 								'options' => $truck_facilities,
 								'empty' => __('Pilih Fasilitas Truk'),
-		    					'disabled' => $disabled,
+		    					'readonly' => empty($truck_facility_id)?false:$disabled,
 	    					));
 					?>
 		        </div>
@@ -126,7 +128,7 @@
 										'options' => $drivers,
 										'empty' => __('Pilih Supir Truk'),
 										'id' => 'driverID',
-				    					'disabled' => $disabled,
+				    					'readonly' => $disabled,
 			    					));
 							?>
 		        		</div>
@@ -141,7 +143,7 @@
 		        <div class="form-group">
 		        	<?php 
 		    				echo $this->Common->buildForm('capacity', __('Kapasitas *'), array(
-		    					'disabled' => $disabled,
+		    					'readonly' => $disabled,
 	    					));
 					?>
 		        </div>
@@ -179,7 +181,7 @@
 								'required' => false,
 								'empty' => __('Pilih Tahun Neraca'),
 								'options' => $years,
-								'disabled' => $assetDisabled,
+								'readonly' => $assetDisabled,
 							));
 					?>
 		        </div>
@@ -200,11 +202,11 @@
 							// 		'type' => 'text',
 							// 		'class' => 'custom-date form-control neraca-form',
 							// 		'fieldError' => 'Asset.purchase_date',
-							// 		'disabled' => $assetDisabled,
+							// 		'readonly' => $assetDisabled,
 							// 	));
 	 					// 		echo $this->Common->buildInputForm('asset_group_id', __('Group Asset *'), array(
 							// 		'empty' => __('Pilih Group Asset'),
-							// 		'disabled' => $assetDisabled,
+							// 		'readonly' => $assetDisabled,
 							// 		'class'=>'form-control neraca-form',
 							// 		'fieldError' => 'Asset.asset_group_id',
 							// 	));
@@ -212,13 +214,13 @@
 							// 		'type' => 'text',
 							// 		'class' => 'input_price_coma form-control neraca-form',
 							// 		'fieldError' => 'Asset.nilai_perolehan',
-							// 		'disabled' => $assetDisabled,
+							// 		'readonly' => $assetDisabled,
 							// 	));
 							// 	echo $this->Common->buildInputForm('ak_penyusutan', __('Ak. Penyusutan *'), array(
 							// 		'type' => 'text',
 							// 		'class' => 'input_price_coma form-control neraca-form',
 							// 		'fieldError' => 'Asset.ak_penyusutan',
-							// 		'disabled' => $assetDisabled,
+							// 		'readonly' => $assetDisabled,
 							// 	));
 							// }
 		        		}
@@ -440,7 +442,7 @@
 													'empty' => __('Pilih'),
 													'options' => $customers,
 													'value' => (!empty($this->request->data['TruckCustomer']['customer_id'][0])) ? $this->request->data['TruckCustomer']['customer_id'][0] : '',
-													'disabled'=> $disabled, 
+													'readonly'=> $disabled, 
 												));
 										?>
 							        </div>
@@ -479,7 +481,7 @@
 											'empty' => __('Pilih'),
 											'options' => $customers,
 											'value' => $value,
-											'disabled'=> $disabled, 
+											'readonly'=> $disabled, 
 										));
 									?>
 						        </div>

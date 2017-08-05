@@ -208,6 +208,33 @@ class ProductExpenditureDetail extends AppModel {
         return $this->filterEmptyField($value, 'ProductExpenditureDetail', 'total', 0);
     }
 
+    function getExpenditureByProduct( $id, $product_id, $spk_product_id, $branch_id ){
+        $productExpenditureId = $this->ProductExpenditure->getData('list', array(
+            'conditions' => array(
+                'ProductExpenditure.document_id' => $id,
+                'ProductExpenditure.branch_id' => $branch_id,
+            ),
+            'fields' => array(
+                'ProductExpenditure.id',
+            ),
+        ), array(
+            'branch' => false,
+        ));
+
+        $this->ProductExpenditureDetailSerialNumber->virtualFields['total_price'] = 'SUM(ProductExpenditureDetailSerialNumber.price)';
+        $this->ProductExpenditureDetailSerialNumber->virtualFields['total_qty'] = 'SUM(ProductExpenditureDetailSerialNumber.qty)';
+        return $this->ProductExpenditureDetailSerialNumber->getData('first', array(
+            'conditions' => array(
+                'ProductExpenditureDetail.product_expenditure_id' => $productExpenditureId,
+                'ProductExpenditureDetail.spk_product_id' => $spk_product_id,
+                'ProductExpenditureDetail.product_id' => $product_id,
+            ),
+            'contain' => array(
+                'ProductExpenditureDetail',
+            ),
+        ));
+    }
+
     public function _callRefineParams( $data = '', $default_options = false ) {
         $code = $this->filterEmptyField($data, 'named', 'code');
         $name = $this->filterEmptyField($data, 'named', 'name');

@@ -318,5 +318,37 @@ class RjSpkComponent extends Component {
             'vendors', 'value', 'drivers'
 		));
     }
+
+    function _callBeforeViewTireReports( $params ) {
+        $dateFrom = Common::hashEmptyField($params, 'named.DateFrom');
+        $dateTo = Common::hashEmptyField($params, 'named.DateTo');
+        $title = __('Laporan Pergantian Ban');
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $period_text = __('Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+        
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('active_menu', $title);
+        $this->controller->set(compact(
+            'period_text'
+        ));
+    }
+
+    function _callBeforeViewSpkReports( $params ) {
+        $dateFrom = Common::hashEmptyField($params, 'named.DateFrom');
+        $dateTo = Common::hashEmptyField($params, 'named.DateTo');
+        $title = __('Laporan SPK');
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $period_text = __('Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+        
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('active_menu', $title);
+        $this->controller->set(compact(
+            'period_text'
+        ));
+    }
 }
 ?>

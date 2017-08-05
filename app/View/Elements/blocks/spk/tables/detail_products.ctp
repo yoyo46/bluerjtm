@@ -13,7 +13,7 @@
             ),
             'name' => array(
                 'name' => __('Nama'),
-                'style' => 'width:15%;',
+                // 'style' => 'width:15%;',
             ),
             'stock' => array(
                 'name' => __('Stok'),
@@ -50,12 +50,18 @@
                 'class' => __('text-center wrapper-eksternal %s', $eksternalClass),
                 'style' => 'width:15%;',
             ),
-            'action' => empty($view)?array(
-                'name' => __('Action'),
-                'class' => 'text-center',
-                'style' => 'width:5%;',
-            ):null,
         );
+
+        if( empty($view) ) {
+            $dataColumns = array_merge($dataColumns, array(
+                'action' => array(
+                    'name' => __('Action'),
+                    'class' => 'text-center',
+                    'style' => 'width:5%;',
+                ),
+            ));
+        }
+
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
         
         if( $view != 'detail' ) {
@@ -156,6 +162,7 @@
                                             'controller' => 'spk',
                                             'action' => 'wheel_position',
                                             $product_id,
+                                            'view' => $view,
                                         ), array(
                                             'class' => 'wheel-position',
                                             'title' => __('Pilih Posisi Ban'),
@@ -244,7 +251,9 @@
                                             'rel' => 'qty',
                                         ));
 
-                                        echo $this->Html->tag('td', $price_service_type);
+                                        echo $this->Html->tag('td', $price_service_type, array(
+                                            'class' => __('wrapper-eksternal %s', $eksternalClass),
+                                        ));
 
                                         echo $this->Html->tag('td', $this->Html->tag('div', $this->Common->getFormatPrice($price_service, 0, 2), array(
                                             'class' => 'text-center',
@@ -258,8 +267,7 @@
 
                                     echo $this->Html->tag('td', $this->Common->getFormatPrice($customTotal, '0', 2), array(
                                         'rel' => 'grandtotal',
-                                        'data-type' => 'input_price_coma',
-                                        'class' => __('wrapper-eksternal %s total text-right total_row price_custom', $eksternalClass),
+                                        'class' => __('wrapper-eksternal %s total text-right', $eksternalClass),
                                     ));
 
                                     if( empty($view) ) {

@@ -17,6 +17,7 @@ class ProductExpenditureDetailSerialNumber extends AppModel {
             'order'=> array(
                 'ProductExpenditureDetailSerialNumber.id' => 'ASC',
             ),
+            'contain' => array(),
             'fields' => array(),
             'group' => array(),
         );
@@ -28,21 +29,7 @@ class ProductExpenditureDetailSerialNumber extends AppModel {
                 break;
         }
 
-        if(!empty($options['conditions'])){
-            $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
-        }
-        if(!empty($options['order'])){
-            $default_options['order'] = $options['order'];
-        }
-        if(!empty($options['fields'])){
-            $default_options['fields'] = $options['fields'];
-        }
-        if(!empty($options['limit'])){
-            $default_options['limit'] = $options['limit'];
-        }
-        if(!empty($options['group'])){
-            $default_options['group'] = $options['group'];
-        }
+        $default_options = $this->merge_options($default_options, $options);
 
         if( $find == 'paginate' ) {
             $result = $default_options;

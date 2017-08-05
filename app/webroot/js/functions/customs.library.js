@@ -2062,25 +2062,27 @@
 
         if( settings.obj.length > 0 ) {
             settings.obj.off('click').click(function(e){
-                var self = $(this);
-                var max_qty = $.convertNumber($('.wheel-position-max-qty').val(), 'float');
-                var tire_qty = $.convertNumber($('.wheel-position-qty').val(), 'int');
+                if( $('.wheel-position-qty').length > 0 ) {
+                    var self = $(this);
+                    var max_qty = $.convertNumber($('.wheel-position-max-qty').val(), 'float');
+                    var tire_qty = $.convertNumber($('.wheel-position-qty').val(), 'int');
 
-                if( self.hasClass('active') ) {
-                    self.removeClass('active');
-                    tire_qty--;
-                } else {
-                    self.addClass('active');
-                    tire_qty++;
+                    if( self.hasClass('active') ) {
+                        self.removeClass('active');
+                        tire_qty--;
+                    } else {
+                        self.addClass('active');
+                        tire_qty++;
+                    }
+
+                    if( tire_qty > max_qty ) {
+                        alert('Qty telah habis terpakai, klik tombol submit untuk melanjutkan');
+                        self.removeClass('active');
+                        tire_qty--;
+                    }
+
+                    $('.wheel-position-qty').val(tire_qty);
                 }
-
-                if( tire_qty > max_qty ) {
-                    alert('Qty telah habis terpakai, klik tombol submit untuk melanjutkan');
-                    self.removeClass('active');
-                    tire_qty--;
-                }
-
-                $('.wheel-position-qty').val(tire_qty)
             });
         }
 
@@ -2091,9 +2093,16 @@
                 var href = self.attr('href');
                 var title = self.attr('title');
 
-                var objQty = parents.find('input[rel="qty"]');
+                var objQty = parents.find('[rel="qty"]');
                 var product_id = parents.attr('rel');
-                var qty = $.convertNumber(objQty.val(), 'float');
+
+                if( objQty.attr('type') == 'text' ) {
+                    var valQty = objQty.val();
+                } else {
+                    var valQty = objQty.html();
+                }
+
+                var qty = $.convertNumber(valQty, 'float');
 
                 if( qty != 0 ) {
                     href += '/' + qty;
