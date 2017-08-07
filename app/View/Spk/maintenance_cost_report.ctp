@@ -1,15 +1,14 @@
 <?php 
 
         $full_name = $this->Common->filterEmptyField($User, 'Employe', 'full_name');
-        $element = 'blocks/spk/tables/reports';
         
         $this->Html->addCrumb($sub_module_title);
-        echo $this->element('blocks/spk/tables/search/reports');
+        echo $this->element('blocks/spk/tables/search/maintenance_cost_reports');
 ?>
 <section class="content invoice">
     <?php 
             echo $this->element('blocks/common/box_header', array(
-                'title' => sprintf('%s ( %s )', $sub_module_title, $period_text),
+                'title' => $sub_module_title,
             ));
             echo $this->Common->_getPrint(array(
                 '_attr' => array(

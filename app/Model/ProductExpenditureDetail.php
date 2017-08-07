@@ -235,6 +235,41 @@ class ProductExpenditureDetail extends AppModel {
         ));
     }
 
+    function getExpenditureByDocumentId( $id, $branch_id ){
+        $options = array(
+            'conditions' => array(
+                'ProductExpenditure.document_id' => $id,
+            ),
+            'fields' => array(
+                'ProductExpenditure.id',
+            ),
+        );
+
+        if( !empty($branch_id) ) {
+            $options['conditions']['ProductExpenditure.branch_id'] = $branch_id;
+        }
+
+        $productExpenditureId = $this->ProductExpenditure->getData('list', $options, array(
+            'branch' => false,
+        ));
+
+        if( !empty($productExpenditureId) ) {
+            $this->ProductExpenditureDetailSerialNumber->virtualFields['total'] = 'SUM(ProductExpenditureDetailSerialNumber.price*ProductExpenditureDetailSerialNumber.qty)';
+            $value = $this->ProductExpenditureDetailSerialNumber->getData('first', array(
+                'conditions' => array(
+                    'ProductExpenditureDetail.product_expenditure_id' => $productExpenditureId,
+                ),
+                'contain' => array(
+                    'ProductExpenditureDetail',
+                ),
+            ));
+
+            return Common::hashEmptyField($value, 'ProductExpenditureDetailSerialNumber.total');
+        } else {
+            return false;
+        }
+    }
+
     public function _callRefineParams( $data = '', $default_options = false ) {
         $code = $this->filterEmptyField($data, 'named', 'code');
         $name = $this->filterEmptyField($data, 'named', 'name');

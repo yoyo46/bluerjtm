@@ -799,6 +799,8 @@ class MkCommonComponent extends Component {
 
             if( $type == 'options' ) {
                 $options['conditions'][$fieldName] = $value;
+            } else if( $type == 'value' ) {
+                $options = $value;
             } else {
                 $options[$fieldName] = $value;
             }
@@ -1657,6 +1659,8 @@ class MkCommonComponent extends Component {
         if( !empty($monthFrom) && !empty($yearFrom) ) {
             $params['monthFrom'] = urlencode($monthFrom);
             $params['yearFrom'] = urlencode($yearFrom);
+        } else if( !empty($yearFrom) ) {
+            $params['year'] = urlencode($yearFrom);
         }
         if( !empty($monthTo) && !empty($yearTo) ) {
             $params['monthTo'] = urlencode($monthTo);
@@ -1849,6 +1853,7 @@ class MkCommonComponent extends Component {
         }
         if( !empty($paramYear) ) {
             $this->controller->request->data['Search']['year'] = $paramYear;
+            $this->controller->request->data['Search']['from']['year'] = $paramYear;
 
             $result['named']['year'] = $paramYear;
         }

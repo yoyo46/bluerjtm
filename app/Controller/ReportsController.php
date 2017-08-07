@@ -29,6 +29,9 @@ class ReportsController extends AppController {
 				case 'stock_cards':
 					$limit = 30;
 					break;
+				case 'maintenance_cost_report':
+					$limit = 30;
+					break;
 			}
 
 			$type = ucwords($type);
@@ -139,6 +142,9 @@ class ReportsController extends AppController {
 
 				switch ($type) {
 					case 'stock_cards':
+						$limit = 30;
+						break;
+					case 'maintenance_cost_report':
 						$limit = 30;
 						break;
 				}

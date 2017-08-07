@@ -1368,7 +1368,8 @@
                             'receipt_reports',
                         ),
                         'spk' => array(
-                            'index', 'tire_reports', 'spk_reports'
+                            'index', 'tire_reports', 'spk_reports',
+                            'maintenance_cost_report',
                         ),
                     );
 
@@ -1379,7 +1380,8 @@
                             'receipts', 'product_units', 'expenditures',
                             'current_stock_reports', 'stock_cards',
                             'expenditure_reports',
-                            'receipt_reports', 'tire_reports', 'spk_reports'
+                            'receipt_reports', 'tire_reports', 'spk_reports',
+                            'maintenance_cost_report',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1490,14 +1492,14 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'spk_reports' )?'active':'',
                             ));
-                            // echo $this->Html->tag('li', $this->Html->link(__('%s Laporan Pergantian Ban', $this->Common->icon('angle-double-right')), array(
-                            //     'controller' => 'spk',
-                            //     'action' => 'tire_reports'
-                            // ), array(
-                            //     'escape' => false
-                            // )), array(
-                            //     'class' => ( !empty($active_menu) && $active_menu == 'tire_reports' )?'active':'',
-                            // ));
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Laporan Perbaikan', $this->Common->icon('angle-double-right')), array(
+                                'controller' => 'spk',
+                                'action' => 'maintenance_cost_report'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'maintenance_cost_report' )?'active':'',
+                            ));
                     ?>
                 </ul>
             </li>

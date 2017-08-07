@@ -42,6 +42,10 @@ class Spk extends AppModel {
             'className' => 'SpkProduction',
             'foreignKey' => 'spk_id',
         ),
+        'ProductExpenditure' => array(
+            'className' => 'ProductExpenditure',
+            'foreignKey' => 'document_id',
+        ),
     );
 
     var $validate = array(
@@ -561,6 +565,34 @@ class Spk extends AppModel {
                 'special_id' => $id,
                 'type' => $document_type,
             ));
+    }
+
+    function _callMaintenanceCostByTruckMonthly ( $truck_id, $branch_id = null, $monthYear = null ) {
+        $options = array(
+            'conditions' => array(
+                'Spk.truck_id' => $truck_id,
+            ),
+            'fields' => array(
+                'Spk.id',
+            ),
+        );
+
+        if( !empty($branch_id) ) {
+            $options['conditions']['Spk.branch_id'] = $branch_id;
+        }
+        if( !empty($monthYear) ) {
+            $options['conditions']['DATE_FORMAT(Spk.transaction_date, \'%Y-%m\')'] = $monthYear;
+        }
+
+        $spk_id = $this->getData('list', $options, array(
+            'branch' => false,
+        ));
+
+        if( !empty($spk_id) ) {
+            return $this->ProductExpenditure->ProductExpenditureDetail->getExpenditureByDocumentId($spk_id, $branch_id);
+        } else {
+            return false;
+        }
     }
 }
 ?>

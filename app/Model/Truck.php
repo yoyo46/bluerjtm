@@ -273,6 +273,10 @@ class Truck extends AppModel {
             'className' => 'DocumentPaymentDetail',
             'foreignKey' => 'truck_id',
         ),
+        'Spk' => array(
+            'className' => 'Spk',
+            'foreignKey' => 'truck_id',
+        ),
     );
 
     function checkUniq() {
@@ -401,6 +405,9 @@ class Truck extends AppModel {
             }
             if(!empty($options['group'])){
                 $default_options['group'] = $options['group'];
+            }
+            if(!empty($options['offset'])){
+                $default_options['offset'] = $options['offset'];
             }
         } else if( !empty($options) ) {
             $default_options = $options;

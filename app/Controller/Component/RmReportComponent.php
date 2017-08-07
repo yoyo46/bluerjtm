@@ -48,20 +48,20 @@ class RmReportComponent extends Component {
 					if( is_array($value) ) {
 						$value = array_filter($value);
 
-						// if( in_array($field, array( 'type', 'status', 'subareas' )) ) {
-						// 	$result_value = array();
-
-						// 	foreach ($value as $key => $val) {
-						// 		$result_value[] = $key;
-						// 	}
-
-						// 	$value = $result_value;
-						// }
-
-						$search_value = implode(',', $value);
-						
-						if( !empty($value) ) {
-							$value = @serialize($value);
+						switch ($field) {
+							case 'from':
+								if( count($value) == 1 ) {
+									$field = 'year';
+									$value = $search_value = implode(',', $value);
+								}
+								break;
+							default:
+								$search_value = implode(',', $value);
+								
+								if( !empty($value) ) {
+									$value = @serialize($value);
+								}
+								break;
 						}
 					} else {
 						$search_value = $value;
@@ -1919,7 +1919,13 @@ class RmReportComponent extends Component {
                 $product_id = Common::hashEmptyField($value, 'Product.id');
                 $productExpenditure = $this->controller->SpkProduct->ProductExpenditureDetail->getExpenditureByProduct($id, $product_id, $spk_product_id, $branch_id);
                 $qty_out = Common::hashEmptyField($productExpenditure, 'ProductExpenditureDetailSerialNumber.total_qty');
-                $price = Common::hashEmptyField($productExpenditure, 'ProductExpenditureDetailSerialNumber.total_price')/$qty_out;
+
+                if( !empty($qty_out) ) {
+                	$price = Common::hashEmptyField($productExpenditure, 'ProductExpenditureDetailSerialNumber.total_price')/$qty_out;
+                } else {
+                	$price = 0;
+                }
+                
                 $total_price = $qty_out * $price;
 
 				$grandtotal_price += $total_price;
@@ -2039,7 +2045,7 @@ class RmReportComponent extends Component {
             			),
 					),
 					__('QTY Keluar') => array(
-						'text' => $qty_out,
+						'text' => !empty($qty_out)?$qty_out:'-',
 		                'style' => 'text-align: center;',
 		                'data-options' => 'field:\'qty_out\',width:80',
 		                'align' => 'center',
@@ -2174,6 +2180,194 @@ class RmReportComponent extends Component {
 		);
 	}
 
+	function _callDataMaintenance_cost_report ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('Truck');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+
+		$options = array(
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+		$options = $this->controller->Truck->_callRefineParams($params, $options);
+        $branch_id = $this->MkCommon->getConditionGroupBranch( $params, 'Truck', false, 'value' );
+    	$year = Common::hashEmptyField($params, 'named.year', date('Y'));
+
+		$this->controller->paginate	= $this->controller->Truck->getData('paginate', $options, true, array(
+			'branch' => false,
+		));
+		$data = $this->controller->paginate('Truck');
+		$result = array();
+
+		$last_data = end($data);
+		$last_id = Common::hashEmptyField($last_data, 'Truck.id');
+
+		$paging = $this->controller->params->paging;
+        $nextPage = Common::hashEmptyField($paging, 'Truck.nextPage');
+
+        $totalQty = 0;
+        $totalPrice = 0;
+        $grandtotal = 0;
+
+		if( !empty($data) ) {
+			foreach ($data as $key => $value) {
+		        $value = $this->controller->Truck->getMergeList($value, array(
+		            'contain' => array(
+		                'TruckCategory',
+		                'TruckCustomer' => array(
+		                	'type' => 'first',
+		                	'conditions' => array(
+		                		'TruckCustomer.primary' => 1,
+	                		),
+	                		'contain' => array(
+                        		'CustomerNoType',
+                			),
+	                	),
+	                	'TruckBrand',
+	                	'TruckCategory',
+		            ),
+		        ));
+
+                $truck_id = Common::hashEmptyField($value, 'Truck.id');
+                $brand = Common::hashEmptyField($value, 'TruckBrand.name', '-');
+                $category = Common::hashEmptyField($value, 'TruckCategory.name', '-');
+                
+				$result[$key] = array(
+					__('No Pol') => array(
+						'text' => Common::hashEmptyField($value, 'Truck.nopol'),
+                		'field_model' => 'Truck.nopol',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'nopol\',width:100',
+					),
+					__('Kapasitas') => array(
+						'text' => Common::hashEmptyField($value, 'Truck.capacity', '-'),
+                		'field_model' => 'Truck.capacity',
+		                'align' => 'center',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'capacity\',width:100',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Merek') => array(
+						'text' => $brand,
+                		'field_model' => 'TruckBrand.name',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'brand\',width:100',
+		                'align' => 'left',
+					),
+					__('Jenis') => array(
+						'text' => $category,
+                		'field_model' => 'TruckCategory.name',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'category\',width:100',
+		                'align' => 'left',
+					),
+					__('Tahun') => array(
+						'text' => Common::hashEmptyField($value, 'Truck.tahun', '-'),
+                		'field_model' => 'Truck.tahun',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'tahun\',width:100',
+		                'align' => 'left',
+                		'fix_column' => true,
+					),
+				);
+
+                for ($i=1; $i <= 12; $i++) {
+                	$monthName = date('F', mktime(0, 0, 0, $i, 1));
+                	$monthYear = __('%s-%s', $year, date('m', mktime(0, 0, 0, $i, 1)));
+                	
+                	$total = $this->controller->Truck->Spk->_callMaintenanceCostByTruckMonthly($truck_id, $branch_id, $monthYear);
+					$result[$key] = array_merge($result[$key], array(
+						$monthName => array(
+							'text' => !empty($total)?Common::getFormatPrice($total):'-',
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'month_'.$i.'\',width:100',
+			                'align' => 'right',
+						),
+					));
+                }
+			}
+
+			// if( empty($nextPage) ) {
+			// 	$result[$key+1] = array(
+			// 		__('Cabang') => array(
+   //              		'field_model' => 'Branch.code',
+			// 		),
+			// 		__('Tgl') => array(
+   //              		'field_model' => 'Spk.transaction_date',
+			// 		),
+			// 		__('No. SPK') => array(
+   //              		'field_model' => 'Spk.nodoc',
+			// 		),
+			// 		__('Jenis SPK') => array(
+   //              		'field_model' => 'Spk.document_type',
+			// 		),
+			// 		__('Estimasi') => array(
+   //              		'field_model' => 'Spk.estimation_date',
+			// 		),
+			// 		__('Tgl Selesai') => array(
+   //              		'field_model' => 'Spk.complete_date',
+			// 		),
+			// 		__('No Pol') => array(
+   //              		'field_model' => 'Truck.nopol',
+			// 		),
+			// 		__('Supir') => array(
+   //              		'field_model' => 'Driver.driver_name',
+			// 		),
+			// 		__('Merek') => array(
+   //              		'field_model' => 'TruckBrand.name',
+			// 		),
+			// 		__('Jenis') => array(
+   //              		'field_model' => 'TruckCategory.name',
+			// 		),
+			// 		__('Kapasitas') => array(
+   //              		'field_model' => 'Truck.capacity',
+			// 		),
+			// 		__('Kode Barang') => array(
+   //              		'field_model' => 'Product.code',
+			// 		),
+			// 		__('Nama Barang') => array(
+   //              		'field_model' => 'Product.name',
+			// 		),
+			// 		__('QTY') => array(
+   //              		'field_model' => 'SpkProduct.qty',
+			// 		),
+			// 		__('QTY Keluar') => array(
+   //              		'excel' => array(
+   //              			'align' => 'center',
+   //          			),
+			// 		),
+			// 		__('Satuan') => array(
+   //              		'field_model' => 'ProductUnit.name',
+			// 		),
+			// 		__('Harga') => array(
+			// 			'text' => __('Total'),
+			// 		),
+			// 		__('Total Harga') => array(
+			// 			'text' => !empty($grandtotal_price)?Common::getFormatPrice($grandtotal_price):'-',
+			// 		),
+			// 		__('Keterangan') => array(
+   //              		'field_model' => 'Spk.note',
+			// 		),
+			// 		__('Status') => array(
+   //              		'field_model' => 'Spk.transaction_status',
+			// 		),
+			// 	);
+			// }
+		}
+
+		return array(
+			'data' => $result,
+			'last_id' => $last_id,
+			'model' => 'Truck',
+		);
+	}
+
 	function _callProcess( $modelName, $id, $value, $data ) {
 		$dataSave = false;
 		$file = false;
@@ -2230,6 +2424,8 @@ class RmReportComponent extends Component {
 
 		if( !empty($data) ) {
 			$dataSave = Common::hashEmptyField($value, 'dataSave');
+			$document_status = Common::hashEmptyField($dataSave, 'Report.document_status');
+
 			$dataQueue = Common::hashEmptyField($value, 'dataQueue');
 			$filename_path = Common::hashEmptyField($value, 'file.filename_path');
 
@@ -2241,7 +2437,7 @@ class RmReportComponent extends Component {
 				'periods' => $periods,
 			);
 
-			$this->exportExcel($titles, $data, $filename_path);
+			$this->exportExcel($titles, $data, $filename_path, $document_status);
 
 			if( !empty($dataSave) ) {
 				$dataSave['ReportQueue'][] = $dataQueue;
@@ -2270,7 +2466,7 @@ class RmReportComponent extends Component {
 		return $path;
 	}
 
-	function exportExcel( $titles, $data, $path = false ) {
+	function exportExcel( $titles, $data, $path = false, $document_status = null ) {
 		if( file_exists($path) ) {
 			$this->PhpExcel->loadWorksheet($path);
 			$this->PhpExcel->_xls->getActiveSheet();
@@ -2282,13 +2478,13 @@ class RmReportComponent extends Component {
 		}
 
 		// get table report data
-		$this->processReportTableData( $titles, $data, $theader );
+		$this->processReportTableData( $titles, $data, $theader, $document_status );
 		// $this->PhpExcel->getDefaultStyle()->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 		$this->PhpExcel->_xls->getActiveSheet();
 		$this->PhpExcel->save($path);
 	}
 
-	function processReportTableData( $titles, $data, $theader = true ) {
+	function processReportTableData( $titles, $data, $theader = true, $document_status = null ) {
 		$table = array();
 		$idx = 64; // Acii A
 		$dimensi = 64; // Acii A
@@ -2469,20 +2665,22 @@ class RmReportComponent extends Component {
 			}
 		}
 
-        $full_name = Configure::read('__Site.config_user_data.Employe.full_name');
-		$this->PhpExcel->addTableRow(array(
-	    	array(
-				'text' => '',
-			)
-    	));
-		$this->PhpExcel->addTableRow(array(
-	    	array(
-				'text' => __('Printed on : %s, by : %s', date('d F Y'), $full_name),
-				'options' => array(
-					'colspan' => 5,
-				),
-			)
-    	));
+    	if( $document_status == 'completed' ) {
+	        $full_name = Configure::read('__Site.config_user_data.Employe.full_name');
+			$this->PhpExcel->addTableRow(array(
+		    	array(
+					'text' => '',
+				)
+	    	));
+			$this->PhpExcel->addTableRow(array(
+		    	array(
+					'text' => __('Printed on : %s, by : %s', date('d F Y'), $full_name),
+					'options' => array(
+						'colspan' => 5,
+					),
+				)
+	    	));
+		}
 	}
 
 	function _callDetailBeforeView ( $value ) {

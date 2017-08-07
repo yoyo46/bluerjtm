@@ -358,4 +358,22 @@ class SpkController extends AppController {
             '_freeze' => true,
         ));
     }
+
+    public function maintenance_cost_report() {
+        $params = $this->MkCommon->_callRefineParams($this->params);
+
+        $dataReport = $this->RmReport->_callDataMaintenance_cost_report($params, 30, 0, true);
+        $values = Common::hashEmptyField($dataReport, 'data');
+
+        $this->RjSpk->_callBeforeViewMaintenanceCostReports($params);
+        $this->MkCommon->_layout_file(array(
+            'select',
+            'freeze',
+        ));
+        $this->set(array(
+            'values' => $values,
+            'active_menu' => 'maintenance_cost_report',
+            '_freeze' => true,
+        ));
+    }
 }

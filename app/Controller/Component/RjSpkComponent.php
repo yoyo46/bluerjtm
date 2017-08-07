@@ -350,5 +350,17 @@ class RjSpkComponent extends Component {
             'period_text'
         ));
     }
+
+    function _callBeforeViewMaintenanceCostReports( $params ) {
+        $year = Common::hashEmptyField($params, 'named.year');
+        $title = __('Laporan Perbaikan');
+
+        if( !empty($year) ) {
+            $title .= __(' - Tahun %s', $year);
+        }
+        
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('active_menu', $title);
+    }
 }
 ?>
