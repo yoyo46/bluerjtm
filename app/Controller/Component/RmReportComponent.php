@@ -2213,6 +2213,8 @@ class RmReportComponent extends Component {
         $grandtotal = 0;
 
 		if( !empty($data) ) {
+			$grandtotalArr = array();
+
 			foreach ($data as $key => $value) {
 		        $value = $this->controller->Truck->getMergeList($value, array(
 		            'contain' => array(
@@ -2276,15 +2278,67 @@ class RmReportComponent extends Component {
                 		'fix_column' => true,
 					),
 				);
+				
+				$total = 0;
 
                 for ($i=1; $i <= 12; $i++) {
                 	$monthName = date('F', mktime(0, 0, 0, $i, 1));
                 	$monthYear = __('%s-%s', $year, date('m', mktime(0, 0, 0, $i, 1)));
                 	
-                	$total = $this->controller->Truck->Spk->_callMaintenanceCostByTruckMonthly($truck_id, $branch_id, $monthYear);
+                	$jumlah = $this->controller->Truck->Spk->_callMaintenanceCostByTruckMonthly($truck_id, $branch_id, $monthYear);
+					$total += $jumlah;
+                	$grandtotalArr[$i] = $jumlah + Common::hashEmptyField($grandtotalArr, $i, 0);
+
 					$result[$key] = array_merge($result[$key], array(
 						$monthName => array(
-							'text' => !empty($total)?Common::getFormatPrice($total):'-',
+							'text' => !empty($jumlah)?Common::getFormatPrice($jumlah):'-',
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'month_'.$i.'\',width:100',
+			                'align' => 'right',
+						),
+					));
+                }
+
+                $result[$key] = array_merge($result[$key], array(
+					__('Total') => array(
+						'text' => !empty($total)?Common::getFormatPrice($total):'-',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'month_total\',width:100',
+		                'align' => 'right',
+					),
+				));
+			}
+
+			if( empty($nextPage) || !empty($view) ) {
+				$result[$key+1] = array(
+					__('No Pol') => array(
+		                'style' => 'text-align: center;',
+					),
+					__('Kapasitas') => array(
+		                'style' => 'text-align: center;',
+					),
+					__('Merek') => array(
+		                'style' => 'text-align: center;',
+					),
+					__('Jenis') => array(
+		                'style' => 'text-align: center;',
+					),
+					__('Tahun') => array(
+						'text' => __('Total'),
+		                'style' => 'font-weight: bold;',
+                		'excel' => array(
+                			'bold' => true,
+            			),
+					),
+				);
+
+                for ($i=1; $i <= 12; $i++) {
+                	$monthName = date('F', mktime(0, 0, 0, $i, 1));
+                	$grandtotal = Common::hashEmptyField($grandtotalArr, $i, 0);
+
+					$result[$key+1] = array_merge($result[$key+1], array(
+						$monthName => array(
+							'text' => !empty($grandtotal)?Common::getFormatPrice($grandtotal):'-',
 			                'style' => 'text-align: center;',
 			                'data-options' => 'field:\'month_'.$i.'\',width:100',
 			                'align' => 'right',
@@ -2292,73 +2346,6 @@ class RmReportComponent extends Component {
 					));
                 }
 			}
-
-			// if( empty($nextPage) ) {
-			// 	$result[$key+1] = array(
-			// 		__('Cabang') => array(
-   //              		'field_model' => 'Branch.code',
-			// 		),
-			// 		__('Tgl') => array(
-   //              		'field_model' => 'Spk.transaction_date',
-			// 		),
-			// 		__('No. SPK') => array(
-   //              		'field_model' => 'Spk.nodoc',
-			// 		),
-			// 		__('Jenis SPK') => array(
-   //              		'field_model' => 'Spk.document_type',
-			// 		),
-			// 		__('Estimasi') => array(
-   //              		'field_model' => 'Spk.estimation_date',
-			// 		),
-			// 		__('Tgl Selesai') => array(
-   //              		'field_model' => 'Spk.complete_date',
-			// 		),
-			// 		__('No Pol') => array(
-   //              		'field_model' => 'Truck.nopol',
-			// 		),
-			// 		__('Supir') => array(
-   //              		'field_model' => 'Driver.driver_name',
-			// 		),
-			// 		__('Merek') => array(
-   //              		'field_model' => 'TruckBrand.name',
-			// 		),
-			// 		__('Jenis') => array(
-   //              		'field_model' => 'TruckCategory.name',
-			// 		),
-			// 		__('Kapasitas') => array(
-   //              		'field_model' => 'Truck.capacity',
-			// 		),
-			// 		__('Kode Barang') => array(
-   //              		'field_model' => 'Product.code',
-			// 		),
-			// 		__('Nama Barang') => array(
-   //              		'field_model' => 'Product.name',
-			// 		),
-			// 		__('QTY') => array(
-   //              		'field_model' => 'SpkProduct.qty',
-			// 		),
-			// 		__('QTY Keluar') => array(
-   //              		'excel' => array(
-   //              			'align' => 'center',
-   //          			),
-			// 		),
-			// 		__('Satuan') => array(
-   //              		'field_model' => 'ProductUnit.name',
-			// 		),
-			// 		__('Harga') => array(
-			// 			'text' => __('Total'),
-			// 		),
-			// 		__('Total Harga') => array(
-			// 			'text' => !empty($grandtotal_price)?Common::getFormatPrice($grandtotal_price):'-',
-			// 		),
-			// 		__('Keterangan') => array(
-   //              		'field_model' => 'Spk.note',
-			// 		),
-			// 		__('Status') => array(
-   //              		'field_model' => 'Spk.transaction_status',
-			// 		),
-			// 	);
-			// }
 		}
 
 		return array(
