@@ -1841,4 +1841,30 @@ class ProductsController extends AppController {
                 break;
         }
     }
+
+    function adjusment () {
+        $this->set('sub_module_title', 'Qty Adjusment');
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->PurchaseOrder->_callRefineParams($params);
+        $this->paginate = $this->PurchaseOrder->getData('paginate', $options, array(
+            'status' => 'all',
+        ));
+        $values = $this->paginate('PurchaseOrder');
+        $values = $this->PurchaseOrder->Vendor->getMerge($values, false, 'PurchaseOrder');
+
+        $vendors = $this->PurchaseOrder->Vendor->getData('list');
+
+        $this->MkCommon->_layout_file('select');
+        $this->set('active_menu', 'Purchase Order');
+        $this->set(compact(
+            'values', 'vendors'
+        ));
+    }
 }
