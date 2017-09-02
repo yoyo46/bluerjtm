@@ -49,13 +49,13 @@ class RjProductComponent extends Component {
 		return $parameters;
 	}
 
-    function _callStockSerialNumber ( $session_id, $product_id, $data, $price = null ) {
-        $serial_numbers = $this->controller->Product->ProductReceiptDetailSerialNumber->getMergeAll(array(), 'all', $product_id, $session_id, 'ProductReceiptDetailSerialNumber.session_id');
+    function _callStockSerialNumber ( $session_id, $product_id, $data, $price = null, $modelSn = 'ProductReceiptDetailSerialNumber' ) {
+        $serial_numbers = $this->controller->Product->$modelSn->getMergeAll(array(), 'all', $product_id, $session_id, $modelSn.'.session_id');
         $result = array();
 
-        if( !empty($serial_numbers['ProductReceiptDetailSerialNumber']) ) {
-            foreach ($serial_numbers['ProductReceiptDetailSerialNumber'] as $key => $value) {
-                $serial_number = $this->MkCommon->filterEmptyField($value, 'ProductReceiptDetailSerialNumber', 'serial_number');
+        if( !empty($serial_numbers[$modelSn]) ) {
+            foreach ($serial_numbers[$modelSn] as $key => $value) {
+                $serial_number = $this->MkCommon->filterEmptyField($value, $modelSn, 'serial_number');
 
                 $result[$key] = $data;
                 $result[$key]['qty'] = 1;
@@ -158,7 +158,7 @@ class RjProductComponent extends Component {
         return $result;
     }
 
-    function _callOutStockSerialNumber ( $detail, $stock_history, $serial_numbers ) {
+    function _callOutStockSerialNumber ( $detail, $stock_history, $serial_numbers, $modelDetail = 'ProductExpenditureDetail' ) {
         $result = array();
 
         if( !empty($serial_numbers) ) {
@@ -168,7 +168,7 @@ class RjProductComponent extends Component {
                 $price = $this->MkCommon->filterEmptyField($value, 'price');
                 $qty_out = 1;
 
-                $detail['ProductExpenditureDetail']['Product']['ProductStock'][] = $this->_callOutStock( $product_id, $qty_out, $serial_number);
+                $detail[$modelDetail]['Product']['ProductStock'][] = $this->_callOutStock( $product_id, $qty_out, $serial_number);
 
                 if( !empty($detail['ProductHistory'][$price]['qty']) ) {
                     $detail['ProductHistory'][$price]['qty'] += $qty_out;
@@ -183,7 +183,7 @@ class RjProductComponent extends Component {
         return $detail;
     }
 
-    function _callStock ( $transaction_type, $data, $detail, $type = 'in', $model = 'ProductReceipt', $documentDetail = null ) {
+    function _callStock ( $transaction_type, $data, $detail, $type = 'in', $model = 'ProductReceipt', $documentDetail = null, $modelDetail = 'ProductExpenditureDetail', $modelSn = 'ProductExpenditureDetailSerialNumber' ) {
         $transaction_status = $this->MkCommon->filterEmptyField($data, $model, 'transaction_status');
         $document_type = $this->MkCommon->filterEmptyField($data, $model, 'document_type');
         $transaction_date = $this->MkCommon->filterEmptyField($data, $model, 'transaction_date');
@@ -203,7 +203,7 @@ class RjProductComponent extends Component {
 
             if( $type == 'out' ) {
                 $ending -= $qty;
-                $serial_numbers = $this->MkCommon->filterEmptyField($detail, $modelDetail, 'ProductExpenditureDetailSerialNumber');
+                $serial_numbers = $this->MkCommon->filterEmptyField($detail, $modelDetail, $modelSn);
             } else if( $type == 'in' ) {
                 if( !in_array($document_type, array( 'spk' )) ) {
                     $ending += $qty;
@@ -228,7 +228,7 @@ class RjProductComponent extends Component {
             $stock['type'] = in_array($document_type, array( 'spk' ))?'barang_bekas':'default';
 
             if($qty > $stock_qty ) {
-                $detail['ProductExpenditureDetail']['out_stock'] = true;
+                $detail[$modelDetail]['out_stock'] = true;
             }
 
             switch ($type) {
@@ -242,7 +242,7 @@ class RjProductComponent extends Component {
                                 break;
                             case 'wht':
                                 $serial_numbers = $this->controller->Product->ProductReceiptDetailSerialNumber->getMergeAll(array(), 'all', $product_id, $session_id, 'ProductReceiptDetailSerialNumber.session_id');
-                                $product_expenditure_detail_id = Set::extract('/ProductReceiptDetail/Product/ProductExpenditureDetail/id', $detail);
+                                $product_expenditure_detail_id = Set::extract('/ProductReceiptDetail/Product/'.$modelDetail.'/id', $detail);
                                 $detail_serial_numbers = $this->controller->Product->ProductExpenditureDetailSerialNumber->getMergeAll(array(), 'all', $product_id, $product_expenditure_detail_id, 'ProductExpenditureDetailSerialNumber.product_expenditure_detail_id');
 
                                 $result = array();
@@ -279,13 +279,41 @@ class RjProductComponent extends Component {
                                 $detail['ProductHistory']['ProductStock'] = $result;
                                 break;
                             default:
-                                $detail['ProductHistory']['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock, $price );
+                                if( $transaction_type == 'product_adjustment_plus' ) {
+                                    $detailHistory = Common::hashEmptyField($detail, 'ProductHistory');
+                                    $detailHistory['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock, $price, 'ProductAdjustmentDetailSerialNumber' );
+
+                                    $detail['ProductHistory'] = array(
+                                        $detailHistory,
+                                    );
+                                    
+                                    $session_id = Common::hashEmptyField($data, 'ProductAdjustment.session_id');
+                                    
+                                    $this->controller->Product->ProductAdjustmentDetail->ProductAdjustmentDetailSerialNumber->virtualFields['qty'] = '1';
+                                    $productAdjustmentSN = $this->controller->Product->ProductAdjustmentDetail->ProductAdjustmentDetailSerialNumber->find('all', array(
+                                        'conditions' => array(
+                                            'ProductAdjustmentDetailSerialNumber.product_id' => $product_id,
+                                            'ProductAdjustmentDetailSerialNumber.session_id' => $session_id,
+                                        ),
+                                        'fields' => array(
+                                            'ProductAdjustmentDetailSerialNumber.product_id',
+                                            'ProductAdjustmentDetailSerialNumber.serial_number',
+                                            'ProductAdjustmentDetailSerialNumber.qty',
+                                        ),
+                                    ));
+
+                                    if( !empty($serial_number) ) {
+                                        $detail[$modelDetail][$modelSn] = $productAdjustmentSN;
+                                    }
+                                } else {
+                                    $detail['ProductHistory']['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock, $price, 'ProductAdjustmentDetailSerialNumber' );
+                                }
                                 break;
                         }
                     } else {
                         switch ($document_type) {
                             case 'wht':
-                                $product_expenditure_detail_id = Set::extract('/ProductReceiptDetail/Product/ProductExpenditureDetail/id', $detail);
+                                $product_expenditure_detail_id = Set::extract('/ProductReceiptDetail/Product/'.$modelDetail.'/id', $detail);
                                 $serial_numbers = $this->controller->Product->ProductExpenditureDetailSerialNumber->getMergeAll(array(), 'all', $product_id, $product_expenditure_detail_id, 'ProductExpenditureDetailSerialNumber.product_expenditure_detail_id');
 
                                 if( !empty($serial_numbers['ProductExpenditureDetailSerialNumber']) ) {
@@ -336,9 +364,20 @@ class RjProductComponent extends Component {
                                 break;
                             
                             default:
-                                $detail['ProductHistory']['ProductStock'][] = array_merge($stock, array(
-                                    'serial_number' => sprintf('%s-%s', Common::getNoRef($product_id), date('ymdHis')),
-                                ));
+                                if( $transaction_type == 'product_adjustment_plus' ) {
+                                    $detailHistory = Common::hashEmptyField($detail, 'ProductHistory');
+                                    $detailHistory['ProductStock'][] = array_merge($stock, array(
+                                        'serial_number' => sprintf('%s-%s', Common::getNoRef($product_id), date('ymdHis')),
+                                    ));
+
+                                    $detail['ProductHistory'] = array(
+                                        $detailHistory,
+                                    );
+                                } else {
+                                    $detail['ProductHistory']['ProductStock'][] = array_merge($stock, array(
+                                        'serial_number' => sprintf('%s-%s', Common::getNoRef($product_id), date('ymdHis')),
+                                    ));
+                                }
                                 break;
                         }
                     }
@@ -348,7 +387,7 @@ class RjProductComponent extends Component {
                     unset($detail['ProductHistory']);
 
                     if( !empty($serial_numbers) ) {
-                        $detail = $this->_callOutStockSerialNumber( $detail, $stock_history, $serial_numbers );
+                        $detail = $this->_callOutStockSerialNumber( $detail, $stock_history, $serial_numbers, $modelDetail );
                     } else {
                         $result = $this->_callOutStock($product_id, $qty);
 
@@ -371,16 +410,19 @@ class RjProductComponent extends Component {
                                     $detail['ProductHistory'][$price]['price'] = $price;
                                 }
 
-                                $detail['ProductExpenditureDetail']['Product']['ProductStock'][] = $this->MkCommon->filterEmptyField($val, 'ProductStock');
+                                $detail[$modelDetail]['Product']['ProductStock'][] = $this->MkCommon->filterEmptyField($val, 'ProductStock');
                                 // $detail['ProductHistory'][$key]['ProductHistory']['qty'] = $qty_out;
 
-                                $detail['ProductExpenditureDetail']['ProductExpenditureDetailSerialNumber'][] = array(
-                                    'serial_number' => $serial_number,
-                                    'product_id' => $product_id,
-                                    'qty' => $qty_out,
-                                    'price' => $price,
-                                );
-                                $detail['ProductExpenditureDetail']['without_serial_number'] = true;
+                                if( !empty($serial_number) ) {
+                                    $detail[$modelDetail][$modelSn][] = array(
+                                        'serial_number' => $serial_number,
+                                        'product_id' => $product_id,
+                                        'qty' => $qty_out,
+                                        'price' => $price,
+                                    );
+                                }
+
+                                $detail[$modelDetail]['without_serial_number'] = true;
                             }
 
                             // $total_price = $total_price / count($result);
@@ -759,13 +801,13 @@ class RjProductComponent extends Component {
     //     return $value;
     // }
 
-    function _callBeforeSaveSerialNumber ( $data, $id = false, $session_id = false ) {
+    function _callBeforeSaveSerialNumber ( $data, $id = false, $session_id = false, $modelName = 'ProductReceiptDetailSerialNumber' ) {
         $dataSave = array();
 
         if( !empty($data) ) {
             if( !empty($data) ) {
                 foreach ($data as $key => $serial_number) {
-                    $dataSave[]['ProductReceiptDetailSerialNumber'] = array(
+                    $dataSave[][$modelName] = array(
                         'product_id' => $id,
                         'session_id' => $session_id,
                         'serial_number' => strtoupper($serial_number),
@@ -964,8 +1006,8 @@ class RjProductComponent extends Component {
         ));
     }
 
-    function _callExpenditureSN ( $data, $product, $details ) {
-        $detail_serial_numbers = $this->MkCommon->filterEmptyField($data, 'ProductExpenditureDetailSerialNumber', 'serial_numbers');
+    function _callExpenditureSN ( $data, $product, $details, $modelSn = 'ProductExpenditureDetailSerialNumber' ) {
+        $detail_serial_numbers = $this->MkCommon->filterEmptyField($data, $modelSn, 'serial_numbers');
 
         $product_id = $this->MkCommon->filterEmptyField($product, 'Product', 'id');
         $is_serial_number = $this->MkCommon->filterEmptyField($product, 'Product', 'is_serial_number');
@@ -989,7 +1031,7 @@ class RjProductComponent extends Component {
                         ),
                     ));
 
-                    $details['ProductExpenditureDetailSerialNumber'][] = array(
+                    $details[$modelSn][] = array(
                         'product_id' => $product_id,
                         'serial_number' => strtoupper($serial_number),
                         'price' => Common::hashEmptyField($stock, 'ProductStock.price', 0),
@@ -1102,7 +1144,7 @@ class RjProductComponent extends Component {
                 $data['ProductExpenditureDetail'] = $dataDetail;
             }
         }
-        // debug($data);die();
+        debug($data);die();
 
         return $data;
     }
@@ -1701,6 +1743,166 @@ class RjProductComponent extends Component {
         ));
 
         return $value;
+    }
+
+    function _callBeforeSaveAdjustment ( $data, $id = false ) {
+        if( !empty($data) ) {
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'ProductAdjustment' => array(
+                        'transaction_date',
+                    ),
+                )
+            ));
+            $transaction_status = $this->MkCommon->filterEmptyField($data, 'ProductAdjustment', 'transaction_status');
+            $transaction_date = Common::hashEmptyField($data, 'ProductAdjustment.transaction_date');
+            $session_id = $this->MkCommon->filterEmptyField($data, 'ProductAdjustment', 'session_id');
+
+            $data['ProductAdjustment']['id'] = $id;
+            $data['ProductAdjustment']['user_id'] = Configure::read('__Site.config_user_id');
+            $data['ProductAdjustment']['branch_id'] = Configure::read('__Site.config_branch_id');
+
+            $details = $this->MkCommon->filterEmptyField($data, 'ProductAdjustmentDetail', 'product_id');
+            $adjustQty = $this->MkCommon->filterEmptyField($data, 'ProductAdjustmentDetail', 'qty');
+            $adjustPrice = $this->MkCommon->filterEmptyField($data, 'ProductAdjustmentDetail', 'price');
+
+            if( !empty($details) ) {
+                $total = 0;
+                $dataDetail = array();
+                $values = array_filter($details);
+
+                foreach ($values as $key => $product_id) {
+                    $qty = $this->MkCommon->filterIssetField($adjustQty, $key);
+                    $price = $this->MkCommon->filterIssetField($adjustPrice, $key);
+                    
+                    $price = Common::_callPriceConverter($price);
+
+                    $product = $this->controller->Product->getMerge(array(), $product_id);
+
+                    $code = $this->MkCommon->filterEmptyField($product, 'Product', 'code');
+                    $name = $this->MkCommon->filterEmptyField($product, 'Product', 'name');
+                    $is_serial_number = $this->MkCommon->filterEmptyField($product, 'Product', 'is_serial_number');
+                    $unit = $this->MkCommon->filterEmptyField($product, 'ProductUnit', 'name');
+                    
+                    $product_stock_cnt = $this->controller->Product->ProductStock->_callStock($product_id);
+                    $qty_difference = $qty - $product_stock_cnt;
+                    $type = 'plus';
+
+                    if( $qty_difference == 0 ) {
+                        $flag_qty_difference = false;
+                    } else {
+                        $flag_qty_difference = true;
+
+                        if( $qty_difference < 0 ) {
+                            $price = false;
+                            $type = 'min';
+                        }
+                    }
+
+                    $dataDetail[$key]['ProductAdjustmentDetail'] = array(
+                        'product_id' => $product_id,
+                        'is_serial_number' => $is_serial_number,
+                        'code' => $code,
+                        'name' => $name,
+                        'unit' => $unit,
+                        'qty' => abs($qty_difference),
+                        'price' => $price,
+                        'flag_qty_difference' => $flag_qty_difference,
+                        'qty_difference' => $qty_difference,
+                        'total_qty' => $product_stock_cnt,
+                        'type' => $type,
+                    );
+
+                    if( $qty_difference < 0 ) {
+                        $dataDetail[$key]['ProductAdjustmentDetail'] = $this->_callExpenditureSN($data, $product, $dataDetail[$key]['ProductAdjustmentDetail'], 'ProductAdjustmentDetailSerialNumber');
+                        $dataDetail[$key]['ProductAdjustmentDetail']['Product'] = array(
+                            'id' => $product_id,
+                            'status' => 1,
+                        );
+
+                        $dataDetail[$key] = $this->_callStock('product_adjustment_min', $data, $dataDetail[$key], 'out', 'ProductAdjustment', null, 'ProductAdjustmentDetail', 'ProductAdjustmentDetailSerialNumber');
+                    } else {
+                        if( !empty($is_serial_number) ) {
+                            $serial_number = $this->controller->Product->ProductAdjustmentDetailSerialNumber->getCount($session_id, $product_id);
+                        } else {
+                            $serial_number = 0;
+                        }
+
+                        if( abs($qty_difference) != $serial_number ) {
+                            $serial_number = 0;
+                        }
+
+                        $dataDetail[$key]['ProductAdjustmentDetail']['serial_number'] = $serial_number;
+                        $dataDetail[$key] = $this->_callStock('product_adjustment_plus', $data, $dataDetail[$key], 'in', 'ProductAdjustment', null, 'ProductAdjustmentDetail', 'ProductAdjustmentDetailSerialNumber');
+                    }
+                    
+                    $dataDetail[$key]['ProductAdjustmentDetail']['qty'] = $qty;
+                    $total += $qty;
+                }
+
+                $data['ProductAdjustment']['total'] = $total;
+                $data['ProductAdjustmentDetail'] = $dataDetail;
+            }
+        }
+
+        return $data;
+    }
+
+    function _callBeforeRenderAdjustment ( $data, $value = null ) {
+        if( empty($data) ) {
+            if( !empty($value) ) {
+                $data = $value;
+                $details = Common::hashEmptyField($data, 'ProductAdjustmentDetail');
+                $serial_numbers = array();
+
+                if( !empty($details) ) {
+                    foreach ($details as $key => &$detail) {
+                        $product_id = Common::hashEmptyField($detail, 'Product.id');
+                        $unit = Common::hashEmptyField($detail, 'Product.ProductUnit.name');
+
+                        $sn = Set::extract('/ProductAdjustmentDetailSerialNumber/ProductAdjustmentDetailSerialNumber/serial_number', $detail);
+
+                        $serial_numbers[$product_id] = $sn;
+                        $detail['Product']['unit'] = $unit;
+                    }
+
+                    $data['ProductAdjustmentDetail'] = $details;
+                }
+            } else {
+                $data['ProductAdjustment']['session_id'] = String::uuid();
+            }
+        } else {
+            $serial_numbers = Common::hashEmptyField($data, 'ProductAdjustmentDetailSerialNumber.serial_numbers');
+        }
+
+        if( !empty($serial_numbers) ) {
+            foreach ($serial_numbers as $key => &$value) {
+                if( !empty($value) && is_array($value) ) {
+                    $value = array_combine($value, $value);
+                }
+            }
+            $data['ProductAdjustmentDetailSerialNumber']['serial_numbers'] = $serial_numbers;
+        }
+
+        $transaction_date = $this->MkCommon->filterEmptyField($data, 'ProductAdjustment', 'transaction_date', date('Y-m-d'));
+        $data['ProductAdjustment']['transaction_date'] = $this->MkCommon->getDate($transaction_date, true);
+
+        return $data;
+    }
+
+    function _callBeforeViewAdjustSerialNumber ( $values, $session_id = false ) {
+        if( !empty($values) ) {
+            $dataRequest = array();
+
+            foreach ($values as $key => $value) {
+                $serial_number = $this->MkCommon->filterEmptyField($value, 'ProductAdjustmentDetailSerialNumber', 'serial_number');
+                $dataRequest['ProductAdjustmentDetailSerialNumber']['serial_number'][$key] = strtoupper($serial_number);
+            }
+
+            $this->controller->request->data = $dataRequest;
+        }
+
+        $this->controller->request->data['ProductAdjustment']['session_id'] = $session_id;
     }
 }
 ?>
