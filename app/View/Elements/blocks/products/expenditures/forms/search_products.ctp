@@ -26,7 +26,9 @@
 <div class="row">
     <div class="col-sm-6">
         <?php 
-                echo $this->Common->buildInputForm('code', __('Kode Barang'));
+                echo $this->Common->buildInputForm('code', __('Kode Barang'), array(
+                    'class'=>'form-control on-focus',
+                ));
                 echo $this->Common->buildInputForm('group', __('Grup Barang'), array(
                     'class'=>'form-control chosen-select',
                     'options' => $productCategories,

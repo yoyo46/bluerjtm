@@ -1366,6 +1366,7 @@
                             'stock_cards',
                             'expenditure_reports',
                             'receipt_reports',
+                            'adjustment',
                         ),
                         'spk' => array(
                             'index', 'tire_reports', 'spk_reports',
@@ -1381,7 +1382,7 @@
                             'current_stock_reports', 'stock_cards',
                             'expenditure_reports',
                             'receipt_reports', 'tire_reports', 'spk_reports',
-                            'maintenance_cost_report',
+                            'maintenance_cost_report', 'adjustment',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1452,13 +1453,13 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'receipts' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link(__('%s Qty Adjusment', $this->Common->icon('angle-double-right')), array(
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Qty Adjustment', $this->Common->icon('angle-double-right')), array(
                                 'controller' => 'products',
-                                'action' => 'adjusment'
+                                'action' => 'adjustment'
                             ), array(
                                 'escape' => false
                             )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'receipts' )?'active':'',
+                                'class' => ( !empty($active_menu) && $active_menu == 'adjustment' )?'active':'',
                             ));
                             echo $this->Html->tag('li', $this->Html->link(__('%s Kartu Stok', $this->Common->icon('angle-double-right')), array(
                                 'controller' => 'products',

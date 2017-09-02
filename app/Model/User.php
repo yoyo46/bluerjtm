@@ -56,6 +56,10 @@ class User extends AppModel {
             'className' => 'GeneralLedger',
             'foreignKey' => 'user_id',
         ),
+        'ProductAdjustment' => array(
+            'className' => 'ProductAdjustment',
+            'foreignKey' => 'user_id',
+        ),
     );
     
     var $validate = array(

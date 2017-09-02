@@ -25,6 +25,13 @@ class ProductHistory extends AppModel {
             'className' => 'Branch',
             'foreignKey' => 'branch_id',
         ),
+        'ProductAdjustmentDetail' => array(
+            'className' => 'ProductAdjustmentDetail',
+            'foreignKey' => 'transaction_id',
+            'conditions' => array(
+                'ProductHistory.transaction_type' => array( 'product_adjustment_plus', 'product_adjustment_min' ),
+            ),
+        ),
     );
 
     var $hasMany = array(
@@ -157,10 +164,14 @@ class ProductHistory extends AppModel {
         $product_id = $this->filterEmptyField($this->data, 'ProductHistory', 'product_id');
 
         $qty = $this->_callStock($product_id);
+        $dataSave = array(
+            'Product' => array(
+                'id' => $product_id,
+                'product_stock_cnt' => $qty,
+            ),
+        );
 
-        $this->Product->id = $product_id;
-        $this->Product->set('product_stock_cnt', $qty);
-        $this->Product->save();
+        $this->Product->saveAll($dataSave);
     }
 
     function getMerge( $data, $id, $fieldName = 'ProductHistory.product_id' ){

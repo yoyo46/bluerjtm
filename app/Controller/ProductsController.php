@@ -1842,8 +1842,9 @@ class ProductsController extends AppController {
         }
     }
 
-    function adjusment () {
-        $this->set('sub_module_title', 'Qty Adjusment');
+    function adjustment () {
+        $this->loadModel('ProductAdjustment');
+        $this->set('sub_module_title', 'Qty Adjustment');
         
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');
@@ -1852,19 +1853,155 @@ class ProductsController extends AppController {
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
         ));
-        $options =  $this->PurchaseOrder->_callRefineParams($params);
-        $this->paginate = $this->PurchaseOrder->getData('paginate', $options, array(
+        // $options =  $this->ProductAdjustment->_callRefineParams($params);
+        $this->paginate = $this->ProductAdjustment->getData('paginate', array(), array(
             'status' => 'all',
         ));
-        $values = $this->paginate('PurchaseOrder');
-        $values = $this->PurchaseOrder->Vendor->getMerge($values, false, 'PurchaseOrder');
-
-        $vendors = $this->PurchaseOrder->Vendor->getData('list');
+        $values = $this->paginate('ProductAdjustment');
 
         $this->MkCommon->_layout_file('select');
-        $this->set('active_menu', 'Purchase Order');
+        $this->set('active_menu', 'adjustment');
         $this->set(compact(
-            'values', 'vendors'
+            'values'
         ));
+    }
+
+    public function adjustment_add() {
+        $this->set('sub_module_title', __('Adjust Qty Barang'));
+
+        $data = $this->request->data;
+        $data = $this->RjProduct->_callBeforeSaveAdjustment($data);
+        $result = $this->User->ProductAdjustment->doSave($data);
+        $this->MkCommon->setProcessParams($result, array(
+            'action' => 'adjustment',
+            'admin' => false,
+        ));
+        $this->request->data = $this->RjProduct->_callBeforeRenderAdjustment($this->request->data);
+
+        $this->MkCommon->_layout_file('select');
+        $this->set('active_menu', 'adjustment');
+    }
+
+    function adjustment_products ( $transaction_id = false ) {
+        $data = $this->request->data;
+        $values = false;
+
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $productCategories = $this->Product->ProductCategory->getData('list');
+
+        $options =  $this->Product->_callRefineParams($params, array(
+            'limit' => 10,
+        ));
+
+        $this->paginate = $this->Product->getData('paginate', $options, array(
+            'status' => 'active',
+        ));
+        $values = $this->paginate('Product');
+
+
+        if( !empty($values) ) {
+            foreach ($values as $key => &$value) {
+                $id = Common::hashEmptyField($value, 'Product.id');
+
+                $value = $this->Product->getMergeList($value, array(
+                    'contain' => array(
+                        'ProductUnit',
+                        'ProductCategory',
+                    ),
+                ));
+                $value['Product']['product_stock_cnt'] = $this->Product->ProductStock->_callStock($id);
+            }
+        }
+
+        $this->set(array(
+            'values' => $values,
+            'transaction_id' => $transaction_id,
+            'productCategories' => $productCategories,
+        ));
+    }
+
+    function bypass_adjust_serial_numbers ( $id = false ) {
+        $data = $this->request->data;
+        $session_id = $this->MkCommon->filterEmptyField($data, 'ProductAdjustment', 'session_id');
+        $number = $this->MkCommon->filterEmptyField($this->params, 'named', 'picker', 0);
+        $view = $this->MkCommon->filterEmptyField($this->params, 'named', 'view', 0);
+
+        $value = $this->Product->getData('first', array(
+            'conditions' => array(
+                'Product.id' => $id,
+            ),
+        ));
+
+        if( !empty($session_id) && !empty($value) ) {
+            $serial_numbers = $this->MkCommon->filterEmptyField($data, 'ProductAdjustmentDetailSerialNumber', 'serial_number');
+
+            if( !empty($serial_numbers) ) {
+                $serial_numbers = $this->RjProduct->_callBeforeSaveSerialNumber($serial_numbers, $id, $session_id, 'ProductAdjustmentDetailSerialNumber');
+                $result = $this->Product->ProductAdjustmentDetailSerialNumber->doSave($serial_numbers, $id, $session_id);
+
+                $this->MkCommon->setProcessParams($result, false, array(
+                    'ajaxFlash' => false,
+                    'ajaxRedirect' => false,
+                ));
+            } else {
+                $values = $this->Product->ProductAdjustmentDetailSerialNumber->getData('all', array(
+                    'conditions' => array(
+                        'ProductAdjustmentDetailSerialNumber.product_id' => $id,
+                        'ProductAdjustmentDetailSerialNumber.session_id' => $session_id,
+                    ),
+                ));
+                $this->RjProduct->_callBeforeViewAdjustSerialNumber($values, $session_id);
+            }
+
+            $this->set('_flash', false);
+            $this->set(compact(
+                'number', 'value', 'id',
+                'result', 'view'
+            ));
+        } else {
+            if( empty($value) ) {
+                $this->set('message', __('Barang tidak ditemukan. Mohon cek kembali barang yang ingin Anda proses'));
+            }
+
+            $this->render('/Ajax/page_not_found');
+        }
+    }
+
+    public function adjustment_detail( $id = false ) {
+        $this->set('sub_module_title', __('Detail Adjustment'));
+
+        $value = $this->Product->ProductAdjustmentDetail->ProductAdjustment->getData('first', array(
+            'conditions' => array(
+                'ProductAdjustment.id' => $id,
+            ),
+        ), array(
+            'status' => 'all',
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->Product->ProductAdjustmentDetail->ProductAdjustment->getMergeList($value, array(
+                'contain' => array(
+                    'ProductAdjustmentDetail' => array(
+                        'Product' => array(
+                            'contain' => array(
+                                'ProductUnit',
+                            ),
+                        ),
+                        'ProductAdjustmentDetailSerialNumber',
+                    ),
+                ),
+            ));
+            $this->request->data = $this->RjProduct->_callBeforeRenderAdjustment(false, $value);
+            $this->MkCommon->_layout_file('select');
+
+            $this->set(array(
+                'value' => $value,
+                'active_menu' => 'adjustment',
+                'view' => true,
+            ));
+            $this->render('adjustment_add');
+        } else {
+            $this->MkCommon->redirectReferer(__('Adjustment tidak ditemukan.'), 'error');
+        }
     }
 }
