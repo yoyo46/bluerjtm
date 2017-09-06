@@ -61,7 +61,7 @@ class Common {
 						}
 						break;
 					case 'currency':
-						$result = $this->getFormatPrice($result);
+						$result = Common::getFormatPrice($result);
 						break;
 				}
 			}

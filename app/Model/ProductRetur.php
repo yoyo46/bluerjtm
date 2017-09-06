@@ -336,6 +336,9 @@ class ProductRetur extends AppModel {
                     'ProductReturDetail' => array(
                         'contain' => array(
                             'ProductHistory' => array(
+                                'conditions' => array(
+                                    'ProductHistory.transaction_type' => 'product_returs',
+                                ),
                                 'contain' => array(
                                     'ProductStock',
                                 ),

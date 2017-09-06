@@ -917,7 +917,13 @@
             formData = $(data_form).serialize(); 
         }
         if( data_picker != false ) {
-            url += '/picker:' + $(data_picker).val() + '/';
+            if( $(data_picker).is('input') ) {
+                var picker_id = $(data_picker).val();
+            } else {
+                var picker_id = $(data_picker).html();
+            }
+            
+            url += '/picker:' + picker_id + '/';
         }
 
         if( data_check != false ) {
@@ -1310,9 +1316,49 @@
             }
         });
     }
+    
+    function callcAdjustment (self, parent) {
+        var dataAdjutment = $.checkUndefined(self.attr('data-adjutment'), null);
+        var qtyStock = $.convertNumber(parent.find('[rel="qty-stock"]').html(), 'float', 0);
+        var qty = $.convertNumber(parent.find('[rel="qty"]').val(), 'float', 0);
+
+        var qtyAdjustment = qty - qtyStock;
+
+        parent.find(dataAdjutment).html(qtyAdjustment);
+        
+        // var dataTarget = parent.find(dataAdjutment).attr('data-target');
+        // var dataMinus = parent.find(dataAdjutment).attr('data-minus');
+        var dataDisabled = parent.find(dataAdjutment).attr('data-disabled');
+        var dataDisplay = parent.find(dataAdjutment).attr('data-display');
+        var typeAdjustment = 'minus';
+
+        if( qtyAdjustment > 0 ) {
+            parent.find(dataDisabled).attr('disabled', false);
+            typeAdjustment = 'plus';
+        } else {
+            parent.find(dataDisabled).attr('disabled', true);
+        }
+
+        dataDisplay = eval(dataDisplay);
+
+        if( $.isArray(dataDisplay) ) {
+            parent.find('.display-adjust').hide();
+
+            $.each( dataDisplay, function( i, val ) {
+                target = val[0];
+                type = val[1];
+
+                if( type == typeAdjustment ) {
+                    parent.find(target).show();
+                }
+            });
+        }
+    }
 
     function _callTotalCustom (self) {
         var rel = self.attr('rel');
+        var dataAdjutment = $.checkUndefined(self.attr('data-adjutment'), null);
+
         var parent = self.parents('.pick-document');
         var objTotal = parent.find('.total_custom[rel="'+rel+'"]');
         var objTotalRow = parent.find('.total_row');
@@ -1339,6 +1385,10 @@
         objTotal.html( $.formatDecimal(total, 2) );
         objTotalRow.html( $.formatDecimal(total, 2) );
         calcGrandTotalCustom();
+
+        if( dataAdjutment != null ) {
+            callcAdjustment(self, parent);
+        }
     }
 
     $.calcTotal = function(options){

@@ -76,6 +76,7 @@
                 $nopol = Common::hashEmptyField($value, 'Truck.nopol', '-');
                 $nodoc = Common::hashEmptyField($value, 'DocumentDetail.Document.nodoc');
                 $docid = Common::hashEmptyField($value, 'DocumentDetail.Document.id');
+                $serial_numbers = Common::hashEmptyField($value, 'DocumentDetail.SerialNumber');
                 $qty = Common::hashEmptyField($value, 'ProductHistory.qty');
                 // $total_balance_price = $total_begining_price*$balance;
 
@@ -100,6 +101,7 @@
                         );
                     }
 
+                    $ending_stock[$price]['serial_numbers'] = $serial_numbers;
 
                     if( $transaction_type == 'product_expenditure_void' ) {
                         $nodoc = __('%s (Void)', $nodoc);
@@ -118,17 +120,38 @@
             
                     if( !empty($ending_stock) ) {
                         foreach ($ending_stock as $key => $stock) {
-                            $ending_qty = Common::hashEmptyField($stock, 'qty', 0) - $qty_out_tmp;
+                            if( !empty($serial_numbers) ) {
+                                $sn_stock = Common::hashEmptyField($stock, 'serial_numbers');
 
-                            if( empty($ending_qty) ) {
-                                unset($ending_stock[$key]);
-                                break;
-                            } else if( $ending_qty < 0 ) {
-                                unset($ending_stock[$key]);
-                                $qty_out_tmp = abs($ending_qty);
+                                foreach ($serial_numbers as $sn) {
+                                    if( in_array($sn, $sn_stock) ) {
+                                        $ending_qty = Common::hashEmptyField($stock, 'qty', 0) - $qty_out_tmp;
+
+                                        if( empty($ending_qty) ) {
+                                            unset($ending_stock[$key]);
+                                            break;
+                                        } else if( $ending_qty < 0 ) {
+                                            unset($ending_stock[$key]);
+                                            $qty_out_tmp = abs($ending_qty);
+                                        } else {
+                                            $ending_stock[$key]['qty'] = $ending_qty;
+                                            break;
+                                        }
+                                    }
+                                }
                             } else {
-                                $ending_stock[$key]['qty'] = $ending_qty;
-                                break;
+                                $ending_qty = Common::hashEmptyField($stock, 'qty', 0) - $qty_out_tmp;
+
+                                if( empty($ending_qty) ) {
+                                    unset($ending_stock[$key]);
+                                    break;
+                                } else if( $ending_qty < 0 ) {
+                                    unset($ending_stock[$key]);
+                                    $qty_out_tmp = abs($ending_qty);
+                                } else {
+                                    $ending_stock[$key]['qty'] = $ending_qty;
+                                    break;
+                                }
                             }
                         }
                     }

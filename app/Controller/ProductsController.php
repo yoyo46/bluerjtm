@@ -1220,6 +1220,36 @@ class ProductsController extends AppController {
                     ),
                 ));
 
+                if( $transaction_type == 'product_receipt' ) {
+                    $product_receipt_id = Common::hashEmptyField($value, 'DocumentDetail.Document.id');
+
+                    $value['DocumentDetail']['SerialNumber'] = $this->Product->ProductHistory->ProductReceiptDetail->ProductReceipt->ProductReceiptDetailSerialNumber->getData('list', array(
+                        'fields' => array(
+                            'ProductReceiptDetailSerialNumber.serial_number',
+                            'ProductReceiptDetailSerialNumber.serial_number',
+                        ),
+                        'conditions' => array(
+                            'ProductReceiptDetailSerialNumber.product_receipt_id' => $product_receipt_id,
+                            'ProductReceiptDetailSerialNumber.product_id' => $product_id,
+                        ),
+                    ), array(
+                        'status' => 'confirm',
+                    ));
+                } else if( $transaction_type == 'product_expenditure' ) {
+                    $product_expenditure_detail_id = Common::hashEmptyField($value, 'DocumentDetail.id');
+
+                    $value['DocumentDetail']['SerialNumber'] = $this->Product->ProductHistory->ProductExpenditureDetail->ProductExpenditureDetailSerialNumber->getData('list', array(
+                        'fields' => array(
+                            'ProductExpenditureDetailSerialNumber.serial_number',
+                            'ProductExpenditureDetailSerialNumber.serial_number',
+                        ),
+                        'conditions' => array(
+                            'ProductExpenditureDetailSerialNumber.product_expenditure_detail_id' => $product_expenditure_detail_id,
+                            'ProductExpenditureDetailSerialNumber.product_id' => $product_id,
+                        ),
+                    ));
+                }
+
                 $document_type = Common::hashEmptyField($value, 'DocumentDetail.Document.document_type');
                 $document_id = Common::hashEmptyField($value, 'DocumentDetail.Document.document_id');
 
@@ -1638,6 +1668,9 @@ class ProductsController extends AppController {
                 'ProductReturDetail' => array(
                     'contain' => array(
                         'ProductHistory' => array(
+                            'conditions' => array(
+                                'ProductHistory.transaction_type' => 'product_returs',
+                            ),
                             'contain' => array(
                                 'ProductStock',
                             ),

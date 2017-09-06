@@ -421,7 +421,11 @@ class ProductExpenditure extends AppModel {
                     'ProductExpenditureDetail' => array(
                         'contain' => array(
                             'ProductExpenditureDetailSerialNumber',
-                            'ProductHistory',
+                            'ProductHistory' => array(
+                                'conditions' => array(
+                                    'ProductHistory.transaction_type' => 'product_expenditure',
+                                ),
+                            ),
                         ),
                     ),
                 ),

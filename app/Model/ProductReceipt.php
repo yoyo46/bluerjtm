@@ -498,6 +498,9 @@ class ProductReceipt extends AppModel {
                     'ProductReceiptDetail' => array(
                         'contain' => array(
                             'ProductHistory' => array(
+                                'conditions' => array(
+                                    'ProductHistory.transaction_type' => 'product_receipt',
+                                ),
                                 'contain' => array(
                                     'ProductStock',
                                 ),
