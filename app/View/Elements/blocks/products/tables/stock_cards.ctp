@@ -64,6 +64,7 @@
                 $url = null;
                 $price = null;
                 $id = Common::hashEmptyField($value, 'Product.id');
+                $is_serial_number = Common::hashEmptyField($value, 'Product.is_serial_number');
                 $unit = Common::hashEmptyField($value, 'ProductUnit.name');
 
                 $transaction_id = Common::hashEmptyField($value, 'ProductHistory.transaction_id');
@@ -120,9 +121,9 @@
             
                     if( !empty($ending_stock) ) {
                         foreach ($ending_stock as $key => $stock) {
-                            if( !empty($serial_numbers) ) {
-                                $sn_stock = Common::hashEmptyField($stock, 'serial_numbers');
+                            $sn_stock = Common::hashEmptyField($stock, 'serial_numbers');
 
+                            if( !empty($serial_numbers) && !empty($sn_stock) && !empty($is_serial_number) ) {
                                 foreach ($serial_numbers as $sn) {
                                     if( in_array($sn, $sn_stock) ) {
                                         $ending_qty = Common::hashEmptyField($stock, 'qty', 0) - $qty_out_tmp;
