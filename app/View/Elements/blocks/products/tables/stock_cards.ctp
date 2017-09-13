@@ -81,15 +81,25 @@
                 $qty = Common::hashEmptyField($value, 'ProductHistory.qty');
                 // $total_balance_price = $total_begining_price*$balance;
 
-                if( in_array($transaction_type, array( 'product_receipt', 'product_expenditure_void' )) ) {
+                if( in_array($transaction_type, array( 'product_receipt', 'product_expenditure_void', 'product_adjustment_plus', 'product_adjustment_min_void' )) ) {
                     $qty_in = Common::hashEmptyField($value, 'ProductHistory.qty');
                     $price = $price_in = Common::hashEmptyField($value, 'ProductHistory.price');
                     $total_in = $qty_in * $price_in;
-                    $url = $this->Html->url(array(
-                        'controller' => 'products',
-                        'action' => 'receipt_detail',
-                        $docid,
-                    ), true);
+
+                    if( in_array($transaction_type, array( 'product_adjustment_plus' )) ) {
+                        $url = $this->Html->url(array(
+                            'controller' => 'products',
+                            'action' => 'adjustment_detail',
+                            $docid,
+                        ), true);
+                    } else {
+                        $url = $this->Html->url(array(
+                            'controller' => 'products',
+                            'action' => 'receipt_detail',
+                            $docid,
+                        ), true);
+                    }
+
                     $total_ending_price = $price*$qty;
                     // $grandtotal_ending = $total_balance_price + $total_ending_price;
             
@@ -107,7 +117,7 @@
                     if( $transaction_type == 'product_expenditure_void' ) {
                         $nodoc = __('%s (Void)', $nodoc);
                     }
-                } else if( $transaction_type == 'product_expenditure' ) {
+                } else if( in_array($transaction_type, array('product_expenditure', 'product_adjustment_min', 'product_adjustment_plus_void')) ) {
                     $qty_out_tmp = $qty_out = Common::hashEmptyField($value, 'ProductHistory.qty');
                     $price = $price_out = Common::hashEmptyField($value, 'ProductHistory.price');
                     $total_out = $qty_out * $price_out;

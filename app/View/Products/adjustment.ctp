@@ -53,7 +53,7 @@
                             $transactionDate = $this->Common->filterEmptyField($value, 'ProductAdjustment', 'transaction_date');
                             $note = $this->Common->filterEmptyField($value, 'ProductAdjustment', 'note', '-');
                             $total = $this->Common->filterEmptyField($value, 'ProductAdjustment', 'total', '-');
-                            $transaction_status = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'transaction_status');
+                            $transaction_status = $this->Common->filterEmptyField($value, 'ProductAdjustment', 'transaction_status');
 
                             $customStatus = $this->Common->_callTransactionStatus($value, 'ProductAdjustment');
                             $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
@@ -73,11 +73,10 @@
                                     'admin' => false,
                                 ), array(
                                     'class' => 'btn btn-primary btn-xs',
-                                    'closing' => true,
                                 ));
                             }
 
-                            if( in_array($transaction_status, array( 'unposting' )) ){
+                            if( $transaction_status <> 'void' ) {
                                 $customAction .= $this->Html->link(__('Void'), array(
                                     'action' => 'adjustment_toggle',
                                     $id,
@@ -85,7 +84,6 @@
                                     'admin' => false,
                                 ), array(
                                     'class' => 'btn btn-danger btn-xs trigger-disabled',
-                                    'closing' => true,
                                     'data-alert' => __('Anda yakin ingin membatalkan dokumen ini?'),
                                 ));
                             }

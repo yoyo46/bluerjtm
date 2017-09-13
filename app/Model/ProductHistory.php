@@ -29,7 +29,7 @@ class ProductHistory extends AppModel {
             'className' => 'ProductAdjustmentDetail',
             'foreignKey' => 'transaction_id',
             'conditions' => array(
-                'ProductHistory.transaction_type' => array( 'product_adjustment_plus', 'product_adjustment_min' ),
+                'ProductHistory.transaction_type' => array( 'product_adjustment_plus', 'product_adjustment_min', 'product_adjustment_plus_void', 'product_adjustment_min_void' ),
             ),
         ),
     );
@@ -58,7 +58,7 @@ class ProductHistory extends AppModel {
         switch ($status) {
             case 'active':
                 $default_options['conditions']['ProductHistory.status'] = 1;
-                $default_options['conditions']['ProductHistory.transaction_type <>'] = 'product_expenditure_void';
+                $default_options['conditions']['ProductHistory.transaction_type NOT'] = array( 'product_expenditure_void', 'product_adjustment_min_void' );
         }
 
         if( !empty($branch) ) {

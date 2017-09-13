@@ -51,7 +51,7 @@ class ProductAdjustment extends AppModel {
                 'ProductAdjustment.nodoc'
             )
         ), array(
-            'branch' => false,
+            'status' => 'all',
         ));
 
         if(!empty($last_data['ProductAdjustment']['nodoc'])){
@@ -129,6 +129,27 @@ class ProductAdjustment extends AppModel {
         return $result;
     }
 
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
+        $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(ProductAdjustment.transaction_date, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(ProductAdjustment.transaction_date, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+        }
+        if( !empty($nodoc) ) {
+            $default_options['conditions']['ProductAdjustment.nodoc LIKE'] = '%'.$nodoc.'%';
+        }
+        
+        return $default_options;
+    }
+
     function doSave( $data, $value = false, $id = false ) {
         $result = false;
         $defaul_msg = __('Qty Adjustment');
@@ -163,6 +184,12 @@ class ProductAdjustment extends AppModel {
                 $this->ProductAdjustmentDetail->ProductAdjustmentDetailSerialNumber->deleteAll(array(
                     'ProductAdjustmentDetailSerialNumber.session_id' => $session_id,
                 ));
+
+                if( !empty($id) ) {
+                    $this->ProductAdjustmentDetail->deleteAll(array(
+                        'ProductAdjustmentDetail.product_adjustment_id' => $id,
+                    ));
+                }
                 
                 $flag = $this->saveAll($data, array(
                     'deep' => true,
@@ -206,6 +233,217 @@ class ProductAdjustment extends AppModel {
             }
         } else if( !empty($value) ) {
             $result['data'] = $value;
+        }
+
+        return $result;
+    }
+
+    function doDelete( $id, $type = null ) {
+        $result = false;
+        $value = $this->getData('first', array(
+            'conditions' => array(
+                'ProductAdjustment.id' => $id,
+            ),
+        ));
+
+        if ( !empty($value) ) {
+            $default_msg = sprintf(__('membatalkan adjusment barang #%s'), $id);
+
+            $this->id = $id;
+            $this->set('status', 0);
+            $this->set('transaction_status', 'void');
+            
+            $value = $this->getMergeList($value, array(
+                'contain' => array(
+                    'ProductAdjustmentDetail' => array(
+                        'contain' => array(
+                            'ProductAdjustmentDetailSerialNumber',
+                            // 'ProductHistory' => array(
+                            //     'conditions' => array(
+                            //         'ProductHistory.transaction_type' => 'product_adjustment_'.$type,
+                            //     ),
+                            //     'contain' => array(
+                            //         'ProductStock',
+                            //     ),
+                            // ),
+                        ),
+                    ),
+                ),
+            ));
+            $details = $this->filterEmptyField($value, 'ProductAdjustmentDetail');
+
+            if( !empty($details) ) {
+                foreach ($details as $key => $detail) {
+                    $type = $this->filterEmptyField($detail, 'ProductAdjustmentDetail', 'type');
+                    $detail = $this->ProductAdjustmentDetail->getMergeList($detail, array(
+                        'contain' => array(
+                            'ProductHistory' => array(
+                                'conditions' => array(
+                                    'ProductHistory.transaction_type' => 'product_adjustment_'.$type,
+                                ),
+                                'contain' => array(
+                                    'ProductStock',
+                                ),
+                            ),
+                        ),
+                    ));
+
+                    switch ($type) {
+                        case 'min':
+                            $branch_id = Common::hashEmptyField($value, 'ProductAdjustment.branch_id');
+                            $transaction_date = Common::hashEmptyField($value, 'ProductAdjustment.transaction_date');
+                            $product_history_id = Set::extract('/ProductHistory/ProductHistory/id', $detail);
+                            $product_serial_numbers = Common::hashEmptyField($detail, 'ProductAdjustmentDetailSerialNumber');
+                            $product_histories = Common::hashEmptyField($detail, 'ProductHistory');
+
+                            if( $this->save() ) {
+                                $dataHistory = array();
+
+                                if( !empty($product_serial_numbers) ) {
+                                    foreach ($product_serial_numbers as $key => $val) {
+                                        $product_id = Common::hashEmptyField($val, 'ProductAdjustmentDetailSerialNumber.product_id');
+                                        $qty = Common::hashEmptyField($val, 'ProductAdjustmentDetailSerialNumber.qty');
+                                        $price = Common::hashEmptyField($val, 'ProductAdjustmentDetailSerialNumber.price');
+
+                                        $arrHistory['ProductHistory'] = array(
+                                            'branch_id' => $branch_id,
+                                            'product_id' => $product_id,
+                                            'transaction_id' => Common::hashEmptyField($val, 'ProductAdjustmentDetailSerialNumber.product_adjustment_detail_id'),
+                                            'transaction_type' => 'product_adjustment_min_void',
+                                            'transaction_date' => $transaction_date,
+                                            'qty' => $qty,
+                                            'price' => $price,
+                                            'type' => 'in',
+                                            'ProductStock' => array(
+                                                array(
+                                                    'product_id' => $product_id,
+                                                    'branch_id' => $branch_id,
+                                                    'transaction_date' => $transaction_date,
+                                                    'qty' => $qty,
+                                                    'price' => $price,
+                                                    'serial_number' => Common::hashEmptyField($val, 'ProductAdjustmentDetailSerialNumber.serial_number'),
+                                                ),
+                                            ),
+                                        );
+                                        $dataHistory[] = $arrHistory;
+                                    }
+                                } else if( !empty($product_histories) ) {
+                                    foreach ($product_histories as $key => $history) {
+                                        $product_id = Common::hashEmptyField($history, 'ProductHistory.product_id');
+                                        $history_id = Common::hashEmptyField($history, 'ProductHistory.ProductHistory.id');
+
+                                        $history = Common::_callUnset($history, array(
+                                            'ProductHistory' => array(
+                                                'id',
+                                                'created',
+                                                'modified',
+                                                'status',
+                                            ),
+                                        ));
+                                        $history['ProductHistory']['transaction_type'] = 'product_adjustment_min_void';
+                                        $history['ProductHistory']['type'] = 'in';
+                                        $history['ProductHistory']['ProductStock'] = array(
+                                            'product_id' => $product_id,
+                                            'product_history_id' => $history_id,
+                                            'branch_id' => Common::hashEmptyField($history, 'ProductHistory.branch_id'),
+                                            'transaction_date' => Common::hashEmptyField($history, 'ProductHistory.transaction_date'),
+                                            'qty' => Common::hashEmptyField($history, 'ProductHistory.qty'),
+                                            'price' => Common::hashEmptyField($history, 'ProductHistory.price'),
+                                            'serial_number' => sprintf('%s-%s', Common::getNoRef($product_id), date('ymdHis')),
+                                        );
+
+                                        $dataHistory[] = $history;
+                                    }
+                                }
+
+                                if( !empty($dataHistory) ) {
+                                    $this->ProductAdjustmentDetail->ProductHistory->saveAll($dataHistory, array(
+                                        'deep' => true,
+                                    ));
+                                }
+                                if( !empty($product_history_id) ) {
+                                    $this->ProductAdjustmentDetail->ProductHistory->updateAll(array(
+                                        'ProductHistory.status' => 0,
+                                    ), array(
+                                        'ProductHistory.id' => $product_history_id,
+                                    ));
+                                }
+
+                                $msg = sprintf(__('Berhasil %s'), $default_msg);
+                                $result = array(
+                                    'msg' => $msg,
+                                    'status' => 'success',
+                                    'Log' => array(
+                                        'activity' => $msg,
+                                        'old_data' => $value,
+                                    ),
+                                );
+                            } else {
+                                $msg = sprintf(__('Gagal %s'), $default_msg);
+                                $result = array(
+                                    'msg' => $msg,
+                                    'status' => 'error',
+                                    'Log' => array(
+                                        'activity' => $msg,
+                                        'old_data' => $value,
+                                        'error' => 1,
+                                    ),
+                                );
+                            }
+                            break;
+                        
+                        default:
+                            $product_history_id = Set::extract('/ProductHistory/ProductHistory/id', $detail);
+                            $product_stock_id = Set::extract('/ProductHistory/ProductStock/ProductStock/id', $detail);
+                            $qty_use = Set::extract('/ProductHistory/ProductStock/ProductStock/qty_use', $detail);
+                            $qty_use = array_filter($qty_use);
+
+                            if( $this->save() ) {
+                                if( !empty($product_history_id) ) {
+                                    $this->ProductAdjustmentDetail->ProductHistory->updateAll(array(
+                                        'ProductHistory.status' => false,
+                                    ), array(
+                                        'ProductHistory.id' => $product_history_id,
+                                    ));
+                                }
+                                if( !empty($product_stock_id) ) {
+                                    $this->ProductAdjustmentDetail->Product->ProductStock->updateAll(array(
+                                        'status' => false,
+                                    ), array(
+                                        'ProductStock.id' => $product_stock_id,
+                                    ));
+                                }
+
+                                $msg = sprintf(__('Berhasil %s'), $default_msg);
+                                $result = array(
+                                    'msg' => $msg,
+                                    'status' => 'success',
+                                    'Log' => array(
+                                        'activity' => $msg,
+                                        'old_data' => $value,
+                                    ),
+                                );
+                            } else {
+                                $msg = sprintf(__('Gagal %s'), $default_msg);
+                                $result = array(
+                                    'msg' => $msg,
+                                    'status' => 'error',
+                                    'Log' => array(
+                                        'activity' => $msg,
+                                        'old_data' => $value,
+                                        'error' => 1,
+                                    ),
+                                );
+                            }
+                            break;
+                    }
+                }
+            }
+        } else {
+            $result = array(
+                'msg' => __('Gagal menghapus penerimaan barang. Data tidak ditemukan'),
+                'status' => 'error',
+            );
         }
 
         return $result;

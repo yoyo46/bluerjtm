@@ -1201,6 +1201,18 @@ class ProductsController extends AppController {
                     case 'product_expenditure_void':
                         $modelName = 'ProductExpenditure';
                         break;
+                    case 'product_adjustment_min':
+                        $modelName = 'ProductAdjustment';
+                        break;
+                    case 'product_adjustment_min_void':
+                        $modelName = 'ProductAdjustment';
+                        break;
+                    case 'product_adjustment_plus':
+                        $modelName = 'ProductAdjustment';
+                        break;
+                    case 'product_adjustment_plus_void':
+                        $modelName = 'ProductAdjustment';
+                        break;
                 }
 
                 $value = $this->Product->ProductHistory->getMergeList($value, array(
@@ -1248,40 +1260,59 @@ class ProductsController extends AppController {
                             'ProductExpenditureDetailSerialNumber.product_id' => $product_id,
                         ),
                     ));
+                } else if( in_array($transaction_type, array('product_adjustment_min', 'product_adjustment_plus')) ) {
+                    $product_adjustment_detail_id = Common::hashEmptyField($value, 'DocumentDetail.id');
+
+                    $value['DocumentDetail']['SerialNumber'] = $this->Product->ProductHistory->ProductAdjustmentDetail->ProductAdjustmentDetailSerialNumber->getData('list', array(
+                        'fields' => array(
+                            'ProductAdjustmentDetailSerialNumber.serial_number',
+                            'ProductAdjustmentDetailSerialNumber.serial_number',
+                        ),
+                        'conditions' => array(
+                            'ProductAdjustmentDetailSerialNumber.product_adjustment_detail_id' => $product_adjustment_detail_id,
+                            'ProductAdjustmentDetailSerialNumber.product_id' => $product_id,
+                        ),
+                    ));
                 }
 
-                $document_type = Common::hashEmptyField($value, 'DocumentDetail.Document.document_type');
-                $document_id = Common::hashEmptyField($value, 'DocumentDetail.Document.document_id');
+                if( in_array($transaction_type, array('product_adjustment_min', 'product_adjustment_plus', 'product_adjustment_min_void', 'product_adjustment_plus_void')) ) {
+                    $result[$product_id][$branch_id]['Branch'] = Common::hashEmptyField($value, 'Branch');
+                    $result[$product_id][$branch_id]['Product'] = Common::hashEmptyField($value, 'Product');
+                    $result[$product_id][$branch_id]['ProductHistory'][] = $value;
+                } else {
+                    $document_type = Common::hashEmptyField($value, 'DocumentDetail.Document.document_type');
+                    $document_id = Common::hashEmptyField($value, 'DocumentDetail.Document.document_id');
 
-                switch ($document_type) {
-                    case 'po':
-                        $transactionName = 'PurchaseOrder';
-                        break;
+                    switch ($document_type) {
+                        case 'po':
+                            $transactionName = 'PurchaseOrder';
+                            break;
+                        
+                        default:
+                            $transactionName = 'Spk';
+                            break;
+                    }
+
+                    $modelNameDetail = $modelName.'Detail';
+                    $value = $this->Product->ProductHistory->$modelNameDetail->$modelName->$transactionName->getMerge($value, $document_id, $transactionName.'.id', 'all', 'Transaction');
                     
-                    default:
-                        $transactionName = 'Spk';
-                        break;
+                    $truck_id = Common::hashEmptyField($value, 'Transaction.truck_id');
+
+                    if( !empty($truck_id) ) {
+                        $value = $this->Product->ProductHistory->$modelNameDetail->$modelName->$transactionName->Truck->getMerge($value, $truck_id);
+                    }
+
+                    $result[$product_id][$branch_id]['Branch'] = Common::hashEmptyField($value, 'Branch');
+                    $result[$product_id][$branch_id]['Product'] = Common::hashEmptyField($value, 'Product');
+                    $result[$product_id][$branch_id]['ProductHistory'][] = $value;
                 }
-
-                $modelNameDetail = $modelName.'Detail';
-                $value = $this->Product->ProductHistory->$modelNameDetail->$modelName->$transactionName->getMerge($value, $document_id, $transactionName.'.id', 'all', 'Transaction');
-                
-                $truck_id = Common::hashEmptyField($value, 'Transaction.truck_id');
-
-                if( !empty($truck_id) ) {
-                    $value = $this->Product->ProductHistory->$modelNameDetail->$modelName->$transactionName->Truck->getMerge($value, $truck_id);
-                }
-
-                $result[$product_id][$branch_id]['Branch'] = Common::hashEmptyField($value, 'Branch');
-                $result[$product_id][$branch_id]['Product'] = Common::hashEmptyField($value, 'Product');
-                $result[$product_id][$branch_id]['ProductHistory'][] = $value;
             }
 
             $values = $result;
         }
 
         if(!empty($values)){
-            $this->Product->ProductHistory->virtualFields['total_begining_balance'] = 'SUM(CASE WHEN ProductHistory.transaction_type = \'product_receipt\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.transaction_type = \'product_expenditure\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END)';
+            $this->Product->ProductHistory->virtualFields['total_begining_balance'] = 'SUM(CASE WHEN ProductHistory.transaction_type = \'product_receipt\' OR ProductHistory.transaction_type = \'product_adjustment_plus\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.transaction_type = \'product_expenditure\' OR ProductHistory.transaction_type = \'product_adjustment_min\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END)';
             $this->Product->ProductHistory->virtualFields['total_qty_in'] = 'SUM(CASE WHEN ProductHistory.type = \'in\' THEN ProductHistory.qty ELSE 0 END)';
             $this->Product->ProductHistory->virtualFields['total_qty_out'] = 'SUM(CASE WHEN ProductHistory.type = \'out\' THEN ProductHistory.qty ELSE 0 END)';
                     
@@ -1915,6 +1946,38 @@ class ProductsController extends AppController {
         $this->set('active_menu', 'adjustment');
     }
 
+    public function adjustment_edit( $id = null ) {
+        $this->set('sub_module_title', __('Edit Adjust Barang'));
+        $value = $this->Product->ProductAdjustmentDetail->ProductAdjustment->getData('first', array(
+            'conditions' => array(
+                'ProductAdjustment.id' => $id,
+            ),
+        ), array(
+            'status' => 'all',
+        ));
+
+        if( !empty($value) ) {
+            $data = $this->request->data;
+
+            if( !empty($data) ) {
+                $data = $this->RjProduct->_callBeforeSaveAdjustment($data, $id);
+                $result = $this->User->ProductAdjustment->doSave($data, $value, $id);
+                $this->MkCommon->setProcessParams($result, array(
+                    'action' => 'adjustment',
+                    'admin' => false,
+                ));
+            }
+
+            $this->request->data = $this->RjProduct->_callBeforeRenderAdjustment($this->request->data, $value);
+
+            $this->MkCommon->_layout_file('select');
+            $this->set('active_menu', 'adjustment');
+            $this->render('adjustment_add');
+        } else {
+            $this->MkCommon->redirectReferer(__('Adjustment tidak ditemukan.'), 'error');
+        }
+    }
+
     function adjustment_products ( $transaction_id = false ) {
         $data = $this->request->data;
         $values = false;
@@ -2012,18 +2075,6 @@ class ProductsController extends AppController {
         ));
 
         if( !empty($value) ) {
-            $value = $this->Product->ProductAdjustmentDetail->ProductAdjustment->getMergeList($value, array(
-                'contain' => array(
-                    'ProductAdjustmentDetail' => array(
-                        'Product' => array(
-                            'contain' => array(
-                                'ProductUnit',
-                            ),
-                        ),
-                        'ProductAdjustmentDetailSerialNumber',
-                    ),
-                ),
-            ));
             $this->request->data = $this->RjProduct->_callBeforeRenderAdjustment(false, $value);
             $this->MkCommon->_layout_file('select');
 
@@ -2036,5 +2087,33 @@ class ProductsController extends AppController {
         } else {
             $this->MkCommon->redirectReferer(__('Adjustment tidak ditemukan.'), 'error');
         }
+    }
+
+    public function adjustment_toggle( $id ) {
+        $result = $this->Product->ProductAdjustmentDetail->ProductAdjustment->doDelete( $id );
+        $this->MkCommon->setProcessParams($result);
+    }
+
+    public function adjustment_report() {
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+
+        $dataReport = $this->RmReport->_callDataAdjustment_report($params, 30, 0, true);
+        $values = Common::hashEmptyField($dataReport, 'data');
+
+        $this->RjProduct->_callBeforeViewAdjustmentReports($params);
+        $this->MkCommon->_layout_file(array(
+            'select',
+            'freeze',
+        ));
+        $this->set(array(
+            'values' => $values,
+            'active_menu' => 'adjustment_report',
+            '_freeze' => true,
+        ));
     }
 }

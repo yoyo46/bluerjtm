@@ -92,6 +92,12 @@
                             echo $this->Html->tag('td', $unit, array(
                                 'class' => 'text-center',
                             ));
+                            echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('ProductAdjustmentDetail.note.%s', $id), false, array(
+                                'type' => 'text',
+                                'frameClass' => false,
+                            )), array(
+                                'class' => 'hide',
+                            ));
                             echo $this->Html->tag('td', $group, array(
                                 'class' => 'removed',
                             ));

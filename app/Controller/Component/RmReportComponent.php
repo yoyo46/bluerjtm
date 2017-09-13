@@ -1082,6 +1082,12 @@ class RmReportComponent extends Component {
 			'contain' => array(
 				'ProductExpenditureDetailSerialNumber',
 			),
+            'order'=> array(
+                'ProductExpenditure.status' => 'DESC',
+                'ProductExpenditure.created' => 'DESC',
+                'ProductExpenditure.id' => 'DESC',
+                'ProductExpenditureDetail.id' => 'ASC',
+            ),
         	'offset' => $offset,
         	'limit' => $limit,
         );
@@ -1336,6 +1342,12 @@ class RmReportComponent extends Component {
 		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
 
 		$options = array(
+            'order'=> array(
+                'ProductReceipt.status' => 'DESC',
+                'ProductReceipt.created' => 'DESC',
+                'ProductReceipt.id' => 'DESC',
+                'ProductReceiptDetail.id' => 'ASC',
+            ),
         	'offset' => $offset,
         	'limit' => $limit,
         );
@@ -2352,6 +2364,197 @@ class RmReportComponent extends Component {
 			'data' => $result,
 			'last_id' => $last_id,
 			'model' => 'Truck',
+		);
+	}
+
+	function _callDataAdjustment_report ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('ProductAdjustmentDetail');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+
+		$options = array(
+            'order'=> array(
+                'ProductAdjustment.status' => 'DESC',
+                'ProductAdjustment.created' => 'DESC',
+                'ProductAdjustment.id' => 'DESC',
+                'ProductAdjustmentDetail.id' => 'ASC',
+            ),
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+		$options = $this->controller->ProductAdjustmentDetail->ProductAdjustment->_callRefineParams($params, $options);
+		$options = $this->controller->ProductAdjustmentDetail->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'ProductAdjustment', $options );
+
+		$this->controller->paginate	= $this->controller->ProductAdjustmentDetail->getData('paginate', $options, array(
+			'branch' => false,
+			'header' => true,
+		));
+		$data = $this->controller->paginate('ProductAdjustmentDetail');
+		$result = array();
+
+		$last_data = end($data);
+		$last_id = Common::hashEmptyField($last_data, 'ProductAdjustmentDetail.id');
+
+		if( !empty($data) ) {
+			foreach ($data as $key => $value) {
+		        $value = $this->controller->ProductAdjustmentDetail->getMergeList($value, array(
+		            'contain' => array(
+		            	'Product' => array(
+		                	'ProductUnit',
+	            		),
+                        'ProductAdjustmentDetailSerialNumber',
+		            ),
+		        ));
+		        $value = $this->controller->ProductAdjustmentDetail->ProductAdjustment->getMergeList($value, array(
+		            'contain' => array(
+		            	'Branch',
+		            ),
+		        ));
+
+                $nodoc = Common::hashEmptyField($value, 'ProductAdjustment.nodoc');
+                $transaction_date = Common::hashEmptyField($value, 'ProductAdjustment.transaction_date', null, array(
+                	'date' => 'd M Y',
+            	));
+                $note = Common::hashEmptyField($value, 'ProductAdjustmentDetail.note', '-', array(
+                	'strict' => true,
+            	));
+                $customStatus = $this->MkCommon->_callTransactionStatus($value, 'ProductAdjustment', 'transaction_status', $view);
+            	$price = Common::hashEmptyField($value, 'ProductAdjustmentDetail.price', 0);
+
+                $branch = Common::hashEmptyField($value, 'Branch.code');
+                $code = Common::hashEmptyField($value, 'Product.code');
+                $name = Common::hashEmptyField($value, 'Product.name');
+                $is_serial_number = Common::hashEmptyField($value, 'Product.is_serial_number');
+                $unit = Common::hashEmptyField($value, 'Product.ProductUnit.name');
+                $serialNumbers = Common::hashEmptyField($value, 'ProductAdjustmentDetailSerialNumber');
+				
+				if( !empty($is_serial_number) && !empty($serialNumbers) ) {
+                    $serial_numbers = Set::extract('/ProductAdjustmentDetailSerialNumber/serial_number', $serialNumbers);
+                    $serial_number = implode(', ', $serial_numbers);
+	            } else {
+	                $serial_number = __('Automatic');
+	            }
+
+				$result[$key] = array(
+					__('No Dokumen') => array(
+						'text' => $nodoc,
+                		'field_model' => 'ProductAdjustment.nodoc',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'nodoc\',width:120',
+		                'align' => 'left',
+					),
+					__('Cabang') => array(
+						'text' => $branch,
+                		'field_model' => 'Branch.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'branch\',width:100',
+					),
+					__('Tgl Adjustment') => array(
+						'text' => $transaction_date,
+                		'field_model' => 'ProductAdjustment.transaction_date',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'transaction_date\',width:120',
+		                'align' => 'left',
+					),
+					__('Kode Barang') => array(
+						'text' => $code,
+                		'fix_column' => true,
+                		'field_model' => 'Product.code',
+		                'align' => 'center',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'code\',width:100',
+		                'align' => 'left',
+					),
+					__('Nama Barang') => array(
+						'text' => $name,
+                		'field_model' => 'Product.name',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'name\',width:120',
+		                'align' => 'left',
+					),
+					__('Satuan') => array(
+						'text' => $unit,
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'unit\',width:100',
+		                'align' => 'left',
+					),
+					__('Keterangan') => array(
+						'text' => $note,
+                		'field_model' => 'ProductAdjustmentDetail.note',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'note\',width:150',
+					),
+					__('Last Stok') => array(
+						'text' => Common::hashEmptyField($value, 'ProductAdjustmentDetail.total_qty', '-'),
+                		'field_model' => 'ProductAdjustmentDetail.total_qty',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'total_qty\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Adjustment') => array(
+						'text' => Common::hashEmptyField($value, 'ProductAdjustmentDetail.qty', '-'),
+                		'field_model' => 'ProductAdjustmentDetail.qty',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'qty\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Difference') => array(
+						'text' => Common::hashEmptyField($value, 'ProductAdjustmentDetail.qty_difference', '-'),
+                		'field_model' => 'ProductAdjustmentDetail.qty_difference',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'qty_difference\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Harga') => array(
+						'text' => !empty($price)?Common::getFormatPrice($price):'-',
+                		'field_model' => 'ProductAdjustmentDetail.price',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'price\',width:120',
+		                'align' => 'right',
+		                'mainalign' => 'right',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('No Seri') => array(
+						'text' => $serial_number,
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'serial_number\',width:80',
+					),
+					__('Status') => array(
+						'text' => $customStatus,
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'status\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+				);
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'last_id' => $last_id,
+			'model' => 'ProductAdjustmentDetail',
 		);
 	}
 

@@ -20,6 +20,10 @@
                 'class' => 'text-center',
                 'style' => 'width:5%;',
             ),
+            'note' => array(
+                'name' => __('Keterangan'),
+                'style' => 'width:10%;',
+            ),
         );
 
         if( empty($view) ) {
@@ -121,7 +125,6 @@
                             $total_qty_adjustment = 0;
                             $total_in_qty = 0;
 
-
                             if(!empty($dataDetail)){
                                 foreach ($dataDetail as $key => $value) {
                                     $id = $this->Common->filterEmptyField($value, 'ProductAdjustmentDetail', 'product_id');
@@ -129,7 +132,6 @@
                                     $price = $this->Common->filterEmptyField($value, 'ProductAdjustmentDetail', 'price', 0);
                                     $code = $this->Common->filterEmptyField($value, 'ProductAdjustmentDetail', 'code');
                                     $serial_number = $this->Common->filterEmptyField($value, 'ProductAdjustmentDetailSerialNumber');
-
 
                                     $grandtotal += $price;
                                     $total_qty_adjustment += $qty;
@@ -160,7 +162,7 @@
                     <tr class="grandtotal">
                         <?php
                                 echo $this->Html->tag('td', __('Total'), array(
-                                    'colspan' => 4,
+                                    'colspan' => 5,
                                     'class' => 'text-right',
                                 ));
                                 echo $this->Html->tag('td', $total_qty_adjustment, array(

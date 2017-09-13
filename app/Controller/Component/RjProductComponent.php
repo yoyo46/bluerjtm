@@ -1144,7 +1144,6 @@ class RjProductComponent extends Component {
                 $data['ProductExpenditureDetail'] = $dataDetail;
             }
         }
-        debug($data);die();
 
         return $data;
     }
@@ -1765,6 +1764,7 @@ class RjProductComponent extends Component {
             $details = $this->MkCommon->filterEmptyField($data, 'ProductAdjustmentDetail', 'product_id');
             $adjustQty = $this->MkCommon->filterEmptyField($data, 'ProductAdjustmentDetail', 'qty');
             $adjustPrice = $this->MkCommon->filterEmptyField($data, 'ProductAdjustmentDetail', 'price');
+            $adjustNote = $this->MkCommon->filterEmptyField($data, 'ProductAdjustmentDetail', 'note');
 
             if( !empty($details) ) {
                 $total = 0;
@@ -1774,6 +1774,7 @@ class RjProductComponent extends Component {
                 foreach ($values as $key => $product_id) {
                     $qty = $this->MkCommon->filterIssetField($adjustQty, $key);
                     $price = $this->MkCommon->filterIssetField($adjustPrice, $key);
+                    $note = $this->MkCommon->filterIssetField($adjustNote, $key);
                     
                     $price = Common::_callPriceConverter($price);
 
@@ -1805,6 +1806,7 @@ class RjProductComponent extends Component {
                         'code' => $code,
                         'name' => $name,
                         'unit' => $unit,
+                        'note' => $note,
                         'qty' => abs($qty_difference),
                         'price' => $price,
                         'flag_qty_difference' => $flag_qty_difference,
@@ -1851,6 +1853,19 @@ class RjProductComponent extends Component {
     function _callBeforeRenderAdjustment ( $data, $value = null ) {
         if( empty($data) ) {
             if( !empty($value) ) {
+                $value = $this->controller->Product->ProductAdjustmentDetail->ProductAdjustment->getMergeList($value, array(
+                    'contain' => array(
+                        'ProductAdjustmentDetail' => array(
+                            'Product' => array(
+                                'contain' => array(
+                                    'ProductUnit',
+                                ),
+                            ),
+                            'ProductAdjustmentDetailSerialNumber',
+                        ),
+                    ),
+                ));
+
                 $data = $value;
                 $details = Common::hashEmptyField($data, 'ProductAdjustmentDetail');
                 $serial_numbers = array();
@@ -1858,12 +1873,19 @@ class RjProductComponent extends Component {
                 if( !empty($details) ) {
                     foreach ($details as $key => &$detail) {
                         $product_id = Common::hashEmptyField($detail, 'Product.id');
+                        $code = Common::hashEmptyField($detail, 'Product.code');
+                        $name = Common::hashEmptyField($detail, 'Product.name');
                         $unit = Common::hashEmptyField($detail, 'Product.ProductUnit.name');
+                        $is_serial_number = Common::hashEmptyField($detail, 'Product.is_serial_number');
 
                         $sn = Set::extract('/ProductAdjustmentDetailSerialNumber/ProductAdjustmentDetailSerialNumber/serial_number', $detail);
 
                         $serial_numbers[$product_id] = $sn;
-                        $detail['Product']['unit'] = $unit;
+
+                        $detail['ProductAdjustmentDetail']['name'] = $name;
+                        $detail['ProductAdjustmentDetail']['code'] = $code;
+                        $detail['ProductAdjustmentDetail']['unit'] = $unit;
+                        $detail['ProductAdjustmentDetail']['is_serial_number'] = $is_serial_number;
                     }
 
                     $data['ProductAdjustmentDetail'] = $details;
@@ -1903,6 +1925,22 @@ class RjProductComponent extends Component {
         }
 
         $this->controller->request->data['ProductAdjustment']['session_id'] = $session_id;
+    }
+
+    function _callBeforeViewAdjustmentReports( $params ) {
+        $dateFrom = Common::hashEmptyField($params, 'named.DateFrom');
+        $dateTo = Common::hashEmptyField($params, 'named.DateTo');
+        $title = __('Laporan Qty Adjustment');
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $period_text = __('Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+        
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('active_menu', $title);
+        $this->controller->set(compact(
+            'period_text'
+        ));
     }
 }
 ?>

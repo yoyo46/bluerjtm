@@ -1370,7 +1370,7 @@
                         ),
                         'spk' => array(
                             'index', 'tire_reports', 'spk_reports',
-                            'maintenance_cost_report',
+                            'maintenance_cost_report', 'adjustment_report',
                         ),
                     );
 
@@ -1383,6 +1383,7 @@
                             'expenditure_reports',
                             'receipt_reports', 'tire_reports', 'spk_reports',
                             'maintenance_cost_report', 'adjustment',
+                            'adjustment_report',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1508,6 +1509,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'maintenance_cost_report' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Laporan Qty Adjustment', $this->Common->icon('angle-double-right')), array(
+                                'controller' => 'products',
+                                'action' => 'adjustment_report'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'adjustment_report' )?'active':'',
                             ));
                     ?>
                 </ul>

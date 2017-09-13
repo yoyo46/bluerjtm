@@ -34,13 +34,14 @@
             ));
 
             if( !empty($view) ) {
-                $total_qty = Common::hashEmptyField($value, 'ProductAdjustmentDetail.total_qty');
+                $note = $this->Common->filterEmptyField($value, $modelName, 'note', '-');
                 $qty = Common::hashEmptyField($value, 'ProductAdjustmentDetail.qty', 0);
                 $qty_difference = Common::hashEmptyField($value, 'ProductAdjustmentDetail.qty_difference', 0);
                 $price = Common::hashEmptyField($value, 'ProductAdjustmentDetail.price', 0, array(
                     'type' => 'currency',
                 ));
 
+                echo $this->Html->tag('td', $note);
                 echo $this->Html->tag('td', $total_qty, array(
                     'class' => 'text-center',
                 ));
@@ -55,6 +56,17 @@
                     'class' => 'text-right',
                 ));
             } else {
+                $note = $this->Common->filterEmptyField($value, $modelName, 'note');
+
+                echo $this->Html->tag('td', $this->Common->buildInputForm('ProductAdjustmentDetail.note.'.$id, false, array(
+                    'type' => 'text',
+                    'frameClass' => false,
+                    'attributes' => array(
+                        'value' => $note,
+                    ),
+                )), array(
+                    'class' => 'text-center',
+                ));
                 echo $this->Html->tag('td', $total_qty, array(
                     'class' => 'text-center price_custom',
                     'rel' => 'qty-stock',
