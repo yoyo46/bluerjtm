@@ -262,7 +262,6 @@ class RevenuesController extends AppController {
                     } else {
                         $priceUnit = 0;
                         $jenis_unit = false;
-                        $tarif_angkutan_type = false;
                     }
                     
                     $qtyMuatan = !empty($dataValidate['TtujTipeMotor']['qty'])?trim($dataValidate['TtujTipeMotor']['qty']):0;
