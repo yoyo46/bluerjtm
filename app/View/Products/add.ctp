@@ -6,6 +6,7 @@
 		$this->Html->addCrumb($sub_module_title);
 
 		$truck_categories = !empty($truck_categories)?$truck_categories:false;
+		$branch = Configure::read('__Site.Branch.code');
 
 		echo $this->Form->create('Product');
 ?>
@@ -31,24 +32,34 @@
 			    ?>
 				<div class="form-group">
 					<?php 
-							echo $this->Form->label('min_stock', __('Minimum Stok'));
+							echo $this->Form->label('ProductMinStock.min_stock', __('Minimum Stok'));
 					?>
 					<div class="row">
 						<div class="col-sm-6">
 							<div class="input-group">
 								<?php 
-										echo $this->Form->input('min_stock',array(
+										echo $this->Form->input('ProductMinStock.min_stock',array(
 											'type' => 'text',
 											'label'=> false, 
 											'class'=>'form-control',
 											'required' => false,
 											'div' => false,
+											'error' => false,
 										));
 										echo $this->Html->tag('span', __('N/A'), array(
 											'class'=>'input-group-addon addon-min-stock',
 										));
 								?>
 		                    </div>
+		                    <?php
+		                    		if( !empty($branch) ) {
+		                    			echo $this->Html->tag('p', __('Minimum untuk cabang %s', $branch), array(
+		                    				'class' => 'help-block',
+	                    				));
+		                    		}
+									
+									echo $this->Form->error('ProductMinStock.0.min_stock');
+		                    ?>
 						</div>
 					</div>
 				</div>

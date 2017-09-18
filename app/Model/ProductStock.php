@@ -166,13 +166,19 @@ class ProductStock extends AppModel {
         return $result;
     }
 
-    function _callStock ( $product_id ) {
+    function _callStock ( $product_id, $branch_id = false ) {
         $this->virtualFields['qty_cnt'] = 'SUM(ProductStock.qty - ProductStock.qty_use)';
-        $value = $this->getData('first', array(
+        $options = array(
             'conditions' => array(
                 'ProductStock.product_id' => $product_id,
             ),
-        ), array(
+        );
+
+        if( !empty($branch_id) ) {
+            $options['conditions']['ProductStock.branch_id'] = $branch_id;
+        }
+
+        $value = $this->getData('first', $options, array(
             'status' => 'barang_jadi',
         ));
         $total_stock = $this->filterEmptyField($value, 'ProductStock', 'qty_cnt');

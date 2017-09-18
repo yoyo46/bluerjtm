@@ -21,7 +21,7 @@
             ),
             'min_stock' => array(
                 'name' => __('Min. Stok'),
-                'field_model' => 'Product.min_stock',
+                'field_model' => 'ProductMinStock.min_stock',
                 'class' => 'text-center',
             ),
             'stock' => array(
@@ -101,8 +101,8 @@
                             $unit = $this->Common->filterEmptyField($value, 'ProductUnit', 'name');
                             $group = $this->Common->filterEmptyField($value, 'ProductCategory', 'name');
                             
-                            $min_stock = $this->Common->filterEmptyField($value, 'Product', 'min_stock');
-                            $product_stock_cnt = $this->Common->filterEmptyField($value, 'Product', 'product_stock_cnt', '-');
+                            $min_stock = Common::hashEmptyField($value, 'ProductMinStock.min_stock');
+                            $product_stock_cnt = Common::hashEmptyField($value, 'Product.product_stock_cnt');
 
                             if( !empty($min_stock) && $min_stock >= $product_stock_cnt ) {
                                 $tr_bg = 'alert alert-danger';
@@ -145,7 +145,7 @@
                         echo $this->Html->tag('td', $min_stock, array(
                             'class' => 'text-center',
                         ));
-                        echo $this->Html->tag('td', $product_stock_cnt, array(
+                        echo $this->Html->tag('td', !empty($product_stock_cnt)?$product_stock_cnt:'-', array(
                             'class' => 'text-center',
                         ));
                         echo $this->Html->tag('td', $sq, array(

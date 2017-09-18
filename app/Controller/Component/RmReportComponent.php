@@ -2564,14 +2564,26 @@ class RmReportComponent extends Component {
         $params_named = Common::hashEmptyField($params, 'named', array(), array(
         	'strict' => true,
     	));
+        // $branch_id = $this->MkCommon->getConditionGroupBranch( $params, 'ProductMinStock', array(), 'value' );
+
 		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
 		$params['named']['status_stock'] = Common::hashEmptyField($params, 'named.status_stock', 'stock_minimum_empty');
+        // $params['named']['branch_id'] = !empty($branch_id)?$branch_id:Configure::read('__Site.config_branch_id');
+		$params['named']['branch'] = false;
 
 		$options = array(
+			'contain' => array(
+				'ProductMinStock',
+			),
             'order'=> array(
-                'Product.product_stock_cnt' => 'ASC',
+                'ProductMinStock.min_stock' => 'DESC',
+                'ViewStock.product_stock_cnt' => 'ASC',
                 'Product.created' => 'DESC',
                 'Product.id' => 'DESC',
+            ),
+            'group'=> array(
+                'Product.id',
+                'ProductMinStock.branch_id',
             ),
         	'offset' => $offset,
         	'limit' => $limit,
@@ -2580,6 +2592,7 @@ class RmReportComponent extends Component {
 
 		$this->controller->paginate	= $this->controller->Product->getData('paginate', $options);
 		$data = $this->controller->paginate('Product');
+		// debug($this->controller->paginate);die();
 		$result = array();
 
 		$last_data = end($data);
@@ -2587,22 +2600,38 @@ class RmReportComponent extends Component {
 
 		if( !empty($data) ) {
 			foreach ($data as $key => $value) {
+                $id = Common::hashEmptyField($value, 'Product.id');
+                $branch_id = Common::hashEmptyField($value, 'ProductMinStock.branch_id');
+                
 		        $value = $this->controller->Product->getMergeList($value, array(
 		            'contain' => array(
 	                	'ProductUnit',
 	                	'ProductCategory',
 		            ),
 		        ));
+		        $value = $this->controller->Product->ProductMinStock->getMergeList($value, array(
+		            'contain' => array(
+	                	'Branch',
+		            ),
+		        ));
+                $value['ViewStock']['product_stock_cnt'] = $this->controller->Product->ProductStock->_callStock($id, $branch_id);
 
 		        $type = Common::hashEmptyField($value, 'Product.type');
                 $customType = str_replace('_', ' ', $type);
                 $customType = ucwords($customType);
 
-                $stock = Common::hashEmptyField($value, 'Product.product_stock_cnt', 0);
-                $min_stock = Common::hashEmptyField($value, 'Product.min_stock', 0);
+                $stock = Common::hashEmptyField($value, 'ViewStock.product_stock_cnt', 0);
+                $min_stock = Common::hashEmptyField($value, 'ProductMinStock.min_stock', 0);
                 $minus = $stock - $min_stock;
 
 				$result[$key] = array(
+					__('Cabang') => array(
+						'text' => Common::hashEmptyField($value, 'Branch.code', '-'),
+                		'field_model' => 'Branch.code',
+		                'style' => 'text-align: left;',
+		                'data-options' => 'field:\'branch\',width:100',
+		                'align' => 'left',
+					),
 					__('Kode') => array(
 						'text' => Common::hashEmptyField($value, 'Product.code'),
                 		'field_model' => 'Product.code',
@@ -2613,13 +2642,13 @@ class RmReportComponent extends Component {
 					__('Nama') => array(
 						'text' => Common::hashEmptyField($value, 'Product.name', '-'),
                 		'field_model' => 'Product.name',
-		                'style' => 'text-align: center;',
+		                'style' => 'text-align: left;',
 		                'data-options' => 'field:\'name\',width:120',
 					),
 					__('Tipe') => array(
 						'text' => $customType,
                 		'field_model' => 'Product.type',
-		                'style' => 'text-align: center;',
+		                'style' => 'text-align: left;',
 		                'data-options' => 'field:\'type\',width:100',
 		                'align' => 'left',
 					),
@@ -2640,18 +2669,7 @@ class RmReportComponent extends Component {
 					),
 					__('Stok') => array(
 						'text' => !empty($stock)?$stock:'-',
-                		'field_model' => 'Product.min_stock',
-		                'style' => 'text-align: center;',
-		                'data-options' => 'field:\'min_stock\',width:100',
-		                'align' => 'center',
-		                'mainalign' => 'center',
-                		'excel' => array(
-                			'align' => 'center',
-            			),
-					),
-					__('Min. Stok') => array(
-						'text' => !empty($min_stock)?$min_stock:'-',
-                		'field_model' => 'Product.product_stock_cnt',
+                		'field_model' => 'ViewStock.product_stock_cnt',
 		                'style' => 'text-align: center;',
 		                'data-options' => 'field:\'product_stock_cnt\',width:100',
 		                'align' => 'center',
@@ -2660,9 +2678,19 @@ class RmReportComponent extends Component {
                 			'align' => 'center',
             			),
 					),
+					__('Min. Stok') => array(
+						'text' => !empty($min_stock)?$min_stock:'-',
+                		'field_model' => 'ProductMinStock.min_stock',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'min_stock\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
 					__('Kekurangan') => array(
 						'text' => !empty($minus)?abs($minus):'-',
-                		'field_model' => 'Product.minus',
 		                'style' => 'text-align: center;',
 		                'data-options' => 'field:\'minus\',width:100',
 		                'align' => 'center',

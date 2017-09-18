@@ -33,4 +33,18 @@ class ValidationBehavior extends ModelBehavior {
 			return true;
 		}
 	}
+
+    public function callNumber (Model $model, $data, $fieldName) {
+        $value = Common::hashEmptyField($data, $fieldName);
+
+        if( !empty($value) ) {
+            if( is_numeric($value) ) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
 }

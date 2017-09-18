@@ -32,6 +32,15 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('name',array(
+                                'label'=> __('Nama Barang'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
                 <?php
                         echo $this->Common->_callInputForm('status_stock', array(
                             'label' => __('Status *'),
@@ -47,15 +56,6 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('name',array(
-                                'label'=> __('Nama Barang'),
-                                'class'=>'form-control',
-                                'required' => false,
-                            ));
-                    ?>
-                </div>
-                <div class="form-group">
-                    <?php 
                             echo $this->Form->input('group',array(
                                 'label'=> __('Group Barang'),
                                 'class'=>'form-control chosen-select',
@@ -63,6 +63,11 @@
                                 'options' => $productCategories,
                                 'empty' => __('Pilih Group'),
                             ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php
+                            echo $this->Common->getCheckboxBranch();
                     ?>
                 </div>
                 <div class="form-group action">

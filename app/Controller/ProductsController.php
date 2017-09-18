@@ -327,12 +327,23 @@ class ProductsController extends AppController {
         if( !empty($values) ) {
             foreach ($values as $key => &$value) {
                 $id = $this->MkCommon->filterEmptyField($value, 'Product', 'id');
-                $product_unit_id = $this->MkCommon->filterEmptyField($value, 'Product', 'product_unit_id');
-                $product_category_id = $this->MkCommon->filterEmptyField($value, 'Product', 'product_category_id');
-
-                $value = $this->Product->ProductUnit->getMerge($value, $product_unit_id);
-                $value = $this->Product->ProductCategory->getMerge($value, $product_category_id);
                 $value['Product']['product_stock_cnt'] = $this->Product->ProductStock->_callStock($id);
+                
+                $value = $this->Product->getMergeList($value, array(
+                    'contain' => array(
+                        'ProductUnit',
+                        'ProductCategory',
+                        'ProductMinStock' => array(
+                            'type' => 'first',
+                            'conditions' => array(
+                                'ProductMinStock.branch_id' => Configure::read('__Site.config_branch_id'),
+                            ),
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
+                    ),
+                ));
             }
         }
 
@@ -386,6 +397,20 @@ class ProductsController extends AppController {
         ));
 
         if( !empty($value) ) {
+            $value = $this->Product->getMergeList($value, array(
+                'contain' => array(
+                    'ProductMinStock' => array(
+                        'type' => 'first',
+                        'conditions' => array(
+                            'ProductMinStock.branch_id' => Configure::read('__Site.config_branch_id'),
+                        ),
+                        'elements' => array(
+                            'branch' => false,
+                        ),
+                    ),
+                ),
+            ));
+
             $result = $this->Product->doSave($this->request->data, $value, $id);
             $this->MkCommon->setProcessParams($result, array(
                 'controller' => 'products',

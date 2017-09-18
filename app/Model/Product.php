@@ -70,6 +70,14 @@ class Product extends AppModel {
             'className' => 'ProductAdjustmentDetail',
             'foreignKey' => 'product_id',
         ),
+        'ProductMinStock' => array(
+            'className' => 'ProductMinStock',
+            'foreignKey' => 'product_id',
+        ),
+        'ViewStock' => array(
+            'className' => 'ViewStock',
+            'foreignKey' => 'product_id',
+        ),
     );
 
 	var $validate = array(
@@ -207,55 +215,69 @@ class Product extends AppModel {
         $defaul_msg = __('barang');
 
         if ( !empty($data) ) {
+            $product_min_stock_id = Common::hashEmptyField($value, 'ProductMinStock.id');
+            $productMinStock = Common::hashEmptyField($data, 'ProductMinStock');
+            $branch_id = Configure::read('__Site.config_branch_id');
+
+            if( !empty($productMinStock) ) {
+                $min_stock = Common::hashEmptyField($data, 'ProductMinStock.min_stock');
+                unset($data['ProductMinStock']);
+
+                $data['ProductMinStock'][] = array(
+                    'id' => $product_min_stock_id,
+                    'min_stock' => $min_stock,
+                    'branch_id' => $branch_id,
+                );
+            }
+
             if( empty($id) ) {
-                $this->create();
                 $defaul_msg = sprintf(__('menambah %s'), $defaul_msg);
             } else {
-                $this->id = $id;
+                $data['Product']['id'] = $id;
                 $defaul_msg = sprintf(__('mengubah %s'), $defaul_msg);
             }
 
-            $this->set($data);
-            $flagValidates = $this->validates();
-            $code = !empty($data['Product']['code'])?$data['Product']['code']:false;
-            $name = !empty($data['Product']['name'])?$data['Product']['name']:false;
+            $code = Common::hashEmptyField($data, 'Product.code');
+            $name = Common::hashEmptyField($data, 'Product.name');
 
             if( !empty($code) && !empty($name) ) {
                 $defaul_msg = sprintf(__('%s (%s) %s'), $defaul_msg, $code, $name);
             }
 
-            if( $flagValidates ) {
-                if( $this->save($data) ) {
-                    $id = $this->id;
-                    $defaul_msg = sprintf(__('Berhasil %s'), $defaul_msg);
+            $flag = $this->saveAll($data, array(
+                'validate' => 'only',
+            ));
 
-                    $result = array(
-                        'msg' => $defaul_msg,
-                        'status' => 'success',
-                        'Log' => array(
-                            'activity' => $defaul_msg,
-                            'old_data' => $value,
-                            'document_id' => $id,
-                        ),
-                    );
-                } else {
-                    $defaul_msg = sprintf(__('Gagal %s'), $defaul_msg);
-                    $result = array(
-                        'msg' => $defaul_msg,
-                        'status' => 'error',
-                        'Log' => array(
-                            'activity' => $defaul_msg,
-                            'old_data' => $value,
-                            'document_id' => $id,
-                            'error' => 1,
-                        ),
-                    );
-                }
+            if( !empty($flag) ) {
+                // $this->ProductMinStock->deleteAll(array(
+                //     'ProductMinStock.product_id' => $id,
+                //     'ProductMinStock.branch_id' => $branch_id,
+                // ));
+                $this->saveAll($data);
+
+                $id = $this->id;
+                $defaul_msg = sprintf(__('Berhasil %s'), $defaul_msg);
+
+                $result = array(
+                    'msg' => $defaul_msg,
+                    'status' => 'success',
+                    'Log' => array(
+                        'activity' => $defaul_msg,
+                        'old_data' => $value,
+                        'document_id' => $id,
+                    ),
+                );
             } else {
                 $defaul_msg = sprintf(__('Gagal %s'), $defaul_msg);
                 $result = array(
                     'msg' => $defaul_msg,
                     'status' => 'error',
+                    'Log' => array(
+                        'activity' => $defaul_msg,
+                        'old_data' => $value,
+                        'document_id' => $id,
+                        'error' => 1,
+                    ),
                 );
             }
         } else if( !empty($value) ) {
@@ -272,13 +294,34 @@ class Product extends AppModel {
         $group = !empty($data['named']['group'])?$data['named']['group']:false;
         $unit = !empty($data['named']['unit'])?$data['named']['unit']:false;
         $status_stock = !empty($data['named']['status_stock'])?$data['named']['status_stock']:false;
+        $sort = !empty($data['named']['sort'])?$data['named']['sort']:false;
+        $direction = !empty($data['named']['direction'])?$data['named']['direction']:false;
+        $branch = isset($data['named']['branch'])?$data['named']['branch']:Configure::read('__Site.config_branch_id');
+        $productMinStock = strpos($sort, 'ProductMinStock.');
+        $viewStock = strpos($sort, 'ViewStock.');
+        
+        if( is_numeric($productMinStock) || !empty($status_stock) ) {
+            if( !empty($branch) ) {
+                $conditions['ProductMinStock.branch_id'] = $branch;
+            } else {
+                $conditions = array();
+            }
 
-        // if( !empty($keyword) ) {
-        //     $default_options['conditions']['OR'] = array(
-        //         'Product.code LIKE' => '%'.$keyword.'%',
-        //         'Product.name LIKE' => '%'.$keyword.'%',
-        //     );
-        // }
+            $this->unBindModel(array(
+                'hasMany' => array(
+                    'ProductMinStock'
+                )
+            ));
+            $this->bindModel(array(
+                'hasOne' => array(
+                    'ProductMinStock' => array(
+                        'className' => 'ProductMinStock',
+                        'foreignKey' => 'product_id',
+                        'conditions' => $conditions,
+                    )
+                )
+            ), false);
+        }
         
         if( !empty($code) ) {
             $default_options['conditions']['Product.code LIKE'] = '%'.$code.'%';
@@ -293,30 +336,81 @@ class Product extends AppModel {
             $default_options['conditions']['Product.product_unit_id'] = $unit;
         }
         if( !empty($status_stock) ) {
+            $this->unBindModel(array(
+                'hasMany' => array(
+                    'ViewStock'
+                )
+            ));
+            $this->bindModel(array(
+                'hasOne' => array(
+                    'ViewStock' => array(
+                        'className' => 'ViewStock',
+                        'foreignKey' => 'product_id',
+                        'conditions' => array(
+                            'OR' => array(
+                                'ProductMinStock.branch_id' => NULL,
+                                'ViewStock.branch_id = ProductMinStock.branch_id',
+                            ),
+                        ),
+                    )
+                )
+            ), false);
+
             switch ($status_stock) {
                 case 'stock_available':
-                    $default_options['conditions']['Product.product_stock_cnt >'] = 0;
-                    $default_options['conditions'][] = 'Product.product_stock_cnt > IFNULL(Product.min_stock, 0)';
+                    $default_options['conditions']['ViewStock.product_stock_cnt >'] = 0;
+                    $default_options['conditions'][] = 'ViewStock.product_stock_cnt > IFNULL(ProductMinStock.min_stock, 0)';
                     break;
                 case 'stock_empty':
-                    $default_options['conditions']['Product.product_stock_cnt'] = 0;
+                    $default_options['conditions'][]['OR'] = array(
+                        array(
+                            'ViewStock.product_stock_cnt' => 0,
+                        ),
+                        array(
+                            'ViewStock.product_stock_cnt' => NULL,
+                        ),
+                    );
+                    $default_options['group'] = array(
+                        'Product.id',
+                        'ViewStock.branch_id',
+                    );
                     break;
                 case 'stock_minimum':
-                    $default_options['conditions']['Product.product_stock_cnt >'] = 0;
-                    $default_options['conditions'][] = 'Product.product_stock_cnt <= IFNULL(Product.min_stock, 0)';
+                    $default_options['conditions']['ViewStock.product_stock_cnt >'] = 0;
+                    $default_options['conditions'][] = 'ViewStock.product_stock_cnt <= IFNULL(ProductMinStock.min_stock, 0)';
                     break;
                 case 'stock_minimum_empty':
                     $default_options['conditions'][]['OR'] = array(
                         array(
-                            'Product.product_stock_cnt >' => 0,
-                            'Product.product_stock_cnt <= IFNULL(Product.min_stock, 0)',
+                            'ViewStock.product_stock_cnt >' => 0,
+                            'ViewStock.product_stock_cnt <= IFNULL(ProductMinStock.min_stock, 0)',
                         ),
                         array(
-                            'Product.product_stock_cnt' => 0,
+                            'ViewStock.product_stock_cnt' => null,
                         ),
                     );
                     break;
             }
+
+            $default_options['contain'][] = 'ProductMinStock';
+            $default_options['contain'][] = 'ViewStock';
+        }
+
+        if( !empty($sort) ) {
+            if( is_numeric($productMinStock) ) {
+                $default_options['contain'][] = 'ProductMinStock';
+            }
+            if( is_numeric($viewStock) ) {
+                $default_options['contain'][] = 'ViewStock';
+                $default_options['group'] = array(
+                    'Product.id',
+                    'ViewStock.branch_id',
+                );
+            }
+
+            $default_options['order'] = array(
+                $sort => $direction,
+            );
         }
         
         return $default_options;
