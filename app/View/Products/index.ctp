@@ -7,6 +7,7 @@
             'name' => array(
                 'name' => __('Nama'),
                 'field_model' => 'Product.name',
+                'width' => '20%',
             ),
             'type' => array(
                 'name' => __('Tipe'),
@@ -17,6 +18,11 @@
             ),
             'group' => array(
                 'name' => __('Grup'),
+            ),
+            'min_stock' => array(
+                'name' => __('Min. Stok'),
+                'field_model' => 'Product.min_stock',
+                'class' => 'text-center',
             ),
             'stock' => array(
                 'name' => __('Stok'),
@@ -89,12 +95,21 @@
                             $type = $this->Common->filterEmptyField($value, 'Product', 'type');
                             $created = $this->Common->filterEmptyField($value, 'Product', 'created');
                             $status = $this->Common->filterEmptyField($value, 'Product', 'status');
-                            $product_stock_cnt = $this->Common->filterEmptyField($value, 'Product', 'product_stock_cnt', '-');
                             $is_supplier_quotation = $this->Common->filterEmptyField($value, 'Product', 'is_supplier_quotation');
                             $is_serial_number = $this->Common->filterEmptyField($value, 'Product', 'is_serial_number');
 
                             $unit = $this->Common->filterEmptyField($value, 'ProductUnit', 'name');
                             $group = $this->Common->filterEmptyField($value, 'ProductCategory', 'name');
+                            
+                            $min_stock = $this->Common->filterEmptyField($value, 'Product', 'min_stock');
+                            $product_stock_cnt = $this->Common->filterEmptyField($value, 'Product', 'product_stock_cnt', '-');
+
+                            if( !empty($min_stock) && $min_stock >= $product_stock_cnt ) {
+                                $tr_bg = 'alert alert-danger';
+                            } else {
+                                $min_stock = '-';
+                                $tr_bg = '';
+                            }
 
                             $customCreated = $this->Common->formatDate($created, 'd/m/Y');
                             
@@ -120,13 +135,16 @@
                                 'data-alert' => __('Anda yakin ingin menghapus barang ini?'),
                             ));
             ?>
-            <tr>
+            <tr class="<?php echo $tr_bg; ?>">
                 <?php 
                         echo $this->Html->tag('td', $code);
                         echo $this->Html->tag('td', $name);
                         echo $this->Html->tag('td', $customType);
                         echo $this->Html->tag('td', $unit);
                         echo $this->Html->tag('td', $group);
+                        echo $this->Html->tag('td', $min_stock, array(
+                            'class' => 'text-center',
+                        ));
                         echo $this->Html->tag('td', $product_stock_cnt, array(
                             'class' => 'text-center',
                         ));

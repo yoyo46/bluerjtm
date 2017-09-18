@@ -14,10 +14,11 @@
                     'url'=> $this->Html->url( array(
                         'controller' => 'products',
                         'action' => 'search',
-                        'index'
+                        'min_stock_report'
                     )), 
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
+                    'class' => 'form-search',
                 ));
         ?>
         <div class="row">
@@ -37,7 +38,6 @@
                             'empty' => __('Pilih Status'),
                             'class' => 'form-control',
                             'options' => array(
-                                'stock_available' => __('Stok Tersedia'),
                                 'stock_empty' => __('Stok Kosong'),
                                 'stock_minimum' => __('Kurang dari Minimum Stok'),
                             ),
@@ -74,7 +74,7 @@
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
                                 'controller' => 'products', 
-                                'action' => 'index', 
+                                'action' => 'min_stock_report', 
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',
@@ -84,7 +84,10 @@
             </div>
         </div>
         <?php 
-            echo $this->Form->end();
+                echo $this->Form->hidden('title',array(
+                    'value'=> $sub_module_title,
+                ));
+                echo $this->Form->end();
         ?>
     </div>
 </div>

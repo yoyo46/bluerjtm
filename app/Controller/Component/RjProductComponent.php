@@ -1942,5 +1942,12 @@ class RjProductComponent extends Component {
             'period_text'
         ));
     }
+
+    function _callBeforeViewMinStockReport( $params ) {
+        $title = __('Laporan Minimum Stok');
+        
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('active_menu', $title);
+    }
 }
 ?>

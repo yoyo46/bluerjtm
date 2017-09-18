@@ -1367,6 +1367,7 @@
                             'expenditure_reports',
                             'receipt_reports',
                             'adjustment',
+                            'min_stock_report',
                         ),
                         'spk' => array(
                             'index', 'tire_reports', 'spk_reports',
@@ -1383,7 +1384,7 @@
                             'expenditure_reports',
                             'receipt_reports', 'tire_reports', 'spk_reports',
                             'maintenance_cost_report', 'adjustment',
-                            'adjustment_report',
+                            'adjustment_report', 'min_stock_report',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1517,6 +1518,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'adjustment_report' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Laporan Minimum Stok', $this->Common->icon('angle-double-right')), array(
+                                'controller' => 'products',
+                                'action' => 'min_stock_report'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'min_stock_report' )?'active':'',
                             ));
                     ?>
                 </ul>

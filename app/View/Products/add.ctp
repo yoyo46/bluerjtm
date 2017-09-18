@@ -19,13 +19,39 @@
 		    	<?php 
 						echo $this->Common->buildForm('code', __('Kode *'));
 						echo $this->Common->buildForm('name', __('Nama *'));
-						echo $this->Common->buildForm('product_unit_id', __('Satuan *'), array(
+						echo $this->Common->_callInputForm('product_unit_id', array(
+							'label' => __('Satuan *'),
 							'empty' => __('Pilih Satuan'),
+							'class' => 'form-control  data-on-change',
+							'data-target' => '.addon-min-stock',
 						));
 						echo $this->Common->buildForm('product_category_id', __('Group *'), array(
 							'empty' => __('Pilih Grup'),
 						));
 			    ?>
+				<div class="form-group">
+					<?php 
+							echo $this->Form->label('min_stock', __('Minimum Stok'));
+					?>
+					<div class="row">
+						<div class="col-sm-6">
+							<div class="input-group">
+								<?php 
+										echo $this->Form->input('min_stock',array(
+											'type' => 'text',
+											'label'=> false, 
+											'class'=>'form-control',
+											'required' => false,
+											'div' => false,
+										));
+										echo $this->Html->tag('span', __('N/A'), array(
+											'class'=>'input-group-addon addon-min-stock',
+										));
+								?>
+		                    </div>
+						</div>
+					</div>
+				</div>
 		    </div>
 		</div>
     </div>

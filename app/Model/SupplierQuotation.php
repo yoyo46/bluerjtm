@@ -33,8 +33,8 @@ class SupplierQuotation extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'No dokumen harap diisi'
             ),
-            'unique' => array(
-                'rule' => 'isUnique',
+            'checkUniq' => array(
+                'rule' => array('checkUniq'),
                 'message' => 'No dokumen sudah terdaftar, mohon masukkan no dokumen lain.'
             ),
         ),
@@ -73,6 +73,27 @@ class SupplierQuotation extends AppModel {
         //     ),
         // ),
 	);
+
+    function checkUniq() {
+        $id = $this->id;
+        $id = Common::hashEmptyField($this->data, 'SupplierQuotation.id', $id);
+        $nodoc = Common::hashEmptyField($this->data, 'SupplierQuotation.nodoc');
+
+        $check = $this->getData('first', array(
+            'conditions' => array(
+                'SupplierQuotation.id <>' => $id,
+                'SupplierQuotation.nodoc' => $nodoc,
+            ),
+        ), array(
+            'branch' => true,
+        ));
+
+        if( !empty($check) ) {
+            return false;
+        } else {
+            return true; 
+        }
+    }
 
 	function getData( $find, $options = false, $elements = false ){
         $status = isset($elements['status'])?$elements['status']:'active';
@@ -195,6 +216,7 @@ class SupplierQuotation extends AppModel {
                 $defaul_msg = sprintf(__('menambah %s'), $defaul_msg);
             } else {
                 $this->id = $id;
+                $data['SupplierQuotation']['id'] = $id;
                 $defaul_msg = sprintf(__('mengubah %s'), $defaul_msg);
             }
 
@@ -212,6 +234,7 @@ class SupplierQuotation extends AppModel {
             $detailValidates = $this->SupplierQuotationDetail->doSave($data, false, true);
 
             if( $validates && $detailValidates ) {
+                $dataDetail['SupplierQuotationDetail'] = Common::hashEmptyField($data, 'SupplierQuotationDetail');
                 $data = Common::_callUnset($data, array(
                     'SupplierQuotationDetail',
                 ));
@@ -223,7 +246,7 @@ class SupplierQuotation extends AppModel {
                         'DocumentAuth.document_type' => 'sq',
                     ));
                     
-                    $this->SupplierQuotationDetail->doSave($data, $id);
+                    $this->SupplierQuotationDetail->doSave($dataDetail, $id);
                     $defaul_msg = sprintf(__('Berhasil %s'), $defaul_msg);
 
                     $result = array(

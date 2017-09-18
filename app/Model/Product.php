@@ -271,6 +271,7 @@ class Product extends AppModel {
         $name = !empty($data['named']['name'])?$data['named']['name']:false;
         $group = !empty($data['named']['group'])?$data['named']['group']:false;
         $unit = !empty($data['named']['unit'])?$data['named']['unit']:false;
+        $status_stock = !empty($data['named']['status_stock'])?$data['named']['status_stock']:false;
 
         // if( !empty($keyword) ) {
         //     $default_options['conditions']['OR'] = array(
@@ -290,6 +291,32 @@ class Product extends AppModel {
         }
         if( !empty($unit) ) {
             $default_options['conditions']['Product.product_unit_id'] = $unit;
+        }
+        if( !empty($status_stock) ) {
+            switch ($status_stock) {
+                case 'stock_available':
+                    $default_options['conditions']['Product.product_stock_cnt >'] = 0;
+                    $default_options['conditions'][] = 'Product.product_stock_cnt > IFNULL(Product.min_stock, 0)';
+                    break;
+                case 'stock_empty':
+                    $default_options['conditions']['Product.product_stock_cnt'] = 0;
+                    break;
+                case 'stock_minimum':
+                    $default_options['conditions']['Product.product_stock_cnt >'] = 0;
+                    $default_options['conditions'][] = 'Product.product_stock_cnt <= IFNULL(Product.min_stock, 0)';
+                    break;
+                case 'stock_minimum_empty':
+                    $default_options['conditions'][]['OR'] = array(
+                        array(
+                            'Product.product_stock_cnt >' => 0,
+                            'Product.product_stock_cnt <= IFNULL(Product.min_stock, 0)',
+                        ),
+                        array(
+                            'Product.product_stock_cnt' => 0,
+                        ),
+                    );
+                    break;
+            }
         }
         
         return $default_options;

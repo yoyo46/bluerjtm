@@ -4509,4 +4509,19 @@ $(function() {
         $('.target-month').val(month);
         $('.target-year').val(year+1);
     });
+
+    if( $('.data-on-change').length > 0 ) {
+        $('.data-on-change').change(function(){
+            var self = $(this);
+            var val = self.val();
+
+            if( val != '' ) {
+                var text = self.find('option:selected').text();
+                var target = self.attr('data-target');
+                
+                $(target).html(text);
+            }
+        });
+        $('.data-on-change').trigger('change');
+    }
 });
