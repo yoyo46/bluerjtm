@@ -537,6 +537,21 @@ class RmReportComponent extends Component {
                     case 'product_expenditure':
                         $modelName = 'ProductExpenditure';
                         break;
+                    case 'product_expenditure_void':
+                        $modelName = 'ProductExpenditure';
+                        break;
+                    case 'product_adjustment_min':
+                        $modelName = 'ProductAdjustment';
+                        break;
+                    case 'product_adjustment_min_void':
+                        $modelName = 'ProductAdjustment';
+                        break;
+                    case 'product_adjustment_plus':
+                        $modelName = 'ProductAdjustment';
+                        break;
+                    case 'product_adjustment_plus_void':
+                        $modelName = 'ProductAdjustment';
+                        break;
                 }
 
                 $value = $this->controller->ProductHistory->getMergeList($value, array(
@@ -546,11 +561,90 @@ class RmReportComponent extends Component {
                             'contain' => array(
                                 'Document' => array(
                                     'uses' => $modelName,
+                                    'elements' => array(
+                                        'branch' => false,
+                                        'status' => false,
+                                    ),
                                 ),
                             ),
                         ),
                     ),
                 ));
+
+                if( $transaction_type == 'product_receipt' ) {
+                    $product_receipt_id = Common::hashEmptyField($value, 'DocumentDetail.Document.id');
+
+                    $value['DocumentDetail']['SerialNumber'] = $this->controller->ProductHistory->ProductReceiptDetail->ProductReceipt->ProductReceiptDetailSerialNumber->getData('list', array(
+                        'fields' => array(
+                            'ProductReceiptDetailSerialNumber.serial_number',
+                            'ProductReceiptDetailSerialNumber.serial_number',
+                        ),
+                        'conditions' => array(
+                            'ProductReceiptDetailSerialNumber.product_receipt_id' => $product_receipt_id,
+                            'ProductReceiptDetailSerialNumber.product_id' => $product_id,
+                        ),
+                    ), array(
+                        'status' => 'confirm',
+                    ));
+                } else if( $transaction_type == 'product_expenditure' ) {
+                    $product_expenditure_detail_id = Common::hashEmptyField($value, 'DocumentDetail.id');
+
+                    $value['DocumentDetail']['SerialNumber'] = $this->controller->ProductHistory->ProductExpenditureDetail->ProductExpenditureDetailSerialNumber->getData('list', array(
+                        'fields' => array(
+                            'ProductExpenditureDetailSerialNumber.serial_number',
+                            'ProductExpenditureDetailSerialNumber.serial_number',
+                        ),
+                        'conditions' => array(
+                            'ProductExpenditureDetailSerialNumber.product_expenditure_detail_id' => $product_expenditure_detail_id,
+                            'ProductExpenditureDetailSerialNumber.product_id' => $product_id,
+                        ),
+                    ));
+                } else if( in_array($transaction_type, array('product_adjustment_min', 'product_adjustment_plus')) ) {
+                    $product_adjustment_detail_id = Common::hashEmptyField($value, 'DocumentDetail.id');
+
+                    $value['DocumentDetail']['SerialNumber'] = $this->controller->ProductHistory->ProductAdjustmentDetail->ProductAdjustmentDetailSerialNumber->getData('list', array(
+                        'fields' => array(
+                            'ProductAdjustmentDetailSerialNumber.serial_number',
+                            'ProductAdjustmentDetailSerialNumber.serial_number',
+                        ),
+                        'conditions' => array(
+                            'ProductAdjustmentDetailSerialNumber.product_adjustment_detail_id' => $product_adjustment_detail_id,
+                            'ProductAdjustmentDetailSerialNumber.product_id' => $product_id,
+                        ),
+                    ));
+                }
+
+                if( in_array($transaction_type, array('product_adjustment_min', 'product_adjustment_plus', 'product_adjustment_min_void', 'product_adjustment_plus_void')) ) {
+                    $tmpResult[$product_id][$branch_id]['Branch'] = Common::hashEmptyField($value, 'Branch');
+                    $tmpResult[$product_id][$branch_id]['Product'] = Common::hashEmptyField($value, 'Product');
+                    $tmpResult[$product_id][$branch_id]['ProductHistory'][] = $value;
+                } else {
+                    $document_type = Common::hashEmptyField($value, 'DocumentDetail.Document.document_type');
+                    $document_id = Common::hashEmptyField($value, 'DocumentDetail.Document.document_id');
+
+                    switch ($document_type) {
+                        case 'po':
+                            $transactionName = 'PurchaseOrder';
+                            break;
+                        
+                        default:
+                            $transactionName = 'Spk';
+                            break;
+                    }
+
+                    $modelNameDetail = $modelName.'Detail';
+                    $value = $this->controller->ProductHistory->$modelNameDetail->$modelName->$transactionName->getMerge($value, $document_id, $transactionName.'.id', 'all', 'Transaction');
+                    
+                    $truck_id = Common::hashEmptyField($value, 'Transaction.truck_id');
+
+                    if( !empty($truck_id) ) {
+                        $value = $this->controller->ProductHistory->$modelNameDetail->$modelName->$transactionName->Truck->getMerge($value, $truck_id);
+                    }
+
+                    $tmpResult[$product_id][$branch_id]['Branch'] = Common::hashEmptyField($value, 'Branch');
+                    $tmpResult[$product_id][$branch_id]['Product'] = Common::hashEmptyField($value, 'Product');
+                    $tmpResult[$product_id][$branch_id]['ProductHistory'][] = $value;
+                }
 
                 $document_type = Common::hashEmptyField($value, 'DocumentDetail.Document.document_type');
                 $document_id = Common::hashEmptyField($value, 'DocumentDetail.Document.document_id');
@@ -564,25 +658,12 @@ class RmReportComponent extends Component {
                         $transactionName = 'Spk';
                         break;
                 }
-
-                $modelNameDetail = $modelName.'Detail';
-                $value = $this->controller->ProductHistory->$modelNameDetail->$modelName->$transactionName->getMerge($value, $document_id, $transactionName.'.id', 'all', 'Transaction');
-                
-                $truck_id = Common::hashEmptyField($value, 'Transaction.truck_id');
-
-                if( !empty($truck_id) ) {
-                    $value = $this->controller->ProductHistory->$modelNameDetail->$modelName->$transactionName->Truck->getMerge($value, $truck_id);
-                }
-
-                $tmpResult[$product_id][$branch_id]['Branch'] = Common::hashEmptyField($value, 'Branch');
-                $tmpResult[$product_id][$branch_id]['Product'] = Common::hashEmptyField($value, 'Product');
-                $tmpResult[$product_id][$branch_id]['ProductHistory'][] = $value;
 			}
 		}
 
         if(!empty($tmpResult)){
         	$idx = 0;
-            $this->controller->ProductHistory->virtualFields['total_begining_balance'] = 'SUM(CASE WHEN ProductHistory.transaction_type = \'product_receipt\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.transaction_type = \'product_expenditure\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END)';
+            $this->controller->ProductHistory->virtualFields['total_begining_balance'] = 'SUM(CASE WHEN ProductHistory.transaction_type = \'product_receipt\' OR ProductHistory.transaction_type = \'product_adjustment_plus\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.transaction_type = \'product_expenditure\' OR ProductHistory.transaction_type = \'product_adjustment_min\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END)';
             $this->controller->ProductHistory->virtualFields['total_qty_in'] = 'SUM(CASE WHEN ProductHistory.type = \'in\' THEN ProductHistory.qty ELSE 0 END)';
             $this->controller->ProductHistory->virtualFields['total_qty_out'] = 'SUM(CASE WHEN ProductHistory.type = \'out\' THEN ProductHistory.qty ELSE 0 END)';
 
@@ -736,35 +817,60 @@ class RmReportComponent extends Component {
 
                					$nopol = Common::hashEmptyField($value, 'Truck.nopol', '-');
 				                $nodoc = Common::hashEmptyField($value, 'DocumentDetail.Document.nodoc');
+                				$docid = Common::hashEmptyField($value, 'DocumentDetail.Document.id');
+                				$serial_numbers = Common::hashEmptyField($value, 'DocumentDetail.SerialNumber');
 				                $qty = Common::hashEmptyField($value, 'ProductHistory.qty');
 				                // $total_balance_price = $total_begining_price*$balance;
 
-				                switch ($transaction_type) {
-				                    case 'product_receipt':
-				                        $qty_in = Common::hashEmptyField($value, 'ProductHistory.qty');
-				                        $price = $price_in = Common::hashEmptyField($value, 'ProductHistory.price');
-				                        $total_in = $qty_in * $price_in;
-				                        $total_ending_price = $price*$qty;
-				                        // $grandtotal_ending = $total_balance_price + $total_ending_price;
-                
-				                        if( !empty($ending_stock[$price]['qty']) ) {
-				                            $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
-				                        } else {
-				                            $ending_stock[$price] = array(
-				                                'qty' => $qty,
-				                                'price' => $price,
-				                            );
-				                        }
-				                        break;
-				                    case 'product_expenditure':
-				                        $qty_out_tmp = $qty_out = Common::hashEmptyField($value, 'ProductHistory.qty');
-				                        $price = $price_out = Common::hashEmptyField($value, 'ProductHistory.price');
-				                        $total_out = $qty_out * $price_out;
-				                        $total_ending_price = $price*$qty;
-				                        // $grandtotal_ending = $total_balance_price - $total_ending_price;
-                
-				                        if( !empty($ending_stock) ) {
-				                            foreach ($ending_stock as $key => $stock) {
+				                if( in_array($transaction_type, array( 'product_receipt', 'product_expenditure_void', 'product_adjustment_plus', 'product_adjustment_min_void' )) ) {
+				                    $qty_in = Common::hashEmptyField($value, 'ProductHistory.qty');
+				                    $price = $price_in = Common::hashEmptyField($value, 'ProductHistory.price');
+				                    $total_in = $qty_in * $price_in;
+
+				                    $total_ending_price = $price*$qty;
+				            
+				                    if( !empty($ending_stock[$price]['qty']) ) {
+				                        $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
+				                    } else {
+				                        $ending_stock[$price] = array(
+				                            'qty' => $qty,
+				                            'price' => $price,
+				                        );
+				                    }
+
+				                    $ending_stock[$price]['serial_numbers'] = $serial_numbers;
+
+				                    if( $transaction_type == 'product_expenditure_void' ) {
+				                        $nodoc = __('%s (Void)', $nodoc);
+				                    }
+				                } else if( in_array($transaction_type, array('product_expenditure', 'product_adjustment_min', 'product_adjustment_plus_void')) ) {
+				                    $qty_out_tmp = $qty_out = Common::hashEmptyField($value, 'ProductHistory.qty');
+				                    $price = $price_out = Common::hashEmptyField($value, 'ProductHistory.price');
+				                    $total_out = $qty_out * $price_out;
+				                    $total_ending_price = $price*$qty;
+				            
+				                    if( !empty($ending_stock) ) {
+				                        foreach ($ending_stock as $key => $stock) {
+				                            $sn_stock = Common::hashEmptyField($stock, 'serial_numbers');
+
+				                            if( !empty($serial_numbers) && !empty($sn_stock) && !empty($is_serial_number) ) {
+				                                foreach ($serial_numbers as $sn) {
+				                                    if( in_array($sn, $sn_stock) ) {
+				                                        $ending_qty = Common::hashEmptyField($stock, 'qty', 0) - $qty_out_tmp;
+
+				                                        if( empty($ending_qty) ) {
+				                                            unset($ending_stock[$key]);
+				                                            break;
+				                                        } else if( $ending_qty < 0 ) {
+				                                            unset($ending_stock[$key]);
+				                                            $qty_out_tmp = abs($ending_qty);
+				                                        } else {
+				                                            $ending_stock[$key]['qty'] = $ending_qty;
+				                                            break;
+				                                        }
+				                                    }
+				                                }
+				                            } else {
 				                                $ending_qty = Common::hashEmptyField($stock, 'qty', 0) - $qty_out_tmp;
 
 				                                if( empty($ending_qty) ) {
@@ -779,14 +885,8 @@ class RmReportComponent extends Component {
 				                                }
 				                            }
 				                        }
-				                        break;
+				                    }
 				                }
-
-				                // if( !empty($ending) ) {
-				                //     $grandtotal_ending_price = $grandtotal_ending / $ending;
-				                // } else {
-				                //     $grandtotal_ending_price = 0;
-				                // }
 
 					            if( !empty($ending_stock) ) {
 					                $firstArr = reset($ending_stock);
