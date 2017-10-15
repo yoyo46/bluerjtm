@@ -33,6 +33,7 @@
                                 'paid' => __('Sudah dibayar'),
                             ),
                         ));
+                        echo $this->Common->buildInputForm('note', __('Keterangan'));
                         echo $this->element('blocks/common/searchs/box_action', array(
                             '_url' => array(
                                 'controller' => 'products', 

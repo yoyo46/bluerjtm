@@ -1933,7 +1933,7 @@ class ProductsController extends AppController {
 
     function adjustment () {
         $this->loadModel('ProductAdjustment');
-        $this->set('sub_module_title', 'Qty Adjustment');
+        $this->set('sub_module_title', 'Penyesuaian Qty');
         
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');
@@ -1942,8 +1942,8 @@ class ProductsController extends AppController {
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
         ));
-        // $options =  $this->ProductAdjustment->_callRefineParams($params);
-        $this->paginate = $this->ProductAdjustment->getData('paginate', array(), array(
+        $options =  $this->ProductAdjustment->_callRefineParams($params);
+        $this->paginate = $this->ProductAdjustment->getData('paginate', $options, array(
             'status' => 'all',
         ));
         $values = $this->paginate('ProductAdjustment');
@@ -1999,7 +1999,7 @@ class ProductsController extends AppController {
             $this->set('active_menu', 'adjustment');
             $this->render('adjustment_add');
         } else {
-            $this->MkCommon->redirectReferer(__('Adjustment tidak ditemukan.'), 'error');
+            $this->MkCommon->redirectReferer(__('Penyesuaian tidak ditemukan.'), 'error');
         }
     }
 
@@ -2089,7 +2089,7 @@ class ProductsController extends AppController {
     }
 
     public function adjustment_detail( $id = false ) {
-        $this->set('sub_module_title', __('Detail Adjustment'));
+        $this->set('sub_module_title', __('Detail Penyesuaian Qty'));
 
         $value = $this->Product->ProductAdjustmentDetail->ProductAdjustment->getData('first', array(
             'conditions' => array(
@@ -2110,7 +2110,7 @@ class ProductsController extends AppController {
             ));
             $this->render('adjustment_add');
         } else {
-            $this->MkCommon->redirectReferer(__('Adjustment tidak ditemukan.'), 'error');
+            $this->MkCommon->redirectReferer(__('Penyesuaian Qty tidak ditemukan.'), 'error');
         }
     }
 

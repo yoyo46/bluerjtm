@@ -34,12 +34,12 @@
                     'style' => 'width:5%;',
                 ),
                 'qty_adjust' => array(
-                    'name' => __('Adjustment'),
+                    'name' => __('Penyesuaian'),
                     'class' => 'text-center',
                     'style' => 'width:8%;',
                 ),
                 'qty_difference' => array(
-                    'name' => __('Difference'),
+                    'name' => __('Selisih'),
                     'class' => 'text-center',
                     'style' => 'width:5%;',
                 ),

@@ -2553,7 +2553,7 @@ class RmReportComponent extends Component {
 		                'style' => 'text-align: center;',
 		                'data-options' => 'field:\'branch\',width:100',
 					),
-					__('Tgl Adjustment') => array(
+					__('Tgl Penyesuaian') => array(
 						'text' => $transaction_date,
                 		'field_model' => 'ProductAdjustment.transaction_date',
 		                'style' => 'text-align: center;',
@@ -2599,7 +2599,7 @@ class RmReportComponent extends Component {
                 			'align' => 'center',
             			),
 					),
-					__('Adjustment') => array(
+					__('Penyesuaian') => array(
 						'text' => Common::hashEmptyField($value, 'ProductAdjustmentDetail.qty', '-'),
                 		'field_model' => 'ProductAdjustmentDetail.qty',
 		                'style' => 'text-align: center;',
@@ -2610,7 +2610,7 @@ class RmReportComponent extends Component {
                 			'align' => 'center',
             			),
 					),
-					__('Difference') => array(
+					__('Selisih') => array(
 						'text' => Common::hashEmptyField($value, 'ProductAdjustmentDetail.qty_difference', '-'),
                 		'field_model' => 'ProductAdjustmentDetail.qty_difference',
 		                'style' => 'text-align: center;',

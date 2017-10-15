@@ -131,6 +131,7 @@ class ProductAdjustment extends AppModel {
 
     public function _callRefineParams( $data = '', $default_options = false ) {
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $note = !empty($data['named']['note'])?$data['named']['note']:false;
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
 
@@ -146,13 +147,16 @@ class ProductAdjustment extends AppModel {
         if( !empty($nodoc) ) {
             $default_options['conditions']['ProductAdjustment.nodoc LIKE'] = '%'.$nodoc.'%';
         }
+        if( !empty($note) ) {
+            $default_options['conditions']['ProductAdjustment.note LIKE'] = '%'.$note.'%';
+        }
         
         return $default_options;
     }
 
     function doSave( $data, $value = false, $id = false ) {
         $result = false;
-        $defaul_msg = __('Qty Adjustment');
+        $defaul_msg = __('Penyesuaian Qty');
 
         if ( !empty($data) ) {
             $nodoc = $this->filterEmptyField($data, 'ProductAdjustment', 'nodoc');

@@ -1,5 +1,5 @@
 <?php
-		$title = __('Qty Adjustment');
+		$title = __('Penyesuaian Qty');
 		$urlRoot = array(
 			'controller' => 'products',
 			'action' => 'adjustment',

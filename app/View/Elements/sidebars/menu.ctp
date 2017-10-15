@@ -1455,7 +1455,7 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'receipts' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link(__('%s Qty Adjustment', $this->Common->icon('angle-double-right')), array(
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Penyesuaian Qty', $this->Common->icon('angle-double-right')), array(
                                 'controller' => 'products',
                                 'action' => 'adjustment'
                             ), array(
@@ -1511,7 +1511,7 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'maintenance_cost_report' )?'active':'',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link(__('%s Laporan Qty Adjustment', $this->Common->icon('angle-double-right')), array(
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Laporan Penyesuaian Qty', $this->Common->icon('angle-double-right')), array(
                                 'controller' => 'products',
                                 'action' => 'adjustment_report'
                             ), array(
