@@ -81,7 +81,9 @@ class Revenue extends AppModel {
         $branch = isset($elements['branch'])?$elements['branch']:true;
 
         $default_options = array(
-            'conditions'=> array(),
+            'conditions'=> array(
+                'Revenue.import_code' => 0,
+            ),
             'order'=> array(
                 'Revenue.created' => 'DESC',
                 'Revenue.id' => 'DESC',
@@ -216,6 +218,8 @@ class Revenue extends AppModel {
             'conditions' => array(
                 'Revenue.ttuj_id' => $ttuj_id,
             ),
+        ), true, array(
+            'branch' => false,
         ));
         $conditions = array(
             'RevenueDetail.revenue_id' => $revenue_id,
@@ -548,7 +552,7 @@ class Revenue extends AppModel {
         }
     }
 
-    function saveRevenue ( $id, $data_local, $data, $controller ) {
+    function saveRevenue ( $id, $data_local, $data, $controller, $is_import = null ) {
         $data['Revenue']['date_sj'] = !empty($data['Revenue']['date_sj']) ? date('Y-m-d', strtotime($data['Revenue']['date_sj'])) : '';
         $data['Revenue']['ppn'] = $ppn = $this->filterEmptyField($data, 'Revenue', 'ppn', 0);
         $data['Revenue']['pph'] = $pph = $this->filterEmptyField($data, 'Revenue', 'pph', 0);
@@ -668,10 +672,12 @@ class Revenue extends AppModel {
                 'data' => $dataRevenue,
             );
         } else if( $flag && $validate_qty ){
-            if( $qtyUse >= $qtyTtuj ) {
-                $dataTtuj['Ttuj']['is_revenue'] = 1;
-            } else {
-                $dataTtuj['Ttuj']['is_revenue'] = 0;
+            if( empty($is_import) ) {
+                if( $qtyUse >= $qtyTtuj ) {
+                    $dataTtuj['Ttuj']['is_revenue'] = 1;
+                } else {
+                    $dataTtuj['Ttuj']['is_revenue'] = 0;
+                }
             }
         }else{
             $checkQty = false;
@@ -714,17 +720,19 @@ class Revenue extends AppModel {
                 $id = $this->id;
                 $this->Log = ClassRegistry::init('Log');
 
-                $this->_callSetJournal($id, $dataRevenue);
+                if( empty($is_import) ) {
+                    $this->_callSetJournal($id, $dataRevenue);
 
-                if( !empty($dataTtuj) && !empty($ttuj_id) ) {
-                    $this->Ttuj->id = $ttuj_id;
-                    $this->Ttuj->save($dataTtuj);
-                }
+                    if( !empty($dataTtuj) && !empty($ttuj_id) ) {
+                        $this->Ttuj->id = $ttuj_id;
+                        $this->Ttuj->save($dataTtuj);
+                    }
 
-                if( !empty($ttuj_id) && !empty($data_local) && $data_local['Ttuj']['id'] <> $ttuj_id ) {
-                    $this->Ttuj->set('is_revenue', 0);
-                    $this->Ttuj->id = $data_local['Ttuj']['id'];
-                    $this->Ttuj->save();
+                    if( !empty($ttuj_id) && !empty($data_local) && $data_local['Ttuj']['id'] <> $ttuj_id ) {
+                        $this->Ttuj->set('is_revenue', 0);
+                        $this->Ttuj->id = $data_local['Ttuj']['id'];
+                        $this->Ttuj->save();
+                    }
                 }
             }else{
                 $result = array(

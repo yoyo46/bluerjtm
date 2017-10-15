@@ -18,7 +18,7 @@
         	<?php
         			printf(__('Upload Revenue By Excel ( %s )'), $this->Html->link($this->Html->tag('small', __('Download Template')), array(
 						'controller' => 'revenues', 
-						'action' => 'import',
+						'action' => 'import_by_ttuj',
 						'download'
 					), array(
 						'class' => 'download-template',
