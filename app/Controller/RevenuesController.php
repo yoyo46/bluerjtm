@@ -6404,6 +6404,7 @@ class RevenuesController extends AppController {
                     ),
                 ), true, array(
                     'branch' => false,
+                    'status' => 'all',
                 ));
                 $customer['RevenueYear'] = !empty($revenueYear[0]['total'])?$revenueYear[0]['total']/12:0;
 
