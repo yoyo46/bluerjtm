@@ -1948,6 +1948,34 @@ class ProductsController extends AppController {
         ));
         $values = $this->paginate('ProductAdjustment');
 
+        if( !empty($values) ) {
+            foreach ($values as $key => &$value) {
+                $transaction_status = Common::hashEmptyField($value, 'ProductAdjustment.transaction_status');
+                
+                if( $transaction_status <> 'void' ) {
+                    $tmp = $this->ProductAdjustment->getMergeList($value, array(
+                        'contain' => array(
+                            'ProductAdjustmentDetail' => array(
+                                'contain' => array(
+                                    'ProductHistory' => array(
+                                        'contain' => array(
+                                            'ProductStock',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ));
+                    $disabled_void = Set::extract('/ProductAdjustmentDetail/ProductHistory/ProductStock/ProductStock/qty_use', $tmp);
+                    $disabled_void = array_filter($disabled_void);
+
+                    if( !empty($disabled_void) ) {
+                        $value['ProductAdjustment']['disabled_void'] = $disabled_void;
+                    }
+                }
+            }
+        }
+
         $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'adjustment');
         $this->set(compact(
@@ -1994,6 +2022,7 @@ class ProductsController extends AppController {
             }
 
             $this->request->data = $this->RjProduct->_callBeforeRenderAdjustment($this->request->data, $value);
+            $this->MkCommon->getLogs($this->paramController, array( 'adjustment_add', 'adjustment_edit', 'adjustment_toggle' ), $id);
 
             $this->MkCommon->_layout_file('select');
             $this->set('active_menu', 'adjustment');
@@ -2101,6 +2130,7 @@ class ProductsController extends AppController {
 
         if( !empty($value) ) {
             $this->request->data = $this->RjProduct->_callBeforeRenderAdjustment(false, $value);
+            $this->MkCommon->getLogs($this->paramController, array( 'adjustment_add', 'adjustment_edit', 'adjustment_toggle' ), $id);
             $this->MkCommon->_layout_file('select');
 
             $this->set(array(

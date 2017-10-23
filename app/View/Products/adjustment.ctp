@@ -54,6 +54,7 @@
                             $note = $this->Common->filterEmptyField($value, 'ProductAdjustment', 'note', '-');
                             $total = $this->Common->filterEmptyField($value, 'ProductAdjustment', 'total', '-');
                             $transaction_status = $this->Common->filterEmptyField($value, 'ProductAdjustment', 'transaction_status');
+                            $disabled_void = Common::hashEmptyField($value, 'ProductAdjustment.disabled_void');
 
                             $customStatus = $this->Common->_callTransactionStatus($value, 'ProductAdjustment');
                             $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
@@ -76,7 +77,7 @@
                                 ));
                             }
 
-                            if( $transaction_status <> 'void' ) {
+                            if( $transaction_status <> 'void' && empty($disabled_void) ) {
                                 $customAction .= $this->Html->link(__('Void'), array(
                                     'action' => 'adjustment_toggle',
                                     $id,

@@ -1029,6 +1029,8 @@ class RjProductComponent extends Component {
                             'ProductStock.product_id' => $product_id,
                             'ProductStock.serial_number' => $serial_number,
                         ),
+                    ), array(
+                        'status' => 'in_stock',
                     ));
 
                     $details[$modelSn][] = array(

@@ -249,8 +249,24 @@ class ProductAdjustment extends AppModel {
                 'ProductAdjustment.id' => $id,
             ),
         ));
+        $tmp = $this->getMergeList($value, array(
+            'contain' => array(
+                'ProductAdjustmentDetail' => array(
+                    'contain' => array(
+                        'ProductHistory' => array(
+                            'contain' => array(
+                                'ProductStock',
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ));
 
-        if ( !empty($value) ) {
+        $disabled_void = Set::extract('/ProductAdjustmentDetail/ProductHistory/ProductStock/ProductStock/qty_use', $tmp);
+        $disabled_void = array_filter($disabled_void);
+
+        if ( !empty($value) && empty($disabled_void) ) {
             $default_msg = sprintf(__('membatalkan adjusment barang #%s'), $id);
 
             $this->id = $id;
