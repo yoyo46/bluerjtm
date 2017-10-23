@@ -107,6 +107,12 @@
                             echo $this->Html->tag('td', $stock, array(
                                 'class' => 'removed text-center',
                             ));
+                            echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.note.%s', $modelName, $id), false, array(
+                                'type' => 'text',
+                                'frameClass' => false,
+                            )), array(
+                                'class' => 'hide',
+                            ));
                             echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.price.%s', $modelName, $id), false, array(
                                 'type' => 'text',
                                 'frameClass' => false,

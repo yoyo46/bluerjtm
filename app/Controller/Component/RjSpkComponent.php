@@ -47,6 +47,7 @@ class RjSpkComponent extends Component {
             ), $data);
 
             foreach ($spkProduct['product_id'] as $key => $product_id) {
+                $note = !empty($spkProduct['note'][$key])?$spkProduct['note'][$key]:false;
                 $qty = !empty($spkProduct['qty'][$key])?$spkProduct['qty'][$key]:false;
                 $price_service = !empty($spkProduct['price_service'][$key])?$spkProduct['price_service'][$key]:false;
                 $price = !empty($spkProduct['price'][$key])?$spkProduct['price'][$key]:false;
@@ -68,6 +69,7 @@ class RjSpkComponent extends Component {
 
                 $dataProduct = array(
                     'product_id' => $product_id,
+                    'note' => $note,
                     'qty' => $qty,
                     'price_service' => $price_service,
                     'price' => $price,

@@ -13,7 +13,7 @@
             ),
             'name' => array(
                 'name' => __('Nama'),
-                // 'style' => 'width:15%;',
+                'style' => 'width:15%;',
             ),
             'stock' => array(
                 'name' => __('Stok'),
@@ -24,6 +24,10 @@
                 'name' => __('Satuan'),
                 'class' => 'text-center',
                 'style' => 'width:7%;',
+            ),
+            'note' => array(
+                'name' => __('Keterangan'),
+                'style' => 'width:12%;',
             ),
             'price' => array(
                 'name' => __('Harga Satuan'),
@@ -123,6 +127,7 @@
                                         $unit = Common::hashEmptyField($product, 'ProductUnit.name');
                                         $stock = Common::hashEmptyField($product, 'product_stock_cnt', 0);
 
+                                        $note = Common::hashEmptyField($value, 'SpkProduct.note');
                                         $qty = Common::hashEmptyField($value, 'SpkProduct.qty', 0);
                                         $price_service = Common::hashEmptyField($value, 'SpkProduct.price_service', 0);
                                         $price = Common::hashEmptyField($value, 'SpkProduct.price', 0);
@@ -193,6 +198,13 @@
                                     ));
                                     
                                     if( empty($view) ) {
+                                        echo $this->Html->tag('td', $this->Common->_callInputForm(__('SpkProduct.note.%s', $product_id), array(
+                                            'type' => 'text',
+                                            'frameClass' => false,
+                                            'value' => $note,
+                                            'fieldError' => __('SpkProduct.%s.note', $key),
+                                        )));
+
                                         echo $this->Html->tag('td', $this->Common->_callInputForm(__('SpkProduct.price.%s', $product_id), array(
                                             'type' => 'text',
                                             'frameClass' => false,
@@ -236,6 +248,8 @@
                                         ));
                                     } else {
                                         $price_service_type = Common::hashEmptyField(Common::_callPriceServiceType(), $price_service_type);
+
+                                        echo $this->Html->tag('td', $note);
 
                                         echo $this->Html->tag('td', $this->Html->tag('div', $this->Common->getFormatPrice($price, 0, 2), array(
                                             'class' => 'text-center',
@@ -293,7 +307,7 @@
                                     $grandtotal = $this->Common->getFormatPrice($grandtotal, 0, 2);
 
                                     echo $this->Html->tag('td', __('Total'), array(
-                                        'colspan' => 4,
+                                        'colspan' => 5,
                                         'class' => 'text-right',
                                     ));
                                     echo $this->Html->tag('td', $price, array(

@@ -2145,6 +2145,11 @@ class RmReportComponent extends Component {
 		                'data-options' => 'field:\'product\',width:150',
 		                'align' => 'left',
 					),
+					__('Ket. Produk') => array(
+						'text' => Common::hashEmptyField($value, 'SpkProduct.note', '-'),
+                		'field_model' => 'SpkProduct.note',
+		                'data-options' => 'field:\'note_item\',width:120',
+					),
 					__('QTY') => array(
 						'text' => Common::hashEmptyField($value, 'SpkProduct.qty'),
                 		'field_model' => 'SpkProduct.qty',
