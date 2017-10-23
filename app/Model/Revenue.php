@@ -309,6 +309,8 @@ class Revenue extends AppModel {
                         'fields' => array(
                             'SUM(qty_unit) total_unit',
                         ),
+                    ), array(
+                        'branch' => false,
                     ));
 
                     if( !empty($revenueDetail[0]['total_unit']) ) {
