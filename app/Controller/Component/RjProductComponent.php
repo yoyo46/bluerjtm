@@ -313,7 +313,7 @@ class RjProductComponent extends Component {
                     } else {
                         switch ($document_type) {
                             case 'wht':
-                                $product_expenditure_detail_id = Set::extract('/ProductReceiptDetail/Product/'.$modelDetail.'/id', $detail);
+                                $product_expenditure_detail_id = Set::extract('/ProductReceiptDetail/Product/ProductExpenditureDetail/id', $detail);
                                 $serial_numbers = $this->controller->Product->ProductExpenditureDetailSerialNumber->getMergeAll(array(), 'all', $product_id, $product_expenditure_detail_id, 'ProductExpenditureDetailSerialNumber.product_expenditure_detail_id');
 
                                 if( !empty($serial_numbers['ProductExpenditureDetailSerialNumber']) ) {
@@ -577,6 +577,7 @@ class RjProductComponent extends Component {
                             $detailPrice = 0;
 
                             $model = 'ProductExpenditureDetail';
+                            unset($dataDetail[$key]['ProductReceiptDetail']['serial_number']);
                             break;
                         case 'production':
                             $documentDetail = $this->controller->Product->SpkProduction->getMergeData(array(), $document_id, $product_id);
