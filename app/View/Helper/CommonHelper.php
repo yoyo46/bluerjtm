@@ -809,6 +809,56 @@ class CommonHelper extends AppHelper {
         return $dataTree;
     }
 
+    function productCategoryTree($data){
+        $id = $data['ProductCategory']['id'];
+        $title = $data['ProductCategory']['name'];
+        $dataTree = $this->Html->tag('span', $title, array(
+            'title' => $title,
+        ));
+        $dataTree .= $this->Html->link('<i class="fa fa-plus-circle"></i>', array(
+            'action' => 'category_add',
+            $id,
+        ), array(
+            'escape' => false,
+            'class' => 'bg-green'
+        ));
+
+        $dataTree .= $this->Html->link('<i class="fa fa-pencil-square-o"></i>', array(
+            'action' => 'category_edit',
+            $id,
+            $data['ProductCategory']['parent_id'],
+        ), array(
+            'escape' => false,
+            'class' => 'bg-primary',
+            'title' => 'edit'
+        ));
+        
+        $dataTree .= $this->Html->link('<i class="fa fa-minus-circle"></i>', array(
+            'action' => 'category_toggle',
+            $id,
+        ), array(
+            'escape' => false,
+            'class' => 'bg-red'
+        ), __('Anda yakin ingin menghapus grup barang ini ?'));
+
+        return $dataTree;
+    }
+
+    function recallProduCategory($data){
+        if( !empty($data) ) {
+            echo '<ul>';
+            foreach ($data as $key => $value_1) {
+                echo '<li class="parent_li">';
+                echo $this->productCategoryTree($value_1);
+                if(!empty($value_1['children'])){
+                    $this->recallProduCategory($value_1['children']);
+                }
+                echo '</li>';
+            }
+            echo '</ul>';
+        }
+    }
+
     function getBiayaTtuj ( $ttuj, $data_type, $format_currency = true, $tampilkan_sisa = true, $modelName = 'UangJalanKomisiPayment' ) {
         $total = 0;
         $biaya = 0;

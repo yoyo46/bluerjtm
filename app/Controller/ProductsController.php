@@ -44,63 +44,74 @@ class ProductsController extends AppController {
 
 	public function categories() {
         $this->loadModel('ProductCategory');
-		$this->set('active_menu', 'product_categories');
-		$this->set('sub_module_title', __('Grup Barang'));
-        $conditions = array();
-
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-            $parent_id = false;
-
-            if( !empty($refine['parent']) ) {
-                $value = urldecode($refine['parent']);
-                $parent_id = $this->ProductCategory->getData('list', array(
-                    'conditions' => array(
-                        'ProductCategory.name LIKE' => '%'.$value.'%',
-                    ),
-                    'fields' => array(
-                        'ProductCategory.id', 'ProductCategory.id',
-                    ),
-                ));
-            }
-
-            $conditions = $this->MkCommon->_callRefineGenerating($conditions, $refine, array(
-                array(
-                    'modelName' => 'ProductCategory',
-                    'fieldName' => 'name',
-                    'conditionName' => 'ProductCategory.name',
-                    'operator' => 'LIKE',
-                ),
-                array(
-                    'modelName' => 'ProductCategory',
-                    'fieldName' => 'parent',
-                    'conditionName' => 'ProductCategory.parent_id',
-                    'keyword' => $parent_id,
-                ),
-            ));
-        }
-
-        $this->paginate = $this->ProductCategory->getData('paginate', array(
-            'conditions' => $conditions,
+        $values = $this->ProductCategory->getData('threaded', array(
+            'order' => array(
+                'ProductCategory.id' => 'ASC',
+            )
         ));
-        $productCategories = $this->paginate('ProductCategory');
 
-        if( !empty($productCategories) ) {
-            foreach ($productCategories as $key => $value) {
-                $parent_id = $this->MkCommon->filterEmptyField($value, 'ProductCategory', 'parent_id');
+        $this->set('active_menu', 'product_categories');
+        $this->set('sub_module_title', 'Grup Barang');
+        $this->set('values', $values);
+
+  //       $this->loadModel('ProductCategory');
+		// $this->set('active_menu', 'product_categories');
+		// $this->set('sub_module_title', __('Grup Barang'));
+  //       $conditions = array();
+
+  //       if(!empty($this->params['named'])){
+  //           $refine = $this->params['named'];
+  //           $parent_id = false;
+
+  //           if( !empty($refine['parent']) ) {
+  //               $value = urldecode($refine['parent']);
+  //               $parent_id = $this->ProductCategory->getData('list', array(
+  //                   'conditions' => array(
+  //                       'ProductCategory.name LIKE' => '%'.$value.'%',
+  //                   ),
+  //                   'fields' => array(
+  //                       'ProductCategory.id', 'ProductCategory.id',
+  //                   ),
+  //               ));
+  //           }
+
+  //           $conditions = $this->MkCommon->_callRefineGenerating($conditions, $refine, array(
+  //               array(
+  //                   'modelName' => 'ProductCategory',
+  //                   'fieldName' => 'name',
+  //                   'conditionName' => 'ProductCategory.name',
+  //                   'operator' => 'LIKE',
+  //               ),
+  //               array(
+  //                   'modelName' => 'ProductCategory',
+  //                   'fieldName' => 'parent',
+  //                   'conditionName' => 'ProductCategory.parent_id',
+  //                   'keyword' => $parent_id,
+  //               ),
+  //           ));
+  //       }
+
+  //       $this->paginate = $this->ProductCategory->getData('paginate', array(
+  //           'conditions' => $conditions,
+  //       ));
+  //       $productCategories = $this->paginate('ProductCategory');
+
+  //       if( !empty($productCategories) ) {
+  //           foreach ($productCategories as $key => $value) {
+  //               $parent_id = $this->MkCommon->filterEmptyField($value, 'ProductCategory', 'parent_id');
                 
-                $value = $this->ProductCategory->getMerge($value, $parent_id, 'Parent');
-                $productCategories[$key] = $value;
-            }
-        }
+  //               $value = $this->ProductCategory->getMerge($value, $parent_id, 'Parent');
+  //               $productCategories[$key] = $value;
+  //           }
+  //       }
 
-        $this->set('productCategories', $productCategories);
+  //       $this->set('productCategories', $productCategories);
 	}
 
-    function category_add(){
+    function category_add( $parent_id = null ){
         $this->loadModel('ProductCategory');
         $this->set('sub_module_title', __('Tambah Grup Barang'));
-        $this->doProductCategory();
+        $this->doProductCategory( null, null, $parent_id );
     }
 
     function category_edit($id){
@@ -123,7 +134,7 @@ class ProductsController extends AppController {
         }
     }
 
-    function doProductCategory($id = false, $data_local = false){
+    function doProductCategory($id = false, $data_local = false, $parent_id = null){
         if(!empty($this->request->data)){
             $data = $this->request->data;
 
@@ -159,6 +170,8 @@ class ProductsController extends AppController {
             }
         } else if( !empty($data_local) ){
             $this->request->data = $data_local;
+        } else if( !empty($parent_id) ) {
+            $this->request->data['ProductCategory']['parent_id'] = $parent_id;
         }
 
         $categories = $this->ProductCategory->getListParent( $id );
