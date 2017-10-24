@@ -201,7 +201,9 @@ class CashBank extends AppModel {
                 break;
         }
 
-        $docTmps = $this->getData('all', $options);
+        $docTmps = $this->getData('all', $options, array(
+            'branch' => false,
+        ));
 
         if( $document_type == 'prepayment_in' ) {
             return $docTmps;
