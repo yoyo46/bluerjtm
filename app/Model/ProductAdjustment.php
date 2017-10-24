@@ -134,6 +134,7 @@ class ProductAdjustment extends AppModel {
         $note = !empty($data['named']['note'])?$data['named']['note']:false;
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
+        $status = !empty($data['named']['status'])?$data['named']['status']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -149,6 +150,21 @@ class ProductAdjustment extends AppModel {
         }
         if( !empty($note) ) {
             $default_options['conditions']['ProductAdjustment.note LIKE'] = '%'.$note.'%';
+        }
+        if( !empty($status) ) {
+            switch ($status) {
+                case 'unposting':
+                    $default_options['conditions']['ProductAdjustment.status'] = 1;
+                    $default_options['conditions']['ProductAdjustment.transaction_status'] = 'unposting';
+                    break;
+                case 'posting':
+                    $default_options['conditions']['ProductAdjustment.status'] = 1;
+                    $default_options['conditions']['ProductAdjustment.transaction_status'] = 'posting';
+                    break;
+                case 'void':
+                    $default_options['conditions']['ProductAdjustment.transaction_status'] = 'void';
+                    break;
+            }
         }
         
         return $default_options;

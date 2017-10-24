@@ -46,6 +46,7 @@
 									'action' => 'get_supplier_top',
 									'model_name' => 'PurchaseOrder',
 								)),
+								'data-empty' => '.temp-document-picker table tbody',
 							),
 						));
 

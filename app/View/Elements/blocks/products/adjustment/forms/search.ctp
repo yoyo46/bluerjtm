@@ -28,9 +28,9 @@
                         echo $this->Common->buildInputForm('status', __('Status'), array(
                             'empty' => __('Pilih Status'),
                             'options' => array(
-                                'unpaid' => __('Belum dibayar'),
-                                'half_paid' => __('Dibayar sebagian'),
-                                'paid' => __('Sudah dibayar'),
+                                'unposting' => 'Draft',
+                                'posting' => 'Commit',
+                                'void' => __('Void'),
                             ),
                         ));
                         echo $this->Common->buildInputForm('note', __('Keterangan'));
