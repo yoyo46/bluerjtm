@@ -255,28 +255,47 @@ class SpkController extends AppController {
         ));
 
         if( !empty($value) ) {
-            $this->paginate = $this->Spk->getData('paginate', array(
+            $options = $this->Spk->getData('paginate', array(
                 'conditions' => array(
                     'Spk.truck_id' => $id,
+                    'SpkProduct.status' => 1,
                 ),
             ), array(
                 'status' => 'active',
+                'branch' => false,
             ));
-            $values = $this->paginate('Spk');
-            $values = $this->Spk->getMergeList($values, array(
-                'contain' => array(
-                    'Vendor' => array(
-                        'elements' => array(
-                            'status' => 'all',
+
+            $options['contain'] = array(
+                'Spk',
+            );
+            $this->paginate = $options;
+            $values = $this->paginate('SpkProduct');
+
+            if( !empty($values) ) {
+                foreach ($values as $key => &$value) {
+                    // $value = $this->Spk->getMergeList($value, array(
+                    //     'contain' => array(
+                    //         'Vendor' => array(
+                    //             'elements' => array(
+                    //                 'status' => 'all',
+                    //             ),
+                    //         ),
+                    //         'Employe',
+                    //         'Truck',
+                    //         'SpkMechanic' => array(
+                    //             'Employe',
+                    //         ),
+                    //     ),
+                    // ));
+                    $value = $this->Spk->SpkProduct->getMergeList($value, array(
+                        'contain' => array(
+                            'Product' => array(
+                                'ProductUnit'
+                            ),
                         ),
-                    ),
-                    'Employe',
-                    'Truck',
-                    'SpkMechanic' => array(
-                        'Employe',
-                    ),
-                ),
-            ));
+                    ));
+                }
+            }
 
             $this->set('sub_module_title', __('History perbaikan Truk - %s', Common::hashEmptyField($value, 'Truck.nopol')));
             $this->set('active_menu', 'spk');

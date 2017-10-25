@@ -6,28 +6,25 @@
             'transaction_date' => array(
                 'name' => __('Tgl SPK'),
             ),
-            'document_type' => array(
-                'name' => __('Jenis'),
+            'note_item' => array(
+                'name' => __('Ket. Barang'),
             ),
-            'vendor' => array(
-                'name' => __('Supplier'),
+            'code' => array(
+                'name' => __('Kode Barang'),
             ),
-            'kepala_mekanik' => array(
-                'name' => __('Kepala Mekanik'),
-                'width' => '13%',
+            'name' => array(
+                'name' => __('Nama Barang'),
             ),
-            'mekanik' => array(
-                'name' => __('Mekanik'),
-                'width' => '15%',
+            'unit' => array(
+                'name' => __('Satuan'),
+                'width' => '8%',
             ),
-            'est' => array(
-                'name' => __('Estimasi'),
-            ),
-            'finish' => array(
-                'name' => __('Tgl Selesai'),
+            'qty' => array(
+                'name' => __('Qty'),
+                'width' => '8%',
             ),
             'note' => array(
-                'name' => __('Keterangan'),
+                'name' => __('Ket. SPK'),
             ),
             'status' => array(
                 'name' => __('Status'),
@@ -67,22 +64,14 @@
 		                            $nodoc = $this->Common->filterEmptyField($value, 'Spk', 'nodoc', '-');
 		                            $transactionDate = $this->Common->filterEmptyField($value, 'Spk', 'transaction_date');
 		                            $note = $this->Common->filterEmptyField($value, 'Spk', 'note', '-');
-		                            $document_type = $this->Common->filterEmptyField($value, 'Spk', 'document_type');
-		                            $estimation_date = $this->Common->filterEmptyField($value, 'Spk', 'estimation_date', false, true, array(
-		                                'date' => 'd/m/Y',
-		                            ));
-		                            $complete_date = $this->Common->filterEmptyField($value, 'Spk', 'complete_date', false, true, array(
-		                                'date' => 'd/m/Y',
-		                            ));
 		                            $receipt_status = $this->Common->filterEmptyField($value, 'Spk', 'receipt_status', 'none');
 		                            $transaction_status = $this->Common->filterEmptyField($value, 'Spk', 'transaction_status');
 
-		                            $mechanics = Common::hashEmptyField($value, 'SpkMechanic');
-									$mechanics = Set::extract('/Employe/full_name', $mechanics);
-									$mechanics = implode(', ', $mechanics);
-
-		                            $document_type = ucwords($document_type);
-		                            $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name', '-');
+		                            $code = $this->Common->filterEmptyField($value, 'Product', 'code', '-');
+		                            $name = $this->Common->filterEmptyField($value, 'Product', 'name', '-');
+		                            $unit = Common::hashEmptyField($value, 'Product.ProductUnit.name', '-');
+		                            $note_item = Common::hashEmptyField($value, 'SpkProduct.note', '-');
+		                            $qty = Common::hashEmptyField($value, 'SpkProduct.qty', '-');
 
 		                            $customStatus = $this->Common->_callTransactionStatus($value, 'Spk');
 		                            $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
@@ -100,12 +89,15 @@
 		                <?php 
 		                        echo $this->Html->tag('td', $nodoc);
 		                        echo $this->Html->tag('td', $customDate);
-		                        echo $this->Html->tag('td', $document_type);
-		                        echo $this->Html->tag('td', $vendor);
-		                        echo $this->Html->tag('td', Common::hashEmptyField($value, 'Employe.full_name'));
-		                        echo $this->Html->tag('td', $mechanics);
-		                        echo $this->Html->tag('td', $estimation_date);
-		                        echo $this->Html->tag('td', $complete_date);
+		                        echo $this->Html->tag('td', $note_item);
+		                        echo $this->Html->tag('td', $code);
+		                        echo $this->Html->tag('td', $name);
+		                        echo $this->Html->tag('td', $unit, array(
+		                            'class' => 'text-center',
+		                        ));
+		                        echo $this->Html->tag('td', $qty, array(
+		                            'class' => 'text-center',
+		                        ));
 		                        echo $this->Html->tag('td', $note);
 		                        echo $this->Html->tag('td', $customStatus, array(
 		                            'class' => 'text-center',
