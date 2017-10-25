@@ -1353,6 +1353,7 @@ class ProductsController extends AppController {
             $this->Product->ProductHistory->virtualFields['total_begining_balance'] = 'SUM(CASE WHEN ProductHistory.transaction_type = \'product_receipt\' OR ProductHistory.transaction_type = \'product_adjustment_plus\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.transaction_type = \'product_expenditure\' OR ProductHistory.transaction_type = \'product_adjustment_min\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END)';
             $this->Product->ProductHistory->virtualFields['total_qty_in'] = 'SUM(CASE WHEN ProductHistory.type = \'in\' THEN ProductHistory.qty ELSE 0 END)';
             $this->Product->ProductHistory->virtualFields['total_qty_out'] = 'SUM(CASE WHEN ProductHistory.type = \'out\' THEN ProductHistory.qty ELSE 0 END)';
+            $this->Product->ProductStock->virtualFields['label'] = 'CONCAT(ProductStock.id, \'|\', ProductStock.price)';
                     
             foreach ($values as $key => &$product) {
                 if(!empty($product)){
@@ -1382,11 +1383,145 @@ class ProductsController extends AppController {
                             'branch' => false,
                         ));
 
+                        $tmpOption = $options;
+                        $tmpOption['group'] = array(
+                            'ProductHistory.price',
+                        );
+                        $tmpOption['fields'] = array(
+                            'ProductHistory.price',
+                            'ProductHistory.total_qty_in',
+                            'ProductHistory.total_qty_out',
+                        );
+                        $lastHistoryByPrice = $this->Product->ProductHistory->getData('all', $tmpOption, array(
+                            'branch' => false,
+                        ));
+
+                        $receiptSN = $this->Product->ProductHistory->ProductReceiptDetail->ProductReceipt->ProductReceiptDetailSerialNumber->getData('list', array(
+                            'fields' => array(
+                                'ProductReceiptDetailSerialNumber.serial_number',
+                                'ProductReceiptDetailSerialNumber.serial_number',
+                            ),
+                            'contain' => array(
+                                'ProductReceipt',
+                            ),
+                            'conditions' => array(
+                                'ProductReceiptDetailSerialNumber.product_id' => $product_id,
+                                'DATE_FORMAT(ProductReceipt.transaction_date, \'%Y-%m-%d\') <' => $dateFrom,
+                                'ProductReceipt.branch_id' => $branch_id,
+                                'ProductReceipt.status' => 1,
+                                'ProductReceipt.transaction_status NOT' => array( 'unposting', 'revised', 'void' ),
+                            ),
+                        ), array(
+                            'status' => 'confirm',
+                        ));
+
+                        $this->Product->ProductHistory->ProductExpenditureDetail->ProductExpenditureDetailSerialNumber->bindModel(array(
+                            'hasOne' => array(
+                                'ProductExpenditure' => array(
+                                    'className' => 'ProductExpenditure',
+                                    'foreignKey' => false,
+                                    'conditions' => array(
+                                        'ProductExpenditure.id = ProductExpenditureDetail.product_expenditure_id',
+                                    ),
+                                ),
+                            )
+                        ), false);
+                        $expenditureSN = $this->Product->ProductHistory->ProductExpenditureDetail->ProductExpenditureDetailSerialNumber->getData('list', array(
+                            'fields' => array(
+                                'ProductExpenditureDetailSerialNumber.serial_number',
+                                'ProductExpenditureDetailSerialNumber.serial_number',
+                            ),
+                            'contain' => array(
+                                'ProductExpenditureDetail',
+                                'ProductExpenditure',
+                            ),
+                            'conditions' => array(
+                                'ProductExpenditureDetail.status' => 1,
+                                'ProductExpenditureDetailSerialNumber.product_id' => $product_id,
+                                'DATE_FORMAT(ProductExpenditure.transaction_date, \'%Y-%m-%d\') <' => $dateFrom,
+                                'ProductExpenditure.branch_id' => $branch_id,
+                                'ProductExpenditure.status' => 1,
+                                'ProductExpenditure.transaction_status NOT' => array( 'unposting', 'revised', 'void' ),
+                            ),
+                        ));
+                        $last_serial_number = array_diff($receiptSN, $expenditureSN);
+
+                        $this->Product->ProductHistory->ProductAdjustmentDetail->ProductAdjustmentDetailSerialNumber->bindModel(array(
+                            'hasOne' => array(
+                                'ProductAdjustment' => array(
+                                    'className' => 'ProductAdjustment',
+                                    'foreignKey' => false,
+                                    'conditions' => array(
+                                        'ProductAdjustment.id = ProductAdjustmentDetail.product_adjustment_id',
+                                    ),
+                                ),
+                            )
+                        ), false);
+                        $adjustmentPlus = $this->Product->ProductHistory->ProductAdjustmentDetail->ProductAdjustmentDetailSerialNumber->getData('list', array(
+                            'fields' => array(
+                                'ProductAdjustmentDetailSerialNumber.serial_number',
+                                'ProductAdjustmentDetailSerialNumber.serial_number',
+                            ),
+                            'contain' => array(
+                                'ProductAdjustmentDetail',
+                                'ProductAdjustment',
+                            ),
+                            'conditions' => array(
+                                'ProductAdjustmentDetail.status' => 1,
+                                'ProductAdjustmentDetail.type' => 'plus',
+                                'ProductAdjustmentDetailSerialNumber.product_id' => $product_id,
+                                'DATE_FORMAT(ProductAdjustment.transaction_date, \'%Y-%m-%d\') <' => $dateFrom,
+                                'ProductAdjustment.branch_id' => $branch_id,
+                                'ProductAdjustment.status' => 1,
+                                'ProductAdjustment.transaction_status NOT' => array( 'unposting', 'revised', 'void' ),
+                            ),
+                        ));
+                        $last_serial_number = array_merge($last_serial_number, $adjustmentPlus);
+
+                        $adjustmentMin = $this->Product->ProductHistory->ProductAdjustmentDetail->ProductAdjustmentDetailSerialNumber->getData('list', array(
+                            'fields' => array(
+                                'ProductAdjustmentDetailSerialNumber.serial_number',
+                                'ProductAdjustmentDetailSerialNumber.serial_number',
+                            ),
+                            'contain' => array(
+                                'ProductAdjustmentDetail',
+                                'ProductAdjustment',
+                            ),
+                            'conditions' => array(
+                                'ProductAdjustmentDetail.status' => 1,
+                                'ProductAdjustmentDetail.type' => 'min',
+                                'ProductAdjustmentDetailSerialNumber.product_id' => $product_id,
+                                'DATE_FORMAT(ProductAdjustment.transaction_date, \'%Y-%m-%d\') <' => $dateFrom,
+                                'ProductAdjustment.branch_id' => $branch_id,
+                                'ProductAdjustment.status' => 1,
+                                'ProductAdjustment.transaction_status NOT' => array( 'unposting', 'revised', 'void' ),
+                            ),
+                        ));
+                        $last_serial_number = array_diff($last_serial_number, $adjustmentMin);
+
                         $total_qty_in = Common::hashEmptyField($lastHistory, 'ProductHistory.total_qty_in', 0);
                         $total_qty_out = Common::hashEmptyField($lastHistory, 'ProductHistory.total_qty_out', 0);
                         $total_qty = $total_qty_in - $total_qty_out;
 
+                        $stock = $this->Product->ProductStock->getData('list', array(
+                            'fields' => array(
+                                'ProductStock.label',
+                                'ProductStock.serial_number',
+                            ),
+                            'conditions' => array(
+                                'ProductStock.product_id' => $product_id,
+                                'ProductStock.serial_number' => $last_serial_number,
+                                'ProductStock.branch_id' => $branch_id,
+                                'DATE_FORMAT(ProductStock.transaction_date, \'%Y-%m-%d\') <' => $dateFrom,
+                            ),
+                        ), array(
+                            'status' => false,
+                            'branch' => false,
+                        ));
+
                         $lastHistory['ProductHistory']['ending'] = $total_qty;
+                        $lastHistory['ProductHistory']['last_serial_number'] = $stock;
+                        $lastHistory['ProductHistory']['by_price'] = $lastHistoryByPrice;
 
                         $branch['LastHistory'] = $this->Product->getMergeList($lastHistory, array(
                             'contain' => array(

@@ -7,6 +7,9 @@
             $unit = Common::hashEmptyField($lastHistory, 'ProductUnit.name');
             $start_balance = Common::hashEmptyField($lastHistory, 'ProductHistory.ending', 0);
             $total_begining_balance = Common::hashEmptyField($lastHistory, 'ProductHistory.total_begining_balance');
+            $last_serial_number = Common::hashEmptyField($lastHistory, 'ProductHistory.last_serial_number');
+
+            $by_price = Common::hashEmptyField($lastHistory, 'ProductHistory.by_price');
 
             if( !empty($start_balance) ) {
                 $total_begining_price = $total_begining_balance / $start_balance;
@@ -14,8 +17,32 @@
                 $total_begining_price = 0;
             }
     
-            $ending_stock[$total_begining_price]['qty'] = $start_balance;
-            $ending_stock[$total_begining_price]['price'] = $total_begining_price;
+            if( !empty($by_price) ) {
+                foreach ($by_price as $key => $val_price) {
+                    $total_qty_in = Common::hashEmptyField($val_price, 'ProductHistory.total_qty_in');
+                    $total_qty_out = Common::hashEmptyField($val_price, 'ProductHistory.total_qty_out');
+                    $price = Common::hashEmptyField($val_price, 'ProductHistory.price');
+
+                    $ending_stock[$price]['qty'] = $total_qty_in - $total_qty_out;
+                    $ending_stock[$price]['price'] = $price;
+                }
+            }
+
+            if( !empty($last_serial_number) ) {
+                foreach ($last_serial_number as $label_sn => $sn) {
+                    $prices = explode('|', $label_sn);
+
+                    if( !empty($prices[1]) ) {
+                        if( !empty($ending_stock[$prices[1]]['serial_numbers']) ) {
+                            $ending_stock[$prices[1]]['serial_numbers'][] = $sn;
+                        } else {
+                            $ending_stock[$prices[1]]['serial_numbers'] = array(
+                                $sn,
+                            );
+                        }
+                    }
+                }
+            }
         } else {
             $unit = '';
             $start_balance = 0;

@@ -176,6 +176,10 @@ class ProductReceipt extends AppModel {
                 $default_options['conditions']['ProductReceipt.transaction_status'] = array( 'unposting', 'revised' );
                 $default_options['conditions']['ProductReceipt.status'] = 1;
                 break;
+            case 'posting':
+                $default_options['conditions']['ProductReceipt.transaction_status NOT'] = array( 'unposting', 'revised', 'void' );
+                $default_options['conditions']['ProductReceipt.status'] = 1;
+                break;
             case 'non-active':
                 $default_options['conditions']['ProductReceipt.status'] = 0;
                 break;

@@ -60,6 +60,9 @@ class ProductReceiptDetailSerialNumber extends AppModel {
         if(!empty($options['order'])){
             $default_options['order'] = $options['order'];
         }
+        if(!empty($options['contain'])){
+            $default_options['contain'] = $options['contain'];
+        }
         if(!empty($options['fields'])){
             $default_options['fields'] = $options['fields'];
         }
