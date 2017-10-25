@@ -148,11 +148,21 @@
                     $qty_out_tmp = $qty_out = Common::hashEmptyField($value, 'ProductHistory.qty');
                     $price = $price_out = Common::hashEmptyField($value, 'ProductHistory.price');
                     $total_out = $qty_out * $price_out;
-                    $url = $this->Html->url(array(
-                        'controller' => 'products',
-                        'action' => 'expenditure_detail',
-                        $docid,
-                    ), true);
+
+                    if( in_array($transaction_type, array( 'product_adjustment_min' )) ) {
+                        $url = $this->Html->url(array(
+                            'controller' => 'products',
+                            'action' => 'adjustment_detail',
+                            $docid,
+                        ), true);
+                    } else {
+                        $url = $this->Html->url(array(
+                            'controller' => 'products',
+                            'action' => 'expenditure_detail',
+                            $docid,
+                        ), true);
+                    }
+                    
                     $total_ending_price = $price*$qty;
                     // $grandtotal_ending = $total_balance_price - $total_ending_price;
             
