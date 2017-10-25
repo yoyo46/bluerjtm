@@ -280,8 +280,8 @@ class SpkController extends AppController {
             $values = $this->paginate('SpkProduct');
 
             if( !empty($values) ) {
-                foreach ($values as $key => &$value) {
-                    // $value = $this->Spk->getMergeList($value, array(
+                foreach ($values as $key => &$val) {
+                    // $val = $this->Spk->getMergeList($val, array(
                     //     'contain' => array(
                     //         'Vendor' => array(
                     //             'elements' => array(
@@ -295,7 +295,7 @@ class SpkController extends AppController {
                     //         ),
                     //     ),
                     // ));
-                    $value = $this->Spk->SpkProduct->getMergeList($value, array(
+                    $val = $this->Spk->SpkProduct->getMergeList($val, array(
                         'contain' => array(
                             'Product' => array(
                                 'ProductUnit'
