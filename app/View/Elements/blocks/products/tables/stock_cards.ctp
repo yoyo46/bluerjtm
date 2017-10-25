@@ -2,7 +2,7 @@
         $style = 'background-color: #f5f5f5;';
         $ending_stock = array();
 
-        if( !empty($values['LastHistory']['id']) ) {
+        if( !empty($values['LastHistory']['ProductHistory']['id']) ) {
             $lastHistory = $values['LastHistory'];
             $unit = Common::hashEmptyField($lastHistory, 'ProductUnit.name');
             $start_balance = Common::hashEmptyField($lastHistory, 'ProductHistory.ending', 0);
