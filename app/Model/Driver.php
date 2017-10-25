@@ -408,6 +408,7 @@ class Driver extends AppModel {
         $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
         $type = !empty($data['named']['type'])?$data['named']['type']:1;
         $no_truck = !empty($data['named']['no_truck'])?$data['named']['no_truck']:false;
+        $no_id = !empty($data['named']['no_id'])?$data['named']['no_id']:false;
         $sort = !empty($data['named']['sort'])?$data['named']['sort']:false;
         $direction = !empty($data['named']['direction'])?$data['named']['direction']:false;
 
@@ -435,6 +436,9 @@ class Driver extends AppModel {
         if(!empty($no_truck)){
             $default_options['conditions']['Truck.id'] = null;
             $default_options['contain'][] = 'Truck';
+        }
+        if(!empty($no_id)){
+            $default_options['conditions']['Driver.no_id LIKE'] = '%'.$no_id.'%';
         }
 
         if( !empty($sort) ) {

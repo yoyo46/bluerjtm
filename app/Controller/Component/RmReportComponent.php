@@ -102,6 +102,7 @@ class RmReportComponent extends Component {
 		$this->controller->loadModel('Driver');
         $params_named = Common::hashEmptyField($this->controller->params->params, 'named', array());
 		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
 
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
 		$options = array(
@@ -315,6 +316,7 @@ class RmReportComponent extends Component {
 
         $params_named = Common::hashEmptyField($params, 'named', array());
 		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
 
 		$options = array(
             'contain' => array(
@@ -1341,6 +1343,7 @@ class RmReportComponent extends Component {
         	'strict' => true,
     	));
 		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
 
         $this->controller->ProductExpenditureDetail->unBindModel(array(
             'hasMany' => array(
@@ -1618,6 +1621,7 @@ class RmReportComponent extends Component {
         	'strict' => true,
     	));
 		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
 
 		$options = array(
             'order'=> array(
@@ -1890,6 +1894,7 @@ class RmReportComponent extends Component {
         	'strict' => true,
     	));
 		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
 
 		$options = array(
         	'offset' => $offset,
@@ -2109,6 +2114,7 @@ class RmReportComponent extends Component {
         	'strict' => true,
     	));
 		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
 
 		$options = array(
 			'contain' => array(
@@ -2482,6 +2488,7 @@ class RmReportComponent extends Component {
         	'strict' => true,
     	));
 		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
 
 		$options = array(
         	'offset' => $offset,
@@ -2657,6 +2664,7 @@ class RmReportComponent extends Component {
         	'strict' => true,
     	));
 		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
 
 		$options = array(
             'order'=> array(
@@ -2853,6 +2861,7 @@ class RmReportComponent extends Component {
 		$params['named']['status_stock'] = Common::hashEmptyField($params, 'named.status_stock', 'stock_minimum_empty');
         // $params['named']['branch_id'] = !empty($branch_id)?$branch_id:Configure::read('__Site.config_branch_id');
 		$params['named']['branch'] = false;
+		$params = $this->MkCommon->_callRefineParams($params);
 
 		$options = array(
 			'contain' => array(
