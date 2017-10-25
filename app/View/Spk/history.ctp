@@ -18,10 +18,12 @@
             'unit' => array(
                 'name' => __('Satuan'),
                 'width' => '8%',
+                'class' => 'text-center',
             ),
             'qty' => array(
                 'name' => __('Qty'),
                 'width' => '8%',
+                'class' => 'text-center',
             ),
             'note' => array(
                 'name' => __('Ket. SPK'),

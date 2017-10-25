@@ -306,7 +306,7 @@ class RjProductComponent extends Component {
                                         $detail[$modelDetail][$modelSn] = $productAdjustmentSN;
                                     }
                                 } else {
-                                    $detail['ProductHistory']['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock, $price, 'ProductAdjustmentDetailSerialNumber' );
+                                    $detail['ProductHistory']['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock, $price, $modelSn );
                                 }
                                 break;
                         }
@@ -631,7 +631,7 @@ class RjProductComponent extends Component {
                         ),
                     );
 
-                    $dataDetail[$key] = $this->_callStock('product_receipt', $data, $dataDetail[$key], 'in', 'ProductReceipt', $documentDetail);
+                    $dataDetail[$key] = $this->_callStock('product_receipt', $data, $dataDetail[$key], 'in', 'ProductReceipt', $documentDetail, 'ProductReceiptDetail', 'ProductReceiptDetailSerialNumber');
 
                     $total += $qty;
                 }

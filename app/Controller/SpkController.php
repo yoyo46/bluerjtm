@@ -256,6 +256,8 @@ class SpkController extends AppController {
             'conditions' => array(
                 'Truck.id' => $id,
             )
+        ), true, array(
+            'plant' => true,
         ));
 
         if( !empty($value) ) {
