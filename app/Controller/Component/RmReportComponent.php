@@ -472,10 +472,10 @@ class RmReportComponent extends Component {
 
 	function _callDataStock_cards ( $params, $limit = 30, $offset = 0 ) {
 		$this->controller->loadModel('ProductHistory');
-		$params = $this->controller->params->params;
 
         $params_named = Common::hashEmptyField($params, 'named', array());
 		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
 
 		$options = array(
             'contain' => array(
@@ -486,6 +486,9 @@ class RmReportComponent extends Component {
                 'ProductHistory.branch_id' => 'ASC',
                 'ProductHistory.transaction_date' => 'ASC',
                 'ProductHistory.id' => 'ASC',
+            ),
+            'group'=> array(
+                'ProductHistory.product_id',
             ),
         	'offset' => $offset,
         	'limit' => $limit,
@@ -513,151 +516,165 @@ class RmReportComponent extends Component {
 		if( !empty($data) ) {
 			$tmpResult = array();
 
-			foreach ($data as $key => $value) {
-                $product_id = Common::hashEmptyField($value, 'ProductHistory.product_id');
-                $transaction_type = Common::hashEmptyField($value, 'ProductHistory.transaction_type');
-                $transaction_id = Common::hashEmptyField($value, 'ProductHistory.transaction_id');
-                $branch_id = Common::hashEmptyField($value, 'ProductHistory.branch_id');
-
-                $value = $this->controller->ProductHistory->Product->getMergeList($value, array(
-                    'contain' => array(
-                        'ProductUnit',
-                    ),
-                ));
-                $value = $this->controller->ProductHistory->getMergeList($value, array(
-                    'contain' => array(
-                        'Branch',
-                    ),
+			foreach ($data as $key => $val) {
+                $product_id = Common::hashEmptyField($val, 'ProductHistory.product_id');
+                $tmp = $options;
+                $tmp = Common::_callUnset($tmp, array(
+                    'limit',
+                    'group',
                 ));
 
-                switch ($transaction_type) {
-                    case 'product_receipt':
-                        $modelName = 'ProductReceipt';
-                        break;
-                    case 'product_expenditure':
-                        $modelName = 'ProductExpenditure';
-                        break;
-                    case 'product_expenditure_void':
-                        $modelName = 'ProductExpenditure';
-                        break;
-                    case 'product_adjustment_min':
-                        $modelName = 'ProductAdjustment';
-                        break;
-                    case 'product_adjustment_min_void':
-                        $modelName = 'ProductAdjustment';
-                        break;
-                    case 'product_adjustment_plus':
-                        $modelName = 'ProductAdjustment';
-                        break;
-                    case 'product_adjustment_plus_void':
-                        $modelName = 'ProductAdjustment';
-                        break;
-                }
-
-                $value = $this->controller->ProductHistory->getMergeList($value, array(
-                    'contain' => array(
-                        'DocumentDetail' => array(
-                            'uses' => $modelName.'Detail',
-                            'contain' => array(
-                                'Document' => array(
-                                    'uses' => $modelName,
-                                    'elements' => array(
-                                        'branch' => false,
-                                        'status' => false,
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ),
+                $tmp['conditions']['ProductHistory.product_id'] = $product_id;
+                $values = $this->controller->ProductHistory->getData('all', $tmp, array(
+                    'branch' => false,
                 ));
 
-                if( $transaction_type == 'product_receipt' ) {
-                    $product_receipt_id = Common::hashEmptyField($value, 'DocumentDetail.Document.id');
+                foreach ($values as $key => $value) {
+	                $product_id = Common::hashEmptyField($value, 'ProductHistory.product_id');
+	                $transaction_type = Common::hashEmptyField($value, 'ProductHistory.transaction_type');
+	                $transaction_id = Common::hashEmptyField($value, 'ProductHistory.transaction_id');
+	                $branch_id = Common::hashEmptyField($value, 'ProductHistory.branch_id');
 
-                    $value['DocumentDetail']['SerialNumber'] = $this->controller->ProductHistory->ProductReceiptDetail->ProductReceipt->ProductReceiptDetailSerialNumber->getData('list', array(
-                        'fields' => array(
-                            'ProductReceiptDetailSerialNumber.serial_number',
-                            'ProductReceiptDetailSerialNumber.serial_number',
-                        ),
-                        'conditions' => array(
-                            'ProductReceiptDetailSerialNumber.product_receipt_id' => $product_receipt_id,
-                            'ProductReceiptDetailSerialNumber.product_id' => $product_id,
-                        ),
-                    ), array(
-                        'status' => 'confirm',
-                    ));
-                } else if( $transaction_type == 'product_expenditure' ) {
-                    $product_expenditure_detail_id = Common::hashEmptyField($value, 'DocumentDetail.id');
+	                $value = $this->controller->ProductHistory->Product->getMergeList($value, array(
+	                    'contain' => array(
+	                        'ProductUnit',
+	                    ),
+	                ));
+	                $value = $this->controller->ProductHistory->getMergeList($value, array(
+	                    'contain' => array(
+	                        'Branch',
+	                    ),
+	                ));
 
-                    $value['DocumentDetail']['SerialNumber'] = $this->controller->ProductHistory->ProductExpenditureDetail->ProductExpenditureDetailSerialNumber->getData('list', array(
-                        'fields' => array(
-                            'ProductExpenditureDetailSerialNumber.serial_number',
-                            'ProductExpenditureDetailSerialNumber.serial_number',
-                        ),
-                        'conditions' => array(
-                            'ProductExpenditureDetailSerialNumber.product_expenditure_detail_id' => $product_expenditure_detail_id,
-                            'ProductExpenditureDetailSerialNumber.product_id' => $product_id,
-                        ),
-                    ));
-                } else if( in_array($transaction_type, array('product_adjustment_min', 'product_adjustment_plus')) ) {
-                    $product_adjustment_detail_id = Common::hashEmptyField($value, 'DocumentDetail.id');
+	                switch ($transaction_type) {
+	                    case 'product_receipt':
+	                        $modelName = 'ProductReceipt';
+	                        break;
+	                    case 'product_expenditure':
+	                        $modelName = 'ProductExpenditure';
+	                        break;
+	                    case 'product_expenditure_void':
+	                        $modelName = 'ProductExpenditure';
+	                        break;
+	                    case 'product_adjustment_min':
+	                        $modelName = 'ProductAdjustment';
+	                        break;
+	                    case 'product_adjustment_min_void':
+	                        $modelName = 'ProductAdjustment';
+	                        break;
+	                    case 'product_adjustment_plus':
+	                        $modelName = 'ProductAdjustment';
+	                        break;
+	                    case 'product_adjustment_plus_void':
+	                        $modelName = 'ProductAdjustment';
+	                        break;
+	                }
 
-                    $value['DocumentDetail']['SerialNumber'] = $this->controller->ProductHistory->ProductAdjustmentDetail->ProductAdjustmentDetailSerialNumber->getData('list', array(
-                        'fields' => array(
-                            'ProductAdjustmentDetailSerialNumber.serial_number',
-                            'ProductAdjustmentDetailSerialNumber.serial_number',
-                        ),
-                        'conditions' => array(
-                            'ProductAdjustmentDetailSerialNumber.product_adjustment_detail_id' => $product_adjustment_detail_id,
-                            'ProductAdjustmentDetailSerialNumber.product_id' => $product_id,
-                        ),
-                    ));
-                }
+	                $value = $this->controller->ProductHistory->getMergeList($value, array(
+	                    'contain' => array(
+	                        'DocumentDetail' => array(
+	                            'uses' => $modelName.'Detail',
+	                            'contain' => array(
+	                                'Document' => array(
+	                                    'uses' => $modelName,
+	                                    'elements' => array(
+	                                        'branch' => false,
+	                                        'status' => false,
+	                                    ),
+	                                ),
+	                            ),
+	                        ),
+	                    ),
+	                ));
 
-                if( in_array($transaction_type, array('product_adjustment_min', 'product_adjustment_plus', 'product_adjustment_min_void', 'product_adjustment_plus_void')) ) {
-                    $tmpResult[$product_id][$branch_id]['Branch'] = Common::hashEmptyField($value, 'Branch');
-                    $tmpResult[$product_id][$branch_id]['Product'] = Common::hashEmptyField($value, 'Product');
-                    $tmpResult[$product_id][$branch_id]['ProductHistory'][] = $value;
-                } else {
-                    $document_type = Common::hashEmptyField($value, 'DocumentDetail.Document.document_type');
-                    $document_id = Common::hashEmptyField($value, 'DocumentDetail.Document.document_id');
+	                if( $transaction_type == 'product_receipt' ) {
+	                    $product_receipt_id = Common::hashEmptyField($value, 'DocumentDetail.Document.id');
 
-                    switch ($document_type) {
-                        case 'po':
-                            $transactionName = 'PurchaseOrder';
-                            break;
-                        
-                        default:
-                            $transactionName = 'Spk';
-                            break;
-                    }
+	                    $value['DocumentDetail']['SerialNumber'] = $this->controller->ProductHistory->ProductReceiptDetail->ProductReceipt->ProductReceiptDetailSerialNumber->getData('list', array(
+	                        'fields' => array(
+	                            'ProductReceiptDetailSerialNumber.serial_number',
+	                            'ProductReceiptDetailSerialNumber.serial_number',
+	                        ),
+	                        'conditions' => array(
+	                            'ProductReceiptDetailSerialNumber.product_receipt_id' => $product_receipt_id,
+	                            'ProductReceiptDetailSerialNumber.product_id' => $product_id,
+	                        ),
+	                    ), array(
+	                        'status' => 'confirm',
+	                    ));
+	                } else if( $transaction_type == 'product_expenditure' ) {
+	                    $product_expenditure_detail_id = Common::hashEmptyField($value, 'DocumentDetail.id');
 
-                    $modelNameDetail = $modelName.'Detail';
-                    $value = $this->controller->ProductHistory->$modelNameDetail->$modelName->$transactionName->getMerge($value, $document_id, $transactionName.'.id', 'all', 'Transaction');
-                    
-                    $truck_id = Common::hashEmptyField($value, 'Transaction.truck_id');
+	                    $value['DocumentDetail']['SerialNumber'] = $this->controller->ProductHistory->ProductExpenditureDetail->ProductExpenditureDetailSerialNumber->getData('list', array(
+	                        'fields' => array(
+	                            'ProductExpenditureDetailSerialNumber.serial_number',
+	                            'ProductExpenditureDetailSerialNumber.serial_number',
+	                        ),
+	                        'conditions' => array(
+	                            'ProductExpenditureDetailSerialNumber.product_expenditure_detail_id' => $product_expenditure_detail_id,
+	                            'ProductExpenditureDetailSerialNumber.product_id' => $product_id,
+	                        ),
+	                    ));
+	                } else if( in_array($transaction_type, array('product_adjustment_min', 'product_adjustment_plus')) ) {
+	                    $product_adjustment_detail_id = Common::hashEmptyField($value, 'DocumentDetail.id');
 
-                    if( !empty($truck_id) ) {
-                        $value = $this->controller->ProductHistory->$modelNameDetail->$modelName->$transactionName->Truck->getMerge($value, $truck_id);
-                    }
+	                    $value['DocumentDetail']['SerialNumber'] = $this->controller->ProductHistory->ProductAdjustmentDetail->ProductAdjustmentDetailSerialNumber->getData('list', array(
+	                        'fields' => array(
+	                            'ProductAdjustmentDetailSerialNumber.serial_number',
+	                            'ProductAdjustmentDetailSerialNumber.serial_number',
+	                        ),
+	                        'conditions' => array(
+	                            'ProductAdjustmentDetailSerialNumber.product_adjustment_detail_id' => $product_adjustment_detail_id,
+	                            'ProductAdjustmentDetailSerialNumber.product_id' => $product_id,
+	                        ),
+	                    ));
+	                }
 
-                    $tmpResult[$product_id][$branch_id]['Branch'] = Common::hashEmptyField($value, 'Branch');
-                    $tmpResult[$product_id][$branch_id]['Product'] = Common::hashEmptyField($value, 'Product');
-                    $tmpResult[$product_id][$branch_id]['ProductHistory'][] = $value;
-                }
+	                if( in_array($transaction_type, array('product_adjustment_min', 'product_adjustment_plus', 'product_adjustment_min_void', 'product_adjustment_plus_void')) ) {
+	                    $tmpResult[$product_id][$branch_id]['Branch'] = Common::hashEmptyField($value, 'Branch');
+	                    $tmpResult[$product_id][$branch_id]['Product'] = Common::hashEmptyField($value, 'Product');
+	                    $tmpResult[$product_id][$branch_id]['ProductHistory'][] = $value;
+	                } else {
+	                    $document_type = Common::hashEmptyField($value, 'DocumentDetail.Document.document_type');
+	                    $document_id = Common::hashEmptyField($value, 'DocumentDetail.Document.document_id');
 
-                $document_type = Common::hashEmptyField($value, 'DocumentDetail.Document.document_type');
-                $document_id = Common::hashEmptyField($value, 'DocumentDetail.Document.document_id');
+	                    switch ($document_type) {
+	                        case 'po':
+	                            $transactionName = 'PurchaseOrder';
+	                            break;
+	                        
+	                        default:
+	                            $transactionName = 'Spk';
+	                            break;
+	                    }
 
-                switch ($document_type) {
-                    case 'po':
-                        $transactionName = 'PurchaseOrder';
-                        break;
-                    
-                    default:
-                        $transactionName = 'Spk';
-                        break;
-                }
+	                    $modelNameDetail = $modelName.'Detail';
+	                    $value = $this->controller->ProductHistory->$modelNameDetail->$modelName->$transactionName->getMerge($value, $document_id, $transactionName.'.id', 'all', 'Transaction');
+	                    
+	                    $truck_id = Common::hashEmptyField($value, 'Transaction.truck_id');
+
+	                    if( !empty($truck_id) ) {
+	                        $value = $this->controller->ProductHistory->$modelNameDetail->$modelName->$transactionName->Truck->getMerge($value, $truck_id);
+	                    }
+
+	                    $tmpResult[$product_id][$branch_id]['Branch'] = Common::hashEmptyField($value, 'Branch');
+	                    $tmpResult[$product_id][$branch_id]['Product'] = Common::hashEmptyField($value, 'Product');
+	                    $tmpResult[$product_id][$branch_id]['ProductHistory'][] = $value;
+	                }
+
+	                $document_type = Common::hashEmptyField($value, 'DocumentDetail.Document.document_type');
+	                $document_id = Common::hashEmptyField($value, 'DocumentDetail.Document.document_id');
+
+	                switch ($document_type) {
+	                    case 'po':
+	                        $transactionName = 'PurchaseOrder';
+	                        break;
+	                    
+	                    default:
+	                        $transactionName = 'Spk';
+	                        break;
+	                }
+	            }
 			}
 		}
 
@@ -666,6 +683,7 @@ class RmReportComponent extends Component {
             $this->controller->ProductHistory->virtualFields['total_begining_balance'] = 'SUM(CASE WHEN ProductHistory.transaction_type = \'product_receipt\' OR ProductHistory.transaction_type = \'product_adjustment_plus\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.transaction_type = \'product_expenditure\' OR ProductHistory.transaction_type = \'product_adjustment_min\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END)';
             $this->controller->ProductHistory->virtualFields['total_qty_in'] = 'SUM(CASE WHEN ProductHistory.type = \'in\' THEN ProductHistory.qty ELSE 0 END)';
             $this->controller->ProductHistory->virtualFields['total_qty_out'] = 'SUM(CASE WHEN ProductHistory.type = \'out\' THEN ProductHistory.qty ELSE 0 END)';
+            $this->controller->ProductHistory->Product->ProductStock->virtualFields['label'] = 'CONCAT(ProductStock.id, \'|\', ProductStock.price)';
 
             foreach ($tmpResult as $key => &$product) {
                 if(!empty($product)){
@@ -678,6 +696,8 @@ class RmReportComponent extends Component {
 
                         $dateFrom = Common::hashEmptyField($params, 'named.DateFrom');
                         $options = Common::_callUnset($options, array(
+                            'group',
+                            'limit',
                             'conditions' => array(
                                 'ProductHistory.product_id',
                                 'ProductHistory.branch_id',
@@ -693,39 +713,196 @@ class RmReportComponent extends Component {
                             'ProductHistory.created' => 'DESC',
                         );
 
-                        $productHistory = $this->controller->ProductHistory->getData('first', $options, array(
-                            'branch' => false,
-                        ));
-
                         $lastHistory = $this->controller->ProductHistory->getData('first', $options, array(
                             'branch' => false,
                         ));
 
+                        $tmpOption = $options;
+                        $tmpOption['group'] = array(
+                            'ProductHistory.price',
+                        );
+                        $tmpOption['fields'] = array(
+                            'ProductHistory.price',
+                            'ProductHistory.total_qty_in',
+                            'ProductHistory.total_qty_out',
+                        );
+                        $lastHistoryByPrice = $this->controller->ProductHistory->getData('all', $tmpOption, array(
+                            'branch' => false,
+                        ));
+
+                        $receiptSN = $this->controller->ProductHistory->ProductReceiptDetail->ProductReceipt->ProductReceiptDetailSerialNumber->getData('list', array(
+                            'fields' => array(
+                                'ProductReceiptDetailSerialNumber.serial_number',
+                                'ProductReceiptDetailSerialNumber.serial_number',
+                            ),
+                            'contain' => array(
+                                'ProductReceipt',
+                            ),
+                            'conditions' => array(
+                                'ProductReceiptDetailSerialNumber.product_id' => $product_id,
+                                'DATE_FORMAT(ProductReceipt.transaction_date, \'%Y-%m-%d\') <' => $dateFrom,
+                                'ProductReceipt.branch_id' => $branch_id,
+                                'ProductReceipt.status' => 1,
+                                'ProductReceipt.transaction_status NOT' => array( 'unposting', 'revised', 'void' ),
+                            ),
+                        ), array(
+                            'status' => 'confirm',
+                        ));
+
+                        $this->controller->ProductHistory->ProductExpenditureDetail->ProductExpenditureDetailSerialNumber->bindModel(array(
+                            'hasOne' => array(
+                                'ProductExpenditure' => array(
+                                    'className' => 'ProductExpenditure',
+                                    'foreignKey' => false,
+                                    'conditions' => array(
+                                        'ProductExpenditure.id = ProductExpenditureDetail.product_expenditure_id',
+                                    ),
+                                ),
+                            )
+                        ), false);
+                        $expenditureSN = $this->controller->ProductHistory->ProductExpenditureDetail->ProductExpenditureDetailSerialNumber->getData('list', array(
+                            'fields' => array(
+                                'ProductExpenditureDetailSerialNumber.serial_number',
+                                'ProductExpenditureDetailSerialNumber.serial_number',
+                            ),
+                            'contain' => array(
+                                'ProductExpenditureDetail',
+                                'ProductExpenditure',
+                            ),
+                            'conditions' => array(
+                                'ProductExpenditureDetail.status' => 1,
+                                'ProductExpenditureDetailSerialNumber.product_id' => $product_id,
+                                'DATE_FORMAT(ProductExpenditure.transaction_date, \'%Y-%m-%d\') <' => $dateFrom,
+                                'ProductExpenditure.branch_id' => $branch_id,
+                                'ProductExpenditure.status' => 1,
+                                'ProductExpenditure.transaction_status NOT' => array( 'unposting', 'revised', 'void' ),
+                            ),
+                        ));
+                        $last_serial_number = array_diff($receiptSN, $expenditureSN);
+
+                        $this->controller->ProductHistory->ProductAdjustmentDetail->ProductAdjustmentDetailSerialNumber->bindModel(array(
+                            'hasOne' => array(
+                                'ProductAdjustment' => array(
+                                    'className' => 'ProductAdjustment',
+                                    'foreignKey' => false,
+                                    'conditions' => array(
+                                        'ProductAdjustment.id = ProductAdjustmentDetail.product_adjustment_id',
+                                    ),
+                                ),
+                            )
+                        ), false);
+                        $adjustmentPlus = $this->controller->ProductHistory->ProductAdjustmentDetail->ProductAdjustmentDetailSerialNumber->getData('list', array(
+                            'fields' => array(
+                                'ProductAdjustmentDetailSerialNumber.serial_number',
+                                'ProductAdjustmentDetailSerialNumber.serial_number',
+                            ),
+                            'contain' => array(
+                                'ProductAdjustmentDetail',
+                                'ProductAdjustment',
+                            ),
+                            'conditions' => array(
+                                'ProductAdjustmentDetail.status' => 1,
+                                'ProductAdjustmentDetail.type' => 'plus',
+                                'ProductAdjustmentDetailSerialNumber.product_id' => $product_id,
+                                'DATE_FORMAT(ProductAdjustment.transaction_date, \'%Y-%m-%d\') <' => $dateFrom,
+                                'ProductAdjustment.branch_id' => $branch_id,
+                                'ProductAdjustment.status' => 1,
+                                'ProductAdjustment.transaction_status NOT' => array( 'unposting', 'revised', 'void' ),
+                            ),
+                        ));
+                        $last_serial_number = array_merge($last_serial_number, $adjustmentPlus);
+
+                        $adjustmentMin = $this->controller->ProductHistory->ProductAdjustmentDetail->ProductAdjustmentDetailSerialNumber->getData('list', array(
+                            'fields' => array(
+                                'ProductAdjustmentDetailSerialNumber.serial_number',
+                                'ProductAdjustmentDetailSerialNumber.serial_number',
+                            ),
+                            'contain' => array(
+                                'ProductAdjustmentDetail',
+                                'ProductAdjustment',
+                            ),
+                            'conditions' => array(
+                                'ProductAdjustmentDetail.status' => 1,
+                                'ProductAdjustmentDetail.type' => 'min',
+                                'ProductAdjustmentDetailSerialNumber.product_id' => $product_id,
+                                'DATE_FORMAT(ProductAdjustment.transaction_date, \'%Y-%m-%d\') <' => $dateFrom,
+                                'ProductAdjustment.branch_id' => $branch_id,
+                                'ProductAdjustment.status' => 1,
+                                'ProductAdjustment.transaction_status NOT' => array( 'unposting', 'revised', 'void' ),
+                            ),
+                        ));
+                        $last_serial_number = array_diff($last_serial_number, $adjustmentMin);
+
                         $total_qty_in = Common::hashEmptyField($lastHistory, 'ProductHistory.total_qty_in', 0);
                         $total_qty_out = Common::hashEmptyField($lastHistory, 'ProductHistory.total_qty_out', 0);
                         $total_qty = $total_qty_in - $total_qty_out;
-                        
+
+                        $stock = $this->controller->ProductHistory->Product->ProductStock->getData('list', array(
+                            'fields' => array(
+                                'ProductStock.label',
+                                'ProductStock.serial_number',
+                            ),
+                            'conditions' => array(
+                                'ProductStock.product_id' => $product_id,
+                                'ProductStock.serial_number' => $last_serial_number,
+                                'ProductStock.branch_id' => $branch_id,
+                                'DATE_FORMAT(ProductStock.transaction_date, \'%Y-%m-%d\') <' => $dateFrom,
+                            ),
+                        ), array(
+                            'status' => false,
+                            'branch' => false,
+                        ));
+
                         $lastHistory = $this->controller->ProductHistory->Product->getMergeList($lastHistory, array(
                             'contain' => array(
                                 'ProductUnit',
                             ),
                         ));
                         $lastHistory['ProductHistory']['ending'] = $total_qty;
+                        $lastHistory['ProductHistory']['last_serial_number'] = $stock;
+                        $lastHistory['ProductHistory']['by_price'] = $lastHistoryByPrice;
         				$ending_stock = array();
 
 				        if( !empty($lastHistory['ProductHistory']['id']) ) {
 				            $unit = Common::hashEmptyField($lastHistory, 'ProductUnit.name');
 				            $start_balance = Common::hashEmptyField($lastHistory, 'ProductHistory.ending', 0);
 				            $total_begining_balance = Common::hashEmptyField($lastHistory, 'ProductHistory.total_begining_balance');
+            				$last_serial_number = Common::hashEmptyField($lastHistory, 'ProductHistory.last_serial_number');
+            				
+            				$by_price = Common::hashEmptyField($lastHistory, 'ProductHistory.by_price');
 
 				            if( !empty($start_balance) ) {
 				                $total_begining_price = $total_begining_balance / $start_balance;
 				            } else {
 				                $total_begining_price = 0;
 				            }
-				    
-				            $ending_stock[$total_begining_price]['qty'] = $start_balance;
-				            $ending_stock[$total_begining_price]['price'] = $total_begining_price;
+    
+				            if( !empty($by_price) ) {
+				                foreach ($by_price as $key => $val_price) {
+				                    $total_qty_in = Common::hashEmptyField($val_price, 'ProductHistory.total_qty_in');
+				                    $total_qty_out = Common::hashEmptyField($val_price, 'ProductHistory.total_qty_out');
+				                    $price = Common::hashEmptyField($val_price, 'ProductHistory.price');
+
+				                    $ending_stock[$price]['qty'] = $total_qty_in - $total_qty_out;
+				                    $ending_stock[$price]['price'] = $price;
+				                }
+				            }
+
+				            if( !empty($last_serial_number) ) {
+				                foreach ($last_serial_number as $label_sn => $sn) {
+				                    $prices = explode('|', $label_sn);
+
+				                    if( !empty($prices[1]) ) {
+				                        if( !empty($ending_stock[$prices[1]]['serial_numbers']) ) {
+				                            $ending_stock[$prices[1]]['serial_numbers'][] = $sn;
+				                        } else {
+				                            $ending_stock[$prices[1]]['serial_numbers'] = array(
+				                                $sn,
+				                            );
+				                        }
+				                    }
+				                }
+				            }
 				        } else {
 				            $unit = '';
 				            $start_balance = 0;
@@ -805,6 +982,7 @@ class RmReportComponent extends Component {
 				                $url = null;
 				                $price = null;
 				                $id = Common::hashEmptyField($value, 'Product.id');
+                				$is_serial_number = Common::hashEmptyField($value, 'Product.is_serial_number');
 				                $unit = Common::hashEmptyField($value, 'ProductUnit.name');
 
 				                $transaction_id = Common::hashEmptyField($value, 'ProductHistory.transaction_id');
