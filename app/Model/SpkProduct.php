@@ -172,6 +172,9 @@ class SpkProduct extends AppModel {
     }
 
     public function _callRefineParams( $data = '', $default_options = false ) {
+        $nodoc = $this->filterEmptyField($data, 'named', 'nodoc');
+        $dateFrom = $this->filterEmptyField($data, 'named', 'DateFrom');
+        $dateTo = $this->filterEmptyField($data, 'named', 'DateTo');
         $code = $this->filterEmptyField($data, 'named', 'code');
         $name = $this->filterEmptyField($data, 'named', 'name');
         $group = $this->filterEmptyField($data, 'named', 'group');
@@ -232,6 +235,21 @@ class SpkProduct extends AppModel {
             $this->bindModel($bindArr, false);
         }
 
+        if( !empty($nodoc) ) {
+            $default_options['conditions']['Spk.nodoc LIKE'] = '%'.$nodoc.'%';
+            $default_options['contain'][] = 'Spk';
+        }
+        if( !empty($dateFrom) || !empty($dateTo) ) {
+            if( !empty($dateFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(Spk.transaction_date, \'%Y-%m-%d\') >='] = $dateFrom;
+            }
+
+            if( !empty($dateTo) ) {
+                $default_options['conditions']['DATE_FORMAT(Spk.transaction_date, \'%Y-%m-%d\') <='] = $dateTo;
+            }
+            
+            $default_options['contain'][] = 'Spk';
+        }
         if( !empty($code) ) {
             $default_options['conditions']['Product.code LIKE'] = '%'.$code.'%';
             $default_options['contain'][] = 'Product';

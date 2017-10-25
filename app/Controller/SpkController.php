@@ -17,13 +17,17 @@ class SpkController extends AppController {
         $this->set('module_title', __('Gudang'));
     }
 
-    function search( $index = 'index' ){
+    function search( $index = 'index', $id = null ){
         $refine = array();
         if(!empty($this->request->data)) {
             $data = $this->request->data;
             $params = $this->MkCommon->getRefineGroupBranch(array(), $data);
             $result = $this->MkCommon->processFilter($data);
             
+            if(!empty($id)){
+                array_push($params, $id);
+            }
+
             $params = array_merge($params, $result);
             $params['action'] = $index;
 
@@ -255,19 +259,23 @@ class SpkController extends AppController {
         ));
 
         if( !empty($value) ) {
-            $options = $this->Spk->getData('paginate', array(
+            $params = $this->MkCommon->_callRefineParams($this->params);
+            $role = $this->MkCommon->filterEmptyField($params, 'named', 'status');
+            $options =  $this->Spk->SpkProduct->_callRefineParams($params, array(
                 'conditions' => array(
                     'Spk.truck_id' => $id,
                     'SpkProduct.status' => 1,
                 ),
-            ), array(
-                'status' => 'active',
+                'contain' => array(
+                    'Spk',
+                ),
+            ));
+            $options = $this->Spk->getData('paginate', $options, array(
+                'status' => 'all',
                 'branch' => false,
+                'role' => $role,
             ));
 
-            $options['contain'] = array(
-                'Spk',
-            );
             $this->paginate = $options;
             $values = $this->paginate('SpkProduct');
 
@@ -300,6 +308,7 @@ class SpkController extends AppController {
             $this->set('sub_module_title', __('History perbaikan Truk - %s', Common::hashEmptyField($value, 'Truck.nopol')));
             $this->set('active_menu', 'spk');
             $this->set('values', $values);
+            $this->set('id', $id);
         } else {
             $this->MkCommon->setCustomFlash(__('Truk tidak ditemukan.'), 'error');
             $this->redirect($this->referer());

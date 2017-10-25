@@ -38,6 +38,7 @@
         );
 
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
+        echo $this->element('blocks/spk/forms/history_search');
 ?>
 <div id="wrapper-sj">
 	<div class="box box-primary">
