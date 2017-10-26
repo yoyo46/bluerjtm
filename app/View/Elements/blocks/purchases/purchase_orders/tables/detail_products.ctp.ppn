@@ -1,0 +1,208 @@
+<?php 
+        $view = !empty($view)?$view:false;
+        $data = $this->request->data;
+        $ppn_include = $this->Common->filterEmptyField($data, 'PurchaseOrder', 'ppn_include');
+        $dataDetail = $this->Common->filterEmptyField($data, 'PurchaseOrderDetail');
+
+        if( !empty($dataDetail) ) {
+            $tableClass = '';
+        } else {
+            $tableClass = 'hide';
+        }
+
+		$dataColumns = array(
+            'code' => array(
+                'name' => __('Kode'),
+                'class' => 'text-center',
+                'style' => 'width:7%;',
+            ),
+            'name' => array(
+                'name' => __('Nama'),
+                'style' => 'width:15%;',
+            ),
+            'unit' => array(
+                'name' => __('Satuan'),
+                'class' => 'text-center',
+                'style' => 'width:7%;',
+            ),
+            'note' => array(
+                'name' => __('Ket.'),
+                'class' => 'text-center',
+                'style' => 'width:15%;',
+            ),
+            'qty' => array(
+                'name' => __('Qty'),
+                'class' => 'text-center',
+                'style' => 'width:10%;',
+            ),
+            'price' => array(
+                'name' => __('Harga'),
+                'class' => 'text-center',
+                'style' => 'width:15%;',
+            ),
+            'disc' => array(
+                'name' => __('Potongan'),
+                'class' => 'text-center',
+                'style' => 'width:10%;',
+            ),
+            'ppn' => array(
+                'name' => __('Pajak'),
+                'class' => 'text-center',
+                'style' => 'width:10%;',
+            ),
+            'total' => array(
+                'name' => __('Total'),
+                'class' => 'text-center',
+                'style' => 'width:15%;',
+            ),
+            'action' => array(
+                'name' => __('Action'),
+                'class' => 'text-center',
+                'style' => 'width:5%;',
+            ),
+        );
+        $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
+
+        if( $view != 'detail' ) {
+            echo $this->Html->tag('div', $this->Html->link($this->Common->icon('plus-square').__(' Ambil Barang'), $this->Html->url( array(
+                    'controller'=> 'ajax', 
+                    'action' => 'products',
+                    'po',
+                    'admin' => false,
+                )), array(
+                    'escape' => false,
+                    'allow' => true,
+                    'title' => __('Daftar Barang'),
+                    'class' => 'btn bg-maroon ajaxCustomModal',
+                    'data-check' => '#supplier-val',
+                    'data-check-title' => 'supplier',
+                    'data-check-alert' => __('Mohon pilih supplier terlebih dahulu'),
+                    // 'data-check-named' => 'no_sq',
+                    // 'data-check-empty' => 'true',
+                )), array(
+                'class' => "form-group",
+            ));
+            echo $this->Form->error('invalid_detail_po', null, array(
+                'class' => 'error-message mb15',
+            ));
+        }
+?>
+<div class="temp-document-picker document-calc <?php echo $tableClass; ?>" rel="ppn">
+	<div class="box box-success">
+	    <?php 
+	            echo $this->element('blocks/common/box_header', array(
+	                'title' => __('Informasi Barang'),
+	            ));
+	    ?>
+	    <div class="box-body table-responsive">
+	        <table class="table table-hover" id="wrapper-write">
+		        <?php
+	                    if( !empty($fieldColumn) ) {
+	                        echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));
+	                    }
+	            ?>
+	        	<tbody>
+                    <?php
+                            $total = 0;
+
+                            if(!empty($dataDetail)){
+                                foreach ($dataDetail as $key => $value) {
+                                    $supplier_quotation_detail_id = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'supplier_quotation_detail_id');
+
+                                    $subtotal = $this->Purchase->calculate($value, $ppn_include);
+                                    $total += $subtotal;
+
+                                    $customSubtotal = $this->Common->getFormatPrice($subtotal, '', 2);
+
+                                    if( !empty($value['PurchaseOrderDetail']['code']) ) {
+                                        $code = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'code');
+                                        $name = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'name');
+                                        $unit = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'unit');
+                                        $is_supplier_quotation = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'is_supplier_quotation');
+                                    } else {
+                                        $code = $this->Common->filterEmptyField($value, 'Product', 'code');
+                                        $name = $this->Common->filterEmptyField($value, 'Product', 'name');
+                                        $is_supplier_quotation = $this->Common->filterEmptyField($value, 'Product', 'is_supplier_quotation');
+                                        $unit = $this->Common->filterEmptyField($value, 'ProductUnit', 'name');
+                                    }
+
+                                    echo $this->element('blocks/purchases/purchase_orders/tables/detail_items', array(
+                                        'modelName' => 'PurchaseOrderDetail',
+                                        'supplier_quotation_detail_id' => $supplier_quotation_detail_id,
+                                        'value' => $value,
+                                        'total' => $customSubtotal,
+                                        'code' => $code,
+                                        'name' => $name,
+                                        'unit' => $unit,
+                                        'idx' => $key,
+                                        'disabled' => $this->Purchase->_callDisabledNoSq($is_supplier_quotation, $supplier_quotation_detail_id),
+                                    ));
+                                }
+                            }
+                    ?>
+                </tbody>
+                <?php
+
+                        $ppn = $this->Common->filterEmptyField($data, 'PurchaseOrder', 'ppn_total', 0);
+                        $grandtotal = $total + $ppn;
+
+                        $customTotal = $this->Common->getFormatPrice($total, '', 2);
+                        $grandtotalCustom = $this->Common->getFormatPrice($grandtotal);
+                ?>
+                <tfoot>
+                    <tr class="grandtotal">
+                        <?php
+                                echo $this->Html->tag('td', __('Total'), array(
+                                    'colspan' => 8,
+                                    'class' => 'text-right',
+                                ));
+                                echo $this->Html->tag('td', $customTotal, array(
+                                    'id' => 'grand-total-document',
+                                    'class' => 'text-right total normal',
+                                    'data-decimal' => 2,
+                                ));
+                        ?>
+                    </tr>
+                    <tr class="additional-input-revenue" id="ppn-grand-total-revenue">
+                        <td align="right" colspan="8" class="relative">
+                            <?php 
+                                echo $this->Form->input('PurchaseOrder.ppn', array(
+                                    'type' => 'text',
+                                    'label' => __('PPN'),
+                                    'class' => 'input_number ppn-persen',
+                                    'required' => false,
+                                    'div' => false
+                                )).$this->Html->tag('span', '%', array('class' => 'notation-input'));
+                            ?>
+                        </td>
+                        <td align="right">
+                            <?php 
+                                    echo $this->Form->input('PurchaseOrder.ppn_total', array(
+                                        'type' => 'text',
+                                        'id' => 'ppn-total',
+                                        'label' => false,
+                                        'class' => 'input_price_coma',
+                                        'required' => false,
+                                        'div' => false,
+                                        'data-decimal' => '0',
+                                    ));
+                            ?>
+                        </td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr id="all-grand-total-revenue">
+                        <td align="right" colspan="8">
+                            <?php echo $this->Html->tag('label', __('Grand Total'));?>
+                        </td>
+                        <td align="right" id="all-total">
+                            <?php 
+                                    echo $grandtotalCustom;
+                            ?>
+                        </td>
+                        <td>&nbsp;</td>
+                    </tr>
+                </tfoot>
+	    	</table>
+	    </div>
+	</div>
+</div>

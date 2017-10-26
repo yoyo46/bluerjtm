@@ -82,8 +82,12 @@
 }
 
 .ttuj-form .sj_outstanding_pengganti a,
-.ttuj-form .sj_outstanding a {
+.ttuj-form .sj_outstanding a,
+.wrapper-truck-history a {
 	color: #d9534f;
+}
+.wrapper-truck-history a {
+  font-size: 85%;
 }
 
 .informasi-sj {

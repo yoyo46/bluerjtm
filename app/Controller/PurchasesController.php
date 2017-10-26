@@ -349,6 +349,8 @@ class PurchasesController extends AppController {
             $this->request->data = $this->RjPurchase->_callBeforeRenderPO($value);
 
             $vendors = $this->PurchaseOrder->Vendor->getData('list');
+            $this->MkCommon->_layout_file('select');
+            
             $this->set('active_menu', 'Purchase Order');
             $this->set('view', 'detail');
             $this->set(compact(

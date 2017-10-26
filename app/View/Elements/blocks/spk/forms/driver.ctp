@@ -8,3 +8,10 @@
 			));
 	?>
 </div>
+<?php
+		if( !empty($ajax_truck_history) ) {
+        	echo $this->Html->tag('div', $this->element('blocks/spk/truck_history'), array(
+				'class' => 'wrapper-truck-history',
+			));
+        }
+?>

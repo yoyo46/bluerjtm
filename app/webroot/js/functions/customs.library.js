@@ -1758,6 +1758,7 @@
         var flag_alert = settings.obj.attr('data-alert');
         var data_ajax_type = settings.obj.attr('data-ajax-type');
         var data_wrapper_write = settings.obj.attr('data-wrapper-write');
+        var data_wrapper_write_page = $.checkUndefined(settings.obj.attr('data-wrapper-write-page'), false);
         var data_action = settings.obj.attr('data-action');
         var data_pushstate = settings.obj.attr('data-pushstate');
         var data_url_pushstate = settings.obj.attr('data-url-pushstate');
@@ -1834,10 +1835,29 @@
                         }, 2000);
                     }
 
-                    if( $(data_wrapper_write).length > 0 ) {
+                    if( data_wrapper_write_page != false ) {
+                        var data_wrapper_arr = data_wrapper_write_page.split(',');
+
+                        $.each(data_wrapper_arr, function(index, identifier){
+                            var targetWrapper = $.trim(identifier);
+                            var contentPage = $(result).filter(targetWrapper).html();
+
+                            if( typeof contentPage == 'undefined' ) {
+                                contentPage = $(result).find(targetWrapper).html();
+                            }
+
+                            if( $(targetWrapper).length > 0 ) {
+                                $(targetWrapper).html(contentPage);
+                            }
+                            
+                            $.rebuildFunctionAjax( $(targetWrapper) );
+                        });
+                    } else if( $(data_wrapper_write).length > 0 ) {
                         $(data_wrapper_write).html(contentHtml);
                         $.rebuildFunctionAjax( $(data_wrapper_write) );
+                    }
 
+                    if( $(data_wrapper_write).length > 0 || data_wrapper_write_page != false ) {
                         if(data_action == 'messages' ) {
                             var current_active = settings.obj.parents('li');
                             var data_active = $('.list-inbox li');

@@ -109,7 +109,9 @@
 							'fieldName' => 'nopol',
 							'label' => __('No. Pol %s', $this->Html->tag('span', '*', array(
 								'class' => __('wrapper-non-production %s', $nonprodClass),
-							))),
+							))).$this->Html->tag('span', $this->element('blocks/spk/truck_history'), array(
+								'class' => 'wrapper-truck-history',
+							)),
 							'dataUrl' => array(
 								'controller' => 'ajax',
 								'action' => 'truck_picker',
@@ -122,7 +124,7 @@
 									'controller' => 'spk',
 									'action' => 'driver_truck',
 								)),
-								'data-wrapper-write' => '.wrapper-driver',
+								'data-wrapper-write-page' => '.wrapper-driver,.wrapper-truck-history',
 							),
 						));
         				echo $this->element('blocks/spk/forms/driver');

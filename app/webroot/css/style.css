@@ -197,6 +197,9 @@ body > .header {
 .temp-document-picker .grandtotal td {
   font-weight: bold;
 }
+.temp-document-picker .grandtotal td.normal {
+  font-weight: normal;
+}
 
 @media screen and (min-width: 992px) {
   .left-side {

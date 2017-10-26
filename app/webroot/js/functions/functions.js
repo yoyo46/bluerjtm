@@ -2516,7 +2516,7 @@ var invoice_price_payment = function(){
 }
 
 function getTotalPick(){
-    if( $('.document-pick-info-detail .document-pick-price').length > 0 ) {
+    if( $('.document-pick-info-detail .document-pick-price').length > 0 || $('.document-calc[rel="ppn"]').length > 0 ) {
         $('.pph-persen, .ppn-persen').off('keyup');
         $('.pph-persen, .ppn-persen').keyup(function(){
             calcPPNPPH();

@@ -120,6 +120,7 @@ class SpkController extends AppController {
                     ),
                     'SpkProduction',
                     'SpkMechanic',
+                    'Truck',
                 ),
             ));
             $data = $this->request->data;
@@ -166,6 +167,7 @@ class SpkController extends AppController {
                     ),
                     'SpkProduction',
                     'SpkMechanic',
+                    'Truck',
                 ),
             ));
 
@@ -307,7 +309,7 @@ class SpkController extends AppController {
                 }
             }
 
-            $this->set('sub_module_title', __('History perbaikan Truk - %s', Common::hashEmptyField($value, 'Truck.nopol')));
+            $this->set('sub_module_title', __('History Perbaikan - %s', Common::hashEmptyField($value, 'Truck.nopol')));
             $this->set('active_menu', 'spk');
             $this->set('values', $values);
             $this->set('id', $id);
@@ -322,6 +324,9 @@ class SpkController extends AppController {
         $value = $this->Spk->Truck->getInfoTruck($nopol, null, 'Truck.nopol');
 
         $this->request->data['Spk']['driver_id'] = Common::hashEmptyField($value, 'Truck.driver_id');
+        
+        $current_truck = $value;
+        $current_truck_id = Common::hashEmptyField($value, 'Truck.id');
 
         $drivers = $this->Spk->Driver->getData('list', array(
             'fields' => array(
@@ -330,8 +335,12 @@ class SpkController extends AppController {
         ), array(
             'branch' => false,
         ));
-        $this->set(compact(
-            'value', 'drivers'
+        $this->set(array(
+            'value' => $value,
+            'drivers' => $drivers,
+            'current_truck_id' => $current_truck_id,
+            'current_truck' => $current_truck,
+            'ajax_truck_history' => true,
         ));
         $this->render('/Elements/blocks/spk/forms/driver');
     }
