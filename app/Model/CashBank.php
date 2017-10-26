@@ -171,7 +171,7 @@ class CashBank extends AppModel {
         return $data;
     }
 
-    function getDocumentCashBank ( $prepayment_out_id = false, $document_type = 'prepayment_out' ) {
+    function getDocumentCashBank ( $prepayment_out_id = false, $document_type = 'prepayment_out', $elements = array() ) {
         $result = array(
             'docs' => array(),
             'docs_type' => false,
@@ -201,9 +201,7 @@ class CashBank extends AppModel {
                 break;
         }
 
-        $docTmps = $this->getData('all', $options, array(
-            'branch' => false,
-        ));
+        $docTmps = $this->getData('all', $options, $elements);
 
         if( $document_type == 'prepayment_in' ) {
             return $docTmps;

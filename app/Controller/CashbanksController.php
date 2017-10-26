@@ -1561,7 +1561,9 @@ class CashbanksController extends AppController {
     function getPrepaymentMerge ( $prepayment ) {
         // Get Data Prepayment IN
         $prepayment_out_id = $this->MkCommon->filterEmptyField($prepayment, 'CashBank', 'id');
-        $prepayment['PrepaymentIN'] = $this->CashBank->getDocumentCashBank( $prepayment_out_id, 'prepayment_in' );
+        $prepayment['PrepaymentIN'] = $this->CashBank->getDocumentCashBank($prepayment_out_id, 'prepayment_in', array(
+            'branch' => false,
+        ));
 
         if( !empty($prepayment['PrepaymentIN']) ) {
             foreach ($prepayment['PrepaymentIN'] as $key => $prepaymentIN) {
