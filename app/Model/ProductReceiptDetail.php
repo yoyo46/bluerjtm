@@ -88,6 +88,7 @@ class ProductReceiptDetail extends AppModel {
             ),
             'fields' => array(),
             'group' => array(),
+            'contain' => array(),
         );
 
         switch ($status) {

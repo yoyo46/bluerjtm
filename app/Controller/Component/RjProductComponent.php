@@ -449,6 +449,7 @@ class RjProductComponent extends Component {
             $document_type = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'document_type');
             $transaction_status = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'transaction_status');
             $session_id = $this->MkCommon->filterEmptyField($data, 'ProductReceipt', 'session_id');
+            $list_product_id = Common::hashEmptyField($data, 'ProductReceiptDetail.product_id');
 
             switch ($document_type) {
                 case 'po':
@@ -490,15 +491,20 @@ class RjProductComponent extends Component {
                     break;
             }
 
-            $last_doc = $this->controller->Product->ProductReceiptDetail->ProductReceipt->getData('first', array(
+            $last_doc = $this->controller->Product->ProductReceiptDetail->getData('first', array(
                 'conditions' => array(
                     'ProductReceipt.id <>' => $id,
-                    'ProductReceipt.document_id' => $document_id,
+                    'ProductReceiptDetail.product_id' => $list_product_id,
+                    // 'ProductReceipt.document_id' => $document_id,
                     'ProductReceipt.document_type' => $document_type,
+                    'ProductReceipt.status' => 1,
+                ),
+                'contain' => array(
+                    'ProductReceipt',
                 ),
                 'order' => array(
-                    'ProductReceipt.transaction_date' => 'DESC',
-                    'ProductReceipt.id' => 'DESC',
+                    'ProductReceipt.transaction_date' => 'ASC',
+                    'ProductReceipt.id' => 'ASC',
                 ),
             ));
 
