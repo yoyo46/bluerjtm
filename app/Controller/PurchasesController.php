@@ -107,7 +107,7 @@ class PurchasesController extends AppController {
                 'SupplierQuotation.id' => $id,
             ),
         ), array(
-            'status' => 'pending',
+            // 'status' => 'pending',
         ));
 
         if( !empty($value) ) {
@@ -115,7 +115,8 @@ class PurchasesController extends AppController {
             $value = $this->SupplierQuotation->DocumentAuth->getMerge($value, $id, 'sq');
             $transaction_status = $this->MkCommon->filterEmptyField($value, 'SupplierQuotation', 'transaction_status');
 
-            if( in_array($transaction_status, array( 'unposting', 'revised' )) ) {
+            // if( in_array($transaction_status, array( 'unposting', 'revised' )) ) {
+            if( !in_array($transaction_status, array( 'void' )) ) {
                 $data = $this->request->data;
                 $data = $this->RjPurchase->_callBeforeSaveQuotation($data);
             } else {
@@ -724,5 +725,259 @@ class PurchasesController extends AppController {
         $this->set(compact(
             'values', 'data_action'
         ));
+    }
+
+    public function supplier_quotation_import( $download = false ) {
+        if(!empty($download)){
+            $link_url = FULL_BASE_URL . '/files/product.xls';
+            $this->redirect($link_url);
+            exit;
+        } else {
+            App::import('Vendor', 'excelreader'.DS.'excel_reader2');
+            $this->loadModel('Product');
+            $this->loadModel('Vendor');
+
+            $this->set('module_title', __('Produk'));
+            $this->set('active_menu', 'products');
+            $this->set('sub_module_title', __('Import Produk'));
+
+            if(!empty($this->request->data)) { 
+                $Zipped = $this->request->data['Import']['importdata'];
+
+                if($Zipped["name"]) {
+                    $filename = $Zipped["name"];
+                    $source = $Zipped["tmp_name"];
+                    $type = $Zipped["type"];
+                    $name = explode(".", $filename);
+                    $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
+
+                    if(!empty($accepted_types)) {
+                        foreach($accepted_types as $mime_type) {
+                            if($mime_type == $type) {
+                                $okay = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+
+                    if(!$continue) {
+                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
+                        $this->redirect(array('action'=>'supplier_quotation_import'));
+                    } else {
+                        $path = APP.'webroot'.DS.'files'.DS.date('Y').DS.date('m').DS;
+                        $filenoext = basename ($filename, '.xls');
+                        $filenoext = basename ($filenoext, '.XLS');
+                        $fileunique = uniqid() . '_' . $filenoext;
+
+                        if( !file_exists($path) ) {
+                            mkdir($path, 0755, true);
+                        }
+
+                        $targetdir = $path . $fileunique . $filename;
+                         
+                        ini_set('memory_limit', '96M');
+                        ini_set('post_max_size', '64M');
+                        ini_set('upload_max_filesize', '64M');
+
+                        if(!move_uploaded_file($source, $targetdir)) {
+                            $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                            $this->redirect(array('action'=>'supplier_quotation_import'));
+                        }
+                    }
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                    $this->redirect(array('action'=>'supplier_quotation_import'));
+                }
+
+                $xls_files = glob( $targetdir );
+
+                if(empty($xls_files)) {
+                    $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
+                    $this->redirect(array('action'=>'supplier_quotation_import'));
+                } else {
+                    $uploadedXls = $this->MkCommon->addToFiles('xls', $xls_files[0]);
+                    $uploaded_file = $uploadedXls['xls'];
+                    $file = explode(".", $uploaded_file['name']);
+                    $extension = array_pop($file);
+                    
+                    if($extension == 'xls') {
+                        $dataimport = new Spreadsheet_Excel_Reader();
+                        $dataimport->setUTFEncoder('iconv');
+                        $dataimport->setOutputEncoding('UTF-8');
+                        $dataimport->read($uploaded_file['tmp_name']);
+                        
+                        if(!empty($dataimport)) {
+                            $successfull_row = 0;
+                            $failed_row = 0;
+                            $row_submitted = 1;
+                            $error_message = '';
+                            $textError = array();
+                            $data = $dataimport;
+
+                            for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
+                                $datavar = array();
+                                $flag = true;
+                                $i = 1;
+
+                                while ($flag) {
+                                    if( !empty($data->sheets[0]["cells"][1][$i]) ) {
+                                        $variable = $this->MkCommon->toSlug($data->sheets[0]["cells"][1][$i], '_');
+                                        $thedata = !empty($data->sheets[0]["cells"][$x][$i])?$data->sheets[0]["cells"][$x][$i]:NULL;
+                                        $$variable = trim($thedata);
+                                        $datavar[] = trim($thedata);
+                                    } else {
+                                        $flag = false;
+                                    }
+                                    $i++;
+                                }
+
+                                if(array_filter($datavar)) {
+                                    $kode_supplier = !empty($kode_supplier)?$kode_supplier:false;
+                                    $nama_supplier = !empty($nama_supplier)?$nama_supplier:false;
+                                    $jenis = !empty($jenis)?$jenis:false;
+                                    $kode_barang = !empty($kode_barang)?$kode_barang:false;
+                                    $nama_barang = !empty($nama_barang)?$nama_barang:false;
+                                    $satuan = !empty($satuan)?$satuan:false;
+                                    $harga = !empty($harga)?Common::_callPriceConverter($harga):0;
+                                    $harga = !empty($harga)?str_replace(array('Rp*', '*'), array('', ''), $harga):0;
+                                    $harga = trim($harga);
+                                    $ppn = !empty($ppn)?Common::_callPriceConverter($ppn):0;
+                                    $ppn = !empty($ppn)?str_replace(array('Rp*', '*'), array('', ''), $ppn):0;
+                                    $ppn = trim($ppn);
+                                    $diskon = !empty($diskon)?Common::_callPriceConverter($diskon):0;
+                                    $diskon = !empty($diskon)?str_replace(array('Rp*', '*'), array('', ''), $diskon):0;
+                                    $diskon = trim($diskon);
+
+                                    if( !empty($harga) ) {
+                                        $unit = $this->Product->ProductUnit->getMerge(array(), $satuan, 'ProductUnit.name');
+                                        $grupmodel = $this->Product->ProductCategory->getMerge(array(), $jenis, 'ProductCategory', 'ProductCategory.name');
+
+                                        $product = $this->Product->find('first', array(
+                                            'conditions' => array(
+                                                'Product.code' => $kode_barang,
+                                            ),
+                                        ));
+                                        $vendor = $this->Vendor->find('first', array(
+                                            'conditions' => array(
+                                                'Vendor.code' => $kode_supplier,
+                                            ),
+                                        ));
+
+                                        if( empty($unit) ) {
+                                            $unit = array(
+                                                'ProductUnit' => array(
+                                                    'name' => $satuan,
+                                                ),
+                                            );
+
+                                            $this->Product->ProductUnit->create();
+                                            $this->Product->ProductUnit->save($unit);
+                                            $unit['ProductUnit']['id'] = $this->Product->ProductUnit->id;
+                                        }
+                                        if( empty($grupmodel) ) {
+                                            $grupmodel = array(
+                                                'ProductCategory' => array(
+                                                    'name' => $jenis,
+                                                ),
+                                            );
+
+                                            $this->Product->ProductCategory->create();
+                                            $this->Product->ProductCategory->save($grupmodel);
+                                            $grupmodel['ProductCategory']['id'] = $this->Product->ProductCategory->id;
+                                        }
+                                        if( empty($product) ) {
+                                            $product = array(
+                                                'Product' => array(
+                                                    'code' => $kode_barang,
+                                                    'name' => $nama_barang,
+                                                    'product_unit_id' => Common::hashEmptyField($unit, 'ProductUnit.id', 0),
+                                                    'product_category_id' => Common::hashEmptyField($grupmodel, 'ProductCategory.id', 0),
+                                                    'is_supplier_quotation' => true,
+                                                    'type' => 'barang_jadi',
+                                                ),
+                                            );
+
+                                            $this->Product->create();
+                                            $this->Product->save($product);
+                                            $product['Product']['id'] = $this->Product->id;
+                                        }
+                                        if( empty($vendor) ) {
+                                            $vendor = array(
+                                                'Vendor' => array(
+                                                    'code' => $kode_supplier,
+                                                    'name' => $nama_supplier,
+                                                ),
+                                            );
+
+                                            $this->Vendor->create();
+                                            $this->Vendor->save($vendor);
+                                            $vendor['Vendor']['id'] = $this->Vendor->id;
+                                        }
+
+                                        $dataArr[$kode_supplier]['SupplierQuotation']['transaction_date'] = date('Y-m-d');
+                                        $dataArr[$kode_supplier]['SupplierQuotation']['vendor_id'] = Common::hashEmptyField($vendor, 'Vendor.id', 0);
+                                        $dataArr[$kode_supplier]['SupplierQuotation']['transaction_status'] = 'approved';
+                                        $dataArr[$kode_supplier]['SupplierQuotation']['branch_id'] = 15;
+
+                                        if( !empty($dataArr[$kode_supplier]['SupplierQuotation']['grandtotal']) ) {
+                                            $dataArr[$kode_supplier]['SupplierQuotation']['grandtotal'] += ($harga + $ppn - $diskon);
+                                        } else {
+                                            $dataArr[$kode_supplier]['SupplierQuotation']['grandtotal'] = ($harga + $ppn - $diskon);
+                                        }
+
+                                        $dataArr[$kode_supplier]['SupplierQuotationDetail'][] = array(
+                                            'product_id' => Common::hashEmptyField($product, 'Product.id', 0),
+                                            'price' => $harga,
+                                            'ppn' => $ppn,
+                                            'disc' => $diskon,
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if( !empty($dataArr) ) {
+                    foreach ($dataArr as $key => $value) {
+                        $nodoc = str_pad($row_submitted, 3, '0', STR_PAD_LEFT).'/TS/XI/2017';
+                        $value['SupplierQuotation']['nodoc'] = $nodoc;
+
+                        $result = $this->SupplierQuotation->saveAll($value);
+                        $status = $this->MkCommon->filterEmptyField($result, 'status');
+
+                        $validationErrors = $this->MkCommon->filterEmptyField($result, 'validationErrors');
+                        $textError = $this->MkCommon->_callMsgValidationErrors($validationErrors, 'string');
+
+                        $this->MkCommon->setProcessParams($result, false, array(
+                            'flash' => false,
+                            'noRedirect' => true,
+                        ));
+
+                        if( $status == 'error' ) {
+                            $failed_row++;
+                            $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data %s'), $row_submitted, $kode) . '<br>';
+                        } else {
+                            $successfull_row++;
+                        }
+                        
+                        $row_submitted++;
+                    }
+                }
+
+                if(!empty($successfull_row)) {
+                    $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, $row_submitted-1);
+                    $this->MkCommon->setCustomFlash($message_import1, 'success');
+                }
+                
+                if(!empty($error_message)) {
+                    $this->MkCommon->setCustomFlash($error_message, 'error');
+                }
+
+                $this->redirect(array('action'=>'supplier_quotation_import'));
+            }
+        }
     }
 }

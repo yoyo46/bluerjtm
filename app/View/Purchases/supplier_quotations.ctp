@@ -81,7 +81,8 @@
                                 'class' => 'btn btn-info btn-xs'
                             ));
 
-                            if( in_array($transaction_status, array( 'unposting', 'revised' )) ){
+                            // if( in_array($transaction_status, array( 'unposting', 'revised' )) ){
+                            if( $transaction_status != 'void' ) {
                                 $customAction .= $this->Html->link(__('Edit'), array(
                                     'controller' => 'purchases',
                                     'action' => 'supplier_quotation_edit',
