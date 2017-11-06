@@ -2895,10 +2895,19 @@ class AjaxController extends AppController {
         $wrapper = $this->MkCommon->filterEmptyField($params, 'named', 'wrapper');
         $return_value = $this->MkCommon->filterEmptyField($params, 'named', 'return_value', 'id');
         $target = $this->MkCommon->filterEmptyField($params, 'named', 'target', '#document-id');
+        $without_branch = $this->MkCommon->filterEmptyField($params, 'named', 'without_branch');
 
-		$this->paginate = $this->Truck->getData('paginate', $options, true, array(
-			'plant' => true,
-		));
+        if( !empty($without_branch) ) {
+        	$elements = array(
+				'branch' => false,
+    		);
+        } else {
+        	$elements = array(
+				'plant' => true,
+    		);
+        }
+
+		$this->paginate = $this->Truck->getData('paginate', $options, true, $elements);
         $values = $this->paginate('Truck');
 
         if(!empty($values)){
@@ -2921,7 +2930,7 @@ class AjaxController extends AppController {
 
         $this->set(compact(
         	'values', 'title', 'return_value',
-        	'target', 'wrapper'
+        	'target', 'wrapper', 'without_branch'
     	));
 	}
 

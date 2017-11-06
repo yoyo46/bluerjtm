@@ -116,6 +116,7 @@
 								'controller' => 'ajax',
 								'action' => 'truck_picker',
 								'return_value' => 'nopol',
+								'without_branch' => 1,
 							),
 							'onchange' => 'false',
 							'attributes' => array(

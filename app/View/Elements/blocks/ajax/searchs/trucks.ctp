@@ -1,12 +1,15 @@
 <?php 
         $title = !empty($title)?$title:false;
         $return_value = !empty($return_value)?$return_value:false;
+        $without_branch = !empty($without_branch)?$without_branch:false;
+        
         echo $this->Form->create('Search', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'ajax',
                 'action' => 'search',
                 'truck_picker',
                 'return_value' => $return_value,
+                'without_branch' => $without_branch,
                 'admin' => false,
             )), 
             'role' => 'form',
