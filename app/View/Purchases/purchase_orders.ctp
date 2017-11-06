@@ -84,7 +84,8 @@
                             $grandtotal = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'grandtotal');
                             $is_asset = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'is_asset');
                             $transaction_status = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'transaction_status');
-                            $receipt_status = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'receipt_status');
+                            $draft_receipt_status = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'draft_receipt_status');
+                            $draft_retur_status = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'draft_retur_status');
 
                             $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
 
@@ -109,7 +110,7 @@
                                 'class' => 'btn btn-info btn-xs'
                             ));
 
-                            if( in_array($transaction_status, array( 'unposting', 'revised' )) ){
+                            if( in_array($transaction_status, array( 'approved', 'unposting', 'posting' )) && in_array($draft_receipt_status, array( 'none' )) && in_array($draft_retur_status, array( 'none' )) ){
                                 $customAction .= $this->Html->link(__('Edit'), array(
                                     'controller' => $controller,
                                     'action' => 'purchase_order_edit',
@@ -121,7 +122,7 @@
                                     'periode' => $periode,
                                 ));
                             }
-                            if( in_array($transaction_status, array( 'unposting', 'revised', 'posting', 'approved' )) && $receipt_status == 'none' ){
+                            if( in_array($transaction_status, array( 'unposting', 'revised', 'posting', 'approved' )) && $draft_receipt_status == 'none' ){
                                 $customAction .= $this->Html->link(__('Void'), array(
                                     'controller' => 'purchases',
                                     'action' => 'purchase_order_toggle',

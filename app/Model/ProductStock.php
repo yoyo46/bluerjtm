@@ -7,6 +7,10 @@ class ProductStock extends AppModel {
             'className' => 'Product',
             'foreignKey' => 'product_id',
         ),
+        'ProductHistory' => array(
+            'className' => 'ProductHistory',
+            'foreignKey' => 'product_id',
+        ),
         // 'ProductReceiptDetail' => array(
         //     'className' => 'ProductReceiptDetail',
         //     'foreignKey' => 'transaction_id',
@@ -21,8 +25,8 @@ class ProductStock extends AppModel {
         //         'ProductStock.transaction_type' => 'product_expenditure',
         //     ),
         // ),
-    )
-    ;
+    );
+    
     public function __construct($id = false, $table = NULL, $ds = NULL){
         parent::__construct($id, $table, $ds);
         $this->virtualFields['qty_total'] = __('%s.qty - %s.qty_use', $this->alias, $this->alias);

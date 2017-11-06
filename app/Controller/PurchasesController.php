@@ -264,9 +264,12 @@ class PurchasesController extends AppController {
         $value = $this->PurchaseOrder->getData('first', array(
             'conditions' => array(
                 'PurchaseOrder.id' => $id,
+                'PurchaseOrder.transaction_status' => array( 'approved', 'unposting', 'posting' ),
+                'PurchaseOrder.draft_receipt_status' => 'none',
+                'PurchaseOrder.draft_retur_status' => 'none',
             ),
         ), array(
-            'status' => 'pending',
+            // 'status' => 'pending',
         ));
 
         if( !empty($value) ) {
