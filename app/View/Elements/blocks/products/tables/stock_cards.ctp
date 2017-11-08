@@ -203,6 +203,21 @@
                             }
                         }
                     }
+                } else {
+                    $qty_in = Common::hashEmptyField($value, 'ProductHistory.qty');
+                    $price = $price_in = Common::hashEmptyField($value, 'ProductHistory.price');
+                    $total_in = $qty_in * $price_in;
+
+                    $total_ending_price = $price*$qty;
+            
+                    if( !empty($ending_stock[$price]['qty']) ) {
+                        $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
+                    } else {
+                        $ending_stock[$price] = array(
+                            'qty' => $qty,
+                            'price' => $price,
+                        );
+                    }
                 }
 
                 if( $key%2 == 0 ) {
@@ -229,6 +244,10 @@
                 } else {
                     $rowspan = 2;
                 }
+
+                $nodoc = !empty($nodoc)?$this->Html->link($nodoc, $url, array(
+                    'target' => '_blank',
+                )):'-';
 ?>
 <tr>
     <?php 
@@ -236,9 +255,7 @@
                 'style' => $style,
                 'rowspan' => $rowspan,
             ));
-            echo $this->Html->tag('td', $this->Html->link($nodoc, $url, array(
-                'target' => '_blank',
-            )), array(
+            echo $this->Html->tag('td', $nodoc, array(
                 'style' => $style,
                 'rowspan' => $rowspan,
             ));

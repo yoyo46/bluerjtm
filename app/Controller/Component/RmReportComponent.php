@@ -504,6 +504,7 @@ class RmReportComponent extends Component {
         ));
 		$data = $this->controller->paginate('ProductHistory');
 		$result = array();
+		$values = array();
 
 		$last_data = end($data);
 		$last_id = Common::hashEmptyField($last_data, 'ProductHistory.id');
@@ -572,22 +573,24 @@ class RmReportComponent extends Component {
 	                        break;
 	                }
 
-	                $value = $this->controller->ProductHistory->getMergeList($value, array(
-	                    'contain' => array(
-	                        'DocumentDetail' => array(
-	                            'uses' => $modelName.'Detail',
-	                            'contain' => array(
-	                                'Document' => array(
-	                                    'uses' => $modelName,
-	                                    'elements' => array(
-	                                        'branch' => false,
-	                                        'status' => false,
-	                                    ),
-	                                ),
-	                            ),
-	                        ),
-	                    ),
-	                ));
+                    if( !empty($modelName) ) {
+		                $value = $this->controller->ProductHistory->getMergeList($value, array(
+		                    'contain' => array(
+		                        'DocumentDetail' => array(
+		                            'uses' => $modelName.'Detail',
+		                            'contain' => array(
+		                                'Document' => array(
+		                                    'uses' => $modelName,
+		                                    'elements' => array(
+		                                        'branch' => false,
+		                                        'status' => false,
+		                                    ),
+		                                ),
+		                            ),
+		                        ),
+		                    ),
+		                ));
+		            }
 
 	                if( $transaction_type == 'product_receipt' ) {
 	                    $product_receipt_id = Common::hashEmptyField($value, 'DocumentDetail.Document.id');
@@ -650,14 +653,16 @@ class RmReportComponent extends Component {
 	                            break;
 	                    }
 
-	                    $modelNameDetail = $modelName.'Detail';
-	                    $value = $this->controller->ProductHistory->$modelNameDetail->$modelName->$transactionName->getMerge($value, $document_id, $transactionName.'.id', 'all', 'Transaction');
-	                    
-	                    $truck_id = Common::hashEmptyField($value, 'Transaction.truck_id');
+                    	if( !empty($modelName) ) {
+		                    $modelNameDetail = $modelName.'Detail';
+		                    $value = $this->controller->ProductHistory->$modelNameDetail->$modelName->$transactionName->getMerge($value, $document_id, $transactionName.'.id', 'all', 'Transaction');
+		                    
+		                    $truck_id = Common::hashEmptyField($value, 'Transaction.truck_id');
 
-	                    if( !empty($truck_id) ) {
-	                        $value = $this->controller->ProductHistory->$modelNameDetail->$modelName->$transactionName->Truck->getMerge($value, $truck_id);
-	                    }
+		                    if( !empty($truck_id) ) {
+		                        $value = $this->controller->ProductHistory->$modelNameDetail->$modelName->$transactionName->Truck->getMerge($value, $truck_id);
+		                    }
+		                }
 
 	                    $tmpResult[$product_id][$branch_id]['Branch'] = Common::hashEmptyField($value, 'Branch');
 	                    $tmpResult[$product_id][$branch_id]['Product'] = Common::hashEmptyField($value, 'Product');
@@ -1065,6 +1070,21 @@ class RmReportComponent extends Component {
 				                                }
 				                            }
 				                        }
+				                    }
+				                } else {
+				                    $qty_in = Common::hashEmptyField($value, 'ProductHistory.qty');
+				                    $price = $price_in = Common::hashEmptyField($value, 'ProductHistory.price');
+				                    $total_in = $qty_in * $price_in;
+
+				                    $total_ending_price = $price*$qty;
+				            
+				                    if( !empty($ending_stock[$price]['qty']) ) {
+				                        $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
+				                    } else {
+				                        $ending_stock[$price] = array(
+				                            'qty' => $qty,
+				                            'price' => $price,
+				                        );
 				                    }
 				                }
 

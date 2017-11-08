@@ -28,9 +28,11 @@ class ReportsController extends AppController {
 			switch ($type) {
 				case 'stock_cards':
 					$limit = 30;
+					$this->limit_paging = 30;
 					break;
 				case 'maintenance_cost_report':
 					$limit = 30;
+					$this->limit_paging = 30;
 					break;
 			}
 
