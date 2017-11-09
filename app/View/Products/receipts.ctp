@@ -27,7 +27,6 @@
             ),
             'action' => array(
                 'name' => __('Action'),
-                'width' => '15%',
             ),
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
