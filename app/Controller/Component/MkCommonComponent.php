@@ -1862,11 +1862,11 @@ class MkCommonComponent extends Component {
     }
 
     function _callDemoVersion () {
-        // if( in_array(FULL_BASE_URL, array( 'http://ww.erprjtm.com', 'http://erp.rjtm.co.id', 'http://yukblanja.com' )) ) {
+        if( in_array(FULL_BASE_URL, array( 'http://ww.erprjtm.com', 'http://erp.rjtm.co.id', 'http://yukblanja.com' )) ) {
             return true;
-        // } else {
-        //     return false;
-        // }
+        } else {
+            return false;
+        }
     }
 
     function _callSettingGeneral ( $modelName = false, $labelName = false, $request = true ) {

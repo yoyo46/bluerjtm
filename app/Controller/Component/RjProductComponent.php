@@ -49,18 +49,33 @@ class RjProductComponent extends Component {
 		return $parameters;
 	}
 
-    function _callStockSerialNumber ( $session_id, $product_id, $data, $price = null, $modelSn = 'ProductReceiptDetailSerialNumber' ) {
-        $serial_numbers = $this->controller->Product->$modelSn->getMergeAll(array(), 'all', $product_id, $session_id, $modelSn.'.session_id');
+    function _callStockSerialNumber ( $session_id, $product_id, $data, $price = null, $modelSn = 'ProductReceiptDetailSerialNumber', $dataSave = array() ) {
+        $import = Common::hashEmptyField($dataSave, 'ProductAdjustment.import');
         $result = array();
 
-        if( !empty($serial_numbers[$modelSn]) ) {
-            foreach ($serial_numbers[$modelSn] as $key => $value) {
-                $serial_number = $this->MkCommon->filterEmptyField($value, $modelSn, 'serial_number');
+        if( !empty($import) ) {
+            $serial_numbers = Common::hashEmptyField($dataSave, 'ProductAdjustmentDetailSerialNumber.serial_numbers.'.$product_id);
 
-                $result[$key] = $data;
-                $result[$key]['qty'] = 1;
-                $result[$key]['serial_number'] = strtoupper($serial_number);
-                $result[$key]['price'] = $price;
+            if( !empty($serial_numbers) ) {
+                foreach ($serial_numbers as $key => $serial_number) {
+                    $result[$key] = $data;
+                    $result[$key]['qty'] = 1;
+                    $result[$key]['serial_number'] = strtoupper($serial_number);
+                    $result[$key]['price'] = $price;
+                }
+            }
+        } else {
+            $serial_numbers = $this->controller->Product->$modelSn->getMergeAll(array(), 'all', $product_id, $session_id, $modelSn.'.session_id');
+
+            if( !empty($serial_numbers[$modelSn]) ) {
+                foreach ($serial_numbers[$modelSn] as $key => $value) {
+                    $serial_number = $this->MkCommon->filterEmptyField($value, $modelSn, 'serial_number');
+
+                    $result[$key] = $data;
+                    $result[$key]['qty'] = 1;
+                    $result[$key]['serial_number'] = strtoupper($serial_number);
+                    $result[$key]['price'] = $price;
+                }
             }
         }
 
@@ -281,7 +296,7 @@ class RjProductComponent extends Component {
                             default:
                                 if( $transaction_type == 'product_adjustment_plus' ) {
                                     $detailHistory = Common::hashEmptyField($detail, 'ProductHistory');
-                                    $detailHistory['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock, $price, 'ProductAdjustmentDetailSerialNumber' );
+                                    $detailHistory['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock, $price, 'ProductAdjustmentDetailSerialNumber', $data );
 
                                     $detail['ProductHistory'] = array(
                                         $detailHistory,
@@ -306,7 +321,7 @@ class RjProductComponent extends Component {
                                         $detail[$modelDetail][$modelSn] = $productAdjustmentSN;
                                     }
                                 } else {
-                                    $detail['ProductHistory']['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock, $price, $modelSn );
+                                    $detail['ProductHistory']['ProductStock'] = $this->_callStockSerialNumber( $session_id, $product_id, $stock, $price, $modelSn, $data );
                                 }
                                 break;
                         }
@@ -1765,6 +1780,7 @@ class RjProductComponent extends Component {
             $transaction_status = $this->MkCommon->filterEmptyField($data, 'ProductAdjustment', 'transaction_status');
             $transaction_date = Common::hashEmptyField($data, 'ProductAdjustment.transaction_date');
             $session_id = $this->MkCommon->filterEmptyField($data, 'ProductAdjustment', 'session_id');
+            $import = $this->MkCommon->filterEmptyField($data, 'ProductAdjustment', 'import');
 
             $data['ProductAdjustment']['id'] = $id;
             $data['ProductAdjustment']['user_id'] = Configure::read('__Site.config_user_id');
@@ -1834,7 +1850,17 @@ class RjProductComponent extends Component {
                         $dataDetail[$key] = $this->_callStock('product_adjustment_min', $data, $dataDetail[$key], 'out', 'ProductAdjustment', null, 'ProductAdjustmentDetail', 'ProductAdjustmentDetailSerialNumber');
                     } else {
                         if( !empty($is_serial_number) ) {
-                            $serial_number = $this->controller->Product->ProductAdjustmentDetailSerialNumber->getCount($session_id, $product_id);
+                            if( !empty($import) ) {
+                                $serial_number = Common::hashEmptyField($data, 'ProductAdjustmentDetailSerialNumber.serial_numbers.'.$product_id);
+
+                                if( is_array($serial_number) ) {
+                                    $serial_number = count($serial_number);
+                                } else {
+                                    $serial_number = 0;
+                                }
+                            } else {
+                                $serial_number = $this->controller->Product->ProductAdjustmentDetailSerialNumber->getCount($session_id, $product_id);
+                            }
                         } else {
                             $serial_number = 0;
                         }

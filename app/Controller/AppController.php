@@ -96,7 +96,7 @@ class AppController extends Controller {
 				$cacheName = 'Branch.List';
 	    	}
 
-			$branchList = Cache::read($cacheName, 'default');
+			// $branchList = Cache::read($cacheName, 'default');
 
 			if( empty($branchList) ) {
 		    	if( $GroupId == 1 ) {
@@ -221,7 +221,7 @@ class AppController extends Controller {
 				$cacheName = __('GroupBranch.admin.%s', $current_branch_id);
 			}
 			
-			$branchCache = Cache::read($cacheName, 'default');
+			// $branchCache = Cache::read($cacheName, 'default');
 
 			if( empty($branchCache) ) {
 		    	$groupBranch = $this->GroupBranch->_callAllowListBranch($conditionsBranch);

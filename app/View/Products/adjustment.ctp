@@ -32,8 +32,19 @@
             echo $this->element('blocks/common/box_header', array(
                 'title' => $sub_module_title,
                 '_label_multiple' => __('Tambah'),
-                '_add' => array(
-                    'action' => 'adjustment_add',
+                '_add_multiple' => array(
+                    array(
+                        'label' => __('Tambah'),
+                        'url' => array(
+                            'action' => 'adjustment_add',
+                        ),
+                    ),
+                    array(
+                        'label' => __('Import'),
+                        'url' => array(
+                            'action' => 'adjustment_import',
+                        ),
+                    ),
                 ),
             ));
     ?>

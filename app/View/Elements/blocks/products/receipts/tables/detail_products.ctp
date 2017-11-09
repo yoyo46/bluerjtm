@@ -26,7 +26,7 @@
         if( empty($view) ) {
             $dataColumns = array_merge($dataColumns, array(
                 'qty_doc' => array(
-                    'name' => __('Qty Penerimaan'),
+                    'name' => __('Qty PO'),
                     'class' => 'text-center',
                     'style' => 'width:5%;',
                 ),

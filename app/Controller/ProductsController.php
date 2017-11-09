@@ -2686,7 +2686,7 @@ class ProductsController extends AppController {
                                     $qty_penyesuaian = !empty($qty_penyesuaian)?$qty_penyesuaian:false;
                                     $harga = !empty($harga)?Common::_callPriceConverter($harga):false;
                                     $no_seri = !empty($no_seri)?$no_seri:0;
-                                    $kode_cabang = !empty($kode_cabang)?$kode_cabang:false;
+                                    $kode_cabang = !empty($kode_cabang)?$kode_cabang:false;                                    
 
                                     $product = $this->Product->find('first', array(
                                         'conditions' => array(
@@ -2704,7 +2704,7 @@ class ProductsController extends AppController {
                                     $dataArr[$index]['ProductAdjustment']['transaction_date'] = $tgl_penyesuaian;
                                     $dataArr[$index]['ProductAdjustment']['note'] = $keterangan;
                                     $dataArr[$index]['ProductAdjustment']['transaction_status'] = 'posting';
-                                    $dataArr[$index]['ProductAdjustment']['session_id'] = String::uuid();
+                                    $dataArr[$index]['ProductAdjustment']['import'] = true;
 
                                     $dataArr[$index]['ProductAdjustmentDetail']['product_id'][$product_id] = $product_id;
                                     $dataArr[$index]['ProductAdjustmentDetail']['note'][$product_id] = $ket_item;
@@ -2712,6 +2712,14 @@ class ProductsController extends AppController {
                                     $dataArr[$index]['ProductAdjustmentDetail']['price'][$product_id] = $harga;
                                     $dataArr[$index]['ProductAdjustmentDetail']['price'][$product_id] = $harga;
                                     $dataArr[$index]['ProductAdjustmentDetail']['row'][$product_id] = $row_submitted;
+                                    
+                                    if( !empty($no_seri) ) {
+                                        $no_seri = explode(',', $no_seri);
+
+                                        if( is_array($no_seri) ) {
+                                            $dataArr[$index]['ProductAdjustmentDetailSerialNumber']['serial_numbers'][$product_id] = $no_seri;
+                                        }
+                                    }
                                     
                                     $row_submitted++;
                                 }
