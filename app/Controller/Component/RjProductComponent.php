@@ -1939,7 +1939,7 @@ class RjProductComponent extends Component {
     function _callBeforeViewAdjustmentReports( $params ) {
         $dateFrom = Common::hashEmptyField($params, 'named.DateFrom');
         $dateTo = Common::hashEmptyField($params, 'named.DateTo');
-        $title = __('Laporan Qty Adjustment');
+        $title = __('Laporan Penyesuaian Qty');
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
             $period_text = __('Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));

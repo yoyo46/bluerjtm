@@ -35,6 +35,21 @@
                     'class' => 'box-tools'
                 ));
             } else if( !empty($_add_multiple) ) {
+                $menus = array();
+
+                foreach ($_add_multiple as $key => $val) {
+                    $label = $this->Common->filterEmptyField($val, 'label');
+                    $url = $this->Common->filterEmptyField($val, 'url');
+                    $link = $this->Html->link($label, $url, array(
+                        'escape' => false,
+                    ));
+
+                    if( !empty($link) ) {
+                        $menus[] = $this->Html->tag('li', $link);
+                    }
+                }
+
+                if( !empty($menus) ) {
     ?>
     <div class="box-tools">
         <div class="btn-group pull-right">
@@ -46,27 +61,16 @@
             ?>
             <ul class="dropdown-menu" role="menu">
                 <?php 
-                        $menus = array();
-
-                        foreach ($_add_multiple as $key => $val) {
-                            $label = $this->Common->filterEmptyField($val, 'label');
-                            $url = $this->Common->filterEmptyField($val, 'url');
-                            $menus[] = $this->Html->tag('li', $this->Html->link($label, $url, array(
-                                'escape' => false,
-                            )));
-                        }
-
-                        if( !empty($menus) ) {
-                            echo implode($this->Html->tag('li', '', array(
-                                'class' => 'divider',
-                            )), $menus);
-                        }
+                        echo implode($this->Html->tag('li', '', array(
+                            'class' => 'divider',
+                        )), $menus);
                 ?>
             </ul>
         </div>
         <div class="clear"></div>
     </div>
     <?php
+                }
             }
     ?>
     <div class="clear"></div>

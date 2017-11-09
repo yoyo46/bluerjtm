@@ -1615,7 +1615,7 @@ class ProductsController extends AppController {
     }
 
     // SerialNumber
-    public function import_sn( $download = false ) {
+    public function import( $download = false ) {
         if(!empty($download)){
             $link_url = FULL_BASE_URL . '/files/product.xls';
             $this->redirect($link_url);
@@ -1760,7 +1760,7 @@ class ProductsController extends AppController {
                                             'branch_id' => Configure::read('__Site.config_branch_id'),
                                             'balance' => 0,
                                             'transaction_type' => 'stok_awal',
-                                            'transaction_date' => date('Y-m-d'),
+                                            'transaction_date' => '2017-10-31',
                                             'qty' => 1,
                                             'price' => $harga_barang,
                                             'type' => 'in',
@@ -1768,7 +1768,7 @@ class ProductsController extends AppController {
                                             'ProductStock' => array(
                                                 array(
                                                     'branch_id' => Configure::read('__Site.config_branch_id'),
-                                                    'transaction_date' => date('Y-m-d'),
+                                                    'transaction_date' => '2017-10-31',
                                                     'qty' => 1,
                                                     'qty_use' => 0,
                                                     'price' => $harga_barang,
@@ -1825,7 +1825,7 @@ class ProductsController extends AppController {
     }
 
     // Real
-    public function import( $download = false ) {
+    public function import_real( $download = false ) {
         if(!empty($download)){
             $link_url = FULL_BASE_URL . '/files/product.xls';
             $this->redirect($link_url);
@@ -2376,7 +2376,7 @@ class ProductsController extends AppController {
         $this->RjProduct->_callBeforeRenderReceipts();
 
         $this->MkCommon->_layout_file('select');
-        $this->set('active_menu', 'receipts');
+        $this->set('active_menu', 'retur');
         $this->set(compact(
             'values'
         ));
@@ -2400,7 +2400,7 @@ class ProductsController extends AppController {
         $this->RjProduct->_callBeforeRenderRetur($data);
 
         $this->set(array(
-            'active_menu' => 'receipts',
+            'active_menu' => 'retur',
         ));
     }
 
@@ -2435,7 +2435,7 @@ class ProductsController extends AppController {
 
             $this->set(array(
                 'value' => $value,
-                'active_menu' => 'receipts',
+                'active_menu' => 'retur',
             ));
             $this->render('retur_add');
         } else {
@@ -2482,7 +2482,7 @@ class ProductsController extends AppController {
             $value = $this->User->getMerge($value, $user_id);
             $this->RjProduct->_callBeforeRenderRetur(false, $value);
 
-            $this->set('active_menu', 'receipts');
+            $this->set('active_menu', 'retur');
             $this->set('view', 'detail');
             $this->set(compact(
                 'vendors', 'value',

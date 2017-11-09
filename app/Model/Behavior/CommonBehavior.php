@@ -380,6 +380,9 @@ class CommonBehavior extends ModelBehavior {
 			if(!empty($options['group'])){
 				$default_options['group'] = $options['group'];
 			}
+			if(!empty($options['offset'])){
+				$default_options['offset'] = $options['offset'];
+			}
 			if(!empty($options['cache'])){
                 $default_options['cache'] = $options['cache'];
                     

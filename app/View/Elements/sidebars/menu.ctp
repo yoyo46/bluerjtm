@@ -1360,7 +1360,7 @@
 
                     $dataMenu = array(
                         'products' => array(
-                            'categories', 'product_units',
+                            'categories', 'units',
                             'receipts', 'expenditures',
                             'current_stock_reports',
                             'stock_cards',
@@ -1368,6 +1368,7 @@
                             'receipt_reports',
                             'adjustment',
                             'min_stock_report',
+                            'index', 'retur',
                         ),
                         'spk' => array(
                             'index', 'tire_reports', 'spk_reports',
@@ -1385,6 +1386,7 @@
                             'receipt_reports', 'tire_reports', 'spk_reports',
                             'maintenance_cost_report', 'adjustment',
                             'adjustment_report', 'min_stock_report',
+                            'retur',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1453,7 +1455,7 @@
                             ), array(
                                 'escape' => false
                             )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'receipts' )?'active':'',
+                                'class' => ( !empty($active_menu) && $active_menu == 'retur' )?'active':'',
                             ));
                             echo $this->Html->tag('li', $this->Html->link(__('%s Penyesuaian Qty', $this->Common->icon('angle-double-right')), array(
                                 'controller' => 'products',
