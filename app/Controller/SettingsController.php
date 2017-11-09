@@ -5999,7 +5999,7 @@ class SettingsController extends AppController {
 
     public function vendor_import( $download = false ) {
         if(!empty($download)){
-            $link_url = FULL_BASE_URL . '/files/vendors.xls';
+            $link_url = FULL_BASE_URL . '/files/supplier.xls';
             $this->redirect($link_url);
             exit;
         } else {
@@ -6110,9 +6110,18 @@ class SettingsController extends AppController {
                                     $telp = !empty($telp)?$telp:false;
                                     $nama_pic = !empty($nama_pic)?$nama_pic:null;
                                     $telp_pic = !empty($telp_pic)?$telp_pic:false;
+                                    $no_telp = !empty($no_telp)?$no_telp:false;
                                     
                                     $vendor = $this->Vendor->getMerge(array(), $nama, 'Vendor', 'Vendor.name');
                                     $branch = $this->Vendor->Branch->getMerge(array(), $cabang, 'Branch.code');
+
+                                    if( !empty($no_telp) ) {
+                                        if( !empty($telp) ) {
+                                            $telp .= ' / '.$no_telp;
+                                        } else {
+                                            $telp = $no_telp;
+                                        }
+                                    }
 
                                     $dataArr = array(
                                         'Vendor' => array(
@@ -6129,7 +6138,7 @@ class SettingsController extends AppController {
                                         $dataArr['Vendor']['pic'] = $nama_pic;
                                     }
                                     if( empty($id) ) {
-                                        $dataArr['Vendor']['branch_id'] = Common::hashEmptyField($branch, 'Branch.id', 0);
+                                        $dataArr['Vendor']['branch_id'] = Common::hashEmptyField($branch, 'Branch.id', 15);
                                     }
 
                                     $result = $this->Vendor->saveAll($dataArr, array(
