@@ -1188,6 +1188,15 @@ class ProductsController extends AppController {
         $dateFrom = date('Y-m-01');
         $dateTo = date('Y-m-t');
 
+        $this->Product->ProductHistory->ProductStock->bindModel(array(
+            'belongsTo' => array(
+                'ProductHistory' => array(
+                    'className' => 'ProductHistory',
+                    'foreignKey' => 'product_history_id',
+                ),
+            )
+        ), false);
+
         $params = $this->MkCommon->_callRefineParams($this->params, array(
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
@@ -1231,6 +1240,7 @@ class ProductsController extends AppController {
                 ));
 
                 foreach ($values as $key => $value) {
+                    $product_history_id = Common::hashEmptyField($value, 'ProductHistory.id');
                     $product_id = Common::hashEmptyField($value, 'ProductHistory.product_id');
                     $transaction_type = Common::hashEmptyField($value, 'ProductHistory.transaction_type');
                     $transaction_id = Common::hashEmptyField($value, 'ProductHistory.transaction_id');
@@ -1329,6 +1339,23 @@ class ProductsController extends AppController {
                             'conditions' => array(
                                 'ProductAdjustmentDetailSerialNumber.product_adjustment_detail_id' => $product_adjustment_detail_id,
                                 'ProductAdjustmentDetailSerialNumber.product_id' => $product_id,
+                            ),
+                        ));
+                    } else if( empty($transaction_type) ) {
+                        $value['DocumentDetail']['SerialNumber'] = $this->Product->ProductHistory->ProductStock->find('list', array(
+                            'fields' => array(
+                                'ProductStock.serial_number',
+                                'ProductStock.serial_number',
+                            ),
+                            'contain' => array(
+                                'ProductHistory',
+                            ),
+                            'conditions' => array(
+                                'ProductStock.product_history_id' => $product_history_id,
+                                'ProductHistory.status' => 1,
+                                'ProductHistory.transaction_type = \'\' ',
+                                'ProductHistory.product_id' => $product_id,
+                                'ProductHistory.branch_id' => $branch_id,
                             ),
                         ));
                     }
@@ -1519,6 +1546,24 @@ class ProductsController extends AppController {
                                 'ProductAdjustment.branch_id' => $branch_id,
                                 'ProductAdjustment.status' => 1,
                                 'ProductAdjustment.transaction_status NOT' => array( 'unposting', 'revised', 'void' ),
+                            ),
+                        ));
+                        $last_serial_number = array_diff($last_serial_number, $adjustmentMin);
+
+                        $importStok = $this->Product->ProductHistory->ProductStock->find('list', array(
+                            'fields' => array(
+                                'ProductStock.serial_number',
+                                'ProductStock.serial_number',
+                            ),
+                            'contain' => array(
+                                'ProductHistory',
+                            ),
+                            'conditions' => array(
+                                'ProductHistory.status' => 1,
+                                'ProductHistory.transaction_type = \'\' ',
+                                'ProductHistory.product_id' => $product_id,
+                                'DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') <' => $dateFrom,
+                                'ProductHistory.branch_id' => $branch_id,
                             ),
                         ));
                         $last_serial_number = array_diff($last_serial_number, $adjustmentMin);

@@ -139,7 +139,13 @@
                         );
                     }
 
-                    $ending_stock[$price]['serial_numbers'] = $serial_numbers;
+                    if( !empty($serial_numbers) ) {
+                        if( !empty($ending_stock[$price]['serial_numbers']) ) {
+                            $ending_stock[$price]['serial_numbers'] = array_merge($ending_stock[$price]['serial_numbers'], $serial_numbers);
+                        } else {
+                            $ending_stock[$price]['serial_numbers'] = $serial_numbers;
+                        }
+                    }
 
                     if( $transaction_type == 'product_expenditure_void' ) {
                         $nodoc = __('%s (Void)', $nodoc);
@@ -218,6 +224,14 @@
                             'price' => $price,
                         );
                     }
+                    
+                    if( !empty($serial_numbers) ) {
+                        if( !empty($ending_stock[$price]['serial_numbers']) ) {
+                            $ending_stock[$price]['serial_numbers'] = array_merge($ending_stock[$price]['serial_numbers'], $serial_numbers);
+                        } else {
+                            $ending_stock[$price]['serial_numbers'] = $serial_numbers;
+                        }
+                    }
                 }
 
                 if( $key%2 == 0 ) {
@@ -247,6 +261,8 @@
 
                 $nodoc = !empty($nodoc)?$this->Html->link($nodoc, $url, array(
                     'target' => '_blank',
+                    'allow' => true,
+                    // 'allowed_module' => true,
                 )):'-';
 ?>
 <tr>
