@@ -797,12 +797,17 @@ class ProductsController extends AppController {
         $params = $this->MkCommon->_callRefineParams($this->params);
         $productCategories = $this->Product->ProductCategory->getData('list');
 
+        $nodoc = urldecode($nodoc);
+        $nodoc = str_replace('/', '[slash]', $nodoc);
+
         $this->set(array(
             'nodoc' => $nodoc,
             'transaction_id' => $transaction_id,
             'document_type' => $document_type,
             'productCategories' => $productCategories,
         ));
+
+        $nodoc = str_replace('[slash]', '/', $nodoc);
 
         switch ($document_type) {
             case 'spk':
@@ -1069,15 +1074,15 @@ class ProductsController extends AppController {
     function spk_products ( $transaction_id = false, $nodoc = false ) {
         $this->loadModel('SpkProduct');
 
-        $nodoc = urldecode($nodoc);
-        $nodoc = str_replace('[slash]', '/', $nodoc);
+        $tmp_nodoc = urldecode($nodoc);
+        $tmp_nodoc = str_replace('[slash]', '/', $tmp_nodoc);
 
         $value = $this->SpkProduct->Spk->getData('first', array(
             'conditions' => array(
-                'Spk.nodoc' => $nodoc,
+                'Spk.nodoc' => $tmp_nodoc,
             ),
         ), array(
-            'status' => 'pending-out',
+            'status' => 'spk-product-pending-out',
         ));
         $spk_id = $this->MkCommon->filterEmptyField($value, 'Spk', 'id');
 
@@ -2535,12 +2540,17 @@ class ProductsController extends AppController {
         $params = $this->MkCommon->_callRefineParams($this->params);
         $productCategories = $this->Product->ProductCategory->getData('list');
 
+        $nodoc = urldecode($nodoc);
+        $nodoc = str_replace('/', '[slash]', $nodoc);
+
         $this->set(array(
             'nodoc' => $nodoc,
             'transaction_id' => $transaction_id,
             'document_type' => $document_type,
             'productCategories' => $productCategories,
         ));
+
+        $nodoc = str_replace('[slash]', '/', $nodoc);
 
         switch ($document_type) {
             default:

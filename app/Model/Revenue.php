@@ -661,7 +661,7 @@ class Revenue extends AppModel {
         $qtyUse = !empty($qtyReview['qtyUsed'])?$qtyReview['qtyUsed']:0;
         $qtyUse += $total_qty;
 
-        if( !empty($ttuj_id) && $qtyUse > $qtyTtuj ) {
+        if( empty($is_import) && !empty($ttuj_id) && $qtyUse > $qtyTtuj ) {
             $validate_qty = false;
         }
 

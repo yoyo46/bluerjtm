@@ -103,6 +103,7 @@
                     'class' => 'btn bg-maroon ajaxCustomModal',
                     'data-form' => '.receipt-form',
                     'data-check' => '#document-number',
+                    'data-check-encode' => 'true',
                     'data-check-alert' => __('Mohon pilih No. Dokumen terlebih dahulu'),
                 )), array(
                 'class' => "form-group",

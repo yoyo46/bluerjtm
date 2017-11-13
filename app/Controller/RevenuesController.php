@@ -8059,7 +8059,7 @@ class RevenuesController extends AppController {
                                         $truck_capacity = !empty($truck['Truck']['capacity'])?$truck['Truck']['capacity']:false;
                                         $from_city_id = !empty($formCity['City']['id'])?$formCity['City']['id']:false;
                                         $to_city_id = !empty($toCity['City']['id'])?$toCity['City']['id']:false;
-                                        $tanggal_revenue = $this->MkCommon->getDate($tanggal_revenue);
+                                        $tgl_revenue = $this->MkCommon->getDate($tgl_revenue);
                                         $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, false, $customer_id, $truck_capacity, false );
                                         $jenis_tarif = !empty($tarif['jenis_unit'])?$tarif['jenis_unit']:'per_unit';
                                         $ppn = !empty($ppn)?$this->MkCommon->convertPriceToString($ppn):0;
@@ -8080,7 +8080,7 @@ class RevenuesController extends AppController {
                                         if( !empty($no_ttuj) ) {
                                             $conditionsTtuj['Ttuj.no_ttuj'] = $no_ttuj;
                                         } else {
-                                            $conditionsTtuj['Ttuj.ttuj_date'] = $tanggal_revenue;
+                                            $conditionsTtuj['Ttuj.ttuj_date'] = $tgl_revenue;
                                         }
 
                                         $ttuj = $this->Ttuj->getData('first', array(
@@ -8161,7 +8161,7 @@ class RevenuesController extends AppController {
                                                 'branch_id' => $branch_id,
                                                 'no_doc' => $no_dokumen,
                                                 'transaction_status' => 'unposting',
-                                                'date_revenue' => $tanggal_revenue,
+                                                'date_revenue' => $tgl_revenue,
                                                 'customer_id' => $customer_id,
                                                 'truck_id' => $truck_id,
                                                 'truck_capacity' => $truck_capacity,
@@ -8284,6 +8284,9 @@ class RevenuesController extends AppController {
                     $value = $this->City->getMerge($value, $from_city_id, 'FromCity');
                     $value = $this->City->getMerge($value, $to_city_id, 'ToCity');
                     $value = $this->Ttuj->Truck->getMerge($value, $truck_id);
+                } else {
+                    $ttuj_id = $value['Revenue']['ttuj_id'];
+                    $value['ttuj_unit'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
                 }
 
                 if( empty($customer_id) ) {
@@ -8376,6 +8379,7 @@ class RevenuesController extends AppController {
                     }
                 }
 
+                $dataRevenue['Revenue']['import_code'] = 0;
                 $resultSave = $this->Revenue->saveRevenue(false, false, $dataRevenue, $this, true);
                 $statusSave = !empty($resultSave['status'])?$resultSave['status']:false;
                 $msgSave = !empty($resultSave['msg'])?$resultSave['msg']:false;

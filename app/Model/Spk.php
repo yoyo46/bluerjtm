@@ -258,6 +258,12 @@ class Spk extends AppModel {
                 $default_options['conditions']['Spk.transaction_status'] = array( 'open' );
                 $default_options['conditions']['Spk.draft_document_status'] = array( 'none', 'half' );
                 break;
+            case 'spk-product-pending-out':
+                $default_options['conditions']['Spk.status'] = 1;
+                $default_options['conditions']['Spk.document_type'] = array( 'internal', 'wht', 'production', 'eksternal' );
+                $default_options['conditions']['Spk.transaction_status'] = array( 'open' );
+                // $default_options['conditions']['Spk.draft_document_status'] = array( 'none', 'half' );
+                break;
             case 'unreceipt':
                 $default_options['conditions']['Spk.status'] = 1;
                 $default_options['conditions']['Spk.document_type'] = array( 'internal' );

@@ -36,9 +36,16 @@
                         echo $this->Html->tag('th', $this->Paginator->sort('Ttuj.from_city_name', __('Dari-Tujuan'), array(
                             'escape' => false
                         )));
-                        echo $this->Html->tag('th', __('Total Unit'));
+                        echo $this->Html->tag('th', __('Unit TTUJ'), array(
+                            'class' => 'text-center',
+                        ));
+                        echo $this->Html->tag('th', __('Unit Revenue'), array(
+                            'class' => 'text-center',
+                        ));
+                        echo $this->Html->tag('th', __('Selisih'), array(
+                            'class' => 'text-center',
+                        ));
                         echo $this->Html->tag('th', $this->Paginator->sort('Revenue.created', __('Dibuat'), array(
-                            'align' => 'center',
                             'escape' => false
                         )));
                         echo $this->Html->tag('th', __('Action'), array(
@@ -60,8 +67,18 @@
 
                             $from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name', $from_city);
                             $to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name', $to_city);
+
+                            $ttuj_unit = Common::hashEmptyField($value, 'ttuj_unit', 0);
+                            $revenue_unit = Common::hashEmptyField($value, 'qty_unit', 0);
+                            $selisih = $ttuj_unit - $revenue_unit;
+
+                            if( $selisih < 0 ) {
+                                $style = 'alert alert-danger';
+                            } else {
+                                $style = '';
+                            }
             ?>
-            <tr>
+            <tr class="<?php echo $style; ?>">
                 <td><?php echo str_pad($value['Revenue']['id'], 5, '0', STR_PAD_LEFT);?></td>
                 <td><?php echo $value['Revenue']['no_doc'];?></td>
                 <td><?php echo $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y');?></td>
@@ -87,7 +104,9 @@
                 <?php 
                         echo $this->Html->tag('td', sprintf('%s - %s', $from_city, $to_city));
                 ?>
-                <td align="center"><?php echo Common::hashEmptyField($value, 'qty_unit', '-');?></td>
+                <td align="center"><?php echo $ttuj_unit;?></td>
+                <td align="center"><?php echo $revenue_unit;?></td>
+                <td align="center"><?php echo $selisih;?></td>
                 <td><?php echo $this->Common->customDate($value['Revenue']['created']);?></td>
                 <td class="action">
                     <?php
