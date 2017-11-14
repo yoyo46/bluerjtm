@@ -4205,15 +4205,21 @@ $(function() {
         $('.popover-hover-top-click.in,.popover-hover-bottom-click.in').trigger('click');
     });
 
-    $('.cash-bank-handle').change(function(){
-        var value = $(this).val();
-        var prepayment_out_id = $('#prepayment-out-id').val();;
+    var _callCashBankHandle = function ( self ) {
+        var value = self.val();
 
         if(value == 'in' || value == 'ppn_in' || value == 'prepayment_in'){
             $('.cash_bank_user_type').html('Diterima dari');
         }else{
             $('.cash_bank_user_type').html('Dibayar kepada');
         }
+    }
+
+    $('.cash-bank-handle').change(function(){
+        var value = $(this).val();
+        var prepayment_out_id = $('#prepayment-out-id').val();
+
+        _callCashBankHandle( $(this) );
 
         if( value == 'ppn_in' || value == 'prepayment_in' ) {
             $.ajax({
@@ -4240,6 +4246,8 @@ $(function() {
             $('#form-content-document').html('');
         }
     });
+
+    _callCashBankHandle( $('.cash-bank-handle') );
     get_document_cashbank();
 
     // $('.invoice-pph, .invoice-ppn').keyup(function(){
