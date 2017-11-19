@@ -1,10 +1,11 @@
 <?php 
         $dataColumns = array(
-            'transaction_date' => array(
-                'name' => __('Tgl'),
-            ),
             'code' => array(
                 'name' => __('No Doc'),
+                'width' => '15%',
+            ),
+            'transaction_date' => array(
+                'name' => __('Tgl'),
             ),
             'note' => array(
                 'name' => __('Keterangan'),
@@ -102,8 +103,8 @@
             ?>
             <tr>
                 <?php 
-                        echo $this->Html->tag('td', $customDate);
                         echo $this->Html->tag('td', $nodoc);
+                        echo $this->Html->tag('td', $customDate);
                         echo $this->Html->tag('td', $note);
                         echo $this->Html->tag('td', $total, array(
                             'class' => 'text-center',

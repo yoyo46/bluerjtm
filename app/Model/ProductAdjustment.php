@@ -36,7 +36,11 @@ class ProductAdjustment extends AppModel {
 	);
 
     function beforeSave( $options = array() ) {
-        $this->data = Hash::insert($this->data, 'ProductAdjustment.nodoc', $this->generateNoDoc());
+        $generate_nodoc = Common::hashEmptyField($this->data, 'ProductAdjustment.generate_nodoc');
+
+        if( !empty($generate_nodoc) ) {
+            $this->data = Hash::insert($this->data, 'ProductAdjustment.nodoc', $this->generateNoDoc());
+        }
     }
 
     function generateNoDoc(){
@@ -179,6 +183,7 @@ class ProductAdjustment extends AppModel {
             $transaction_status = $this->filterEmptyField($data, 'ProductAdjustment', 'transaction_status');
 
             $data['ProductAdjustment']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['ProductAdjustment']['generate_nodoc'] = true;
 
             if( !empty($nodoc) ) {
                 $defaul_msg = sprintf(__('%s #%s'), $defaul_msg, $nodoc);
@@ -201,9 +206,13 @@ class ProductAdjustment extends AppModel {
 
             if( !empty($flag) ) {
                 $session_id = $this->filterEmptyField($data, 'ProductAdjustment', 'session_id');
-                $this->ProductAdjustmentDetail->ProductAdjustmentDetailSerialNumber->deleteAll(array(
-                    'ProductAdjustmentDetailSerialNumber.session_id' => $session_id,
-                ));
+                $transaction_status = $this->filterEmptyField($data, 'ProductAdjustment', 'transaction_status');
+
+                if( $transaction_status == 'posting' ) {
+                    $this->ProductAdjustmentDetail->ProductAdjustmentDetailSerialNumber->deleteAll(array(
+                        'ProductAdjustmentDetailSerialNumber.session_id' => $session_id,
+                    ));
+                }
 
                 if( !empty($id) ) {
                     $this->ProductAdjustmentDetail->deleteAll(array(

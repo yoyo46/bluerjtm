@@ -456,6 +456,7 @@ class ProductExpenditure extends AppModel {
                 }
 
                 $dataHistory = array();
+                $dataStock = array();
 
                 if( !empty($product_serial_numbers) ) {
                     foreach ($product_serial_numbers as $key => $detail) {
@@ -463,8 +464,33 @@ class ProductExpenditure extends AppModel {
                         $product_id = Common::hashEmptyField($arrDetail, 'ProductExpenditureDetailSerialNumber.product_id');
                         $qty = Common::hashEmptyField($arrDetail, 'ProductExpenditureDetailSerialNumber.qty');
                         $price = Common::hashEmptyField($arrDetail, 'ProductExpenditureDetailSerialNumber.price');
+                        $current_serial_number = Common::hashEmptyField($arrDetail, 'ProductExpenditureDetailSerialNumber.serial_number');
 
-                        $arrHistory['ProductHistory'] = array(
+                        $checkStock = $this->ProductExpenditureDetail->ProductHistory->ProductStock->getData('first', array(
+                            'conditions' => array(
+                                'ProductStock.product_id' => $product_id,
+                                'ProductStock.serial_number' => $current_serial_number,
+                                'ProductStock.price' => $price,
+                            ),
+                        ), array(
+                            'status' => false,
+                            'branch' => false,
+                        ));
+                        $checkStock = $this->ProductExpenditureDetail->ProductHistory->ProductStock->getMergeList($checkStock, array(
+                            'contain' => array(
+                                'ProductHistory' => array(
+                                    'primaryKey' => 'id',
+                                    'foreignKey' => 'product_history_id',
+                                    'elements' => array(
+                                        'status' => false,
+                                        'branch' => false,
+                                    ),
+                                ),
+                            ),
+                        ));
+                        $transaction_type = Common::hashEmptyField($checkStock, 'ProductHistory.transaction_type');
+
+                        $productHistory = array(
                             'branch_id' => $branch_id,
                             'product_id' => $product_id,
                             'transaction_id' => Common::hashEmptyField($arrDetail, 'ProductExpenditureDetailSerialNumber.product_expenditure_detail_id'),
@@ -473,7 +499,20 @@ class ProductExpenditure extends AppModel {
                             'qty' => $qty,
                             'price' => $price,
                             'type' => 'in',
-                            'ProductStock' => array(
+                        );
+
+                        if ($transaction_type == 'product_adjustment_plus') {
+                            $arrHistory['ProductHistory'] = $productHistory;
+                            $arrStock['ProductStock'] = array(
+                                'id' => Common::hashEmptyField($checkStock, 'ProductStock.id'),
+                                'product_history_id' => Common::hashEmptyField($checkStock, 'ProductStock.product_history_id'),
+                                'qty_use' => Common::hashEmptyField($checkStock, 'ProductStock.qty_use', 0) - $qty,
+                                'status' => true,
+                            );
+
+                            $dataStock[] = $arrStock;
+                        } else {
+                            $productHistory['ProductStock'] = array(
                                 array(
                                     'product_id' => $product_id,
                                     'branch_id' => $branch_id,
@@ -482,8 +521,10 @@ class ProductExpenditure extends AppModel {
                                     'price' => $price,
                                     'serial_number' => Common::hashEmptyField($arrDetail, 'ProductExpenditureDetailSerialNumber.serial_number'),
                                 ),
-                            ),
-                        );
+                            );
+                            $arrHistory['ProductHistory'] = $productHistory;
+                        }
+
                         $dataHistory[] = $arrHistory;
                     }
                 } else if( !empty($product_histories) ) {
@@ -518,6 +559,11 @@ class ProductExpenditure extends AppModel {
 
                 if( !empty($dataHistory) ) {
                     $this->ProductExpenditureDetail->ProductHistory->saveAll($dataHistory, array(
+                        'deep' => true,
+                    ));
+                }
+                if( !empty($dataStock) ) {
+                    $this->ProductExpenditureDetail->ProductHistory->ProductStock->saveAll($dataStock, array(
                         'deep' => true,
                     ));
                 }
