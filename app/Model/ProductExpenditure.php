@@ -506,6 +506,7 @@ class ProductExpenditure extends AppModel {
                             $arrStock['ProductStock'] = array(
                                 'id' => Common::hashEmptyField($checkStock, 'ProductStock.id'),
                                 'product_history_id' => Common::hashEmptyField($checkStock, 'ProductStock.product_history_id'),
+                                'product_id' => $product_id,
                                 'qty_use' => Common::hashEmptyField($checkStock, 'ProductStock.qty_use', 0) - $qty,
                                 'status' => true,
                             );
