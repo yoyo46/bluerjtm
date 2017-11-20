@@ -343,14 +343,40 @@ class ProductAdjustment extends AppModel {
 
                             if( $this->save() ) {
                                 $dataHistory = array();
+                                $dataStock = array();
 
                                 if( !empty($product_serial_numbers) ) {
                                     foreach ($product_serial_numbers as $key => $val) {
                                         $product_id = Common::hashEmptyField($val, 'ProductAdjustmentDetailSerialNumber.product_id');
                                         $qty = Common::hashEmptyField($val, 'ProductAdjustmentDetailSerialNumber.qty');
                                         $price = Common::hashEmptyField($val, 'ProductAdjustmentDetailSerialNumber.price');
+                                        $current_serial_number = Common::hashEmptyField($val, 'ProductAdjustmentDetailSerialNumber.serial_number');
 
-                                        $arrHistory['ProductHistory'] = array(
+                                        $checkStock = $this->ProductAdjustmentDetail->ProductHistory->ProductStock->getData('first', array(
+                                            'conditions' => array(
+                                                'ProductStock.product_id' => $product_id,
+                                                'ProductStock.serial_number' => $current_serial_number,
+                                                'ProductStock.price' => $price,
+                                            ),
+                                        ), array(
+                                            'status' => false,
+                                            'branch' => false,
+                                        ));
+                                        $checkStock = $this->ProductAdjustmentDetail->ProductHistory->ProductStock->getMergeList($checkStock, array(
+                                            'contain' => array(
+                                                'ProductHistory' => array(
+                                                    'primaryKey' => 'id',
+                                                    'foreignKey' => 'product_history_id',
+                                                    'elements' => array(
+                                                        'status' => false,
+                                                        'branch' => false,
+                                                    ),
+                                                ),
+                                            ),
+                                        ));
+                                        $transaction_type = Common::hashEmptyField($checkStock, 'ProductHistory.transaction_type');
+
+                                        $productHistory = array(
                                             'branch_id' => $branch_id,
                                             'product_id' => $product_id,
                                             'transaction_id' => Common::hashEmptyField($val, 'ProductAdjustmentDetailSerialNumber.product_adjustment_detail_id'),
@@ -359,17 +385,33 @@ class ProductAdjustment extends AppModel {
                                             'qty' => $qty,
                                             'price' => $price,
                                             'type' => 'in',
-                                            'ProductStock' => array(
+                                        );
+
+                                        if ($transaction_type == 'product_adjustment_plus') {
+                                            $arrHistory['ProductHistory'] = $productHistory;
+                                            $arrStock['ProductStock'] = array(
+                                                'id' => Common::hashEmptyField($checkStock, 'ProductStock.id'),
+                                                'product_history_id' => Common::hashEmptyField($checkStock, 'ProductStock.product_history_id'),
+                                                'product_id' => $product_id,
+                                                'qty_use' => Common::hashEmptyField($checkStock, 'ProductStock.qty_use', 0) - $qty,
+                                                'status' => true,
+                                            );
+
+                                            $dataStock[] = $arrStock;
+                                        } else {
+                                            $productHistory['ProductStock'] = array(
                                                 array(
                                                     'product_id' => $product_id,
                                                     'branch_id' => $branch_id,
                                                     'transaction_date' => $transaction_date,
                                                     'qty' => $qty,
                                                     'price' => $price,
-                                                    'serial_number' => Common::hashEmptyField($val, 'ProductAdjustmentDetailSerialNumber.serial_number'),
+                                                    'serial_number' => $current_serial_number,
                                                 ),
-                                            ),
-                                        );
+                                            );
+                                            $arrHistory['ProductHistory'] = $productHistory;
+                                        }
+
                                         $dataHistory[] = $arrHistory;
                                     }
                                 } else if( !empty($product_histories) ) {
@@ -403,6 +445,11 @@ class ProductAdjustment extends AppModel {
 
                                 if( !empty($dataHistory) ) {
                                     $this->ProductAdjustmentDetail->ProductHistory->saveAll($dataHistory, array(
+                                        'deep' => true,
+                                    ));
+                                }
+                                if( !empty($dataStock) ) {
+                                    $this->ProductAdjustmentDetail->ProductHistory->ProductStock->saveAll($dataStock, array(
                                         'deep' => true,
                                     ));
                                 }
