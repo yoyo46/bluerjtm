@@ -42,12 +42,12 @@ class SpkProduct extends AppModel {
                 'message' => 'Qty harap diisi'
             ),
         ),
-        'price_service' => array(
-            'eksternalValidate' => array(
-                'rule' => array('eksternalValidate', 'price_service'),
-                'message' => 'Harga jasa harap diisi'
-            ),
-        ),
+        // 'price_service' => array(
+        //     'eksternalValidate' => array(
+        //         'rule' => array('eksternalValidate', 'price_service'),
+        //         'message' => 'Harga jasa harap diisi'
+        //     ),
+        // ),
         'price' => array(
             'checkPrice' => array(
                 'rule' => array('eksternalValidate', 'price'),

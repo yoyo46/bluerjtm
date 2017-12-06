@@ -321,6 +321,17 @@ class Spk extends AppModel {
                     );
                 }
                 break;
+            case 'unreceipt_draft':
+                $default_options['conditions']['Spk.status'] = 1;
+                $default_options['conditions']['Spk.document_type'] = array( 'internal', 'eksternal' );
+
+                if( !empty($special_id) ) {
+                    $default_options['conditions']['OR']['Spk.id'] = $special_id;
+                    $default_options['conditions']['OR']['Spk.draft_receipt_status'] = array( 'none', 'half' );
+                } else {
+                    $default_options['conditions']['Spk.draft_receipt_status'] = array( 'none', 'half' );
+                }
+                break;
         }
 
         switch ($type) {

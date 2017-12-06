@@ -242,7 +242,8 @@ class RjProductComponent extends Component {
             $stock = $stock_history;
 
             if( in_array($document_type, array( 'spk' )) ) {
-                $price_service = Common::hashEmptyField($documentDetail, 'SpkProduct.price_service', 0);
+                // $price_service = Common::hashEmptyField($documentDetail, 'SpkProduct.price_service', 0);
+                $price_service = Common::hashEmptyField($documentDetail, 'SpkProduct.price', 0);
                 
                 $stock['price'] = $detail['ProductHistory']['price'] = $price_service;
                 $stock['type'] = 'barang_bekas';
