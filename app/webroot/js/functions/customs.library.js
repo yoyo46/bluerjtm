@@ -1613,6 +1613,7 @@
         $.dropdownFix();
         $.serialNumber();
         $.handle_toggle();
+        $.new_handle_toggle();
     }
 
     $.checkAll = function() {
@@ -1697,12 +1698,15 @@
                             case 'handle-toggle':
                                 handle_toggle(self);
                             break;
+                            case 'handle-toggle-click':
+                                $.new_handle_toggle();
+                            break;
                         }
                     }
                 });
             }
 
-            settings.objChange.off('change').change(function(){
+            settings.objChange.off('change').change(function(event){
                 var self = $(this);
                 var href = self.attr('href');
                 var data_trigger = self.attr('data-trigger');
@@ -1712,6 +1716,9 @@
                 switch (data_trigger) { 
                     case 'handle-toggle':
                         handle_toggle(self);
+                    break;
+                    case 'handle-toggle-click':
+                        _callHandleToggle(self, self.val(), event);
                     break;
                 }
 
@@ -1815,6 +1822,7 @@
 
                 if( data_empty != null ) {
                     $(data_empty).empty();
+                    calcGrandTotalCustom();
                 }
 
                 if( type == 'content' ) {
@@ -2239,5 +2247,241 @@
         $(target).remove();
 
         return false;
+    });
+
+    function _callHandleToggle ( self, value, event ) {
+        var match = $.checkUndefined(self.attr('data-match'));
+        var resetTarget = $.checkUndefined(self.data('reset-target'), true);
+        var targetDisabled = $.checkUndefined(self.data('target-disabled'), null);
+        var result = false;
+        match = eval(match);
+
+        if($.isArray(match) ) {
+            $.each( match, function( i, val ) {
+                target = $.checkUndefined(val[0]);
+                dataMatch = $.checkUndefined(val[1]);
+                type = $.checkUndefined(val[2]);
+                reset = $.checkUndefined(val[3], 'true');
+
+                if($(target).length){
+                    var key = $.inArray( value, dataMatch );
+
+                    if( key >= 0 ) {
+                        result = true;
+                        $(target).removeClass('hide');
+                    } else {
+                        result = false;
+                    }
+
+                    switch (type) { 
+                        case 'fade':
+                            if( result ) {
+                                $(target).fadeIn();
+                            } else {
+                                $(target).fadeOut();
+                            }
+                        break;
+                        case 'slide':
+                            if( result ) {
+                                $(target).slideDown();
+                            } else {
+                                $(target).slideUp();
+                            }
+                        break;
+                        default : 
+                            if( result ) {
+                                $(target).show();
+                            } else {
+                                $(target).hide();
+                            }
+                        break;
+                    }
+
+                //  force clear target value on change event
+                    var inputs = $(target).find(':input');
+
+                    if( reset == 'false' ) {
+                      resetTarget = false;
+                    } else {
+                      resetTarget = $.inArray( event.type, ['change', 'click'] ) && resetTarget === true;
+                    }
+
+                    if(inputs.length){
+                        if( !result && resetTarget == true){
+                        // if( resetTarget == true){
+                        //  reset all inputs value
+                            inputs.each(function(index, element){
+                                var type = $(this).attr('type');
+
+                                if( $.inArray(type, ['checkbox', 'radio']) !== -1 ) {
+                                    $(this).prop('checked', false);
+                                } else {
+                                    $(this).val('').prop('checked', false);
+                                }
+                            });
+                        }
+
+                        inputs.prop('disabled', !result);
+                        $('[data-match-type="remove"]').remove();
+
+                        if( targetDisabled != null ) {
+                            $(targetDisabled).prop('disabled', !result);
+                            
+                            if( result && resetTarget && inputs.val() == '' && targetDisabled != null ) {
+                                $(targetDisabled).each(function(index, element){
+                                    var type = $(this).attr('type');
+
+                                    if( type == 'checkbox' ) {
+                                        $(this).prop('checked', false);
+                                    } else {
+                                        $(this).val('').prop('checked', false);
+                                    }
+                                });
+                            }
+                        }
+
+                        var ckeditorInput = inputs.filter('.ckeditor-short, .ckeditor');
+                        if(ckeditorInput.length && event.type != 'init'){
+                            $._resetEditor(ckeditorInput);
+                        }
+                    }
+
+                    var innerToggles = $(target).find('.handle-toggle:visible, .handle-toggle-click:visible');
+
+                    if(resetTarget && innerToggles.length){
+                    //  re-trigger init toggle (karena di dalam element yang di toggle kemungkinan masih ada toggle yang kena reset)
+                        innerToggles.trigger('init');
+                    }
+                }
+                else{
+                //  jangan return, looping jadi stop
+                //  return false;
+                }
+            });
+        }
+    }
+
+    $.new_handle_toggle = function(options){
+        var settings = $.extend({
+            obj: '.handle-toggle-change',
+            objToggleClick: '.handle-toggle-click',
+            objToggleContent: '.handle-toggle-content',
+            objDisplayToggle: '.display-toggle', 
+        }, options );
+
+        $( "body" ).delegate( settings.obj, "init change", function(event) {
+            var self = $(this);
+            var input_type = $.checkUndefined(self.attr('type'));
+            var value = self.val();
+
+            if( $.inArray(input_type, ['radio', 'checkbox']) !== -1 ) {
+                if( !self.is(':checked') ) {
+                    value = false;
+                }
+            }
+
+            _callHandleToggle(self, value, event);
+        });
+
+        $( "body" ).delegate( settings.objToggleClick, "init click", function(event) {
+            var self = $(this);
+            var input_type = $.checkUndefined(self.attr('type'));
+            var value = self.val();
+
+            if( $.inArray(input_type, ['radio', 'checkbox']) !== -1 ) {
+                if( !self.is(':checked') ) {
+                    value = false;
+                }
+            }
+
+            _callHandleToggle(self, value, event);
+        });
+
+        $('body').delegate(settings.objDisplayToggle, 'click', function(){
+            var self = $(this);
+            var target = $(self.data('target'));
+            var clear = $.checkUndefined(self.data('clear'), false);
+
+            if(target.length){
+                var toggleClass = $.checkUndefined(self.data('class'), 'hide');
+
+                if(clear === true){
+                    target.attr('class', '');   
+                }
+
+                target.toggleClass(toggleClass);
+            }
+        });
+
+        $( "body" ).delegate( settings.objToggleContent, "init click", function(event) {
+            var self = $(this);
+            
+            var target = self.attr('data-target');
+            var reverse = self.attr('data-reverse');
+            var type = self.attr('data-type');
+            
+            if(target != ''){
+                if( self.is(':checked') ) {
+                    if(type == 'disabled-input'){
+                        if(reverse == 'true'){
+                            $(target+' input').attr('disabled', false);
+                        }else{
+                            $(target+' input').attr('disabled', true);
+                        }
+                    }else{
+                        if(reverse == 'true'){
+                            $(target).fadeOut();
+                        }else{
+                            $(target).fadeIn();
+                        }
+                    }
+                } else {
+                    if(type == 'disabled-input'){
+                        if(reverse == 'true'){
+                            $(target+' input').attr('disabled', true);
+                        }else{
+                            $(target+' input').attr('disabled', false);
+                        }
+                    }else{
+                        if(reverse == 'true'){
+                            $(target).fadeIn();
+                        }else{
+                            $(target).fadeOut();
+                        }
+                    }
+                }
+
+                if(gmapRku.length > 0){
+                    map = gmapRku.gmap3('get');
+                    google.maps.event.trigger(map, 'resize');
+                }
+            }
+        });
+
+    //  trigger init event for first page load
+        if($(settings.obj).length){
+            $(settings.obj).trigger('init');
+        }
+        if($(settings.objToggleContent).length){
+            $(settings.objToggleContent).trigger('init');
+        }
+
+        if($(settings.objToggleClick+'[type="radio"]:checked').length){
+            $(settings.objToggleClick+'[type="radio"]:checked').trigger('init');
+        } else if($(settings.objToggleClick).length){
+            $(settings.objToggleClick).trigger('init');
+        }
+    }
+
+    $( "body" ).delegate( '.empty-change', "init change", function(event) {
+        var self = $(this);
+        
+        var target = self.attr('data-target');
+        
+        if(target != ''){
+            $(target).empty();
+            
+            calcGrandTotalCustom();
+        }
     });
 }( jQuery ));

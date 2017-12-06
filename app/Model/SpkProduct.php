@@ -342,5 +342,34 @@ class SpkProduct extends AppModel {
 
         return $data;
     }
+
+    function _callGrandtotal( $id ){
+        $values = $this->getData('all', array(
+            'conditions' => array(
+                'SpkProduct.spk_id' => $id,
+            ),
+        ));
+        $grandtotal = 0;
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $value = $this->getMergeList($value, array(
+                    'contain' => array(
+                        'Spk',
+                    ),
+                ));
+
+                $ppn_include = Common::hashEmptyField($value, 'Spk.ppn_include');
+                $product_id = Common::hashEmptyField($value, 'SpkProduct.product_id');
+                $qty = Common::hashEmptyField($value, 'SpkProduct.qty');
+                $price_service = Common::hashEmptyField($value, 'SpkProduct.price_service');
+
+                $total = $qty*$price_service;
+                $grandtotal += $total;
+            }
+        }
+
+        return $grandtotal;
+    }
 }
 ?>

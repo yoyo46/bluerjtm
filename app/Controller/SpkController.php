@@ -415,4 +415,192 @@ class SpkController extends AppController {
             '_freeze' => true,
         ));
     }
+
+    public function payments() {
+        $this->loadModel('SpkPayment');
+        $this->set('sub_module_title', __('Pembayaran SPK'));
+        
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->SpkPayment->_callRefineParams($params);
+        $this->paginate = $this->SpkPayment->getData('paginate', $options, array(
+            'status' => 'void-active',
+        ));
+        $values = $this->paginate('SpkPayment');
+        $values = $this->Spk->Vendor->getMerge($values, false, 'SpkPayment');
+
+        $vendors = $this->Spk->Vendor->getData('list');
+
+        $this->MkCommon->_layout_file('select');
+        $this->set('active_menu', 'spk_payment');
+        $this->set(compact(
+            'values', 'vendors'
+        ));
+    }
+
+    function payment_add(){
+        $this->set('sub_module_title', __('Pembayaran SPK'));
+
+        $data = $this->request->data;
+        $dataSave = $this->RjSpk->_callBeforeSavePayment($data);
+        $result = $this->Spk->SpkPaymentDetail->SpkPayment->doSave($dataSave);
+        $this->MkCommon->setProcessParams($result, array(
+            'controller' => 'spk',
+            'action' => 'payments',
+            'admin' => false,
+        ));
+        $this->request->data = $this->RjSpk->_callBeforeRenderPayment($this->request->data);
+
+        $this->set('active_menu', 'spk_payment');
+    }
+
+    public function payment_edit( $id = false ) {
+        $this->set('sub_module_title', __('Edit Pembayaran SPK'));
+
+        $value = $this->Spk->SpkPaymentDetail->SpkPayment->getData('first', array(
+            'conditions' => array(
+                'SpkPayment.id' => $id,
+            ),
+        ), array(
+            'status' => 'unposting',
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->Spk->SpkPaymentDetail->getMerge($value, $id);
+            $spk_id = Set::extract('/SpkPaymentDetail/SpkPaymentDetail/spk_id', $value);
+
+            $data = $this->request->data;
+            $dataSave = $this->RjSpk->_callBeforeSavePayment($data, $id);
+            $result = $this->Spk->SpkPaymentDetail->SpkPayment->doSave($dataSave, $value, $id);
+            $this->MkCommon->setProcessParams($result, array(
+                'controller' => 'spk',
+                'action' => 'payments',
+                'admin' => false,
+            ));
+            $this->request->data = $this->RjSpk->_callBeforeRenderPayment($this->request->data, $spk_id);
+
+            $this->set('active_menu', 'spk_payment');
+            $this->set(compact(
+                'value'
+            ));
+            $this->render('payment_add');
+        } else {
+            $this->MkCommon->redirectReferer(__('Pembayaran SPK tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function payment_detail( $id ) {
+        $this->set('sub_module_title', __('Detail Pembayaran SPK'));
+
+        $value = $this->Spk->SpkPaymentDetail->SpkPayment->getData('first', array(
+            'conditions' => array(
+                'SpkPayment.id' => $id,
+            ),
+        ), array(
+            'status' => 'void-active',
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->Spk->SpkPaymentDetail->SpkPayment->SpkPaymentDetail->getMerge($value, $id);
+            $spk_id = Set::extract('/SpkPaymentDetail/SpkPaymentDetail/spk_id', $value);
+            $this->request->data = $this->RjSpk->_callBeforeRenderPayment($value, $spk_id);
+
+            $this->set('view', 'detail');
+            $this->set('active_menu', 'spk_payment');
+            $this->set(compact(
+                'value'
+            ));
+            $this->render('payment_add');
+        } else {
+            $this->MkCommon->redirectReferer(__('Pembayaran SPK tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function payment_toggle( $id ) {
+        $is_ajax = $this->RequestHandler->isAjax();
+        $action_type = 'spk_payments';
+        $msg = array(
+            'msg' => '',
+            'type' => 'error'
+        );
+        $value = $this->Spk->SpkPaymentDetail->SpkPayment->getData('first', array(
+            'conditions' => array(
+                'SpkPayment.id' => $id,
+            ),
+        ));
+        $data = $this->request->data;
+
+        if( !empty($value) ) {
+            if(!empty($data)){
+                $result = $this->Spk->SpkPaymentDetail->SpkPayment->doDelete( $id, $value, $data );
+                $msg = array(
+                    'msg' => $this->MkCommon->filterEmptyField($result, 'msg'),
+                    'type' => $this->MkCommon->filterEmptyField($result, 'status'),
+                );
+                $this->MkCommon->setProcessParams($result, false, array(
+                    'ajaxFlash' => true,
+                    'noRedirect' => true,
+                ));
+            }
+        } else {
+            $msg = array(
+                'msg' => __('Pembayaran leasing tidak ditemukan'),
+                'type' => 'error'
+            );
+        }
+
+        $modelName = 'SpkPayment';
+        $canceled_date = $this->MkCommon->filterEmptyField($data, 'LeasingPayment', 'canceled_date');
+        $this->set(compact(
+            'msg', 'is_ajax', 'action_type',
+            'canceled_date', 'modelName', 'value'
+        ));
+        $this->render('/Elements/blocks/common/form_delete');
+    }
+
+    function spk_documents () {
+        $payment_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'payment_id');
+        $vendor_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'vendor_id');
+        
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Spk->_callRefineParams($params, array(
+            'conditions' => array(
+                'Spk.vendor_id' => $vendor_id,
+            ),
+            'limit' => 10,
+        ));
+
+        $this->paginate = $this->Spk->getData('paginate', $options, array(
+            'payment_status' => 'unpaid',
+        ));
+        $values = $this->paginate('Spk');
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'Spk', 'id');
+                $vendor_id = $this->MkCommon->filterEmptyField($value, 'Spk', 'vendor_id');
+
+                $grandtotal = $this->Spk->SpkProduct->_callGrandtotal($id);
+
+                $paid = $this->Spk->SpkPaymentDetail->_callPaidSpk($id, $payment_id);
+                $total_remain = $grandtotal - $paid;
+                $value['Spk']['total_paid'] = ($paid <= 0)?0:$paid;
+                $value['Spk']['total_remain'] = ($total_remain <= 0)?0:$total_remain;
+                $value['Spk']['grandtotal'] = $grandtotal;
+
+                $value = $this->Spk->Vendor->getMerge($value, $vendor_id);
+                $values[$key] = $value;
+            }
+        }
+
+        $this->set('module_title', __('spk'));
+        $this->set(compact(
+            'values', 'payment_id', 'vendor_id'
+        ));
+    }
 }

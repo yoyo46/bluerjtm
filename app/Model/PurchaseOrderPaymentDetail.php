@@ -5,7 +5,11 @@ class PurchaseOrderPaymentDetail extends AppModel {
     var $belongsTo = array(
         'PurchaseOrder' => array(
             'className' => 'PurchaseOrder',
-            'foreignKey' => 'purchase_order_id',
+            'foreignKey' => 'document_id',
+        ),
+        'Spk' => array(
+            'className' => 'Spk',
+            'foreignKey' => 'document_id',
         ),
         'PurchaseOrderPayment' => array(
             'className' => 'PurchaseOrderPayment',
@@ -14,10 +18,10 @@ class PurchaseOrderPaymentDetail extends AppModel {
     );
 
 	var $validate = array(
-        'purchase_order_id' => array(
+        'document_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'PO harap dipilih'
+                'message' => 'Dokumen harap dipilih'
             ),
         ),
         'price' => array(
@@ -53,6 +57,12 @@ class PurchaseOrderPaymentDetail extends AppModel {
             case 'paid':
                 $default_options['conditions']['PurchaseOrderPaymentDetail.status'] = 1;
                 $default_options['conditions']['PurchaseOrderPayment.transaction_status'] = array( 'posting', 'unposting' );
+                $default_options['conditions']['PurchaseOrderPayment.status'] = 1;
+                $default_options['contain'][] = 'PurchaseOrderPayment';
+                break;
+            case 'paid-posting':
+                $default_options['conditions']['PurchaseOrderPaymentDetail.status'] = 1;
+                $default_options['conditions']['PurchaseOrderPayment.transaction_status'] = array( 'posting' );
                 $default_options['conditions']['PurchaseOrderPayment.status'] = 1;
                 $default_options['contain'][] = 'PurchaseOrderPayment';
                 break;
@@ -92,19 +102,31 @@ class PurchaseOrderPaymentDetail extends AppModel {
         ));
 
         if(!empty($values)){
+            $document_type = $this->filterEmptyField($data, 'PurchaseOrderPayment', 'document_type');
+
             foreach ($values as $key => $value) {
-                $purchase_order_id = $this->filterEmptyField($value, 'PurchaseOrderPaymentDetail', 'purchase_order_id');
+                $document_id = $this->filterEmptyField($value, 'PurchaseOrderPaymentDetail', 'document_id');
                 $price = $this->filterEmptyField($value, 'PurchaseOrderPaymentDetail', 'price');
 
-                $value = $this->PurchaseOrder->getMerge($value, $purchase_order_id);
+                switch ($document_type) {
+                    case 'spk':
+                        $value = $this->Spk->getMerge($value, $document_id);
+                        $grandtotal = $this->Spk->SpkProduct->_callGrandtotal($document_id);
+                        $paid = $this->_callPaidSpk($document_id, $id);
+                        $modelName = 'Spk';
+                        break;
+                    
+                    default:
+                        $value = $this->PurchaseOrder->getMerge($value, $document_id);
+                        $grandtotal = $this->PurchaseOrder->PurchaseOrderDetail->_callGrandtotal($document_id);
+                        $paid = $this->_callPaidPO($document_id, $id);
+                        $modelName = 'PurchaseOrder';
+                        break;
+                }
 
-                $grandtotal = $this->PurchaseOrder->PurchaseOrderDetail->_callGrandtotal($purchase_order_id);
-                // $grandtotal = $this->filterEmptyField($value, 'PurchaseOrder', 'grandtotal');
-
-                $paid = $this->_callPaidPO($purchase_order_id, $id);
-                $value['PurchaseOrder']['total_remain'] = $grandtotal - $paid;
-                $value['PurchaseOrder']['total_paid'] = $paid;
-                $value['PurchaseOrder']['grandtotal'] = $grandtotal;
+                $value[$modelName]['total_remain'] = $grandtotal - $paid;
+                $value[$modelName]['total_paid'] = $paid;
+                $value[$modelName]['grandtotal'] = $grandtotal;
                 $values[$key] = $value;
             }
             $data['PurchaseOrderPaymentDetail'] = $values;
@@ -113,20 +135,46 @@ class PurchaseOrderPaymentDetail extends AppModel {
         return $data;
     }
 
-    function _callPaidPO( $id = false, $payment_id = false ){
+    function _callPaidPO( $id = false, $payment_id = false, $status = 'paid' ){
         $this->virtualFields['total_paid'] = 'SUM(PurchaseOrderPaymentDetail.price)';
         $result = $this->getData('first', array(
             'conditions'=> array(
-                'PurchaseOrderPaymentDetail.purchase_order_id' => $id,
+                'PurchaseOrderPaymentDetail.document_id' => $id,
                 'PurchaseOrderPaymentDetail.purchase_order_payment_id <>' => $payment_id,
+                'PurchaseOrderPayment.document_type' => 'po',
+            ),
+            'contain' => array(
+                'PurchaseOrderPayment',
             ),
         ), array(
-            'status' => 'paid',
+            'status' => $status,
         ));
         $result = $this->PurchaseOrder->getMerge($result, $id, 'PurchaseOrder.id', 'unpaid');
 
         $total_paid = $this->filterEmptyField($result, 'PurchaseOrderPaymentDetail', 'total_paid', 0);
         $total_po = $this->filterEmptyField($result, 'PurchaseOrder', 'grandtotal', 0);
+
+        return $total_paid;
+    }
+
+    function _callPaidSpk( $id = false, $payment_id = false, $status = 'paid' ){
+        $this->virtualFields['total_paid'] = 'SUM(PurchaseOrderPaymentDetail.price)';
+        $result = $this->getData('first', array(
+            'conditions'=> array(
+                'PurchaseOrderPaymentDetail.document_id' => $id,
+                'PurchaseOrderPaymentDetail.purchase_order_payment_id <>' => $payment_id,
+                'PurchaseOrderPayment.document_type' => 'spk',
+            ),
+            'contain' => array(
+                'PurchaseOrderPayment',
+            ),
+        ), array(
+            'status' => $status,
+        ));
+        $result = $this->Spk->getMerge($result, $id, 'Spk.id', 'unpaid');
+
+        $total_paid = $this->filterEmptyField($result, 'PurchaseOrderPaymentDetail', 'total_paid', 0);
+        $total_spk = $this->filterEmptyField($result, 'Spk', 'grandtotal', 0);
 
         return $total_paid;
     }

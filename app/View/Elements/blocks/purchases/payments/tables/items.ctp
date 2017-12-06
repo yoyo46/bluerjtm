@@ -1,18 +1,30 @@
 <?php 
         $value = !empty($value)?$value:false;
+        $data = $this->request->data;
+        $document_type = $this->Common->filterEmptyField($data, 'PurchaseOrderPayment', 'document_type', 'po');
+
+        switch ($document_type) {
+            case 'spk':
+                $modelNameDocument = 'Spk';
+                break;
+            
+            default:
+                $modelNameDocument = 'PurchaseOrder';
+                break;
+        }
+
         $id = $this->Common->filterEmptyField($value, 'PurchaseOrderPaymentDetail', 'id');
-        $purchase_order_id = $this->Common->filterEmptyField($value, 'PurchaseOrderPaymentDetail', 'purchase_order_id');
+        $document_id = $this->Common->filterEmptyField($value, 'PurchaseOrderPaymentDetail', 'document_id');
         $price = $this->Common->filterEmptyField($value, 'PurchaseOrderPaymentDetail', 'price');
 
-        $note = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'note', '-');
+        $note = $this->Common->filterEmptyField($value, $modelNameDocument, 'note', '-');
         
-        $grandtotal = Common::hashEmptyField($value, 'PurchaseOrder.grandtotal');
-        $grandtotal = Common::hashEmptyField($value, 'PurchaseOrder.total_po', $grandtotal);
+        $grandtotal = Common::hashEmptyField($value, $modelNameDocument.'.grandtotal');
+        $grandtotal = Common::hashEmptyField($value, $modelNameDocument.'.total_'.$document_type, $grandtotal);
 
-        // $total_remain = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'total_remain');
-        $total_paid = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'total_paid');
-        $nodoc = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'nodoc');
-        $transaction_date = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'transaction_date');
+        $total_paid = $this->Common->filterEmptyField($value, $modelNameDocument, 'total_paid');
+        $nodoc = $this->Common->filterEmptyField($value, $modelNameDocument, 'nodoc');
+        $transaction_date = $this->Common->filterEmptyField($value, $modelNameDocument, 'transaction_date');
 
         $transaction_date = $this->Common->formatDate($transaction_date, 'd/m/Y');
         $grandtotal = $this->Common->getFormatPrice($grandtotal, 0, 2);
@@ -22,11 +34,11 @@
 
         $hiddenContent = $this->Form->hidden('PurchaseOrderPaymentDetail.id.', array(
             'value' => $id,
-        )).$this->Form->hidden('PurchaseOrderPaymentDetail.purchase_order_id.', array(
-            'value' => $purchase_order_id,
+        )).$this->Form->hidden('PurchaseOrderPaymentDetail.document_id.', array(
+            'value' => $document_id,
         ));
 ?>
-<tr class="pick-document item" data-type="single-total" rel="<?php echo $purchase_order_id; ?>">
+<tr class="pick-document item" data-type="single-total" rel="<?php echo $document_id; ?>">
     <?php
             echo $this->Html->tag('td', $nodoc.$hiddenContent);
             echo $this->Html->tag('td', $transaction_date, array(

@@ -377,5 +377,124 @@ class RjSpkComponent extends Component {
         $this->controller->set('sub_module_title', $title);
         $this->controller->set('active_menu', $title);
     }
+
+    function _callBeforeSavePayment ( $data, $id = false ) {
+        $dataSave = array();
+
+        if( !empty($data) ) {
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'SpkPayment' => array(
+                        'transaction_date',
+                    ),
+                ),
+            ));
+            $this->MkCommon->_callAllowClosing($data, 'SpkPayment', 'transaction_date');
+
+            $values = $this->MkCommon->filterEmptyField($data, 'SpkPaymentDetail', 'spk_id');
+            $transaction_date = $this->MkCommon->filterEmptyField($data, 'SpkPayment', 'transaction_date');
+            $transaction_status = $this->MkCommon->filterEmptyField($data, 'SpkPayment', 'transaction_status');
+
+            $dataSave['SpkPayment'] = $this->MkCommon->filterEmptyField($data, 'SpkPayment');
+            $dataSave['SpkPayment']['id'] = $id;
+            $dataSave['SpkPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $dataSave['SpkPayment']['user_id'] = Configure::read('__Site.config_user_id');
+
+            if( !empty($values) ) {
+                $grandtotal = 0;
+
+                foreach ($values as $key => $spk_id) {
+                    $idArr = $this->MkCommon->filterEmptyField($data, 'SpkPaymentDetail', 'id');
+                    $priceArr = $this->MkCommon->filterEmptyField($data, 'SpkPaymentDetail', 'price');
+                    $totalRemainArr = $this->MkCommon->filterEmptyField($data, 'Spk', 'total_remain');
+                    
+                    $spk = $this->controller->Spk->getMerge(array(), $spk_id);
+                    $nodoc = $this->MkCommon->filterEmptyField($spk, 'Spk', 'nodoc');
+                    $transaction_date = $this->MkCommon->filterEmptyField($spk, 'Spk', 'transaction_date');
+                    $note = $this->MkCommon->filterEmptyField($spk, 'Spk', 'note');
+                    $is_asset = $this->MkCommon->filterEmptyField($spk, 'Spk', 'is_asset');
+                    
+                    $total_spk = $this->controller->Spk->SpkProduct->_callGrandtotal($spk_id);
+                    // $total_spk = $this->MkCommon->filterEmptyField($spk, 'Spk', 'grandtotal');
+
+                    $idDetail = !empty($idArr[$key])?$idArr[$key]:false;
+                    $price = !empty($priceArr[$key])?$this->MkCommon->_callPriceConverter($priceArr[$key])*1:false;
+                    $grandtotal += $price;
+                    
+                    $draft_paid = $this->controller->Spk->SpkPaymentDetail->_callPaidSpk($spk_id, $id);
+                    $total_remain = $total_spk - $draft_paid;
+
+                    $dataSave['SpkPaymentDetail'][$key] = array(
+                        'SpkPaymentDetail' => array(
+                            // 'id' => $idDetail,
+                            'spk_id' => $spk_id,
+                            'price' => $price,
+                        ),
+                        'Spk' => array(
+                            'id' => $spk_id,
+                            'total_spk' => $total_spk,
+                            'total_remain' => $total_remain,
+                            'total_paid' => $draft_paid,
+                            'nodoc' => $nodoc,
+                            'transaction_date' => $transaction_date,
+                            'note' => $note,
+                        ),
+                    );
+                    $draft_paid += $price;
+
+                    if( $draft_paid >= $total_spk ) {
+                        $draft_status = 'paid';
+                    } else {
+                        $draft_status = 'half_paid';
+                    }
+                    
+                    $dataSave['SpkPaymentDetail'][$key]['Spk']['draft_payment_status'] = $draft_status;
+
+                    if( $transaction_status == 'posting' ) {
+                        $paid = $this->controller->Spk->SpkPaymentDetail->_callPaidSpk($spk_id, $id, 'paid-posting');
+                        $paid += $price;
+
+                        if( $paid >= $total_spk ) {
+                            $status = 'paid';
+                        } else {
+                            $status = 'half_paid';
+                        }
+                        
+                        $dataSave['SpkPaymentDetail'][$key]['Spk']['payment_status'] = $status;
+                    }
+                }
+
+                $dataSave['SpkPayment']['grandtotal'] = $grandtotal;
+            }
+        }
+
+        return $dataSave;
+    }
+
+    function _callBeforeRenderPayment ( $data, $spk_id = false ) {
+        if( !empty($data) ) {
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'SpkPayment' => array(
+                        'transaction_date',
+                    ),
+                ),
+            ), true);
+        } else {
+            $data['SpkPayment']['transaction_date'] = date('d/m/Y');
+        }
+
+        $vendors = $this->controller->Spk->_callVendors('unpaid', $spk_id);
+        $coas = $this->controller->GroupBranch->Branch->BranchCoa->getCoas();
+        $this->MkCommon->_layout_file(array(
+            'select',
+        ));
+
+        $this->controller->set(compact(
+            'vendors', 'coas'
+        ));
+
+        return $data;
+    }
 }
 ?>

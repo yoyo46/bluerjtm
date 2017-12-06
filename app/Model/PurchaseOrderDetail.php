@@ -251,6 +251,7 @@ class PurchaseOrderDetail extends AppModel {
         $code = !empty($data['named']['code'])?$data['named']['code']:false;
         $name = !empty($data['named']['name'])?$data['named']['name']:false;
         $group = !empty($data['named']['group'])?$data['named']['group']:false;
+        $note = !empty($data['named']['note'])?$data['named']['note']:false;
 
         if( !empty($code) ) {
             $default_options['conditions']['Product.code LIKE'] = '%'.$code.'%';
@@ -264,6 +265,9 @@ class PurchaseOrderDetail extends AppModel {
             $default_options['conditions']['Product.product_category_id'] = $group;
             $default_options['contain'][] = 'Product';
         }
+        if( !empty($note) ) {
+            $default_options['conditions']['PurchaseOrderDetail.note LIKE'] = '%'.$note.'%';
+        }
         
         return $default_options;
     }
@@ -274,7 +278,7 @@ class PurchaseOrderDetail extends AppModel {
                 'PurchaseOrderDetail.purchase_order_id' => $id,
             ),
         ), array(
-            'status' => 'status',
+            'status' => 'active',
         ));
         $grandtotal = 0;
 

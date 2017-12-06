@@ -16,6 +16,9 @@
                     'name' => __('Tanggal SPK'),
                     'class' => 'text-center',
                 ),
+                'nopol' => array(
+                    'name' => __('No Pol'),
+                ),
                 'note' => array(
                     'name' => __('Keterangan'),
                 ),
@@ -23,7 +26,7 @@
 
             $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
-            echo $this->element('blocks/products/receipts/forms/search_spk');
+            echo $this->element('blocks/products/receipts/forms/search_spk_external');
     ?>
     <div class="box-body table-responsive browse-form">
         <table class="table table-hover">
@@ -43,6 +46,7 @@
 
                                 $spk_nodoc = $this->Common->filterEmptyField($value, 'Spk', 'nodoc');
                                 $spk_date = $this->Common->filterEmptyField($value, 'Spk', 'transaction_date');
+                                $nopol = $this->Common->filterEmptyField($value, 'Spk', 'nopol', '-');
 
                                 $transaction_date = $this->Common->formatDate($transaction_date, 'd/m/Y');
                                 $spk_date = $this->Common->formatDate($spk_date, 'd/m/Y');
@@ -59,6 +63,7 @@
                             echo $this->Html->tag('td', $spk_date, array(
                                 'class' => 'text-center',
                             ));
+                            echo $this->Html->tag('td', $nopol);
                             echo $this->Html->tag('td', $note);
                     ?>
                 </tr>

@@ -28,7 +28,7 @@ class PurchaseOrder extends AppModel {
         ),
         'PurchaseOrderPaymentDetail' => array(
             'className' => 'PurchaseOrderPaymentDetail',
-            'foreignKey' => 'purchase_order_id',
+            'foreignKey' => 'document_id',
         ),
         'DocumentAuth' => array(
             'className' => 'DocumentAuth',
@@ -107,6 +107,7 @@ class PurchaseOrder extends AppModel {
         $branch = isset($elements['branch'])?$elements['branch']:true;
         $status = isset($elements['status'])?$elements['status']:'active';
         $special_id = isset($elements['special_id'])?$elements['special_id']:false;
+        $payment_status = isset($elements['payment_status'])?$elements['payment_status']:'active';
 
         $default_options = array(
             'conditions'=> array(),
@@ -130,11 +131,17 @@ class PurchaseOrder extends AppModel {
                 if( !empty($special_id) ) {
                     $default_options['conditions']['OR']['PurchaseOrder.id'] = $special_id;
                     $default_options['conditions']['OR']['PurchaseOrder.transaction_status'] = array(
-                        'approved', 'half_paid',
+                        'approved',
+                    );
+                    $default_options['conditions']['OR']['PurchaseOrder.payment_status'] = array(
+                        'none', 'half_paid',
                     );
                 } else {
                     $default_options['conditions']['PurchaseOrder.transaction_status'] = array(
-                        'approved', 'half_paid',
+                        'approved',
+                    );
+                    $default_options['conditions']['PurchaseOrder.payment_status'] = array(
+                        'none', 'half_paid',
                     );
                 }
                 break;
@@ -146,13 +153,13 @@ class PurchaseOrder extends AppModel {
                 $default_options['conditions']['PurchaseOrder.status'] = 0;
                 break;
             case 'unreceipt':
-                $default_options['conditions']['PurchaseOrder.transaction_status'] = array( 'approved', 'paid', 'half_paid' );
+                $default_options['conditions']['PurchaseOrder.transaction_status'] = array( 'approved', 'paid' );
                 $default_options['conditions']['PurchaseOrder.receipt_status'] = array( 'none', 'half' );
                 $default_options['conditions']['PurchaseOrder.is_asset'] = 0;
                 $default_options['conditions']['PurchaseOrder.status'] = 1;
                 break;
             case 'unreceipt_draft':
-                $default_options['conditions']['PurchaseOrder.transaction_status'] = array( 'approved', 'paid', 'half_paid' );
+                $default_options['conditions']['PurchaseOrder.transaction_status'] = array( 'approved', 'paid' );
                 $default_options['conditions']['PurchaseOrder.is_asset'] = 0;
                 $default_options['conditions']['PurchaseOrder.status'] = 1;
                 $default_options['conditions']['PurchaseOrder.draft_retur_status'] = array( 'none', 'half' );
@@ -165,7 +172,7 @@ class PurchaseOrder extends AppModel {
                 }
                 break;
             case 'unretur':
-                $default_options['conditions']['PurchaseOrder.transaction_status'] = array( 'approved', 'paid', 'half_paid' );
+                $default_options['conditions']['PurchaseOrder.transaction_status'] = array( 'approved', 'paid' );
                 $default_options['conditions']['PurchaseOrder.retur_status'] = array( 'none', 'half' );
                 $default_options['conditions']['PurchaseOrder.is_asset'] = 0;
                 $default_options['conditions']['PurchaseOrder.status'] = 1;
@@ -173,7 +180,7 @@ class PurchaseOrder extends AppModel {
                 $default_options['conditions']['PurchaseOrder.receipt_status'] = array( 'none', 'half' );
                 break;
             case 'unretur_draft':
-                $default_options['conditions']['PurchaseOrder.transaction_status'] = array( 'approved', 'paid', 'half_paid' );
+                $default_options['conditions']['PurchaseOrder.transaction_status'] = array( 'approved', 'paid' );
                 $default_options['conditions']['PurchaseOrder.is_asset'] = 0;
                 $default_options['conditions']['PurchaseOrder.status'] = 1;
 
@@ -188,6 +195,29 @@ class PurchaseOrder extends AppModel {
                 break;
             default:
                 $default_options['conditions']['PurchaseOrder.status'] = array( 0, 1 );
+                break;
+        }
+
+        switch ($payment_status) {
+            case 'unpaid':
+                $default_options['conditions']['PurchaseOrder.status'] = 1;
+
+                if( !empty($special_id) ) {
+                    $default_options['conditions']['OR']['PurchaseOrder.id'] = $special_id;
+                    $default_options['conditions']['OR']['PurchaseOrder.transaction_status'] = array(
+                        'approved',
+                    );
+                    $default_options['conditions']['OR']['PurchaseOrder.draft_payment_status'] = array(
+                        'none', 'half_paid'
+                    );
+                } else {
+                    $default_options['conditions']['PurchaseOrder.transaction_status'] = array(
+                        'approved',
+                    );
+                    $default_options['conditions']['PurchaseOrder.draft_payment_status'] = array(
+                        'none', 'half_paid'
+                    );
+                }
                 break;
         }
 
@@ -361,6 +391,7 @@ class PurchaseOrder extends AppModel {
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $vendor_id = !empty($data['named']['vendor_id'])?$data['named']['vendor_id']:false;
         $status = !empty($data['named']['status'])?$data['named']['status']:false;
+        $payment_status = !empty($data['named']['payment_status'])?$data['named']['payment_status']:false;
         $receipt_status = !empty($data['named']['receipt_status'])?$data['named']['receipt_status']:false;
         $retur_status = !empty($data['named']['retur_status'])?$data['named']['retur_status']:false;
 
@@ -406,17 +437,10 @@ class PurchaseOrder extends AppModel {
             }
         }
         if( !empty($status) ) {
-            switch ($status) {
-                case 'unpaid':
-                    $default_options['conditions']['PurchaseOrder.transaction_status'] = array( 'posting', 'unposting', 'approved' );
-                    break;
-                case 'half_paid':
-                    $default_options['conditions']['PurchaseOrder.transaction_status'] = 'half_paid';
-                    break;
-                case 'paid':
-                    $default_options['conditions']['PurchaseOrder.transaction_status'] = 'paid';
-                    break;
-            }
+            $default_options['conditions']['PurchaseOrder.transaction_status'] = $status;
+        }
+        if( !empty($payment_status) ) {
+            $default_options['conditions']['PurchaseOrder.payment_status'] = $payment_status;
         }
         
         return $default_options;
@@ -540,7 +564,7 @@ class PurchaseOrder extends AppModel {
         $vendor = $this->Vendor->getMerge(array(), $vendor_id);
         $vendor_name = !empty($vendor['Vendor']['name'])?$vendor['Vendor']['name']:false;
 
-        $coaHutangUsaha = $this->User->Coa->CoaSettingDetail->getMerge(array(), 'HutangUsaha', 'CoaSettingDetail.label');
+        $coaHutangUsaha = $this->User->Coa->CoaSettingDetail->getMerge(array(), 'HutangProduct', 'CoaSettingDetail.label');
         $hutang_usaha_coa_id = !empty($coaHutangUsaha['CoaSettingDetail']['coa_id'])?$coaHutangUsaha['CoaSettingDetail']['coa_id']:false;
 
         $this->User->Journal->deleteJournal($id, array(

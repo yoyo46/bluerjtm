@@ -387,6 +387,10 @@ class ProductExpenditure extends AppModel {
         if( !empty($status) ) {
             $default_options['conditions']['ProductExpenditure.transaction_status'] = $status;
         }
+        if( !empty($nopol) ) {
+            $default_options['conditions']['Spk.nopol LIKE'] = '%'.$nopol.'%';
+            $default_options['contain'][] = 'Spk';
+        }
         
         return $default_options;
     }

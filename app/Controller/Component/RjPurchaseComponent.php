@@ -310,9 +310,10 @@ class RjPurchaseComponent extends Component {
             ));
             $this->MkCommon->_callAllowClosing($data, 'PurchaseOrderPayment', 'transaction_date');
 
-            $values = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPaymentDetail', 'purchase_order_id');
+            $values = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPaymentDetail', 'document_id');
             $transaction_date = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPayment', 'transaction_date');
             $transaction_status = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPayment', 'transaction_status');
+            $document_type = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPayment', 'document_type');
 
             $dataSave['PurchaseOrderPayment'] = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPayment');
             $dataSave['PurchaseOrderPayment']['id'] = $id;
@@ -322,45 +323,101 @@ class RjPurchaseComponent extends Component {
             if( !empty($values) ) {
                 $grandtotal = 0;
 
-                foreach ($values as $key => $purchase_order_id) {
+                foreach ($values as $key => $document_id) {
                     $idArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPaymentDetail', 'id');
                     $priceArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPaymentDetail', 'price');
-                    $totalRemainArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'total_remain');
                     
-                    $purchaseOrder = $this->controller->PurchaseOrder->getMerge(array(), $purchase_order_id);
-                    $nodoc = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'nodoc');
-                    $transaction_date = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'transaction_date');
-                    $note = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'note');
-                    $is_asset = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'is_asset');
-                    
-                    $total_po = $this->controller->PurchaseOrder->PurchaseOrderDetail->_callGrandtotal($purchase_order_id);
-                    // $total_po = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'grandtotal');
+                    switch ($document_type) {
+                        case 'spk':
+                            $totalRemainArr = $this->MkCommon->filterEmptyField($data, 'Spk', 'total_remain');
+
+                            $spk = $this->controller->PurchaseOrder->PurchaseOrderPaymentDetail->Spk->getMerge(array(), $document_id);
+                            $nodoc = $this->MkCommon->filterEmptyField($spk, 'Spk', 'nodoc');
+                            $transaction_date = $this->MkCommon->filterEmptyField($spk, 'Spk', 'transaction_date');
+                            $note = $this->MkCommon->filterEmptyField($spk, 'Spk', 'note');
+                            $is_asset = $this->MkCommon->filterEmptyField($spk, 'Spk', 'is_asset');
+                            
+                            $total_po = $this->controller->PurchaseOrder->PurchaseOrderPaymentDetail->Spk->SpkProduct->_callGrandtotal($document_id);
+                            $draft_paid = $this->controller->PurchaseOrder->PurchaseOrderPaymentDetail->_callPaidSpk($document_id, $id);
+                            $modelNameDocument = 'Spk';
+                            break;
+                        
+                        default:
+                            $totalRemainArr = $this->MkCommon->filterEmptyField($data, 'PurchaseOrder', 'total_remain');
+
+                            $purchaseOrder = $this->controller->PurchaseOrder->getMerge(array(), $document_id);
+                            $nodoc = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'nodoc');
+                            $transaction_date = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'transaction_date');
+                            $note = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'note');
+                            $is_asset = $this->MkCommon->filterEmptyField($purchaseOrder, 'PurchaseOrder', 'is_asset');
+                            
+                            $total_po = $this->controller->PurchaseOrder->PurchaseOrderDetail->_callGrandtotal($document_id);
+                            $draft_paid = $this->controller->PurchaseOrder->PurchaseOrderPaymentDetail->_callPaidPO($document_id, $id);
+                            $modelNameDocument = 'PurchaseOrder';
+                            break;
+                    }
 
                     $idDetail = !empty($idArr[$key])?$idArr[$key]:false;
                     $price = !empty($priceArr[$key])?$this->MkCommon->_callPriceConverter($priceArr[$key])*1:false;
                     $grandtotal += $price;
                     
-                    $paid = $this->controller->PurchaseOrder->PurchaseOrderPaymentDetail->_callPaidPO($purchase_order_id, $id);
-                    $total_remain = $total_po - $paid;
+                    $total_remain = $total_po - $draft_paid;
 
                     $dataSave['PurchaseOrderPaymentDetail'][$key] = array(
                         'PurchaseOrderPaymentDetail' => array(
                             // 'id' => $idDetail,
-                            'purchase_order_id' => $purchase_order_id,
+                            'document_id' => $document_id,
                             'price' => $price,
-                        ),
-                        'PurchaseOrder' => array(
-                            'id' => $purchase_order_id,
-                            'total_po' => $total_po,
-                            'total_remain' => $total_remain,
-                            'total_paid' => $paid,
-                            'nodoc' => $nodoc,
-                            'transaction_date' => $transaction_date,
-                            'note' => $note,
                         ),
                     );
 
+                    switch ($document_type) {
+                        case 'spk':
+                            $dataSave['PurchaseOrderPaymentDetail'][$key]['Spk'] = array(
+                                'id' => $document_id,
+                                'total_spk' => $total_po,
+                                'total_remain' => $total_remain,
+                                'total_paid' => $draft_paid,
+                                'nodoc' => $nodoc,
+                                'transaction_date' => $transaction_date,
+                                'note' => $note,
+                            );
+                            break;
+                        
+                        default:
+                            $dataSave['PurchaseOrderPaymentDetail'][$key]['PurchaseOrder'] = array(
+                                'id' => $document_id,
+                                'total_po' => $total_po,
+                                'total_remain' => $total_remain,
+                                'total_paid' => $draft_paid,
+                                'nodoc' => $nodoc,
+                                'transaction_date' => $transaction_date,
+                                'note' => $note,
+                            );
+                            break;
+                    }
+
+                    $draft_paid += $price;
+
+                    if( $draft_paid >= $total_po ) {
+                        $draft_status = 'paid';
+                    } else {
+                        $draft_status = 'half_paid';
+                    }
+
+                    $dataSave['PurchaseOrderPaymentDetail'][$key][$modelNameDocument]['draft_payment_status'] = $draft_status;
+
                     if( $transaction_status == 'posting' ) {
+                        switch ($document_type) {
+                            case 'spk':
+                                $paid = $this->controller->PurchaseOrder->PurchaseOrderPaymentDetail->_callPaidSpk($document_id, $id, 'paid-posting');
+                                break;
+                            
+                            default:
+                                $paid = $this->controller->PurchaseOrder->PurchaseOrderPaymentDetail->_callPaidPO($document_id, $id, 'paid-posting');
+                                break;
+                        }
+
                         $paid += $price;
 
                         if( $paid >= $total_po ) {
@@ -368,8 +425,8 @@ class RjPurchaseComponent extends Component {
                         } else {
                             $status = 'half_paid';
                         }
-
-                        $dataSave['PurchaseOrderPaymentDetail'][$key]['PurchaseOrder']['transaction_status'] = $status;
+                        
+                        $dataSave['PurchaseOrderPaymentDetail'][$key][$modelNameDocument]['payment_status'] = $status;
                     }
                 }
 
@@ -380,7 +437,7 @@ class RjPurchaseComponent extends Component {
         return $dataSave;
     }
 
-    function _callBeforeRenderPayment ( $data, $purchase_order_id = false ) {
+    function _callBeforeRenderPayment ( $data, $document_id = false ) {
         if( !empty($data) ) {
             $data = $this->MkCommon->dataConverter($data, array(
                 'date' => array(
@@ -393,7 +450,18 @@ class RjPurchaseComponent extends Component {
             $data['PurchaseOrderPayment']['transaction_date'] = date('d/m/Y');
         }
 
-        $vendors = $this->controller->PurchaseOrder->_callVendors('unpaid', $purchase_order_id);
+        $document_type = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPayment', 'document_type');
+
+        switch ($document_type) {
+            case 'spk':
+                $vendors = $this->controller->PurchaseOrder->PurchaseOrderPaymentDetail->Spk->_callVendors('unpaid', $document_id);
+                break;
+            
+            default:
+                $vendors = $this->controller->PurchaseOrder->_callVendors('unpaid', $document_id);
+                break;
+        }
+
         $coas = $this->controller->GroupBranch->Branch->BranchCoa->getCoas();
         $this->MkCommon->_layout_file(array(
             'select',

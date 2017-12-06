@@ -69,7 +69,7 @@
                             $transaction_status = $this->Common->filterEmptyField($value, 'ProductExpenditure', 'transaction_status');
 
                             $document_number = $this->Common->filterEmptyField($spk, 'nodoc', false, '-');
-                            $nopol = $this->Common->filterEmptyField($spk, 'Truck', 'nopol', '-');
+                            $nopol = $this->Common->filterEmptyField($spk, 'nopol', false, '-');
 
                             $staff = $this->Common->filterEmptyField($value, 'Staff', 'name');
                             $employe = $this->Common->filterEmptyField($value, 'Employe', 'full_name');

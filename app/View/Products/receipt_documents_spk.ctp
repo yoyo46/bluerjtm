@@ -3,11 +3,17 @@
             $modelName = false;
             $dataColumns = array(
                 'nodoc' => array(
-                    'name' => __('No Dokumen'),
+                    'name' => __('No. SPK'),
                 ),
                 'date' => array(
                     'name' => __('Tanggal'),
                     'class' => 'text-center',
+                ),
+                'type' => array(
+                    'name' => __('Jenis'),
+                ),
+                'nopol' => array(
+                    'name' => __('No Pol'),
                 ),
                 'note' => array(
                     'name' => __('Keterangan'),
@@ -16,7 +22,7 @@
 
             $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
-            echo $this->element('blocks/products/receipts/forms/search_spk');
+            echo $this->element('blocks/products/receipts/forms/search_spk_external');
     ?>
     <div class="box-body table-responsive browse-form">
         <table class="table table-hover">
@@ -31,10 +37,13 @@
                             foreach ($values as $key => $value) {
                                 $id = $this->Common->filterEmptyField($value, 'Spk', 'id');
                                 $nodoc = $this->Common->filterEmptyField($value, 'Spk', 'nodoc');
-                                $transaction_date = $this->Common->filterEmptyField($value, 'Spk', 'transaction_date');
+                                $transaction_date = $this->Common->filterEmptyField($value, 'Spk', 'transaction_date', false, true, array(
+                                    'date' => 'd/m/Y',
+                                ));
+                                $document_type = $this->Common->filterEmptyField($value, 'Spk', 'document_type');
                                 $note = $this->Common->filterEmptyField($value, 'Spk', 'note', '-');
-
-                                $transaction_date = $this->Common->formatDate($transaction_date, 'd/m/Y');
+                                $nopol = $this->Common->filterEmptyField($value, 'Spk', 'nopol', '-');
+                                $document_type = ucwords($document_type);
                 ?>
                 <tr data-value="<?php echo $nodoc; ?>" data-change="#document-number" data-form=".receipt-form" data-wrapper-write=".wrapper-table-documents" data-duplicate="false" data-id="<?php echo $id; ?>" >
                     <?php
@@ -44,6 +53,8 @@
                             echo $this->Html->tag('td', $transaction_date, array(
                                 'class' => 'text-center',
                             ));
+                            echo $this->Html->tag('td', $document_type);
+                            echo $this->Html->tag('td', $nopol);
                             echo $this->Html->tag('td', $note);
                     ?>
                 </tr>

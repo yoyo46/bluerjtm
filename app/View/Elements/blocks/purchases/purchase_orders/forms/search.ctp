@@ -25,14 +25,38 @@
                             'empty' => __('- Pilih Supplier -'),
                             'class' => 'form-control chosen-select',
                         ));
+                        echo $this->element('blocks/common/searchs/box_action', array(
+                            '_url' => array(
+                                'controller' => 'purchases', 
+                                'action' => 'purchase_orders', 
+                            ),
+                        ));
                 ?>
             </div>
             <div class="col-sm-6">
                 <?php 
+                        // echo $this->Common->buildInputForm('status', __('Status'), array(
+                        //     'empty' => __('Pilih Status'),
+                        //     'options' => array(
+                        //         'unpaid' => __('Belum dibayar'),
+                        //         'half_paid' => __('Dibayar sebagian'),
+                        //         'paid' => __('Sudah dibayar'),
+                        //     ),
+                        // ));
                         echo $this->Common->buildInputForm('status', __('Status'), array(
                             'empty' => __('Pilih Status'),
                             'options' => array(
-                                'unpaid' => __('Belum dibayar'),
+                                'unposting' => __('Draft'),
+                                'posting' => __('Commit'),
+                                'approved' => __('Disetujui'),
+                                'rejected' => __('Ditolak'),
+                                'void' => __('Void'),
+                            ),
+                        ));
+                        echo $this->Common->buildInputForm('payment_status', __('Status Pembayaran'), array(
+                            'empty' => __('Pilih Status'),
+                            'options' => array(
+                                'none' => __('Belum dibayar'),
                                 'half_paid' => __('Dibayar sebagian'),
                                 'paid' => __('Sudah dibayar'),
                             ),
@@ -51,12 +75,6 @@
                                 'none' => __('Belum diretur'),
                                 'half' => __('Diretur sebagian'),
                                 'full' => __('Sudah Diretur'),
-                            ),
-                        ));
-                        echo $this->element('blocks/common/searchs/box_action', array(
-                            '_url' => array(
-                                'controller' => 'purchases', 
-                                'action' => 'purchase_orders', 
                             ),
                         ));
                 ?>

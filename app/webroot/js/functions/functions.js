@@ -4532,4 +4532,19 @@ $(function() {
         });
         $('.data-on-change').trigger('change');
     }
+
+    if( $('.search-collapse').length > 0 ) {
+        $('.search-collapse').click(function(){
+            var self = $(this);
+
+            $.callChoosen({
+                obj: $('.box-collapse .chosen-select'),
+                init: 'destroy',
+            });
+
+            $.callChoosen({
+                obj: $('.box-collapse .chosen-select'),
+            });
+        });
+    }
 });

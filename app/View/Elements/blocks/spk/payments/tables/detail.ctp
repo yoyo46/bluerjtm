@@ -1,10 +1,8 @@
 <?php 
         $value = !empty($value)?$value:false;
         $data = $this->request->data;
-        $id = $this->Common->filterEmptyField($value, 'PurchaseOrderPayment', 'id', 0);
-        
-        $document_type = $this->Common->filterEmptyField($data, 'PurchaseOrderPayment', 'document_type', 'po');
-        $dataDetail = $this->Common->filterEmptyField($data, 'PurchaseOrderPaymentDetail');
+        $id = $this->Common->filterEmptyField($value, 'SpkPayment', 'id', 0);
+        $dataDetail = $this->Common->filterEmptyField($data, 'SpkPaymentDetail');
 
         $dataColumns = array(
             'nodoc' => array(
@@ -19,7 +17,7 @@
                 'name' => __('Keterangan'),
             ),
             'total' => array(
-                'name' => __('Total PO'),
+                'name' => __('Total Barang'),
                 'class' => 'text-center',
                 'style' => 'width:15%;',
             ),
@@ -50,45 +48,28 @@
 <div class="form-added temp-document-picker">
     <?php 
             if( empty($view) ) {
-                echo $this->Html->tag('div', $this->Html->link($this->Common->icon('plus-square').__(' Ambil PO'), $this->Html->url( array(
-                    'controller'=> 'purchases', 
-                    'action' => 'po_documents',
-                    'payment_id' => $id,
-                    'admin' => false,
-                )), array(
-                    'escape' => false,
-                    'title' => __('Daftar PO'),
-                    'class' => 'btn bg-maroon ajaxCustomModal wrapper-po',
-                    'data-check' => '#supplier-val',
-                    'data-check-named' => 'vendor_id',
-                    'data-check-alert' => __('Mohon pilih supplier terlebih dahulu'),
-                    'style' => 'display:'.(($document_type != 'po')?'none;':'inline-block;'),
-                )), array(
-                    'class' => "form-group",
-                ));
-                echo $this->Html->tag('div', $this->Html->link($this->Common->icon('plus-square').__(' Ambil spk'), $this->Html->url( array(
-                    'controller'=> 'purchases', 
+                echo $this->Html->tag('div', $this->Html->link($this->Common->icon('plus-square').__(' Ambil SPK'), $this->Html->url( array(
+                    'controller'=> 'spk', 
                     'action' => 'spk_documents',
                     'payment_id' => $id,
                     'admin' => false,
                 )), array(
                     'escape' => false,
                     'title' => __('Daftar SPK'),
-                    'class' => 'btn bg-maroon ajaxCustomModal wrapper-spk',
+                    'class' => 'btn bg-maroon ajaxCustomModal',
                     'data-check' => '#supplier-val',
                     'data-check-named' => 'vendor_id',
                     'data-check-alert' => __('Mohon pilih supplier terlebih dahulu'),
-                    'style' => 'display:'.(($document_type != 'spk')?'none;':'inline-block;'),
                 )), array(
-                    'class' => "form-group",
-                ));
+                'class' => "form-group",
+            ));
             }
     ?>
     <div class="temp-document-picker document-calc">
     	<div class="box box-success">
     	    <?php 
     	            echo $this->element('blocks/common/box_header', array(
-    	                'title' => __('Informasi PO'),
+    	                'title' => __('Informasi SPK'),
     	            ));
     	    ?>
     	    <div class="box-body table-responsive">
@@ -104,13 +85,13 @@
 
                                 if(!empty($dataDetail)){
                                     foreach ($dataDetail as $key => $value) {
-                                        $price = $this->Common->filterEmptyField($value, 'PurchaseOrderPaymentDetail', 'price');
+                                        $price = $this->Common->filterEmptyField($value, 'SpkPaymentDetail', 'price');
 
                                         $grandtotal += $price;
                                         $customTotal = $this->Common->getFormatPrice($price);
 
-                                        echo $this->element('blocks/purchases/payments/tables/items', array(
-                                            'modelName' => 'PurchaseOrderPaymentDetail',
+                                        echo $this->element('blocks/spk/payments/tables/items', array(
+                                            'modelName' => 'SpkPaymentDetail',
                                             'value' => $value,
                                             'total' => $customTotal,
                                             'idx' => $key,

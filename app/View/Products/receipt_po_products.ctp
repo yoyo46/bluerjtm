@@ -18,6 +18,10 @@
                 'name' => array(
                     'name' => __('Nama'),
                 ),
+                'note' => array(
+                    'name' => __('Ket.'),
+                    'width' => '10%',
+                ),
                 'unit' => array(
                     'name' => __('Satuan'),
                     'class' => 'text-center',
@@ -54,6 +58,7 @@
                     'po',
                     'admin' => false,
                 ),
+                'module_name' => 'po',
             ));
     ?>
     <div class="box-body table-responsive">
@@ -72,6 +77,7 @@
                                 $detail_id = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'id');
                                 $total_qty = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'total_qty');
                                 $qty = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'qty');
+                                $note = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'note');
                                 $in_qty = $this->Common->filterEmptyField($value, 'PurchaseOrderDetail', 'in_qty', 0);
 
                                 $id = $this->Common->filterEmptyField($value, 'Product', 'id');
@@ -99,6 +105,7 @@
                                 'value' => $id,
                             )));
                             echo $this->Html->tag('td', $name);
+                            echo $this->Html->tag('td', $note);
                             echo $this->Html->tag('td', $unit, array(
                                 'class' => 'text-center',
                             ));

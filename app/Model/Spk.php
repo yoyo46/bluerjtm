@@ -46,6 +46,10 @@ class Spk extends AppModel {
             'className' => 'ProductExpenditure',
             'foreignKey' => 'document_id',
         ),
+        'PurchaseOrderPaymentDetail' => array(
+            'className' => 'PurchaseOrderPaymentDetail',
+            'foreignKey' => 'document_id',
+        ),
     );
 
     var $validate = array(
@@ -217,6 +221,7 @@ class Spk extends AppModel {
     function getData( $find, $options = false, $elements = false ){
         $branch = isset($elements['branch'])?$elements['branch']:true;
         $status = isset($elements['status'])?$elements['status']:'active';
+        $payment_status = isset($elements['payment_status'])?$elements['payment_status']:'active';
         $role = isset($elements['role'])?$elements['role']:false;
         $special_id = isset($elements['special_id'])?$elements['special_id']:false;
         $type = isset($elements['type'])?$elements['type']:false;
@@ -254,7 +259,8 @@ class Spk extends AppModel {
                 break;
             case 'pending-out':
                 $default_options['conditions']['Spk.status'] = 1;
-                $default_options['conditions']['Spk.document_type'] = array( 'internal', 'wht', 'production', 'eksternal' );
+                // $default_options['conditions']['Spk.document_type'] = array( 'internal', 'wht', 'production', 'eksternal' );
+                $default_options['conditions']['Spk.document_type'] = array( 'internal', 'wht', 'production' );
                 $default_options['conditions']['Spk.transaction_status'] = array( 'open' );
                 $default_options['conditions']['Spk.draft_document_status'] = array( 'none', 'half' );
                 break;
@@ -289,6 +295,30 @@ class Spk extends AppModel {
                     $default_options['conditions']['OR']['Spk.transaction_status'] = 'out';
                 } else {
                     $default_options['conditions']['Spk.transaction_status'] = 'out';
+                }
+                break;
+        }
+
+        switch ($payment_status) {
+            case 'unpaid':
+                $default_options['conditions']['Spk.status'] = 1;
+                $default_options['conditions']['Spk.document_type'] = 'eksternal';
+
+                if( !empty($special_id) ) {
+                    $default_options['conditions']['OR']['Spk.id'] = $special_id;
+                    $default_options['conditions']['OR']['Spk.transaction_status'] = array(
+                        'approved', 'finish', 'closed',
+                    );
+                    $default_options['conditions']['OR']['Spk.draft_payment_status'] = array(
+                        'none', 'half_paid'
+                    );
+                } else {
+                    $default_options['conditions']['Spk.transaction_status'] = array(
+                        'approved', 'finish', 'closed',
+                    );
+                    $default_options['conditions']['Spk.draft_payment_status'] = array(
+                        'none', 'half_paid'
+                    );
                 }
                 break;
         }
@@ -450,10 +480,13 @@ class Spk extends AppModel {
     public function _callRefineParams( $data = '', $default_options = false ) {
         $noref = $this->filterEmptyField($data, 'named', 'noref');
         $document_type = $this->filterEmptyField($data, 'named', 'document_type');
+        $nopol = $this->filterEmptyField($data, 'named', 'nopol');
         $nodoc = $this->filterEmptyField($data, 'named', 'nodoc');
         $dateFrom = $this->filterEmptyField($data, 'named', 'DateFrom');
         $dateTo = $this->filterEmptyField($data, 'named', 'DateTo');
         $vendor_id = $this->filterEmptyField($data, 'named', 'vendor_id');
+        $note = $this->filterEmptyField($data, 'named', 'note');
+        $payment_status = $this->filterEmptyField($data, 'named', 'payment_status');
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -472,6 +505,16 @@ class Spk extends AppModel {
         }
         if( !empty($document_type) ) {
             $default_options['conditions']['Spk.document_type'] = $document_type;
+        }
+        if( !empty($nopol) ) {
+            $default_options['conditions']['Spk.nopol LIKE'] = '%'.$nopol.'%';
+        }
+        if( !empty($note) ) {
+            $default_options['conditions']['Spk.note LIKE'] = '%'.$note.'%';
+        }
+        if( !empty($payment_status) ) {
+            $default_options['conditions']['Spk.document_type'] = 'eksternal';
+            $default_options['conditions']['Spk.payment_status'] = $payment_status;
         }
         
         return $default_options;
@@ -557,20 +600,20 @@ class Spk extends AppModel {
 
     function _callVendors ( $status = 'unpaid', $id = false, $document_type = false ) {
         return $this->getData('list', array(
-                'contain' => array(
-                    'Vendor',
-                ),
-                'fields' => array(
-                    'Vendor.id', 'Vendor.name',
-                ),
-                'group' => array(
-                    'Spk.vendor_id',
-                ),
-            ), array(
-                'status' => $status,
-                'special_id' => $id,
-                'type' => $document_type,
-            ));
+            'contain' => array(
+                'Vendor',
+            ),
+            'fields' => array(
+                'Vendor.id', 'Vendor.name',
+            ),
+            'group' => array(
+                'Spk.vendor_id',
+            ),
+        ), array(
+            'payment_status' => $status,
+            'special_id' => $id,
+            'type' => $document_type,
+        ));
     }
 
     function _callMaintenanceCostByTruckMonthly ( $truck_id, $branch_id = null, $monthYear = null ) {

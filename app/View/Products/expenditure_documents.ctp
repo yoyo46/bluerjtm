@@ -41,7 +41,7 @@
                                     'date' => 'd/m/Y',
                                 ));
                                 $document_type = $this->Common->filterEmptyField($value, 'Spk', 'document_type');
-                                $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol', '-');
+                                $nopol = $this->Common->filterEmptyField($value, 'Spk', 'nopol', '-');
                                 $driver = $this->Common->filterEmptyField($value, 'Driver', 'name', '-');
                                 $document_type = ucwords($document_type);
                 ?>

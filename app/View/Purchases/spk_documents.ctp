@@ -17,7 +17,7 @@
                     'name' => __('Keterangan'),
                 ),
                 'total' => array(
-                    'name' => __('Total PO'),
+                    'name' => __('Total SPK'),
                     'class' => 'text-center',
                 ),
                 'paid' => array(
@@ -28,7 +28,7 @@
 
             $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
-            echo $this->element('blocks/purchases/payments/forms/search_po');
+            echo $this->element('blocks/spk/payments/forms/search_spk');
     ?>
     <div class="box-body table-responsive">
         <table class="table table-hover document-picker">
@@ -41,13 +41,13 @@
                 <?php
                         if(!empty($values)){
                             foreach ($values as $key => $value) {
-                                $id = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'id');
-                                $nodoc = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'nodoc');
-                                $transaction_date = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'transaction_date');
-                                $note = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'note');
-                                $grandtotal = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'grandtotal');
-                                $total_paid = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'total_paid');
-                                $total_remain = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'total_remain');
+                                $id = $this->Common->filterEmptyField($value, 'Spk', 'id');
+                                $nodoc = $this->Common->filterEmptyField($value, 'Spk', 'nodoc');
+                                $transaction_date = $this->Common->filterEmptyField($value, 'Spk', 'transaction_date');
+                                $note = $this->Common->filterEmptyField($value, 'Spk', 'note');
+                                $grandtotal = $this->Common->filterEmptyField($value, 'Spk', 'grandtotal');
+                                $total_paid = $this->Common->filterEmptyField($value, 'Spk', 'total_paid');
+                                $total_remain = $this->Common->filterEmptyField($value, 'Spk', 'total_remain');
 
                                 if( !empty($total_remain) ) {
                                     $transaction_date = $this->Common->formatDate($transaction_date, 'd/m/Y');
@@ -113,7 +113,7 @@
             echo $this->element('pagination', array(
                 'options' => array(
                     'urlClass' => 'ajaxCustomModal',
-                    'urlTitle' => __('Daftar PO'),
+                    'urlTitle' => __('Daftar SPK'),
                 ),
             ));
     ?>

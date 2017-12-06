@@ -20,6 +20,10 @@
                 'name' => __('Status'),
                 'class' => 'text-center',
             ),
+            'payment_status' => array(
+                'name' => __('Pembayaran'),
+                'class' => 'text-center',
+            ),
             'penerimaan' => array(
                 'name' => __('Penerimaan'),
                 'class' => 'text-center',
@@ -86,6 +90,7 @@
                             $transaction_status = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'transaction_status');
                             $draft_receipt_status = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'draft_receipt_status');
                             $draft_retur_status = $this->Common->filterEmptyField($value, 'PurchaseOrder', 'draft_retur_status');
+                            $paymentStatus = $this->Common->_callTransactionStatus($value, 'PurchaseOrder', 'payment_status');
 
                             $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
 
@@ -149,6 +154,9 @@
                         echo $this->Html->tag('td', $customStatus, array(
                             'class' => 'text-center',
                         ));
+                        echo $this->Html->tag('td', $paymentStatus, array(
+                            'class' => 'text-center',
+                        ));
                         echo $this->Html->tag('td', $customReceipt, array(
                             'class' => 'text-center',
                         ));
@@ -165,7 +173,7 @@
                     } else {
                          echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '9'
+                            'colspan' => '10'
                         )));
                     }
             ?>

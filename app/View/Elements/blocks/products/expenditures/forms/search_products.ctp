@@ -1,5 +1,6 @@
 <?php 
         $nodoc = !empty($nodoc)?$nodoc:false;
+        $module_name = !empty($module_name)?$module_name:false;
         $transaction_id = !empty($transaction_id)?$transaction_id:0;
         $urlForm = !empty($urlForm)?$urlForm:array(
             'controller' => 'products',
@@ -40,6 +41,10 @@
     <div class="col-sm-6">
         <?php 
                 echo $this->Common->buildInputForm('name', __('Nama Barang'));
+
+                if( $module_name == 'po' ) {
+                    echo $this->Common->buildInputForm('note', __('Ket. Barang'));
+                }
         ?>
     </div>
 </div>

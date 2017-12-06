@@ -240,7 +240,15 @@ class RjProductComponent extends Component {
             );
             $detail['ProductHistory'] = $stock_history;
             $stock = $stock_history;
-            $stock['type'] = in_array($document_type, array( 'spk' ))?'barang_bekas':'default';
+
+            if( in_array($document_type, array( 'spk' )) ) {
+                $price_service = Common::hashEmptyField($documentDetail, 'SpkProduct.price_service', 0);
+                
+                $stock['price'] = $detail['ProductHistory']['price'] = $price_service;
+                $stock['type'] = 'barang_bekas';
+            } else {
+                $stock['type'] = 'default';
+            }
 
             if($qty > $stock_qty ) {
                 $detail[$modelDetail]['out_stock'] = true;
@@ -1159,6 +1167,10 @@ class RjProductComponent extends Component {
                         }
 
                         $dataDetail[$key] = $this->_callStock('product_expenditure', $data, $dataDetail[$key], 'out', 'ProductExpenditure');
+
+                        if( empty($is_serial_number) && empty($dataDetail[$key]['ProductExpenditureDetail']['Product']['ProductStock']) ) {
+                            $dataDetail[$key]['ProductExpenditureDetail']['sn_match'] = true;
+                        }
                     }
 
                     $total += $qty;

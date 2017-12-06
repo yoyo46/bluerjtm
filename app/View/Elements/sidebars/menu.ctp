@@ -1386,7 +1386,7 @@
                             'receipt_reports', 'tire_reports', 'spk_reports',
                             'maintenance_cost_report', 'adjustment',
                             'adjustment_report', 'min_stock_report',
-                            'retur',
+                            'retur', 'spk_payment',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1465,6 +1465,14 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'adjustment' )?'active':'',
                             ));
+                            // echo $this->Html->tag('li', $this->Html->link(__('%s Pembayaran SPK Eksternal', $this->Common->icon('angle-double-right')), array(
+                            //     'controller' => 'spk',
+                            //     'action' => 'payments'
+                            // ), array(
+                            //     'escape' => false
+                            // )), array(
+                            //     'class' => ( !empty($active_menu) && $active_menu == 'spk_payment' )?'active':'',
+                            // ));
                             echo $this->Html->tag('li', $this->Html->link(__('%s Kartu Stok', $this->Common->icon('angle-double-right')), array(
                                 'controller' => 'products',
                                 'action' => 'stock_cards'

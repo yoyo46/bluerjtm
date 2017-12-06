@@ -1,6 +1,6 @@
 <?php
-class PurchaseOrderPayment extends AppModel {
-	var $name = 'PurchaseOrderPayment';
+class SpkPayment extends AppModel {
+	var $name = 'SpkPayment';
 
     var $belongsTo = array(
         'User' => array(
@@ -14,9 +14,9 @@ class PurchaseOrderPayment extends AppModel {
     );
 
     var $hasMany = array(
-        'PurchaseOrderPaymentDetail' => array(
-            'className' => 'PurchaseOrderPaymentDetail',
-            'foreignKey' => 'purchase_order_payment_id',
+        'SpkPaymentDetail' => array(
+            'className' => 'SpkPaymentDetail',
+            'foreignKey' => 'spk_payment_id',
         ),
     );
 
@@ -59,7 +59,7 @@ class PurchaseOrderPayment extends AppModel {
 
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
-        $this->virtualFields['order'] = 'CASE WHEN PurchaseOrderPayment.transaction_status = \'void\' THEN 2 WHEN PurchaseOrderPayment.transaction_status = \'posting\' THEN 1 ELSE 0 END';
+        $this->virtualFields['order'] = 'CASE WHEN SpkPayment.transaction_status = \'void\' THEN 2 WHEN SpkPayment.transaction_status = \'posting\' THEN 1 ELSE 0 END';
     }
 
 	function getData( $find, $options = false, $elements = false ){
@@ -69,36 +69,36 @@ class PurchaseOrderPayment extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'PurchaseOrderPayment.order' => 'ASC',
-                'PurchaseOrderPayment.status' => 'DESC',
-                'PurchaseOrderPayment.created' => 'DESC',
-                'PurchaseOrderPayment.id' => 'DESC',
+                'SpkPayment.order' => 'ASC',
+                'SpkPayment.status' => 'DESC',
+                'SpkPayment.created' => 'DESC',
+                'SpkPayment.id' => 'DESC',
             ),
             'fields' => array(),
         );
 
         switch ($status) {
             case 'active':
-                $default_options['conditions']['PurchaseOrderPayment.status'] = 1;
-                $default_options['conditions']['PurchaseOrderPayment.transaction_status <>'] = 'void';
+                $default_options['conditions']['SpkPayment.status'] = 1;
+                $default_options['conditions']['SpkPayment.transaction_status <>'] = 'void';
                 break;
             case 'unposting':
-                $default_options['conditions']['PurchaseOrderPayment.status'] = 1;
-                $default_options['conditions']['PurchaseOrderPayment.transaction_status'] = 'unposting';
+                $default_options['conditions']['SpkPayment.status'] = 1;
+                $default_options['conditions']['SpkPayment.transaction_status'] = 'unposting';
                 break;
             case 'void-active':
-                $default_options['conditions']['PurchaseOrderPayment.status'] = 1;
+                $default_options['conditions']['SpkPayment.status'] = 1;
                 break;
             case 'non-active':
-                $default_options['conditions']['PurchaseOrderPayment.status'] = 0;
+                $default_options['conditions']['SpkPayment.status'] = 0;
                 break;
             default:
-                $default_options['conditions']['PurchaseOrderPayment.status'] = array( 0, 1 );
+                $default_options['conditions']['SpkPayment.status'] = array( 0, 1 );
                 break;
         }
 
         if( !empty($branch) ) {
-            $default_options['conditions']['PurchaseOrderPayment.branch_id'] = Configure::read('__Site.config_branch_id');
+            $default_options['conditions']['SpkPayment.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
         if(!empty($options['conditions'])){
@@ -125,7 +125,7 @@ class PurchaseOrderPayment extends AppModel {
     function getMerge( $data, $id ){
         $data_merge = $this->getData('first', array(
             'conditions' => array(
-                'PurchaseOrderPayment.id' => $id
+                'SpkPayment.id' => $id
             ),
         ));
 
@@ -144,18 +144,18 @@ class PurchaseOrderPayment extends AppModel {
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
-                $default_options['conditions']['DATE_FORMAT(PurchaseOrderPayment.transaction_date, \'%Y-%m-%d\') >='] = $dateFrom;
+                $default_options['conditions']['DATE_FORMAT(SpkPayment.transaction_date, \'%Y-%m-%d\') >='] = $dateFrom;
             }
 
             if( !empty($dateTo) ) {
-                $default_options['conditions']['DATE_FORMAT(PurchaseOrderPayment.transaction_date, \'%Y-%m-%d\') <='] = $dateTo;
+                $default_options['conditions']['DATE_FORMAT(SpkPayment.transaction_date, \'%Y-%m-%d\') <='] = $dateTo;
             }
         }
         if( !empty($nodoc) ) {
-            $default_options['conditions']['PurchaseOrderPayment.nodoc LIKE'] = '%'.$nodoc.'%';
+            $default_options['conditions']['SpkPayment.nodoc LIKE'] = '%'.$nodoc.'%';
         }
         if( !empty($vendor_id) ) {
-            $default_options['conditions']['PurchaseOrderPayment.vendor_id'] = $vendor_id;
+            $default_options['conditions']['SpkPayment.vendor_id'] = $vendor_id;
         }
         
         return $default_options;
@@ -164,25 +164,25 @@ class PurchaseOrderPayment extends AppModel {
     function generateNoId(){
         $default_id = 1;
         $branch_code = Configure::read('__Site.Branch.code');
-        $format_id = sprintf('POPAID-%s-%s-', $branch_code, date('y'));
+        $format_id = sprintf('SPKPAID-%s-%s-', $branch_code, date('y'));
 
         $last_data = $this->getData('first', array(
             'order' => array(
-                'PurchaseOrderPayment.nodoc' => 'DESC'
+                'SpkPayment.nodoc' => 'DESC'
             ),
             'fields' => array(
-                'PurchaseOrderPayment.nodoc'
+                'SpkPayment.nodoc'
             ),
             'conditions' => array(
-                'PurchaseOrderPayment.nodoc LIKE' => $format_id.'%',
+                'SpkPayment.nodoc LIKE' => $format_id.'%',
             ),
         ), array(
             'status' => 'all',
             'branch' => false,
         ));
 
-        if(!empty($last_data['PurchaseOrderPayment']['nodoc'])){
-            $str_arr = explode('-', $last_data['PurchaseOrderPayment']['nodoc']);
+        if(!empty($last_data['SpkPayment']['nodoc'])){
+            $str_arr = explode('-', $last_data['SpkPayment']['nodoc']);
             $last_arr = count($str_arr)-1;
             $default_id = intval($str_arr[$last_arr]+1);
         }
@@ -193,11 +193,11 @@ class PurchaseOrderPayment extends AppModel {
     }
 
     function doSave( $data, $value = false, $id = false ) {
-        $msg = __('Gagal melakukan pembayaran PO');
+        $msg = __('Gagal melakukan pembayaran SPK');
 
         if( !empty($data) ) {   
             if( empty($id) ){
-                $data['PurchaseOrderPayment']['nodoc'] = $this->generateNoId();
+                $data['SpkPayment']['nodoc'] = $this->generateNoId();
             }
 
             $flag = $this->saveAll($data, array(
@@ -206,14 +206,14 @@ class PurchaseOrderPayment extends AppModel {
             ));
 
             if( !empty($flag) ) {
-                $flag = $this->PurchaseOrderPaymentDetail->updateAll(array(
-                    'PurchaseOrderPaymentDetail.status' => 0,
+                $flag = $this->SpkPaymentDetail->updateAll(array(
+                    'SpkPaymentDetail.status' => 0,
                 ), array(
-                    'PurchaseOrderPaymentDetail.purchase_order_payment_id' => $id,
+                    'SpkPaymentDetail.spk_payment_id' => $id,
                 ));
 
                 if( !empty($flag) ) {
-                    $msg = __('Berhasil melakukan pembayaran PO');
+                    $msg = __('Berhasil melakukan pembayaran SPK');
                     $this->saveAll($data, array(
                         'deep' => true,
                     ));
@@ -260,14 +260,14 @@ class PurchaseOrderPayment extends AppModel {
     }
 
     function _callSetJournalPayment ( $id, $data ) {
-        $transaction_status = $this->filterEmptyField($data, 'PurchaseOrderPayment', 'transaction_status');
+        $transaction_status = $this->filterEmptyField($data, 'SpkPayment', 'transaction_status');
 
         if( $transaction_status == 'posting' ) {
-            $vendor_id = $this->filterEmptyField($data, 'PurchaseOrderPayment', 'vendor_id');
-            $grandtotal = $this->filterEmptyField($data, 'PurchaseOrderPayment', 'grandtotal');
-            $transaction_date = $this->filterEmptyField($data, 'PurchaseOrderPayment', 'transaction_date');
-            $nodoc = $this->filterEmptyField($data, 'PurchaseOrderPayment', 'nodoc');
-            $coa_id = $this->filterEmptyField($data, 'PurchaseOrderPayment', 'coa_id');
+            $vendor_id = $this->filterEmptyField($data, 'SpkPayment', 'vendor_id');
+            $grandtotal = $this->filterEmptyField($data, 'SpkPayment', 'grandtotal');
+            $transaction_date = $this->filterEmptyField($data, 'SpkPayment', 'transaction_date');
+            $nodoc = $this->filterEmptyField($data, 'SpkPayment', 'nodoc');
+            $coa_id = $this->filterEmptyField($data, 'SpkPayment', 'coa_id');
 
             $vendor = $this->Vendor->getMerge(array(), $vendor_id);
             $vendor_name = $this->filterEmptyField($vendor, 'Vendor', 'name');
@@ -276,11 +276,11 @@ class PurchaseOrderPayment extends AppModel {
             $hutang_usaha_coa_id = !empty($coaHutangUsaha['CoaSettingDetail']['coa_id'])?$coaHutangUsaha['CoaSettingDetail']['coa_id']:false;
 
             $this->User->Journal->deleteJournal($id, array(
-                'po_payment',
+                'spk_payment',
             ));
 
-            $titleJournal = sprintf(__('Pembayaran PO kepada supplier %s '), $vendor_name);
-            $titleJournal = $this->filterEmptyField($data, 'PurchaseOrderPayment', 'note', $titleJournal);
+            $titleJournal = sprintf(__('Pembayaran SPK kepada supplier %s '), $vendor_name);
+            $titleJournal = $this->filterEmptyField($data, 'SpkPayment', 'note', $titleJournal);
 
             $this->User->Journal->setJournal($grandtotal, array(
                 'credit' => $coa_id,
@@ -290,7 +290,7 @@ class PurchaseOrderPayment extends AppModel {
                 'document_id' => $id,
                 'title' => $titleJournal,
                 'document_no' => $nodoc,
-                'type' => 'po_payment',
+                'type' => 'spk_payment',
             ));
         }
     }
@@ -299,40 +299,53 @@ class PurchaseOrderPayment extends AppModel {
         $result = false;
 
         if ( !empty($value) ) {
-            $nodoc = $this->filterEmptyField($value, 'PurchaseOrderPayment', 'nodoc');
-            $grandtotal = $this->filterEmptyField($value, 'PurchaseOrderPayment', 'grandtotal');
+            $nodoc = $this->filterEmptyField($value, 'SpkPayment', 'nodoc');
+            $grandtotal = $this->filterEmptyField($value, 'SpkPayment', 'grandtotal');
+            $transaction_status = $this->filterEmptyField($value, 'SpkPayment', 'transaction_status');
 
-            $data['PurchaseOrderPayment']['id'] = $id;
-            $data['PurchaseOrderPayment']['transaction_status'] = 'void';
+            $data['SpkPayment']['id'] = $id;
+            $data['SpkPayment']['transaction_status'] = 'void';
             
-            $value = $this->PurchaseOrderPaymentDetail->getMerge($value, $id);
-            $details = $this->filterEmptyField($value, 'PurchaseOrderPaymentDetail');
+            $value = $this->SpkPaymentDetail->getMerge($value, $id);
+            $details = $this->filterEmptyField($value, 'SpkPaymentDetail');
 
             if( !empty($details) ) {
                 foreach ($details as $key => $detail) {
-                    $detail_id = $this->filterEmptyField($detail, 'PurchaseOrderPaymentDetail', 'id');
-                    $document_id = $this->filterEmptyField($detail, 'PurchaseOrderPaymentDetail', 'document_id');
-                    $paid = $this->PurchaseOrderPaymentDetail->_callPaidPO($document_id, $id);
+                    $detail_id = $this->filterEmptyField($detail, 'SpkPaymentDetail', 'id');
+                    $spk_id = $this->filterEmptyField($detail, 'SpkPaymentDetail', 'spk_id');
+                    $draft_paid = $this->SpkPaymentDetail->_callPaidSpk($spk_id, $id);
 
-                    if( empty($paid) ) {
-                        $status = 'approved';
+                    if( empty($draft_paid) ) {
+                        $draft_status = 'none';
                     } else {
-                        $status = 'half_paid';
+                        $draft_status = 'half_paid';
                     }
 
-                    $data['PurchaseOrderPaymentDetail'][$key] = array(
-                        'PurchaseOrderPaymentDetail' => array(
+                    $data['SpkPaymentDetail'][$key] = array(
+                        'SpkPaymentDetail' => array(
                             'id' => $detail_id,
                         ),
-                        'PurchaseOrder' => array(
-                            'id' => $document_id,
-                            'transaction_status' => $status,
+                        'Spk' => array(
+                            'id' => $spk_id,
+                            'draft_payment_status' => $draft_status,
                         ),
                     );
+
+                    if( $transaction_status == 'posting' ) {
+                        $paid = $this->SpkPaymentDetail->_callPaidSpk($spk_id, $id, 'paid-posting');
+
+                        if( empty($paid) ) {
+                            $status = 'none';
+                        } else {
+                            $status = 'half_paid';
+                        }
+
+                        $data['SpkPaymentDetail'][$key]['Spk']['payment_status'] = $status;
+                    }
                 }
             }
 
-            $default_msg = sprintf(__('menghapus pembayaran PO #%s'), $nodoc);
+            $default_msg = sprintf(__('menghapus pembayaran SPK #%s'), $nodoc);
 
             if($this->saveAll($data, array(
                 'deep' => true,
@@ -360,7 +373,7 @@ class PurchaseOrderPayment extends AppModel {
             }
         } else {
             $result = array(
-                'msg' => __('Gagal menghapus pembayaran PO. Data tidak ditemukan'),
+                'msg' => __('Gagal menghapus pembayaran SPK. Data tidak ditemukan'),
                 'status' => 'error',
             );
         }

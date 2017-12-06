@@ -28,6 +28,10 @@
                 'name' => __('Status'),
                 'class' => 'text-center',
             ),
+            'payment_status' => array(
+                'name' => __('Pembayaran'),
+                'class' => 'text-center',
+            ),
         );
 
         // if( !empty($spk_internal_policy) && $spk_internal_policy == 'receipt' ) {
@@ -89,6 +93,12 @@
                             ));
                             $receipt_status = $this->Common->filterEmptyField($value, 'Spk', 'receipt_status', 'none');
                             $transaction_status = $this->Common->filterEmptyField($value, 'Spk', 'transaction_status');
+
+                            if( $document_type == 'eksternal' ) {
+                                $paymentStatus = $this->Common->_callTransactionStatus($value, 'Spk', 'payment_status');
+                            } else {
+                                $paymentStatus = 'N/A';
+                            }
 
                             $document_type = ucwords($document_type);
                             $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name', '-');
@@ -152,6 +162,9 @@
                         echo $this->Html->tag('td', $customStatus, array(
                             'class' => 'text-center',
                         ));
+                        echo $this->Html->tag('td', $paymentStatus, array(
+                            'class' => 'text-center',
+                        ));
 
                         // if( !empty($spk_internal_policy) && $spk_internal_policy == 'receipt' ) {
                         //     echo $this->Html->tag('td', $statusReceipt, array(
@@ -169,7 +182,7 @@
                     } else {
                          echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '10'
+                            'colspan' => '11'
                         )));
                     }
             ?>

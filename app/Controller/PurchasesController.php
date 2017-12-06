@@ -479,6 +479,7 @@ class PurchasesController extends AppController {
     }
 
     function payment_add(){
+        $this->loadModel('Spk');
         $this->set('sub_module_title', __('Pembayaran PO'));
 
         $data = $this->request->data;
@@ -495,6 +496,7 @@ class PurchasesController extends AppController {
     }
 
     public function payment_edit( $id = false ) {
+        $this->loadModel('Spk');
         $this->set('sub_module_title', __('Edit Pembayaran PO'));
 
         $value = $this->PurchaseOrder->PurchaseOrderPaymentDetail->PurchaseOrderPayment->getData('first', array(
@@ -507,7 +509,7 @@ class PurchasesController extends AppController {
 
         if( !empty($value) ) {
             $value = $this->PurchaseOrder->PurchaseOrderPaymentDetail->getMerge($value, $id);
-            $purchase_order_id = Set::extract('/PurchaseOrderPaymentDetail/PurchaseOrderPaymentDetail/purchase_order_id', $value);
+            $document_id = Set::extract('/PurchaseOrderPaymentDetail/PurchaseOrderPaymentDetail/document_id', $value);
 
             $data = $this->request->data;
             $dataSave = $this->RjPurchase->_callBeforeSavePayment($data, $id);
@@ -517,7 +519,7 @@ class PurchasesController extends AppController {
                 'action' => 'payments',
                 'admin' => false,
             ));
-            $this->request->data = $this->RjPurchase->_callBeforeRenderPayment($this->request->data, $purchase_order_id);
+            $this->request->data = $this->RjPurchase->_callBeforeRenderPayment($this->request->data, $document_id);
 
             $this->set('active_menu', 'Pembayaran PO');
             $this->set(compact(
@@ -542,8 +544,8 @@ class PurchasesController extends AppController {
 
         if( !empty($value) ) {
             $value = $this->PurchaseOrder->PurchaseOrderPaymentDetail->PurchaseOrderPayment->PurchaseOrderPaymentDetail->getMerge($value, $id);
-            $purchase_order_id = Set::extract('/PurchaseOrderPaymentDetail/PurchaseOrderPaymentDetail/purchase_order_id', $value);
-            $this->request->data = $this->RjPurchase->_callBeforeRenderPayment($value, $purchase_order_id);
+            $document_id = Set::extract('/PurchaseOrderPaymentDetail/PurchaseOrderPaymentDetail/document_id', $value);
+            $this->request->data = $this->RjPurchase->_callBeforeRenderPayment($value, $document_id);
 
             $this->set('view', 'detail');
             $this->set('active_menu', 'Purchase Order');
@@ -600,6 +602,7 @@ class PurchasesController extends AppController {
 
     function po_documents () {
         $payment_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'payment_id');
+        $special_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'special_id');
         $vendor_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'vendor_id');
         
         $params = $this->MkCommon->_callRefineParams($this->params);
@@ -611,7 +614,7 @@ class PurchasesController extends AppController {
         ));
 
         $this->paginate = $this->PurchaseOrder->getData('paginate', $options, array(
-            'status' => 'unpaid',
+            'payment_status' => 'unpaid',
         ));
         $values = $this->paginate('PurchaseOrder');
 
@@ -982,5 +985,63 @@ class PurchasesController extends AppController {
                 $this->redirect(array('action'=>'supplier_quotation_import'));
             }
         }
+    }
+
+    function spk_documents () {
+        $this->loadModel('Spk');
+        $payment_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'payment_id');
+        $vendor_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'vendor_id');
+        
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Spk->_callRefineParams($params, array(
+            'conditions' => array(
+                'Spk.vendor_id' => $vendor_id,
+            ),
+            'limit' => 10,
+        ));
+
+        $this->paginate = $this->Spk->getData('paginate', $options, array(
+            'payment_status' => 'unpaid',
+        ));
+        $values = $this->paginate('Spk');
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'Spk', 'id');
+                $vendor_id = $this->MkCommon->filterEmptyField($value, 'Spk', 'vendor_id');
+
+                $grandtotal = $this->Spk->SpkProduct->_callGrandtotal($id);
+
+                $paid = $this->Spk->PurchaseOrderPaymentDetail->_callPaidSpk($id, $payment_id);
+                $total_remain = $grandtotal - $paid;
+                $value['Spk']['total_paid'] = ($paid <= 0)?0:$paid;
+                $value['Spk']['total_remain'] = ($total_remain <= 0)?0:$total_remain;
+                $value['Spk']['grandtotal'] = $grandtotal;
+
+                $value = $this->Spk->Vendor->getMerge($value, $vendor_id);
+                $values[$key] = $value;
+            }
+        }
+
+        $this->set('module_title', __('spk'));
+        $this->set(compact(
+            'values', 'payment_id', 'vendor_id'
+        ));
+    }
+
+    function payment_choose_documents ( $type = false ) {
+        switch ($type) {
+            case 'spk':
+                $vendors = $this->PurchaseOrder->PurchaseOrderPaymentDetail->Spk->_callVendors('unpaid');
+                break;
+            default:
+                $vendors = $this->PurchaseOrder->_callVendors('unpaid');
+                break;
+        }
+
+        $this->set(compact(
+            'vendors', 'type'
+        ));
+        $this->render('/Elements/blocks/purchases/payments/forms/payment_choose_documents');
     }
 }
