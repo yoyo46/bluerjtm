@@ -142,6 +142,7 @@ class ProductAdjustmentDetail extends AppModel {
         $code = $this->filterEmptyField($data, 'named', 'code');
         $name = $this->filterEmptyField($data, 'named', 'name');
         $group = $this->filterEmptyField($data, 'named', 'group');
+        $serial_number = $this->filterEmptyField($data, 'named', 'serial_number');
         $sort = $this->filterEmptyField($data, 'named', 'sort', false, array(
             'addslashes' => true,
         ));
@@ -157,6 +158,24 @@ class ProductAdjustmentDetail extends AppModel {
         if( !empty($group) ) {
             $default_options['conditions']['Product.product_category_id'] = $group;
             $default_options['contain'][] = 'Product';
+        }
+        if( !empty($serial_number) ) {
+            $this->unBindModel(array(
+                'hasMany' => array(
+                    'ProductAdjustmentDetailSerialNumber'
+                )
+            ));
+            $this->bindModel(array(
+                'hasOne' => array(
+                    'ProductAdjustmentDetailSerialNumber' => array(
+                        'className' => 'ProductAdjustmentDetailSerialNumber',
+                        'foreignKey' => 'product_adjustment_detail_id',
+                    ),
+                )
+            ), false);
+
+            $default_options['conditions']['ProductAdjustmentDetailSerialNumber.serial_number LIKE'] = '%'.$serial_number.'%';
+            $default_options['contain'][] = 'ProductAdjustmentDetailSerialNumber';
         }
 
         if( !empty($sort) ) {

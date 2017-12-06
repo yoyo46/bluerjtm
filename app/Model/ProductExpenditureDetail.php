@@ -275,6 +275,7 @@ class ProductExpenditureDetail extends AppModel {
         $name = $this->filterEmptyField($data, 'named', 'name');
         $group = $this->filterEmptyField($data, 'named', 'group');
         $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
+        $serial_number = !empty($data['named']['serial_number'])?$data['named']['serial_number']:false;
         $sort = !empty($data['named']['sort'])?$data['named']['sort']:false;
         $direction = !empty($data['named']['direction'])?$data['named']['direction']:false;
 
@@ -296,6 +297,10 @@ class ProductExpenditureDetail extends AppModel {
             $default_options['contain'][] = 'Spk';
             $default_options['contain'][] = 'Truck';
             $bind = true;
+        }
+        if( !empty($serial_number) ) {
+            $default_options['conditions']['ProductExpenditureDetailSerialNumber.serial_number LIKE'] = '%'.$serial_number.'%';
+            $default_options['contain'][] = 'ProductExpenditureDetailSerialNumber';
         }
 
         if( !empty($sort) ) {

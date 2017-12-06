@@ -81,6 +81,59 @@ class ProductReceiptDetailSerialNumber extends AppModel {
         return $result;
     }
 
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $code = $this->filterEmptyField($data, 'named', 'code');
+        $name = $this->filterEmptyField($data, 'named', 'name');
+        $group = $this->filterEmptyField($data, 'named', 'group');
+        $serial_number = $this->filterEmptyField($data, 'named', 'serial_number');
+        $sort = $this->filterEmptyField($data, 'named', 'sort', false, array(
+            'addslashes' => true,
+        ));
+
+        if( !empty($code) ) {
+            $default_options['conditions']['Product.code LIKE'] = '%'.$code.'%';
+            $default_options['contain'][] = 'Product';
+        }
+        if( !empty($name) ) {
+            $default_options['conditions']['Product.name LIKE'] = '%'.$name.'%';
+            $default_options['contain'][] = 'Product';
+        }
+        if( !empty($group) ) {
+            $default_options['conditions']['Product.product_category_id'] = $group;
+            $default_options['contain'][] = 'Product';
+        }
+        if( !empty($serial_number) ) {
+            $default_options['conditions']['ProductReceiptDetailSerialNumber.serial_number LIKE'] = '%'.$serial_number.'%';
+        }
+
+        if( !empty($sort) ) {
+            $sortBranch = strpos($sort, 'Branch.');
+            $sortProduct = strpos($sort, 'Product.');
+
+            if( is_numeric($sortBranch) ) {
+                $this->bindModel(array(
+                    'hasOne' => array(
+                        'Branch' => array(
+                            'className' => 'Branch',
+                            'foreignKey' => false,
+                            'conditions' => array(
+                                'ProductReceipt.branch_id = Branch.id'
+                            ),
+                        ),
+                    )
+                ), false);
+
+                $default_options['contain'][] = 'ProductReceipt';
+                $default_options['contain'][] = 'Branch';
+            }
+            if( is_numeric($sortProduct) ) {
+                $default_options['contain'][] = 'Product';
+            }
+        }
+        
+        return $default_options;
+    }
+
     function doSave( $data, $id = false, $session_id = false ) {
         $result = false;
         $msg = __('menyimpan no. seri');

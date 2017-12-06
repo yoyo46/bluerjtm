@@ -1571,7 +1571,8 @@ class RmReportComponent extends Component {
 				);
 			}
 
-			if( empty($nextPage) ) {
+			// if( empty($nextPage) ) {
+			if( !empty($view) ) {
 				$result[$key+1] = array(
 					__('No Dokumen') => array(
                 		'field_model' => 'ProductExpenditure.nodoc',
@@ -1635,7 +1636,7 @@ class RmReportComponent extends Component {
 	}
 
 	function _callDataReceipt_reports ( $params, $limit = 30, $offset = 0, $view = false ) {
-		$this->controller->loadModel('ProductReceiptDetail');
+		$this->controller->loadModel('ProductReceiptDetailSerialNumber');
 
         $params_named = Common::hashEmptyField($params, 'named', array(), array(
         	'strict' => true,
@@ -1644,31 +1645,33 @@ class RmReportComponent extends Component {
 		$params = $this->MkCommon->_callRefineParams($params);
 
 		$options = array(
+			'contain' => array(
+				'ProductReceipt',
+			),
             'order'=> array(
                 'ProductReceipt.status' => 'DESC',
                 'ProductReceipt.created' => 'DESC',
                 'ProductReceipt.id' => 'DESC',
-                'ProductReceiptDetail.id' => 'ASC',
+                'ProductReceiptDetailSerialNumber.id' => 'ASC',
             ),
         	'offset' => $offset,
         	'limit' => $limit,
         );
-		$options = $this->controller->ProductReceiptDetail->ProductReceipt->_callRefineParams($params, $options);
-		$options = $this->controller->ProductReceiptDetail->_callRefineParams($params, $options);
+		$options = $this->controller->ProductReceiptDetailSerialNumber->ProductReceipt->_callRefineParams($params, $options);
+		$options = $this->controller->ProductReceiptDetailSerialNumber->_callRefineParams($params, $options);
         $options = $this->MkCommon->getConditionGroupBranch( $params, 'ProductReceipt', $options );
 
-		$this->controller->paginate	= $this->controller->ProductReceiptDetail->getData('paginate', $options, array(
-			'branch' => false,
-			'header' => true,
+		$this->controller->paginate	= $this->controller->ProductReceiptDetailSerialNumber->getData('paginate', $options, array(
+			'status' => 'confirm',
 		));
-		$data = $this->controller->paginate('ProductReceiptDetail');
+		$data = $this->controller->paginate('ProductReceiptDetailSerialNumber');
 		$result = array();
 
 		$last_data = end($data);
-		$last_id = Common::hashEmptyField($last_data, 'ProductReceiptDetail.id');
+		$last_id = Common::hashEmptyField($last_data, 'ProductReceiptDetailSerialNumber.id');
 
 		$paging = $this->controller->params->paging;
-        $nextPage = Common::hashEmptyField($paging, 'ProductReceiptDetail.nextPage');
+        $nextPage = Common::hashEmptyField($paging, 'ProductReceiptDetailSerialNumber.nextPage');
 
         $totalQty = 0;
         $totalPrice = 0;
@@ -1680,14 +1683,14 @@ class RmReportComponent extends Component {
 
 			foreach ($data as $key => $value) {
                 $value = $this->RjProduct->_callGetDocReceipt($value);
-		        $value = $this->controller->ProductReceiptDetail->getMergeList($value, array(
+		        $value = $this->controller->ProductReceiptDetailSerialNumber->getMergeList($value, array(
 		            'contain' => array(
 		            	'Product' => array(
 		                	'ProductUnit',
 	            		),
 		            ),
 		        ));
-		        $value = $this->controller->ProductReceiptDetail->ProductReceipt->getMergeList($value, array(
+		        $value = $this->controller->ProductReceiptDetailSerialNumber->ProductReceipt->getMergeList($value, array(
 		            'contain' => array(
 		            	'Branch',
                 		'Employe' => array(
@@ -1720,9 +1723,10 @@ class RmReportComponent extends Component {
                 $document_type = Common::hashEmptyField($value, 'ProductReceipt.document_type');
                 $customStatus = $this->MkCommon->_callTransactionStatus($value, 'ProductReceipt', 'transaction_status', $view);
                 
-                $qty = Common::hashEmptyField($value, 'ProductReceiptDetail.qty', 0, array(
+                $qty = Common::hashEmptyField($value, 'ProductReceiptDetailSerialNumber.qty', 1, array(
                 	'strict' => true,
             	));
+                $serial_number = Common::hashEmptyField($value, 'ProductReceiptDetailSerialNumber.serial_number');
 
                 $document_nodoc = Common::hashEmptyField($value, 'Document.nodoc');
                 $branch = Common::hashEmptyField($value, 'Branch.code');
@@ -1821,9 +1825,14 @@ class RmReportComponent extends Component {
                 			'align' => 'center',
             			),
 					),
+					__('Serial Number') => array(
+						'text' => $serial_number,
+                		'field_model' => 'ProductReceiptDetailSerialNumber.serial_number',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'serial_number\',width:120',
+					),
 					__('QTY') => array(
 						'text' => $qty,
-                		'field_model' => 'ProductReceiptDetail.qty',
 		                'style' => 'text-align: center;',
 		                'data-options' => 'field:\'qty\',width:80',
 		                'align' => 'center',
@@ -1846,7 +1855,8 @@ class RmReportComponent extends Component {
 				);
 			}
 
-			if( empty($nextPage) || !empty($view) ) {
+			// if( empty($nextPage) || !empty($view) ) {
+			if( !empty($view) ) {
 				$result[$key+1] = array(
 					__('No Dokumen') => array(
                 		'field_model' => 'ProductReceipt.nodoc',
@@ -1884,9 +1894,12 @@ class RmReportComponent extends Component {
 					__('Satuan') => array(
                 		'field_model' => 'ProductUnit.name',
 					),
+					__('Serial Number') => array(
+                		'field_model' => 'ProductExpenditureDetailSerialNumber.serial_number',
+					),
 					__('QTY') => array(
 						'text' => $totalQty,
-                		'field_model' => 'ProductReceiptDetail.qty',
+                		'field_model' => 'ProductReceiptDetailSerialNumber.qty',
 		                'style' => 'text-align: center;font-weight: bold;',
 		                'data-options' => 'field:\'qty\',width:80',
 		                'align' => 'center',
@@ -1903,7 +1916,7 @@ class RmReportComponent extends Component {
 		return array(
 			'data' => $result,
 			'last_id' => $last_id,
-			'model' => 'ProductReceiptDetail',
+			'model' => 'ProductReceiptDetailSerialNumber',
 		);
 	}
 
@@ -2707,6 +2720,9 @@ class RmReportComponent extends Component {
                 'ProductAdjustment.id' => 'DESC',
                 'ProductAdjustmentDetail.id' => 'ASC',
             ),
+            'group'=> array(
+                'ProductAdjustmentDetail.id',
+            ),
         	'offset' => $offset,
         	'limit' => $limit,
         );
@@ -2726,12 +2742,18 @@ class RmReportComponent extends Component {
 
 		if( !empty($data) ) {
 			foreach ($data as $key => $value) {
+				$value = Common::_callUnset($value, array(
+					'ProductAdjustmentDetailSerialNumber',
+				));
+
 		        $value = $this->controller->ProductAdjustmentDetail->getMergeList($value, array(
 		            'contain' => array(
 		            	'Product' => array(
 		                	'ProductUnit',
 	            		),
-                        'ProductAdjustmentDetailSerialNumber',
+                        'ProductAdjustmentDetailSerialNumber' => array(
+                        	'type' => 'all',
+                    	),
 		            ),
 		        ));
 		        $value = $this->controller->ProductAdjustmentDetail->ProductAdjustment->getMergeList($value, array(

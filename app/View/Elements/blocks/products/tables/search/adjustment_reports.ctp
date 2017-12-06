@@ -30,6 +30,7 @@
                 <?php 
                         echo $this->Common->buildInputForm('nodoc', __('No Dokumen'));
                         echo $this->Common->buildInputForm('name', __('Nama Barang'));
+                        echo $this->Common->buildInputForm('serial_number', __('Serial Number'));
                         echo $this->element('blocks/common/searchs/box_action', array(
                             '_url' => array(
                                 'controller' => 'products', 
