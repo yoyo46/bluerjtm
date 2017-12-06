@@ -2631,7 +2631,8 @@ class RmReportComponent extends Component {
 				));
 			}
 
-			if( empty($nextPage) || !empty($view) ) {
+			// if( empty($nextPage) || !empty($view) ) {
+			if( !empty($view) ) {
 				$result[$key+1] = array(
 					__('No Pol') => array(
 		                'style' => 'text-align: center;',
@@ -2653,6 +2654,8 @@ class RmReportComponent extends Component {
             			),
 					),
 				);
+				
+				$grandtotal_sum = 0;
 
                 for ($i=1; $i <= 12; $i++) {
                 	$monthName = date('F', mktime(0, 0, 0, $i, 1));
@@ -2666,7 +2669,18 @@ class RmReportComponent extends Component {
 			                'align' => 'right',
 						),
 					));
+					
+					$grandtotal_sum += $grandtotal;
                 }
+
+                $result[$key+1] = array_merge($result[$key+1], array(
+					__('Total') => array(
+						'text' => !empty($grandtotal_sum)?Common::getFormatPrice($grandtotal_sum):'-',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'month_total\',width:100',
+		                'align' => 'right',
+					),
+				));
 			}
 		}
 
