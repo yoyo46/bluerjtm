@@ -362,7 +362,7 @@ class SpkProduct extends AppModel {
                 $ppn_include = Common::hashEmptyField($value, 'Spk.ppn_include');
                 $product_id = Common::hashEmptyField($value, 'SpkProduct.product_id');
                 $qty = Common::hashEmptyField($value, 'SpkProduct.qty');
-                $price_service = Common::hashEmptyField($value, 'SpkProduct.price_service');
+                $price_service = Common::hashEmptyField($value, 'SpkProduct.price');
 
                 $total = $qty*$price_service;
                 $grandtotal += $total;
