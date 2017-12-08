@@ -113,6 +113,9 @@ class SpkProduct extends AppModel {
                 $default_options['conditions']['SpkProduct.status'] = 1;
                 $default_options['conditions']['SpkProduct.receipt_status <>'] = 'full';
                 break;
+            case 'active':
+                $default_options['conditions']['SpkProduct.status'] = 1;
+                break;
         }
 
         if(!empty($options['conditions'])){
@@ -179,6 +182,7 @@ class SpkProduct extends AppModel {
         $name = $this->filterEmptyField($data, 'named', 'name');
         $group = $this->filterEmptyField($data, 'named', 'group');
         $nopol = $this->filterEmptyField($data, 'named', 'nopol');
+        $status = $this->filterEmptyField($data, 'named', 'status');
         $sort = $this->filterEmptyField($data, 'named', 'sort', false, array(
             'addslashes' => true,
         ));
@@ -292,6 +296,9 @@ class SpkProduct extends AppModel {
                     'Spk',
                     'Truck',
                 ),
+            ),
+            'status' => array(
+                'field' => 'Spk.transaction_status',
             ),
         ));
 
