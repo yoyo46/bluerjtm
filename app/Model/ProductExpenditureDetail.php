@@ -221,7 +221,7 @@ class ProductExpenditureDetail extends AppModel {
             'branch' => false,
         ));
 
-        $this->ProductExpenditureDetailSerialNumber->virtualFields['total_price'] = 'SUM(ProductExpenditureDetailSerialNumber.price)';
+        $this->ProductExpenditureDetailSerialNumber->virtualFields['total_price'] = 'SUM(ProductExpenditureDetailSerialNumber.price*ProductExpenditureDetailSerialNumber.qty)';
         $this->ProductExpenditureDetailSerialNumber->virtualFields['total_qty'] = 'SUM(ProductExpenditureDetailSerialNumber.qty)';
         return $this->ProductExpenditureDetailSerialNumber->getData('first', array(
             'conditions' => array(
