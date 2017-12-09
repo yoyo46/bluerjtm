@@ -2693,9 +2693,14 @@ class CommonHelper extends AppHelper {
         ));
     }
 
-    function _callPeriodeYear ( $minPeriode = 20 ) {
+    function _callPeriodeYear ( $minPeriode = 20, $maxPeriode = null ) {
         $year = array();
-        $nowYear = date('Y');
+
+        if( !empty($maxPeriode) ) {
+            $nowYear = $maxPeriode;
+        } else {
+            $nowYear = date('Y');
+        }
 
         for ($i=0; $i < $minPeriode; $i++) {
             $value = $nowYear-$i;

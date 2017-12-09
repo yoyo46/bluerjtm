@@ -19,7 +19,7 @@
 			'morris/morris',
 			'jvectormap/jquery-jvectormap-1.2.2',
 			'datepicker/datepicker3',
-			'daterangepicker/daterangepicker-bs3',
+			// 'daterangepicker/daterangepicker-bs3',
 			'bootstrap-wysihtml5/bootstrap3-wysihtml5.min',
 			'jquery',
 			'style',

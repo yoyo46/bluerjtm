@@ -18,32 +18,43 @@ $(function() {
     }).disableSelection();
     $(".connectedSortable .box-header, .connectedSortable .nav-tabs-custom").css("cursor", "move");
     //jQuery UI sortable for the todo list
-    $(".todo-list").sortable({
-        placeholder: "sort-highlight",
-        handle: ".handle",
-        forcePlaceholderSize: true,
-        zIndex: 999999
-    }).disableSelection();
+    // $(".todo-list").sortable({
+    //     placeholder: "sort-highlight",
+    //     handle: ".handle",
+    //     forcePlaceholderSize: true,
+    //     zIndex: 999999
+    // }).disableSelection();
     ;
 
     //bootstrap WYSIHTML5 - text editor
     $(".textarea").wysihtml5();
 
-    $('.daterange').daterangepicker(
-            {
-                ranges: {
-                    'Today': [moment(), moment()],
-                    'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
-                    'Last 7 Days': [moment().subtract('days', 6), moment()],
-                    'Last 30 Days': [moment().subtract('days', 29), moment()],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
-                },
-                startDate: moment().subtract('days', 29),
-                endDate: moment()
-            },
-    function(start, end) {
-        alert("You chose: " + start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    var range_options = {
+        ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
+            'Last 7 Days': [moment().subtract('days', 6), moment()],
+            'Last 30 Days': [moment().subtract('days', 29), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
+        },
+        startDate: moment().subtract('days', 29),
+        endDate: moment()
+    };
+
+    $('.daterange-top-spk').daterangepicker(range_options);
+    $('.daterange-top-spk').on('apply.daterangepicker', function(ev, picker) {
+        var self = $('.daterange-top-spk');
+        var data_trigger = $.checkUndefined(self.attr('data-trigger'), null);
+
+        var start = picker.startDate.format('YYYY-MM-DD');
+        var end = picker.endDate.format('YYYY-MM-DD');
+
+        if( data_trigger != null ) {
+            var href = self.attr('ori-href') + '/DateFrom:' + start + '/DateTo:' + end + '/';
+            self.attr('href', href);
+            self.trigger(data_trigger);
+        }
     });
 
     /* jQueryKnob */
@@ -255,13 +266,13 @@ $(function() {
     });
 
     /* The todo list plugin */
-    $(".todo-list").todolist({
-        onCheck: function(ele) {
-            //console.log("The element has been checked")
-        },
-        onUncheck: function(ele) {
-            //console.log("The element has been unchecked")
-        }
-    });
+    // $(".todo-list").todolist({
+    //     onCheck: function(ele) {
+    //         //console.log("The element has been checked")
+    //     },
+    //     onUncheck: function(ele) {
+    //         //console.log("The element has been unchecked")
+    //     }
+    // });
 
 });

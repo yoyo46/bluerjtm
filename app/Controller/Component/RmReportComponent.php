@@ -1389,6 +1389,9 @@ class RmReportComponent extends Component {
                 'ProductExpenditure.id' => 'DESC',
                 'ProductExpenditureDetail.id' => 'ASC',
             ),
+			'group' => array(
+				'ProductExpenditureDetail.id',
+			),
         	'offset' => $offset,
         	'limit' => $limit,
         );
@@ -1418,6 +1421,10 @@ class RmReportComponent extends Component {
             $totalQty = 0;
 
 			foreach ($data as $key => $value) {
+                $product_expenditure_detail_id = Common::hashEmptyField($value, 'ProductExpenditureDetail.id');
+                $branch_id = Common::hashEmptyField($value, 'ProductExpenditure.branch_id');
+                $document_type = Common::hashEmptyField($value, 'ProductExpenditure.document_type');
+
                 $value = $this->RjProduct->_callGetDocReceipt($value);
 		        $value = $this->controller->ProductExpenditureDetail->getMergeList($value, array(
 		            'contain' => array(
@@ -1434,6 +1441,24 @@ class RmReportComponent extends Component {
 		                ),
 		            ),
 		        ));
+        		
+        		switch ($document_type) {
+        			case 'internal':
+		        		$this->controller->ProductExpenditureDetail->ProductHistory->virtualFields['grandtotal'] = 'SUM(ProductHistory.qty*ProductHistory.price)';
+				        $history = $this->controller->ProductExpenditureDetail->ProductHistory->getData('first', array(
+				        	'conditions' => array(
+				        		'ProductHistory.transaction_type' => 'product_expenditure',
+				        		'ProductHistory.transaction_id' => $product_expenditure_detail_id,
+				        		'ProductHistory.branch_id' => $branch_id,
+			        		),
+			        	), array(
+			        		'branch' => false,
+			        	));
+        				break;
+    				default:
+    					$history = array();
+        				break;
+        		}
 
                 $nodoc = Common::hashEmptyField($value, 'ProductExpenditure.nodoc');
                 $transaction_date = Common::hashEmptyField($value, 'ProductExpenditure.transaction_date', null, array(
@@ -1457,6 +1482,8 @@ class RmReportComponent extends Component {
                 $code = Common::hashEmptyField($value, 'Product.code');
                 $name = Common::hashEmptyField($value, 'Product.name');
                 $unit = Common::hashEmptyField($value, 'Product.ProductUnit.name');
+                $spk_grandtotal = Common::hashEmptyField($history, 'ProductHistory.grandtotal');
+				$grandtotal += $spk_grandtotal;
 
                 $type = Common::hashEmptyField($types, $document_type);
             	$totalQty += $qty;
@@ -1557,6 +1584,16 @@ class RmReportComponent extends Component {
                 			'align' => 'center',
             			),
 					),
+					__('Total Biaya') => array(
+						'text' => !empty($spk_grandtotal)?Common::getFormatPrice($spk_grandtotal):'-',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'grandtotal\',width:120',
+		                'align' => 'right',
+		                'mainalign' => 'right',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
 					__('Status') => array(
 						'text' => $customStatus,
                 		'field_model' => 'ProductExpenditure.transaction_status',
@@ -1624,6 +1661,17 @@ class RmReportComponent extends Component {
                 			'bold' => true,
             			),
 					),
+					__('Total Biaya') => array(
+						'text' => !empty($grandtotal)?Common::getFormatPrice($grandtotal):'-',
+		                'style' => 'text-align: center;font-weight: bold;',
+		                'data-options' => 'field:\'grandtotal\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+                			'bold' => true,
+            			),
+					),
 				);
 			}
 		}
@@ -1654,6 +1702,9 @@ class RmReportComponent extends Component {
                 'ProductReceipt.id' => 'DESC',
                 'ProductReceiptDetailSerialNumber.id' => 'ASC',
             ),
+			'group' => array(
+				'ProductReceiptDetailSerialNumber.id',
+			),
         	'offset' => $offset,
         	'limit' => $limit,
         );

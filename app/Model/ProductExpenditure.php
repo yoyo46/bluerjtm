@@ -186,6 +186,10 @@ class ProductExpenditure extends AppModel {
                 
                 $default_options['contain'][] = 'Spk';
                 break;
+            case 'confirm':
+                $default_options['conditions']['ProductExpenditure.transaction_status'] = array( 'approved', 'paid', 'half_paid', 'posting' );
+                $default_options['conditions']['ProductExpenditure.status'] = 1;
+                break;
             default:
                 $default_options['conditions']['ProductExpenditure.status'] = array( 0, 1 );
                 break;

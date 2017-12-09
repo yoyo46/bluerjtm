@@ -6,6 +6,7 @@
   - SPK
   - Chosen
   - Product
+  - Daterangepicker
 */
 
 /*- Global*/
@@ -1348,4 +1349,99 @@ tbody.wrapper-table-documents td {
 .wrapper-product .product-branch,
 .wrapper-product .product-name {
   font-weight: bold;
+}
+
+
+
+/*- Daterangepicker*/
+.daterangepicker.dropdown-menu {
+  display: none;
+  z-index: 100;
+}
+.daterangepicker.opensright .ranges .range_inputs {
+  margin-top: 10px;
+}
+.daterangepicker .calendar-time {
+  margin-bottom: 10px;
+}
+.daterangepicker .calendar-time .prm-time {
+  display: inline-block;
+  font-size: 24px;
+  margin-right: 10px;
+}
+.daterangepicker .calendar-time > .prm-time + div {
+  display: inline-block;
+}
+.daterangepicker .calendar-time > .prm-time + div select {
+  text-align: center;
+  padding: 0 10px;
+  height: 30px;
+}
+.daterangepicker .calendar.single thead > tr:first-child th {
+  border: none !important;
+}
+.daterangepicker .calendar.single select.monthselect,
+.daterangepicker .calendar.single select.yearselect {
+  background-color: #FFF;
+  padding: 0 5px;
+}
+.daterangepicker.dropdown-menu.single {
+  -webkit-box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+.modal-open .daterangepicker.dropdown-menu {
+  z-index: 99999;
+}
+.modal-open .daterangepicker.dropdown-menu.single .daterangepicker-title {
+  display: none;
+}
+.daterangepicker.dropdown-menu.single {
+  padding-bottom: 0;
+}
+.daterangepicker.single.opensright .ranges .range_inputs {
+  position: relative;
+}
+.daterangepicker.single.opensright .ranges .range_inputs {
+  margin-top: 0;
+}
+
+@media (max-width: 767px) {
+  .daterangepicker.opensright .ranges .range_inputs {
+    margin: 0;
+  }
+  .daterangepicker .applyBtn,
+  .daterangepicker .cancelBtn {
+    padding: 5px 0;
+  }
+  .daterangepicker.dropdown-menu {
+      padding-bottom: 80px;
+  }
+}
+@media (max-width: 480px) {
+  .daterangepicker.dropdown-menu {
+        width: 100% !important;
+  }
+  .daterangepicker.opensright .calendar {
+      max-width: none;
+    width: 48%;
+  }
+}
+@media (max-width: 360px) {
+  .daterangepicker.opensright .calendar,
+  .daterangepicker.dropdown-menu {
+      width: 100% !important;
+      max-width: none;
+      margin: 0;
+      padding: 5px;
+  }
+  .daterangepicker.dropdown-menu {
+      padding-bottom: 80px;
+  }
+}
+.daterangepicker td.in-range {
+  background-color: #ebf4f8 !important;
+}
+.daterangepicker td.active,
+.daterangepicker td.active:hover {
+  background-color: #357ebd !important;
 }

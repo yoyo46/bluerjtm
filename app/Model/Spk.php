@@ -297,6 +297,10 @@ class Spk extends AppModel {
                     $default_options['conditions']['Spk.transaction_status'] = 'out';
                 }
                 break;
+            case 'confirm':
+                $default_options['conditions']['Spk.transaction_status'] = array( 'open', 'closed', 'finish', 'receipt', 'out' );
+                $default_options['conditions']['Spk.status'] = 1;
+                break;
         }
 
         switch ($payment_status) {

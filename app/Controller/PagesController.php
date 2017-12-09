@@ -32,9 +32,11 @@ class PagesController extends AppController {
                 'Truck.id NOT' => $truck_ongoing,
             ),
         ));
+        $top_spk = $this->get_top_spk();
 
         $this->set(compact(
-        	'ttujSJ', 'invoiceUnPaid', 'truckAvailable'
+        	'ttujSJ', 'invoiceUnPaid', 'truckAvailable',
+            'top_spk'
     	));
 		$this->render('home');
 	}
@@ -96,5 +98,82 @@ class PagesController extends AppController {
         $this->set('values', $values);
 
         $this->render('notifications');
+    }
+
+    function get_top_spk ( $year = '2017' ) {
+        $this->loadModel('Spk');
+
+        $this->Spk->ProductExpenditure->ProductExpenditureDetail->ProductHistory->bindModel(array(
+            'hasOne' => array(
+                'ProductExpenditure' => array(
+                    'className' => 'ProductExpenditure',
+                    'foreignKey' => false,
+                    'conditions' => array(
+                        'ProductExpenditure.id = ProductExpenditureDetail.product_expenditure_id',
+                        'ProductExpenditure.status' => 1,
+                    )
+                ),
+                'Spk' => array(
+                    'className' => 'Spk',
+                    'foreignKey' => false,
+                    'conditions' => array(
+                        'Spk.id = ProductExpenditure.document_id',
+                        'Spk.status' => 1,
+                    )
+                ),
+            )
+        ), false);
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => __('%s-01-01', $year),
+            'dateTo' => __('%s-12-31', $year),
+        ));
+        $this->Spk->ProductExpenditure->ProductExpenditureDetail->ProductHistory->virtualFields['grandtotal'] = 'SUM(ProductHistory.qty*ProductHistory.price)';
+        $optionTopSpk =  $this->Spk->ProductExpenditure->_callRefineParams($params);
+        $optionTopSpk = $this->Spk->ProductExpenditure->getData('paginate', $optionTopSpk, array(
+            'status' => 'confirm',
+            'branch' => false,
+        ));
+        $optionTopSpk = Common::_callUnset($optionTopSpk, array(
+            'order',
+        ));
+
+        $top_spk = $this->Spk->ProductExpenditure->ProductExpenditureDetail->ProductHistory->getData('all', array_merge_recursive($optionTopSpk, array(
+            'conditions' => array(
+                'ProductHistory.transaction_type' => 'product_expenditure',
+                // 'DATE_FORMAT(ProductExpenditure.transaction_date, \'%Y\')' => '2017',
+                'ProductExpenditure.document_type' => 'internal',
+            ),
+            'contain' => array(
+                'ProductExpenditureDetail',
+                'ProductExpenditure',
+                'Spk',
+            ),
+            'group' => array(
+                'Spk.truck_id',
+            ),
+            'order' => array(
+                'ProductHistory.grandtotal' => 'DESC',
+            ),
+            'limit' => 10,
+        )), array(
+            'status' => 'active',
+        ));
+        $top_spk = $this->Spk->getMergeList($top_spk, array(
+            'contain' => array(
+                'Truck',
+            ),
+        ));
+
+        return $top_spk;
+    }
+
+    function bypass_top_spk ( $year = '2017' ) {
+        $top_spk = $this->get_top_spk( $year );
+
+        $this->set(compact(
+            'top_spk', 'year'
+        ));
+        $this->render('/Elements/blocks/pages/top_spk');
     }
 }
