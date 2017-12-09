@@ -4,11 +4,12 @@
             'action' => 'top_spk',
             'bypass' => true,
         ));
+        $year = !empty($year)?$year:date('Y');
 ?>
 <div class="box-header">
     <i class="fa fa-wrench"></i>
     <h3 id="wrapper-top-spk-title" class="box-title">
-        Perbaikan truk Tertinggi Tahun <span>2017</span>
+        Perbaikan truk Tertinggi Tahun <span><?php echo $year; ?></span>
     </h3>
     <div class="pull-right box-tools">
         <?php
@@ -18,7 +19,7 @@
                     'frameClass' => 'form-group no-margin',
                     'data-wrapper-write-page' => '#wrapper-top-spk,#wrapper-top-spk-title',
                     'href' => $urlTopSpk,
-                    'value' => date('Y'),
+                    'value' => $year,
                 ));
         ?>
         <!-- <button class="btn btn-primary btn-sm daterange-top-spk pull-right ajax-change" data-toggle="tooltip" title="" data-original-title="Date range" data-trigger="change" ori-href="<?php echo $urlTopSpk; ?>" href="<?php echo $urlTopSpk; ?>" data-wrapper-write="#wrapper-top-spk"><i class="fa fa-calendar"></i></button> -->
