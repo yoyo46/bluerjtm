@@ -1379,7 +1379,7 @@ class RmReportComponent extends Component {
             )
         ), false);
 
-        $this->controller->ProductExpenditureDetail->ProductExpenditureDetailSerialNumber->virtualFields['qty'] = 'SUM(ProductExpenditureDetailSerialNumber.qty)';
+        $this->controller->ProductExpenditureDetail->ProductExpenditureDetailSerialNumber->virtualFields['qty'] = 'CASE WHEN ProductExpenditureDetailSerialNumber.id IS NULL THEN SUM(ProductExpenditureDetail.qty) ELSE SUM(ProductExpenditureDetailSerialNumber.qty) END';
 
 		$options = array(
 			'contain' => array(
@@ -3246,6 +3246,7 @@ class RmReportComponent extends Component {
 								'action' => 'expenditure_reports',
 								'product_category_id' => $id,
 								'date' => Common::_callUrlEncode($date, true),
+								'status' => 'posting',
 							), array(
 								'target' => '_blank',
 							));
@@ -3265,6 +3266,7 @@ class RmReportComponent extends Component {
 								'action' => 'expenditure_reports',
 								'product_category_id' => $id,
 								'date' => Common::_callUrlEncode($date, true),
+								'status' => 'posting',
 							), array(
 								'target' => '_blank',
 							));

@@ -447,6 +447,7 @@ class ProductReceipt extends AppModel {
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $vendor_id = !empty($data['named']['vendor_id'])?$data['named']['vendor_id']:false;
+        $status = !empty($data['named']['status'])?$data['named']['status']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -465,6 +466,9 @@ class ProductReceipt extends AppModel {
         }
         if( !empty($nodocref) ) {
             $default_options['conditions']['ProductReceipt.document_number LIKE'] = '%'.$nodocref.'%';
+        }
+        if( !empty($status) ) {
+            $default_options['conditions']['ProductReceipt.transaction_status'] = $status;
         }
         
         return $default_options;

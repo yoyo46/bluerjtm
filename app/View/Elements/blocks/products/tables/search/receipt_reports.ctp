@@ -22,6 +22,14 @@
                             'class' => 'form-control pull-right date-range',
                         ));
                         echo $this->Common->buildInputForm('code', __('Kode Barang'));
+                        echo $this->Common->buildInputForm('status', __('Status'), array(
+                            'empty' => __('Pilih Status'),
+                            'options' => array(
+                                'unposting' => __('Draft'),
+                                'posting' => __('Commit'),
+                                'void' => __('Void'),
+                            ),
+                        ));
                         // Custom Otorisasi
                         echo $this->Common->getCheckboxBranch();
                 ?>
