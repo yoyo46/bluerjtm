@@ -1442,8 +1442,8 @@ class RmReportComponent extends Component {
 		            ),
 		        ));
         		
-        		switch ($document_type) {
-        			case 'internal':
+        		// switch ($document_type) {
+        		// 	case 'internal':
 		        		$this->controller->ProductExpenditureDetail->ProductHistory->virtualFields['grandtotal'] = 'SUM(ProductHistory.qty*ProductHistory.price)';
 				        $history = $this->controller->ProductExpenditureDetail->ProductHistory->getData('first', array(
 				        	'conditions' => array(
@@ -1454,11 +1454,11 @@ class RmReportComponent extends Component {
 			        	), array(
 			        		'branch' => false,
 			        	));
-        				break;
-    				default:
-    					$history = array();
-        				break;
-        		}
+        // 				break;
+    				// default:
+    				// 	$history = array();
+        // 				break;
+        // 		}
 
                 $nodoc = Common::hashEmptyField($value, 'ProductExpenditure.nodoc');
                 $transaction_date = Common::hashEmptyField($value, 'ProductExpenditure.transaction_date', null, array(
@@ -1584,7 +1584,7 @@ class RmReportComponent extends Component {
                 			'align' => 'center',
             			),
 					),
-					__('Total Biaya') => array(
+					__('Harga Barang') => array(
 						'text' => !empty($spk_grandtotal)?Common::getFormatPrice($spk_grandtotal):'-',
 		                'style' => 'text-align: center;',
 		                'data-options' => 'field:\'grandtotal\',width:120',
@@ -1661,7 +1661,7 @@ class RmReportComponent extends Component {
                 			'bold' => true,
             			),
 					),
-					__('Total Biaya') => array(
+					__('Total Harga') => array(
 						'text' => !empty($grandtotal)?Common::getFormatPrice($grandtotal):'-',
 		                'style' => 'text-align: center;font-weight: bold;',
 		                'data-options' => 'field:\'grandtotal\',width:100',
@@ -2209,6 +2209,9 @@ class RmReportComponent extends Component {
                 'Spk.created' => 'DESC',
                 'Spk.id' => 'DESC',
             ),
+            'group'=> array(
+                'SpkProduct.id',
+            ),
         	'offset' => $offset,
         	'limit' => $limit,
         );
@@ -2601,6 +2604,9 @@ class RmReportComponent extends Component {
 		if( !empty($data) ) {
 			$grandtotalArr = array();
 
+	        App::import('Helper', 'Html');
+	        $this->Html = new HtmlHelper(new View(null));
+
 			foreach ($data as $key => $value) {
 		        $value = $this->controller->Truck->getMergeList($value, array(
 		            'contain' => array(
@@ -2622,10 +2628,11 @@ class RmReportComponent extends Component {
                 $truck_id = Common::hashEmptyField($value, 'Truck.id');
                 $brand = Common::hashEmptyField($value, 'TruckBrand.name', '-');
                 $category = Common::hashEmptyField($value, 'TruckCategory.name', '-');
+                $nopol = Common::hashEmptyField($value, 'Truck.nopol');
                 
 				$result[$key] = array(
 					__('No Pol') => array(
-						'text' => Common::hashEmptyField($value, 'Truck.nopol'),
+						'text' => $nopol,
                 		'field_model' => 'Truck.nopol',
 		                'style' => 'text-align: center;',
 		                'data-options' => 'field:\'nopol\',width:100',
@@ -2671,13 +2678,32 @@ class RmReportComponent extends Component {
                 	$monthName = date('F', mktime(0, 0, 0, $i, 1));
                 	$monthYear = __('%s-%s', $year, date('m', mktime(0, 0, 0, $i, 1)));
                 	
-                	$jumlah = $this->controller->Truck->Spk->_callMaintenanceCostByTruckMonthly($truck_id, $branch_id, $monthYear);
+                	$jumlah = $this->controller->Truck->Spk->ProductExpenditure->_callMaintenanceCostByTruckMonthly($truck_id, $branch_id, $monthYear);
 					$total += $jumlah;
                 	$grandtotalArr[$i] = $jumlah + Common::hashEmptyField($grandtotalArr, $i, 0);
 
+                	if( !empty($jumlah) ) {
+	                	if( !empty($view) ) {
+	                    	$date = __('%s - %s', Common::formatDate($monthYear, '01/m/Y'), Common::formatDate($monthYear, 't/m/Y'));
+
+	                    	$monthLabel = $this->Html->link(Common::getFormatPrice($jumlah), array(
+								'controller' => 'products',
+								'action' => 'expenditure_reports',
+								'nopol' => $nopol,
+								'date' => Common::_callUrlEncode($date, true),
+							), array(
+								'target' => '_blank',
+							));
+	                    } else {
+	                    	$monthLabel = Common::getFormatPrice($jumlah);
+	                    }
+	                } else {
+	                	$monthLabel = '-';
+	                }
+
 					$result[$key] = array_merge($result[$key], array(
 						$monthName => array(
-							'text' => !empty($jumlah)?Common::getFormatPrice($jumlah):'-',
+							'text' => $monthLabel,
 			                'style' => 'text-align: center;',
 			                'data-options' => 'field:\'month_'.$i.'\',width:100',
 			                'align' => 'right',
@@ -3106,6 +3132,189 @@ class RmReportComponent extends Component {
 			'data' => $result,
 			'last_id' => $last_id,
 			'model' => 'Product',
+		);
+	}
+
+	function _callDataCategory_report ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('ProductCategory');
+		$this->controller->loadModel('ProductExpenditureDetail');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+
+		$options = array(
+			'conditions' => array(
+				'ProductCategory.name' => 'BAN BS',
+			),
+			'group' => array(
+				'ProductCategory.id',
+			),
+            'order'=> array(
+                'ProductCategory.id' => 'ASC',
+            ),
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+        
+		$options = $this->controller->ProductCategory->_callRefineParams($params, $options);
+    	$year = Common::hashEmptyField($params, 'named.year', date('Y'));
+
+		$this->controller->paginate	= $this->controller->ProductCategory->getData('paginate', $options, array(
+			'branch' => false,
+			'header' => true,
+		));
+		$data = $this->controller->paginate('ProductCategory');
+		$result = array();
+
+		$last_data = end($data);
+		$last_id = Common::hashEmptyField($last_data, 'ProductCategory.id');
+
+		$paging = $this->controller->params->paging;
+        $nextPage = Common::hashEmptyField($paging, 'ProductCategory.nextPage');
+
+        $totalQty = 0;
+        $totalPrice = 0;
+        $grandtotal = 0;
+        $branch_id = false;
+
+		if( !empty($data) ) {
+			$grandtotalArr = array();
+
+	        App::import('Helper', 'Html');
+	        $this->Html = new HtmlHelper(new View(null));
+
+			foreach ($data as $key => $value) {
+				$id = Common::hashEmptyField($value, 'ProductCategory.id');
+		        $value = $this->controller->ProductCategory->getMergeList($value, array(
+		            'contain' => array(
+	                	'ParentProductCategory' => array(
+		                    'uses' => 'ProductCategory',
+		                    'primaryKey' => 'parent_id',
+		                    'foreignKey' => 'id',
+		                ),
+		            ),
+		        ));
+
+				$result[$key] = array(
+					__('Grup Barang') => array(
+						'text' => Common::hashEmptyField($value, 'ProductCategory.name'),
+                		'field_model' => 'ProductCategory.name',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'product_category_name\',width:100',
+					),
+					__('Parent') => array(
+						'text' => Common::hashEmptyField($value, 'ParentProductCategory.name', '-'),
+                		'field_model' => 'ParentProductCategory.name',
+		                'align' => 'center',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'parent_product_category_name\',width:100',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+                		'fix_column' => true,
+					),
+				);
+				
+				$total = 0;
+
+                for ($i=1; $i <= 12; $i++) {
+                	$monthName = date('F', mktime(0, 0, 0, $i, 1));
+                	$monthYear = __('%s-%s', $year, date('m', mktime(0, 0, 0, $i, 1)));
+                	
+                	$jumlah = $this->controller->ProductExpenditureDetail->getExpenditureByProductCategoryId($id, $branch_id, $monthYear);
+					$total += $jumlah;
+                	$grandtotalArr[$i] = $jumlah + Common::hashEmptyField($grandtotalArr, $i, 0);
+
+                	if( !empty($jumlah) ) {
+	                	if( !empty($view) ) {
+	                    	$date = __('%s - %s', Common::formatDate($monthYear, '01/m/Y'), Common::formatDate($monthYear, 't/m/Y'));
+
+	                    	$monthLabel = $this->Html->link(Common::getFormatPrice($jumlah), array(
+								'controller' => 'products',
+								'action' => 'expenditure_reports',
+								'product_category_id' => $id,
+								'date' => Common::_callUrlEncode($date, true),
+							), array(
+								'target' => '_blank',
+							));
+	                    } else {
+	                    	$monthLabel = Common::getFormatPrice($jumlah);
+	                    }
+	                } else {
+	                	$monthLabel = '-';
+	                }
+
+					$result[$key] = array_merge($result[$key], array(
+						$monthName => array(
+							'text' => $monthLabel,
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'month_'.$i.'\',width:100',
+			                'align' => 'right',
+						),
+					));
+                }
+
+                $result[$key] = array_merge($result[$key], array(
+					__('Total') => array(
+						'text' => !empty($total)?Common::getFormatPrice($total):'-',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'month_total\',width:100',
+		                'align' => 'right',
+					),
+				));
+			}
+
+			if( !empty($view) ) {
+				$result[$key+1] = array(
+					__('Grup Barang') => array(
+		                'style' => 'text-align: center;',
+					),
+					__('Parent') => array(
+						'text' => __('Total'),
+		                'style' => 'font-weight: bold;',
+                		'excel' => array(
+                			'bold' => true,
+            			),
+					),
+				);
+				
+				$grandtotal_sum = 0;
+
+                for ($i=1; $i <= 12; $i++) {
+                	$monthName = date('F', mktime(0, 0, 0, $i, 1));
+                	$grandtotal = Common::hashEmptyField($grandtotalArr, $i, 0);
+
+					$result[$key+1] = array_merge($result[$key+1], array(
+						$monthName => array(
+							'text' => !empty($grandtotal)?Common::getFormatPrice($grandtotal):'-',
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'month_'.$i.'\',width:100',
+			                'align' => 'right',
+						),
+					));
+					
+					$grandtotal_sum += $grandtotal;
+                }
+
+                $result[$key+1] = array_merge($result[$key+1], array(
+					__('Total') => array(
+						'text' => !empty($grandtotal_sum)?Common::getFormatPrice($grandtotal_sum):'-',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'month_total\',width:100',
+		                'align' => 'right',
+					),
+				));
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'last_id' => $last_id,
+			'model' => 'ProductCategory',
 		);
 	}
 

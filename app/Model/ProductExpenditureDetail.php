@@ -81,6 +81,7 @@ class ProductExpenditureDetail extends AppModel {
 
         $default_options = array(
             'conditions'=> array(),
+            'contain'=> array(),
             'order'=> array(
                 'ProductExpenditureDetail.id' => 'ASC',
             ),
@@ -235,36 +236,69 @@ class ProductExpenditureDetail extends AppModel {
         ));
     }
 
-    function getExpenditureByDocumentId( $id, $branch_id ){
+    function getExpenditureByDetail( $id ){
+        if( !empty($id) ) {
+            $this->ProductHistory->virtualFields['grandtotal'] = 'SUM(ProductHistory.qty*ProductHistory.price)';
+            $history = $this->ProductHistory->getData('first', array(
+                'conditions' => array(
+                    'ProductHistory.transaction_type' => 'product_expenditure',
+                    'ProductHistory.transaction_id' => $id,
+                ),
+            ), array(
+                'branch' => false,
+            ));
+            return Common::hashEmptyField($history, 'ProductHistory.grandtotal');
+        } else {
+            return false;
+        }
+    }
+
+    function getExpenditureByDocumentId( $id ){
+        if( !empty($id) ) {
+            $product_expenditure_detail_id = $this->getData('list', array(
+                'conditions' => array(
+                    'ProductExpenditureDetail.product_expenditure_id' => $id,
+                ),
+            ));
+
+            return $this->getExpenditureByDetail($product_expenditure_detail_id);
+        } else {
+            return false;
+        }
+    }
+
+    function getExpenditureByProductCategoryId( $id, $branch_id = null, $monthYear = null ){
         $options = array(
             'conditions' => array(
-                'ProductExpenditure.document_id' => $id,
+                'Product.product_category_id' => $id,
             ),
             'fields' => array(
-                'ProductExpenditure.id',
+                'ProductExpenditureDetail.id',
+            ),
+            'contain' => array(
+                'Product',
+                'ProductExpenditure',
+            ),
+            'group' => array(
+                'ProductExpenditureDetail.id',
             ),
         );
 
         if( !empty($branch_id) ) {
             $options['conditions']['ProductExpenditure.branch_id'] = $branch_id;
         }
+        if( !empty($monthYear) ) {
+            $options['conditions']['DATE_FORMAT(ProductExpenditure.transaction_date, \'%Y-%m\')'] = $monthYear;
+        }
 
-        $productExpenditureId = $this->ProductExpenditure->getData('list', $options, array(
+        $options = $this->ProductExpenditure->getData('paginate', $options, array(
             'branch' => false,
+            'status' => 'confirm',
         ));
+        $product_expenditure_detail_id = $this->getData('list', $options);
 
-        if( !empty($productExpenditureId) ) {
-            $this->ProductExpenditureDetailSerialNumber->virtualFields['total'] = 'SUM(ProductExpenditureDetailSerialNumber.price*ProductExpenditureDetailSerialNumber.qty)';
-            $value = $this->ProductExpenditureDetailSerialNumber->getData('first', array(
-                'conditions' => array(
-                    'ProductExpenditureDetail.product_expenditure_id' => $productExpenditureId,
-                ),
-                'contain' => array(
-                    'ProductExpenditureDetail',
-                ),
-            ));
-
-            return Common::hashEmptyField($value, 'ProductExpenditureDetailSerialNumber.total');
+        if( !empty($product_expenditure_detail_id) ) {
+            return $this->getExpenditureByDetail($product_expenditure_detail_id);
         } else {
             return false;
         }

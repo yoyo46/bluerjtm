@@ -43,6 +43,7 @@
                             'action' => 'expenditure_reports',
                             'nopol' => $nopol,
                             'date' => Common::_callUrlEncode($date),
+                            'bypass' => false,
                         );
         ?>
         <li>

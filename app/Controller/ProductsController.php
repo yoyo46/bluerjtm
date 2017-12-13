@@ -3024,4 +3024,22 @@ class ProductsController extends AppController {
             'active_menu' => 'min_stock_report',
         ));
     }
+
+    public function category_report() {
+        $params = $this->MkCommon->_callRefineParams($this->params);
+
+        $dataReport = $this->RmReport->_callDataCategory_report($params, 30, 0, true);
+        $values = Common::hashEmptyField($dataReport, 'data');
+
+        $this->RjProduct->_callBeforeViewProductCategoryReports($params);
+        $this->MkCommon->_layout_file(array(
+            'select',
+            'freeze',
+        ));
+        $this->set(array(
+            'values' => $values,
+            'active_menu' => 'category_report',
+            '_freeze' => true,
+        ));
+    }
 }

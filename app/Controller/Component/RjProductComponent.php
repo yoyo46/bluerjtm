@@ -1997,5 +1997,17 @@ class RjProductComponent extends Component {
         $this->controller->set('sub_module_title', $title);
         $this->controller->set('active_menu', $title);
     }
+
+    function _callBeforeViewProductCategoryReports( $params ) {
+        $year = Common::hashEmptyField($params, 'named.year');
+        $title = __('Laporan Grup Barang');
+
+        if( !empty($year) ) {
+            $title .= __(' - Tahun %s', $year);
+        }
+        
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('active_menu', $title);
+    }
 }
 ?>

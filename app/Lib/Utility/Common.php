@@ -746,7 +746,13 @@ class Common {
         return $driver;
     }
 
-    public static function _callUrlEncode ( $value ) {
-    	return rawurlencode(urlencode($value));
+    public static function _callUrlEncode ( $value, $encode = false ) {
+    	$result = rawurlencode(urlencode($value));
+
+    	if( !empty($encode) ) {
+    		return urlencode($result);
+    	} else {
+    		return $result;
+    	}
 	}
 }

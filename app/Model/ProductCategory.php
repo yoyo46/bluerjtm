@@ -62,6 +62,16 @@ class ProductCategory extends AppModel {
         return $data;
     }
 
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $name = $this->filterEmptyField($data, 'named', 'name');
+
+        if( !empty($name) ) {
+            $default_options['conditions']['ProductCategory.name LIKE'] = '%'.$name.'%';
+        }
+        
+        return $default_options;
+    }
+
     function getListParent ( $id = false, $categories = false, $idx = 0 ) {
         $result = array();
         $separator = str_pad('', $idx, '-', STR_PAD_LEFT);

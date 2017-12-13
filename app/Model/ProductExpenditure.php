@@ -371,6 +371,7 @@ class ProductExpenditure extends AppModel {
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
+        $product_category_id = !empty($data['named']['product_category_id'])?$data['named']['product_category_id']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -394,6 +395,10 @@ class ProductExpenditure extends AppModel {
         if( !empty($nopol) ) {
             $default_options['conditions']['Spk.nopol LIKE'] = '%'.$nopol.'%';
             $default_options['contain'][] = 'Spk';
+        }
+        if( !empty($product_category_id) ) {
+            $default_options['conditions']['Product.product_category_id'] = $product_category_id;
+            $default_options['contain'][] = 'Product';
         }
         
         return $default_options;
@@ -675,6 +680,41 @@ class ProductExpenditure extends AppModel {
                 'special_id' => $id,
                 'branch' => false,
             ));
+    }
+
+    function _callMaintenanceCostByTruckMonthly ( $truck_id, $branch_id = null, $monthYear = null ) {
+        $options = array(
+            'conditions' => array(
+                'Spk.truck_id' => $truck_id,
+            ),
+            'fields' => array(
+                'ProductExpenditure.id',
+            ),
+            'contain' => array(
+                'Spk',
+            ),
+            'group' => array(
+                'ProductExpenditure.id',
+            ),
+        );
+
+        if( !empty($branch_id) ) {
+            $options['conditions']['ProductExpenditure.branch_id'] = $branch_id;
+        }
+        if( !empty($monthYear) ) {
+            $options['conditions']['DATE_FORMAT(ProductExpenditure.transaction_date, \'%Y-%m\')'] = $monthYear;
+        }
+
+        $document_id = $this->getData('list', $options, array(
+            'branch' => false,
+            'status' => 'confirm',
+        ));
+
+        if( !empty($document_id) ) {
+            return $this->ProductExpenditureDetail->getExpenditureByDocumentId($document_id);
+        } else {
+            return false;
+        }
     }
 }
 ?>
