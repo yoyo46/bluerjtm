@@ -1094,6 +1094,7 @@ class RjProductComponent extends Component {
             $value = $this->controller->Product->ProductExpenditureDetail->ProductExpenditure->Spk->getMerge(array(), $document_number, 'Spk.nodoc', 'open');
             $document_id = $this->MkCommon->filterEmptyField($value, 'Spk', 'id');
             $document_type = $this->MkCommon->filterEmptyField($value, 'Spk', 'document_type');
+            $transaction_date = $this->MkCommon->filterEmptyField($value, 'Spk', 'transaction_date');
 
             $data['ProductExpenditure']['id'] = $id;
             $data['ProductExpenditure']['user_id'] = Configure::read('__Site.config_user_id');
@@ -1170,7 +1171,15 @@ class RjProductComponent extends Component {
                         $dataDetail[$key] = $this->_callStock('product_expenditure', $data, $dataDetail[$key], 'out', 'ProductExpenditure');
 
                         if( empty($is_serial_number) && empty($dataDetail[$key]['ProductExpenditureDetail']['Product']['ProductStock']) ) {
-                            $dataDetail[$key]['ProductExpenditureDetail']['sn_match'] = true;
+                            if( $transaction_status != 'posting' ) {
+                                $stock_qty = $this->controller->Product->ProductHistory->_callStockTransaction($product_id, $transaction_date);
+
+                                if($qty > $stock_qty ) {
+                                    $dataDetail[$key]['ProductExpenditureDetail']['out_stock'] = true;
+                                }
+                            } else {
+                                $dataDetail[$key]['ProductExpenditureDetail']['sn_match'] = true;
+                            }
                         }
                     }
 
@@ -2005,9 +2014,14 @@ class RjProductComponent extends Component {
         if( !empty($year) ) {
             $title .= __(' - Tahun %s', $year);
         }
+
+        $productCategories = $this->controller->Product->ProductCategory->getData('list');
+
+        $this->MkCommon->_layout_file('select');
         
         $this->controller->set('sub_module_title', $title);
         $this->controller->set('active_menu', $title);
+        $this->controller->set('productCategories', $productCategories);
     }
 }
 ?>

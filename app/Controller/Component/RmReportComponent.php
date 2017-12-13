@@ -1379,6 +1379,8 @@ class RmReportComponent extends Component {
             )
         ), false);
 
+        $this->controller->ProductExpenditureDetail->ProductExpenditureDetailSerialNumber->virtualFields['qty'] = 'SUM(ProductExpenditureDetailSerialNumber.qty)';
+
 		$options = array(
 			'contain' => array(
 				'ProductExpenditureDetailSerialNumber',
@@ -1390,6 +1392,7 @@ class RmReportComponent extends Component {
                 'ProductExpenditureDetail.id' => 'ASC',
             ),
 			'group' => array(
+				'ProductExpenditureDetailSerialNumber.id',
 				'ProductExpenditureDetail.id',
 			),
         	'offset' => $offset,
@@ -3146,9 +3149,6 @@ class RmReportComponent extends Component {
 		$params = $this->MkCommon->_callRefineParams($params);
 
 		$options = array(
-			'conditions' => array(
-				'ProductCategory.name' => 'BAN BS',
-			),
 			'group' => array(
 				'ProductCategory.id',
 			),
@@ -3161,6 +3161,7 @@ class RmReportComponent extends Component {
         
 		$options = $this->controller->ProductCategory->_callRefineParams($params, $options);
     	$year = Common::hashEmptyField($params, 'named.year', date('Y'));
+        $branch_id = $this->MkCommon->getConditionGroupBranch( $params, 'ProductCategory', false, 'value' );
 
 		$this->controller->paginate	= $this->controller->ProductCategory->getData('paginate', $options, array(
 			'branch' => false,
@@ -3175,13 +3176,12 @@ class RmReportComponent extends Component {
 		$paging = $this->controller->params->paging;
         $nextPage = Common::hashEmptyField($paging, 'ProductCategory.nextPage');
 
-        $totalQty = 0;
-        $totalPrice = 0;
         $grandtotal = 0;
-        $branch_id = false;
+        $grandtotal_qty = 0;
 
 		if( !empty($data) ) {
 			$grandtotalArr = array();
+			$grandtotalQtyArr = array();
 
 	        App::import('Helper', 'Html');
 	        $this->Html = new HtmlHelper(new View(null));
@@ -3192,8 +3192,8 @@ class RmReportComponent extends Component {
 		            'contain' => array(
 	                	'ParentProductCategory' => array(
 		                    'uses' => 'ProductCategory',
-		                    'primaryKey' => 'parent_id',
-		                    'foreignKey' => 'id',
+		                    'primaryKey' => 'id',
+		                    'foreignKey' => 'parent_id',
 		                ),
 		            ),
 		        ));
@@ -3220,14 +3220,22 @@ class RmReportComponent extends Component {
 				);
 				
 				$total = 0;
+				$total_qty = 0;
 
                 for ($i=1; $i <= 12; $i++) {
                 	$monthName = date('F', mktime(0, 0, 0, $i, 1));
                 	$monthYear = __('%s-%s', $year, date('m', mktime(0, 0, 0, $i, 1)));
                 	
-                	$jumlah = $this->controller->ProductExpenditureDetail->getExpenditureByProductCategoryId($id, $branch_id, $monthYear);
+                	$history = $this->controller->ProductExpenditureDetail->getExpenditureByProductCategoryId($id, $branch_id, $monthYear);
+
+                	$jumlah = Common::hashEmptyField($history, 'ProductHistory.grandtotal', 0);
+                	$qty = Common::hashEmptyField($history, 'ProductHistory.total_qty', 0);
+
 					$total += $jumlah;
+					$total_qty += $qty;
+
                 	$grandtotalArr[$i] = $jumlah + Common::hashEmptyField($grandtotalArr, $i, 0);
+                	$grandtotalQtyArr[$i] = $qty + Common::hashEmptyField($grandtotalQtyArr, $i, 0);
 
                 	if( !empty($jumlah) ) {
 	                	if( !empty($view) ) {
@@ -3248,22 +3256,73 @@ class RmReportComponent extends Component {
 	                	$monthLabel = '-';
 	                }
 
+	                if( !empty($qty) ) {
+	                	if( !empty($view) ) {
+	                    	$date = __('%s - %s', Common::formatDate($monthYear, '01/m/Y'), Common::formatDate($monthYear, 't/m/Y'));
+
+	                    	$monthQtyLabel = $this->Html->link(Common::getFormatPrice($qty), array(
+								'controller' => 'products',
+								'action' => 'expenditure_reports',
+								'product_category_id' => $id,
+								'date' => Common::_callUrlEncode($date, true),
+							), array(
+								'target' => '_blank',
+							));
+	                    } else {
+	                    	$monthQtyLabel = $qty;
+	                    }
+	                } else {
+	                	$monthQtyLabel = '-';
+	                }
+
 					$result[$key] = array_merge($result[$key], array(
 						$monthName => array(
 							'text' => $monthLabel,
 			                'style' => 'text-align: center;',
 			                'data-options' => 'field:\'month_'.$i.'\',width:100',
-			                'align' => 'right',
+			                'align' => 'center',
+			                'child' => array(
+			                	__('Total') => array(
+									'name' => __('Total'),
+									'text' => $monthLabel,
+					                'style' => 'text-align: center;',
+					                'data-options' => 'field:\'month_total_'.$i.'\',width:100',
+					                'align' => 'right',
+		                		),
+			                	__('QTY') => array(
+									'name' => __('QTY'),
+									'text' => $monthQtyLabel,
+					                'style' => 'text-align: center;',
+					                'data-options' => 'field:\'month_qty_'.$i.'\',width:100',
+					                'align' => 'center',
+		                		),
+		                	),
 						),
 					));
                 }
 
                 $result[$key] = array_merge($result[$key], array(
 					__('Total') => array(
-						'text' => !empty($total)?Common::getFormatPrice($total):'-',
+						'text' => __('Total'),
 		                'style' => 'text-align: center;',
 		                'data-options' => 'field:\'month_total\',width:100',
-		                'align' => 'right',
+		                'align' => 'center',
+		                'child' => array(
+		                	__('Total') => array(
+								'name' => __('Total'),
+								'text' => !empty($total)?Common::getFormatPrice($total):'-',
+				                'style' => 'text-align: center;',
+				                'data-options' => 'field:\'month_total_'.$i.'\',width:100',
+				                'align' => 'right',
+	                		),
+		                	__('QTY') => array(
+								'name' => __('QTY'),
+								'text' => !empty($total_qty)?$total_qty:'-',
+				                'style' => 'text-align: center;',
+				                'data-options' => 'field:\'month_qty_'.$i.'\',width:100',
+				                'align' => 'center',
+	                		),
+	                	),
 					),
 				));
 			}
@@ -3283,29 +3342,64 @@ class RmReportComponent extends Component {
 				);
 				
 				$grandtotal_sum = 0;
+				$grandtotal_qty_sum = 0;
 
                 for ($i=1; $i <= 12; $i++) {
                 	$monthName = date('F', mktime(0, 0, 0, $i, 1));
                 	$grandtotal = Common::hashEmptyField($grandtotalArr, $i, 0);
+                	$grandtotal_qty = Common::hashEmptyField($grandtotalQtyArr, $i, 0);
 
 					$result[$key+1] = array_merge($result[$key+1], array(
 						$monthName => array(
-							'text' => !empty($grandtotal)?Common::getFormatPrice($grandtotal):'-',
+							'text' => $monthName,
 			                'style' => 'text-align: center;',
 			                'data-options' => 'field:\'month_'.$i.'\',width:100',
-			                'align' => 'right',
+			                'align' => 'center',
+			                'child' => array(
+			                	__('Total') => array(
+									'name' => __('Total'),
+									'text' => !empty($grandtotal)?Common::getFormatPrice($grandtotal):'-',
+					                'style' => 'text-align: center;',
+					                'data-options' => 'field:\'month_total_'.$i.'\',width:100',
+					                'align' => 'right',
+		                		),
+			                	__('QTY') => array(
+									'name' => __('QTY'),
+									'text' => !empty($grandtotal_qty)?$grandtotal_qty:'-',
+					                'style' => 'text-align: center;',
+					                'data-options' => 'field:\'month_qty_'.$i.'\',width:100',
+					                'align' => 'center',
+		                		),
+		                	),
 						),
 					));
 					
 					$grandtotal_sum += $grandtotal;
+					$grandtotal_qty_sum += $grandtotal_qty;
                 }
 
                 $result[$key+1] = array_merge($result[$key+1], array(
 					__('Total') => array(
-						'text' => !empty($grandtotal_sum)?Common::getFormatPrice($grandtotal_sum):'-',
+						'text' => __('Total'),
 		                'style' => 'text-align: center;',
 		                'data-options' => 'field:\'month_total\',width:100',
-		                'align' => 'right',
+		                'align' => 'center',
+		                'child' => array(
+		                	__('Total') => array(
+								'name' => __('Total'),
+								'text' => !empty($grandtotal_sum)?Common::getFormatPrice($grandtotal_sum):'-',
+				                'style' => 'text-align: center;',
+				                'data-options' => 'field:\'month_total_'.$i.'\',width:100',
+				                'align' => 'right',
+	                		),
+		                	__('QTY') => array(
+								'name' => __('QTY'),
+								'text' => !empty($grandtotal_qty_sum)?$grandtotal_qty_sum:'-',
+				                'style' => 'text-align: center;',
+				                'data-options' => 'field:\'month_qty_'.$i.'\',width:100',
+				                'align' => 'center',
+	                		),
+	                	),
 					),
 				));
 			}

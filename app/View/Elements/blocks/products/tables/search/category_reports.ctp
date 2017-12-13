@@ -31,10 +31,17 @@
                     ?>
                 </div>
                 <?php
-                        echo $this->Common->buildInputForm('nopol', __('No Pol'));
+                        echo $this->Common->buildInputForm('name', __('Nama Grup'));
                 ?>
             </div>
             <div class="col-sm-6">
+                <?php
+                        echo $this->Common->buildInputForm('parent_id', __('Parent Grup'), array(
+                            'empty' => __('Pilih Parent'),
+                            'options' => !empty($productCategories)?$productCategories:false,
+                            'class' => 'form-control chosen-select',
+                        ));
+                ?>
                 <div class="form-group">
                     <?php 
                             // Custom Otorisasi

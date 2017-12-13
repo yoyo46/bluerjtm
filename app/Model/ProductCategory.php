@@ -64,9 +64,13 @@ class ProductCategory extends AppModel {
 
     public function _callRefineParams( $data = '', $default_options = false ) {
         $name = $this->filterEmptyField($data, 'named', 'name');
+        $parent_id = $this->filterEmptyField($data, 'named', 'parent_id');
 
         if( !empty($name) ) {
             $default_options['conditions']['ProductCategory.name LIKE'] = '%'.$name.'%';
+        }
+        if( !empty($parent_id) ) {
+            $default_options['conditions']['ProductCategory.parent_id'] = $parent_id;
         }
         
         return $default_options;

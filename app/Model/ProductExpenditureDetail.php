@@ -236,9 +236,11 @@ class ProductExpenditureDetail extends AppModel {
         ));
     }
 
-    function getExpenditureByDetail( $id ){
+    function getExpenditureByDetail( $id, $type = 'total' ){
         if( !empty($id) ) {
             $this->ProductHistory->virtualFields['grandtotal'] = 'SUM(ProductHistory.qty*ProductHistory.price)';
+            $this->ProductHistory->virtualFields['total_qty'] = 'SUM(ProductHistory.qty)';
+
             $history = $this->ProductHistory->getData('first', array(
                 'conditions' => array(
                     'ProductHistory.transaction_type' => 'product_expenditure',
@@ -247,7 +249,16 @@ class ProductExpenditureDetail extends AppModel {
             ), array(
                 'branch' => false,
             ));
-            return Common::hashEmptyField($history, 'ProductHistory.grandtotal');
+
+            switch ($type) {
+                case 'total':
+                    return Common::hashEmptyField($history, 'ProductHistory.grandtotal');
+                    break;
+                
+                default:
+                    return $history;
+                    break;
+            }
         } else {
             return false;
         }
@@ -298,7 +309,7 @@ class ProductExpenditureDetail extends AppModel {
         $product_expenditure_detail_id = $this->getData('list', $options);
 
         if( !empty($product_expenditure_detail_id) ) {
-            return $this->getExpenditureByDetail($product_expenditure_detail_id);
+            return $this->getExpenditureByDetail($product_expenditure_detail_id, 'all');
         } else {
             return false;
         }

@@ -51,21 +51,37 @@
             ?>
             <tbody>
                 <?php
+                        $unset = array(
+                            'text',
+                            'field_model',
+                            'rowspan',
+                        );
+
                         foreach($values as $key => $value){
                             $content = array();
 
                             if( !empty($value) ) {
                                 foreach ($value as $key => $val) {
                                     $title = Common::hashEmptyField($val, 'text', false, false, false);
-                                    $attr = Common::_callUnset($val, array(
-                                        'text',
-                                        'field_model',
-                                    ));
+                                    $childs = Common::hashEmptyField($val, 'child');
+                                    $attr = Common::_callUnset($val, $unset);
 
-                                    $content[] = array(
-                                        $title,
-                                        $attr,
-                                    );
+                                    if( !empty($childs) ) {
+                                        foreach ($childs as $key => $child) {
+                                            $title = Common::hashEmptyField($child, 'text');
+                                            $attr = Common::_callUnset($child, $unset);
+
+                                            $content[] = array(
+                                                $title,
+                                                $attr,
+                                            );
+                                        }
+                                    } else {
+                                        $content[] = array(
+                                            $title,
+                                            $attr,
+                                        );
+                                    }
                                 }
                             }
                             echo($this->Html->tableCells(array($content)));
