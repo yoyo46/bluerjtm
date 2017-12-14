@@ -53,6 +53,7 @@
                 echo $this->Form->hidden('title',array(
                     'value'=> $sub_module_title,
                 ));
+                echo $this->Form->hidden('product_category_id');
                 echo $this->Form->end();
         ?>
     </div>
