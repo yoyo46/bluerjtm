@@ -7,6 +7,10 @@ class Laka extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'No Dokumen name harap diisi'
             ),
+            'unique' => array(
+                'rule' => 'isUnique',
+                'message' => 'No dokumen sudah terdaftar, mohon masukkan no dokumen lain.'
+            ),
         ),
         'nopol' => array(
             'notempty' => array(
@@ -106,6 +110,14 @@ class Laka extends AppModel {
         'Truck' => array(
             'className' => 'Truck',
             'foreignKey' => 'truck_id',
+        ),
+        'Branch' => array(
+            'className' => 'Branch',
+            'foreignKey' => 'branch_id',
+        ),
+        'Driver' => array(
+            'className' => 'Driver',
+            'foreignKey' => 'driver_id',
         ),
     );
 

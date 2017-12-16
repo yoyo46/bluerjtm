@@ -27,6 +27,10 @@ class Spk extends AppModel {
             'className' => 'Driver',
             'foreignKey' => 'driver_id',
         ),
+        'Laka' => array(
+            'className' => 'Laka',
+            'foreignKey' => 'laka_id',
+        ),
     );
 
     var $hasMany = array(
@@ -495,6 +499,7 @@ class Spk extends AppModel {
     public function _callRefineParams( $data = '', $default_options = false ) {
         $noref = $this->filterEmptyField($data, 'named', 'noref');
         $document_type = $this->filterEmptyField($data, 'named', 'document_type');
+        $nolaka = $this->filterEmptyField($data, 'named', 'nolaka');
         $nopol = $this->filterEmptyField($data, 'named', 'nopol');
         $nodoc = $this->filterEmptyField($data, 'named', 'nodoc');
         $dateFrom = $this->filterEmptyField($data, 'named', 'DateFrom');
@@ -502,6 +507,8 @@ class Spk extends AppModel {
         $vendor_id = $this->filterEmptyField($data, 'named', 'vendor_id');
         $note = $this->filterEmptyField($data, 'named', 'note');
         $payment_status = $this->filterEmptyField($data, 'named', 'payment_status');
+        $sort = !empty($data['named']['sort'])?$data['named']['sort']:false;
+        $direction = !empty($data['named']['direction'])?$data['named']['direction']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -524,12 +531,28 @@ class Spk extends AppModel {
         if( !empty($nopol) ) {
             $default_options['conditions']['Spk.nopol LIKE'] = '%'.$nopol.'%';
         }
+        if( !empty($nolaka) ) {
+            $default_options['conditions']['Laka.nodoc LIKE'] = '%'.$nolaka.'%';
+            $default_options['contain'][] = 'Laka';
+        }
         if( !empty($note) ) {
             $default_options['conditions']['Spk.note LIKE'] = '%'.$note.'%';
         }
         if( !empty($payment_status) ) {
             $default_options['conditions']['Spk.document_type'] = 'eksternal';
             $default_options['conditions']['Spk.payment_status'] = $payment_status;
+        }
+
+        if( !empty($sort) ) {
+            $laka = strpos($sort, 'Laka.');
+
+            if( is_numeric($laka) ) {
+                $default_options['contain'][] = 'Laka';
+            }
+
+            $default_options['order'] = array(
+                $sort => $direction,
+            );
         }
         
         return $default_options;

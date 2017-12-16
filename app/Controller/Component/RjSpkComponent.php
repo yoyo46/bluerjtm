@@ -150,12 +150,22 @@ class RjSpkComponent extends Component {
                 )
             ));
             $nopol = $this->MkCommon->filterEmptyField($data, 'Spk', 'nopol');
+            $nolaka = $this->MkCommon->filterEmptyField($data, 'Spk', 'nolaka');
 
             $current_truck = $this->controller->Spk->Truck->getMerge(array(), $nopol, 'Truck.nopol');
             $current_truck_id = Common::hashEmptyField($current_truck, 'Truck.id');
 
             $data['Spk']['branch_id'] = Configure::read('__Site.config_branch_id');
             $data['Spk']['truck_id'] = $this->MkCommon->filterEmptyField($current_truck, 'Truck', 'id');
+
+            if( !empty($nolaka) ) {
+                $laka = $this->controller->Spk->Laka->getData('first', array(
+                    'conditions' => array(
+                        'Laka.nodoc' => $nolaka,
+                    ),
+                ));
+                $data['Spk']['laka_id'] = Common::hashEmptyField($laka, 'Laka.id');
+            }
 
             $data = $this->_callMechanicBeforeSave($data);
             $data = $this->_callProductBeforeSave($data);
@@ -277,6 +287,7 @@ class RjSpkComponent extends Component {
                 $data['Spk']['complete_time'] = Common::hashEmptyField($data, 'Spk.complete_date', null, array(
                     'date' => 'H:i',
                 ));
+                $data['Spk']['nolaka'] = Common::hashEmptyField($data, 'Laka.nodoc');
             }
 
             $current_truck['Truck'] = Common::hashEmptyField($data, 'Truck.Truck');

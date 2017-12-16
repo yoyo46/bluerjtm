@@ -63,6 +63,7 @@ class SpkController extends AppController {
                 ),
                 'Employe',
                 'Truck',
+                'Laka',
             ),
         ));
 
@@ -121,6 +122,7 @@ class SpkController extends AppController {
                     'SpkProduction',
                     'SpkMechanic',
                     'Truck',
+                    'Laka',
                 ),
             ));
             $data = $this->request->data;
@@ -168,6 +170,7 @@ class SpkController extends AppController {
                     'SpkProduction',
                     'SpkMechanic',
                     'Truck',
+                    'Laka',
                 ),
             ));
 
@@ -259,7 +262,8 @@ class SpkController extends AppController {
                 'Truck.id' => $id,
             )
         ), true, array(
-            'plant' => true,
+            'plant' => false,
+            'branch' => false,
         ));
 
         if( !empty($value) ) {
@@ -602,5 +606,90 @@ class SpkController extends AppController {
         $this->set(compact(
             'values', 'payment_id', 'vendor_id'
         ));
+    }
+
+    function laka($nodoc = null ) {
+        $nodoc = urldecode($nodoc);
+        $value = $this->Spk->Laka->getData('first', array(
+            'conditions' => array(
+                'Laka.nodoc' => $nodoc,
+            ),
+        ));
+
+        $value = $this->Spk->Laka->getMergeList($value, array(
+            'contain' => array(
+                'Truck',
+            ),
+        ));
+
+        $ttuj_id = Common::hashEmptyField($value, 'Laka.ttuj_id');
+        $ttuj = $this->Spk->Laka->Ttuj->getData('first', array(
+            'conditions' => array(
+                'Ttuj.id' => $ttuj_id,
+            ),
+        ), true, array(
+            'status' => 'all',
+            'plant' => true,
+        ));
+
+        if( !empty($ttuj) ) {
+            $value['Ttuj'] = Common::hashEmptyField($ttuj, 'Ttuj');
+            $value = $this->Spk->Laka->Ttuj->getMergeList($value, array(
+                'contain' => array(
+                    'Driver' => array(
+                        'elements' => array(
+                            'branch' => false,
+                        ),
+                    ),
+                ),
+            ));
+        } else {
+            $value = $this->Spk->Laka->Truck->getMergeList($value, array(
+                'contain' => array(
+                    'Driver' => array(
+                        'elements' => array(
+                            'branch' => false,
+                        ),
+                    ),
+                ),
+            ));
+        }
+        $value = $this->Spk->Laka->getMergeList($value, array(
+            'contain' => array(
+                'DriverPengganti' => array(
+                    'uses' => 'Driver',
+                    'primaryKey' => 'id',
+                    'foreignKey' => 'change_driver_id',
+                    'elements' => array(
+                        'branch' => false,
+                    ),
+                ),
+            ),
+        ));
+
+        if( !empty($value) ) {
+            $this->request->data['Spk']['nolaka'] = Common::hashEmptyField($value, 'Laka.nodoc');
+            $this->request->data['Spk']['nopol'] = Common::hashEmptyField($value, 'Laka.nopol');
+            $this->request->data['Spk']['driver_id'] = Common::hashEmptyField($value, 'DriverPengganti.id');
+        }
+
+        $drivers = $this->Spk->Driver->getData('list', array(
+            'fields' => array(
+                'Driver.id', 'Driver.driver_name'
+            ),
+        ), array(
+            'branch' => false,
+        ));
+
+        $current_truck = $value;
+        $current_truck_id = Common::hashEmptyField($value, 'Truck.id');
+
+        $this->set(array(
+            'value' => $value,
+            'drivers' => $drivers,
+            'current_truck_id' => $current_truck_id,
+            'current_truck' => $current_truck,
+        ));
+        $this->render('/Elements/blocks/spk/forms/truck');
     }
 }

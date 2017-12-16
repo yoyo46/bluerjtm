@@ -181,12 +181,14 @@ class SpkProduct extends AppModel {
         $code = $this->filterEmptyField($data, 'named', 'code');
         $name = $this->filterEmptyField($data, 'named', 'name');
         $group = $this->filterEmptyField($data, 'named', 'group');
+        $nolaka = $this->filterEmptyField($data, 'named', 'nolaka');
         $nopol = $this->filterEmptyField($data, 'named', 'nopol');
         $status = $this->filterEmptyField($data, 'named', 'status');
         $sort = $this->filterEmptyField($data, 'named', 'sort', false, array(
             'addslashes' => true,
         ));
         $sortTruck = strpos($sort, 'Truck.');
+        $sortLaka = strpos($sort, 'Laka.');
         $sortDriver = strpos($sort, 'Driver.');
         $sortTruckBrand = strpos($sort, 'TruckBrand.');
         $sortTruckCategory = strpos($sort, 'TruckCategory.');
@@ -194,6 +196,14 @@ class SpkProduct extends AppModel {
         $sortProductUnit = strpos($sort, 'ProductUnit.');
         $bindArr = array();
 
+        if( is_numeric($sortLaka) || !empty($nolaka) ) {
+            $bindArr['hasOne']['Laka'] = array(
+                'foreignKey' => FALSE, 
+                'conditions' => array(
+                    'Spk.laka_id = Laka.id', 
+                ), 
+            );
+        }
         if( is_numeric($sortTruck) || is_numeric($sortTruckBrand) || is_numeric($sortTruckCategory) || !empty($nopol) ) {
             $bindArr['hasOne']['Truck'] = array(
                 'foreignKey' => FALSE, 
@@ -297,12 +307,24 @@ class SpkProduct extends AppModel {
                     'Truck',
                 ),
             ),
+            'nolaka' => array(
+                'field' => 'Laka.nodoc',
+                'type' => 'like',
+                'contain' => array(
+                    'Spk',
+                    'Laka',
+                ),
+            ),
             'status' => array(
                 'field' => 'Spk.transaction_status',
             ),
         ));
 
         if( !empty($sort) ) {
+            if( is_numeric($sortLaka) ) {
+                $default_options['contain'][] = 'Spk';
+                $default_options['contain'][] = 'Laka';
+            }
             if( is_numeric($sortTruck) ) {
                 $default_options['contain'][] = 'Spk';
                 $default_options['contain'][] = 'Truck';

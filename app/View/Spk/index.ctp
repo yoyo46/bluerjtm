@@ -12,6 +12,9 @@
             'vendor' => array(
                 'name' => __('Supplier'),
             ),
+            'nolaka' => array(
+                'name' => __('LAKA'),
+            ),
             'nopol' => array(
                 'name' => __('NoPol'),
             ),
@@ -85,6 +88,7 @@
                             $note = $this->Common->filterEmptyField($value, 'Spk', 'note', '-');
                             $document_type = $this->Common->filterEmptyField($value, 'Spk', 'document_type');
                             $nopol = $this->Common->filterEmptyField($value, 'Spk', 'nopol', '-');
+                            $nolaka = $this->Common->filterEmptyField($value, 'Laka', 'nodoc', '-');
                             $estimation_date = $this->Common->filterEmptyField($value, 'Spk', 'estimation_date', '-', true, array(
                                 'date' => 'd/m/Y',
                             ));
@@ -155,6 +159,7 @@
                         echo $this->Html->tag('td', $customDate);
                         echo $this->Html->tag('td', $document_type);
                         echo $this->Html->tag('td', $vendor);
+                        echo $this->Html->tag('td', $nolaka);
                         echo $this->Html->tag('td', $nopol);
                         echo $this->Html->tag('td', $estimation_date);
                         echo $this->Html->tag('td', $complete_date);
@@ -182,7 +187,7 @@
                     } else {
                          echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '11'
+                            'colspan' => '12'
                         )));
                     }
             ?>

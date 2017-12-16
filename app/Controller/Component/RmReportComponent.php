@@ -2256,6 +2256,7 @@ class RmReportComponent extends Component {
 		        ));
 		        $value = $this->controller->SpkProduct->Spk->getMergeList($value, array(
 		            'contain' => array(
+		            	'Laka',
 		            	'Branch',
 		                'Employe',
 		                'Driver',
@@ -2366,6 +2367,12 @@ class RmReportComponent extends Component {
 						'text' => $complete_date,
                 		'field_model' => 'Spk.complete_date',
 		                'data-options' => 'field:\'complete_date\',width:100',
+					),
+					__('No. LAKA') => array(
+						'text' => Common::hashEmptyField($value, 'Laka.nodoc', '-'),
+                		'field_model' => 'Laka.nodoc',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'nolaka\',width:100',
 					),
 					__('No Pol') => array(
 						'text' => Common::hashEmptyField($value, 'Truck.nopol', '-'),
@@ -2515,6 +2522,9 @@ class RmReportComponent extends Component {
 					),
 					__('Tgl Selesai') => array(
                 		'field_model' => 'Spk.complete_date',
+					),
+					__('No. Laka') => array(
+                		'field_model' => 'Truck.nopol',
 					),
 					__('No Pol') => array(
                 		'field_model' => 'Truck.nopol',

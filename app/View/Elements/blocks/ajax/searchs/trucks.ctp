@@ -14,6 +14,8 @@
             )), 
             'role' => 'form',
             'inputDefaults' => array('div' => false),
+            'class' => 'ajax-form',
+            'data-wrapper-write' => '#wrapper-modal-write',
         ));
 ?>
 <div class="row">
@@ -33,13 +35,13 @@
                         'return_value' => $return_value,
                     ),
                     'submitOptions' => array(
-                        'class'=> 'btn btn-success btn-sm ajaxModal',
+                        'class'=> 'btn btn-success btn-sm',
                         'data-action' => 'browse-form',
                         'data-parent' => true,
                         'title' => $title,
                     ),
                     'backOptions' => array(
-                        'class'=> 'btn btn-default btn-sm ajaxModal',
+                        'class'=> 'btn btn-default btn-sm ajaxCustomModal',
                         'data-action' => 'browse-form',
                         'title' => $title,
                     ),

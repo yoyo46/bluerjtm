@@ -12,6 +12,9 @@
                 'type' => array(
                     'name' => __('Jenis'),
                 ),
+                'nolaka' => array(
+                    'name' => __('Laka'),
+                ),
                 'nopol' => array(
                     'name' => __('No Pol'),
                 ),
@@ -37,6 +40,7 @@
                             foreach ($values as $key => $value) {
                                 $id = $this->Common->filterEmptyField($value, 'Spk', 'id');
                                 $nodoc = $this->Common->filterEmptyField($value, 'Spk', 'nodoc');
+                                $nolaka = $this->Common->filterEmptyField($value, 'Laka', 'nodoc', '-');
                                 $transaction_date = $this->Common->filterEmptyField($value, 'Spk', 'transaction_date', false, true, array(
                                     'date' => 'd/m/Y',
                                 ));
@@ -52,6 +56,7 @@
                                 'class' => 'text-center',
                             ));
                             echo $this->Html->tag('td', $document_type);
+                            echo $this->Html->tag('td', $nolaka);
                             echo $this->Html->tag('td', $nopol);
                             echo $this->Html->tag('td', $driver);
                     ?>
@@ -60,7 +65,7 @@
                         }
                     }else{
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data tidak ditemukan'), array(
-                            'colspan' => 7,
+                            'colspan' => 8,
                             'class' => 'text-center alert alert-warning',
                         )));
                     }

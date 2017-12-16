@@ -2975,5 +2975,61 @@ class AjaxController extends AppController {
         $this->set('model_name', $model_name);
         $this->render('/Elements/blocks/purchases/purchase_orders/get_supplier_top');
 	}
+
+	function laka_picker () {
+		$this->loadModel('Laka');
+
+		$title = __('LAKA');
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->Laka->_callRefineParams($params, array(
+            'limit' => Configure::read('__Site.config_pagination'),
+        ));
+
+        $return_value = $this->MkCommon->filterEmptyField($params, 'named', 'return_value', 'nodoc');
+        $target = $this->MkCommon->filterEmptyField($params, 'named', 'target', '#laka-id');
+
+		$this->paginate = $this->Laka->getData('paginate', $options, array(
+			'branch' => false,
+		));
+        $values = $this->paginate('Laka');
+
+        if(!empty($values)){
+            foreach ($values as $key => $value) {
+        		$document_id = $this->MkCommon->filterEmptyField($value, 'Laka', 'id');
+
+				$value['Laka']['last_paid'] = $this->Laka->LakaPaymentDetail->getTotalPayment($document_id);
+	            $value = $this->Laka->getMergeList($value, array(
+	                'contain' => array(
+	                    'Branch',
+	                    'Truck',
+		                'DriverPengganti' => array(
+		                    'uses' => 'Driver',
+		                    'primaryKey' => 'id',
+		                    'foreignKey' => 'change_driver_id',
+		                    'elements' => array(
+		                        'branch' => false,
+		                    ),
+		                ),
+	                ),
+	            ));
+	            $value = $this->Laka->Truck->getMergeList($value, array(
+	                'contain' => array(
+	                    'Driver' => array(
+	                        'elements' => array(
+	                            'branch' => false,
+	                        ),
+	                    ),
+	                ),
+	            ));
+
+                $values[$key] = $value;
+            }
+        }
+
+        $this->set(compact(
+        	'values', 'title', 'return_value',
+        	'target', 'without_branch'
+    	));
+	}
 }
 ?>

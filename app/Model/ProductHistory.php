@@ -132,6 +132,7 @@ class ProductHistory extends AppModel {
         $values = $this->getData('all', array(
             'conditions' => array(
                 'ProductHistory.product_id' => $product_id,
+                'ProductHistory.product_type' => 'default',
             ),
             'group' => array(
                 'ProductHistory.type',
@@ -224,6 +225,7 @@ class ProductHistory extends AppModel {
         $this->virtualFields['qty_cnt'] = 'SUM(CASE WHEN ProductHistory.type = \'in\' THEN ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.type = \'out\' THEN ProductHistory.qty ELSE 0 END)';
         $conditions = array(
             'ProductHistory.product_id' => $product_id,
+            'ProductHistory.product_type' => 'default',
         );
 
         if( !empty($transaction_date) ) {

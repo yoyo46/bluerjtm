@@ -1356,7 +1356,7 @@ tbody.wrapper-table-documents td {
 /*- Daterangepicker*/
 .daterangepicker.dropdown-menu {
   display: none;
-  z-index: 100;
+  z-index: 9999;
 }
 .daterangepicker.opensright .ranges .range_inputs {
   margin-top: 10px;

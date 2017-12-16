@@ -1,16 +1,19 @@
 <?php
+		$wrapperClass = isset($wrapper_class)?$wrapper_class:false;
+		$inputID = isset($input_id)?$input_id:'document-id';
 		$readonly = isset($readonly)?$readonly:true;
 		$onchange = !empty($onchange)?$onchange:false;
 		$attributes = !empty($attributes)?$attributes:array();
+		$pickupTitle = isset($pickup_title)?$pickup_title:strip_tags($label);
 		$attrBrowse = array(
             'class' => 'ajaxModal visible-xs browse-docs',
             'escape' => false,
             'data-action' => 'browse-form',
-            'data-change' => 'document-id',
-            'title' => strip_tags($label),
+            'data-change' => $inputID,
+            'title' => $pickupTitle,
         );
 ?>
-<div class="form-group">
+<div class="form-group <?php echo $wrapperClass; ?>">
 	<?php
 			echo $this->Form->label($fieldName, $label.$this->Html->link($this->Common->icon('plus-square'), $dataUrl, $attrBrowse));
 	?>
@@ -19,7 +22,7 @@
 			<?php
 					echo $this->Common->buildInputForm($fieldName, false, array(
 						'type' => 'text',
-						'id' => 'document-id',
+						'id' => $inputID,
 						'placeholder' => $label,
 						'readonly' => $readonly,
 						'frameClass' => false,
@@ -31,7 +34,7 @@
 		</div>
 		<div class="col-sm-2">
 			<?php 
-					$attrBrowse['class'] = 'btn bg-maroon ajaxModal hidden-xs';
+					$attrBrowse['class'] = 'btn bg-maroon ajaxCustomModal hidden-xs';
                     echo $this->Html->link($this->Common->icon('plus-square'), $dataUrl, $attrBrowse);
             ?>
 		</div>

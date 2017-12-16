@@ -15,7 +15,6 @@
 		$whtClass = Common::_callDisplayToggle('wht', $data);
 		$extClass = Common::_callDisplayToggle('eksternal', $data);
 		$prodClass = Common::_callDisplayToggle('production', $data);
-		$nonprodClass = Common::_callDisplayToggle('non-production', $data);
 
 		$this->Html->addCrumb($title, $urlRoot);
 		$this->Html->addCrumb($sub_module_title);
@@ -48,7 +47,7 @@
 		                    'class' => 'form-control handle-toggle',
 		                    'empty' => __('Pilih Jenis SPK'),
 		                    'options' => Configure::read('__Site.Spk.type'),
-					    	'data-match' => '[[\'.wrapper-mechanic\', [\'internal\',\'production\'], \'slide\'],[\'.wrapper-wht\', [\'wht\'], \'slide\'],[\'.wrapper-eksternal\', [\'eksternal\'], \'slide\'], [\'.wrapper-production\', [\'production\'], \'slide\'], [\'.wrapper-non-production\', [\'internal\'], \'slide\']]',
+					    	'data-match' => '[[\'.wrapper-mechanic\', [\'internal\',\'production\'], \'slide\'],[\'.wrapper-wht\', [\'wht\'], \'slide\'],[\'.wrapper-eksternal\', [\'eksternal\'], \'slide\'], [\'.wrapper-production\', [\'production\'], \'slide\'], [\'.wrapper-non-production\', [\'internal\'], \'slide\'], [\'.wrapper-internal\', [\'internal\'], \'slide\']]',
 					    	'id' => 'spk-document-type',
 						));
 
@@ -105,30 +104,7 @@
 						// 		'closed' => __('Closed'),
 						// 	),
 						// ));
-						echo $this->element('blocks/common/forms/input_pickup', array(
-							'fieldName' => 'nopol',
-							'label' => __('No. Pol %s', $this->Html->tag('span', '*', array(
-								'class' => __('wrapper-non-production %s', $nonprodClass),
-							))).$this->Html->tag('span', $this->element('blocks/spk/truck_history'), array(
-								'class' => 'wrapper-truck-history',
-							)),
-							'dataUrl' => array(
-								'controller' => 'ajax',
-								'action' => 'truck_picker',
-								'return_value' => 'nopol',
-								'without_branch' => 1,
-							),
-							'onchange' => 'false',
-							'attributes' => array(
-								'class' => 'ajax-change form-control',
-								'href' => $this->Html->url(array(
-									'controller' => 'spk',
-									'action' => 'driver_truck',
-								)),
-								'data-wrapper-write-page' => '.wrapper-driver,.wrapper-truck-history',
-							),
-						));
-        				echo $this->element('blocks/spk/forms/driver');
+        				echo $this->element('blocks/spk/forms/truck');
 						echo $this->Common->_callInputForm('vendor_id', array(
 							'label' => __('Supplier *'),
 							'empty' => __('- Pilih Supplier -'),

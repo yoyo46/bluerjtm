@@ -17,6 +17,11 @@
             <div class="col-sm-6">
                 <?php 
                         echo $this->Common->buildInputForm('nodoc', __('No SPK'));
+                        echo $this->Common->buildInputForm('date', __('Tanggal'), array(
+                            'textGroup' => $this->Common->icon('calendar'),
+                            'positionGroup' => 'positionGroup',
+                            'class' => 'form-control pull-right date-range',
+                        ));
                         echo $this->Common->buildInputForm('document_type', __('Jenis SPK'), array(
                             'empty' => __('- Pilih Jenis -'),
                             'class' => 'form-control chosen-select',
@@ -32,11 +37,7 @@
             </div>
             <div class="col-sm-6">
                 <?php 
-                        echo $this->Common->buildInputForm('date', __('Tanggal'), array(
-                            'textGroup' => $this->Common->icon('calendar'),
-                            'positionGroup' => 'positionGroup',
-                            'class' => 'form-control pull-right date-range',
-                        ));
+                        echo $this->Common->buildInputForm('nolaka', __('No. LAKA'));
                         echo $this->Common->buildInputForm('nopol', __('No Pol'));
                         echo $this->Common->buildInputForm('status', __('Status'), array(
                             'empty' => __('Pilih Status'),

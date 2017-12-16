@@ -1056,6 +1056,7 @@ class ProductsController extends AppController {
         $values = $this->paginate('Spk');
         $values = $this->Spk->getMergeList($values, array(
             'contain' => array(
+                'Laka',
                 'Truck',
                 'Driver' => array(
                     'elements' => array(
