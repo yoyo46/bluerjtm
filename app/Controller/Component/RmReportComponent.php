@@ -1031,20 +1031,25 @@ class RmReportComponent extends Component {
 				                if( in_array($transaction_type, array( 'product_receipt', 'product_expenditure_void', 'product_adjustment_plus', 'product_adjustment_min_void' )) ) {
 				                    $qty_in = Common::hashEmptyField($value, 'ProductHistory.qty');
 				                    $price = $price_in = Common::hashEmptyField($value, 'ProductHistory.price');
+                    				$doc_type = Common::hashEmptyField($value, 'ProductHistory.product_type');
 				                    $total_in = $qty_in * $price_in;
 
 				                    $total_ending_price = $price*$qty;
 				            
-				                    if( !empty($ending_stock[$price]['qty']) ) {
-				                        $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
-				                    } else {
-				                        $ending_stock[$price] = array(
-				                            'qty' => $qty,
-				                            'price' => $price,
-				                        );
-				                    }
+                    				if( $doc_type != 'barang_bekas' ) {            
+					                    if( !empty($ending_stock[$price]['qty']) ) {
+					                        $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
+					                    } else {
+					                        $ending_stock[$price] = array(
+					                            'qty' => $qty,
+					                            'price' => $price,
+					                        );
+					                    }
 
-				                    $ending_stock[$price]['serial_numbers'] = $serial_numbers;
+					                    $ending_stock[$price]['serial_numbers'] = $serial_numbers;
+					                } else {
+				                        $nodoc = __('%s (Barang Bekas)', $nodoc);
+				                    }
 
 				                    if( $transaction_type == 'product_expenditure_void' ) {
 				                        $nodoc = __('%s (Void)', $nodoc);
@@ -1094,18 +1099,23 @@ class RmReportComponent extends Component {
 				                    }
 				                } else {
 				                    $qty_in = Common::hashEmptyField($value, 'ProductHistory.qty');
+                    				$doc_type = Common::hashEmptyField($value, 'ProductHistory.product_type');
 				                    $price = $price_in = Common::hashEmptyField($value, 'ProductHistory.price');
 				                    $total_in = $qty_in * $price_in;
 
 				                    $total_ending_price = $price*$qty;
 				            
-				                    if( !empty($ending_stock[$price]['qty']) ) {
-				                        $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
-				                    } else {
-				                        $ending_stock[$price] = array(
-				                            'qty' => $qty,
-				                            'price' => $price,
-				                        );
+                    				if( $doc_type != 'barang_bekas' ) {            
+					                    if( !empty($ending_stock[$price]['qty']) ) {
+					                        $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
+					                    } else {
+					                        $ending_stock[$price] = array(
+					                            'qty' => $qty,
+					                            'price' => $price,
+					                        );
+					                    }
+					                } else {
+				                        $nodoc = __('%s (Barang Bekas)', $nodoc);
 				                    }
 				                }
 
