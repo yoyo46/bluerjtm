@@ -978,6 +978,14 @@ class MkCommonComponent extends Component {
                             'functions/bootstrap-typeahead',
                         ));
                         break;
+                    case 'flot':
+                        $layout_js = array_merge($layout_js, array(
+                            'plugins/flot/jquery.flot.min',
+                            'plugins/flot/jquery.flot.resize.min',
+                            'plugins/flot/jquery.flot.pie.min',
+                            'plugins/flot/jquery.flot.categories.min',
+                        ));
+                        break;
                 }
             }
         }

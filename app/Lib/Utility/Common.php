@@ -755,4 +755,14 @@ class Common {
     		return $result;
     	}
 	}
+
+	public static function _callTargetPercentage( $value, $target ){
+		$margin = $value / $target;
+
+		if( !empty($margin) ) {
+			return round($margin * 100, 2);
+		} else {
+			return 0;
+		}
+	}
 }

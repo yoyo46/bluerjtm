@@ -4547,4 +4547,93 @@ $(function() {
             });
         });
     }
+
+    if( $('.load-chart').length > 0 ) {
+        /*
+         * Custom Label formatter
+         * ----------------------
+         */
+        function labelFormatter(label, series) {
+            return "<div style='font-size:13px; text-align:center; padding:2px; color: #fff; font-weight: 600;'>"
+                    + label
+                    + "<br/>"
+                    + Math.round(series.percent) + "%</div>";
+        }
+
+        function _callLoadChart ( self ) {
+            var url = self.attr('data-url');
+            var type = self.attr('data-type');
+            var target = self.attr('data-target');
+            var dataForm = $.checkUndefined(self.attr('data-form'), null);
+            var data = null;
+
+            if( dataForm != null ) {
+                data = $(dataForm).serialize();
+            }
+
+            $(target).html('');
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function(result, status) {
+                    if( result != '' ) {
+                        result = jQuery.parseJSON(result);
+                        var more = result.url;
+                        var dataChart = result.chart;
+                        
+                        switch(type) {
+                            case 'pie':
+                                var donutData = dataChart;
+                                // [
+                                //     {label: "Series2", data: 30, color: "#3c8dbc"},
+                                //     {label: "Series3", data: 20, color: "#0073b7"},
+                                //     {label: "Series4", data: 50, color: "#00c0ef"}
+                                // ];
+                                $.plot(target, donutData, {
+                                    series: {
+                                        pie: {
+                                            show: true,
+                                            radius: 1,
+                                            innerRadius: 0.5,
+                                            label: {
+                                                show: true,
+                                                radius: 2 / 3,
+                                                formatter: labelFormatter,
+                                                threshold: 0.1
+                                            }
+                                        }
+                                    },
+                                });
+                                
+                                $(target).parents('.box').find('.box-footer').show();
+                                $(target).parents('.box').find('.box-footer a').attr('href', more);
+                                break;
+                        }
+                    } else {
+                        $(target).html('<p class="alert alert-danger no-margin">Data belum tersedia</p>');
+                        $(target).parents('.box').find('.box-footer').hide();
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');
+                    return false;
+                }
+            });
+        }
+
+        $('.chart-change').change(function(){
+            var self = $(this);
+            var target = self.attr('data-target');
+
+            _callLoadChart($(target));
+        });
+
+        $.each( $('.load-chart'), function( i, val ) {
+            var self = $(this);
+            
+            _callLoadChart(self);
+        });
+    }
 });

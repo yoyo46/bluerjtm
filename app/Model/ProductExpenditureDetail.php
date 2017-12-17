@@ -323,6 +323,7 @@ class ProductExpenditureDetail extends AppModel {
         $serial_number = !empty($data['named']['serial_number'])?$data['named']['serial_number']:false;
         $sort = !empty($data['named']['sort'])?$data['named']['sort']:false;
         $direction = !empty($data['named']['direction'])?$data['named']['direction']:false;
+        $is_laka = !empty($data['named']['is_laka'])?$data['named']['is_laka']:false;
 
         if( !empty($code) ) {
             $default_options['conditions']['Product.code LIKE'] = '%'.$code.'%';
@@ -346,6 +347,27 @@ class ProductExpenditureDetail extends AppModel {
         if( !empty($serial_number) ) {
             $default_options['conditions']['ProductExpenditureDetailSerialNumber.serial_number LIKE'] = '%'.$serial_number.'%';
             $default_options['contain'][] = 'ProductExpenditureDetailSerialNumber';
+        }
+        if( !empty($is_laka) ) {
+            $default_options['conditions'][]['OR'] = array(
+                array( 'Spk.laka_id <>' => 0, ),
+                array( 'Spk.laka_id <>' => NULL ),
+            );
+
+            $this->bindModel(array(
+                'hasOne' => array(
+                    'Spk' => array(
+                        'className' => 'Spk',
+                        'foreignKey' => false,
+                        'conditions' => array(
+                            'Spk.id = ProductExpenditure.document_id',
+                            'Spk.status' => 1,
+                        ),
+                    ),
+                )
+            ), false);
+            $default_options['contain'][] = 'ProductExpenditure';
+            $default_options['contain'][] = 'Spk';
         }
 
         if( !empty($sort) ) {

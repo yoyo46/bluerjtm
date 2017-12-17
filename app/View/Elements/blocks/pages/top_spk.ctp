@@ -17,7 +17,7 @@
                     'class' => 'form-control ajax-change',
                     'options' => $this->Common->_callPeriodeYear(10, date('Y')+1),
                     'frameClass' => 'form-group no-margin',
-                    'data-wrapper-write-page' => '#wrapper-top-spk,#wrapper-top-spk-title',
+                    'data-wrapper-write-page' => '#wrapper-top-spk,#wrapper-top-spk-title,.wrapper-top-spk-more',
                     'href' => $urlTopSpk,
                     'value' => $year,
                 ));
@@ -43,6 +43,7 @@
                             'action' => 'expenditure_reports',
                             'nopol' => $nopol,
                             'date' => Common::_callUrlEncode($date),
+                            'status' => 'posting',
                             'bypass' => false,
                         );
         ?>
@@ -77,3 +78,21 @@
         ?>
     </ul>
 </div><!-- /.box-body -->
+<div class="box-footer clearfix wrapper-top-spk-more">
+    <?php
+            if( !empty($top_spk) ) {
+                echo $this->Html->link(__('Lihat Semua'), array(
+                    'controller' => 'spk',
+                    'action' => 'maintenance_cost_report',
+                    'year' => $year,
+                    'sort' => 'ProductHistory.grandtotal',
+                    'direction' => 'DESC',
+                    'bypass' => false,
+                ), array(
+                    'target' => 'blank',
+                    'class' => 'pull-right btn btn-default',
+                    'escape' => false,
+                ));
+            }
+    ?>
+</div>

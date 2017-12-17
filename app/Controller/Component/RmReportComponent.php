@@ -1447,16 +1447,22 @@ class RmReportComponent extends Component {
         		
         		// switch ($document_type) {
         		// 	case 'internal':
-		        		$this->controller->ProductExpenditureDetail->ProductHistory->virtualFields['grandtotal'] = 'SUM(ProductHistory.qty*ProductHistory.price)';
-				        $history = $this->controller->ProductExpenditureDetail->ProductHistory->getData('first', array(
-				        	'conditions' => array(
-				        		'ProductHistory.transaction_type' => 'product_expenditure',
-				        		'ProductHistory.transaction_id' => $product_expenditure_detail_id,
-				        		'ProductHistory.branch_id' => $branch_id,
-			        		),
-			        	), array(
-			        		'branch' => false,
-			        	));
+        				if( empty($value['ProductExpenditureDetailSerialNumber']['id']) ) {
+			        		$this->controller->ProductExpenditureDetail->ProductHistory->virtualFields['grandtotal'] = 'SUM(ProductHistory.qty*ProductHistory.price)';
+					        $history = $this->controller->ProductExpenditureDetail->ProductHistory->getData('first', array(
+					        	'conditions' => array(
+					        		'ProductHistory.transaction_type' => 'product_expenditure',
+					        		'ProductHistory.transaction_id' => $product_expenditure_detail_id,
+					        		'ProductHistory.branch_id' => $branch_id,
+				        		),
+				        	), array(
+				        		'branch' => false,
+				        	));
+					    } else {
+					    	$qty_sn = Common::hashEmptyField($value, 'ProductExpenditureDetailSerialNumber.qty');
+					    	$price_sn = Common::hashEmptyField($value, 'ProductExpenditureDetailSerialNumber.price');
+					    	$history['ProductHistory']['grandtotal'] = $qty_sn * $price_sn;
+					    }
         // 				break;
     				// default:
     				// 	$history = array();

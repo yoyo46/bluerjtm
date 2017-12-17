@@ -616,6 +616,7 @@ class Truck extends AppModel {
         $type = !empty($data['named']['type'])?urldecode($data['named']['type']):1;
         $driver = !empty($data['named']['driver'])?urldecode($data['named']['driver']):false;
         $customerid = !empty($data['named']['customerid'])?urldecode($data['named']['customerid']):false;
+        $year = !empty($data['named']['year'])?urldecode($data['named']['year']):false;
         $sort = !empty($data['named']['sort'])?urldecode($data['named']['sort']):false;
         $direction = !empty($data['named']['direction'])?urldecode($data['named']['direction']):false;
 
@@ -703,6 +704,75 @@ class Truck extends AppModel {
                     $default_options['contain'][] = 'Ttuj';
                     $default_options['contain'][] = 'Revenue';
                     $default_options['group'][] = 'Truck.id';
+                    break;
+                case 'ProductHistory.grandtotal':
+                    $this->unBindModel(array(
+                        'hasMany' => array(
+                            'Spk',
+                        )
+                    ), false);
+                    $this->bindModel(array(
+                        'hasOne' => array(
+                            'Spk' => array(
+                                'className' => 'Spk',
+                                'foreignKey' => false,
+                                'conditions' => array(
+                                    'Spk.truck_id = Truck.id',
+                                    'Spk.status' => 1,
+                                )
+                            ),
+                            'ProductExpenditure' => array(
+                                'className' => 'ProductExpenditure',
+                                'foreignKey' => false,
+                                'conditions' => array(
+                                    'ProductExpenditure.document_id = Spk.id',
+                                    'ProductExpenditure.document_type' => 'internal',
+                                    'ProductExpenditure.transaction_status' => array(
+                                        'approved',
+                                        'paid',
+                                        'half_paid',
+                                        'posting'
+                                    ),
+                                    'ProductExpenditure.status' => 1,
+                                )
+                            ),
+                            'ProductExpenditureDetail' => array(
+                                'className' => 'ProductExpenditureDetail',
+                                'foreignKey' => false,
+                                'conditions' => array(
+                                    'ProductExpenditureDetail.product_expenditure_id = ProductExpenditure.id',
+                                    'ProductExpenditure.status' => 1,
+                                )
+                            ),
+                            'ProductHistory' => array(
+                                'className' => 'ProductHistory',
+                                'foreignKey' => false,
+                                'conditions' => array(
+                                    'ProductExpenditureDetail.id = ProductHistory.transaction_id',
+                                    'ProductHistory.transaction_type NOT' => array(
+                                        'product_expenditure_void',
+                                        'product_adjustment_min_void',
+                                    ),
+                                    'ProductHistory.transaction_type' => 'product_expenditure',
+                                    'ProductHistory.status' => 1,
+                                )
+                            ),
+                        )
+                    ), false);
+                    $this->ProductHistory->virtualFields['grandtotal'] = 'SUM(ProductHistory.qty*ProductHistory.price)';
+
+                    $default_options['contain'][] = 'Spk';
+                    $default_options['contain'][] = 'ProductExpenditure';
+                    $default_options['contain'][] = 'ProductExpenditureDetail';
+                    $default_options['contain'][] = 'ProductHistory';
+                    $default_options['group'][] = 'Truck.id';
+
+                    if( !empty($year) ) {
+                        $default_options['conditions'][]['OR'] = array(
+                            'DATE_FORMAT(ProductExpenditure.transaction_date, \'%Y\')' => $year,
+                            'ProductExpenditure.id' => NULL,
+                        );
+                    }
                     break;
             }
         }

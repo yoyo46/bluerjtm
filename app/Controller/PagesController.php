@@ -34,6 +34,7 @@ class PagesController extends AppController {
         ));
         $top_spk = $this->get_top_spk();
 
+        $this->MkCommon->_layout_file('flot');
         $this->set(compact(
         	'ttujSJ', 'invoiceUnPaid', 'truckAvailable',
             'top_spk'
@@ -100,7 +101,7 @@ class PagesController extends AppController {
         $this->render('notifications');
     }
 
-    function get_top_spk ( $year = '2017' ) {
+    function get_top_spk ( $year = '2017', $type = null ) {
         $this->loadModel('Spk');
 
         $this->Spk->ProductExpenditure->ProductExpenditureDetail->ProductHistory->bindModel(array(
@@ -137,8 +138,7 @@ class PagesController extends AppController {
         $optionTopSpk = Common::_callUnset($optionTopSpk, array(
             'order',
         ));
-
-        $top_spk = $this->Spk->ProductExpenditure->ProductExpenditureDetail->ProductHistory->getData('all', array_merge_recursive($optionTopSpk, array(
+        $options = array_merge_recursive($optionTopSpk, array(
             'conditions' => array(
                 'ProductHistory.transaction_type' => 'product_expenditure',
                 // 'DATE_FORMAT(ProductExpenditure.transaction_date, \'%Y\')' => '2017',
@@ -149,15 +149,43 @@ class PagesController extends AppController {
                 'ProductExpenditure',
                 'Spk',
             ),
-            'group' => array(
-                'Spk.truck_id',
-            ),
             'order' => array(
                 'ProductHistory.grandtotal' => 'DESC',
             ),
             'limit' => 10,
-        )), array(
+        ));
+
+        switch ($type) {
+            case 'group_area':
+                $options['group'] = array(
+                    'Branch.is_head_office',
+                );
+
+                $options['contain'][] = 'Branch';
+                break;
+            
+            case 'laka_group_area':
+                $options['group'] = array(
+                    'Branch.is_head_office',
+                );
+
+                $options['conditions'][]['OR'] = array(
+                    array( 'Spk.laka_id <>' => 0, ),
+                    array( 'Spk.laka_id <>' => NULL ),
+                );
+                $options['contain'][] = 'Branch';
+                break;
+
+            default:
+                $options['group'] = array(
+                    'Spk.truck_id',
+                );
+                break;
+        }
+
+        $top_spk = $this->Spk->ProductExpenditure->ProductExpenditureDetail->ProductHistory->getData('all', $options, array(
             'status' => 'active',
+            'branch' => false,
         ));
         $top_spk = $this->Spk->getMergeList($top_spk, array(
             'contain' => array(
@@ -175,5 +203,119 @@ class PagesController extends AppController {
             'top_spk', 'year'
         ));
         $this->render('/Elements/blocks/pages/top_spk');
+    }
+
+    function bypass_chart_maintenance () {
+        $this->autoRender = false;
+
+        $data = $this->request->data;
+        $year = Common::hashEmptyField($data, 'Search.select_year', date('Y'));
+
+        $values = $this->get_top_spk( $year, 'group_area' );
+
+        if( !empty($values) ) {
+            $date = __('01/01/%s - 31/12/%s', $year, $year);
+            $date = Common::_callUrlEncode($date, true);
+            $result = array(
+                'url' => '/products/expenditure_reports/status:posting/date:'.$date,
+                'chart' => array(),
+            );
+            $colors = array(
+                '#3c8dbc',
+                '#0073b7',
+                '#00c0ef',
+            );
+            $grandtotal = 0;
+
+            foreach ($values as $key => $value) {
+                $total = Common::hashEmptyField($value, 'ProductHistory.grandtotal', 0);
+                $grandtotal += $total;
+            }
+
+            foreach ($values as $key => $value) {
+                $is_head_office = Common::hashEmptyField($value, 'Branch.is_head_office');
+                $total = Common::hashEmptyField($value, 'ProductHistory.grandtotal', 0);
+                $percent = Common::_callTargetPercentage($total, $grandtotal);
+
+                if( !empty($is_head_office) ) {
+                    $label = __('HO');
+                } else {
+                    $label = __('Daerah');
+                }
+
+                if( !empty($colors[$key]) ) {
+                    $color_code = $colors[$key];
+                } else {
+                    $color_code = $colors[0];
+                }
+
+                $result['chart'][] = array(
+                    'label' => __('%s (%s)', $label, Common::getFormatPrice($total)),
+                    'data' => $percent,
+                    'color' => $color_code,
+                );
+            }
+
+            return json_encode($result);
+        } else {
+            return null;
+        }
+    }
+
+    function bypass_chart_maintenance_laka () {
+        $this->autoRender = false;
+
+        $data = $this->request->data;
+        $year = Common::hashEmptyField($data, 'Search.select_year', date('Y'));
+
+        $values = $this->get_top_spk( $year, 'laka_group_area' );
+
+        if( !empty($values) ) {
+            $date = __('01/01/%s - 31/12/%s', $year, $year);
+            $date = Common::_callUrlEncode($date, true);
+            $result = array(
+                'url' => '/products/expenditure_reports/is_laka:1/status:posting/date:'.$date,
+                'chart' => array(),
+            );
+            $colors = array(
+                '#3c8dbc',
+                '#0073b7',
+                '#00c0ef',
+            );
+            $grandtotal = 0;
+
+            foreach ($values as $key => $value) {
+                $total = Common::hashEmptyField($value, 'ProductHistory.grandtotal', 0);
+                $grandtotal += $total;
+            }
+
+            foreach ($values as $key => $value) {
+                $is_head_office = Common::hashEmptyField($value, 'Branch.is_head_office');
+                $total = Common::hashEmptyField($value, 'ProductHistory.grandtotal', 0);
+                $percent = Common::_callTargetPercentage($total, $grandtotal);
+
+                if( !empty($is_head_office) ) {
+                    $label = __('HO');
+                } else {
+                    $label = __('Daerah');
+                }
+
+                if( !empty($colors[$key]) ) {
+                    $color_code = $colors[$key];
+                } else {
+                    $color_code = $colors[0];
+                }
+
+                $result['chart'][] = array(
+                    'label' => __('%s (%s)', $label, Common::getFormatPrice($total)),
+                    'data' => $percent,
+                    'color' => $color_code,
+                );
+            }
+
+            return json_encode($result);
+        } else {
+            return null;
+        }
     }
 }
