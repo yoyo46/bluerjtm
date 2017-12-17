@@ -517,8 +517,10 @@ class ProductReceipt extends AppModel {
                     ),
                 ),
             ));
+
             $product_history_id = Set::extract('/ProductReceiptDetail/ProductHistory/id', $value);
             $product_stock_id = Set::extract('/ProductReceiptDetail/ProductHistory/ProductStock/ProductStock/id', $value);
+            $spk_product_id = Set::extract('/ProductReceiptDetail/ProductReceiptDetail/document_detail_id', $value);
             $qty_use = Set::extract('/ProductReceiptDetail/ProductHistory/ProductStock/ProductStock/qty_use', $value);
             $qty_use = array_filter($qty_use);
 
@@ -528,7 +530,17 @@ class ProductReceipt extends AppModel {
                         $this->Spk->id = $document_id;
                         $this->Spk->set('receipt_status', 'none');
                         $this->Spk->set('draft_receipt_status', 'none');
+                        $this->Spk->set('transaction_status', 'open');
+                        $this->Spk->set('draft_document_status', 'none');
                         $this->Spk->save();
+
+                        $this->Spk->SpkProduct->updateAll(array(
+                            'SpkProduct.document_status' => "'none'",
+                            'SpkProduct.receipt_status' => "'none'",
+                            'SpkProduct.draft_document_status' => "'none'",
+                        ), array(
+                            'SpkProduct.id' => $spk_product_id,
+                        ));
                         break;
                     case 'wht':
                         $value = $this->ProductExpenditure->getMerge($value, $document_id);
