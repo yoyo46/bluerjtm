@@ -21,6 +21,7 @@
                             'positionGroup' => 'positionGroup',
                             'class' => 'form-control pull-right date-range',
                         ));
+                        echo $this->Common->buildInputForm('nopol', __('NoPol'));
                 ?>
             </div>
             <div class="col-sm-6">
