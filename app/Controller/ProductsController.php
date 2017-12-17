@@ -1429,6 +1429,7 @@ class ProductsController extends AppController {
                         ));
 
                         $options['conditions']['DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') <'] = $dateFrom;
+                        $options['conditions']['ProductHistory.product_type'] = 'default';
                         $options['conditions']['ProductHistory.product_id'] = $product_id;
                         $options['conditions']['ProductHistory.branch_id'] = $branch_id;
                         $options['order'] = array(
@@ -1467,6 +1468,7 @@ class ProductsController extends AppController {
                                 'ProductReceipt.branch_id' => $branch_id,
                                 'ProductReceipt.status' => 1,
                                 'ProductReceipt.transaction_status NOT' => array( 'unposting', 'revised', 'void' ),
+                                'ProductReceipt.document_type <>' => 'spk',
                             ),
                         ), array(
                             'status' => 'confirm',
@@ -1556,23 +1558,25 @@ class ProductsController extends AppController {
                         ));
                         $last_serial_number = array_diff($last_serial_number, $adjustmentMin);
 
-                        $importStok = $this->Product->ProductHistory->ProductStock->find('list', array(
-                            'fields' => array(
-                                'ProductStock.serial_number',
-                                'ProductStock.serial_number',
-                            ),
-                            'contain' => array(
-                                'ProductHistory',
-                            ),
-                            'conditions' => array(
-                                'ProductHistory.status' => 1,
-                                'ProductHistory.transaction_type = \'\' ',
-                                'ProductHistory.product_id' => $product_id,
-                                'DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') <' => $dateFrom,
-                                'ProductHistory.branch_id' => $branch_id,
-                            ),
-                        ));
-                        $last_serial_number = array_diff($last_serial_number, $adjustmentMin);
+                        // $importStok = $this->Product->ProductHistory->ProductStock->find('list', array(
+                        //     'fields' => array(
+                        //         'ProductStock.serial_number',
+                        //         'ProductStock.serial_number',
+                        //     ),
+                        //     'contain' => array(
+                        //         'ProductHistory',
+                        //     ),
+                        //     'conditions' => array(
+                        //         'ProductHistory.status' => 1,
+                        //         'ProductHistory.transaction_type = \'\' ',
+                        //         'ProductHistory.product_id' => $product_id,
+                        //         'DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') <' => $dateFrom,
+                        //         'ProductHistory.branch_id' => $branch_id,
+                        //     ),
+                        // ), array(
+                        //     'status' => 'barang_jadi',
+                        // ));
+                        // $last_serial_number = array_diff($last_serial_number, $importStok);
 
                         $total_qty_in = Common::hashEmptyField($lastHistory, 'ProductHistory.total_qty_in', 0);
                         $total_qty_out = Common::hashEmptyField($lastHistory, 'ProductHistory.total_qty_out', 0);
@@ -1588,6 +1592,7 @@ class ProductsController extends AppController {
                                 'ProductStock.serial_number' => $last_serial_number,
                                 'ProductStock.branch_id' => $branch_id,
                                 'DATE_FORMAT(ProductStock.transaction_date, \'%Y-%m-%d\') <' => $dateFrom,
+                                'ProductStock.type' => 'default',
                             ),
                         ), array(
                             'status' => false,

@@ -111,6 +111,7 @@
                 if( in_array($transaction_type, array( 'product_receipt', 'product_expenditure_void', 'product_adjustment_plus', 'product_adjustment_min_void' )) ) {
                     $qty_in = Common::hashEmptyField($value, 'ProductHistory.qty');
                     $price = $price_in = Common::hashEmptyField($value, 'ProductHistory.price');
+                    $doc_type = $price_in = Common::hashEmptyField($value, 'ProductHistory.product_type');
                     $total_in = $qty_in * $price_in;
 
                     if( in_array($transaction_type, array( 'product_adjustment_plus' )) ) {
@@ -129,22 +130,26 @@
 
                     $total_ending_price = $price*$qty;
                     // $grandtotal_ending = $total_balance_price + $total_ending_price;
-            
-                    if( !empty($ending_stock[$price]['qty']) ) {
-                        $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
-                    } else {
-                        $ending_stock[$price] = array(
-                            'qty' => $qty,
-                            'price' => $price,
-                        );
-                    }
 
-                    if( !empty($serial_numbers) ) {
-                        if( !empty($ending_stock[$price]['serial_numbers']) ) {
-                            $ending_stock[$price]['serial_numbers'] = array_merge($ending_stock[$price]['serial_numbers'], $serial_numbers);
+                    if( $doc_type != 'barang_bekas' ) {            
+                        if( !empty($ending_stock[$price]['qty']) ) {
+                            $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
                         } else {
-                            $ending_stock[$price]['serial_numbers'] = $serial_numbers;
+                            $ending_stock[$price] = array(
+                                'qty' => $qty,
+                                'price' => $price,
+                            );
                         }
+
+                        if( !empty($serial_numbers) ) {
+                            if( !empty($ending_stock[$price]['serial_numbers']) ) {
+                                $ending_stock[$price]['serial_numbers'] = array_merge($ending_stock[$price]['serial_numbers'], $serial_numbers);
+                            } else {
+                                $ending_stock[$price]['serial_numbers'] = $serial_numbers;
+                            }
+                        }
+                    } else {
+                        $nodoc = __('%s (Barang Bekas)', $nodoc);
                     }
 
                     if( $transaction_type == 'product_expenditure_void' ) {
@@ -211,26 +216,31 @@
                     }
                 } else {
                     $qty_in = Common::hashEmptyField($value, 'ProductHistory.qty');
+                    $doc_type = Common::hashEmptyField($value, 'ProductHistory.product_type');
                     $price = $price_in = Common::hashEmptyField($value, 'ProductHistory.price');
                     $total_in = $qty_in * $price_in;
 
                     $total_ending_price = $price*$qty;
             
-                    if( !empty($ending_stock[$price]['qty']) ) {
-                        $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
-                    } else {
-                        $ending_stock[$price] = array(
-                            'qty' => $qty,
-                            'price' => $price,
-                        );
-                    }
-                    
-                    if( !empty($serial_numbers) ) {
-                        if( !empty($ending_stock[$price]['serial_numbers']) ) {
-                            $ending_stock[$price]['serial_numbers'] = array_merge($ending_stock[$price]['serial_numbers'], $serial_numbers);
+                    if( $doc_type != 'barang_bekas' ) {            
+                        if( !empty($ending_stock[$price]['qty']) ) {
+                            $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
                         } else {
-                            $ending_stock[$price]['serial_numbers'] = $serial_numbers;
+                            $ending_stock[$price] = array(
+                                'qty' => $qty,
+                                'price' => $price,
+                            );
                         }
+                        
+                        if( !empty($serial_numbers) ) {
+                            if( !empty($ending_stock[$price]['serial_numbers']) ) {
+                                $ending_stock[$price]['serial_numbers'] = array_merge($ending_stock[$price]['serial_numbers'], $serial_numbers);
+                            } else {
+                                $ending_stock[$price]['serial_numbers'] = $serial_numbers;
+                            }
+                        }
+                    } else {
+                        $nodoc = __('%s (Barang Bekas)', $nodoc);
                     }
                 }
 

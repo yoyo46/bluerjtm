@@ -178,7 +178,8 @@ class ProductHistory extends AppModel {
     function getMerge( $data, $id, $fieldName = 'ProductHistory.product_id' ){
         $data_merge = $this->getData('first', array(
             'conditions' => array(
-                $fieldName => $id
+                $fieldName => $id,
+                'ProductHistory.product_type' => 'default',
             ),
         ));
 

@@ -533,6 +533,7 @@ class RmReportComponent extends Component {
                 ));
 
                 foreach ($values as $key => $value) {
+                    $product_history_id = Common::hashEmptyField($value, 'ProductHistory.id');
 	                $product_id = Common::hashEmptyField($value, 'ProductHistory.product_id');
 	                $transaction_type = Common::hashEmptyField($value, 'ProductHistory.transaction_type');
 	                $transaction_id = Common::hashEmptyField($value, 'ProductHistory.transaction_id');
@@ -633,7 +634,24 @@ class RmReportComponent extends Component {
 	                            'ProductAdjustmentDetailSerialNumber.product_id' => $product_id,
 	                        ),
 	                    ));
-	                }
+	                } else if( empty($transaction_type) ) {
+                        $value['DocumentDetail']['SerialNumber'] = $this->controller->ProductHistory->ProductStock->find('list', array(
+                            'fields' => array(
+                                'ProductStock.serial_number',
+                                'ProductStock.serial_number',
+                            ),
+                            'contain' => array(
+                                'ProductHistory',
+                            ),
+                            'conditions' => array(
+                                'ProductStock.product_history_id' => $product_history_id,
+                                'ProductHistory.status' => 1,
+                                'ProductHistory.transaction_type = \'\' ',
+                                'ProductHistory.product_id' => $product_id,
+                                'ProductHistory.branch_id' => $branch_id,
+                            ),
+                        ));
+                    }
 
 	                if( in_array($transaction_type, array('product_adjustment_min', 'product_adjustment_plus', 'product_adjustment_min_void', 'product_adjustment_plus_void')) ) {
 	                    $tmpResult[$product_id][$branch_id]['Branch'] = Common::hashEmptyField($value, 'Branch');
@@ -713,6 +731,7 @@ class RmReportComponent extends Component {
                             ),
                         ));
                         $options['conditions']['DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') <'] = $dateFrom;
+                        $options['conditions']['ProductHistory.product_type'] = 'default';
                         $options['conditions']['ProductHistory.product_id'] = $product_id;
                         $options['conditions']['ProductHistory.branch_id'] = $branch_id;
                         $options['order'] = array(
@@ -751,6 +770,7 @@ class RmReportComponent extends Component {
                                 'ProductReceipt.branch_id' => $branch_id,
                                 'ProductReceipt.status' => 1,
                                 'ProductReceipt.transaction_status NOT' => array( 'unposting', 'revised', 'void' ),
+                                'ProductReceipt.document_type <>' => 'spk',
                             ),
                         ), array(
                             'status' => 'confirm',
@@ -854,6 +874,7 @@ class RmReportComponent extends Component {
                                 'ProductStock.serial_number' => $last_serial_number,
                                 'ProductStock.branch_id' => $branch_id,
                                 'DATE_FORMAT(ProductStock.transaction_date, \'%Y-%m-%d\') <' => $dateFrom,
+                                'ProductStock.type' => 'default',
                             ),
                         ), array(
                             'status' => false,
