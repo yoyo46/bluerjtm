@@ -22,6 +22,10 @@
                             'class' => 'form-control pull-right date-range',
                         ));
                         echo $this->Common->buildInputForm('code', __('Kode Barang'));
+                        echo $this->Common->buildInputForm('vendor_id', __('Supplier'), array(
+                            'empty' => __('- Pilih Supplier -'),
+                            'class' => 'form-control chosen-select',
+                        ));
                         echo $this->Common->buildInputForm('status', __('Status'), array(
                             'empty' => __('Pilih Status'),
                             'options' => array(

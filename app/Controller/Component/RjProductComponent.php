@@ -1495,6 +1495,9 @@ class RjProductComponent extends Component {
             $period_text = __('Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
         }
         
+        $vendors = $this->controller->Product->PurchaseOrderDetail->PurchaseOrder->Vendor->getData('list');
+        
+        $this->controller->set('vendors', $vendors);
         $this->controller->set('sub_module_title', $title);
         $this->controller->set('active_menu', $title);
         $this->controller->set(compact(
