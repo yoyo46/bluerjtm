@@ -1468,7 +1468,7 @@ class ProductsController extends AppController {
                                 'ProductReceipt.branch_id' => $branch_id,
                                 'ProductReceipt.status' => 1,
                                 'ProductReceipt.transaction_status NOT' => array( 'unposting', 'revised', 'void' ),
-                                'ProductReceipt.document_type <>' => 'spk',
+                                // 'ProductReceipt.document_type <>' => 'spk',
                             ),
                         ), array(
                             'status' => 'confirm',

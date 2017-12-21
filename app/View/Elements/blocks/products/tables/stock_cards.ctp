@@ -111,7 +111,7 @@
                 if( in_array($transaction_type, array( 'product_receipt', 'product_expenditure_void', 'product_adjustment_plus', 'product_adjustment_min_void' )) ) {
                     $qty_in = Common::hashEmptyField($value, 'ProductHistory.qty');
                     $price = $price_in = Common::hashEmptyField($value, 'ProductHistory.price');
-                    $doc_type = Common::hashEmptyField($value, 'ProductHistory.product_type');
+                    // $doc_type = Common::hashEmptyField($value, 'ProductHistory.product_type');
                     $total_in = $qty_in * $price_in;
 
                     if( in_array($transaction_type, array( 'product_adjustment_plus' )) ) {
@@ -216,7 +216,7 @@
                     }
                 } else {
                     $qty_in = Common::hashEmptyField($value, 'ProductHistory.qty');
-                    $doc_type = Common::hashEmptyField($value, 'ProductHistory.product_type');
+                    // $doc_type = Common::hashEmptyField($value, 'ProductHistory.product_type');
                     $price = $price_in = Common::hashEmptyField($value, 'ProductHistory.price');
                     $total_in = $qty_in * $price_in;
 
