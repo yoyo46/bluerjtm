@@ -131,7 +131,7 @@
                     $total_ending_price = $price*$qty;
                     // $grandtotal_ending = $total_balance_price + $total_ending_price;
 
-                    if( $doc_type != 'barang_bekas' ) {            
+                    // if( $doc_type != 'barang_bekas' ) {            
                         if( !empty($ending_stock[$price]['qty']) ) {
                             $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
                         } else {
@@ -148,9 +148,9 @@
                                 $ending_stock[$price]['serial_numbers'] = $serial_numbers;
                             }
                         }
-                    } else {
-                        $nodoc = __('%s (Barang Bekas)', $nodoc);
-                    }
+                    // } else {
+                    //     $nodoc = __('%s (Barang Bekas)', $nodoc);
+                    // }
 
                     if( $transaction_type == 'product_expenditure_void' ) {
                         $nodoc = __('%s (Void)', $nodoc);
@@ -222,7 +222,7 @@
 
                     $total_ending_price = $price*$qty;
             
-                    if( $doc_type != 'barang_bekas' ) {            
+                    // if( $doc_type != 'barang_bekas' ) {            
                         if( !empty($ending_stock[$price]['qty']) ) {
                             $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
                         } else {
@@ -239,9 +239,9 @@
                                 $ending_stock[$price]['serial_numbers'] = $serial_numbers;
                             }
                         }
-                    } else {
-                        $nodoc = __('%s (Barang Bekas)', $nodoc);
-                    }
+                    // } else {
+                    //     $nodoc = __('%s (Barang Bekas)', $nodoc);
+                    // }
                 }
 
                 if( $key%2 == 0 ) {

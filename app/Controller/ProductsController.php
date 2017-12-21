@@ -1429,7 +1429,7 @@ class ProductsController extends AppController {
                         ));
 
                         $options['conditions']['DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') <'] = $dateFrom;
-                        $options['conditions']['ProductHistory.product_type'] = 'default';
+                        // $options['conditions']['ProductHistory.product_type'] = 'default';
                         $options['conditions']['ProductHistory.product_id'] = $product_id;
                         $options['conditions']['ProductHistory.branch_id'] = $branch_id;
                         $options['order'] = array(
@@ -1592,7 +1592,7 @@ class ProductsController extends AppController {
                                 'ProductStock.serial_number' => $last_serial_number,
                                 'ProductStock.branch_id' => $branch_id,
                                 'DATE_FORMAT(ProductStock.transaction_date, \'%Y-%m-%d\') <' => $dateFrom,
-                                'ProductStock.type' => 'default',
+                                // 'ProductStock.type' => 'default',
                             ),
                         ), array(
                             'status' => false,

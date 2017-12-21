@@ -731,7 +731,7 @@ class RmReportComponent extends Component {
                             ),
                         ));
                         $options['conditions']['DATE_FORMAT(ProductHistory.transaction_date, \'%Y-%m-%d\') <'] = $dateFrom;
-                        $options['conditions']['ProductHistory.product_type'] = 'default';
+                        // $options['conditions']['ProductHistory.product_type'] = 'default';
                         $options['conditions']['ProductHistory.product_id'] = $product_id;
                         $options['conditions']['ProductHistory.branch_id'] = $branch_id;
                         $options['order'] = array(
@@ -874,7 +874,7 @@ class RmReportComponent extends Component {
                                 'ProductStock.serial_number' => $last_serial_number,
                                 'ProductStock.branch_id' => $branch_id,
                                 'DATE_FORMAT(ProductStock.transaction_date, \'%Y-%m-%d\') <' => $dateFrom,
-                                'ProductStock.type' => 'default',
+                                // 'ProductStock.type' => 'default',
                             ),
                         ), array(
                             'status' => false,
@@ -1036,7 +1036,7 @@ class RmReportComponent extends Component {
 
 				                    $total_ending_price = $price*$qty;
 				            
-                    				if( $doc_type != 'barang_bekas' ) {            
+                    				// if( $doc_type != 'barang_bekas' ) {            
 					                    if( !empty($ending_stock[$price]['qty']) ) {
 					                        $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
 					                    } else {
@@ -1047,9 +1047,9 @@ class RmReportComponent extends Component {
 					                    }
 
 					                    $ending_stock[$price]['serial_numbers'] = $serial_numbers;
-					                } else {
-				                        $nodoc = __('%s (Barang Bekas)', $nodoc);
-				                    }
+					                // } else {
+				                 //        $nodoc = __('%s (Barang Bekas)', $nodoc);
+				                 //    }
 
 				                    if( $transaction_type == 'product_expenditure_void' ) {
 				                        $nodoc = __('%s (Void)', $nodoc);
@@ -1105,7 +1105,7 @@ class RmReportComponent extends Component {
 
 				                    $total_ending_price = $price*$qty;
 				            
-                    				if( $doc_type != 'barang_bekas' ) {            
+                    				// if( $doc_type != 'barang_bekas' ) {            
 					                    if( !empty($ending_stock[$price]['qty']) ) {
 					                        $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
 					                    } else {
@@ -1114,9 +1114,9 @@ class RmReportComponent extends Component {
 					                            'price' => $price,
 					                        );
 					                    }
-					                } else {
-				                        $nodoc = __('%s (Barang Bekas)', $nodoc);
-				                    }
+					                // } else {
+				                 //        $nodoc = __('%s (Barang Bekas)', $nodoc);
+				                 //    }
 				                }
 
 					            if( !empty($ending_stock) ) {
