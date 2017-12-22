@@ -92,10 +92,13 @@ class RjProductComponent extends Component {
 
         if( !empty($serial_number) ) {
             $conditions['conditions']['ProductStock.serial_number'] = $serial_number;
+            $elements = 'in_stock';
+        } else {
+            $elements = 'FIFO';
         }
 
         $stock = $this->controller->Product->ProductStock->getData('first', $conditions, array(
-            'status' => 'FIFO',
+            'status' => $elements,
         ));
 
         $id = $this->MkCommon->filterEmptyField($stock, 'ProductStock', 'id');
@@ -181,7 +184,7 @@ class RjProductComponent extends Component {
                 $product_id = $this->MkCommon->filterEmptyField($value, 'product_id');
                 $serial_number = $this->MkCommon->filterEmptyField($value, 'serial_number');
                 $price = $this->MkCommon->filterEmptyField($value, 'price');
-                $qty_out = 1;
+                $qty_out = Common::hashEmptyField($value, 'qty', 1);
 
                 $detail[$modelDetail]['Product']['ProductStock'][] = $this->_callOutStock( $product_id, $qty_out, $serial_number);
 
@@ -251,7 +254,7 @@ class RjProductComponent extends Component {
                 $stock['type'] = 'default';
             }
 
-            if($qty > $stock_qty ) {
+            if( $qty > $stock_qty && empty($serial_numbers) ) {
                 $detail[$modelDetail]['out_stock'] = true;
             }
 
@@ -1063,12 +1066,23 @@ class RjProductComponent extends Component {
                     ), array(
                         'status' => 'in_stock',
                     ));
+                    $stock_sn = Common::hashEmptyField($stock, 'ProductStock.qty', 0);
+                    $qty_out = 1;
+
+                    if( !empty($details['sn_match']) ) {
+                        if( $stock_sn >= $qty ) {
+                            $qty_out = $qty;
+                            unset($details['sn_match']);
+                        } else {
+                            $details['out_stock'] = true;
+                        }
+                    }
 
                     $details[$modelSn][] = array(
                         'product_id' => $product_id,
                         'serial_number' => strtoupper($serial_number),
                         'price' => Common::hashEmptyField($stock, 'ProductStock.price', 0),
-                        'qty' => 1,
+                        'qty' => $qty_out,
                     );
                 }
             } else if( !empty($is_serial_number) ) {

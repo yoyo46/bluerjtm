@@ -131,26 +131,22 @@
                     $total_ending_price = $price*$qty;
                     // $grandtotal_ending = $total_balance_price + $total_ending_price;
 
-                    // if( $doc_type != 'barang_bekas' ) {            
-                        if( !empty($ending_stock[$price]['qty']) ) {
-                            $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
+                    if( !empty($ending_stock[$price]['qty']) ) {
+                        $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
+                    } else {
+                        $ending_stock[$price] = array(
+                            'qty' => $qty,
+                            'price' => $price,
+                        );
+                    }
+                    
+                    if( !empty($serial_numbers) ) {
+                        if( !empty($ending_stock[$price]['serial_numbers']) ) {
+                            $ending_stock[$price]['serial_numbers'] = array_merge($ending_stock[$price]['serial_numbers'], $serial_numbers);
                         } else {
-                            $ending_stock[$price] = array(
-                                'qty' => $qty,
-                                'price' => $price,
-                            );
+                            $ending_stock[$price]['serial_numbers'] = $serial_numbers;
                         }
-
-                        if( !empty($serial_numbers) ) {
-                            if( !empty($ending_stock[$price]['serial_numbers']) ) {
-                                $ending_stock[$price]['serial_numbers'] = array_merge($ending_stock[$price]['serial_numbers'], $serial_numbers);
-                            } else {
-                                $ending_stock[$price]['serial_numbers'] = $serial_numbers;
-                            }
-                        }
-                    // } else {
-                    //     $nodoc = __('%s (Barang Bekas)', $nodoc);
-                    // }
+                    }
 
                     if( $transaction_type == 'product_expenditure_void' ) {
                         $nodoc = __('%s (Void)', $nodoc);
@@ -179,35 +175,40 @@
             
                     if( !empty($ending_stock) ) {
                         foreach ($ending_stock as $key => $stock) {
-                            $sn_stock = Common::hashEmptyField($stock, 'serial_numbers');
+                            $sn_stock = !empty($ending_stock[$key]['serial_numbers'])?$ending_stock[$key]['serial_numbers']:0;
 
                             if( !empty($serial_numbers) && !empty($sn_stock) && !empty($is_serial_number) ) {
+
                                 foreach ($serial_numbers as $sn) {
                                     if( in_array($sn, $sn_stock) ) {
-                                        $ending_qty = Common::hashEmptyField($stock, 'qty', 0) - $qty_out_tmp;
+                                        $stock_sn = !empty($ending_stock[$key]['qty'])?$ending_stock[$key]['qty']:0;
+                                        $ending_qty = $stock_sn - 1;
 
                                         if( empty($ending_qty) ) {
+                                            $qty_out_tmp = 0;
                                             unset($ending_stock[$key]);
-                                            break;
                                         } else if( $ending_qty < 0 ) {
                                             unset($ending_stock[$key]);
                                             $qty_out_tmp = abs($ending_qty);
                                         } else {
+                                            $qty_out_tmp--;
                                             $ending_stock[$key]['qty'] = $ending_qty;
-                                            break;
                                         }
                                     }
                                 }
                             } else {
-                                $ending_qty = Common::hashEmptyField($stock, 'qty', 0) - $qty_out_tmp;
+                                $stock_sn = !empty($ending_stock[$key]['qty'])?$ending_stock[$key]['qty']:0;
+                                $ending_qty = $stock_sn - $qty_out_tmp;
 
                                 if( empty($ending_qty) ) {
+                                    $qty_out_tmp = 0;
                                     unset($ending_stock[$key]);
                                     break;
                                 } else if( $ending_qty < 0 ) {
                                     unset($ending_stock[$key]);
                                     $qty_out_tmp = abs($ending_qty);
                                 } else {
+                                    $qty_out_tmp = 0;
                                     $ending_stock[$key]['qty'] = $ending_qty;
                                     break;
                                 }
@@ -222,26 +223,22 @@
 
                     $total_ending_price = $price*$qty;
             
-                    // if( $doc_type != 'barang_bekas' ) {            
-                        if( !empty($ending_stock[$price]['qty']) ) {
-                            $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
+                    if( !empty($ending_stock[$price]['qty']) ) {
+                        $ending_stock[$price]['qty'] = $ending_stock[$price]['qty'] + $qty;
+                    } else {
+                        $ending_stock[$price] = array(
+                            'qty' => $qty,
+                            'price' => $price,
+                        );
+                    }
+
+                    if( !empty($serial_numbers) ) {
+                        if( !empty($ending_stock[$price]['serial_numbers']) ) {
+                            $ending_stock[$price]['serial_numbers'] = array_merge($ending_stock[$price]['serial_numbers'], $serial_numbers);
                         } else {
-                            $ending_stock[$price] = array(
-                                'qty' => $qty,
-                                'price' => $price,
-                            );
+                            $ending_stock[$price]['serial_numbers'] = $serial_numbers;
                         }
-                        
-                        if( !empty($serial_numbers) ) {
-                            if( !empty($ending_stock[$price]['serial_numbers']) ) {
-                                $ending_stock[$price]['serial_numbers'] = array_merge($ending_stock[$price]['serial_numbers'], $serial_numbers);
-                            } else {
-                                $ending_stock[$price]['serial_numbers'] = $serial_numbers;
-                            }
-                        }
-                    // } else {
-                    //     $nodoc = __('%s (Barang Bekas)', $nodoc);
-                    // }
+                    }
                 }
 
                 if( $key%2 == 0 ) {
