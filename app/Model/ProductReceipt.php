@@ -524,23 +524,54 @@ class ProductReceipt extends AppModel {
             $qty_use = Set::extract('/ProductReceiptDetail/ProductHistory/ProductStock/ProductStock/qty_use', $value);
             $qty_use = array_filter($qty_use);
 
+            $details = Common::hashEmptyField($value, 'ProductReceiptDetail');
+
             if( $this->save() ) {
+                $defaultOptions = array(
+                    'ProductReceipt.id <>' => $id,
+                    'ProductReceipt.document_id' => $document_id,
+                    'ProductReceipt.document_type' => $document_type,
+                );
+                $receiptProduct = $this->getData('first', array(
+                    'conditions' => $defaultOptions,
+                ), array(
+                    'status' => 'posting',
+                ));
+                $draftReceiptProduct = $this->getData('first', array(
+                    'conditions' => $defaultOptions,
+                ), array(
+                    'status' => 'pending',
+                ));
+
+                if( !empty($receiptProduct['ProductReceipt']['id']) ) {
+                    $receipt_status = 'half';
+                } else {
+                    $receipt_status = 'none';
+                }
+                if( !empty($draftReceiptProduct['ProductReceipt']['id']) ) {
+                    $draft_receipt_status = 'half';
+                } else {
+                    $draft_receipt_status = $receipt_status;
+                }
+
                 switch ($document_type) {
                     case 'spk':
                         $this->Spk->id = $document_id;
-                        $this->Spk->set('receipt_status', 'none');
-                        $this->Spk->set('draft_receipt_status', 'none');
+                        $this->Spk->set('receipt_status', $receipt_status);
+                        $this->Spk->set('draft_receipt_status', $draft_receipt_status);
                         $this->Spk->set('transaction_status', 'open');
                         $this->Spk->set('draft_document_status', 'none');
                         $this->Spk->save();
 
-                        $this->Spk->SpkProduct->updateAll(array(
-                            'SpkProduct.document_status' => "'none'",
-                            'SpkProduct.receipt_status' => "'none'",
-                            'SpkProduct.draft_document_status' => "'none'",
-                        ), array(
-                            'SpkProduct.id' => $spk_product_id,
-                        ));
+                        $modelDetail = $this->Spk->SpkProduct;
+
+                        // $this->Spk->SpkProduct->updateAll(array(
+                        //     'SpkProduct.document_status' => "'none'",
+                        //     'SpkProduct.receipt_status' => "'none'",
+                        //     'SpkProduct.draft_document_status' => "'none'",
+                        // ), array(
+                        //     'SpkProduct.id' => $spk_product_id,
+                        // ));
                         break;
                     case 'wht':
                         $value = $this->ProductExpenditure->getMerge($value, $document_id);
@@ -561,8 +592,8 @@ class ProductReceipt extends AppModel {
                         $dataSave = array(
                             'ProductExpenditure' => array(
                                 'id' => $document_id,
-                                'receipt_status' => 'none',
-                                'draft_receipt_status' => 'none',
+                                'receipt_status' => $receipt_status,
+                                'draft_receipt_status' => $draft_receipt_status,
                             ),
                             'Spk' => array(
                                 'Spk.id' => $spk_id,
@@ -571,19 +602,63 @@ class ProductReceipt extends AppModel {
                         );
 
                         $this->ProductExpenditure->saveAll($dataSave);
+
+                        $modelDetail = $this->ProductExpenditure->ProductExpenditureDetail;
                         break;
                     case 'production':
                         $this->Spk->id = $document_id;
-                        $this->Spk->set('receipt_status', 'none');
-                        $this->Spk->set('draft_receipt_status', 'none');
+                        $this->Spk->set('receipt_status', $receipt_status);
+                        $this->Spk->set('draft_receipt_status', $draft_receipt_status);
                         $this->Spk->save();
+                        
+                        $modelDetail = $this->Spk->SpkProduction;
                         break;
                     default:
                         $this->PurchaseOrder->id = $document_id;
-                        $this->PurchaseOrder->set('receipt_status', 'none');
-                        $this->PurchaseOrder->set('draft_receipt_status', 'none');
+                        $this->PurchaseOrder->set('receipt_status', $receipt_status);
+                        $this->PurchaseOrder->set('draft_receipt_status', $draft_receipt_status);
                         $this->PurchaseOrder->save();
+                        
+                        $modelDetail = $this->PurchaseOrder->PurchaseOrderDetail;
                         break;
+                }
+
+                if( !empty($details) ) {
+                    foreach ($details as $key => $val) {
+                        $product_id = Common::hashEmptyField($val, 'ProductReceiptDetail.product_id');
+                        $document_detail_id = Common::hashEmptyField($val, 'ProductReceiptDetail.document_detail_id');
+
+                        $optionsDetail = $this->getData('paginate', array(
+                            'conditions' => array(
+                                'ProductReceiptDetail.product_receipt_id <>' => $id,
+                                'ProductReceiptDetail.document_detail_id' => $document_detail_id,
+                                'ProductReceiptDetail.product_id' => $product_id,
+                            ),
+                            'contain' => array(
+                                'ProductReceipt',
+                            ),
+                        ));
+                        $dataDetail = $this->ProductReceiptDetail->find('first', $optionsDetail);
+
+                        if( !empty($dataDetail['ProductReceiptDetail']['id']) ) {
+                            $receipt_product_status = 'half';
+                        } else {
+                            $receipt_product_status = 'none';
+                        }
+
+                        $modelDetail->id = $document_detail_id;
+                        $modelDetail->set('receipt_status', $receipt_product_status);
+
+                        switch ($document_type) {
+                            case 'spk':
+                                $modelDetail->set('draft_receipt_status', $draft_receipt_status);
+                                $modelDetail->set('transaction_status', 'open');
+                                $modelDetail->set('draft_document_status', 'open');
+                                break;
+                        }
+
+                        $modelDetail->save();
+                    }
                 }
 
                 if( empty($qty_use) ) {

@@ -10,6 +10,7 @@
 		$view = !empty($view)?$view:false;
 		$documentTypes = array(
 	    	'po' => __('PO'),
+	    	'spk' => __('SPK Eksternal'),
     	);
 
     	$document_type = Common::hashEmptyField($data, 'ProductRetur.document_type');

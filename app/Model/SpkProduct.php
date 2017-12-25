@@ -116,6 +116,14 @@ class SpkProduct extends AppModel {
             case 'active':
                 $default_options['conditions']['SpkProduct.status'] = 1;
                 break;
+            case 'unretur':
+                $default_options['conditions']['SpkProduct.status'] = 1;
+                $default_options['conditions']['SpkProduct.retur_status <>'] = 'full';
+                break;
+            case 'retur':
+                $default_options['conditions']['SpkProduct.status'] = 1;
+                $default_options['conditions']['SpkProduct.retur_status'] = array( 'full', 'half' );
+                break;
         }
 
         if(!empty($options['conditions'])){
@@ -355,7 +363,7 @@ class SpkProduct extends AppModel {
         return $default_options;
     }
 
-    function getMergeData( $data, $id, $product_id ){
+    function getMergeData( $data, $id, $product_id, $exclude_id = null ){
         $value = $this->getData('first', array(
             'conditions' => array(
                 'SpkProduct.spk_id' => $id,
@@ -366,6 +374,17 @@ class SpkProduct extends AppModel {
         ));
 
         if(!empty($value)){
+            $qty_retur = $this->Product->ProductReturDetail->getTotalRetur($exclude_id, $id, 'spk', $product_id);
+            $qty = Common::hashEmptyField($value, 'SpkProduct.qty');
+
+            $total_qty = $qty - $qty_retur;
+
+            if( $total_qty <= 0 ) {
+                $total_qty = 0;
+            }
+
+            $value['SpkProduct']['qty'] = $total_qty;
+
             $data = array_merge($data, $value);
         }
 

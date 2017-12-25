@@ -453,7 +453,7 @@ class PurchasesController extends AppController {
 
     public function payments() {
         $this->loadModel('PurchaseOrderPayment');
-        $this->set('sub_module_title', __('Pembayaran PO'));
+        $this->set('sub_module_title', __('Pembayaran PO/SPK'));
         
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');
@@ -472,7 +472,7 @@ class PurchasesController extends AppController {
         $vendors = $this->PurchaseOrder->Vendor->getData('list');
 
         $this->MkCommon->_layout_file('select');
-        $this->set('active_menu', 'Pembayaran PO');
+        $this->set('active_menu', 'Pembayaran PO/SPK');
         $this->set(compact(
             'values', 'vendors'
         ));
@@ -480,7 +480,7 @@ class PurchasesController extends AppController {
 
     function payment_add(){
         $this->loadModel('Spk');
-        $this->set('sub_module_title', __('Pembayaran PO'));
+        $this->set('sub_module_title', __('Pembayaran PO/SPK'));
 
         $data = $this->request->data;
         $dataSave = $this->RjPurchase->_callBeforeSavePayment($data);
@@ -497,7 +497,7 @@ class PurchasesController extends AppController {
 
     public function payment_edit( $id = false ) {
         $this->loadModel('Spk');
-        $this->set('sub_module_title', __('Edit Pembayaran PO'));
+        $this->set('sub_module_title', __('Edit Pembayaran PO/SPK'));
 
         $value = $this->PurchaseOrder->PurchaseOrderPaymentDetail->PurchaseOrderPayment->getData('first', array(
             'conditions' => array(
@@ -521,18 +521,18 @@ class PurchasesController extends AppController {
             ));
             $this->request->data = $this->RjPurchase->_callBeforeRenderPayment($this->request->data, $document_id);
 
-            $this->set('active_menu', 'Pembayaran PO');
+            $this->set('active_menu', 'Pembayaran PO/SPK');
             $this->set(compact(
                 'value'
             ));
             $this->render('payment_add');
         } else {
-            $this->MkCommon->redirectReferer(__('Pembayaran PO tidak ditemukan.'), 'error');
+            $this->MkCommon->redirectReferer(__('Pembayaran PO/SPK tidak ditemukan.'), 'error');
         }
     }
 
     public function payment_detail( $id ) {
-        $this->set('sub_module_title', __('Detail Pembayaran PO'));
+        $this->set('sub_module_title', __('Detail Pembayaran PO/SPK'));
 
         $value = $this->PurchaseOrder->PurchaseOrderPaymentDetail->PurchaseOrderPayment->getData('first', array(
             'conditions' => array(
@@ -554,7 +554,7 @@ class PurchasesController extends AppController {
             ));
             $this->render('payment_add');
         } else {
-            $this->MkCommon->redirectReferer(__('Pembayaran PO tidak ditemukan.'), 'error');
+            $this->MkCommon->redirectReferer(__('Pembayaran PO/SPK tidak ditemukan.'), 'error');
         }
     }
 

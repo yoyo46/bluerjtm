@@ -1,6 +1,7 @@
 <?php 
         $data = $this->request->data;
-        $modelName = !empty($modelName)?$modelName:'SpkProduct';
+        $nodoc = !empty($nodoc)?$nodoc:false;
+        $transaction_id = !empty($transaction_id)?$transaction_id:0;
 ?>
 <div id="wrapper-modal-write" class="document-picker">
     <?php 
@@ -39,7 +40,7 @@
                 'urlForm' => array(
                     'controller' => 'products',
                     'action' => 'search',
-                    'receipt_document_products',
+                    'retur_document_products',
                     $transaction_id,
                     $nodoc,
                     $document_type,
@@ -47,7 +48,7 @@
                 ),
                 'urlReset' => array(
                     'controller' => 'products',
-                    'action' => 'receipt_document_products',
+                    'action' => 'retur_document_products',
                     $transaction_id,
                     $nodoc,
                     $document_type,
@@ -68,17 +69,16 @@
                             foreach ($values as $key => $value) {
                                 $product = $this->Common->filterEmptyField($value, 'Product');
 
-                                $detail_id = $this->Common->filterEmptyField($value, $modelName, 'id');
-                                $total_qty = $this->Common->filterEmptyField($value, $modelName, 'total_qty');
-                                $qty = $this->Common->filterEmptyField($value, $modelName, 'qty');
-                                $in_qty = $this->Common->filterEmptyField($value, $modelName, 'in_qty', 0);
+                                $detail_id = $this->Common->filterEmptyField($value, 'SpkProduct', 'id');
+                                $total_qty = $this->Common->filterEmptyField($value, 'SpkProduct', 'total_qty');
+                                $qty = $this->Common->filterEmptyField($value, 'SpkProduct', 'qty');
+                                $retur_qty = $this->Common->filterEmptyField($value, 'SpkProduct', 'retur_qty', 0);
+                                $in_qty = $this->Common->filterEmptyField($value, 'SpkProduct', 'in_qty', 0);
 
                                 $id = $this->Common->filterEmptyField($value, 'Product', 'id');
                                 $code = $this->Common->filterEmptyField($value, 'Product', 'code');
                                 $name = $this->Common->filterEmptyField($value, 'Product', 'name');
                                 $type = $this->Common->filterEmptyField($value, 'Product', 'type');
-                                $is_serial_number = $this->Common->filterEmptyField($value, 'Product', 'is_serial_number');
-                                $serial_numbers = $this->Common->filterEmptyField($value, 'Product', 'serial_numbers');
 
                                 $unit = $this->Common->filterEmptyField($product, 'ProductUnit', 'name');
                                 $group = $this->Common->filterEmptyField($product, 'ProductCategory', 'name');
@@ -94,7 +94,7 @@
                             )), array(
                                 'class' => 'removed check-box text-center',
                             ));
-                            echo $this->Html->tag('td', $code.$this->Form->hidden(sprintf('ProductReceiptDetail.product_id.%s', $id), array(
+                            echo $this->Html->tag('td', $code.$this->Form->hidden(sprintf('ProductReturDetail.product_id.%s', $id), array(
                                 'value' => $id,
                             )));
                             echo $this->Html->tag('td', $name);
@@ -107,15 +107,19 @@
                             echo $this->Html->tag('td', $customType, array(
                                 'class' => 'removed',
                             ));
-                            echo $this->Html->tag('td', $total_qty, array(
-                                'class' => 'text-center price_custom hide',
+                            echo $this->Html->tag('td', $qty, array(
+                                'class' => 'text-center price_custom',
                                 'rel' => 'qty-doc',
                             ));
                             echo $this->Html->tag('td', $in_qty, array(
                                 'class' => 'text-center hide price_custom',
-                                'rel' => 'qty-in',
+                                'rel' => 'qty-receipt',
                             ));
-                            echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('ProductReceiptDetail.qty.%s', $id), false, array(
+                            echo $this->Html->tag('td', $retur_qty, array(
+                                'class' => 'text-center hide price_custom',
+                                'rel' => 'qty-remain',
+                            ));
+                            echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('ProductReturDetail.qty.%s', $id), false, array(
                                 'type' => 'text',
                                 'frameClass' => false,
                                 'class' => __('input_number text-center price_custom %s', $targetQty),
@@ -126,34 +130,6 @@
                             )), array(
                                 'class' => 'hide',
                             ));
-                            echo $this->Html->tag('td', $qty, array(
-                                'class' => 'text-center removed',
-                            ));
-
-                            if( !empty($is_serial_number) ) {
-                                $lblSerialNumber = __('Masukan No. Seri %s', $this->Common->icon('plus-square', false, 'i', 'ml5'));
-                                echo $this->Html->tag('td', $this->Html->link($lblSerialNumber, array(
-                                    'controller'=> 'products', 
-                                    'action' => 'receipt_serial_numbers',
-                                    $id,
-                                    'admin' => false,
-                                    'bypass' => true,
-                                ), array(
-                                    'escape' => false,
-                                    'allow' => true,
-                                    'class' => sprintf('ajaxCustomModal browse-docs serial-number-fill-%s', $id),
-                                    'title' => __('Serial Number'),
-                                    'data-action' => 'browse-form',
-                                    'data-form' => '.receipt-form',
-                                    'data-picker' => sprintf('.%s', $targetQty),
-                                )), array(
-                                    'class' => 'text-center hide',
-                                ));
-                            } else {
-                                echo $this->Html->tag('td', __('Automatic'), array(
-                                    'class' => 'text-center hide',
-                                ));
-                            }
 
                             echo $this->Html->tag('td', $this->Html->link($this->Common->icon('times'), '#', array(
                                 'class' => 'delete-document btn btn-danger btn-xs',
@@ -161,7 +137,7 @@
                             )), array(
                                 'class' => 'actions text-center hide',
                             ));
-                            echo $this->Form->hidden(sprintf('ProductReceiptDetail.document_detail_id.%s', $id), array(
+                            echo $this->Form->hidden(sprintf('ProductReturDetail.document_detail_id.%s', $id), array(
                                 'value' => $detail_id,
                             ));
                     ?>

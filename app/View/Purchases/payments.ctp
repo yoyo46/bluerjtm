@@ -100,7 +100,7 @@
                                     'data-action' => 'submit_form',
                                     'closing' => true,
                                     'periode' => $periode,
-                                    'title' => __('Void Pembayaran PO')
+                                    'title' => __('Void Pembayaran PO/SPK')
                                 ));
                             }
             ?>

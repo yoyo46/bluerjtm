@@ -26,6 +26,13 @@ class ProductRetur extends AppModel {
                 'ProductRetur.document_type' => 'po',
             ),
         ),
+        'Spk' => array(
+            'className' => 'Spk',
+            'foreignKey' => 'document_id',
+            'conditions' => array(
+                'ProductRetur.document_type' => 'spk',
+            ),
+        ),
     );
 
     var $hasMany = array(
@@ -141,6 +148,10 @@ class ProductRetur extends AppModel {
                 $default_options['conditions']['ProductRetur.transaction_status'] = array( 'unposting', 'revised' );
                 $default_options['conditions']['ProductRetur.status'] = 1;
                 break;
+            case 'posting':
+                $default_options['conditions']['ProductRetur.transaction_status NOT'] = array( 'unposting', 'revised', 'void' );
+                $default_options['conditions']['ProductRetur.status'] = 1;
+                break;
             case 'non-active':
                 $default_options['conditions']['ProductRetur.status'] = 0;
                 break;
@@ -183,28 +194,91 @@ class ProductRetur extends AppModel {
         $transaction_status = $this->filterEmptyField($data, 'ProductRetur', 'transaction_status');
         $transaction_date = $this->filterEmptyField($data, 'ProductRetur', 'transaction_date');
 
-        $purchaseOrderDetail = $this->PurchaseOrder->PurchaseOrderDetail->getData('first', array(
-            'conditions' => array(
-                'PurchaseOrderDetail.purchase_order_id' => $document_id,
-            ),
-        ), array(
-            'status' => 'unretur',
-        ));
+        switch ($document_type) {
+            case 'spk':
+                $spkProduct = $this->Spk->SpkProduct->getData('first', array(
+                    'conditions' => array(
+                        'SpkProduct.spk_id' => $document_id,
+                    ),
+                ), array(
+                    'status' => 'unretur',
+                ));
+                $dataDetail = $this->Spk->SpkProduct->getData('first', array(
+                    'conditions' => array(
+                        'SpkProduct.spk_id' => $document_id,
+                    ),
+                ), array(
+                    'status' => 'unreceipt',
+                ));
 
-        if( !empty($purchaseOrderDetail) ) {
-            $status = 'half';
-        } else {
-            $status = 'full';
+                if( !empty($spkProduct) ) {
+                    $status = 'half';
+                } else {
+                    $status = 'full';
+                }
+
+                if( !empty($dataDetail) ) {
+                    $receipt_status = 'half';
+                } else {
+                    $receipt_status = 'full';
+                }
+
+                $this->Spk->id = $document_id;
+                $this->Spk->set('draft_retur_status', $status);
+                $this->Spk->set('draft_receipt_status', $receipt_status);
+
+                if( $transaction_status == 'posting' ) {
+                    $this->Spk->set('retur_status', $status);
+                    $this->Spk->set('receipt_status', $receipt_status);
+
+                    if( $receipt_status == 'full' ) {
+                        $this->Spk->set('transaction_status', 'closed');
+                    }
+                }
+
+                $this->Spk->save();
+                break;
+            
+            default:
+                $purchaseOrderDetail = $this->PurchaseOrder->PurchaseOrderDetail->getData('first', array(
+                    'conditions' => array(
+                        'PurchaseOrderDetail.purchase_order_id' => $document_id,
+                    ),
+                ), array(
+                    'status' => 'unretur',
+                ));
+                $dataDetail = $this->PurchaseOrder->PurchaseOrderDetail->getData('first', array(
+                    'conditions' => array(
+                        'PurchaseOrderDetail.purchase_order_id' => $document_id,
+                    ),
+                ), array(
+                    'status' => 'unreceipt',
+                ));
+
+                if( !empty($purchaseOrderDetail) ) {
+                    $status = 'half';
+                } else {
+                    $status = 'full';
+                }
+
+                if( !empty($dataDetail) ) {
+                    $receipt_status = 'half';
+                } else {
+                    $receipt_status = 'full';
+                }
+
+                $this->PurchaseOrder->id = $document_id;
+                $this->PurchaseOrder->set('draft_retur_status', $status);
+                $this->PurchaseOrder->set('draft_receipt_status', $receipt_status);
+
+                if( $transaction_status == 'posting' ) {
+                    $this->PurchaseOrder->set('retur_status', $status);
+                    $this->PurchaseOrder->set('receipt_status', $receipt_status);
+                }
+
+                $this->PurchaseOrder->save();
+                break;
         }
-
-        $this->PurchaseOrder->id = $document_id;
-        $this->PurchaseOrder->set('draft_retur_status', $status);
-
-        if( $transaction_status == 'posting' ) {
-            $this->PurchaseOrder->set('retur_status', $status);
-        }
-
-        $this->PurchaseOrder->save();
     }
 
     function doSave( $data, $value = false, $id = false ) {
@@ -212,6 +286,9 @@ class ProductRetur extends AppModel {
         $defaul_msg = __('retur barang');
 
         if ( !empty($data) ) {
+            $document_type = Common::hashEmptyField($data, 'ProductRetur.document_type');
+            $document_id = Common::hashEmptyField($data, 'ProductRetur.document_id');
+
             $flag = $this->saveAll($data, array(
                 'deep' => true,
                 'validate' => 'only',
@@ -220,6 +297,76 @@ class ProductRetur extends AppModel {
             if( !empty($flag) ) {
                 if( empty($id) ){
                     $data['ProductRetur']['nodoc'] = $this->generateNoId();
+                }
+
+                $detail_existing = Set::extract('/ProductReturDetail/ProductReturDetail/product_id', $data);
+                $returDetail = Common::hashEmptyField($value, 'ProductReturDetail');
+
+                if( !empty($returDetail) ) {
+                    foreach ($returDetail as $key => $detail) {
+                        $product_id = Common::hashEmptyField($detail, 'ProductReturDetail.product_id');
+                        $document_detail_id = Common::hashEmptyField($detail, 'ProductReturDetail.document_detail_id');
+
+                        if( !in_array($product_id, $detail_existing) ) {
+                            $optionsDetail = $this->getData('paginate', array(
+                                'conditions' => array(
+                                    'ProductReturDetail.product_retur_id <>' => $id,
+                                    'ProductReturDetail.document_detail_id' => $document_detail_id,
+                                    'ProductReturDetail.product_id' => $product_id,
+                                ),
+                                'contain' => array(
+                                    'ProductRetur',
+                                ),
+                            ));
+                            $dataDetail = $this->ProductReturDetail->find('first', $optionsDetail);
+
+                            if( !empty($dataDetail['ProductReturDetail']['id']) ) {
+                                $retur_status = 'half';
+                            } else {
+                                $retur_status = 'none';
+                            }
+
+                            switch ($document_type) {
+                                case 'spk':
+                                    $receiptProduct = $this->ProductReturDetail->Product->SpkProduct->getMergeData(array(), $document_id, $product_id, $id);
+                                    $detailQty = Common::hashEmptyField($receiptProduct, 'SpkProduct.qty');
+                                    $total_receipt = $this->ProductReturDetail->Product->ProductReceiptDetail->getTotalReceipt(false, $document_id, $document_type, $product_id);
+
+                                    if( $total_receipt >= $detailQty ) {
+                                        $receipt_detail_status = 'full';
+                                    } else {
+                                        $receipt_detail_status = 'half';
+                                    }
+
+                                    $this->Spk->SpkProduct->updateAll(array(
+                                        'SpkProduct.retur_status' => "'".$retur_status."'",
+                                        'SpkProduct.receipt_status' => "'".$receipt_detail_status."'",
+                                    ), array(
+                                        'SpkProduct.id' => $document_detail_id,
+                                    ));
+                                    break;
+                                
+                                default:
+                                    $receiptProduct = $this->ProductReturDetail->Product->PurchaseOrderDetail->getMergeData(array(), $document_id, $product_id, $id);
+                                    $detailQty = Common::hashEmptyField($receiptProduct, 'PurchaseOrderDetail.qty');
+                                    $total_receipt = $this->ProductReturDetail->Product->ProductReceiptDetail->getTotalReceipt(false, $document_id, $document_type, $product_id);
+
+                                    if( $total_receipt >= $detailQty ) {
+                                        $receipt_detail_status = 'full';
+                                    } else {
+                                        $receipt_detail_status = 'half';
+                                    }
+
+                                    $this->PurchaseOrder->PurchaseOrderDetail->updateAll(array(
+                                        'PurchaseOrderDetail.retur_status' => "'".$retur_status."'",
+                                        'PurchaseOrderDetail.receipt_status' => "'".$receipt_detail_status."'",
+                                    ), array(
+                                        'PurchaseOrderDetail.id' => $document_detail_id,
+                                    ));
+                                    break;
+                            }
+                        }
+                    }
                 }
 
                 $this->ProductReturDetail->deleteAll(array(
@@ -316,6 +463,7 @@ class ProductRetur extends AppModel {
             $document_id = $this->filterEmptyField($value, 'ProductRetur', 'document_id');
             $nodoc = $this->filterEmptyField($value, 'ProductRetur', 'nodoc');
             $document_type = $this->filterEmptyField($value, 'ProductRetur', 'document_type');
+            $transaction_status = $this->filterEmptyField($value, 'ProductRetur', 'transaction_status');
 
             switch ($type) {
                 case 'void':
@@ -333,46 +481,165 @@ class ProductRetur extends AppModel {
             
             $value = $this->getMergeList($value, array(
                 'contain' => array(
-                    'ProductReturDetail' => array(
-                        'contain' => array(
-                            'ProductHistory' => array(
-                                'conditions' => array(
-                                    'ProductHistory.transaction_type' => 'product_returs',
-                                ),
-                                'contain' => array(
-                                    'ProductStock',
-                                ),
-                            ),
-                        ),
-                    ),
+                    'ProductReturDetail',
                 ),
             ));
-            $product_history_id = Set::extract('/ProductReturDetail/ProductHistory/id', $value);
-            $product_stock_id = Set::extract('/ProductReturDetail/ProductHistory/ProductStock/ProductStock/id', $value);
-            $qty_use = Set::extract('/ProductReturDetail/ProductHistory/ProductStock/ProductStock/qty_use', $value);
-            $qty_use = array_filter($qty_use);
+            $details = Common::hashEmptyField($value, 'ProductReturDetail');
 
             if( $this->save() ) {
-                $this->PurchaseOrder->id = $document_id;
-                $this->PurchaseOrder->set('retur_status', 'none');
-                $this->PurchaseOrder->set('draft_retur_status', 'none');
-                $this->PurchaseOrder->save();
+                $defaultOptions = array(
+                    'ProductRetur.id <>' => $id,
+                    'ProductRetur.document_id' => $document_id,
+                    'ProductRetur.document_type' => $document_type,
+                );
+                $returProduct = $this->getData('first', array(
+                    'conditions' => $defaultOptions,
+                ), array(
+                    'status' => 'posting',
+                ));
+                $draftReturProduct = $this->getData('first', array(
+                    'conditions' => $defaultOptions,
+                ), array(
+                    'status' => 'pending',
+                ));
 
-                if( empty($qty_use) ) {
-                    if( !empty($product_history_id) ) {
-                        $this->ProductReturDetail->ProductHistory->updateAll(array(
-                            'ProductHistory.status' => false,
-                        ), array(
-                            'ProductHistory.id' => $product_history_id,
-                        ));
-                    }
-                    if( !empty($product_stock_id) ) {
-                        $this->ProductReturDetail->Product->ProductStock->updateAll(array(
-                            'status' => false,
-                        ), array(
-                            'ProductStock.id' => $product_stock_id,
-                        ));
-                    }
+                if( !empty($returProduct['ProductRetur']['id']) ) {
+                    $retur_status = 'half';
+                } else {
+                    $retur_status = 'none';
+                }
+                if( !empty($draftReturProduct['ProductRetur']['id']) ) {
+                    $draft_retur_status = 'half';
+                } else {
+                    $draft_retur_status = $retur_status;
+                }
+
+                $defaultOptions = array(
+                    'ProductReceipt.document_id' => $document_id,
+                    'ProductReceipt.document_type' => $document_type,
+                );
+                $receiptProduct = $this->ProductReturDetail->Product->ProductReceiptDetail->ProductReceipt->getData('first', array(
+                    'conditions' => $defaultOptions,
+                ), array(
+                    'status' => 'posting',
+                ));
+                $draftReceiptProduct = $this->ProductReturDetail->Product->ProductReceiptDetail->ProductReceipt->getData('first', array(
+                    'conditions' => $defaultOptions,
+                ), array(
+                    'status' => 'pending',
+                ));
+
+                if( !empty($receiptProduct['ProductReceipt']['id']) ) {
+                    $receipt_status = 'half';
+                } else {
+                    $receipt_status = 'none';
+                }
+                if( !empty($draftReceiptProduct['ProductReceipt']['id']) ) {
+                    $draft_receipt_status = 'half';
+                } else {
+                    $draft_receipt_status = $receipt_status;
+                }
+
+                switch ($document_type) {
+                    case 'spk':
+                        if( !empty($details) ) {
+                            foreach ($details as $key => $val) {
+                                $product_id = Common::hashEmptyField($val, 'ProductReturDetail.product_id');
+                                $document_detail_id = Common::hashEmptyField($val, 'ProductReturDetail.document_detail_id');
+
+                                $optionsDetail = $this->getData('paginate', array(
+                                    'conditions' => array(
+                                        'ProductReturDetail.product_retur_id <>' => $id,
+                                        'ProductReturDetail.document_detail_id' => $document_detail_id,
+                                        'ProductReturDetail.product_id' => $product_id,
+                                    ),
+                                    'contain' => array(
+                                        'ProductRetur',
+                                    ),
+                                ));
+                                $dataDetail = $this->ProductReturDetail->find('first', $optionsDetail);
+
+                                if( !empty($dataDetail['ProductReturDetail']['id']) ) {
+                                    $retur_product_status = 'half';
+                                } else {
+                                    $retur_product_status = 'none';
+                                }
+
+                                $receiptProduct = $this->ProductReturDetail->Product->SpkProduct->getMergeData(array(), $document_id, $product_id);
+                                $detailQty = Common::hashEmptyField($receiptProduct, 'SpkProduct.qty');
+                                $total_receipt = $this->ProductReturDetail->Product->ProductReceiptDetail->getTotalReceipt(false, $document_id, $document_type, $product_id);
+
+                                if( $total_receipt >= $detailQty ) {
+                                    $receipt_detail_status = 'full';
+                                } else {
+                                    $receipt_detail_status = 'half';
+                                }
+                                
+                                $this->Spk->SpkProduct->id = $document_detail_id;
+                                $this->Spk->SpkProduct->set('retur_status', $retur_product_status);
+                                $this->Spk->SpkProduct->set('receipt_status', $receipt_detail_status);
+                                $this->Spk->SpkProduct->save();
+                            }
+                        }
+
+                        $this->Spk->id = $document_id;
+                        $this->Spk->set('retur_status', $retur_status);
+                        $this->Spk->set('draft_retur_status', $draft_retur_status);
+                        $this->Spk->set('transaction_status', 'open');
+                        $this->Spk->set('receipt_status', $receipt_status);
+                        $this->Spk->set('draft_receipt_status', $draft_receipt_status);
+                        $this->Spk->save();
+                        break;
+                    
+                    default:
+                        if( !empty($details) ) {
+                            foreach ($details as $key => $val) {
+                                $product_id = Common::hashEmptyField($val, 'ProductReturDetail.product_id');
+                                $document_detail_id = Common::hashEmptyField($val, 'ProductReturDetail.document_detail_id');
+
+                                $optionsDetail = $this->getData('paginate', array(
+                                    'conditions' => array(
+                                        'ProductReturDetail.product_retur_id <>' => $id,
+                                        'ProductReturDetail.document_detail_id' => $document_detail_id,
+                                        'ProductReturDetail.product_id' => $product_id,
+                                    ),
+                                    'contain' => array(
+                                        'ProductRetur',
+                                    ),
+                                ));
+                                $dataDetail = $this->ProductReturDetail->find('first', $optionsDetail);
+
+                                if( !empty($dataDetail['ProductReturDetail']['id']) ) {
+                                    $retur_product_status = 'half';
+                                } else {
+                                    $retur_product_status = 'none';
+                                }
+
+                                $receiptProduct = $this->ProductReturDetail->Product->PurchaseOrderDetail->getMergeData(array(), $document_id, $product_id);
+                                $detailQty = Common::hashEmptyField($receiptProduct, 'PurchaseOrderDetail.qty');
+                                $total_receipt = $this->ProductReturDetail->Product->ProductReceiptDetail->getTotalReceipt(false, $document_id, $document_type, $product_id);
+
+                                if( $total_receipt >= $detailQty ) {
+                                    $receipt_detail_status = 'full';
+                                } else {
+                                    $receipt_detail_status = 'half';
+                                }
+                                
+                                $this->PurchaseOrder->PurchaseOrderDetail->id = $document_detail_id;
+                                $this->PurchaseOrder->PurchaseOrderDetail->set('retur_status', $retur_product_status);
+                                $this->PurchaseOrder->PurchaseOrderDetail->set('receipt_status', $receipt_detail_status);
+                                $this->PurchaseOrder->PurchaseOrderDetail->save();
+                            }
+                        }
+
+                        $this->PurchaseOrder->id = $document_id;
+                        $this->PurchaseOrder->set('retur_status', $retur_status);
+                        $this->PurchaseOrder->set('draft_retur_status', $draft_retur_status);
+                        $this->PurchaseOrder->set('transaction_status', 'approved');
+                        $this->PurchaseOrder->set('draft_receipt_status', $draft_receipt_status);
+                        $this->PurchaseOrder->set('receipt_status', $receipt_status);
+                        $this->PurchaseOrder->save();
+                        break;
                 }
 
                 $msg = sprintf(__('Berhasil %s'), $default_msg);

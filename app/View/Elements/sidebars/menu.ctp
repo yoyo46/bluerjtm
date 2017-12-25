@@ -1564,7 +1564,7 @@
                         $activeSetting = false;
                         $lblQuotation = __('Penawaran Supplier');
                         $lblPO = __('Purchase Order');
-                        $lblPOPayment = __('Pembayaran PO');
+                        $lblPOPayment = __('Pembayaran PO/SPK');
                         $lblPOReport = __('Laporan PO');
                         
                         $settingMenu = array(

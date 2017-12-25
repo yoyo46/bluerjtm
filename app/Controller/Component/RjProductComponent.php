@@ -1335,11 +1335,17 @@ class RjProductComponent extends Component {
                         ),
                     ),
                 ));
-
+                $document_id = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'spk_id');
+                $product_id = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'product_id');
+                $total_qty = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'qty');
                 $in_qty = $this->controller->Product->ProductReceiptDetail->getTotalReceipt($transaction_id, $document_id, $document_type, $product_id);
-                // $qty -= $in_qty;
+                $qty_retur = $this->controller->Product->ProductReturDetail->getTotalRetur(false, $document_id, 'spk', $product_id);
+
+                $total_qty -= $qty_retur;
+                $qty = $total_qty - $in_qty;
 
                 if( !empty($qty) ) {
+                    $value[$nodelProduct]['total_qty'] = $total_qty;
                     $value[$nodelProduct]['qty'] = $qty;
                     $value[$nodelProduct]['in_qty'] = $in_qty;
                     $values[$key] = $value;
@@ -1355,7 +1361,7 @@ class RjProductComponent extends Component {
         ));
     }
 
-    function _callSpkInternals( $params, $vendor_id = false ) {
+    function _callSpkInternals( $params, $vendor_id = false, $type = null ) {
         $this->controller->loadModel('Spk');
         $options =  $this->controller->Spk->_callRefineParams($params, array(
             'conditions' => array(
@@ -1365,6 +1371,7 @@ class RjProductComponent extends Component {
         ));
         $this->controller->paginate = $this->controller->Spk->getData('paginate', $options, array(
             'status' => 'unreceipt_draft',
+            'type' => $type,
         ));
         $values = $this->controller->paginate('Spk');
 
@@ -1538,6 +1545,12 @@ class RjProductComponent extends Component {
                     $document_id = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'id');
                     $reference_date = $this->MkCommon->filterEmptyField($value, 'PurchaseOrder', 'transaction_date');
                     break;
+
+                case 'spk':
+                    $value = $this->controller->Product->SpkProduct->Spk->getMerge(array(), $document_number, 'Spk.nodoc', 'active');
+                    $document_id = $this->MkCommon->filterEmptyField($value, 'Spk', 'id');
+                    $reference_date = $this->MkCommon->filterEmptyField($value, 'Spk', 'transaction_date');
+                    break;
                 
                 default:
                     $document_id = '';
@@ -1596,11 +1609,34 @@ class RjProductComponent extends Component {
                     );
 
                     switch ($document_type) {
+                        case 'spk':
+                            $documentDetail = $this->controller->Product->SpkProduct->getMergeData(array(), $document_id, $product_id, $id);
+                            $qty_retur = $this->controller->Product->ProductReturDetail->getTotalRetur($id, $document_id, $document_type, $product_id);
+                            $in_qty = $this->controller->Product->ProductReceiptDetail->getTotalReceipt(null, $document_id, $document_type, $product_id);
+                            $spk_qty = Common::hashEmptyField($documentDetail, 'SpkProduct.qty');
+                            
+                            $total_retur = $qty_retur + $qty;
+                            $spk_qty -= $total_retur;
+
+                            $detailId = $this->MkCommon->filterEmptyField($documentDetail, 'SpkProduct', 'id');
+                            $detailQty = $poQty = $this->MkCommon->filterEmptyField($documentDetail, 'SpkProduct', 'qty');
+                            $detailPrice = $this->MkCommon->filterEmptyField($documentDetail, 'SpkProduct', 'price');
+                            $detailQty = $detailQty - $in_qty;
+
+                            if( $spk_qty == $in_qty ) {
+                                $receipt_status = 'full';
+                            } else {
+                                $receipt_status = Common::hashEmptyField($documentDetail, 'SpkProduct.receipt_status');
+                            }
+
+                            $model = 'SpkProduct';
+                            break;
                         default:
                             $documentDetail = $this->controller->Product->PurchaseOrderDetail->getMergeData(array(), $document_id, $product_id, $id);
                             $qty_retur = $this->controller->Product->ProductReturDetail->getTotalRetur($id, $document_id, $document_type, $product_id);
                             $in_qty = $this->controller->Product->ProductReceiptDetail->getTotalReceipt(null, $document_id, $document_type, $product_id);
-                            
+                            $po_qty = Common::hashEmptyField($documentDetail, 'PurchaseOrderDetail.qty');
+
                             $total_retur = $qty_retur + $qty;
 
                             $detailId = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'id');
@@ -1608,9 +1644,16 @@ class RjProductComponent extends Component {
                             $detailPrice = $this->MkCommon->filterEmptyField($documentDetail, 'PurchaseOrderDetail', 'price');
                             $detailQty = $detailQty - $in_qty;
 
+                            if( $po_qty == $in_qty ) {
+                                $receipt_status = 'full';
+                            } else {
+                                $receipt_status = Common::hashEmptyField($documentDetail, 'PurchaseOrderDetail.receipt_status');
+                            }
+
                             $model = 'PurchaseOrderDetail';
                             break;
                     }
+
 
                     if( $total_retur >= $detailQty ) {
                         $retur_detail_status = 'full';
@@ -1618,7 +1661,7 @@ class RjProductComponent extends Component {
                         $retur_detail_status = 'half';
                     }
 
-                    if( $total_retur > $detailQty ) {
+                    if( $qty_retur > $detailQty ) {
                         $over_retur = true;
                     } else {
                         $over_retur = false;
@@ -1637,6 +1680,7 @@ class RjProductComponent extends Component {
                             array(
                                 'id' => $detailId,
                                 'retur_status' => $retur_detail_status,
+                                'receipt_status' => $receipt_status,
                             ),
                         ),
                     );
@@ -1682,6 +1726,13 @@ class RjProductComponent extends Component {
                     $detail['Product']['unit'] = $this->MkCommon->filterEmptyField($detail, 'ProductUnit', 'name', $unit);
 
                     switch ($type) {
+                        case 'spk':
+                            $documentDetail = $this->controller->Product->SpkProduct->getMergeData(array(), $document_id, $product_id, $id);
+                            $qty_retur = $this->controller->Product->ProductReturDetail->getTotalRetur($id, $document_id, $type, $product_id);
+                            $detailQty = $this->MkCommon->filterEmptyField($documentDetail, 'SpkProduct', 'qty');
+                            $in_qty = $this->controller->Product->ProductReceiptDetail->getTotalReceipt(null, $document_id, $type, $product_id);
+                            break;
+
                         default:
                             $documentDetail = $this->controller->Product->PurchaseOrderDetail->getMergeData(array(), $document_id, $product_id, $id);
                             $qty_retur = $this->controller->Product->ProductReturDetail->getTotalRetur($id, $document_id, $type, $product_id);
@@ -1712,6 +1763,9 @@ class RjProductComponent extends Component {
         $document_type = $this->MkCommon->filterEmptyField($data, 'ProductRetur', 'document_type');
 
         switch ($document_type) {
+            case 'spk':
+                $vendors = $this->controller->Product->SpkProduct->Spk->_callVendors('unretur_draft', $document_id, 'eksternal');
+                break;
             default:
                 $vendors = $this->controller->Product->PurchaseOrderDetail->PurchaseOrder->_callVendors('unretur_draft', $document_id);
                 break;
@@ -1779,12 +1833,65 @@ class RjProductComponent extends Component {
         ));
     }
 
+    function _callBeforeRenderReturSpkProducts ( $values, $transaction_id = false ) {
+        $data = $this->controller->request->data;
+        $document_type = $this->MkCommon->filterEmptyField($data, 'ProductRetur', 'document_type', 'spk');
+
+        if( !empty($values) ) {
+            $nodelProduct = 'SpkProduct';
+
+            foreach ($values as $key => $value) {
+                $value = $this->controller->Product->SpkProduct->getMergeList($value, array(
+                    'contain' => array(
+                        'Product' => array(
+                            'contain' => array(
+                                'ProductUnit',
+                                'ProductCategory',
+                            ),
+                        ),
+                    ),
+                ));
+
+                $document_id = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'spk_id');
+                $product_id = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'product_id');
+                $total_qty = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'qty');
+                $retur_qty = $this->controller->Product->ProductReturDetail->getTotalRetur($transaction_id, $document_id, $document_type, $product_id);
+                $in_qty = $this->controller->Product->ProductReceiptDetail->getTotalReceipt(null, $document_id, $document_type, $product_id);
+
+                $qty = $total_qty - $retur_qty;
+                $qty = $qty - $in_qty;
+
+                if( $qty < 0 ) {
+                    $qty = 0;
+                }
+
+                if( !empty($qty) ) {
+                    $value['SpkProduct']['total_qty'] = $total_qty;
+                    $value['SpkProduct']['qty'] = $qty;
+                    $value['SpkProduct']['retur_qty'] = $retur_qty;
+                    $value['SpkProduct']['in_qty'] = $in_qty;
+                    $values[$key] = $value;
+                } else {
+                    unset($values[$key]);
+                }
+            }
+        }
+
+        $this->controller->set('module_title', __('Barang'));
+        $this->controller->set(compact(
+            'values'
+        ));
+    }
+
     function _callGetDocRetur ( $value ) {
         $this->Product = ClassRegistry::init('Product'); 
         $document_id = $this->MkCommon->filterEmptyField($value, 'ProductRetur', 'document_id');
         $document_type = $this->MkCommon->filterEmptyField($value, 'ProductRetur', 'document_type');
 
         switch ($document_type) {
+            case 'spk':
+                $modalName = 'Spk';
+                break;
             default:
                 $modalName = 'PurchaseOrder';
                 break;

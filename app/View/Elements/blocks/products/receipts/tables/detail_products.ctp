@@ -15,7 +15,7 @@
             ),
             'name' => array(
                 'name' => __('Nama'),
-                'style' => 'width:10%;',
+                // 'style' => 'width:10%;',
             ),
             'unit' => array(
                 'name' => __('Satuan'),
@@ -28,17 +28,17 @@
                 'qty_doc' => array(
                     'name' => __('Qty PO'),
                     'class' => 'text-center',
-                    'style' => 'width:5%;',
+                    'style' => 'width:7%;',
                 ),
                 'qty_in' => array(
                     'name' => __('Qty Diterima'),
                     'class' => 'text-center',
-                    'style' => 'width:5%;',
+                    'style' => 'width:7%;',
                 ),
                 'qty' => array(
                     'name' => __('Qty'),
                     'class' => 'text-center',
-                    'style' => 'width:5%;',
+                    'style' => 'width:7%;',
                 ),
             ));
         } else {

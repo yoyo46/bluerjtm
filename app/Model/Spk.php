@@ -340,6 +340,26 @@ class Spk extends AppModel {
                     $default_options['conditions']['Spk.draft_receipt_status'] = array( 'none', 'half' );
                 }
                 break;
+            case 'unretur':
+                $default_options['conditions']['Spk.transaction_status'] = array( 'open', 'closed', 'finish' );
+                $default_options['conditions']['Spk.retur_status'] = array( 'none', 'half' );
+                $default_options['conditions']['Spk.status'] = 1;
+                
+                $default_options['conditions']['Spk.receipt_status'] = array( 'none', 'half' );
+                break;
+            case 'unretur_draft':
+                $default_options['conditions']['Spk.transaction_status'] = array( 'open', 'closed', 'finish' );
+                $default_options['conditions']['Spk.status'] = 1;
+
+                if( !empty($special_id) ) {
+                    $default_options['conditions']['OR']['Spk.id'] = $special_id;
+                    $default_options['conditions']['OR']['Spk.draft_retur_status'] = array( 'none', 'half' );
+                } else {
+                    $default_options['conditions']['Spk.draft_retur_status'] = array( 'none', 'half' );
+                }
+
+                $default_options['conditions']['Spk.draft_receipt_status'] = array( 'none', 'half' );
+                break;
         }
 
         switch ($type) {

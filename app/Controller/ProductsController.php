@@ -2523,6 +2523,9 @@ class ProductsController extends AppController {
         $render = __('retur_documents_%s', $type);
 
         switch ($type) {
+            case 'spk':
+                $values = $this->RjProduct->_callSpkInternals($params, $vendor_id, 'eksternal');
+                break;
             default:
                 $values = $this->RjProduct->_callPurchaseOrders($params, $vendor_id, 'unretur_draft');
                 $render = 'retur_documents';
@@ -2559,6 +2562,28 @@ class ProductsController extends AppController {
         $nodoc = str_replace('[slash]', '/', $nodoc);
 
         switch ($document_type) {
+            case 'spk':
+                $value = $this->Product->SpkProduct->Spk->getData('first', array(
+                    'conditions' => array(
+                        'Spk.nodoc' => $nodoc,
+                    ),
+                ), array(
+                    'status' => 'unreceipt_draft',
+                    'type' => 'eksternal',
+                ));
+                $document_id = $this->MkCommon->filterEmptyField($value, 'Spk', 'id');
+
+                $options =  $this->Product->SpkProduct->_callRefineParams($params, array(
+                    'conditions' => array(
+                        'SpkProduct.spk_id' => $document_id,
+                    ),
+                    'limit' => 10,
+                ));
+                $this->paginate = $this->Product->SpkProduct->getData('paginate', $options);
+                $values = $this->paginate('SpkProduct');
+                $this->RjProduct->_callBeforeRenderReturSpkProducts($values, $transaction_id);
+                $this->render('retur_spk_products');
+                break;
             default:
                 $value = $this->Product->PurchaseOrderDetail->PurchaseOrder->getData('first', array(
                     'conditions' => array(
@@ -3047,5 +3072,21 @@ class ProductsController extends AppController {
             'active_menu' => 'category_report',
             '_freeze' => true,
         ));
+    }
+
+    function retur_choose_documents ( $type = false ) {
+        switch ($type) {
+            case 'spk':
+                $vendors = $this->Product->SpkProduct->Spk->_callVendors('unreceipt_draft', false, 'eksternal');
+                break;
+            default:
+                $vendors = $this->Product->PurchaseOrderDetail->PurchaseOrder->_callVendors('unreceipt_draft');
+                break;
+        }
+
+        $this->set(compact(
+            'vendors', 'type'
+        ));
+        $this->render('/Elements/blocks/products/retur/forms/choose_document');
     }
 }

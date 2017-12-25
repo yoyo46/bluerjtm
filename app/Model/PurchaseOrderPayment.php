@@ -193,7 +193,7 @@ class PurchaseOrderPayment extends AppModel {
     }
 
     function doSave( $data, $value = false, $id = false ) {
-        $msg = __('Gagal melakukan pembayaran PO');
+        $msg = __('Gagal melakukan pembayaran PO/SPK');
 
         if( !empty($data) ) {   
             if( empty($id) ){
@@ -213,7 +213,7 @@ class PurchaseOrderPayment extends AppModel {
                 ));
 
                 if( !empty($flag) ) {
-                    $msg = __('Berhasil melakukan pembayaran PO');
+                    $msg = __('Berhasil melakukan pembayaran PO/SPK');
                     $this->saveAll($data, array(
                         'deep' => true,
                     ));
@@ -279,7 +279,7 @@ class PurchaseOrderPayment extends AppModel {
                 'po_payment',
             ));
 
-            $titleJournal = sprintf(__('Pembayaran PO kepada supplier %s '), $vendor_name);
+            $titleJournal = sprintf(__('Pembayaran PO/SPK kepada supplier %s '), $vendor_name);
             $titleJournal = $this->filterEmptyField($data, 'PurchaseOrderPayment', 'note', $titleJournal);
 
             $this->User->Journal->setJournal($grandtotal, array(
@@ -332,7 +332,7 @@ class PurchaseOrderPayment extends AppModel {
                 }
             }
 
-            $default_msg = sprintf(__('menghapus pembayaran PO #%s'), $nodoc);
+            $default_msg = sprintf(__('menghapus pembayaran PO/SPK #%s'), $nodoc);
 
             if($this->saveAll($data, array(
                 'deep' => true,
@@ -360,7 +360,7 @@ class PurchaseOrderPayment extends AppModel {
             }
         } else {
             $result = array(
-                'msg' => __('Gagal menghapus pembayaran PO. Data tidak ditemukan'),
+                'msg' => __('Gagal menghapus pembayaran PO/SPK. Data tidak ditemukan'),
                 'status' => 'error',
             );
         }

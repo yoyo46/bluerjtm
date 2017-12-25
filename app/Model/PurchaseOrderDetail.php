@@ -85,6 +85,10 @@ class PurchaseOrderDetail extends AppModel {
                 $default_options['conditions']['PurchaseOrderDetail.status'] = 1;
                 $default_options['conditions']['PurchaseOrderDetail.retur_status <>'] = 'full';
                 break;
+            case 'retur':
+                $default_options['conditions']['PurchaseOrderDetail.status'] = 1;
+                $default_options['conditions']['PurchaseOrderDetail.retur_status'] = array( 'full', 'half' );
+                break;
         }
 
         if(!empty($options['conditions'])){

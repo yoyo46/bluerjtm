@@ -1,5 +1,5 @@
 <?php
-		$title = __('Pembayaran PO');
+		$title = __('Pembayaran PO/SPK');
 		$urlRoot = array(
 			'controller' => 'purchases',
 			'action' => 'payments',
