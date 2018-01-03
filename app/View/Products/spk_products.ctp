@@ -133,6 +133,7 @@
                                     'class' => 'ajaxCustomModal browse-docs',
                                     'title' => __('Stok Barang'),
                                     'data-action' => 'browse-form',
+                                    'data-form' => '.expenditure-form',
                                 )), array(
                                     'class' => 'text-center pick-product-code hide',
                                 ));

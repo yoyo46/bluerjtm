@@ -122,6 +122,7 @@
                         'class' => 'ajaxCustomModal browse-docs',
                         'title' => __('Stok Barang'),
                         'data-action' => 'browse-form',
+                        'data-form' => '.expenditure-form',
                     ));
                 }
             // } else {

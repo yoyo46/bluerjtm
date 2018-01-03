@@ -1105,6 +1105,19 @@ class ProductsController extends AppController {
     }
 
     function stocks ( $id = false ) {
+        $data = $this->request->data;
+
+        if( !empty($data) ) {
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'ProductExpenditure' => array(
+                        'transaction_date',
+                    ),
+                )
+            ));
+        }
+
+        $transaction_date = Common::hashEmptyField($data, 'ProductExpenditure.transaction_date');
         $params = $this->MkCommon->_callRefineParams($this->params);
         $options =  $this->Product->ProductStock->_callRefineParams($params, array(
             'conditions' => array(
@@ -1112,6 +1125,18 @@ class ProductsController extends AppController {
             ),
             'limit' => 10,
         ));
+
+        if( !empty($transaction_date) ) {
+            $data = $this->MkCommon->dataConverter($data, array(
+                'date' => array(
+                    'ProductReceipt' => array(
+                        'transaction_date',
+                    ),
+                )
+            ));
+            $options['conditions']['ProductStock.transaction_date <='] = $transaction_date;
+        }
+
         $this->paginate = $this->Product->ProductStock->getData('paginate', $options, array(
             'status' => 'in_stock',
             'sort' => 'fifo',
