@@ -1,6 +1,7 @@
 <?php 
         $data = $this->request->data;
         $eksternalClass = Common::_callDisplayToggle('eksternal', $data);
+        $document_type = Common::hashEmptyField($data, 'Spk.document_type');
 ?>
 <div id="wrapper-modal-write" class="document-picker">
     <?php 
@@ -82,9 +83,10 @@
                                     'action' => 'wheel_position',
                                     $id,
                                 ), array(
-                                    'class' => 'wheel-position',
+                                    'class' => 'wheel-position wrapper-internal',
                                     'title' => __('Pilih Posisi Ban'),
                                     'rel' => $id,
+                                    'style' => ($document_type == 'internal')?'':'display:none;',
                                 )), array(
                                     'class' => 'hide',
                                 ));

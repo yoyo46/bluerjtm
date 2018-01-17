@@ -1335,9 +1335,10 @@ class RjProductComponent extends Component {
                         ),
                     ),
                 ));
-                $document_id = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'spk_id');
-                $product_id = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'product_id');
-                $total_qty = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'qty');
+                
+                $document_id = $this->MkCommon->filterEmptyField($value, $nodelProduct, 'spk_id');
+                $product_id = $this->MkCommon->filterEmptyField($value, $nodelProduct, 'product_id');
+                $total_qty = $this->MkCommon->filterEmptyField($value, $nodelProduct, 'qty');
                 $in_qty = $this->controller->Product->ProductReceiptDetail->getTotalReceipt($transaction_id, $document_id, $document_type, $product_id);
                 $qty_retur = $this->controller->Product->ProductReturDetail->getTotalRetur(false, $document_id, 'spk', $product_id);
 
@@ -2146,6 +2147,16 @@ class RjProductComponent extends Component {
         $this->controller->set('sub_module_title', $title);
         $this->controller->set('active_menu', $title);
         $this->controller->set('productCategories', $productCategories);
+    }
+
+    function _callBeforeViewIndicatorMaintenanceReports( $params ) {
+        $year = Common::hashEmptyField($params, 'named.year');
+        $title = __('Laporan Indikator Maintenance');
+
+        $this->MkCommon->_layout_file('select');
+        
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('active_menu', $title);
     }
 }
 ?>

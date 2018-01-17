@@ -437,6 +437,36 @@ class ProductsController extends AppController {
         }
     }
 
+    function toggle($id){
+        $locale = $this->Product->getData('first', array(
+            'conditions' => array(
+                'Product.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['Product']['status']){
+                $value = false;
+            }
+
+            $this->Product->id = $id;
+            $this->Product->set('status', $value);
+
+            if($this->Product->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Barang tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
+
     public function receipts() {
         $this->loadModel('ProductReceipt');
         $this->set('sub_module_title', __('Penerimaan Barang'));
@@ -1430,7 +1460,7 @@ class ProductsController extends AppController {
         }
 
         if(!empty($values)){
-            $this->Product->ProductHistory->virtualFields['total_begining_balance'] = 'SUM(CASE WHEN ProductHistory.transaction_type = \'product_receipt\' OR ProductHistory.transaction_type = \'product_adjustment_plus\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.transaction_type = \'product_expenditure\' OR ProductHistory.transaction_type = \'product_adjustment_min\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END)';
+            $this->Product->ProductHistory->virtualFields['total_begining_balance'] = 'SUM(CASE WHEN ProductHistory.transaction_type = \'product_receipt\' OR ProductHistory.transaction_type = \'product_adjustment_plus\' OR ProductHistory.transaction_type = \'\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END) - SUM(CASE WHEN ProductHistory.transaction_type = \'product_expenditure\' OR ProductHistory.transaction_type = \'product_adjustment_min\' THEN ProductHistory.price*ProductHistory.qty ELSE 0 END)';
             $this->Product->ProductHistory->virtualFields['total_qty_in'] = 'SUM(CASE WHEN ProductHistory.type = \'in\' THEN ProductHistory.qty ELSE 0 END)';
             $this->Product->ProductHistory->virtualFields['total_qty_out'] = 'SUM(CASE WHEN ProductHistory.type = \'out\' THEN ProductHistory.qty ELSE 0 END)';
             $this->Product->ProductStock->virtualFields['label'] = 'CONCAT(ProductStock.id, \'|\', ProductStock.price)';
@@ -2022,6 +2052,11 @@ class ProductsController extends AppController {
                                     $min_stok = !empty($min_stok)?$min_stok:0;
                                     $max_stok = !empty($max_stok)?$max_stok:0;
 
+                                    $harga_satuan = !empty($harga_satuan)?$harga_satuan:false;
+                                    $harga_satuan = !empty($harga_satuan)?Common::_callPriceConverter($harga_satuan):0;
+                                    $harga_satuan = !empty($harga_satuan)?str_replace(array('Rp*', '*'), array('', ''), $harga_satuan):0;
+                                    $harga_satuan = trim($harga_satuan);
+
                                     if( !empty($ns) ) {
                                         $unit = $this->Product->ProductUnit->getMerge(array(), $satuan, 'ProductUnit.name');
                                         $grupmodel = $this->Product->ProductCategory->getMerge(array(), $kategori, 'ProductCategory', 'ProductCategory.name');
@@ -2032,6 +2067,7 @@ class ProductsController extends AppController {
                                                 'Product.code' => $kode,
                                             ),
                                         ));
+                                        $id = Common::hashEmptyField($product, 'Product.id');
 
                                         if( empty($unit) ) {
                                             $unit = array(
@@ -2070,6 +2106,7 @@ class ProductsController extends AppController {
 
                                         $dataArr = array(
                                             'Product' => array(
+                                                'id' => $id,
                                                 'code' => $kode,
                                                 'name' => $nama_item,
                                                 'product_unit_id' => Common::hashEmptyField($unit, 'ProductUnit.id', 0),
@@ -2077,6 +2114,7 @@ class ProductsController extends AppController {
                                                 'is_supplier_quotation' => $ps,
                                                 'is_serial_number' => $ns,
                                                 'type' => 'barang_jadi',
+                                                'price' => $harga_satuan,
                                             ),
                                         );
                                         
@@ -2095,9 +2133,9 @@ class ProductsController extends AppController {
                                         //             'branch_id' => Configure::read('__Site.config_branch_id'),
                                         //             'balance' => 0,
                                         //             'transaction_type' => 'stok_awal',
-                                        //             'transaction_date' => date('Y-m-d'),
+                                        //             'transaction_date' => '2017-12-31',
                                         //             'qty' => $stock_akhir,
-                                        //             'price' => 0,
+                                        //             'price' => $harga_satuan,
                                         //             'type' => 'in',
                                         //             'ending' => $stock_akhir,
                                         //         ),
@@ -2105,10 +2143,10 @@ class ProductsController extends AppController {
                                         //     $dataArr['ProductStock'] = array(
                                         //         array(
                                         //             'branch_id' => Configure::read('__Site.config_branch_id'),
-                                        //             'transaction_date' => date('Y-m-d'),
+                                        //             'transaction_date' => '2017-12-31',
                                         //             'qty' => $stock_akhir,
                                         //             'qty_use' => 0,
-                                        //             'price' => 0,
+                                        //             'price' => $harga_satuan,
                                         //         ),
                                         //     );
                                         // }
@@ -3113,5 +3151,134 @@ class ProductsController extends AppController {
             'vendors', 'type'
         ));
         $this->render('/Elements/blocks/products/retur/forms/choose_document');
+    }
+
+    public function target_categories() {
+        $this->loadModel('ProductCategoryTarget');
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->ProductCategoryTarget->_callRefineParams($params);
+
+        $this->paginate = $this->ProductCategoryTarget->getData('paginate', $options);
+        $values = $this->paginate('ProductCategoryTarget');
+
+        $values = $this->ProductCategoryTarget->getMergeList($values, array(
+            'contain' => array(
+                'ProductCategory',
+            ),
+        ));
+
+        $productCategories = $this->Product->ProductCategory->getData('list');
+        $this->MkCommon->_layout_file('select');
+
+        $this->set('active_menu', 'target_categories');
+        $this->set('sub_module_title', __('Target Grup Barang'));
+        $this->set(compact(
+            'values', 'productCategories'
+        ));
+    }
+
+    function target_category_add(){
+        $this->loadModel('ProductCategoryTarget');
+        $this->set('sub_module_title', __('Tambah Target Grup Barang'));
+
+        $result = $this->ProductCategoryTarget->doSave($this->request->data);
+        $this->MkCommon->setProcessParams($result, array(
+            'controller' => 'products',
+            'action' => 'target_categories',
+            'admin' => false,
+        ));
+
+        $productCategories = $this->Product->ProductCategory->getData('list');
+
+        $this->set('active_menu', 'target_categories');
+        $this->set(compact(
+            'productCategories'
+        ));
+    }
+
+    function target_category_edit( $id = false ){
+        $this->loadModel('ProductCategoryTarget');
+        $this->set('sub_module_title', __('Edit Target Grup Barang'));
+
+        $value = $this->ProductCategoryTarget->getData('first', array(
+            'conditions' => array(
+                'ProductCategoryTarget.id' => $id,
+            ),
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->ProductCategoryTarget->getMergeList($value, array(
+                'contain' => array(
+                    'ProductCategory',
+                ),
+            ));
+
+            $result = $this->ProductCategoryTarget->doSave($this->request->data, $value, $id);
+            $this->MkCommon->setProcessParams($result, array(
+                'controller' => 'products',
+                'action' => 'target_categories',
+                'admin' => false,
+            ));
+
+            $productCategories = $this->Product->ProductCategory->getData('list');
+
+            $this->set('active_menu', 'target_categories');
+            $this->set(compact(
+                'productCategories'
+            ));
+
+            $this->render('target_category_add');
+        } else {
+            $this->MkCommon->setCustomFlash(__('Target grup barang tidak ditemukan.'), 'error');
+        }
+    }
+
+    function target_category_toggle($id){
+        $this->loadModel('ProductCategoryTarget');
+        $locale = $this->ProductCategoryTarget->getData('first', array(
+            'conditions' => array(
+                'ProductCategoryTarget.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['ProductCategoryTarget']['status']){
+                $value = false;
+            }
+
+            $this->ProductCategoryTarget->id = $id;
+            $this->ProductCategoryTarget->set('status', $value);
+
+            if($this->ProductCategoryTarget->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status target grup barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status target grup barang ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Target grup barang tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
+
+    public function indicator_maintenance() {
+        $params = $this->MkCommon->_callRefineParams($this->params);
+
+        $dataReport = $this->RmReport->_callDataIndicator_maintenance_report($params, 30, 0, true);
+        $values = Common::hashEmptyField($dataReport, 'data');
+
+        $this->RjProduct->_callBeforeViewIndicatorMaintenanceReports($params);
+        $this->MkCommon->_layout_file(array(
+            'select',
+            'freeze',
+        ));
+        $this->set(array(
+            'values' => $values,
+            'active_menu' => 'indicator_maintenance',
+            '_freeze' => true,
+        ));
     }
 }

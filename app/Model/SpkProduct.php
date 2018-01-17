@@ -66,8 +66,9 @@ class SpkProduct extends AppModel {
         $data = $this->data;
         
         $empty_tire = Common::hashEmptyField($data, 'SpkProduct.empty_tire');
+        $document_type = Common::hashEmptyField($data, 'SpkProduct.document_type');
 
-        if( !empty($empty_tire) ) {
+        if( $document_type == 'internal' && !empty($empty_tire) ) {
             return false;
         } else {
             return true;

@@ -4,6 +4,7 @@
 
         $dataDetail = Common::hashEmptyField($data, 'SpkProduct');
         $eksternalClass = Common::_callDisplayToggle('eksternal', $data);
+        $document_type = Common::hashEmptyField($data, 'Spk.document_type');
 
 		$dataColumns = array(
             'code' => array(
@@ -169,9 +170,10 @@
                                             $product_id,
                                             'view' => $view,
                                         ), array(
-                                            'class' => 'wheel-position',
+                                            'class' => 'wheel-position wrapper-internal',
                                             'title' => __('Pilih Posisi Ban'),
                                             'rel' => $product_id,
+                                            'style' => ($document_type == 'internal')?'':'display:none;',
                                         )).$this->Form->error(__('SpkProduct.%s.empty_tire', $key)));
 
                                         if( !empty($tires) ) {
