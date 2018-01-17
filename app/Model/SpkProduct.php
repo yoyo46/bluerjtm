@@ -78,9 +78,11 @@ class SpkProduct extends AppModel {
     function eksternalValidate ( $data, $field = false ) {
         $dataSpk = $this->Spk->data;
         $data = $this->data;
-        $price_service = Common::hashEmptyField($data, 'SpkProduct.'.$field);
+        // $price_service = Common::hashEmptyField($data, 'SpkProduct.'.$field);
+        $price = Common::hashEmptyField($data, 'SpkProduct.'.$field);
 
-        if( Common::_callDisplayToggle('eksternal', $dataSpk, true) && empty($price_service) ) {
+        // if( Common::_callDisplayToggle('eksternal', $dataSpk, true) && empty($price_service) ) {
+        if( Common::_callDisplayToggle('eksternal', $dataSpk, true) && empty($price) ) {
             return false;
         } else {
             return true;
@@ -411,9 +413,11 @@ class SpkProduct extends AppModel {
                 $ppn_include = Common::hashEmptyField($value, 'Spk.ppn_include');
                 $product_id = Common::hashEmptyField($value, 'SpkProduct.product_id');
                 $qty = Common::hashEmptyField($value, 'SpkProduct.qty');
-                $price_service = Common::hashEmptyField($value, 'SpkProduct.price');
+                // $price_service = Common::hashEmptyField($value, 'SpkProduct.price');
+                $price = Common::hashEmptyField($value, 'SpkProduct.price');
 
-                $total = $qty*$price_service;
+                // $total = $qty*$price_service;
+                $total = $qty*$price;
                 $grandtotal += $total;
             }
         }

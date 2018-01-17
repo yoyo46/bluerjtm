@@ -2091,7 +2091,7 @@
                 }
 
                 if( !result ) {
-                    $(target).find('input,select').val('');
+                    $(target).find('input:not([data-keep="true"]),select').val('');
                     $(target).find('select.calc-type').val('borongan');
 
                     $.callChoosen({

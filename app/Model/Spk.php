@@ -179,6 +179,12 @@ class Spk extends AppModel {
                 'message' => 'Mohon pilih barang yg dihasilkan'
             ),
         ),
+        'production_notbalance' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Total harga barang yg dihasilkan tidak sama dengan total harga barang yg akan diproduksi'
+            ),
+        ),
     );
 
     function mechanicValidate () {

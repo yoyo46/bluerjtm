@@ -46,12 +46,14 @@ class RjSpkComponent extends Component {
                 'SpkProduct',
             ), $data);
 
+            $grandtotal = 0;
+
             foreach ($spkProduct['product_id'] as $key => $product_id) {
                 $note = !empty($spkProduct['note'][$key])?$spkProduct['note'][$key]:false;
                 $qty = !empty($spkProduct['qty'][$key])?$spkProduct['qty'][$key]:false;
-                $price_service = !empty($spkProduct['price_service'][$key])?$spkProduct['price_service'][$key]:false;
-                $price = !empty($spkProduct['price'][$key])?$spkProduct['price'][$key]:false;
-                $price_service_type = !empty($spkProduct['price_service_type'][$key])?$spkProduct['price_service_type'][$key]:false;
+                // $price_service = !empty($spkProduct['price_service'][$key])?$spkProduct['price_service'][$key]:false;
+                $price = !empty($spkProduct['price'][$key])?Common::_callPriceConverter($spkProduct['price'][$key]):false;
+                // $price_service_type = !empty($spkProduct['price_service_type'][$key])?$spkProduct['price_service_type'][$key]:false;
                 $tire_position = !empty($spkProduct['tire_position'][$key])?$spkProduct['tire_position'][$key]:false;
 
                 $product = $this->controller->Spk->SpkProduct->Product->getData('first', array(
@@ -71,13 +73,13 @@ class RjSpkComponent extends Component {
                     'product_id' => $product_id,
                     'note' => $note,
                     'qty' => $qty,
-                    'price_service' => $price_service,
+                    // 'price_service' => $price_service,
                     'price' => $price,
-                    'price_service_type' => $price_service_type,
+                    // 'price_service_type' => $price_service_type,
                 );
                 $dataProduct = $this->MkCommon->dataConverter($dataProduct, array(
                     'price' => array(
-                        'price_service',
+                        // 'price_service',
                         'price',
                     )
                 ));
@@ -95,8 +97,11 @@ class RjSpkComponent extends Component {
                     }
                 }
 
+                $grandtotal += $price * $qty;
                 $data['SpkProduct'][]['SpkProduct'] = $dataProduct;
             }
+            
+            $data['Spk']['grandtotal'] = $grandtotal;
         } else {
             $data['Spk']['product'] = '';
         }
@@ -114,12 +119,11 @@ class RjSpkComponent extends Component {
                 $data = $this->MkCommon->_callUnset(array(
                     'SpkProduction',
                 ), $data);
+                $grandtotal = 0;
 
                 foreach ($spkProduction['product_id'] as $key => $product_id) {
                     $qty = !empty($spkProduction['qty'][$key])?$spkProduction['qty'][$key]:false;
-                    $price = !empty($spkProduction['price'][$key])?$spkProduction['price'][$key]:false;
-
-                    $price = Common::_callPriceConverter($price);
+                    $price = !empty($spkProduction['price'][$key])?Common::_callPriceConverter($spkProduction['price'][$key]):false;
 
                     $dataProduct = array(
                         'product_id' => $product_id,
@@ -127,7 +131,14 @@ class RjSpkComponent extends Component {
                         'price' => $price,
                     );
 
+                    $grandtotal += $price * $qty;
                     $data['SpkProduction'][]['SpkProduction'] = $dataProduct;
+                }
+                
+                $grandtotal_spk = Common::hashEmptyField($data, 'Spk.grandtotal');
+
+                if( $grandtotal_spk != $grandtotal ) {
+                    $data['Spk']['production_notbalance'] = '';
                 }
             } else {
                 $data['Spk']['production'] = '';
@@ -229,9 +240,10 @@ class RjSpkComponent extends Component {
     }
 
     function _callProductionBeforeRender ( $data ) {
+        $document_type = $this->MkCommon->filterEmptyField($data, 'Spk', 'document_type');
         $spkProduction = $this->MkCommon->filterEmptyField($data, 'SpkProduction');
 
-        if( !empty($spkProduction) ) {
+        if( !empty($spkProduction) && $document_type == 'production' ) {
             foreach ($spkProduction as $key => &$value) {
                 $product_id = $this->MkCommon->filterEmptyField($value, 'SpkProduction', 'product_id');
                 
@@ -247,6 +259,8 @@ class RjSpkComponent extends Component {
             }
 
             $data['SpkProduction'] = $spkProduction;
+        } else {
+            $data['SpkProduction'] = array();
         }
 
         return $data;

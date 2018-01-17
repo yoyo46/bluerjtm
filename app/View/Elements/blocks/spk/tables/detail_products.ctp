@@ -3,7 +3,8 @@
         $data = $this->request->data;
 
         $dataDetail = Common::hashEmptyField($data, 'SpkProduct');
-        $eksternalClass = Common::_callDisplayToggle('eksternal', $data);
+        // $eksternalClass = Common::_callDisplayToggle('eksternal', $data);
+        $priceClass = Common::_callDisplayToggle('price', $data);
         $document_type = Common::hashEmptyField($data, 'Spk.document_type');
 
 		$dataColumns = array(
@@ -32,7 +33,7 @@
             ),
             'price' => array(
                 'name' => __('Harga Satuan'),
-                'class' => __('text-center wrapper-eksternal %s', $eksternalClass),
+                'class' => __('text-center wrapper-price %s', $priceClass),
                 'style' => 'width:15%;',
             ),
             'qty' => array(
@@ -40,19 +41,19 @@
                 'class' => 'text-center',
                 'style' => 'width:10%;',
             ),
-            'price_service_type' => array(
-                'name' => __('Jenis Harga'),
-                'class' => __('text-center wrapper-eksternal %s', $eksternalClass),
-                'style' => 'width:10%;',
-            ),
-            'price_service' => array(
-                'name' => __('Harga Jasa'),
-                'class' => __('text-center wrapper-eksternal %s', $eksternalClass),
-                'style' => 'width:15%;',
-            ),
+            // 'price_service_type' => array(
+            //     'name' => __('Jenis Harga'),
+            //     'class' => __('text-center wrapper-eksternal %s', $eksternalClass),
+            //     'style' => 'width:10%;',
+            // ),
+            // 'price_service' => array(
+            //     'name' => __('Harga Jasa'),
+            //     'class' => __('text-center wrapper-eksternal %s', $eksternalClass),
+            //     'style' => 'width:15%;',
+            // ),
             'grandtotal' => array(
                 'name' => __('Total'),
-                'class' => __('text-center wrapper-eksternal %s', $eksternalClass),
+                'class' => __('text-center wrapper-price %s', $priceClass),
                 'style' => 'width:15%;',
             ),
         );
@@ -114,7 +115,7 @@
     	        	<tbody>
                         <?php
                                 $total_qty = 0;
-                                $total_price_service = 0;
+                                // $total_price_service = 0;
                                 $total_price = 0;
                                 $grandtotal = 0;
 
@@ -130,25 +131,26 @@
 
                                         $note = Common::hashEmptyField($value, 'SpkProduct.note');
                                         $qty = Common::hashEmptyField($value, 'SpkProduct.qty', 0);
-                                        $price_service = Common::hashEmptyField($value, 'SpkProduct.price_service', 0);
+                                        // $price_service = Common::hashEmptyField($value, 'SpkProduct.price_service', 0);
                                         $price = Common::hashEmptyField($value, 'SpkProduct.price', 0);
 
-                                        $price_service_type = Common::hashEmptyField($value, 'SpkProduct.price_service_type', 'borongan');
+                                        // $price_service_type = Common::hashEmptyField($value, 'SpkProduct.price_service_type', 'borongan');
                                         $group = Common::hashEmptyField($value, 'Product.ProductCategory.name');
                                         $group_slug = Common::toSlug($group);
 
-                                        switch ($price_service_type) {
-                                            case 'satuan':
-                                                $customTotal = $price_service*$qty;
-                                                break;
+                                        // switch ($price_service_type) {
+                                        //     case 'satuan':
+                                        //         $customTotal = $price_service*$qty;
+                                        //         break;
                                             
-                                            default:
-                                                $customTotal = $price_service;
-                                                break;
-                                        }
+                                        //     default:
+                                        //         $customTotal = $price_service;
+                                        //         break;
+                                        // }
+                                        $customTotal = $price*$qty;
 
                                         $total_qty += $qty;
-                                        $total_price_service += $price_service;
+                                        // $total_price_service += $price_service;
                                         $total_price += $price;
                                         $grandtotal += $customTotal;
 
@@ -210,13 +212,13 @@
                                         echo $this->Html->tag('td', $this->Common->_callInputForm(__('SpkProduct.price.%s', $product_id), array(
                                             'type' => 'text',
                                             'frameClass' => false,
-                                            'class' => 'text-right price_custom',
+                                            'class' => 'text-right price_custom price',
                                             'data-type' => 'input_price_coma',
                                             'rel' => 2,
                                             'value' => $this->Common->getFormatPrice($price, 0, 2),
                                             'fieldError' => __('SpkProduct.%s.price', $key),
                                         )), array(
-                                            'class' => __('wrapper-eksternal %s', $eksternalClass),
+                                            'class' => __('wrapper-price %s', $priceClass),
                                         ));
 
                                         echo $this->Html->tag('td', $this->Common->_callInputForm(__('SpkProduct.qty.%s', $product_id), array(
@@ -228,28 +230,28 @@
                                             'fieldError' => __('SpkProduct.%s.qty', $key),
                                         )));
 
-                                        echo $this->Html->tag('td', $this->Common->_callInputForm(__('SpkProduct.price_service_type.%s', $product_id), array(
-                                            'frameClass' => false,
-                                            'class' => 'td-select calc-type',
-                                            'value' => $price_service_type,
-                                            'options' => Common::_callPriceServiceType(),
-                                        )), array(
-                                            'class' => __('wrapper-eksternal %s', $eksternalClass),
-                                        ));
+                                        // echo $this->Html->tag('td', $this->Common->_callInputForm(__('SpkProduct.price_service_type.%s', $product_id), array(
+                                        //     'frameClass' => false,
+                                        //     'class' => 'td-select calc-type',
+                                        //     'value' => $price_service_type,
+                                        //     'options' => Common::_callPriceServiceType(),
+                                        // )), array(
+                                        //     'class' => __('wrapper-eksternal %s', $eksternalClass),
+                                        // ));
 
-                                        echo $this->Html->tag('td', $this->Common->_callInputForm(__('SpkProduct.price_service.%s', $product_id), array(
-                                            'type' => 'text',
-                                            'frameClass' => false,
-                                            'class' => 'text-right price_custom price',
-                                            'data-type' => 'input_price_coma',
-                                            'rel' => 1,
-                                            'value' => $this->Common->getFormatPrice($price_service, 0, 2),
-                                            'fieldError' => __('SpkProduct.%s.price_service', $key),
-                                        )), array(
-                                            'class' => __('wrapper-eksternal %s', $eksternalClass),
-                                        ));
+                                        // echo $this->Html->tag('td', $this->Common->_callInputForm(__('SpkProduct.price_service.%s', $product_id), array(
+                                        //     'type' => 'text',
+                                        //     'frameClass' => false,
+                                        //     'class' => 'text-right price_custom price',
+                                        //     'data-type' => 'input_price_coma',
+                                        //     'rel' => 1,
+                                        //     'value' => $this->Common->getFormatPrice($price_service, 0, 2),
+                                        //     'fieldError' => __('SpkProduct.%s.price_service', $key),
+                                        // )), array(
+                                        //     'class' => __('wrapper-eksternal %s', $eksternalClass),
+                                        // ));
                                     } else {
-                                        $price_service_type = Common::hashEmptyField(Common::_callPriceServiceType(), $price_service_type);
+                                        // $price_service_type = Common::hashEmptyField(Common::_callPriceServiceType(), $price_service_type);
 
                                         echo $this->Html->tag('td', $note);
 
@@ -259,7 +261,7 @@
                                             'data-type' => 'input_price_coma',
                                             'rel' => 2,
                                         )), array(
-                                            'class' => __('wrapper-eksternal %s', $eksternalClass),
+                                            'class' => __('wrapper-price %s', $priceClass),
                                         ));
 
                                         echo $this->Html->tag('td', $qty, array(
@@ -267,23 +269,24 @@
                                             'rel' => 'qty',
                                         ));
 
-                                        echo $this->Html->tag('td', $price_service_type, array(
-                                            'class' => __('wrapper-eksternal %s', $eksternalClass),
-                                        ));
+                                        // echo $this->Html->tag('td', $price_service_type, array(
+                                        //     'class' => __('wrapper-eksternal %s', $eksternalClass),
+                                        // ));
 
-                                        echo $this->Html->tag('td', $this->Html->tag('div', $this->Common->getFormatPrice($price_service, 0, 2), array(
-                                            'class' => 'text-center',
-                                            'rel' => 1,
-                                            'class' => 'text-right price_custom',
-                                            'data-type' => 'input_price_coma',
-                                        )), array(
-                                            'class' => __('wrapper-eksternal %s', $eksternalClass),
-                                        ));
+                                        // echo $this->Html->tag('td', $this->Html->tag('div', $this->Common->getFormatPrice($price_service, 0, 2), array(
+                                        //     'class' => 'text-center',
+                                        //     'rel' => 1,
+                                        //     'class' => 'text-right price_custom',
+                                        //     'data-type' => 'input_price_coma',
+                                        // )), array(
+                                        //     'class' => __('wrapper-eksternal %s', $eksternalClass),
+                                        // ));
                                     }
 
                                     echo $this->Html->tag('td', $this->Common->getFormatPrice($customTotal, '0', 2), array(
                                         'rel' => 'grandtotal',
-                                        'class' => __('wrapper-eksternal %s total text-right', $eksternalClass),
+                                        'class' => __('wrapper-price %s total text-right total_row price_custom', $priceClass),
+                                        'data-type' => 'input_price_coma',
                                     ));
 
                                     if( empty($view) ) {
@@ -304,7 +307,7 @@
                     <tfoot>
                         <tr class="grandtotal">
                             <?php
-                                    $price_service = $this->Common->getFormatPrice($total_price_service, 0, 2);
+                                    // $price_service = $this->Common->getFormatPrice($total_price_service, 0, 2);
                                     $price = $this->Common->getFormatPrice($total_price, 0, 2);
                                     $grandtotal = $this->Common->getFormatPrice($grandtotal, 0, 2);
 
@@ -312,27 +315,30 @@
                                         'colspan' => 5,
                                         'class' => 'text-right',
                                     ));
-                                    echo $this->Html->tag('td', $price, array(
-                                        'class' => __('text-right total_custom wrapper-eksternal %s', $eksternalClass),
-                                        'data-decimal' => 2,
-                                        'rel' => 2,
+                                    // echo $this->Html->tag('td', $price, array(
+                                    //     'class' => __('text-right total_custom wrapper-eksternal %s', $eksternalClass),
+                                    //     'data-decimal' => 2,
+                                    //     'rel' => 2,
+                                    // ));
+                                    echo $this->Html->tag('td', '', array(
+                                        'class' => __('wrapper-price %s', $priceClass),
                                     ));
                                     echo $this->Html->tag('td', $total_qty, array(
                                         'class' => 'text-center total_custom',
                                         'data-decimal' => 0,
                                         'rel' => 'qty',
                                     ));
-                                    echo $this->Html->tag('td', '', array(
-                                        'class' => __('wrapper-eksternal %s', $eksternalClass),
-                                        'colspan' => 2,
-                                    ));
+                                    // echo $this->Html->tag('td', '', array(
+                                    //     'class' => __('wrapper-eksternal %s', $eksternalClass),
+                                    //     'colspan' => 2,
+                                    // ));
                                     // echo $this->Html->tag('td', $price_service, array(
                                     //     'class' => __('text-right total_custom wrapper-eksternal %s', $eksternalClass),
                                     //     'data-decimal' => 2,
                                     //     'rel' => 1,
                                     // ));
                                     echo $this->Html->tag('td', $grandtotal, array(
-                                        'class' => __('text-right total_custom wrapper-eksternal %s', $eksternalClass),
+                                        'class' => __('text-right total_custom wrapper-price %s', $priceClass),
                                         'data-decimal' => 2,
                                         'rel' => 'grandtotal',
                                     ));

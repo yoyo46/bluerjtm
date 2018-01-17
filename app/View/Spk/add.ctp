@@ -47,7 +47,7 @@
 		                    'class' => 'form-control handle-toggle',
 		                    'empty' => __('Pilih Jenis SPK'),
 		                    'options' => Configure::read('__Site.Spk.type'),
-					    	'data-match' => '[[\'.wrapper-mechanic\', [\'internal\',\'production\'], \'slide\'],[\'.wrapper-wht\', [\'wht\'], \'slide\'],[\'.wrapper-eksternal\', [\'eksternal\'], \'slide\'], [\'.wrapper-production\', [\'production\'], \'slide\'], [\'.wrapper-non-production\', [\'internal\'], \'slide\'], [\'.wrapper-internal\', [\'internal\'], \'slide\']]',
+					    	'data-match' => '[[\'.wrapper-mechanic\', [\'internal\',\'production\'], \'slide\'],[\'.wrapper-wht\', [\'wht\'], \'slide\'],[\'.wrapper-eksternal\', [\'eksternal\'], \'slide\'], [\'.wrapper-production\', [\'production\'], \'slide\'], [\'.wrapper-non-production\', [\'internal\'], \'slide\'], [\'.wrapper-internal\', [\'internal\'], \'slide\'],[\'.wrapper-price\', [\'eksternal\',\'production\'], \'slide\']]',
 					    	'id' => 'spk-document-type',
 						));
 

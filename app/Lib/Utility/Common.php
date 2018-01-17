@@ -613,6 +613,11 @@ class Common {
                     $result = 'hide';
                 }
                 break;
+            case 'price':
+                if( !in_array($document_type, array( 'eksternal', 'production' )) ) {
+                    $result = 'hide';
+                }
+                break;
         }
 
         if( !empty($boolean) ) {

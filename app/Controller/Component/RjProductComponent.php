@@ -246,9 +246,9 @@ class RjProductComponent extends Component {
 
             if( in_array($document_type, array( 'spk' )) ) {
                 // $price_service = Common::hashEmptyField($documentDetail, 'SpkProduct.price_service', 0);
-                $price_service = Common::hashEmptyField($documentDetail, 'SpkProduct.price', 0);
+                $price = Common::hashEmptyField($documentDetail, 'SpkProduct.price', 0);
                 
-                $stock['price'] = $detail['ProductHistory']['price'] = $price_service;
+                $stock['price'] = $detail['ProductHistory']['price'] = $price;
                 $stock['type'] = $detail['ProductHistory']['product_type'] = 'barang_bekas';
             } else {
                 $stock['type'] = 'default';
@@ -1306,6 +1306,7 @@ class RjProductComponent extends Component {
                         $document_id = $this->MkCommon->filterEmptyField($value, 'ProductExpenditureDetail', 'product_expenditure_id');
                         $product_id = $this->MkCommon->filterEmptyField($value, 'ProductExpenditureDetail', 'product_id');
                         $qty = $this->MkCommon->filterEmptyField($value, 'ProductExpenditureDetail', 'qty');
+                        $total_qty = $this->MkCommon->filterEmptyField($value, 'ProductExpenditureDetail', 'qty');
                         
                         $nodelName = 'ProductExpenditureDetail';
                         break;
@@ -1313,6 +1314,7 @@ class RjProductComponent extends Component {
                         $document_id = $this->MkCommon->filterEmptyField($value, 'SpkProduction', 'spk_id');
                         $product_id = $this->MkCommon->filterEmptyField($value, 'SpkProduction', 'product_id');
                         $qty = $this->MkCommon->filterEmptyField($value, 'SpkProduction', 'qty');
+                        $total_qty = $this->MkCommon->filterEmptyField($value, 'SpkProduction', 'qty');
 
                         $nodelProduct = $nodelName = 'SpkProduction';
                         break;
@@ -1320,6 +1322,7 @@ class RjProductComponent extends Component {
                         $document_id = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'spk_id');
                         $product_id = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'product_id');
                         $qty = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'qty');
+                        $total_qty = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'qty');
 
                         $nodelName = 'SpkProduct';
                         break;
@@ -1336,9 +1339,6 @@ class RjProductComponent extends Component {
                     ),
                 ));
                 
-                $document_id = $this->MkCommon->filterEmptyField($value, $nodelProduct, 'spk_id');
-                $product_id = $this->MkCommon->filterEmptyField($value, $nodelProduct, 'product_id');
-                $total_qty = $this->MkCommon->filterEmptyField($value, $nodelProduct, 'qty');
                 $in_qty = $this->controller->Product->ProductReceiptDetail->getTotalReceipt($transaction_id, $document_id, $document_type, $product_id);
                 $qty_retur = $this->controller->Product->ProductReturDetail->getTotalRetur(false, $document_id, 'spk', $product_id);
 

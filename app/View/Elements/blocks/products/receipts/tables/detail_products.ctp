@@ -15,7 +15,7 @@
             ),
             'name' => array(
                 'name' => __('Nama'),
-                // 'style' => 'width:10%;',
+                'style' => 'width:15%;',
             ),
             'unit' => array(
                 'name' => __('Satuan'),

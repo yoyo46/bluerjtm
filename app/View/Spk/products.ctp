@@ -1,6 +1,7 @@
 <?php 
         $data = $this->request->data;
-        $eksternalClass = Common::_callDisplayToggle('eksternal', $data);
+        // $eksternalClass = Common::_callDisplayToggle('eksternal', $data);
+        $priceClass = Common::_callDisplayToggle('price', $data);
         $document_type = Common::hashEmptyField($data, 'Spk.document_type');
 ?>
 <div id="wrapper-modal-write" class="document-picker">
@@ -118,14 +119,14 @@
                             echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.price.%s', $modelName, $id), false, array(
                                 'type' => 'text',
                                 'frameClass' => false,
-                                'class' => 'text-right price_custom',
+                                'class' => 'text-right price_custom price',
                                 'attributes' => array(
                                     'data-type' => 'input_price_coma',
                                     'rel' => 2,
                                 ),
                             )), array(
-                                'data-display' => $eksternalClass,
-                                'class' => 'hide wrapper-eksternal',
+                                'data-display' => $priceClass,
+                                'class' => 'hide wrapper-price',
                             ));
                             echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.qty.%s', $modelName, $id), false, array(
                                 'type' => 'text',
@@ -137,31 +138,32 @@
                             )), array(
                                 'class' => 'hide',
                             ));
-                            echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.price_service_type.%s', $modelName, $id), false, array(
-                                'frameClass' => false,
-                                'class' => 'td-select calc-type',
-                                'options' => Common::_callPriceServiceType(),
-                            )), array(
-                                'data-display' => $eksternalClass,
-                                'class' => 'hide wrapper-eksternal',
-                            ));
-                            echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.price_service.%s', $modelName, $id), false, array(
-                                'type' => 'text',
-                                'frameClass' => false,
-                                'class' => 'text-right price_custom price',
-                                'attributes' => array(
-                                    'data-type' => 'input_price_coma',
-                                    'rel' => 1,
-                                ),
-                            )), array(
-                                'data-display' => $eksternalClass,
-                                'class' => 'hide wrapper-eksternal',
-                            ));
+                            // echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.price_service_type.%s', $modelName, $id), false, array(
+                            //     'frameClass' => false,
+                            //     'class' => 'td-select calc-type',
+                            //     'options' => Common::_callPriceServiceType(),
+                            // )), array(
+                            //     'data-display' => $eksternalClass,
+                            //     'class' => 'hide wrapper-eksternal',
+                            // ));
+                            // echo $this->Html->tag('td', $this->Common->buildInputForm(sprintf('%s.price_service.%s', $modelName, $id), false, array(
+                            //     'type' => 'text',
+                            //     'frameClass' => false,
+                            //     'class' => 'text-right price_custom price',
+                            //     'attributes' => array(
+                            //         'data-type' => 'input_price_coma',
+                            //         'rel' => 1,
+                            //     ),
+                            // )), array(
+                            //     'data-display' => $eksternalClass,
+                            //     'class' => 'hide wrapper-eksternal',
+                            // ));
                             echo $this->Html->tag('td', '0', array(
                                 'rel' => 'grandtotal',
-                                'class' => 'total text-right total_row price_custom hide wrapper-eksternal',
+                                'class' => 'total text-right total_row price_custom hide wrapper-price',
                                 'data-type' => 'input_price_coma',
-                                'data-display' => $eksternalClass,
+                                'data-display' => $priceClass,
+                                'data-decimal' => 2,
                             ));
                             echo $this->Html->tag('td', $this->Html->link($this->Common->icon('times'), '#', array(
                                 'class' => 'delete-document btn btn-danger btn-xs',

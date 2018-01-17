@@ -81,21 +81,10 @@
                                 'class' => 'removed text-center',
                             ));
 
-                            echo $this->Html->tag('td', $this->Common->buildInputForm(__('SpkProduction.qty.%s', $id), false, array(
-                                'type' => 'text',
-                                'frameClass' => false,
-                                'class' => 'input_number text-center price_custom',
-                                'attributes' => array(
-                                    'rel' => 'qty',
-                                ),
-                            )), array(
-                                'class' => 'hide',
-                            ));
-
                             echo $this->Html->tag('td', $this->Common->buildInputForm(__('SpkProduction.price.%s', $id), false, array(
                                 'type' => 'text',
                                 'frameClass' => false,
-                                'class' => 'price_custom text-right',
+                                'class' => 'price_custom text-right price',
                                 'attributes' => array(
                                     'rel' => 'price',
                                     'data-decimal' => 2,
@@ -103,6 +92,24 @@
                                 ),
                             )), array(
                                 'class' => 'hide',
+                            ));
+
+                            echo $this->Html->tag('td', $this->Common->buildInputForm(__('SpkProduction.qty.%s', $id), false, array(
+                                'type' => 'text',
+                                'frameClass' => false,
+                                'class' => 'input_number text-center price_custom qty',
+                                'attributes' => array(
+                                    'rel' => 'qty',
+                                ),
+                            )), array(
+                                'class' => 'hide',
+                            ));
+
+                            echo $this->Html->tag('td', '0', array(
+                                'rel' => 'grandtotal',
+                                'class' => 'total text-right total_row price_custom hide wrapper-eksternal',
+                                'data-type' => 'input_price_coma',
+                                'data-decimal' => 2,
                             ));
 
                             echo $this->Html->tag('td', $this->Html->link($this->Common->icon('times'), '#', array(
