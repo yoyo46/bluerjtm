@@ -277,6 +277,10 @@ class ProductExpenditure extends AppModel {
                 case 'wht':
                     $this->Spk->set('transaction_status', 'out');
                     break;
+
+                case 'production':
+                    $this->Spk->set('transaction_status', 'out');
+                    break;
                 
                 default:
                     // if( $spk_internal_status == 'closed_expenditured' ) {
