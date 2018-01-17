@@ -315,7 +315,7 @@
                 'rowspan' => $rowspan,
             ));
 
-            if( !empty($ending_stock) ) {
+            if( !empty($values['ProductHistory']) ) {
                 $firstArr = reset($ending_stock);
                 $lastArr = $ending_stock;
                 array_splice($lastArr, 0, 1);
