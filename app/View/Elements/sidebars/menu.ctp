@@ -1370,6 +1370,8 @@
                             'min_stock_report',
                             'index', 'retur',
                             'category_report',
+                            'target_categories',
+                            'indicator_maintenance',
                         ),
                         'spk' => array(
                             'index', 'tire_reports', 'spk_reports',
@@ -1388,6 +1390,7 @@
                             'maintenance_cost_report', 'adjustment',
                             'adjustment_report', 'min_stock_report',
                             'retur', 'spk_payment', 'category_report',
+                            'target_categories', 'indicator_maintenance',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1417,6 +1420,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'product_categories' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Target Grup Barang', array(
+                                'controller' => 'products',
+                                'action' => 'target_categories'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'target_categories' )?'active':'',
                             ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Barang', array(
                                 'controller' => 'products',
@@ -1545,6 +1556,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'category_report' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Indikator Maintenance', array(
+                                'controller' => 'products',
+                                'action' => 'indicator_maintenance'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'indicator_maintenance' )?'active':'',
                             ));
                     ?>
                 </ul>

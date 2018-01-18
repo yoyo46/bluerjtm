@@ -3461,6 +3461,236 @@ class RmReportComponent extends Component {
 		);
 	}
 
+	function _callDataIndicator_maintenance ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('Truck');
+		$this->controller->loadModel('ProductCategoryTarget');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+
+		$options = array(
+			'group' => array(
+				'Truck.id',
+			),
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+        
+		$options = $this->controller->Truck->_callRefineParams($params, $options);
+    	$year = Common::hashEmptyField($params, 'named.year', date('Y'));
+        $branch_id = $this->MkCommon->getConditionGroupBranch( $params, 'Truck', false, 'value' );
+
+		$this->controller->paginate	= $this->controller->Truck->getData('paginate', $options, true, array(
+            'branch' => false,
+		));
+		$data = $this->controller->paginate('Truck');
+		$result = array();
+
+		$last_data = end($data);
+		$last_id = Common::hashEmptyField($last_data, 'Truck.id');
+
+		$paging = $this->controller->params->paging;
+        $nextPage = Common::hashEmptyField($paging, 'Truck.nextPage');
+
+        $grandtotal = 0;
+        $grandtotal_qty = 0;
+
+        $targets = $this->controller->ProductCategoryTarget->getData('all');
+        $targets = $this->controller->ProductCategoryTarget->getMergeList($targets, array(
+            'contain' => array(
+                'ProductCategory',
+            ),
+        ));
+
+		if( !empty($data) ) {
+			$grandtotalArr = array();
+			$grandtotalQtyArr = array();
+
+	        App::import('Helper', 'Html');
+	        $this->Html = new HtmlHelper(new View(null));
+		    
+		    $this->controller->Truck->Ttuj->virtualFields['total_lead_time'] = 'SUM(Ttuj.arrive_lead_time+Ttuj.back_lead_time)';
+
+			foreach ($data as $key => $value) {
+				$id = Common::hashEmptyField($value, 'Truck.id');
+				$nopol = Common::hashEmptyField($value, 'Truck.nopol');
+
+				$result[$key] = array(
+					__('Truk') => array(
+						'text' => !empty($view)?$this->Html->link($nopol, array(
+							'controller' => 'revenues',
+							'action' => 'detail_ritase',
+							$id,
+							'admin' => false,
+							'full_base' => true,
+						), array(
+							'target' => '_blank',
+						)):$nopol,
+                		'field_model' => 'Truck.nopol',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'nopol\',width:120',
+					),
+				);
+				
+				if( !empty($targets) ) {
+					foreach ($targets as $target) {
+	                	$group_id = Common::hashEmptyField($target, 'ProductCategory.id');
+	                	$group = Common::hashEmptyField($target, 'ProductCategory.name');
+	                	$target = Common::hashEmptyField($target, 'ProductCategoryTarget.target', 0);
+
+	                	$spk = $this->controller->Truck->Spk->SpkProduct->getData('first', array(
+	                		'conditions' => array(
+	                			'Spk.truck_id' => $id,
+	                			'Product.product_category_id' => $group_id,
+	                			'Spk.transaction_status' => 'finish',
+	                			'Spk.status' => 1,
+                			),
+                			'contain' => array(
+                				'Spk',
+                				'Product',
+            				),
+            				'order' => array(
+            					'Spk.complete_date' => 'DESC',
+        					),
+                		));
+	                	$complete_date = Common::hashEmptyField($spk, 'Spk.complete_date');
+	                	$progress = 0;
+	                	$optionsTtuj = array(
+	                		'conditions' => array(
+	                			'Ttuj.truck_id' => $id,
+                			),
+                		);
+
+	                	if( !empty($complete_date) ) {
+            				$complete_date = Common::formatDate($complete_date, 'Y-m-d');
+	                		$optionsTtuj['conditions']['Ttuj.ttuj_date >='] = $complete_date;
+	                	}
+
+                		$ttuj = $this->controller->Truck->Ttuj->getData('first', $optionsTtuj, true, array(
+				            'status' => 'commit',
+				            'branch' => false,
+				        ));
+	                	$total_lead_time = Common::hashEmptyField($ttuj, 'Ttuj.total_lead_time', 0);
+                		
+                		$progress = $total_lead_time / $target;
+                		$progress = $progress * 100;
+            			$progress_color = 'green';
+
+            			$total_lead_time = Common::getFormatPrice($total_lead_time);
+            			$target = Common::getFormatPrice($target);
+
+                		if( $progress > 60 && $progress < 80 ) {
+                			$progress_color = 'yellow';
+                		} else if( $progress > 80 ) {
+                			$progress_color = 'red';
+                		}
+
+						$result[$key] = array_merge($result[$key], array(
+							!empty($view)?$group:__('%s (KM)', $group) => array(
+								// 'text' => $target,
+								'text' => !empty($view)?'<div class="progress xs" style="margin: 0;">
+                                    <div class="progress-bar progress-bar-'.$progress_color.'" style="width: '.$progress.'%;"></div>
+                                </div>':__('%s / %s', $total_lead_time, $target),
+				                'style' => 'text-align: center;',
+				                'data-options' => 'field:\''.$group.'\',width:150',
+				                'align' => 'center',
+		                		'excel' => array(
+		                			'align' => 'center',
+		            			),
+							),
+						));
+					}
+	            }
+			}
+
+			// if( !empty($view) ) {
+			// 	$result[$key+1] = array(
+			// 		__('Grup Barang') => array(
+		 //                'style' => 'text-align: center;',
+			// 		),
+			// 		__('Parent') => array(
+			// 			'text' => __('Total'),
+		 //                'style' => 'font-weight: bold;',
+   //              		'excel' => array(
+   //              			'bold' => true,
+   //          			),
+			// 		),
+			// 	);
+				
+			// 	$grandtotal_sum = 0;
+			// 	$grandtotal_qty_sum = 0;
+
+   //              for ($i=1; $i <= 12; $i++) {
+   //              	$monthName = date('F', mktime(0, 0, 0, $i, 1));
+   //              	$grandtotal = Common::hashEmptyField($grandtotalArr, $i, 0);
+   //              	$grandtotal_qty = Common::hashEmptyField($grandtotalQtyArr, $i, 0);
+
+			// 		$result[$key+1] = array_merge($result[$key+1], array(
+			// 			$monthName => array(
+			// 				'text' => $monthName,
+			//                 'style' => 'text-align: center;',
+			//                 'data-options' => 'field:\'month_'.$i.'\',width:100',
+			//                 'align' => 'center',
+			//                 'child' => array(
+			//                 	__('Total') => array(
+			// 						'name' => __('Total'),
+			// 						'text' => !empty($grandtotal)?Common::getFormatPrice($grandtotal):'-',
+			// 		                'style' => 'text-align: center;',
+			// 		                'data-options' => 'field:\'month_total_'.$i.'\',width:100',
+			// 		                'align' => 'right',
+		 //                		),
+			//                 	__('QTY') => array(
+			// 						'name' => __('QTY'),
+			// 						'text' => !empty($grandtotal_qty)?$grandtotal_qty:'-',
+			// 		                'style' => 'text-align: center;',
+			// 		                'data-options' => 'field:\'month_qty_'.$i.'\',width:100',
+			// 		                'align' => 'center',
+		 //                		),
+		 //                	),
+			// 			),
+			// 		));
+					
+			// 		$grandtotal_sum += $grandtotal;
+			// 		$grandtotal_qty_sum += $grandtotal_qty;
+   //              }
+
+   //              $result[$key+1] = array_merge($result[$key+1], array(
+			// 		__('Total') => array(
+			// 			'text' => __('Total'),
+		 //                'style' => 'text-align: center;',
+		 //                'data-options' => 'field:\'month_total\',width:100',
+		 //                'align' => 'center',
+		 //                'child' => array(
+		 //                	__('Total') => array(
+			// 					'name' => __('Total'),
+			// 					'text' => !empty($grandtotal_sum)?Common::getFormatPrice($grandtotal_sum):'-',
+			// 	                'style' => 'text-align: center;',
+			// 	                'data-options' => 'field:\'month_total_'.$i.'\',width:100',
+			// 	                'align' => 'right',
+	  //               		),
+		 //                	__('QTY') => array(
+			// 					'name' => __('QTY'),
+			// 					'text' => !empty($grandtotal_qty_sum)?$grandtotal_qty_sum:'-',
+			// 	                'style' => 'text-align: center;',
+			// 	                'data-options' => 'field:\'month_qty_'.$i.'\',width:100',
+			// 	                'align' => 'center',
+	  //               		),
+	  //               	),
+			// 		),
+			// 	));
+			// }
+		}
+
+		return array(
+			'data' => $result,
+			'last_id' => $last_id,
+			'model' => 'Truck',
+		);
+	}
+
 	function _callProcess( $modelName, $id, $value, $data ) {
 		$dataSave = false;
 		$file = false;

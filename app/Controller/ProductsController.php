@@ -3267,7 +3267,7 @@ class ProductsController extends AppController {
     public function indicator_maintenance() {
         $params = $this->MkCommon->_callRefineParams($this->params);
 
-        $dataReport = $this->RmReport->_callDataIndicator_maintenance_report($params, 30, 0, true);
+        $dataReport = $this->RmReport->_callDataIndicator_maintenance($params, 30, 0, true);
         $values = Common::hashEmptyField($dataReport, 'data');
 
         $this->RjProduct->_callBeforeViewIndicatorMaintenanceReports($params);
