@@ -277,6 +277,10 @@ class Truck extends AppModel {
             'className' => 'Spk',
             'foreignKey' => 'truck_id',
         ),
+        'ViewTruckMaintenance' => array(
+            'className' => 'ViewTruckMaintenance',
+            'foreignKey' => 'truck_id',
+        ),
     );
 
     function checkUniq() {
@@ -619,6 +623,7 @@ class Truck extends AppModel {
         $year = !empty($data['named']['year'])?urldecode($data['named']['year']):false;
         $sort = !empty($data['named']['sort'])?urldecode($data['named']['sort']):false;
         $direction = !empty($data['named']['direction'])?urldecode($data['named']['direction']):false;
+        $status_maintenance = !empty($data['named']['status_maintenance'])?urldecode($data['named']['status_maintenance']):false;
 
         if(!empty($customerid) || $sort == 'CustomerNoType.code'){
             $this->unBindModel(array(
@@ -662,6 +667,41 @@ class Truck extends AppModel {
             $default_options['conditions']['TruckCustomer.customer_id'] = $customerid;
             $default_options['contain'][] = 'TruckCustomer';
         }
+        if( !empty($status_maintenance) ) {
+            $this->unBindModel(array(
+                'hasMany' => array(
+                    'ViewTruckMaintenance',
+                )
+            ));
+            $this->bindModel(array(
+                'hasOne' => array(
+                    'ViewTruckMaintenance' => array(
+                        'className' => 'ViewTruckMaintenance',
+                        'foreignKey' => 'truck_id',
+                    ),
+                )
+            ), false);
+            
+            $this->virtualFields['progress'] = 'IFNULL((ViewTruckMaintenance.total_lead_time / ViewTruckMaintenance.target)*100, 0)';
+
+            $default_options['contain'][] = 'ViewTruckMaintenance';
+            $having = false;
+
+            switch ($status_maintenance) {
+                case 'warning':
+                    $having = ' HAVING 
+                    Truck__progress > 60
+                    AND Truck__progress < 80';
+                    break;
+                case 'danger':
+                    $having = ' HAVING 
+                    Truck__progress > 80';
+                    break;
+            }
+
+            $default_options['group'][] = 'Truck.id '.$having;
+        }
+
         if( !empty($sort) ) {
             switch ($sort) {
                 case 'TruckBrand.name':

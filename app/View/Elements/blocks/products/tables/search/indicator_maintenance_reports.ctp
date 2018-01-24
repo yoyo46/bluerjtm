@@ -60,6 +60,18 @@
                         ));
                 ?>
             </div>
+            <div class="col-sm-6">
+                <?php
+                        echo $this->Common->buildInputForm('status_maintenance', __('Status'), array(
+                            'empty' => __('Pilih Status'),
+                            'options' => array(
+                                // 'great' => __('Masih Bagus'),
+                                'warning' => __('Perlu Diganti'),
+                                'danger' => __('Harus Diganti'),
+                            ),
+                        ));
+                ?>
+            </div>
         </div>
         <?php 
                 echo $this->Form->hidden('title',array(

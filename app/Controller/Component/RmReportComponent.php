@@ -3593,13 +3593,29 @@ class RmReportComponent extends Component {
 								// 'text' => $target,
 								'text' => !empty($view)?'<div class="progress xs" style="margin: 0;">
                                     <div class="progress-bar progress-bar-'.$progress_color.'" style="width: '.$progress.'%;"></div>
-                                </div>':__('%s / %s', $total_lead_time, $target),
+                                </div>':false,
 				                'style' => 'text-align: center;',
 				                'data-options' => 'field:\''.$group.'\',width:150',
 				                'align' => 'center',
 		                		'excel' => array(
 		                			'align' => 'center',
 		            			),
+				                'child' => empty($view)?array(
+				                	__('Target') => array(
+										'name' => __('Target'),
+										'text' => $target,
+						                'style' => 'text-align: center;',
+						                'data-options' => 'field:\'month_total_'.$i.'\',width:100',
+						                'align' => 'right',
+			                		),
+				                	__('Pemakaian') => array(
+										'name' => __('Pemakaian'),
+										'text' => $total_lead_time,
+						                'style' => 'text-align: center;',
+						                'data-options' => 'field:\'month_qty_'.$i.'\',width:100',
+						                'align' => 'center',
+			                		),
+								):false,
 							),
 						));
 					}

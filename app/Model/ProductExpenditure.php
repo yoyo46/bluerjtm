@@ -561,7 +561,7 @@ class ProductExpenditure extends AppModel {
                         ));
                         $arrHistory['ProductHistory']['transaction_type'] = 'product_expenditure_void';
                         $arrHistory['ProductHistory']['type'] = 'in';
-                        $arrHistory['ProductHistory']['ProductStock'] = array(
+                        $arrHistory['ProductHistory']['ProductStock'][] = array(
                             'product_id' => $product_id,
                             'product_history_id' => $history_id,
                             'branch_id' => Common::hashEmptyField($arrHistory, 'ProductHistory.branch_id'),

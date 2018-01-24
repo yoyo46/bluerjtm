@@ -1936,7 +1936,7 @@ class ProductsController extends AppController {
     }
 
     // Real
-    public function import_real( $download = false ) {
+    public function import( $download = false ) {
         if(!empty($download)){
             $link_url = FULL_BASE_URL . '/files/product.xls';
             $this->redirect($link_url);
@@ -2057,7 +2057,7 @@ class ProductsController extends AppController {
                                     $harga_satuan = !empty($harga_satuan)?str_replace(array('Rp*', '*'), array('', ''), $harga_satuan):0;
                                     $harga_satuan = trim($harga_satuan);
 
-                                    if( !empty($ns) ) {
+                                    // if( !empty($ns) ) {
                                         $unit = $this->Product->ProductUnit->getMerge(array(), $satuan, 'ProductUnit.name');
                                         $grupmodel = $this->Product->ProductCategory->getMerge(array(), $kategori, 'ProductCategory', 'ProductCategory.name');
                                         $subgrupmodel = $this->Product->ProductCategory->getMerge(array(), $sub_kategori, 'ProductCategory', 'ProductCategory.name');
@@ -2126,30 +2126,30 @@ class ProductsController extends AppController {
                                                 ),
                                             );
                                         }
-                                        // if( !empty($stock_akhir) ) {
-                                        //     $dataArr['Product']['product_stock_cnt'] = $stock_akhir;
-                                        //     $dataArr['ProductHistory'] = array(
-                                        //         array(
-                                        //             'branch_id' => Configure::read('__Site.config_branch_id'),
-                                        //             'balance' => 0,
-                                        //             'transaction_type' => 'stok_awal',
-                                        //             'transaction_date' => '2017-12-31',
-                                        //             'qty' => $stock_akhir,
-                                        //             'price' => $harga_satuan,
-                                        //             'type' => 'in',
-                                        //             'ending' => $stock_akhir,
-                                        //         ),
-                                        //     );
-                                        //     $dataArr['ProductStock'] = array(
-                                        //         array(
-                                        //             'branch_id' => Configure::read('__Site.config_branch_id'),
-                                        //             'transaction_date' => '2017-12-31',
-                                        //             'qty' => $stock_akhir,
-                                        //             'qty_use' => 0,
-                                        //             'price' => $harga_satuan,
-                                        //         ),
-                                        //     );
-                                        // }
+                                        if( !empty($stock_akhir) ) {
+                                            $dataArr['Product']['product_stock_cnt'] = $stock_akhir;
+                                            $dataArr['ProductHistory'] = array(
+                                                array(
+                                                    'branch_id' => Configure::read('__Site.config_branch_id'),
+                                                    'balance' => 0,
+                                                    'transaction_type' => 'stok_awal',
+                                                    'transaction_date' => '2017-12-31',
+                                                    'qty' => $stock_akhir,
+                                                    'price' => $harga_satuan,
+                                                    'type' => 'in',
+                                                    'ending' => $stock_akhir,
+                                                ),
+                                            );
+                                            $dataArr['ProductStock'] = array(
+                                                array(
+                                                    'branch_id' => Configure::read('__Site.config_branch_id'),
+                                                    'transaction_date' => '2017-12-31',
+                                                    'qty' => $stock_akhir,
+                                                    'qty_use' => 0,
+                                                    'price' => $harga_satuan,
+                                                ),
+                                            );
+                                        }
 
                                         $result = $this->Product->saveAll($dataArr);
                                         $status = $this->MkCommon->filterEmptyField($result, 'status');
@@ -2170,7 +2170,7 @@ class ProductsController extends AppController {
                                         }
                                         
                                         $row_submitted++;
-                                    }
+                                    // }
                                 }
                             }
                         }
@@ -2191,7 +2191,7 @@ class ProductsController extends AppController {
         }
     }
 
-    public function import( $download = false ) {
+    public function import_bak( $download = false ) {
         if(!empty($download)){
             $link_url = FULL_BASE_URL . '/files/products.xls';
             $this->redirect($link_url);
