@@ -260,6 +260,7 @@ class PhpExcelComponent extends Component {
 
         if( !empty($data) ) {
             foreach ($data as $d) {
+                $child = Common::hashEmptyField($d, 'child');
 
                 // set label
                 $this->_xls->getActiveSheet()->setCellValueByColumnAndRow($offset, $this->_row, $d['label']);
@@ -287,9 +288,83 @@ class PhpExcelComponent extends Component {
                 if (isset($d['text_color']) && $d['text_color'])
                     $this->_tableParams['text_color'][] = $offset;
 
+                if( !empty($child) ) {
+                    $childRow = $this->_row+1;
+
+                    if( !isset($childOffset) ) {
+                        $childOffset = $offset;
+                    }
+
+                    foreach ($child as $key => $val) {
+                        $label = Common::hashEmptyField($val, 'label');
+                        $width = Common::hashEmptyField($val, 'width');
+
+                        $childOffsetAcii = 1+$childOffset;
+                        $childOffsetAcii = Common::getNameFromNumber($childOffsetAcii);
+                        $childPosition = sprintf('%s%s:%s%s', $childOffsetAcii, $childRow, $childOffsetAcii, $childRow);
+
+                        $this->_xls->getActiveSheet()->setCellValueByColumnAndRow($childOffset, $childRow, $label);
+                        
+                        if (isset($width) && is_numeric($width))
+                            $this->_xls->getActiveSheet()->getColumnDimensionByColumn($childOffset)->setWidth((float)$width);
+                        else
+                            $this->_tableParams['auto_width'][] = $childOffset;
+
+                        // text color
+                        if (isset($params['text_color'])) {
+                            $this->_xls->getActiveSheet()->getStyle($childPosition)->getFont()->getColor()->setRGB($params['text_color']);
+                        }
+
+                        // fill color
+                        if (isset($params['fill_color'])) {
+                            $this->_xls->getActiveSheet()->getStyle($childPosition)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB($params['fill_color']);
+                        }
+
+                        // horizontal
+                        if (isset($params['horizontal'])) {
+                            $this->_xls->getActiveSheet()->getStyle($childRow)->getAlignment()->setHorizontal($params['horizontal']);
+                        }
+
+                        $childOffset++;
+                    }
+                }
+
+                if( !empty($d['rowspan']) ) {
+                    $rowspan = $d['rowspan']-1;
+                    $default = 1+$offset;
+                    $row = $this->_row;
+                    $cell_end = $row+$rowspan; // Acii A
+
+                    $default = Common::getNameFromNumber($default);
+                    $this->_xls->getActiveSheet()->mergeCells(__('%s%s:%s%s', $default, $row, $default, $cell_end));
+                    // $this->_row += $rowspan;
+                    // $offset++;
+                }
+                if( !empty($d['colspan']) ) {
+                    $colspan = $d['colspan']-1;
+                    $default = 1+$offset;
+                    $dimensi = $default+$colspan; // Acii A
+                    $row = $this->_row;
+
+                    $default = Common::getNameFromNumber($default);
+                    $cell_end = Common::getNameFromNumber($dimensi);
+
+                    $this->_xls->getActiveSheet()->mergeCells(__('%s%s:%s%s', $default, $row, $cell_end, $row));
+                    
+                    $offset += $colspan;
+                    // $this->_row ++;
+                }
+
                 $offset++;
             }
         }
+
+        $child = Set::extract('/child', $data);
+
+        if ( !empty($child) ) {
+            $this->_row++;
+        }
+        
         $this->_row++;
 
         return $this;

@@ -3330,6 +3330,9 @@ class RmReportComponent extends Component {
 			                'style' => 'text-align: center;',
 			                'data-options' => 'field:\'month_'.$i.'\',width:100',
 			                'align' => 'center',
+	                		'excel' => array(
+	                			'headercolspan' => 2,
+	            			),
 			                'child' => array(
 			                	__('Total') => array(
 									'name' => __('Total'),
@@ -3356,6 +3359,9 @@ class RmReportComponent extends Component {
 		                'style' => 'text-align: center;',
 		                'data-options' => 'field:\'month_total\',width:100',
 		                'align' => 'center',
+                		'excel' => array(
+                			'headercolspan' => 2,
+            			),
 		                'child' => array(
 		                	__('Total') => array(
 								'name' => __('Total'),
@@ -3536,7 +3542,7 @@ class RmReportComponent extends Component {
 				);
 				
 				if( !empty($targets) ) {
-					foreach ($targets as $target) {
+					foreach ($targets as $idx => $target) {
 	                	$group_id = Common::hashEmptyField($target, 'ProductCategory.id');
 	                	$group = Common::hashEmptyField($target, 'ProductCategory.name');
 	                	$target = Common::hashEmptyField($target, 'ProductCategoryTarget.target', 0);
@@ -3599,20 +3605,21 @@ class RmReportComponent extends Component {
 				                'align' => 'center',
 		                		'excel' => array(
 		                			'align' => 'center',
+	                				'headercolspan' => 2,
 		            			),
 				                'child' => empty($view)?array(
 				                	__('Target') => array(
 										'name' => __('Target'),
 										'text' => $target,
 						                'style' => 'text-align: center;',
-						                'data-options' => 'field:\'month_total_'.$i.'\',width:100',
-						                'align' => 'right',
+						                'data-options' => 'field:\'month_total_'.$idx.'\',width:100',
+						                'align' => 'center',
 			                		),
 				                	__('Pemakaian') => array(
 										'name' => __('Pemakaian'),
 										'text' => $total_lead_time,
 						                'style' => 'text-align: center;',
-						                'data-options' => 'field:\'month_qty_'.$i.'\',width:100',
+						                'data-options' => 'field:\'month_qty_'.$idx.'\',width:100',
 						                'align' => 'center',
 			                		),
 								):false,
@@ -3825,8 +3832,9 @@ class RmReportComponent extends Component {
 
 	function processReportTableData( $titles, $data, $theader = true, $document_status = null ) {
 		$table = array();
-		$idx = 64; // Acii A
-		$dimensi = 64; // Acii A
+		// $idx = 64; // Acii A
+		// $dimensi = 64; // Acii A
+		$dimensi = 0; // Acii A
 		$column = null;
 
 		if( !empty($data['multiple_column']) ) {
@@ -3836,9 +3844,14 @@ class RmReportComponent extends Component {
 		}
 
 		if( !empty($column) ) {
+			$num = 0;
+
 			foreach ($column as $label => $value) {
 				$text = Common::hashEmptyField($value, 'text');
 				$label = Common::hashEmptyField($value, 'label', $label);
+				$childs = Common::hashEmptyField($value, 'child');
+				$rowspan = Common::hashEmptyField($value, 'excel.headerrowspan');
+				$colspan = Common::hashEmptyField($value, 'excel.headercolspan');
 				// $width = Common::hashEmptyField($value, 'width');
 
 				$dataArr = Common::_callUnset($value, array(
@@ -3846,25 +3859,62 @@ class RmReportComponent extends Component {
 					'horizontal',
 				));
 
-				$table[] = array_merge($dataArr, array(
+				$table[$num] = array_merge($dataArr, array(
 					'label' => $label,
+					'rowspan' => $rowspan,
+					'colspan' => $colspan,
 					// 'width' => $width,
 				));
 
-				if( $idx >= 90 ) {
-					$dimensi++;
+				// if( $idx >= 90 ) {
+				// 	$dimensi++;
+				// } else {
+				// 	$idx++;
+				// }
+
+				if( !empty($childs) ) {
+					$childTmp = array();
+
+					foreach ($childs as $key => $child) {
+						$label = Common::hashEmptyField($child, 'name', '');
+						$width = Common::hashEmptyField($child, 'width');
+						$rowspan = Common::hashEmptyField($child, 'excel.headerrowspan');
+						$colspan = Common::hashEmptyField($child, 'excel.headercolspan');
+
+						$childTmp[] = array_merge($dataArr, array(
+							'label' => $label,
+							'width' => $width,
+							'rowspan' => $rowspan,
+							'colspan' => $colspan,
+						));
+
+						// if( $idx >= 90 ) {
+							$dimensi++;
+						// } else {
+						// 	$idx++;
+						// }
+					}
+
+					$table[$num]['child'] = $childTmp;
 				} else {
-					$idx++;
+					// if( $idx >= 90 ) {
+						$dimensi++;
+					// } else {
+					// 	$idx++;
+					// }
 				}
+				
+				$num++;
 			}
 		}
 
-		$cell_end = chr($idx);
+		// $cell_end = chr($idx);
 
-		if( $dimensi > 64 ) {
-			$dimensi_chr = chr($dimensi);
-			$cell_end = __('A%s', $dimensi_chr);
-		}
+		// if( $dimensi > 64 ) {
+		// 	$dimensi_chr = chr($dimensi);
+		// 	$cell_end = __('A%s', $dimensi_chr);
+		// }
+		$cell_end = Common::getNameFromNumber($dimensi);
 
 		if( !empty($theader) ) {
 			$title = Common::hashEmptyField($titles, 'title');
@@ -3985,14 +4035,31 @@ class RmReportComponent extends Component {
 						foreach ($values as $key => $value) {
 							$text = Common::hashEmptyField($value, 'text', '');
 							$excel = Common::hashEmptyField($value, 'excel');
+							$childs = Common::hashEmptyField($value, 'child');
 
-							if( !empty($excel) ) {
-								$dataTable[] = array(
-									'text' => $text,
-									'options' => $excel,
-								);
+							if( !empty($childs) ) {
+								foreach ($childs as $key => $child) {
+									$text = Common::hashEmptyField($child, 'text', '');
+									$excel = Common::hashEmptyField($child, 'excel');
+
+									if( !empty($excel) ) {
+										$dataTable[] = array(
+											'text' => $text,
+											'options' => $excel,
+										);
+									} else {
+										$dataTable[] = $text;
+									}
+								}
 							} else {
-								$dataTable[] = $text;
+								if( !empty($excel) ) {
+									$dataTable[] = array(
+										'text' => $text,
+										'options' => $excel,
+									);
+								} else {
+									$dataTable[] = $text;
+								}
 							}
 						}
 					}
