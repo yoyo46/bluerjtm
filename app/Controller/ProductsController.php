@@ -1310,6 +1310,7 @@ class ProductsController extends AppController {
                     $transaction_type = Common::hashEmptyField($value, 'ProductHistory.transaction_type');
                     $transaction_id = Common::hashEmptyField($value, 'ProductHistory.transaction_id');
                     $branch_id = Common::hashEmptyField($value, 'ProductHistory.branch_id');
+                    $price = Common::hashEmptyField($value, 'ProductHistory.price');
 
                     $value = $this->Product->getMergeList($value, array(
                         'contain' => array(
@@ -1391,8 +1392,13 @@ class ProductsController extends AppController {
                             'conditions' => array(
                                 'ProductExpenditureDetailSerialNumber.product_expenditure_detail_id' => $product_expenditure_detail_id,
                                 'ProductExpenditureDetailSerialNumber.product_id' => $product_id,
+                                'ProductExpenditureDetailSerialNumber.price' => $price,
                             ),
                         ));
+
+                        // if( $product_history_id == 1806 ) {
+                        //     debug($value);die();
+                        // }
                     } else if( in_array($transaction_type, array('product_adjustment_min', 'product_adjustment_plus')) ) {
                         $product_adjustment_detail_id = Common::hashEmptyField($value, 'DocumentDetail.id');
 
