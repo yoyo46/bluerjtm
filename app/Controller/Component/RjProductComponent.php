@@ -186,14 +186,19 @@ class RjProductComponent extends Component {
                 $price = $this->MkCommon->filterEmptyField($value, 'price');
                 $qty_out = Common::hashEmptyField($value, 'qty', 1);
 
-                $detail[$modelDetail]['Product']['ProductStock'][] = $this->_callOutStock( $product_id, $qty_out, $serial_number);
+                $productStock = $this->_callOutStock( $product_id, $qty_out, $serial_number);
+                $no_ref_id = Common::hashEmptyField($productStock, 'id');
+
+                $detail[$modelDetail]['Product']['ProductStock'][] = $productStock;
 
                 if( !empty($detail['ProductHistory'][$price]['qty']) ) {
                     $detail['ProductHistory'][$price]['qty'] += $qty_out;
+                    $detail['ProductHistory'][$price]['no_ref_id'] = $no_ref_id;
                 } else {
                     $detail['ProductHistory'][$price] = $stock_history;
                     $detail['ProductHistory'][$price]['qty'] = $qty_out;
                     $detail['ProductHistory'][$price]['price'] = $price;
+                    $detail['ProductHistory'][$price]['no_ref_id'] = $no_ref_id;
                 }
             }
         }
@@ -422,6 +427,7 @@ class RjProductComponent extends Component {
                             // $total_price = 0;
 
                             foreach ($result as $key => $val) {
+                                $product_stock_id = Common::hashEmptyField($val, 'ProductStock.id');
                                 $serial_number = Common::hashEmptyField($val, 'ProductStock.serial_number');
                                 $qty_out = Common::hashEmptyField($val, 'ProductStock.qty_out');
                                 $price = Common::hashEmptyField($val, 'price');
@@ -437,6 +443,7 @@ class RjProductComponent extends Component {
                                     $detail['ProductHistory'][$price]['price'] = $price;
                                 }
 
+                                $detail['ProductHistory'][$price]['no_ref_id'] = $product_stock_id;
                                 $detail[$modelDetail]['Product']['ProductStock'][] = $this->MkCommon->filterEmptyField($val, 'ProductStock');
                                 // $detail['ProductHistory'][$key]['ProductHistory']['qty'] = $qty_out;
 

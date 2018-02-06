@@ -482,30 +482,43 @@ class ProductExpenditure extends AppModel {
                         $qty = Common::hashEmptyField($arrDetail, 'ProductExpenditureDetailSerialNumber.qty');
                         $price = Common::hashEmptyField($arrDetail, 'ProductExpenditureDetailSerialNumber.price');
                         $current_serial_number = Common::hashEmptyField($arrDetail, 'ProductExpenditureDetailSerialNumber.serial_number');
+                        $product_expenditure_detail_id = Common::hashEmptyField($arrDetail, 'ProductExpenditureDetailSerialNumber.product_expenditure_detail_id');
 
-                        $checkStock = $this->ProductExpenditureDetail->ProductHistory->ProductStock->getData('first', array(
+                        $checkStock = $this->ProductExpenditureDetail->ProductHistory->getData('first', array(
                             'conditions' => array(
-                                'ProductStock.product_id' => $product_id,
-                                'ProductStock.serial_number' => $current_serial_number,
-                                'ProductStock.price' => $price,
-                            ),
-                        ), array(
-                            'status' => false,
-                            'branch' => false,
-                        ));
-                        $checkStock = $this->ProductExpenditureDetail->ProductHistory->ProductStock->getMergeList($checkStock, array(
-                            'contain' => array(
-                                'ProductHistory' => array(
-                                    'primaryKey' => 'id',
-                                    'foreignKey' => 'product_history_id',
-                                    'elements' => array(
-                                        'status' => false,
-                                        'branch' => false,
-                                    ),
-                                ),
+                                'ProductHistory.product_id' => $product_id,
+                                'ProductHistory.transaction_id' => $product_expenditure_detail_id,
+                                'ProductHistory.transaction_type' => 'product_expenditure',
                             ),
                         ));
-                        $transaction_type = Common::hashEmptyField($checkStock, 'ProductHistory.transaction_type');
+                        $no_ref_id = Common::hashEmptyField($checkStock, 'ProductHistory.no_ref_id');
+
+                        // $checkStock = $this->ProductExpenditureDetail->ProductHistory->ProductStock->getData('first', array(
+                        //     'conditions' => array(
+                        //         'ProductStock.product_id' => $product_id,
+                        //         'ProductStock.serial_number' => $current_serial_number,
+                        //         'ProductStock.price' => $price,
+                        //     ),
+                        // ), array(
+                        //     'status' => false,
+                        //     'branch' => false,
+                        // ));
+                        // $checkStock = $this->ProductExpenditureDetail->ProductHistory->ProductStock->getMergeList($checkStock, array(
+                        //     'contain' => array(
+                        //         'ProductHistory' => array(
+                        //             'conditions' => array(
+                        //                 'ProductHistory.transaction_type <>' => 'product_expenditure',
+                        //             ),
+                        //             'primaryKey' => 'id',
+                        //             'foreignKey' => 'product_history_id',
+                        //             'elements' => array(
+                        //                 'status' => false,
+                        //                 'branch' => false,
+                        //             ),
+                        //         ),
+                        //     ),
+                        // ));
+                        // $transaction_type = Common::hashEmptyField($checkStock, 'ProductHistory.transaction_type');
 
                         $productHistory = array(
                             'branch_id' => $branch_id,
@@ -518,12 +531,24 @@ class ProductExpenditure extends AppModel {
                             'type' => 'in',
                         );
 
-                        if ($transaction_type == 'product_adjustment_plus') {
+                        // if (in_array($transaction_type, array( 'product_adjustment_plus', 'product_receipt' ))) {
+                        if( !empty($no_ref_id) ) {
+                            $checkStock = $this->ProductExpenditureDetail->ProductHistory->ProductStock->getData('first', array(
+                                'conditions' => array(
+                                    'ProductStock.id' => $no_ref_id,
+                                    'ProductStock.product_id' => $product_id,
+                                    'ProductStock.serial_number' => $current_serial_number,
+                                ),
+                            ), array(
+                                'status' => false,
+                                'branch' => false,
+                            ));
+
                             $arrHistory['ProductHistory'] = $productHistory;
                             $arrStock['ProductStock'] = array(
                                 'id' => Common::hashEmptyField($checkStock, 'ProductStock.id'),
-                                'product_history_id' => Common::hashEmptyField($checkStock, 'ProductStock.product_history_id'),
-                                'product_id' => $product_id,
+                                // 'product_history_id' => Common::hashEmptyField($checkStock, 'ProductStock.product_history_id'),
+                                // 'product_id' => $product_id,
                                 'qty_use' => Common::hashEmptyField($checkStock, 'ProductStock.qty_use', 0) - $qty,
                                 'status' => true,
                             );

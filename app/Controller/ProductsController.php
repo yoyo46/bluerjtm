@@ -483,36 +483,40 @@ class ProductsController extends AppController {
             'status' => 'all',
         ));
         $values = $this->paginate('ProductReceipt');
-        $values = $this->ProductReceipt->getMergeList($values, array(
-            'contain' => array(
-                'Vendor' => array(
-                    'elements' => array(
-                        'status' => 'all',
-                        'branch' => false,
-                    ),
-                ),
-                'Employe',
-                'Warehouse' => array(
-                    'uses' => 'Branch',
-                    'primaryKey' => 'id',
-                    'foreignKey' => 'to_branch_id',
-                    'type' => 'first',
-                ),
-                'ProductReceiptDetail' => array(
-                    'contain' => array(
-                        'ProductHistory' => array(
-                            'contain' => array(
-                                'ProductStock',
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-        ));
 
         if( !empty($values) ) {
             foreach ($values as $key => $value) {
+                $value = $this->ProductReceipt->getMergeList($value, array(
+                    'contain' => array(
+                        'Vendor' => array(
+                            'elements' => array(
+                                'status' => 'all',
+                                'branch' => false,
+                            ),
+                        ),
+                        'Employe',
+                        'Warehouse' => array(
+                            'uses' => 'Branch',
+                            'primaryKey' => 'id',
+                            'foreignKey' => 'to_branch_id',
+                            'type' => 'first',
+                        ),
+                        'ProductReceiptDetail' => array(
+                            'contain' => array(
+                                'ProductHistory' => array(
+                                    'conditions' => array(
+                                        'transaction_type' => 'product_receipt',
+                                    ),
+                                    'contain' => array(
+                                        'ProductStock',
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ));
                 $value = $this->RjProduct->_callGetDocReceipt($value);
+
                 $values[$key] = $value;
             }
         }
