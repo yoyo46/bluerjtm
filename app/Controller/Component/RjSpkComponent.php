@@ -55,6 +55,10 @@ class RjSpkComponent extends Component {
                 $price = !empty($spkProduct['price'][$key])?Common::_callPriceConverter($spkProduct['price'][$key]):false;
                 // $price_service_type = !empty($spkProduct['price_service_type'][$key])?$spkProduct['price_service_type'][$key]:false;
                 $tire_position = !empty($spkProduct['tire_position'][$key])?$spkProduct['tire_position'][$key]:false;
+                $document_status = !empty($spkProduct['document_status'][$key])?$spkProduct['document_status'][$key]:false;
+                $draft_document_status = !empty($spkProduct['draft_document_status'][$key])?$spkProduct['draft_document_status'][$key]:false;
+                $receipt_status = !empty($spkProduct['receipt_status'][$key])?$spkProduct['receipt_status'][$key]:false;
+                $retur_status = !empty($spkProduct['retur_status'][$key])?$spkProduct['retur_status'][$key]:false;
 
                 $product = $this->controller->Spk->SpkProduct->Product->getData('first', array(
                     'conditions' => array(
@@ -76,6 +80,10 @@ class RjSpkComponent extends Component {
                     // 'price_service' => $price_service,
                     'price' => $price,
                     // 'price_service_type' => $price_service_type,
+                    'document_status' => $document_status,
+                    'draft_document_status' => $draft_document_status,
+                    'receipt_status' => $receipt_status,
+                    'retur_status' => $retur_status,
                 );
                 $dataProduct = $this->MkCommon->dataConverter($dataProduct, array(
                     'price' => array(
@@ -124,11 +132,15 @@ class RjSpkComponent extends Component {
                 foreach ($spkProduction['product_id'] as $key => $product_id) {
                     $qty = !empty($spkProduction['qty'][$key])?$spkProduction['qty'][$key]:false;
                     $price = !empty($spkProduction['price'][$key])?Common::_callPriceConverter($spkProduction['price'][$key]):false;
+                    $document_status = !empty($spkProduction['document_status'][$key])?$spkProduction['document_status'][$key]:false;
+                    $receipt_status = !empty($spkProduction['receipt_status'][$key])?$spkProduction['receipt_status'][$key]:false;
 
                     $dataProduct = array(
                         'product_id' => $product_id,
                         'qty' => $qty,
                         'price' => $price,
+                        'document_status' => $document_status,
+                        'receipt_status' => $receipt_status,
                     );
 
                     $grandtotal += $price * $qty;

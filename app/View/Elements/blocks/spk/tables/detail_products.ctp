@@ -133,6 +133,11 @@
                                         $qty = Common::hashEmptyField($value, 'SpkProduct.qty', 0);
                                         // $price_service = Common::hashEmptyField($value, 'SpkProduct.price_service', 0);
                                         $price = Common::hashEmptyField($value, 'SpkProduct.price', 0);
+                                        
+                                        $document_status = Common::hashEmptyField($value, 'SpkProduct.document_status');
+                                        $draft_document_status = Common::hashEmptyField($value, 'SpkProduct.draft_document_status');
+                                        $receipt_status = Common::hashEmptyField($value, 'SpkProduct.receipt_status');
+                                        $retur_status = Common::hashEmptyField($value, 'SpkProduct.retur_status');
 
                                         // $price_service_type = Common::hashEmptyField($value, 'SpkProduct.price_service_type', 'borongan');
                                         $group = Common::hashEmptyField($value, 'Product.ProductCategory.name');
@@ -300,6 +305,18 @@
                             ?>
                         </tr>
                         <?php
+                                        echo $this->Form->hidden('SpkProduct.document_status.'.$product_id, array(
+                                            'value' => $document_status,
+                                        ));
+                                        echo $this->Form->hidden('SpkProduct.draft_document_status.'.$product_id, array(
+                                            'value' => $draft_document_status,
+                                        ));
+                                        echo $this->Form->hidden('SpkProduct.receipt_status.'.$product_id, array(
+                                            'value' => $receipt_status,
+                                        ));
+                                        echo $this->Form->hidden('SpkProduct.retur_status.'.$product_id, array(
+                                            'value' => $retur_status,
+                                        ));
                                     }
                                 }
                         ?>

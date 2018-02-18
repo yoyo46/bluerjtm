@@ -108,6 +108,9 @@
                                         $qty = $this->Common->filterEmptyField($value, 'SpkProduction', 'qty', 0);
                                         $price = $this->Common->filterEmptyField($value, 'SpkProduction', 'price', 0);
                                         
+                                        $document_status = Common::hashEmptyField($value, 'SpkProduction.document_status');
+                                        $receipt_status = Common::hashEmptyField($value, 'SpkProduction.receipt_status');
+                                        
                                         $customTotal = $price*$qty;
 
                                         $total_qty += $qty;
@@ -173,6 +176,12 @@
                             ?>
                         </tr>
                         <?php
+                                        echo $this->Form->hidden('SpkProduction.document_status.'.$product_id, array(
+                                            'value' => $document_status,
+                                        ));
+                                        echo $this->Form->hidden('SpkProduction.receipt_status.'.$product_id, array(
+                                            'value' => $receipt_status,
+                                        ));
                                     }
                                 }
                         ?>

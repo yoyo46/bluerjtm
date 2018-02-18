@@ -10,9 +10,15 @@
         $name = $this->Common->filterEmptyField($value, $modelName, 'name');
         $unit = $this->Common->filterEmptyField($value, $modelName, 'name');
         $is_serial_number = $this->Common->filterEmptyField($value, $modelName, 'is_serial_number');
+        
+        $out_stock_date = Common::hashEmptyField($data, 'ProductExpenditureDetail.'.$key.'.ProductExpenditureDetail.out_stock_date');
         $transaction_date = Common::hashEmptyField($data, 'ProductExpenditure.transaction_date');
+        $error_stock = $this->Form->error('ProductExpenditureDetail.'.$key.'.out_stock_date');
 
-        if( !empty($transaction_date) && $transaction_date != '-' ) {
+
+        if( !empty($error_stock) ) {
+            $error_stock = __('Tgl pengeluaran melebihi tgl transaksi terakhir');
+        } else if( !empty($transaction_date) && $transaction_date != '-' ) {
             $error_stock = __('Jml qty melebihi stok barang per tgl %s', $transaction_date);
         } else {
             $error_stock = __('Jml qty melebihi stok barang');
@@ -52,6 +58,10 @@
                     'fieldError' => array(
                         'ProductExpenditureDetail.'.$key.'.qty',
                         'ProductExpenditureDetail.'.$key.'.qty_over',
+                         array(
+                            'error' => 'ProductExpenditureDetail.'.$key.'.out_stock_date',
+                            'text' => $error_stock,
+                        ),
                          array(
                             'error' => 'ProductExpenditureDetail.'.$key.'.out_stock',
                             'text' => $error_stock,

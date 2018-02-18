@@ -175,7 +175,7 @@ class ProductStock extends AppModel {
         return $result;
     }
 
-    function _callStock ( $product_id, $branch_id = false ) {
+    function _callStock ( $product_id, $branch_id = false, $transaction_date = null ) {
         $this->virtualFields['qty_cnt'] = 'SUM(ProductStock.qty - ProductStock.qty_use)';
         $options = array(
             'conditions' => array(
@@ -185,6 +185,10 @@ class ProductStock extends AppModel {
 
         if( !empty($branch_id) ) {
             $options['conditions']['ProductStock.branch_id'] = $branch_id;
+        }
+
+        if( !empty($transaction_date) ) {
+            $options['conditions']['ProductStock.transaction_date <='] = $transaction_date;
         }
 
         $value = $this->getData('first', $options, array(

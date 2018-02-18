@@ -73,6 +73,12 @@ class ProductExpenditureDetail extends AppModel {
                 'message' => 'Jml qty melebihi stok barang'
             ),
         ),
+        'out_stock_date' => array(
+            'validateValue' => array(
+                'rule' => array('validateValue', 'out_stock_date'),
+                'message' => 'Tgl pengeluaran melebihi tgl transaksi terakhir'
+            ),
+        ),
 	);
 
 	function getData( $find, $options = false, $elements = false ){

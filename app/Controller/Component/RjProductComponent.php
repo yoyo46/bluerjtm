@@ -222,7 +222,7 @@ class RjProductComponent extends Component {
             $history = $this->controller->Product->ProductHistory->getMerge(array(), $product_id);
             $balance = $this->MkCommon->filterEmptyField($history, 'ProductHistory', 'ending', 0);
             $ending = $balance;
-            $stock_qty = $this->controller->Product->ProductHistory->_callStockTransaction($product_id, $transaction_date);
+            $stock_qty = $this->controller->Product->ProductHistory->_callStockTransaction($product_id);
 
             if( $type == 'out' ) {
                 $ending -= $qty;
@@ -1111,11 +1111,11 @@ class RjProductComponent extends Component {
             ));
             $transaction_status = $this->MkCommon->filterEmptyField($data, 'ProductExpenditure', 'transaction_status');
             $document_number = $this->MkCommon->filterEmptyField($data, 'ProductExpenditure', 'document_number');
+            $transaction_date = $this->MkCommon->filterEmptyField($data, 'ProductExpenditure', 'transaction_date');
 
             $value = $this->controller->Product->ProductExpenditureDetail->ProductExpenditure->Spk->getMerge(array(), $document_number, 'Spk.nodoc', 'open');
             $document_id = $this->MkCommon->filterEmptyField($value, 'Spk', 'id');
             $document_type = $this->MkCommon->filterEmptyField($value, 'Spk', 'document_type');
-            $transaction_date = $this->MkCommon->filterEmptyField($value, 'Spk', 'transaction_date');
 
             $data['ProductExpenditure']['id'] = $id;
             $data['ProductExpenditure']['user_id'] = Configure::read('__Site.config_user_id');
@@ -1190,8 +1190,11 @@ class RjProductComponent extends Component {
                         }
 
                         $dataDetail[$key] = $this->_callStock('product_expenditure', $data, $dataDetail[$key], 'out', 'ProductExpenditure');
+                        $out_stock_date = $this->controller->Product->ProductStock->_callStock($product_id, null, $transaction_date);
 
-                        if( empty($is_serial_number) && empty($dataDetail[$key]['ProductExpenditureDetail']['Product']['ProductStock']) ) {
+                        if( empty($out_stock_date) ) {
+                            $dataDetail[$key]['ProductExpenditureDetail']['out_stock_date'] = true;
+                        } else if( empty($is_serial_number) && empty($dataDetail[$key]['ProductExpenditureDetail']['Product']['ProductStock']) ) {
                             // if( $transaction_status != 'posting' ) {
                                 $stock_qty = $this->controller->Product->ProductHistory->_callStockTransaction($product_id, $transaction_date);
 
