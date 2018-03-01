@@ -164,11 +164,12 @@ class AppController extends Controller {
 				'users' => array(
 					'change_branch', 'search', 'logout',
 					'login', 'dashboard', 'authorization',
-					'profile'
+					'profile',
 				),
 				'pages' => array(
 					'dashboard', 'notifications',
-					'referer_notification',
+					'referer_notification', 'bypass_chart_maintenance',
+					'bypass_chart_maintenance_laka',
 				),
 				'settings' => array(
 					'search',
