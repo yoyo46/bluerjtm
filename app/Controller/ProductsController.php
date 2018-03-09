@@ -1132,7 +1132,7 @@ class ProductsController extends AppController {
         $values = $this->paginate('SpkProduct');
 
         $productCategories = $this->Product->ProductCategory->getData('list');
-        $this->RjProduct->_callBeforeRenderSpkProducts($values, $transaction_id);
+        $this->RjProduct->_callBeforeRenderSpkProducts($tmp_nodoc, $values, $transaction_id);
         $this->set(compact(
             'nodoc', 'productCategories'
         ));

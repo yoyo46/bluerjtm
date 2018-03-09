@@ -194,10 +194,11 @@ class ProductExpenditureDetail extends AppModel {
         return $result;
     }
 
-    function getTotalExpenditure( $id, $document_id, $product_id ){
+    function getTotalExpenditure( $document_number, $id, $document_id, $product_id ){
         $values = $this->ProductExpenditure->getData('list', array(
             'conditions' => array(
                 'ProductExpenditure.document_id' => $document_id,
+                'ProductExpenditure.document_number' => $document_number,
             ),
             'fields' => array(
                 'ProductExpenditure.id',

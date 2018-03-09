@@ -932,6 +932,7 @@ class RjProductComponent extends Component {
             $id = $this->MkCommon->filterEmptyField($value, 'ProductExpenditure', 'id');
             $type = $this->MkCommon->filterEmptyField($value, 'ProductExpenditure', 'document_type');
             $document_id = $this->MkCommon->filterEmptyField($value, 'ProductExpenditure', 'document_id');
+            $document_number = $this->MkCommon->filterEmptyField($value, 'ProductExpenditure', 'document_number');
             $transaction_status = $this->MkCommon->filterEmptyField($value, 'ProductExpenditure', 'transaction_status');
             $details = $this->MkCommon->filterEmptyField($value, 'ProductExpenditureDetail');
 
@@ -951,7 +952,7 @@ class RjProductComponent extends Component {
                     $spk_detail = $this->controller->Product->SpkProduct->getMergeProduct(array(), $document_id, $product_id);
                     $spk_qty = $this->MkCommon->filterEmptyField($spk_detail, 'SpkProduct', 'qty');
                     
-                    $out_qty = $this->controller->Product->ProductExpenditureDetail->getTotalExpenditure($id, $document_id, $product_id);
+                    $out_qty = $this->controller->Product->ProductExpenditureDetail->getTotalExpenditure($document_number, $id, $document_id, $product_id);
 
                     // if( !empty($is_serial_number) ) {
                     //     $product_serial_numbers = $this->controller->Product->ProductStock->_callSerialNumbers($product_id, $id);
@@ -1060,10 +1061,6 @@ class RjProductComponent extends Component {
             if( !empty($product_serial_numbers) ) {
                 $count_sn = count($product_serial_numbers);
 
-                if( $qty != $count_sn ) {
-                    $details['sn_match'] = true;
-                }
-
                 foreach ($product_serial_numbers as $idx => $serial_number) {
                     $stock = $this->controller->Product->ProductStock->getData('first', array(
                         'conditions' => array(
@@ -1091,6 +1088,10 @@ class RjProductComponent extends Component {
                         'price' => Common::hashEmptyField($stock, 'ProductStock.price', 0),
                         'qty' => $qty_out,
                     );
+                }
+
+                if( $qty != $count_sn ) {
+                    $details['sn_match'] = true;
                 }
             } else if( !empty($is_serial_number) ) {
                 $details['sn_empty'] = true;
@@ -1145,7 +1146,7 @@ class RjProductComponent extends Component {
 
                     $spk_product_id = $this->MkCommon->filterEmptyField($spk_detail, 'SpkProduct', 'id');
                     $spk_qty = $this->MkCommon->filterEmptyField($spk_detail, 'SpkProduct', 'qty');
-                    $out_qty = $this->controller->Product->ProductExpenditureDetail->getTotalExpenditure($id, $document_id, $product_id);
+                    $out_qty = $this->controller->Product->ProductExpenditureDetail->getTotalExpenditure($document_number, $id, $document_id, $product_id);
                     $remain_qty = $spk_qty - $out_qty;
 
                     // if( !empty($is_serial_number) ) {
@@ -1218,7 +1219,7 @@ class RjProductComponent extends Component {
         return $data;
     }
 
-    function _callBeforeRenderSpkProducts ( $values, $transaction_id = false ) {
+    function _callBeforeRenderSpkProducts ( $tmp_nodoc, $values, $transaction_id = false ) {
         if( !empty($values) ) {
             foreach ($values as $key => $value) {
                 $value = $this->controller->SpkProduct->getMergeList($value, array(
@@ -1234,7 +1235,7 @@ class RjProductComponent extends Component {
                 $document_id = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'spk_id');
                 $product_id = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'product_id');
                 $qty = $this->MkCommon->filterEmptyField($value, 'SpkProduct', 'qty');
-                $out_qty = $this->controller->Product->ProductExpenditureDetail->getTotalExpenditure($transaction_id, $document_id, $product_id);
+                $out_qty = $this->controller->Product->ProductExpenditureDetail->getTotalExpenditure($tmp_nodoc, $transaction_id, $document_id, $product_id);
                 // $qty -= $out_qty;
 
                 if( !empty($qty) ) {
