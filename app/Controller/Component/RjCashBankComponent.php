@@ -132,6 +132,8 @@ class RjCashBankComponent extends Component {
 
 	function _callCalcBalanceCoa ( $values, $dateFrom = false, $dateTo = false ) {
 		if( !empty($values) ) {
+            $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+
             foreach ($values as $key => $value) {
 		        $id = $this->MkCommon->filterEmptyField($value, 'Coa', 'id');
 		        $level = $this->MkCommon->filterEmptyField($value, 'Coa', 'level');
@@ -153,11 +155,15 @@ class RjCashBankComponent extends Component {
 		                $fieldName = sprintf('month_%s', $tmpDateFrom);
 		                
 		        		if( $level == 4 ) {
+                            $this->controller->User->Journal->virtualFields['begining_balance_credit'] = 'SUM(Journal.credit)';
+                            $this->controller->User->Journal->virtualFields['begining_balance_debit'] = 'SUM(Journal.debit)';
+
+                            $beginingBalance = $this->MkCommon->filterEmptyField($value, 'Coa', 'balance', 0);
 				            $this->controller->User->Journal->virtualFields['balancing'] = 'SUM(Journal.credit) - SUM(Journal.debit)';
 				            $summaryBalance = $this->controller->User->Journal->getData('first', array(
 				                'conditions' => array(
 				                    'Journal.coa_id' => $id,
-				                    'DATE_FORMAT(Journal.date, \'%Y-%m\')' => $tmpDateFrom,
+				                    'DATE_FORMAT(Journal.date, \'%Y-%m\') <=' => $tmpDateFrom,
 				                ),
 				                'group' => array(
 				                    'Journal.coa_id',
@@ -167,8 +173,7 @@ class RjCashBankComponent extends Component {
                                 'type' => 'active',
                             ));
 
-				            $balancing = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'balancing', 0);
-
+				            $balancing = $beginingBalance - $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'balancing', 0);
 				            $value['Coa'][$tmpDateFrom]['balancing'] = $balancing;
 	            		
 		            		$amount = !empty($values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'])?$values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing']:0;

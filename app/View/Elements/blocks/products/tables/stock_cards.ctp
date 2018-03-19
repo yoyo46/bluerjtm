@@ -173,8 +173,9 @@
                     $total_ending_price = $price*$qty;
                     // $grandtotal_ending = $total_balance_price - $total_ending_price;
             
-                    if( !empty($ending_stock) ) {
-                        foreach ($ending_stock as $key => $stock) {
+                    if( !empty($ending_stock[$price]) ) {
+                        $key = $price;
+                        // foreach ($ending_stock as $key => $stock) {
                             $sn_stock = !empty($ending_stock[$key]['serial_numbers'])?$ending_stock[$key]['serial_numbers']:0;
 
                             if( !empty($serial_numbers) && !empty($sn_stock) && !empty($is_serial_number) ) {
@@ -203,17 +204,17 @@
                                 if( empty($ending_qty) ) {
                                     $qty_out_tmp = 0;
                                     unset($ending_stock[$key]);
-                                    break;
+                                    // break;
                                 } else if( $ending_qty < 0 ) {
                                     unset($ending_stock[$key]);
                                     $qty_out_tmp = abs($ending_qty);
                                 } else {
                                     $qty_out_tmp = 0;
                                     $ending_stock[$key]['qty'] = $ending_qty;
-                                    break;
+                                    // break;
                                 }
                             }
-                        }
+                        // }
                     }
                 } else {
                     $qty_in = Common::hashEmptyField($value, 'ProductHistory.qty');
