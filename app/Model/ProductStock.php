@@ -59,7 +59,7 @@ class ProductStock extends AppModel {
             case 'FIFO':
                 $default_options['conditions']['ProductStock.qty_total <>'] = 0;
                 $default_options['conditions']['ProductStock.status'] = 1;
-                $default_options['conditions']['ProductStock.type'] = 'default';
+                // $default_options['conditions']['ProductStock.type'] = 'default';
                 $default_options['order'] = array(
                     'ProductStock.transaction_date' => 'ASC',
                     'ProductStock.id' => 'ASC',
