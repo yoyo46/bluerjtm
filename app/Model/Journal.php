@@ -37,6 +37,13 @@ class Journal extends AppModel {
         ),
     );
 
+    var $hasMany = array(
+        'JournalSummary' => array(
+            'className' => 'JournalSummary',
+            'foreignKey' => 'coa_id',
+        ),
+    );
+
     function _callCalcSaldo( $coaType, $type, $biaya, $saldo_awal ) {
         if( $coaType == $type ) {
             $saldo_awal += $biaya;
@@ -49,6 +56,10 @@ class Journal extends AppModel {
 
     function setJournal ( $total, $coas, $valueSet = array() ) {
         if( !empty($coas) && is_array($coas) ) {
+            $this->virtualFields['summary_credit'] = 'SUM(IFNULL(Journal.credit, 0))';
+            $this->virtualFields['summary_debit'] = 'SUM(IFNULL(Journal.debit, 0))';
+            $date = Common::hashEmptyField($valueSet, 'date');
+
             foreach ($coas as $type => $coa_name) {
                 $coaSetting = $this->User->CoaSetting->getData('first', array(
                     'conditions' => array(
@@ -72,14 +83,6 @@ class Journal extends AppModel {
                     $coaType = !empty($coa['Coa']['type'])?$coa['Coa']['type']:false;
                     $saldo_awal = $balance = !empty($coa['Coa']['balance'])?$coa['Coa']['balance']:false;
 
-                    // if( in_array($type, array( 'debit', 'credit' )) ) {
-                    //     $balance = $this->_callCalcSaldo($coaType, $type, $total, $saldo_awal);
-
-                    //     $this->Coa->id = $coa_id;
-                    //     $this->Coa->set('balance', $balance);
-                    //     $this->Coa->save();
-                    // }
-
                     $data['Journal'] = array(
                         'branch_id' => Configure::read('__Site.config_branch_id'),
                         'user_id' => $user_id,
@@ -89,10 +92,33 @@ class Journal extends AppModel {
                     $data['Journal'][$type] = $total;
                     $data['Journal'] = array_merge($data['Journal'], $valueSet);
 
-                    $this->create();
-                    $this->set($data);
+                    if( is_numeric($coa_id) ) {
+                        $date_month = Common::formatDate($date, 'Y-m');
 
-                    $this->save($data);
+                        $summaryBalance = $this->getData('first', array(
+                            'conditions' => array(
+                                'Journal.coa_id' => $coa_id,
+                                'DATE_FORMAT(Journal.date, \'%Y-%m\')' => $date_month,
+                            ),
+                            'group' => array(
+                                'Journal.coa_id',
+                            ),
+                        ), true, array(
+                            'type' => 'active',
+                        ));
+
+                        $summary_credit = Common::hashEmptyField($summaryBalance, 'Journal.summary_credit', 0);
+                        $summary_debit = Common::hashEmptyField($summaryBalance, 'Journal.summary_debit', 0);
+                        
+                        $this->JournalSummary->saveAll(array(
+                            'coa_id' => $coa_id,
+                            'date' => $date_month,
+                            'summary_credit' => $summary_credit,
+                            'summary_debit' => $summary_debit,
+                        ));
+                    }
+
+                    $this->saveAll($data);
                 }
             }
         } else {

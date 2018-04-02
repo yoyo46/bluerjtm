@@ -12,6 +12,7 @@
                 $coa_name = $this->Common->filterEmptyField($value, 'Coa', 'name');
                 $level = $this->Common->filterEmptyField($value, 'Coa', 'level');
                 $parent_name = $this->Common->filterEmptyField($value, 'Parent', 'name');
+                $parent_parent_id = $this->Common->filterEmptyField($value, 'Parent', 'parent_id');
                 $parent_id = $this->Common->filterEmptyField($value, 'Coa', 'parent_id');
                 $dataCoa = $this->Common->filterEmptyField($value, 'Coa');
                 $childrens = $this->Common->filterEmptyField($value, 'children');
@@ -38,28 +39,57 @@
                         $fontWeight = '600';
                     }
 ?>
-<tr>
+<tr class="wrapper-coa-<?php echo $id; ?>">
     <?php 
-            echo $this->Html->tag('td', $coa, array(
-                'style' => sprintf('font-weight: %s;padding-left: %spx;', $fontWeight, $marginLeft),
-                'colspan' => $colspan,
-            ));
+            $coa_month_content = false;
+            $wrapper_template = array();
+            $className = false;
+            $dataUrl = false;
 
             if($level == 4 && !empty($dateFrom) && !empty($dateTo) ) {
                 $tmpDateFrom = $dateFrom;
                 $tmpDateTo = $dateTo;
+                $className = 'ajax-infinity';
+                $dataUrl = $this->Html->url(array(
+                    'controller' => 'cashbanks',
+                    'action' => 'balance_sheet_amount',
+                    $id,
+                    $dateFrom,
+                    $dateTo,
+                    'admin' => false,
+                ));
 
                 while( $tmpDateFrom <= $tmpDateTo ) {
                     $balance = $this->Common->filterEmptyField($dataCoa, $tmpDateFrom, 'balancing', 0);
-                    $balance = $this->Common->getFormatPrice($balance, false, 2);
 
-                    echo $this->Html->tag('td', $balance, array(
+                    $op = ($balance>0)?'+':'-';
+                    $balance = !empty($balance)?$this->Common->getFormatPrice($balance, false, 2):0;
+                    $classItem = __('wrapper-coa-%s-%s', $id, $tmpDateFrom);
+
+                    $coa_month_content .= $this->Html->tag('td', $balance, array(
                         'style' => 'text-align: right',
+                        'class' => $classItem.__(' wrapper-coa-parent-%s', $parent_id),
+                        'rel' => $tmpDateFrom,
+                        'data-op' => $op,
                     ));
 
                     $tmpDateFrom = date('Y-m', strtotime('+1 Month', strtotime($tmpDateFrom)));
+                    $wrapper_template[] = $classItem;
                 }
             }
+
+            $wrapper_template = implode(',.', $wrapper_template);
+            $wrapper_template = !empty($wrapper_template)?'.'.$wrapper_template:false;
+
+            echo $this->Html->tag('td', $coa, array(
+                'style' => sprintf('font-weight: %s;padding-left: %spx;', $fontWeight, $marginLeft),
+                'colspan' => $colspan,
+                'class' => $className,
+                'data-url' => $dataUrl,
+                'data-infinity' => 'true',
+                'data-wrapper-write-page' => $wrapper_template,
+            ));
+            echo $coa_month_content;
     ?>
 </tr>
 <?php
@@ -81,8 +111,10 @@
 
                     if( $level == 1 ) {
                         $totalCoaName = $coa_name;
+                        $tmp_parent_id = $id;
                     } else {
                         $totalCoaName = $parent_name;
+                        $tmp_parent_id = $parent_id;
                     }
 
                     while( $tmpDateFrom <= $tmpDateTo ) {
@@ -98,6 +130,9 @@
 
                             $tmpTr .= $this->Html->tag('td', $totalBalance, array(
                                 'style' => 'text-align: right;font-weight: bold;',
+                                'class' => 'wrapper-coa-parent '.__('wrapper-coa-parent-%s', $parent_parent_id),
+                                'coa-id' => $tmp_parent_id,
+                                'rel' => $tmpDateFrom,
                             ));
                         }
 
@@ -115,7 +150,10 @@
                             'style' => sprintf('font-weight: bold;padding-left: %spx;font-style: italic;', $tempMarginLeft),
                         )).$tmpTr;
 
-                        echo $this->Html->tag('tr', $tmpTr);
+                        echo $this->Html->tag('tr', $tmpTr, array(
+                            'class' => 'coa-parent wrapper-coa-'.$tmp_parent_id,
+                            'coa-id' => $tmp_parent_id,
+                        ));
                     }
                 }
             }

@@ -132,7 +132,22 @@ class RjCashBankComponent extends Component {
 
 	function _callCalcBalanceCoa ( $values, $dateFrom = false, $dateTo = false ) {
 		if( !empty($values) ) {
-            $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+            $this->controller->loadModel('ViewCoaLedger');
+            $this->controller->loadModel('ViewCoaSummary');
+
+            // $this->controller->ViewCoaLedger->virtualFields['code'] = 'CONCAT(ViewCoaLedger.coa_id, \'-\', ViewCoaLedger.date)';
+            // $this->controller->ViewCoaLedger->virtualFields['balancing'] = 'ViewCoaLedger.balance - ViewCoaLedger.last_summary - ViewCoaLedger.summary';
+
+            // $summaryBalances = $this->controller->ViewCoaLedger->find('list', array(
+            //     'conditions' => array(
+            //         'ViewCoaLedger.date >=' => $dateFrom,
+            //         'ViewCoaLedger.date <=' => $dateTo,
+            //     ),
+            //     'fields' => array(
+            //         'ViewCoaLedger.code',
+            //         'ViewCoaLedger.balancing',
+            //     ),
+            // ));
 
             foreach ($values as $key => $value) {
 		        $id = $this->MkCommon->filterEmptyField($value, 'Coa', 'id');
@@ -155,25 +170,14 @@ class RjCashBankComponent extends Component {
 		                $fieldName = sprintf('month_%s', $tmpDateFrom);
 		                
 		        		if( $level == 4 ) {
-                            $this->controller->User->Journal->virtualFields['begining_balance_credit'] = 'SUM(Journal.credit)';
-                            $this->controller->User->Journal->virtualFields['begining_balance_debit'] = 'SUM(Journal.debit)';
+                            // $summaryBalance = $this->controller->ViewCoaSummary->find('first', array(
+                            //     'conditions' => array(
+                            //         'ViewCoaSummary.date' => $tmpDateFrom,
+                            //     ),
+                            // ));
 
-                            $beginingBalance = $this->MkCommon->filterEmptyField($value, 'Coa', 'balance', 0);
-				            $this->controller->User->Journal->virtualFields['balancing'] = 'SUM(Journal.credit) - SUM(Journal.debit)';
-				            $summaryBalance = $this->controller->User->Journal->getData('first', array(
-				                'conditions' => array(
-				                    'Journal.coa_id' => $id,
-				                    'DATE_FORMAT(Journal.date, \'%Y-%m\') <=' => $tmpDateFrom,
-				                ),
-				                'group' => array(
-				                    'Journal.coa_id',
-				                ),
-				                // 'contain' => false,
-				            ), true, array(
-                                'type' => 'active',
-                            ));
-
-				            $balancing = $beginingBalance - $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'balancing', 0);
+				            // $balancing = Common::hashEmptyField($summaryBalances, $id.'-'.$tmpDateFrom, 0);
+                            $balancing = 0;
 				            $value['Coa'][$tmpDateFrom]['balancing'] = $balancing;
 	            		
 		            		$amount = !empty($values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'])?$values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing']:0;

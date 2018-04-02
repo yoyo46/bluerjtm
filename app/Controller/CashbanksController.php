@@ -1847,6 +1847,46 @@ class CashbanksController extends AppController {
         ));
     }
 
+    function balance_sheet_amount ( $id = NULL, $dateFrom = NULL, $dateTo = NULL ) {
+        $this->User->Journal->virtualFields['balancing'] = 'SUM(Journal.credit) - SUM(Journal.debit)';
+        $this->User->Journal->virtualFields['date_month'] = 'DATE_FORMAT(Journal.date, \'%Y-%m\')';
+
+        $value = $this->User->Journal->Coa->getMerge(array(), $id);
+
+        $beginingBalance = Common::hashEmptyField($value, 'Coa.balance', 0);
+        $parent_id = Common::hashEmptyField($value, 'Coa.parent_id');
+        $result = array();
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $tmpDateFrom = $dateFrom;
+            $tmpDateTo = $dateTo;
+
+            while( $tmpDateFrom <= $tmpDateTo ) {                
+                $summaryBalance = $this->User->Journal->getData('first', array(
+                    'conditions' => array(
+                        'Journal.coa_id' => $id,
+                        'DATE_FORMAT(Journal.date, \'%Y-%m\') <=' => $tmpDateFrom,
+                    ),
+                    'group' => array(
+                        'Journal.coa_id',
+                    ),
+                ), true, array(
+                    'type' => 'active',
+                ));
+
+                $total_journal = Common::hashEmptyField($summaryBalance, 'Journal.balancing', 0);
+                $balancing = $beginingBalance - $total_journal;
+                $result[$tmpDateFrom] = $balancing;
+
+                $tmpDateFrom = date('Y-m', strtotime('+1 Month', strtotime($tmpDateFrom)));
+            }
+        }
+
+        $this->set(compact(
+            'result', 'id'
+        ));
+    }
+
     public function import_revision( $download = false ) {
         App::import('Vendor', 'excelreader'.DS.'excel_reader2');
 
