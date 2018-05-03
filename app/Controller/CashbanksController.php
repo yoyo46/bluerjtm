@@ -528,6 +528,10 @@ class CashbanksController extends AppController {
 
         $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
         $branches = $this->User->Branch->City->branchCities();
+
+        if( !empty($id) ) {
+            $this->MkCommon->getLogs($this->params['controller'], array( 'cashbank_edit', 'cashbank_add', 'cashbank_delete' ), $id);
+        }
         
         $this->set('active_menu', 'cash_bank');
         $this->set('module_title', 'Kas/Bank');
@@ -1157,6 +1161,7 @@ class CashbanksController extends AppController {
                     break;
             }
 
+            $this->MkCommon->getLogs($this->params['controller'], array( 'cashbank_edit', 'cashbank_add', 'cashbank_delete' ), $id);
             $this->set('active_menu', 'cash_bank');
             $this->set(compact(
                 'user_otorisasi_approvals', 'cashbank',

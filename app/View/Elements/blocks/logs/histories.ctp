@@ -37,9 +37,7 @@
                                 $tmpMsg = __('Modified by');
                             } else if( strstr($action, 'rejected') ) {
                                 $tmpMsg = __('Rejected by');
-                            } else if( strstr($action, 'void') ) {
-                                $tmpMsg = __('Void by');
-                            } else if( strstr($action, 'toggle') ) {
+                            } else if( strstr($action, 'void') || strstr($action, 'toggle') || strstr($action, 'delete') ) {
                                 $tmpMsg = __('Void by');
                             }
 
