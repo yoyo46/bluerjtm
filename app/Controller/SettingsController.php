@@ -5087,8 +5087,17 @@ class SettingsController extends AppController {
                                         $group_motor_id = 0;
                                     }
 
-                                    if( !in_array($jenis_tarif, array( 'per_unit', 'per_truck' )) ) {
-                                        $jenis_tarif = false;
+                                    if( !empty($jenis_tarif) ) {
+                                        $jenis_tarif = Common::toSlug($jenis_tarif, false, '_');
+
+                                        if( $jenis_tarif == 'per_truk' ) {
+                                            $jenis_tarif = 'per_truck';
+                                        }
+
+
+                                        if( !in_array($jenis_tarif, array( 'per_unit', 'per_truck' )) ) {
+                                            $jenis_tarif = false;
+                                        }
                                     }
 
                                     $branch_id = !empty($branch['Branch']['id'])?$branch['Branch']['id']:false;
