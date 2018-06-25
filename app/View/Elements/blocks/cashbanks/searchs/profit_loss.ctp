@@ -64,38 +64,38 @@
                     ?>
                 </div>
             </div>
-            <div class="col-sm-6">
+            <!-- <div class="col-sm-6">
                 <?php 
-                        echo $this->Form->label('fromMonth', __('Sampai Bulan'));
+                        // echo $this->Form->label('fromMonth', __('Sampai Bulan'));
                 ?>
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
                             <?php 
-                                    echo $this->Form->month('to', array(
-                                        'label'=> false, 
-                                        'class'=>'form-control target-month',
-                                        'required' => false,
-                                        'empty' => false,
-                                        'disabled' => true,
-                                    ));
+                                    // echo $this->Form->month('to', array(
+                                    //     'label'=> false, 
+                                    //     'class'=>'form-control target-month',
+                                    //     'required' => false,
+                                    //     'empty' => false,
+                                    //     'disabled' => true,
+                                    // ));
                             ?>
                         </div>
                     </div>
                     <div class="col-sm-6">
                         <div class="form-group">
                             <?php 
-                                    echo $this->Form->input('to.year', array(
-                                        'label'=> false, 
-                                        'class'=>'form-control target-year',
-                                        'empty' => false,
-                                        'disabled' => true,
-                                    ));
+                                    // echo $this->Form->input('to.year', array(
+                                    //     'label'=> false, 
+                                    //     'class'=>'form-control target-year',
+                                    //     'empty' => false,
+                                    //     'disabled' => true,
+                                    // ));
                             ?>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
         <?php 
                 echo $this->Form->end();

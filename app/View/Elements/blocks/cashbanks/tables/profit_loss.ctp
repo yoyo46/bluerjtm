@@ -1,5 +1,6 @@
 <?php
         if(!empty($values)){
+            $main_total = !empty($main_total)?$main_total:false;
             $tmpValues = $values;
 
             if( !empty($tmpValues['TotalCoa']) ) {
@@ -10,6 +11,7 @@
                 $id = $this->Common->filterEmptyField($value, 'Coa', 'id');
                 $coa = $this->Common->filterEmptyField($value, 'Coa', 'coa_name');
                 $level = $this->Common->filterEmptyField($value, 'Coa', 'level');
+                $type = $this->Common->filterEmptyField($value, 'Coa', 'type');
                 $parent_name = $this->Common->filterEmptyField($value, 'Parent', 'name');
                 $parent_parent_id = $this->Common->filterEmptyField($value, 'Parent', 'parent_id');
                 $parent_id = $this->Common->filterEmptyField($value, 'Coa', 'parent_id');
@@ -22,7 +24,7 @@
 
                     if( $level != 4 ) {
                         $fontWeight = 'bold';
-                        $colspan = 13;
+                        $colspan = 2;
                     } else {
                         $colspan = false;
                     }
@@ -46,7 +48,7 @@
                 $className = 'ajax-infinity';
                 $dataUrl = $this->Html->url(array(
                     'controller' => 'cashbanks',
-                    'action' => 'balance_sheet_amount',
+                    'action' => 'profit_loss_amount',
                     $id,
                     $dateFrom,
                     $dateTo,
@@ -57,14 +59,15 @@
                     $balance = $this->Common->filterEmptyField($dataCoa, $tmpDateFrom, 'balancing', 0);
                     
                     $op = ($balance>0)?'+':'-';
-                    $balance = $this->Common->getFormatPrice($balance, false, 2);
+                    $balanceStr = Common::getFormatPrice($balance);
                     $classItem = __('wrapper-coa-%s-%s', $id, $tmpDateFrom);
 
-                    $coa_month_content .= $this->Html->tag('td', $balance, array(
+                    $coa_month_content .= $this->Html->tag('td', $balanceStr, array(
                         'style' => 'text-align: right',
                         'class' => $classItem.__(' wrapper-coa-parent-%s', $parent_id),
                         'rel' => $tmpDateFrom,
                         'data-op' => $op,
+                        'data-type' => $type,
                     ));
 
                     $tmpDateFrom = date('Y-m', strtotime('+1 Month', strtotime($tmpDateFrom)));
@@ -138,9 +141,29 @@
                         echo $this->Html->tag('tr', $tmpTr, array(
                             'class' => 'coa-parent wrapper-coa-'.$tmp_parent_id,
                             'coa-id' => $tmp_parent_id,
+                            'data-type' => $type,
                         ));
                     }
                 }
+            }
+
+            if( !empty($main_total) ) {
+                $summaryProfitLoss = !empty($summaryProfitLoss)?$summaryProfitLoss:false;
+                $debit_total = Common::hashEmptyField($summaryProfitLoss, 'Journal.debit_total');
+                $credit_total = Common::hashEmptyField($summaryProfitLoss, 'Journal.credit_total');
+
+                $tmpTr = $this->Html->tag('td', __('Laba Rugi'), array(
+                    'style' => 'font-weight: bold;font-style: italic;',
+                )).
+                $this->Html->tag('td', Common::getFormatPrice($credit_total - $debit_total), array(
+                    'style' => 'text-align: right;font-weight: bold;',
+                    'class' => 'wrapper-profit-loss',
+                ));
+
+                echo $this->Html->tag('tr', $tmpTr, array(
+                    'class' => 'coa-parent',
+                    'data-type' => 'end',
+                ));
             }
         }
 ?>

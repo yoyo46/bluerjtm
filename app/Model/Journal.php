@@ -56,8 +56,8 @@ class Journal extends AppModel {
 
     function setJournal ( $total, $coas, $valueSet = array() ) {
         if( !empty($coas) && is_array($coas) ) {
-            $this->virtualFields['summary_credit'] = 'SUM(IFNULL(Journal.credit, 0))';
-            $this->virtualFields['summary_debit'] = 'SUM(IFNULL(Journal.debit, 0))';
+            // $this->virtualFields['summary_credit'] = 'SUM(IFNULL(Journal.credit, 0))';
+            // $this->virtualFields['summary_debit'] = 'SUM(IFNULL(Journal.debit, 0))';
             $date = Common::hashEmptyField($valueSet, 'date');
 
             foreach ($coas as $type => $coa_name) {
@@ -92,31 +92,31 @@ class Journal extends AppModel {
                     $data['Journal'][$type] = $total;
                     $data['Journal'] = array_merge($data['Journal'], $valueSet);
 
-                    if( is_numeric($coa_id) ) {
-                        $date_month = Common::formatDate($date, 'Y-m');
+                    // if( is_numeric($coa_id) ) {
+                    //     $date_month = Common::formatDate($date, 'Y-m');
 
-                        $summaryBalance = $this->getData('first', array(
-                            'conditions' => array(
-                                'Journal.coa_id' => $coa_id,
-                                'DATE_FORMAT(Journal.date, \'%Y-%m\')' => $date_month,
-                            ),
-                            'group' => array(
-                                'Journal.coa_id',
-                            ),
-                        ), true, array(
-                            'type' => 'active',
-                        ));
+                    //     $summaryBalance = $this->getData('first', array(
+                    //         'conditions' => array(
+                    //             'Journal.coa_id' => $coa_id,
+                    //             'DATE_FORMAT(Journal.date, \'%Y-%m\')' => $date_month,
+                    //         ),
+                    //         'group' => array(
+                    //             'Journal.coa_id',
+                    //         ),
+                    //     ), true, array(
+                    //         'type' => 'active',
+                    //     ));
 
-                        $summary_credit = Common::hashEmptyField($summaryBalance, 'Journal.summary_credit', 0);
-                        $summary_debit = Common::hashEmptyField($summaryBalance, 'Journal.summary_debit', 0);
+                    //     $summary_credit = Common::hashEmptyField($summaryBalance, 'Journal.summary_credit', 0);
+                    //     $summary_debit = Common::hashEmptyField($summaryBalance, 'Journal.summary_debit', 0);
                         
-                        $this->JournalSummary->saveAll(array(
-                            'coa_id' => $coa_id,
-                            'date' => $date_month,
-                            'summary_credit' => $summary_credit,
-                            'summary_debit' => $summary_debit,
-                        ));
-                    }
+                    //     $this->JournalSummary->saveAll(array(
+                    //         'coa_id' => $coa_id,
+                    //         'date' => $date_month,
+                    //         'summary_credit' => $summary_credit,
+                    //         'summary_debit' => $summary_debit,
+                    //     ));
+                    // }
 
                     $this->saveAll($data);
                 }

@@ -1,19 +1,12 @@
 <?php 
-        if( !empty($data_action) ){
-            $headerRowspan = 2;
-        } else {
-            $headerRowspan = false;
-        }
-
         $element = 'blocks/cashbanks/tables/profit_loss';
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $dataColumns = array(
             'coa_name' => array(
                 'name' => __('Nama Rekening'),
-                'style' => 'text-align: center;vertical-align: middle;',
+                'style' => 'text-align: left;vertical-align: middle;',
                 'data-options' => 'field:\'coa_name\',width:300,styler:cellStyler',
                 'align' => 'left',
-                'rowspan' => $headerRowspan,
                 // 'fix_column' => true,
             ),
         );
@@ -25,10 +18,11 @@
             while( $tmpDateFrom <= $tmpDateTo ) {
                 $fieldName = sprintf('month_%s', $tmpDateFrom);
                 $dataColumns[$fieldName] = array(
-                    'name' => sprintf('%s<br>%s', $this->Common->formatDate($tmpDateFrom, 'M'), $this->Common->formatDate($tmpDateFrom, 'Y')),
+                    'name' => sprintf('%s %s', $this->Common->formatDate($tmpDateFrom, 'M'), $this->Common->formatDate($tmpDateFrom, 'Y')),
                     'style' => 'text-align: center;vertical-align: middle;',
                     'data-options' => sprintf('field:\'%s\',width:100', $fieldName),
                     'align' => 'right',
+                    'class' => 'string',
                 );
 
                 $tmpDateFrom = date('Y-m', strtotime('+1 Month', strtotime($tmpDateFrom)));
@@ -40,7 +34,9 @@
 
             echo $this->element(sprintf('blocks/common/tables/export_%s', $data_action), array(
                 'tableHead' => $fieldColumn,
-                'tableBody' => $this->element($element),
+                'tableBody' => $this->element($element, array(
+                    'main_total' => true,
+                )),
                 'sub_module_title' => $module_title,
                 'contentTr' => false,
             ));
@@ -79,7 +75,9 @@
                 </tr>
             </thead>
             <?php 
-                    echo $this->Html->tag('tbody', $this->element($element));
+                    echo $this->Html->tag('tbody', $this->element($element, array(
+                        'main_total' => true,
+                    )));
             ?>
         </table>
         <?php 

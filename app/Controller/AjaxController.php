@@ -916,6 +916,7 @@ class AjaxController extends AppController {
 			'contain' => false,
 		), true, array(
 			'status' => 'all',
+			'plant' => true,
 		));
 		$from_city_id = $this->MkCommon->filterEmptyField($data_ttuj, 'Ttuj', 'from_city_id', $from_city_id);
 

@@ -507,12 +507,18 @@ class RevenuesController extends AppController {
                 $truck = $this->Ttuj->Truck->Company->getMerge($truck, $company_id);
             }
 
+            $this->Ttuj->UangJalan->virtualFields['order_by_branch'] = 'CASE WHEN UangJalan.branch_id = '.$current_branch_id.' THEN 1 ELSE 0 END';
             $uangJalan = $this->Ttuj->UangJalan->getData('first', array(
                 'conditions' => array(
                     'UangJalan.from_city_id' => $from_city_id,
                     'UangJalan.to_city_id' => $to_city_id,
                     'UangJalan.capacity' => $capacity,
                 ),
+                'order' => array(
+                    'UangJalan.order_by_branch',
+                ),
+            ), true, array(
+                'branch' => false,
             ));
 
             if( !empty($uangJalan) ) {
@@ -3632,9 +3638,16 @@ class RevenuesController extends AppController {
         }
 
         $ttuj_id = !empty($data_local['Ttuj']['id'])?$data_local['Ttuj']['id']:false;
+        
+        $this->Ttuj->virtualFields['current_document_sort'] = 'CASE WHEN Ttuj.id = \''.$ttuj_id.'\' THEN 1 ELSE 0 END';
         $ttujs = $this->Ttuj->getData('list', array(
             'fields' => array(
                 'Ttuj.id', 'Ttuj.no_ttuj'
+            ),
+            'order'=> array(
+                'Ttuj.current_document_sort' => 'DESC',
+                'Ttuj.created' => 'DESC',
+                'Ttuj.id' => 'DESC',
             ),
             'conditions' => array(
                 'OR' => array(

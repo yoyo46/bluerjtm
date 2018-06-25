@@ -1751,12 +1751,14 @@ class CashbanksController extends AppController {
 
     function profit_loss ( $data_action = false ) {
         $module_title = $sub_module_title = __('Laporan Laba Rugi');
-        $dateFrom = date('Y-m', strtotime('-12 Month'));
-        $dateTo = date('Y-m');
+        $dateFrom = date('Y-m', strtotime('-1 Month'));
+        $dateTo = $dateFrom;
+        // $dateFrom = '2017-01';
+        // $dateTo = '2017-01';
 
         $values = $this->User->Coa->getData('threaded', array(
             'conditions' => array(
-                'Coa.coa_profit_loss >=' => 4,
+                'Coa.coa_profit_loss >=' => 3,
                 'Coa.status' => 1,
             ),
             'order' => array(
@@ -1768,18 +1770,30 @@ class CashbanksController extends AppController {
         ));
         $params = $this->MkCommon->_callRefineParams($this->params, array(
             'monthFrom' => $dateFrom,
-            'monthTo' => $dateTo,
+            // 'monthTo' => $dateTo,
         ));
         $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'MonthFrom');
-        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'MonthTo');
+        $dateTo = $dateFrom;
 
-        $values = $this->RjCashBank->_callCalcBalanceCoa($values, $dateFrom, $dateTo);
-        // $this->MkCommon->_layout_file(array(
-        //     'freeze',
-        // ));
+        $values = $this->RjCashBank->_callCalcProfitLoss($values, $dateFrom, $dateTo, $data_action);
+        
+        $this->User->Journal->virtualFields['debit_total'] = 'SUM(Journal.debit)';
+        $this->User->Journal->virtualFields['credit_total'] = 'SUM(Journal.credit)';
+        $summaryProfitLoss = $this->User->Journal->getData('first', array(
+            'conditions' => array(
+                'DATE_FORMAT(Journal.date, \'%Y-%m\')' => $dateFrom,
+                'CASE WHEN SUBSTR(Coa.code, 1, 1) REGEXP \'[0-9]+\' THEN SUBSTR(Coa.code, 1, 1) ELSE 5 END >=' => 3,
+                'Coa.status' => 1,
+            ),
+            'contain' => array(
+                'Coa',
+            ),
+        ), true, array(
+            'type' => 'active',
+        ));
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
-            $sub_module_title = sprintf('%s<br>Periode %s', $module_title, $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
+            $sub_module_title = sprintf('%s - Periode %s', $module_title, $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
         } else {
             $sub_module_title = false;
         }
@@ -1798,14 +1812,17 @@ class CashbanksController extends AppController {
         $this->set('active_menu', 'profit_loss');
         $this->set(compact(
             'values', 'module_title', 'dateFrom',
-            'dateTo', 'sub_module_title', 'data_action'
+            'dateTo', 'sub_module_title', 'data_action',
+            'summaryProfitLoss'
         ));
     }
 
     function balance_sheets ( $data_action = false ) {
         $module_title = __('Laporan Neraca');
-        $dateFrom = date('Y-m', strtotime('-12 Month'));
-        $dateTo = date('Y-m');
+        // $dateFrom = date('Y-m', strtotime('-12 Month'));
+        // $dateTo = date('Y-m');
+        $dateFrom = '2017-01';
+        $dateTo = '2017-01';
 
         $values = $this->User->Coa->getData('threaded', array(
             'conditions' => array(
@@ -1852,14 +1869,61 @@ class CashbanksController extends AppController {
         ));
     }
 
-    function balance_sheet_amount ( $id = NULL, $dateFrom = NULL, $dateTo = NULL ) {
-        $this->User->Journal->virtualFields['balancing'] = 'SUM(Journal.credit) - SUM(Journal.debit)';
+    function profit_loss_amount ( $id = NULL, $dateFrom = NULL, $dateTo = NULL ) {
+        $this->User->Journal->virtualFields['balancing'] = 'CASE WHEN Coa.type = \'debit\' THEN SUM(Journal.debit) - SUM(Journal.credit) ELSE SUM(Journal.credit) - SUM(Journal.debit) END';
         $this->User->Journal->virtualFields['date_month'] = 'DATE_FORMAT(Journal.date, \'%Y-%m\')';
 
         $value = $this->User->Journal->Coa->getMerge(array(), $id);
 
-        $beginingBalance = Common::hashEmptyField($value, 'Coa.balance', 0);
+        // $beginingBalance = Common::hashEmptyField($value, 'Coa.balance', 0);
         $parent_id = Common::hashEmptyField($value, 'Coa.parent_id');
+        $coa_type = Common::hashEmptyField($value, 'Coa.type');
+        $result = array();
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $tmpDateFrom = $dateFrom;
+            $tmpDateTo = $dateTo;
+
+            while( $tmpDateFrom <= $tmpDateTo ) {                
+                $summaryBalance = $this->User->Journal->getData('first', array(
+                    'conditions' => array(
+                        'Journal.coa_id' => $id,
+                        'DATE_FORMAT(Journal.date, \'%Y-%m\')' => $tmpDateFrom,
+                    ),
+                    'contain' => array(
+                        'Coa',
+                    ),
+                    'group' => array(
+                        'Journal.coa_id',
+                    ),
+                ), true, array(
+                    'type' => 'active',
+                ));
+
+                $total_journal = Common::hashEmptyField($summaryBalance, 'Journal.balancing', 0);
+                // $balancing = $beginingBalance + $total_journal;
+                // $result[$tmpDateFrom] = $balancing;
+                $result[$tmpDateFrom] = $total_journal;
+
+                $tmpDateFrom = date('Y-m', strtotime('+1 Month', strtotime($tmpDateFrom)));
+            }
+        }
+
+        $this->set(compact(
+            'result', 'id', 'tmpDateFrom'
+        ));
+        $this->render('balance_sheet_amount');
+    }
+
+    function balance_sheet_amount ( $id = NULL, $dateFrom = NULL, $dateTo = NULL ) {
+        $this->User->Journal->virtualFields['balancing'] = 'CASE WHEN Coa.type = \'debit\' THEN SUM(Journal.debit) - SUM(Journal.credit) ELSE SUM(Journal.credit) - SUM(Journal.debit) END';
+        $this->User->Journal->virtualFields['date_month'] = 'DATE_FORMAT(Journal.date, \'%Y-%m\')';
+
+        $value = $this->User->Journal->Coa->getMerge(array(), $id);
+
+        // $beginingBalance = Common::hashEmptyField($value, 'Coa.balance', 0);
+        $parent_id = Common::hashEmptyField($value, 'Coa.parent_id');
+        $coa_type = Common::hashEmptyField($value, 'Coa.type');
         $result = array();
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
@@ -1872,6 +1936,9 @@ class CashbanksController extends AppController {
                         'Journal.coa_id' => $id,
                         'DATE_FORMAT(Journal.date, \'%Y-%m\') <=' => $tmpDateFrom,
                     ),
+                    'contain' => array(
+                        'Coa',
+                    ),
                     'group' => array(
                         'Journal.coa_id',
                     ),
@@ -1880,15 +1947,16 @@ class CashbanksController extends AppController {
                 ));
 
                 $total_journal = Common::hashEmptyField($summaryBalance, 'Journal.balancing', 0);
-                $balancing = $beginingBalance - $total_journal;
-                $result[$tmpDateFrom] = $balancing;
+                // $balancing = $beginingBalance + $total_journal;
+                // $result[$tmpDateFrom] = $balancing;
+                $result[$tmpDateFrom] = $total_journal;
 
                 $tmpDateFrom = date('Y-m', strtotime('+1 Month', strtotime($tmpDateFrom)));
             }
         }
 
         $this->set(compact(
-            'result', 'id'
+            'result', 'id', 'tmpDateFrom'
         ));
     }
 
@@ -2300,6 +2368,180 @@ class CashbanksController extends AppController {
             $this->render('/Elements/blocks/common/form_delete');
         } else {
             $this->MkCommon->redirectReferer(__('Jurnal Umum tidak ditemukan.'), 'error');
+        }
+    }
+
+    public function import_journal() {
+        App::import('Vendor', 'excelreader'.DS.'excel_reader2');
+
+        $this->set('module_title', __('Jurnal'));
+        $this->set('active_menu', 'cash_bank');
+        $this->set('sub_module_title', __('Import Excel'));
+
+        if(!empty($this->request->data)) { 
+            $Zipped = $this->request->data['Import']['importdata'];
+
+            if($Zipped["name"]) {
+                $filename = $Zipped["name"];
+                $source = $Zipped["tmp_name"];
+                $type = $Zipped["type"];
+                $name = explode(".", $filename);
+                $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
+
+                if(!empty($accepted_types)) {
+                    foreach($accepted_types as $mime_type) {
+                        if($mime_type == $type) {
+                            $okay = true;
+                            break;
+                        }
+                    }
+                }
+
+                $continue = strtolower($name[1]) == 'xls' ? true : false;
+
+                if(!$continue) {
+                    $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
+                    $this->redirect(array('action'=>'import'));
+                } else {
+                    $path = APP.'webroot'.DS.'files'.DS.date('Y').DS.date('m').DS;
+                    $filenoext = basename ($filename, '.xls');
+                    $filenoext = basename ($filenoext, '.XLS');
+                    $fileunique = uniqid() . '_' . $filenoext;
+
+                    if( !file_exists($path) ) {
+                        mkdir($path, 0755, true);
+                    }
+
+                    $targetdir = $path . $fileunique . $filename;
+                     
+                    ini_set('memory_limit', '96M');
+                    ini_set('post_max_size', '64M');
+                    ini_set('upload_max_filesize', '64M');
+
+                    if(!move_uploaded_file($source, $targetdir)) {
+                        $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                        $this->redirect(array('action'=>'import'));
+                    }
+                }
+            } else {
+                $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                $this->redirect(array('action'=>'import'));
+            }
+
+            $xls_files = glob( $targetdir );
+
+            if(empty($xls_files)) {
+                $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
+                $this->redirect(array('action'=>'import'));
+            } else {
+                $uploadedXls = $this->MkCommon->addToFiles('xls', $xls_files[0]);
+                $uploaded_file = $uploadedXls['xls'];
+                $file = explode(".", $uploaded_file['name']);
+                $extension = array_pop($file);
+                
+                if($extension == 'xls') {
+                    $dataimport = new Spreadsheet_Excel_Reader();
+                    $dataimport->setUTFEncoder('iconv');
+                    $dataimport->setOutputEncoding('UTF-8');
+                    $dataimport->read($uploaded_file['tmp_name']);
+                    
+                    if(!empty($dataimport)) {
+                        $data = $dataimport;
+                        $row_submitted = 1;
+                        $successfull_row = 0;
+                        $failed_row = 0;
+                        $error_message = '';
+                        $cnt = 0;
+
+                        for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
+                            $datavar = array();
+                            $flag = true;
+                            $i = 1;
+
+                            while ($flag) {
+                                if( !empty($data->sheets[0]["cells"][1][$i]) ) {
+                                    $variable = $this->MkCommon->toSlug($data->sheets[0]["cells"][1][$i], '_');
+                                    $thedata = !empty($data->sheets[0]["cells"][$x][$i])?$data->sheets[0]["cells"][$x][$i]:NULL;
+                                    $$variable = $thedata;
+                                    $datavar[] = $thedata;
+                                } else {
+                                    $flag = false;
+                                }
+                                $i++;
+                            }
+
+                            if(array_filter($datavar)) {
+                                $src = !empty($src)?$src:false;
+                                $kode_acc = !empty($kode_acc)?$kode_acc:false;
+                                $tgl = !empty($tgl)?$tgl:false;
+                                $ket = !empty($ket)?$ket:false;
+                                $debit = !empty($debit)?$debit:0;
+                                $kredit = !empty($kredit)?$kredit:0;
+                                
+                                $debit = str_replace(array('*',' ',','), array('','',''), $debit);
+                                $kredit = str_replace(array('*',' ',','), array('','',''), $kredit);
+
+                                $coa = $this->User->Coa->getData('first', array(
+                                    'conditions' => array(
+                                        'Coa.code' => $kode_acc,
+                                        'Coa.status' => 1,
+                                    ),
+                                ));
+
+                                $dataTmp = array(
+                                    'branch_id' => 15,
+                                    'document_id' => $src,
+                                    'coa_id' => Common::hashEmptyField($coa, 'Coa.id'),
+                                    'date' => Common::formatDate($tgl, 'Y-m-d'),
+                                    'title' => $ket,
+                                    'debit' => $debit,
+                                    'credit' => $kredit,
+                                );
+
+                                if( $this->User->Journal->saveAll($dataTmp) ){                                        
+                                    $this->Log->logActivity( __('Sukses upload by Import Excel'), $this->user_data, $this->RequestHandler, $this->params );
+                                    $successfull_row++;
+                                } else {
+                                    $validationErrors = $this->User->Coa->validationErrors;
+                                    $textError = array();
+
+                                    if( !empty($validationErrors) ) {
+                                        foreach ($validationErrors as $key => $validationError) {
+                                            if( !empty($validationError) ) {
+                                                foreach ($validationError as $key => $error) {
+                                                    $textError[] = $error;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if( !empty($textError) ) {
+                                        $textError = implode(', ', $textError);
+                                    } else {
+                                        $textError = '';
+                                    }
+
+                                    $failed_row++;
+                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data. %s'), $row_submitted, $textError) . '<br>';
+                                }
+
+                                $row_submitted++;
+                                $cnt++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(!empty($successfull_row)) {
+                $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, $cnt);
+                $this->MkCommon->setCustomFlash(__($message_import1), 'success');
+            }
+            
+            if(!empty($error_message)) {
+                $this->MkCommon->setCustomFlash(__($error_message), 'error');
+            }
+            $this->redirect(array('action'=>'import_journal'));
         }
     }
 }

@@ -5104,7 +5104,7 @@ class SettingsController extends AppController {
                                     $requestData['ROW'.($x-1)] = array(
                                         'TarifAngkutan' => array(
                                             'id' => $id,
-                                            'type' => !empty($tipe_tarif)?strtolower($tipe_tarif):'',
+                                            'type' => !empty($tipe_tarif)?strtolower($tipe_tarif):'angkut',
                                             'name_tarif' => !empty($nama)?$nama:false,
                                             'from_city_name' => !empty($from_city_name)?$from_city_name:false,
                                             'to_city_name' => !empty($to_city_name)?$to_city_name:false,

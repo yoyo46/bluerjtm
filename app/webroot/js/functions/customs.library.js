@@ -1506,6 +1506,7 @@
         }
 
         if( typeof num != 'undefined' ) {
+            firstChar = num.charAt(0);
             num = num.replace(/,/gi, "").replace(/ /gi, "").replace(/IDR/gi, "").replace(/Rp/gi, "").replace(/\(/gi, "").replace(/\)/gi, "");
 
             if( typeof type == 'undefined' ) {
@@ -1522,6 +1523,10 @@
                 if( isNaN(num) ) {
                     num = 0;
                 }
+            }
+
+            if( firstChar == '(' ) {
+                num = num * -1;
             }
         } else {
             num = empty;
@@ -1768,14 +1773,15 @@
                                         var op = objCurrent.attr('data-op');
                                         var total = $.convertNumber(objCurrent.html());
 
-                                        console.log(total);
-
-                                        if( op == '-' ) {
-                                            grandtotal -= total;
-                                        } else {
+                                        // console.log(total);
+                                        // console.log(op);
+                                        // if( op == '-' ) {
+                                        //     grandtotal -= total;
+                                        // } else {
                                             grandtotal += total;
-                                        }
+                                        // }
                                     });
+
 
                                     if( grandtotal < 0 ) {
                                         grandtotal = grandtotal * -1;
@@ -1824,8 +1830,6 @@
             url = obj_content.attr('data-url');
             url = $.checkUndefined(obj_content.attr('href'), url);
         }
-
-        console.log(url);
 
         if( flag_alert != null ) {
             if ( !confirm(flag_alert) ) { 
