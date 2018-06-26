@@ -1846,15 +1846,20 @@ class MkCommonComponent extends Component {
             $monthFrom = sprintf('%s-%s', $paramYearFrom, $paramMonthFrom);
             $monthTo = date('Y-m', strtotime('+12 Month', strtotime($monthFrom)));
         }
-        if( !empty($monthFrom) && !empty($monthTo) ) {
-            $this->controller->request->data['Search']['from']['month'] = date('m', strtotime($monthFrom));
-            $this->controller->request->data['Search']['from']['year'] = date('Y', strtotime($monthFrom));
+        if( !empty($monthFrom) || !empty($monthTo) ) {
+            if( !empty($monthFrom) ) {
+                $this->controller->request->data['Search']['from']['month'] = date('m', strtotime($monthFrom));
+                $this->controller->request->data['Search']['from']['year'] = date('Y', strtotime($monthFrom));   
 
-            $this->controller->request->data['Search']['to']['month'] = date('m', strtotime($monthTo));
-            $this->controller->request->data['Search']['to']['year'] = date('Y', strtotime($monthTo));
+                $result['named']['MonthFrom'] = $monthFrom;
+            }
 
-            $result['named']['MonthFrom'] = $monthFrom;
-            $result['named']['MonthTo'] = $monthTo;
+            if( !empty($monthTo) ) {
+                $this->controller->request->data['Search']['to']['month'] = date('m', strtotime($monthTo));
+                $this->controller->request->data['Search']['to']['year'] = date('Y', strtotime($monthTo));
+
+                $result['named']['MonthTo'] = $monthTo;
+            }
         }
         if( !empty($year) ) {
             $paramYear = $year;

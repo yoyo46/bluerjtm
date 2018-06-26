@@ -1,3 +1,12 @@
+<?php
+        if( !empty($dateFrom) ) {
+            $monthFrom = Common::formatDate($dateFrom, 'm');
+            $yearFrom = Common::formatDate($dateFrom, 'Y');
+        } else {
+            $monthFrom = false;
+            $yearFrom = false;
+        }
+?>
 <div class="box">
     <div class="box-header">
         <h3 class="box-title">Pencarian</h3>
@@ -31,6 +40,7 @@
                                         'class'=>'form-control change-month',
                                         'required' => false,
                                         'empty' => false,
+                                        'value' => $monthFrom,
                                     ));
                             ?>
                         </div>
@@ -43,6 +53,7 @@
                                         'class'=>'form-control change-year',
                                         'required' => false,
                                         'empty' => false,
+                                        'value' => $yearFrom,
                                     ));
                             ?>
                         </div>
