@@ -1824,7 +1824,7 @@ class CashbanksController extends AppController {
 
         $options = array(
             'conditions' => array(
-                'Coa.coa_balance_sheets <' => 4,
+                'Coa.coa_balance_sheets <' => 3,
                 'Coa.status' => 1,
             ),
             'order' => array(
@@ -1850,7 +1850,8 @@ class CashbanksController extends AppController {
         $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'MonthFrom');
         $dateTo = $dateFrom;
 
-        // $values = $this->RjCashBank->_callCalcBalanceCoa($values, $dateFrom, $dateTo);
+        $debits = $this->RjCashBank->_callCalcBalanceSheet($debits, $dateFrom, $dateTo);
+        $credits = $this->RjCashBank->_callCalcBalanceSheet($credits, $dateFrom, $dateTo);
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
             $sub_module_title = sprintf('%s - Periode %s', $module_title, $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
@@ -1955,16 +1956,15 @@ class CashbanksController extends AppController {
                 ));
 
                 $total_journal = Common::hashEmptyField($summaryBalance, 'Journal.balancing', 0);
-                // $balancing = $beginingBalance + $total_journal;
-                // $result[$tmpDateFrom] = $balancing;
-                $result[$tmpDateFrom] = $total_journal;
+                $balancing = $beginingBalance + $total_journal;
+                $result[$tmpDateFrom] = $balancing;
 
                 $tmpDateFrom = date('Y-m', strtotime('+1 Month', strtotime($tmpDateFrom)));
             }
         }
 
         $this->set(compact(
-            'result', 'id', 'tmpDateFrom'
+            'result', 'id', 'tmpDateFrom', 'coa_type'
         ));
     }
 

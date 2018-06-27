@@ -227,25 +227,8 @@ class RjCashBankComponent extends Component {
         return $values;
     }
 
-	function _callCalcBalanceCoa ( $values, $dateFrom = false, $dateTo = false ) {
+	function _callCalcBalanceSheet ( $values, $dateFrom = false, $dateTo = false ) {
 		if( !empty($values) ) {
-            $this->controller->loadModel('ViewCoaLedger');
-            $this->controller->loadModel('ViewCoaSummary');
-
-            // $this->controller->ViewCoaLedger->virtualFields['code'] = 'CONCAT(ViewCoaLedger.coa_id, \'-\', ViewCoaLedger.date)';
-            // $this->controller->ViewCoaLedger->virtualFields['balancing'] = 'ViewCoaLedger.balance - ViewCoaLedger.last_summary - ViewCoaLedger.summary';
-
-            // $summaryBalances = $this->controller->ViewCoaLedger->find('list', array(
-            //     'conditions' => array(
-            //         'ViewCoaLedger.date >=' => $dateFrom,
-            //         'ViewCoaLedger.date <=' => $dateTo,
-            //     ),
-            //     'fields' => array(
-            //         'ViewCoaLedger.code',
-            //         'ViewCoaLedger.balancing',
-            //     ),
-            // ));
-
             foreach ($values as $key => $value) {
 		        $id = $this->MkCommon->filterEmptyField($value, 'Coa', 'id');
 		        $level = $this->MkCommon->filterEmptyField($value, 'Coa', 'level');
@@ -254,45 +237,37 @@ class RjCashBankComponent extends Component {
 		        $childrens = $this->MkCommon->filterEmptyField($value, 'children');
 
 		        if( !empty($childrens) ) {
-        			$childrens = $this->_callCalcBalanceCoa($childrens, $dateFrom, $dateTo);
+        			$childrens = $this->_callCalcBalanceSheet($childrens, $dateFrom, $dateTo);
 		           	$value['children'] = $childrens;
 		        }
 
 		        if( !empty($dateFrom) && !empty($dateTo) ) {
-		        	$tmpDateFrom = $dateFrom;
-		        	$tmpDateTo = $dateTo;
+		        	// $tmpDateFrom = $dateFrom;
+		        	// $tmpDateTo = $dateTo;
 		        	$value = $this->controller->User->Journal->Coa->getMerge($value, $parent_id, 'Parent');
 
-		            while( $tmpDateFrom <= $tmpDateTo ) {
-		                $fieldName = sprintf('month_%s', $tmpDateFrom);
+		     //        while( $tmpDateFrom <= $tmpDateTo ) {
+		     //            $fieldName = sprintf('month_%s', $tmpDateFrom);
 		                
-		        		if( $level == 4 ) {
-                            // $summaryBalance = $this->controller->ViewCoaSummary->find('first', array(
-                            //     'conditions' => array(
-                            //         'ViewCoaSummary.date' => $tmpDateFrom,
-                            //     ),
-                            // ));
-
-				            // $balancing = Common::hashEmptyField($summaryBalances, $id.'-'.$tmpDateFrom, 0);
-                            $balancing = 0;
-				            $value['Coa'][$tmpDateFrom]['balancing'] = $balancing;
+		     //    		if( $level == 4 ) {
+				   //          $value['Coa'][$tmpDateFrom]['balancing'] = 0;
 	            		
-		            		$amount = !empty($values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'])?$values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing']:0;
-	    					$values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'] = $amount + $balancing;
-				        } else if( $level == 1 ) {
-		        			$balancing = !empty($value['children']['TotalCoa'][$id][$tmpDateFrom]['balancing'])?$value['children']['TotalCoa'][$id][$tmpDateFrom]['balancing']:0;
-		            		$amount = !empty($values['TotalCoa'][$tmpDateFrom]['balancing'])?$values['TotalCoa'][$tmpDateFrom]['balancing']:0;
+		     //        		$amount = !empty($values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'])?$values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing']:0;
+	    		// 			$values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'] = $amount + $balancing;
+				   //      } else if( $level == 1 ) {
+		     //    			$balancing = !empty($value['children']['TotalCoa'][$id][$tmpDateFrom]['balancing'])?$value['children']['TotalCoa'][$id][$tmpDateFrom]['balancing']:0;
+		     //        		$amount = !empty($values['TotalCoa'][$tmpDateFrom]['balancing'])?$values['TotalCoa'][$tmpDateFrom]['balancing']:0;
 
-							$values['TotalCoa'][$tmpDateFrom]['balancing'] = $amount + $balancing;
-				        } else {
-		        			$balancing = !empty($value['children']['TotalCoa'][$id][$tmpDateFrom]['balancing'])?$value['children']['TotalCoa'][$id][$tmpDateFrom]['balancing']:0;
-		            		$amount = !empty($values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'])?$values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing']:0;
+							// $values['TotalCoa'][$tmpDateFrom]['balancing'] = $amount + $balancing;
+				   //      } else {
+		     //    			$balancing = !empty($value['children']['TotalCoa'][$id][$tmpDateFrom]['balancing'])?$value['children']['TotalCoa'][$id][$tmpDateFrom]['balancing']:0;
+		     //        		$amount = !empty($values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'])?$values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing']:0;
 
-							$values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'] = $amount + $balancing;
-				        }
+							// $values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'] = $amount + $balancing;
+				   //      }
 
-		                $tmpDateFrom = date('Y-m', strtotime('+1 Month', strtotime($tmpDateFrom)));
-		            }
+		     //            $tmpDateFrom = date('Y-m', strtotime('+1 Month', strtotime($tmpDateFrom)));
+		     //        }
 		        }
 
 	            $values[$key] = $value;

@@ -68,6 +68,7 @@
                     echo $this->Html->tag('tbody', $this->element('blocks/cashbanks/tables/balance_sheets_col', array(
                         'values' => $debits,
                         'dataColumns' => $dataColumns,
+                        'coa_type' => 'debit',
                     )));
             ?>
         </div>
@@ -76,6 +77,7 @@
                     echo $this->Html->tag('tbody', $this->element('blocks/cashbanks/tables/balance_sheets_col', array(
                         'values' => $credits,
                         'dataColumns' => $dataColumns,
+                        'coa_type' => 'credit',
                     )));
             ?>
         </div>

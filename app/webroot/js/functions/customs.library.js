@@ -1750,6 +1750,7 @@
         }, options );
 
         var infinity = $.checkUndefined(settings.obj.attr('data-infinity'), false);
+        var is_balance_sheet = $('.wrapper-total-balance-sheets').length;
 
         if( infinity == 'true' ) {
             var obj_content = settings.obj.get(idxAjax);
@@ -1767,13 +1768,30 @@
                         var child = $('.wrapper-coa-parent-'+coa_id);
                         
                         if( data_type == 'end' ) {
-                            $.each(coaPeriod, function(idx, period){
-                                var tmpDebitTotal = $.checkUndefined(debitTotal[period], 0);
-                                var tmpCreditTotal = $.checkUndefined(creditTotal[period], 0);
+                            if( is_balance_sheet > 0 ) {
+                                if( debitTotal < 0 ) {
+                                    debitTotalFormat = '(' + $.formatDecimal(Math.abs(debitTotal)) + ')';
+                                } else {
+                                    debitTotalFormat = debitTotal;
+                                }
 
-                                var profit_loss = tmpCreditTotal - tmpDebitTotal;
-                                $('.wrapper-profit-loss[rel="'+period+'"]').html($.formatDecimal(profit_loss));
-                            });
+                                if( creditTotal < 0 ) {
+                                    creditTotalFormat = '(' + $.formatDecimal(Math.abs(creditTotal)) + ')';
+                                } else {
+                                    creditTotalFormat = creditTotal;
+                                }
+
+                                $('.wrapper-total-debit').html(debitTotalFormat);
+                                $('.wrapper-total-credit').html(creditTotalFormat);
+                            } else {
+                                $.each(coaPeriod, function(idx, period){
+                                    var tmpDebitTotal = $.checkUndefined(debitTotal[period], 0);
+                                    var tmpCreditTotal = $.checkUndefined(creditTotal[period], 0);
+
+                                    var profit_loss = tmpCreditTotal - tmpDebitTotal;
+                                    $('.wrapper-profit-loss[rel="'+period+'"]').html($.formatDecimal(profit_loss));
+                                });
+                            }
                         } else if( child.length > 0 ) {
                             child.each(function(){
                                 var childSelf = $(this);
@@ -1960,7 +1978,20 @@
                         
                         var coa_type = $.checkUndefined($(result).find('.coa-type').html(), null);
 
-                        if( coa_type != null ) {
+                        if( is_balance_sheet > 0 ) {
+                            var coa_total = $.convertNumber($(result).find('.coa-total').html());
+
+                            if( $.isArray(debitTotal) || $.isPlainObject(debitTotal) ) {
+                                debitTotal = 0;
+                                creditTotal = 0;
+                            }
+
+                            if( coa_type == 'debit' ) {
+                                debitTotal = debitTotal + coa_total;
+                            } else {
+                                creditTotal = creditTotal + coa_total;
+                            }
+                        } else if( coa_type != null ) {
                             coa_month = $(result).find('.coa-month');
 
                             coa_month.each(function(){

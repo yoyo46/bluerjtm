@@ -112,8 +112,8 @@
                     }
 
                     while( $tmpDateFrom <= $tmpDateTo ) {
-                        if( isset($values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing']) ) {
-                            $total = $values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'];
+                        // if( isset($values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing']) ) {
+                            $total = !empty($values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'])?$values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing']:0;
                             $totalBalance = Common::getFormatPrice($total);
 
                             $tmpTr .= $this->Html->tag('td', $totalBalance, array(
@@ -122,7 +122,7 @@
                                 'coa-id' => $tmp_parent_id,
                                 'rel' => $tmpDateFrom,
                             ));
-                        }
+                        // }
 
                         $tmpDateFrom = date('Y-m', strtotime('+1 Month', strtotime($tmpDateFrom)));
                     }

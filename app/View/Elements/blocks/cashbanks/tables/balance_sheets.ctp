@@ -1,4 +1,6 @@
 <?php
+        $coa_type = !empty($coa_type)?$coa_type:false;
+
         if(!empty($values)){
             $tmpValues = $values;
 
@@ -11,6 +13,7 @@
                 $coa = $this->Common->filterEmptyField($value, 'Coa', 'coa_name');
                 $coa_name = $this->Common->filterEmptyField($value, 'Coa', 'name');
                 $level = $this->Common->filterEmptyField($value, 'Coa', 'level');
+                $type = $this->Common->filterEmptyField($value, 'Coa', 'type');
                 $parent_name = $this->Common->filterEmptyField($value, 'Parent', 'name');
                 $parent_parent_id = $this->Common->filterEmptyField($value, 'Parent', 'parent_id');
                 $parent_id = $this->Common->filterEmptyField($value, 'Coa', 'parent_id');
@@ -63,7 +66,7 @@
                     $balance = $this->Common->filterEmptyField($dataCoa, $tmpDateFrom, 'balancing', 0);
 
                     $op = ($balance>0)?'+':'-';
-                    $balance = !empty($balance)?$this->Common->getFormatPrice($balance, false, 2):0;
+                    $balance = !empty($balance)?Common::getFormatPrice($balance):0;
                     $classItem = __('wrapper-coa-%s-%s', $id, $tmpDateFrom);
 
                     $coa_month_content .= $this->Html->tag('td', $balance, array(
@@ -71,6 +74,7 @@
                         'class' => $classItem.__(' wrapper-coa-parent-%s', $parent_id),
                         'rel' => $tmpDateFrom,
                         'data-op' => $op,
+                        'data-type' => $type,
                     ));
 
                     $tmpDateFrom = date('Y-m', strtotime('+1 Month', strtotime($tmpDateFrom)));
@@ -124,9 +128,9 @@
                             $idx = isset($values['TotalCoa'][$parent_id])?$values['TotalCoa'][$parent_id]:false;
                         }
 
-                        if( isset($idx[$tmpDateFrom]['balancing']) ) {
-                            $total = $idx[$tmpDateFrom]['balancing'];
-                            $totalBalance = $this->Common->getFormatPrice($total, false, 2);
+                        // if( isset($idx[$tmpDateFrom]['balancing']) ) {
+                            $total = !empty($idx[$tmpDateFrom]['balancing'])?$idx[$tmpDateFrom]['balancing']:0;
+                            $totalBalance = Common::getFormatPrice($total);
 
                             $tmpTr .= $this->Html->tag('td', $totalBalance, array(
                                 'style' => 'text-align: right;font-weight: bold;',
@@ -134,7 +138,7 @@
                                 'coa-id' => $tmp_parent_id,
                                 'rel' => $tmpDateFrom,
                             ));
-                        }
+                        // }
 
                         $tmpDateFrom = date('Y-m', strtotime('+1 Month', strtotime($tmpDateFrom)));
                     }
@@ -146,7 +150,7 @@
                             $tempMarginLeft = ($level-2) * 30;
                         }
 
-                        $tmpTr = $this->Html->tag('td', sprintf(__('Total %s'), $totalCoaName), array(
+                        $tmpTr = $this->Html->tag('td', __('Total %s', $totalCoaName), array(
                             'style' => sprintf('font-weight: bold;padding-left: %spx;font-style: italic;', $tempMarginLeft),
                         )).$tmpTr;
 
@@ -156,6 +160,21 @@
                         ));
                     }
                 }
+            }
+
+            if( !empty($main_total) ) {
+                $tmpTr = $this->Html->tag('td', __('Total'), array(
+                    'style' => 'font-weight: bold;font-style: italic;',
+                )).
+                $this->Html->tag('td', 0, array(
+                    'style' => 'text-align: right;font-weight: bold;',
+                    'class' => __('wrapper-total-balance-sheets wrapper-total-%s', $coa_type),
+                ));
+
+                echo $this->Html->tag('tr', $tmpTr, array(
+                    'class' => 'coa-parent',
+                    'data-type' => 'end',
+                ));
             }
         }
 ?>
