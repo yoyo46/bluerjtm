@@ -1,11 +1,11 @@
 <?php
-        if( !empty($dateFrom) ) {
-            $monthFrom = Common::formatDate($dateFrom, 'm');
-            $yearFrom = Common::formatDate($dateFrom, 'Y');
-        } else {
-            $monthFrom = false;
-            $yearFrom = false;
-        }
+        // if( !empty($dateFrom) ) {
+        //     $monthFrom = Common::formatDate($dateFrom, 'm');
+        //     $yearFrom = Common::formatDate($dateFrom, 'Y');
+        // } else {
+        //     $monthFrom = false;
+        //     $yearFrom = false;
+        // }
 ?>
 <div class="box">
     <div class="box-header">
@@ -37,10 +37,10 @@
                             <?php 
                                     echo $this->Form->month('from', array(
                                         'label'=> false, 
-                                        'class'=>'form-control change-month',
+                                        'class'=>'form-control',
                                         'required' => false,
                                         'empty' => false,
-                                        'value' => $monthFrom,
+                                        // 'value' => $monthFrom,
                                     ));
                             ?>
                         </div>
@@ -50,10 +50,10 @@
                             <?php 
                                     echo $this->Form->year('from', 1949, date('Y'), array(
                                         'label'=> false, 
-                                        'class'=>'form-control change-year',
+                                        'class'=>'form-control',
                                         'required' => false,
                                         'empty' => false,
-                                        'value' => $yearFrom,
+                                        // 'value' => $yearFrom,
                                     ));
                             ?>
                         </div>
@@ -75,38 +75,39 @@
                     ?>
                 </div>
             </div>
-            <!-- <div class="col-sm-6">
+            <div class="col-sm-6">
                 <?php 
-                        // echo $this->Form->label('fromMonth', __('Sampai Bulan'));
+                        echo $this->Form->label('fromMonth', __('Sampai Bulan'));
                 ?>
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
                             <?php 
-                                    // echo $this->Form->month('to', array(
-                                    //     'label'=> false, 
-                                    //     'class'=>'form-control target-month',
-                                    //     'required' => false,
-                                    //     'empty' => false,
-                                    //     'disabled' => true,
-                                    // ));
+                                    echo $this->Form->month('to', array(
+                                        'label'=> false, 
+                                        'class'=>'form-control target-month',
+                                        'required' => false,
+                                        'empty' => false,
+                                        // 'disabled' => true,
+                                    ));
                             ?>
                         </div>
                     </div>
                     <div class="col-sm-6">
                         <div class="form-group">
                             <?php 
-                                    // echo $this->Form->input('to.year', array(
-                                    //     'label'=> false, 
-                                    //     'class'=>'form-control target-year',
-                                    //     'empty' => false,
-                                    //     'disabled' => true,
-                                    // ));
+                                    echo $this->Form->year('to', 1949, date('Y'), array(
+                                        'label'=> false, 
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                        'empty' => false,
+                                        // 'value' => $yearFrom,
+                                    ));
                             ?>
                         </div>
                     </div>
                 </div>
-            </div> -->
+            </div>
         </div>
         <?php 
                 echo $this->Form->end();

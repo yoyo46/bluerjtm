@@ -5,7 +5,6 @@
             $headerRowspan = false;
         }
 
-        $element = 'blocks/cashbanks/tables/balance_sheets';
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $dataColumns = array(
             'coa_name' => array(
@@ -14,7 +13,6 @@
                 'data-options' => 'field:\'coa_name\',width:300,styler:cellStyler',
                 'align' => 'left',
                 'rowspan' => $headerRowspan,
-                // 'fix_column' => true,
             ),
         );
 
@@ -25,8 +23,8 @@
             while( $tmpDateFrom <= $tmpDateTo ) {
                 $fieldName = sprintf('month_%s', $tmpDateFrom);
                 $dataColumns[$fieldName] = array(
-                    'name' => sprintf('%s<br>%s', $this->Common->formatDate($tmpDateFrom, 'M'), $this->Common->formatDate($tmpDateFrom, 'Y')),
-                    'style' => 'text-align: center;vertical-align: middle;',
+                    'name' => sprintf('%s %s', $this->Common->formatDate($tmpDateFrom, 'M'), $this->Common->formatDate($tmpDateFrom, 'Y')),
+                    'style' => 'text-align: right;vertical-align: middle;',
                     'data-options' => sprintf('field:\'%s\',width:100', $fieldName),
                     'align' => 'right',
                 );
@@ -64,32 +62,24 @@
                     ),
                 ));
     ?>
-    <div class="table-responsive">
-        <?php 
-                if(!empty($values)){
-        ?>
-        <table id="tt" class="table sorting <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" singleSelect="true">
-            <thead frozen="true">
-                <tr>
-                    <?php
-                            if( !empty($fieldColumn) ) {
-                                echo $fieldColumn;
-                            }
-                    ?>
-                </tr>
-            </thead>
+    <div class="row">
+        <div class="col-sm-6">
             <?php 
-                    echo $this->Html->tag('tbody', $this->element($element));
+                    echo $this->Html->tag('tbody', $this->element('blocks/cashbanks/tables/balance_sheets_col', array(
+                        'values' => $debits,
+                        'dataColumns' => $dataColumns,
+                    )));
             ?>
-        </table>
-        <?php 
-                } else {
-                    echo $this->Html->tag('p', __('Data belum tersedia.'), array(
-                        'class' => 'alert alert-warning text-center',
-                    ));
-                }
-        ?>
-    </div><!-- /.box-body -->
+        </div>
+        <div class="col-sm-6">
+            <?php 
+                    echo $this->Html->tag('tbody', $this->element('blocks/cashbanks/tables/balance_sheets_col', array(
+                        'values' => $credits,
+                        'dataColumns' => $dataColumns,
+                    )));
+            ?>
+        </div>
+    </div>
     <?php 
             echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
                 'style' => 'font-size: 14px;font-style: italic;margin-top: 10px;'

@@ -114,7 +114,7 @@
                     while( $tmpDateFrom <= $tmpDateTo ) {
                         if( isset($values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing']) ) {
                             $total = $values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'];
-                            $totalBalance = $this->Common->getFormatPrice($total, false, 2);
+                            $totalBalance = Common::getFormatPrice($total);
 
                             $tmpTr .= $this->Html->tag('td', $totalBalance, array(
                                 'style' => 'text-align: right;font-weight: bold;',
@@ -147,18 +147,28 @@
                 }
             }
 
+            $tmpTrProfitLoss = false;
+            $tmpDateFrom = $dateFrom;
+            $tmpDateTo = $dateTo;
+
+            while( $tmpDateFrom <= $tmpDateTo ) {
+                $tmpTrProfitLoss .= $this->Html->tag('td', 0, array(
+                    'style' => 'text-align: right;font-weight: bold;',
+                    'class' => 'wrapper-profit-loss',
+                    'rel' => $tmpDateFrom,
+                ));
+                
+                $tmpDateFrom = date('Y-m', strtotime('+1 Month', strtotime($tmpDateFrom)));
+            }
+
             if( !empty($main_total) ) {
-                $summaryProfitLoss = !empty($summaryProfitLoss)?$summaryProfitLoss:false;
-                $debit_total = Common::hashEmptyField($summaryProfitLoss, 'Journal.debit_total');
-                $credit_total = Common::hashEmptyField($summaryProfitLoss, 'Journal.credit_total');
+                // $summaryProfitLoss = !empty($summaryProfitLoss)?$summaryProfitLoss:false;
+                // $debit_total = Common::hashEmptyField($summaryProfitLoss, 'Journal.debit_total');
+                // $credit_total = Common::hashEmptyField($summaryProfitLoss, 'Journal.credit_total');
 
                 $tmpTr = $this->Html->tag('td', __('Laba Rugi'), array(
                     'style' => 'font-weight: bold;font-style: italic;',
-                )).
-                $this->Html->tag('td', Common::getFormatPrice($credit_total - $debit_total), array(
-                    'style' => 'text-align: right;font-weight: bold;',
-                    'class' => 'wrapper-profit-loss',
-                ));
+                )).$tmpTrProfitLoss;
 
                 echo $this->Html->tag('tr', $tmpTr, array(
                     'class' => 'coa-parent',

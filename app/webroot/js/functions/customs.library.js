@@ -1739,6 +1739,10 @@
     }
 
     var idxAjax = 0;
+    var debitTotal = {};
+    var creditTotal = {};
+    var coaPeriod = {};
+
     $.directAjaxLink = function( options ) {
         var settings = $.extend({
             obj: $('.ajax-link'),
@@ -1750,6 +1754,7 @@
         if( infinity == 'true' ) {
             var obj_content = settings.obj.get(idxAjax);
             obj_content = $(obj_content);
+            $("#ajaxLoading").show();
 
             if( obj_content.length === 0 ) {
                 var objCoaParent = $('.coa-parent');
@@ -1758,9 +1763,18 @@
                     objCoaParent.each(function(){
                         var coaParentSelf = $(this);
                         var coa_id = coaParentSelf.attr('coa-id');
+                        var data_type = coaParentSelf.attr('data-type');
                         var child = $('.wrapper-coa-parent-'+coa_id);
                         
-                        if( child.length > 0 ) {
+                        if( data_type == 'end' ) {
+                            $.each(coaPeriod, function(idx, period){
+                                var tmpDebitTotal = $.checkUndefined(debitTotal[period], 0);
+                                var tmpCreditTotal = $.checkUndefined(creditTotal[period], 0);
+
+                                var profit_loss = tmpCreditTotal - tmpDebitTotal;
+                                $('.wrapper-profit-loss[rel="'+period+'"]').html($.formatDecimal(profit_loss));
+                            });
+                        } else if( child.length > 0 ) {
                             child.each(function(){
                                 var childSelf = $(this);
                                 var dt = childSelf.attr('rel');
@@ -1771,6 +1785,7 @@
                                     objCoa.each(function(){
                                         var objCurrent = $(this);
                                         var op = objCurrent.attr('data-op');
+                                        // var data_type = objCurrent.attr('data-type');
                                         var total = $.convertNumber(objCurrent.html());
 
                                         // console.log(total);
@@ -1942,6 +1957,33 @@
 
                     if( infinity == 'true' ) {
                         idxAjax++;
+                        
+                        var coa_type = $.checkUndefined($(result).find('.coa-type').html(), null);
+
+                        if( coa_type != null ) {
+                            coa_month = $(result).find('.coa-month');
+
+                            coa_month.each(function(){
+                                var monthSelf = $(this);
+                                var month = monthSelf.html();
+                                var coa_total = $.convertNumber($(result).find('.coa-total[rel="'+month+'"]').html());
+
+                                if( coa_type == 'debit' ) {
+                                    var tmpTotal = $.checkUndefined(debitTotal[month], 0);
+                                    debitTotal[month] = tmpTotal + coa_total;
+                                } else {
+                                    var tmpTotal = $.checkUndefined(creditTotal[month], 0);
+                                    creditTotal[month] = tmpTotal + coa_total;
+                                }
+                                
+                                // var checkPeriod = $.checkUndefined(coaPeriod[month], null);
+
+                                // if( checkPeriod == null ) {
+                                //     var lenPeriod = coaPeriod.length;
+                                    coaPeriod[month] = month;
+                                // }
+                            });
+                        }
 
                         $.directAjaxLink({
                             obj: $('.ajax-infinity'),

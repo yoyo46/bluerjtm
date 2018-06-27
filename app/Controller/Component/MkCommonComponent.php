@@ -1758,6 +1758,9 @@ class MkCommonComponent extends Component {
         $paramMonthFrom = $this->filterEmptyField($result, 'named', 'monthFrom');
         $paramYearFrom = $this->filterEmptyField($result, 'named', 'yearFrom');
 
+        $paramMonthTo = $this->filterEmptyField($result, 'named', 'monthTo');
+        $paramYearTo = $this->filterEmptyField($result, 'named', 'yearTo');
+
         $paramYear = $this->filterEmptyField($options, 'param_year');
         $year = $this->filterEmptyField($result, 'named', 'year');
 
@@ -1845,6 +1848,9 @@ class MkCommonComponent extends Component {
         if( !empty($paramMonthFrom) && !empty($paramYearFrom) ) {
             $monthFrom = sprintf('%s-%s', $paramYearFrom, $paramMonthFrom);
             $monthTo = date('Y-m', strtotime('+12 Month', strtotime($monthFrom)));
+        }
+        if( !empty($paramMonthTo) && !empty($paramYearTo) ) {
+            $monthTo = sprintf('%s-%s', $paramYearTo, $paramMonthTo);
         }
         if( !empty($monthFrom) || !empty($monthTo) ) {
             if( !empty($monthFrom) ) {

@@ -19,7 +19,7 @@
                 $fieldName = sprintf('month_%s', $tmpDateFrom);
                 $dataColumns[$fieldName] = array(
                     'name' => sprintf('%s %s', $this->Common->formatDate($tmpDateFrom, 'M'), $this->Common->formatDate($tmpDateFrom, 'Y')),
-                    'style' => 'text-align: center;vertical-align: middle;',
+                    'style' => 'text-align: left;vertical-align: middle;',
                     'data-options' => sprintf('field:\'%s\',width:100', $fieldName),
                     'align' => 'right',
                     'class' => 'string',

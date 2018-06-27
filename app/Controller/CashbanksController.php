@@ -1770,27 +1770,27 @@ class CashbanksController extends AppController {
         ));
         $params = $this->MkCommon->_callRefineParams($this->params, array(
             'monthFrom' => $dateFrom,
-            // 'monthTo' => $dateTo,
+            'monthTo' => $dateTo,
         ));
         $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'MonthFrom');
-        $dateTo = $dateFrom;
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'MonthTo');
 
         $values = $this->RjCashBank->_callCalcProfitLoss($values, $dateFrom, $dateTo, $data_action);
         
-        $this->User->Journal->virtualFields['debit_total'] = 'SUM(Journal.debit)';
-        $this->User->Journal->virtualFields['credit_total'] = 'SUM(Journal.credit)';
-        $summaryProfitLoss = $this->User->Journal->getData('first', array(
-            'conditions' => array(
-                'DATE_FORMAT(Journal.date, \'%Y-%m\')' => $dateFrom,
-                'CASE WHEN SUBSTR(Coa.code, 1, 1) REGEXP \'[0-9]+\' THEN SUBSTR(Coa.code, 1, 1) ELSE 5 END >=' => 3,
-                'Coa.status' => 1,
-            ),
-            'contain' => array(
-                'Coa',
-            ),
-        ), true, array(
-            'type' => 'active',
-        ));
+        // $this->User->Journal->virtualFields['debit_total'] = 'SUM(Journal.debit)';
+        // $this->User->Journal->virtualFields['credit_total'] = 'SUM(Journal.credit)';
+        // $summaryProfitLoss = $this->User->Journal->getData('first', array(
+        //     'conditions' => array(
+        //         'DATE_FORMAT(Journal.date, \'%Y-%m\')' => $dateFrom,
+        //         'CASE WHEN SUBSTR(Coa.code, 1, 1) REGEXP \'[0-9]+\' THEN SUBSTR(Coa.code, 1, 1) ELSE 5 END >=' => 3,
+        //         'Coa.status' => 1,
+        //     ),
+        //     'contain' => array(
+        //         'Coa',
+        //     ),
+        // ), true, array(
+        //     'type' => 'active',
+        // ));
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
             $sub_module_title = sprintf('%s - Periode %s', $module_title, $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
@@ -1812,19 +1812,17 @@ class CashbanksController extends AppController {
         $this->set('active_menu', 'profit_loss');
         $this->set(compact(
             'values', 'module_title', 'dateFrom',
-            'dateTo', 'sub_module_title', 'data_action',
-            'summaryProfitLoss'
+            'dateTo', 'sub_module_title', 'data_action'
+            // 'summaryProfitLoss'
         ));
     }
 
     function balance_sheets ( $data_action = false ) {
         $module_title = __('Laporan Neraca');
-        // $dateFrom = date('Y-m', strtotime('-12 Month'));
-        // $dateTo = date('Y-m');
-        $dateFrom = '2017-01';
-        $dateTo = '2017-01';
+        $dateFrom = date('Y-m', strtotime('-1 Month'));
+        $dateTo = $dateFrom;
 
-        $values = $this->User->Coa->getData('threaded', array(
+        $options = array(
             'conditions' => array(
                 'Coa.coa_balance_sheets <' => 4,
                 'Coa.status' => 1,
@@ -1835,18 +1833,27 @@ class CashbanksController extends AppController {
                 'Coa.code IS NULL' => 'ASC',
                 'Coa.code' => 'ASC',
             )
-        ));
+        );
+
+        $debitOptions = $options;
+        $debitOptions['conditions']['Coa.type'] = 'debit';
+        $debits = $this->User->Coa->getData('threaded', $debitOptions);
+
+        $creditOptions = $options;
+        $creditOptions['conditions']['Coa.type'] = 'credit';
+        $credits = $this->User->Coa->getData('threaded', $creditOptions);
+
         $params = $this->MkCommon->_callRefineParams($this->params, array(
             'monthFrom' => $dateFrom,
             'monthTo' => $dateTo,
         ));
         $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'MonthFrom');
-        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'MonthTo');
+        $dateTo = $dateFrom;
 
-        $values = $this->RjCashBank->_callCalcBalanceCoa($values, $dateFrom, $dateTo);
+        // $values = $this->RjCashBank->_callCalcBalanceCoa($values, $dateFrom, $dateTo);
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
-            $sub_module_title = sprintf('%s<br>Periode %s', $module_title, $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
+            $sub_module_title = sprintf('%s - Periode %s', $module_title, $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
         } else {
             $sub_module_title = false;
         }
@@ -1864,8 +1871,9 @@ class CashbanksController extends AppController {
         // debug($values);die();
         $this->set('active_menu', 'balance_sheets');
         $this->set(compact(
-            'values', 'module_title', 'dateFrom',
-            'dateTo', 'sub_module_title', 'data_action'
+            'module_title', 'dateFrom',
+            'dateTo', 'sub_module_title', 'data_action',
+            'debits', 'credits'
         ));
     }
 
@@ -1910,7 +1918,7 @@ class CashbanksController extends AppController {
         }
 
         $this->set(compact(
-            'result', 'id', 'tmpDateFrom'
+            'result', 'id', 'tmpDateFrom', 'coa_type'
         ));
         $this->render('balance_sheet_amount');
     }
@@ -1921,7 +1929,7 @@ class CashbanksController extends AppController {
 
         $value = $this->User->Journal->Coa->getMerge(array(), $id);
 
-        // $beginingBalance = Common::hashEmptyField($value, 'Coa.balance', 0);
+        $beginingBalance = Common::hashEmptyField($value, 'Coa.balance', 0);
         $parent_id = Common::hashEmptyField($value, 'Coa.parent_id');
         $coa_type = Common::hashEmptyField($value, 'Coa.type');
         $result = array();
