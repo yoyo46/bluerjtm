@@ -20,7 +20,7 @@
         <div class="row">
             <div class="col-sm-6">
                 <?php 
-                        echo $this->Form->label('fromMonth', __('Dari Bulan'));
+                        echo $this->Form->label('fromMonth', __('Bulan'));
                 ?>
                 <div class="row">
                     <div class="col-sm-6">
@@ -64,6 +64,8 @@
                     ?>
                 </div>
             </div>
+            <?php
+            /*
             <div class="col-sm-6">
                 <?php 
                         echo $this->Form->label('fromMonth', __('Sampai Bulan'));
@@ -96,6 +98,8 @@
                     </div>
                 </div>
             </div>
+            */
+            ?>
         </div>
         <?php 
                 echo $this->Form->end();

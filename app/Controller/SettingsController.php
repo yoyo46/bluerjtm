@@ -5130,32 +5130,39 @@ class SettingsController extends AppController {
                                 foreach($requestData as $request){
                                     $data = $request;
                                     $this->TarifAngkutan->create();
-                                    
-                                    if( $this->TarifAngkutan->save($data) ){
-                                        $this->Log->logActivity( __('Sukses upload Tarif Angkut by Import Excel'), $this->user_data, $this->RequestHandler, $this->params );
-                                        $successfull_row++;
-                                    } else {
-                                        $validationErrors = $this->TarifAngkutan->validationErrors;
-                                        $textError = array();
 
-                                        if( !empty($validationErrors) ) {
-                                            foreach ($validationErrors as $key => $validationError) {
-                                                if( !empty($validationError) ) {
-                                                    foreach ($validationError as $key => $error) {
-                                                        $textError[] = $error;
+                                    $tipe_tarif = Common::hashEmptyField($data, 'TarifAngkutan.type');
+
+                                    if( in_array($tipe_tarif, array( 'angkut', 'asuransi', 'kuli' )) ) {
+                                        if( $this->TarifAngkutan->save($data) ){
+                                            $this->Log->logActivity( __('Sukses upload Tarif Angkut by Import Excel'), $this->user_data, $this->RequestHandler, $this->params );
+                                            $successfull_row++;
+                                        } else {
+                                            $validationErrors = $this->TarifAngkutan->validationErrors;
+                                            $textError = array();
+
+                                            if( !empty($validationErrors) ) {
+                                                foreach ($validationErrors as $key => $validationError) {
+                                                    if( !empty($validationError) ) {
+                                                        foreach ($validationError as $key => $error) {
+                                                            $textError[] = $error;
+                                                        }
                                                     }
                                                 }
                                             }
-                                        }
 
-                                        if( !empty($textError) ) {
-                                            $textError = implode(', ', $textError);
-                                        } else {
-                                            $textError = '';
-                                        }
+                                            if( !empty($textError) ) {
+                                                $textError = implode(', ', $textError);
+                                            } else {
+                                                $textError = '';
+                                            }
 
+                                            $failed_row++;
+                                            $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data. %s'), $row_submitted, $textError) . '<br>';
+                                        }
+                                    } else {
                                         $failed_row++;
-                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data. %s'), $row_submitted, $textError) . '<br>';
+                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data. Tipe tarif yang diperbolehkan angkut, asuransi, & kuli'), $row_submitted) . '<br>';
                                     }
 
                                     $row_submitted++;

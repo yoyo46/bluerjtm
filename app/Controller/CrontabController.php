@@ -200,6 +200,7 @@ class CrontabController extends AppController {
                 if( !empty($status) ) {
                     // Closing Bank
                     $closingPeriod = $this->MkCommon->customDate($periode, 'Y-m');
+                    $monthClosingPeriod = intval($this->MkCommon->customDate($periode, 'm'));
                     $lastPeriod = date('Y-m', strtotime($closingPeriod." -1 month"));
 
                     $this->User->Journal->virtualFields['saldo_debit'] = 'SUM(Journal.debit)';
@@ -215,6 +216,7 @@ class CrontabController extends AppController {
                         ),
                         'contain' => false,
                     ));
+                    $month_closing = Configure::read('__Site.Closing.Year.SettingGeneral.value');
 
                     if( !empty($values) ) {
                         $dataValue = array();
@@ -232,13 +234,18 @@ class CrontabController extends AppController {
                             $saldo_credit = $this->MkCommon->filterEmptyField($value, 'Journal', 'saldo_credit', 0);
 
                             $value = $this->User->Journal->Coa->getMerge($value, $coa_id);
+                            $periode_reset = $this->MkCommon->filterEmptyField($value, 'Coa', 'periode_reset');
                             $coa_type = $this->MkCommon->filterEmptyField($value, 'Coa', 'type');
+                            $balance = $this->MkCommon->filterEmptyField($value, 'Coa', 'balance', 0);
                             $last_closing = $this->User->Journal->Coa->CoaClosing->getData('first', array(
                                 'conditions' => array(
-                                    'DATE_FORMAT(CoaClosing.periode, \'%Y-%m\')' => $lastPeriod,
+                                    'DATE_FORMAT(CoaClosing.periode, \'%Y-%m\') <=' => $lastPeriod,
                                     'CoaClosing.coa_id' => $coa_id,
                                 ),
                                 'contain' => false,
+                                'order'=> array(
+                                    'DATE_FORMAT(CoaClosing.periode, \'%Y-%m\')' => 'DESC',
+                                ),
                             ));
                             $already_closing = $this->User->Journal->Coa->CoaClosing->getData('all', array(
                                 'conditions' => array(
@@ -251,7 +258,13 @@ class CrontabController extends AppController {
                                 ),
                             ));
 
-                            $saldo_awal = $this->MkCommon->filterEmptyField($last_closing, 'CoaClosing', 'saldo_akhir', 0);
+                            $closing_periode_reset = $this->MkCommon->filterEmptyField($last_closing, 'CoaClosing', 'periode_reset');
+
+                            if( !empty($closing_periode_reset) ) {
+                                $saldo_awal = $balance;
+                            } else {
+                                $saldo_awal = $this->MkCommon->filterEmptyField($last_closing, 'CoaClosing', 'saldo_akhir', $balance);
+                            }
 
                             if( $coa_type == 'credit' ) {
                                 $saldo_akhir = $saldo_awal + $saldo_credit - $saldo_debit;
@@ -260,7 +273,8 @@ class CrontabController extends AppController {
                             }
 
                             $dataSaldoAkhir[$coa_id][$closingPeriod] = $saldo_akhir;
-                            $dataValue[] = array(
+
+                            $coaDataValue = array(
                                 'CoaClosing' => array(
                                     'user_id' => $user_id,
                                     'coa_id' => $coa_id,
@@ -271,6 +285,24 @@ class CrontabController extends AppController {
                                     'saldo_akhir' => $saldo_akhir,
                                 ),
                             );
+
+                            if( !empty($periode_reset) ) {
+                                if( $periode_reset == 'yearly' && $monthClosingPeriod == $month_closing ) {
+                                    $coaDataValue['CoaClosing']['Coa'] = array(
+                                        'id' => $coa_id,
+                                        'balance' => 0,
+                                    );
+                                    $coaDataValue['CoaClosing']['periode_reset'] = $periode_reset;
+                                } else if( $periode_reset == 'monthly' ) {
+                                    $coaDataValue['CoaClosing']['Coa'] = array(
+                                        'id' => $coa_id,
+                                        'balance' => 0,
+                                    );
+                                    $coaDataValue['CoaClosing']['periode_reset'] = $periode_reset;
+                                }
+                            }
+
+                            $dataValue[] = $coaDataValue;
 
                             if( !empty($already_closing) ) {
                                 foreach ($already_closing as $key => $already) {
@@ -304,7 +336,9 @@ class CrontabController extends AppController {
                             }
                         }
 
-                        if( !$this->User->Journal->Coa->CoaClosing->saveAll($dataValue) ) {
+                        if(!$this->User->Journal->Coa->CoaClosing->saveAll($dataValue, array(
+                            'deep' => true,
+                        ))) {
                             $this->MkCommon->_saveLog(array(
                                 'activity' => __('Gagal melakukan closing bank'),
                                 'old_data' => $dataValue,

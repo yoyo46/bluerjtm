@@ -2,6 +2,13 @@
 class CoaClosing extends AppModel {
 	var $name = 'CoaClosing';
 
+    var $belongsTo = array(
+        'Coa' => array(
+            'className' => 'Coa',
+            'foreignKey' => 'coa_id',
+        ),
+    );
+
     function getData( $find, $options = false, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:false;
 

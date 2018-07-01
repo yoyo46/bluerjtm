@@ -630,6 +630,10 @@ class MkCommonComponent extends Component {
         ));
 
         Configure::write('__Site.Demo.Version', $this->_callDemoVersion());
+        Configure::write('__Site.monthly', array(
+            'named' => array('Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'),
+            'options' => array(1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'),
+        ));
 
         if( $this->params['prefix'] == 'bypass' && $this->RequestHandler->isAjax() ) {
             $this->layout = 'ajax';
@@ -2256,6 +2260,11 @@ class MkCommonComponent extends Component {
                 'SettingGeneral.name' => 'lock_closing_bank',
             ),
         ));
+        $year_closing = $this->SettingGeneral->find('first', array(
+            'conditions' => array(
+                'SettingGeneral.name' => 'year_closing',
+            ),
+        ));
 
         $lbl = $this->filterEmptyField($value, 'SettingGeneral', 'name');
         $val = $this->filterEmptyField($value, 'SettingGeneral', 'value');
@@ -2279,6 +2288,7 @@ class MkCommonComponent extends Component {
 
         Configure::write('__Site.Closing.periode', $periode);
         Configure::write(sprintf('__Site.Setting.%s', $lbl), $val);
+        Configure::write('__Site.Closing.Year', $year_closing);
     }
 
     function _callAllowClosing ( $data, $modelName, $fieldName = false, $format = 'Y-m', $redirect = true ) {

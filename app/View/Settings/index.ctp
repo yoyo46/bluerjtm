@@ -390,6 +390,16 @@
 		        <h3 class="box-title"><?php echo __('Pengaturan Transaksi'); ?></h3>
 		    </div>
 		    <div class="box-body">
+		    	<?php
+						echo $this->Form->input('SettingGeneral.year_closing',array(
+							'label'=> __('Closing Tahunan Setiap Tgl'), 
+							'class'=>'form-control',
+							'required' => false,
+							'div' => 'form-group',
+							'empty' => __('Pilih Bulan'),
+							'options' => Configure::read('__Site.monthly.options'),
+						));
+		    	?>
 		    	<div class="row">
 	    			<?php 
 	    					echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('SettingGeneral.lock_closing_bank', array(
