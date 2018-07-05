@@ -4636,4 +4636,38 @@ $(function() {
             _callLoadChart(self);
         });
     }
+
+    $( "body" ).delegate( '.duplicate-tr', "init click", function(event) {
+        var self = $(this);
+        var parent = self.parents('tbody');
+        var duplicate = self.parents('tr');
+        var rel = duplicate.attr('rel');
+
+        var uniqid = Date.now();
+        var html = duplicate.html();
+
+        html = '<tr class="pick-document" rel="'+rel+'" copy="'+uniqid+'">'+html+'</tr>';
+        duplicate.after(html);
+
+        var data_empty = $('tr[copy="'+uniqid+'"] .duplicate-empty');
+
+        $('tr[copy="'+uniqid+'"] .duplicate-remove').remove();
+        $.rebuildFunctionAjax($('tr[copy="'+uniqid+'"]'));
+
+        var rowspan = $('.temp-document-picker tr.pick-document[rel="'+rel+'"]').length;
+        duplicate.find('.duplicate-rowspan').attr('rowspan', rowspan);
+
+        $.each( data_empty, function( i, val ) {
+            var self = $(this);
+            var type = self.attr('type');
+
+            if( type == 'text' ) {
+                self.val('');
+            } else {
+                self.html('');
+            }
+        });
+
+        return false;
+    });
 });

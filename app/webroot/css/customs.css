@@ -13,6 +13,9 @@
 .mb15 {
   margin-bottom: 15px !important;
 }
+.mt20 {
+  margin-top: 20px !important;
+}
 
 /*Notification*/
 .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a {
@@ -550,6 +553,9 @@ tr.expired .red {
 }
 tbody.wrapper-table-documents td {
   vertical-align: middle !important;
+}
+.table>thead>tr>th {
+  vertical-align: top;
 }
 
 /*- SPK*/

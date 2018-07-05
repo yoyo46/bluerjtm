@@ -1,5 +1,33 @@
 <div class="box">
     <div class="box-header">
+        <h3 class="box-title"><?php echo __('Asuransi'); ?></h3>
+    </div>
+    <div class="box-body">
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
+							echo $this->Form->label('CoaSettingDetail.Asuransi.coa_id', __('Pembayaran Asuransi'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('CoaSettingDetail.Asuransi.coa_id',array(
+								'label'=> false, 
+								'class'=>'form-control chosen-select',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+							echo $this->Form->hidden('CoaSettingDetail.Asuransi.id');
+					?>
+				</div>
+			</div>
+        </div>
+    </div>
+</div>
+<div class="box">
+    <div class="box-header">
         <h3 class="box-title"><?php echo __('Pembelian'); ?></h3>
     </div>
     <div class="box-body">

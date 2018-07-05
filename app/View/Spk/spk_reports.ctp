@@ -15,7 +15,7 @@
                 '_attr' => array(
                     'escape' => false,
                     'class' => 'ajaxLink',
-                    'data-request' => '#form-report',
+                    'data-request' => '#form-search',
                 ),
                 '_ajax' => true,
             ));

@@ -25,7 +25,7 @@
 		{
 
 			var obj = $(this);
-			var is_number = /[0-9]/;
+			var is_number = /[0-9.]/;
 
 			var prefix = options.prefix;
             var suffix = options.suffix;

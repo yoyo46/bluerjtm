@@ -175,10 +175,6 @@ class Truck extends AppModel {
     );
 
     var $hasOne = array(
-        'Company' => array(
-            'className' => 'Company',
-            'foreignKey' => 'company_id',
-        ),
         'Leasing' => array(
             'className' => 'Leasing',
             'foreignKey' => 'truck_id',
@@ -233,6 +229,10 @@ class Truck extends AppModel {
         'Branch' => array(
             'className' => 'Branch',
             'foreignKey' => 'branch_id',
+        ),
+        'Company' => array(
+            'className' => 'Company',
+            'foreignKey' => 'company_id',
         ),
     );
 

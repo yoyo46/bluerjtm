@@ -149,6 +149,11 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
+		    				echo $this->Common->buildForm('color', __('Warna'));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
 		    				echo $this->Common->buildForm('tahun', __('Tahun *'), array(
 								'options' => $years,
 								'empty' => __('Pilih Tahun'),

@@ -68,6 +68,10 @@ class Coa extends AppModel {
             'className' => 'CoaSettingDetail',
             'foreignKey' => 'coa_id',
         ),
+        'Journal' => array(
+            'className' => 'Journal',
+            'foreignKey' => 'coa_id',
+        ),
     );
 
     function __construct($id = false, $table = null, $ds = null) {

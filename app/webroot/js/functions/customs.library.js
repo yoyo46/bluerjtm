@@ -509,9 +509,18 @@
         if( objTotal.length > 0 ) {
             var total = 0;
 
-            for (i = 0; i < leng; i++) {
-                total += convert_number(obj[i].innerHTML, 'int');
-            };
+            $.each( obj, function( i, val ) {
+                var self = $(this);
+                var type = self.attr('type');
+                
+                if( type == 'text' ) {
+                    var input = self.val();
+                } else {
+                    var input = self.html();
+                }
+                    
+                total += convert_number(input, 'int');
+            });
 
             var formatTotal = formatNumber( total, 0 );
             objTotal.html(formatTotal);
@@ -539,7 +548,7 @@
             getTotal( $(this).parents('tr') );
         });
 
-        // getTotal( settings.obj.parents('tr') );
+        $.getLeasingGrandtotal();
     }
 
     $.convertDecimal = function(self, decimal){
@@ -1209,6 +1218,7 @@
         if( objGrandTotal.length > 0 ) {
             objGrandTotal.html( $.formatDecimal(grandtotal, decimal) );
         }
+        $.calcItem();
     }
 
     function calculate(parent, self, type){
@@ -1219,6 +1229,7 @@
         var price = $.convertNumber(objPrice.val());
         var disc = $.convertNumber(parent.find('.disc').val());
         var ppn = $.convertNumber(parent.find('.ppn').val());
+        var rate = $.convertNumber(parent.find('.rate').val(), 'float', 0);
         var qty = $.convertNumber(parent.find('.qty').val(), 'int', 1);
         var calc_type = $.checkUndefined(parent.find('.calc-type').val(), null);
 
@@ -1236,6 +1247,11 @@
             }
 
             total = total * qty;
+        }
+
+        if( rate > 0 ) {
+            rate = rate/100;
+            total *= rate;
         }
 
         if( format_type == 'input_price_coma' ) {
@@ -1295,6 +1311,8 @@
                 objTotal.html( $.formatDecimal(grandtotal, decimal) );
             }
         });
+
+        $.calcItem();
     }
     
     function callcAdjustment (self, parent) {
@@ -1373,7 +1391,7 @@
 
     $.calcTotal = function(options){
         var settings = $.extend({
-            obj: $('.document-calc .price,.document-calc .disc,.document-calc .ppn,.document-calc .total,.document-calc .qty'),
+            obj: $('.document-calc .price,.document-calc .disc,.document-calc .rate,.document-calc .ppn,.document-calc .total,.document-calc .qty'),
             objQty: $('.document-calc-qty .qty'),
             objClick: $('.ppn_include'),
             objDelete: $('.delete-document'),
@@ -2621,5 +2639,38 @@
         $.directAjaxLink({
             obj: $('.ajax-infinity'),
         });
+    }
+    
+    $( "body" ).delegate( '.item-calc', "init blur", function(event) {
+        $.calcItem();
+    });
+    $.calcItem = function(options){
+        var items = $('.item-calc');
+
+        if( items.length > 0 ) {
+            var total = 0;
+
+            items.each(function(i,item){
+                var self = $(this);
+                var objType = self.attr('type');
+                var type = self.attr('data-type');
+
+                if( objType == 'text' ) {
+                    var val = self.val();
+                } else {
+                    var val = self.html();
+                }
+
+                val = $.convertNumber(val);
+
+                if( type == 'min' ) {
+                    total -= val;
+                } else {
+                    total += val;
+                }
+
+                $('.grandtotal-calc').html($.formatDecimal(total, 2));
+            });
+        }
     }
 }( jQuery ));

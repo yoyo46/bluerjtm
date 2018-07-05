@@ -51,6 +51,8 @@
                     <dd><?php echo !empty($truck['Driver']['driver_name'])?ucwords($truck['Driver']['driver_name']):'-';?></dd>
                     <dt><?php echo __('Kapasitas')?></dt>
                     <dd><?php echo $truck['Truck']['capacity'];?></dd>
+                    <dt><?php echo __('Warna')?></dt>
+                    <dd><?php echo !empty($truck['Truck']['color'])?$truck['Truck']['color']:'-';?></dd>
                     <dt><?php echo __('Tahun')?></dt>
                     <dd><?php echo $truck['Truck']['tahun'];?></dd>
                     <dt><?php echo __('ini adalah aset?')?></dt>

@@ -3714,6 +3714,186 @@ class RmReportComponent extends Component {
 		);
 	}
 
+	function _callDataInsurances_report ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('Insurance');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+
+		$options = array(
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+		$options = $this->controller->Insurance->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'Insurance', $options );
+
+		$this->controller->paginate	= $this->controller->Insurance->getData('paginate', $options, array(
+			'branch' => false,
+		));
+		$data = $this->controller->paginate('Insurance');
+		$result = array();
+
+		$last_data = end($data);
+		$last_id = Common::hashEmptyField($last_data, 'Insurance.id');
+
+		if( !empty($data) ) {
+			foreach ($data as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'Insurance', 'id');
+                $value = $this->controller->Insurance->getMergeList($value, array(
+                    'contain' => array(
+                        'Branch',
+                    ),
+                ));
+                $value = $this->controller->Insurance->InsurancePayment->getPayment($value, $id);
+
+                $nodoc = Common::hashEmptyField($value, 'Insurance.nodoc');
+                $name = Common::hashEmptyField($value, 'Insurance.name');
+                $to_name = Common::hashEmptyField($value, 'Insurance.to_name');
+                $start_date = Common::hashEmptyField($value, 'Insurance.start_date');
+                $end_date = Common::hashEmptyField($value, 'Insurance.end_date');
+                $status = Common::hashEmptyField($value, 'Insurance.status');
+                $transaction_status = Common::hashEmptyField($value, 'Insurance.transaction_status');
+                $total = Common::hashEmptyField($value, 'Insurance.grandtotal', 0);
+                $branch_id = Common::hashEmptyField($value, 'Insurance.branch_id');
+                $branch = Common::hashEmptyField($value, 'Branch.code');
+
+                if( empty($status) ) {
+                    $transaction_status = 'void';
+                    $value = Hash::insert($value, 'Insurance.transaction_status', $transaction_status);
+                }
+
+                $date = Common::getCombineDate($start_date, $end_date);
+                $status = Common::_callTransactionStatus($value, 'Insurance');
+
+                $total_payment = Common::hashEmptyField($value, 'InsurancePayment.grandtotal');
+                $sisa = $total - $total_payment;
+
+				$result[$key] = array(
+					__('Cabang') => array(
+						'text' => $branch,
+					),
+					__('No. Polis') => array(
+						'text' => $nodoc,
+					),
+					__('Nama Asuransi') => array(
+						'text' => $name,
+					),
+					__('Tgl Insurance') => array(
+						'text' => $date,
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Nama Tertanggung') => array(
+						'text' => $to_name,
+					),
+					__('Status') => array(
+						'text' => $status,
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Total') => array(
+						'text' => !empty($total)?Common::getFormatPrice($total, 2):0,
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Total Pembayaran') => array(
+						'text' => !empty($total_payment)?Common::getFormatPrice($total_payment, 2):0,
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Sisa') => array(
+						'text' => !empty($sisa)?Common::getFormatPrice($sisa, 2):0,
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+				);
+			}
+
+			$last = $this->controller->Insurance->getData('first', array_merge($options, array(
+				'offset' => $offset+$limit,
+				'limit' => $limit,
+			)), array(
+				'branch' => false,
+			));
+
+			if( empty($last) ) {
+            	$options = Common::_callUnset($options, array(
+					'group',
+					'limit',
+					'offset',
+				));
+
+        		$this->controller->Insurance->virtualFields['grandtotal'] = 'SUM(grandtotal)';
+				$insurance = $this->controller->Insurance->getData('first', $options, array(
+					'branch' => false,
+				));
+                $payment = $this->controller->Insurance->InsurancePayment->getPayment(array());
+
+				$grandtotal = Common::hashEmptyField($insurance, 'Insurance.grandtotal');
+                $grandtotalPayment = Common::hashEmptyField($payment, 'InsurancePayment.grandtotal');
+                $grandtotalSisa = $grandtotal - $grandtotalPayment;
+
+				$key++;
+
+				$result[$key] = array(
+					__('Cabang') => array(
+                		'field_model' => 'Branch.code',
+					),
+					__('No. Polis') => array(
+                		'field_model' => 'Insurance.nodoc',
+					),
+					__('Nama Asuransi') => array(
+                		'field_model' => 'Insurance.name',
+					),
+					__('Tgl Asuransi') => array(
+                		'field_model' => 'Insurance.start_date',
+					),
+					__('Nama Tertanggung') => array(
+                		'field_model' => 'Insurance.to_name',
+					),
+					__('status') => array(
+                		'text' => __('Total'),
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Total') => array(
+                		'text' => !empty($grandtotal)?Common::getFormatPrice($grandtotal, 2):0,
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Total Pembayaran') => array(
+                		'text' => !empty($grandtotalPayment)?Common::getFormatPrice($grandtotalPayment, 2):0,
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Sisa') => array(
+                		'text' => !empty($grandtotalSisa)?Common::getFormatPrice($grandtotalSisa, 2):0,
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+				);
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'last_id' => $last_id,
+			'model' => 'Insurance',
+		);
+	}
+
 	function _callProcess( $modelName, $id, $value, $data ) {
 		$dataSave = false;
 		$file = false;

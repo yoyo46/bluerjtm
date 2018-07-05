@@ -63,6 +63,9 @@ class Common {
 					case 'currency':
 						$result = Common::getFormatPrice($result);
 						break;
+					case 'unprice':
+						$result = Common::_callPriceConverter($result);
+						break;
 				}
 			}
 		}
