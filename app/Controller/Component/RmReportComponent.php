@@ -3933,31 +3933,31 @@ class RmReportComponent extends Component {
 				$id = Common::hashEmptyField($value, 'Truck.id');
 		        $value = $this->controller->Truck->getMergeList($value, array(
 		            'contain' => array(
-		                // 'TruckCustomer' => array(
-		                //     'type' => 'first',
-		                //     'conditions' => array(
-		                //         'TruckCustomer.primary' => 1,
-		                //     ),
-		                //     'contain' => array(
-		                //         'CustomerNoType',
-		                //     ),
-		                // ),
-		                // 'TruckCategory',
-		                // 'TruckBrand',
-		                // 'Company',
-		                // 'Revenue' => array(
-		                // 	'type' => 'first',
-		                // 	'conditions' => array(
-		                // 		'Revenue.date_revenue >=' => $date_from,
-		                // 		'Revenue.date_revenue <=' => $date_to,
-	                	// 	),
-		                // 	'elements' => array(
-		                // 		'branch' => false,
-		                // 		'status' => 'commit',
-	                	// 	),
-	                	// ),
+		                'TruckCustomer' => array(
+		                    'type' => 'first',
+		                    'conditions' => array(
+		                        'TruckCustomer.primary' => 1,
+		                    ),
+		                    'contain' => array(
+		                        'CustomerNoType',
+		                    ),
+		                ),
+		                'TruckCategory',
+		                'TruckBrand',
+		                'Company',
+		                'Revenue' => array(
+		                	'type' => 'first',
+		                	'conditions' => array(
+		                		'Revenue.date_revenue >=' => $date_from,
+		                		'Revenue.date_revenue <=' => $date_to,
+	                		),
+		                	'elements' => array(
+		                		'branch' => false,
+		                		'status' => 'commit',
+	                		),
+	                	),
 		                'Ttuj' => array(
-		                	'type' => 'paginate',
+		                	'type' => 'first',
 		                    'conditions' => array(
 		                        'Ttuj.is_draft' => 0,
 		                		'Ttuj.ttuj_date >=' => $date_from,
@@ -3969,7 +3969,6 @@ class RmReportComponent extends Component {
 	                	),
 		            ),
 		        ));
-debug($value);die();
 		        $value = $this->controller->Truck->CashBankDetail->getTotalPerTruck($value, array(
 		        	'conditions' => array(
                 		'CashBank.tgl_cash_bank >=' => $date_from,
