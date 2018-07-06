@@ -4,7 +4,7 @@ class TrucksController extends AppController {
 	public $uses = array('Truck');
 
     public $components = array(
-        'RjTruck', 'RjImage'
+        'RjTruck', 'RjImage', 'RmReport'
     );
 
     public $helper = array(
@@ -6075,5 +6075,28 @@ class TrucksController extends AppController {
             'canceled_date', 'modelName'
         ));
         $this->render('/Elements/blocks/common/form_delete');
+    }
+
+    function profit_loss () {
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+
+        $dataReport = $this->RmReport->_callDataProfit_loss($params, 30, 0, true);
+        $values = Common::hashEmptyField($dataReport, 'data');
+
+        $this->RjTruck->_callBeforeViewProfitLoss($params);
+        $this->MkCommon->_layout_file(array(
+            'select',
+            'freeze',
+        ));
+        $this->set(array(
+            'values' => $values,
+            'active_menu' => 'profit_loss_truck',
+            '_freeze' => true,
+        ));
     }
 }

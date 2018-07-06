@@ -281,6 +281,9 @@ class Truck extends AppModel {
             'className' => 'ViewTruckMaintenance',
             'foreignKey' => 'truck_id',
         ),
+        'Revenue' => array(
+            'foreignKey' => 'truck_id',
+        ),
     );
 
     function checkUniq() {

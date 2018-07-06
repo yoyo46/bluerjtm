@@ -121,6 +121,14 @@ class Insurance extends AppModel {
             case 'unpaid':
                 $default_options['conditions']['Insurance.transaction_status'] = array( 'unpaid', 'half_paid' );
                 break;
+
+            case 'publish':
+                $default_options['conditions']['Insurance.status'] = 1;
+                $defaultOptions['conditions'][] = array(
+                    'Insurance.eshop_from'.' <=' => date('Y-m-d'),
+                    'Insurance.eshop_to'.' >=' => date('Y-m-d'),
+                );
+                break;
         }
 
         // Custom Otorisasi

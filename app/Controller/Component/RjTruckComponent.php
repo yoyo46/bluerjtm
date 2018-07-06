@@ -328,5 +328,21 @@ class RjTruckComponent extends Component {
             'capacities'
         ));
 	}
+
+    function _callBeforeViewProfitLoss( $params ) {
+        $dateFrom = Common::hashEmptyField($params, 'named.DateFrom');
+        $dateTo = Common::hashEmptyField($params, 'named.DateTo');
+        $title = __('Laporan Profit Loss Per Truk');
+        $period_text = false;
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $period_text = __('Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+        
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set(compact(
+            'period_text'
+        ));
+    }
 }
 ?>

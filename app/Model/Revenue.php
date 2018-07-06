@@ -101,6 +101,11 @@ class Revenue extends AppModel {
             case 'non-active':
                 $default_options['conditions']['Revenue.status'] = 0;
                 break;
+
+            case 'commit':
+                $default_options['conditions']['Revenue.status'] = 1;
+                $default_options['conditions']['Revenue.transaction_status'] = array( 'posting', 'half_invoiced', 'paid' );
+                break;
             
             default:
                 $default_options['conditions']['Revenue.status'] = 1;

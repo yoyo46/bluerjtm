@@ -3894,6 +3894,305 @@ class RmReportComponent extends Component {
 		);
 	}
 
+	function _callDataProfit_loss ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('Truck');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+
+        $date_from = Common::hashEmptyField($params, 'named.DateFrom');
+        $date_to = Common::hashEmptyField($params, 'named.DateTo');
+
+		$options = array(
+            'conditions' => array(
+                'Truck.branch_id' => $allow_branch_id,
+            ),
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+		$options = $this->controller->Truck->_callRefineParams($params, $options);
+
+		$this->controller->paginate	= $this->controller->Truck->getData('paginate', $options, true, array(
+            'branch' => false,
+        ));
+		$data = $this->controller->paginate('Truck');
+		$result = array();
+
+		$last_data = end($data);
+		$last_id = Common::hashEmptyField($last_data, 'Truck.id');
+
+		if( !empty($data) ) {
+        	$this->controller->Truck->Revenue->virtualFields['total'] = 'SUM(Revenue.total)';
+        	$this->controller->Truck->Ttuj->virtualFields['total'] = 'SUM(Ttuj.uang_jalan_1+Ttuj.uang_jalan_2+Ttuj.uang_jalan_extra+Ttuj.commission+Ttuj.uang_kuli_muat+Ttuj.uang_kuli_bongkar+Ttuj.asdp+Ttuj.uang_kawal+Ttuj.uang_keamanan+Ttuj.commission_extra)';
+
+			foreach ($data as $key => $value) {
+				$id = Common::hashEmptyField($value, 'Truck.id');
+		        $value = $this->controller->Truck->getMergeList($value, array(
+		            'contain' => array(
+		                // 'TruckCustomer' => array(
+		                //     'type' => 'first',
+		                //     'conditions' => array(
+		                //         'TruckCustomer.primary' => 1,
+		                //     ),
+		                //     'contain' => array(
+		                //         'CustomerNoType',
+		                //     ),
+		                // ),
+		                // 'TruckCategory',
+		                // 'TruckBrand',
+		                // 'Company',
+		                // 'Revenue' => array(
+		                // 	'type' => 'first',
+		                // 	'conditions' => array(
+		                // 		'Revenue.date_revenue >=' => $date_from,
+		                // 		'Revenue.date_revenue <=' => $date_to,
+	                	// 	),
+		                // 	'elements' => array(
+		                // 		'branch' => false,
+		                // 		'status' => 'commit',
+	                	// 	),
+	                	// ),
+		                'Ttuj' => array(
+		                	'type' => 'paginate',
+		                    'conditions' => array(
+		                        'Ttuj.is_draft' => 0,
+		                		'Ttuj.ttuj_date >=' => $date_from,
+		                		'Ttuj.ttuj_date <=' => $date_to,
+		                    ),
+		                	'elements' => array(
+		                		'branch' => false,
+	                		),
+	                	),
+		            ),
+		        ));
+debug($value);die();
+		        $value = $this->controller->Truck->CashBankDetail->getTotalPerTruck($value, array(
+		        	'conditions' => array(
+                		'CashBank.tgl_cash_bank >=' => $date_from,
+                		'CashBank.tgl_cash_bank <=' => $date_to,
+                		'CashBankDetail.truck_id' => $id,
+	        		),
+	        	));
+		        $revenue_total = Common::hashEmptyField($value, 'Revenue.total', 0);
+		        $ttuj_total = Common::hashEmptyField($value, 'Ttuj.total', 0);
+		        $out_total = Common::hashEmptyField($value, 'CashBankDetail.total', 0);
+		        $expense = $ttuj_total + $out_total;
+		        $er = 0;
+
+		        if( !empty($revenue_total) ) {
+		        	$er = $expense/$revenue_total;
+		        }
+
+				$result[$key] = array(
+					__('No. ID') => array(
+						'text' => Common::hashEmptyField($value, 'Truck.id'),
+                		'field_model' => 'Truck.id',
+		                'data-options' => 'field:\'id\',width:100',
+					),
+					__('Nopol') => array(
+						'text' => Common::hashEmptyField($value, 'Truck.nopol'),
+                		'field_model' => 'Truck.nopol',
+		                'data-options' => 'field:\'nopol\',width:100',
+					),
+					__('Merek') => array(
+						'text' => Common::hashEmptyField($value, 'TruckBrand.name'),
+                		'field_model' => 'TruckBrand.name',
+		                'data-options' => 'field:\'brand\',width:100',
+                		'fix_column' => true,
+					),
+					__('Jenis') => array(
+						'text' => Common::hashEmptyField($value, 'TruckCategory.name'),
+                		'field_model' => 'TruckCategory.name',
+		                'data-options' => 'field:\'category\',width:100',
+					),
+					__('Tahun') => array(
+						'text' => Common::hashEmptyField($value, 'Truck.tahun'),
+                		'field_model' => 'Truck.tahun',
+		                'data-options' => 'field:\'tahun\',width:80',
+		                'align' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Alokasi') => array(
+						'text' => Common::hashEmptyField($value, 'TruckCustomer.CustomerNoType.code'),
+                		'field_model' => 'CustomerNoType.code',
+		                'data-options' => 'field:\'company\',width:120',
+					),
+					__('Kapasitas') => array(
+						'text' => Common::hashEmptyField($value, 'Truck.capacity', '-'),
+                		'field_model' => 'Truck.capacity',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'capacity\',width:80',
+		                'align' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Revenue') => array(
+						'text' => Common::getFormatPrice($revenue_total, 2),
+		                'style' => 'text-align: right;',
+		                'data-options' => 'field:\'revenue\',width:120',
+		                'align' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Expense') => array(
+						'text' => Common::getFormatPrice($ttuj_total+$out_total, 2),
+		                'style' => 'text-align: right;',
+		                'data-options' => 'field:\'expense\',width:120',
+		                'align' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('E/R (%)') => array(
+						'text' => Common::getFormatPrice($er, 2),
+		                'style' => 'text-align: right;',
+		                'data-options' => 'field:\'er\',width:120',
+		                'align' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Gross Profit') => array(
+						'text' => Common::getFormatPrice($revenue_total-$expense, 2),
+		                'style' => 'text-align: right;',
+		                'data-options' => 'field:\'gross_profit\',width:120',
+		                'align' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+				);
+			}
+
+			$last = $this->controller->Truck->getData('first', array_merge($options, array(
+				'offset' => $offset+$limit,
+				'limit' => $limit,
+			)), array(
+				'branch' => false,
+			));
+
+			if( empty($last) ) {
+            	$options = Common::_callUnset($options, array(
+					'group',
+					'limit',
+					'offset',
+				));
+
+				$revenue = $this->controller->Truck->Revenue->getData('first', array(
+                	'conditions' => array(
+                		'Truck.status' => 1,
+                		'Revenue.date_revenue >=' => $date_from,
+                		'Revenue.date_revenue <=' => $date_to,
+            		),
+            		'contain' => array(
+            			'Truck',
+        			),
+				), array(
+            		'branch' => false,
+            		'status' => 'commit',
+				));
+                $ttuj = $this->controller->Truck->Ttuj->getData('first', array(
+                	'conditions' => array(
+                		'Truck.status' => 1,
+                        'Ttuj.is_draft' => 0,
+                		'Ttuj.ttuj_date >=' => $date_from,
+                		'Ttuj.ttuj_date <=' => $date_to,
+            		),
+            		'contain' => array(
+            			'Truck',
+        			),
+				), array(
+            		'branch' => false,
+				));
+		        $cash_out = $this->controller->Truck->CashBankDetail->getTotalPerTruck(array(), array(
+		        	'conditions' => array(
+                		'Truck.status' => 1,
+                		'CashBank.tgl_cash_bank >=' => $date_from,
+                		'CashBank.tgl_cash_bank <=' => $date_to,
+	        		),
+            		'contain' => array(
+            			'Truck',
+            			'CashBank',
+        			),
+	        	));
+
+				$revenue_total = Common::hashEmptyField($revenue, 'Revenue.total', 0);
+                $ttuj_total = Common::hashEmptyField($ttuj, 'Ttuj.total', 0);
+		        $out_total = Common::hashEmptyField($cash_out, 'CashBankDetail.total', 0);
+		        $expense = $ttuj_total + $out_total;
+		        $er = 0;
+
+		        if( !empty($revenue_total) ) {
+		        	$er = $expense/$revenue_total;
+		        }
+
+				$key++;
+
+				$result[$key] = array(
+					__('No. ID') => array(
+                		'field_model' => 'Truck.id',
+					),
+					__('Nopol') => array(
+                		'field_model' => 'Truck.nopol',
+					),
+					__('Merek') => array(
+                		'field_model' => 'TruckBrand.name',
+					),
+					__('Jenis') => array(
+                		'field_model' => 'TruckCategory.name',
+					),
+					__('Tahun') => array(
+                		'field_model' => 'Truck.tahun',
+					),
+					__('Alokasi') => array(
+                		'field_model' => 'CustomerNoType.code',
+					),
+					__('Kapasitas') => array(
+						'text' => __('Total'),
+					),
+					__('Revenue') => array(
+						'text' => Common::getFormatPrice($revenue_total, 2),
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Expense') => array(
+						'text' => Common::getFormatPrice($ttuj_total+$out_total, 2),
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('E/R (%)') => array(
+						'text' => Common::getFormatPrice($er, 2),
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Gross Profit') => array(
+						'text' => Common::getFormatPrice($revenue_total-$expense, 2),
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+				);
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'last_id' => $last_id,
+			'model' => 'Truck',
+		);
+	}
+
 	function _callProcess( $modelName, $id, $value, $data ) {
 		$dataSave = false;
 		$file = false;
@@ -4027,7 +4326,9 @@ class RmReportComponent extends Component {
 			$num = 0;
 
 			foreach ($column as $label => $value) {
-				$text = Common::hashEmptyField($value, 'text');
+				$text = Common::hashEmptyField($value, 'text', '', array(
+					'isset' => true,
+				));
 				$label = Common::hashEmptyField($value, 'label', $label);
 				$childs = Common::hashEmptyField($value, 'child');
 				$rowspan = Common::hashEmptyField($value, 'excel.headerrowspan');
@@ -4126,7 +4427,9 @@ class RmReportComponent extends Component {
 							    	));
 									
 									foreach ($headers as $label => $val) {
-										$text = Common::hashEmptyField($val, 'text');
+										$text = Common::hashEmptyField($val, 'text', '', array(
+											'isset' => true,
+										));
 										$excel = Common::hashEmptyField($val, 'excel');
 
 									    $this->PhpExcel->addTableRow(array(
@@ -4167,7 +4470,9 @@ class RmReportComponent extends Component {
 
 										if( !empty($values) ) {
 											foreach ($values as $key => $value) {
-												$text = Common::hashEmptyField($value, 'text', '');
+												$text = Common::hashEmptyField($value, 'text', '', array(
+													'isset' => true,
+												));
 												$excel = Common::hashEmptyField($value, 'excel');
 
 												if( !empty($excel) ) {
@@ -4213,13 +4518,17 @@ class RmReportComponent extends Component {
 
 					if( !empty($values) ) {
 						foreach ($values as $key => $value) {
-							$text = Common::hashEmptyField($value, 'text', '');
+							$text = Common::hashEmptyField($value, 'text', '', array(
+								'isset' => true,
+							));
 							$excel = Common::hashEmptyField($value, 'excel');
 							$childs = Common::hashEmptyField($value, 'child');
 
 							if( !empty($childs) ) {
 								foreach ($childs as $key => $child) {
-									$text = Common::hashEmptyField($child, 'text', '');
+									$text = Common::hashEmptyField($child, 'text', '', array(
+										'isset' => true,
+									));
 									$excel = Common::hashEmptyField($child, 'excel');
 
 									if( !empty($excel) ) {

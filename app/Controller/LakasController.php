@@ -103,6 +103,7 @@ class LakasController extends AppController {
     function DoLaka($id = false, $data_local = false){
         $this->loadModel('Ttuj');
         $this->loadModel('City');
+        $this->loadModel('Insurance');
 
         $driver_pengganti_id = $this->MkCommon->filterEmptyField($data_local, 'Laka', 'change_driver_id');
 
@@ -368,7 +369,9 @@ class LakasController extends AppController {
         $ttujs = array();
         $trucks = $result;
         $material = $this->LakaMaterial->find('list');
-        $insurance = $this->LakaInsurance->find('list');
+        $insurance = $this->Insurance->getData('list', array(
+            'status' => 'publish',
+        ));
         $driverPenggantis = $this->Truck->Driver->getData('list', array(
             'conditions' => array(
                 'OR' => array(

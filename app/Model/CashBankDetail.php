@@ -112,5 +112,28 @@ class CashBankDetail extends AppModel {
 
         return $data;
     }
+
+    function getTotalPerTruck ( $data = array(), $options = array() ) {
+        $this->virtualFields['total'] = 'SUM(CashBankDetail.total)';
+        $default_options = array(
+            'conditions' => array(
+                'CashBank.status' => 1,
+                'CashBank.receiving_cash_type' => 'out',
+                'CashBank.transaction_status' => 'posting',
+            ),
+            'contain' => array(
+                'CashBank',
+            ),
+        );
+
+        $default_options = $this->merge_options($default_options, $options);
+        $value = $this->getData('first', $default_options);
+        
+        if( !empty($value) ) {
+            $data = array_merge($data, $value);
+        }
+
+        return $data;
+    }
 }
 ?>

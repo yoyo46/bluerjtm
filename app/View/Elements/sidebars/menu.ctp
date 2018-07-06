@@ -221,7 +221,7 @@
                             'capacity_report', 'point_perday_report',
                             'point_perplant_report', 'licenses_report',
                             'daily_report', 'mutations', 'driver_reports',
-                            'leadtime_report',
+                            'leadtime_report', 'profit_loss',
                         ),
                         'revenues' => array(
                             'ritase_report', 'achievement_report',
@@ -241,7 +241,8 @@
                             'licenses_report', 'truck_import',
                             'daily_report', 'mutations', 'driver_reports',
                             'ttuj_report', 'leadtime_report',
-                            'report_expense_per_truck', 'achievement_rit_report'
+                            'report_expense_per_truck', 'achievement_rit_report',
+                            'profit_loss_truck'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -453,6 +454,15 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'report_expense_per_truck' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Laporan Laba Rugi Truk', $this->Common->icon('angle-double-right')), array(
+                                'controller' => 'trucks',
+                                'action' => 'profit_loss',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'profit_loss_truck' )?'active':'',
                             ));
                     ?>
                 </ul>
