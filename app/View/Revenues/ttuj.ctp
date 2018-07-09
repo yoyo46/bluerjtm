@@ -367,20 +367,19 @@
                                         'closing' => true,
                                         'periode' => $periode,
                                     ));
+                                    echo $this->Html->link(__('Hapus'), array(
+                                        'controller' => 'revenues',
+                                        'action' => 'ttuj_toggle',
+                                        $id,
+                                        $active_menu
+                                    ), array(
+                                        'class' => 'btn btn-danger btn-xs trigger-disabled',
+                                        'title' => 'disable status brand',
+                                        'closing' => true,
+                                        'periode' => $periode,
+                                        'data-alert' => __('Apakah Anda yakin akan menghapus data ini?'),
+                                    ));
                                 }
-
-                                echo $this->Html->link(__('Hapus'), array(
-                                    'controller' => 'revenues',
-                                    'action' => 'ttuj_toggle',
-                                    $id,
-                                    $active_menu
-                                ), array(
-                                    'class' => 'btn btn-danger btn-xs trigger-disabled',
-                                    'title' => 'disable status brand',
-                                    'closing' => true,
-                                    'periode' => $periode,
-                                    'data-alert' => __('Apakah Anda yakin akan menghapus data ini?'),
-                                ));
                             } else {
                                 if( !empty($allowEdit) ) {
                                     echo $this->Html->link(__('Edit'), array(
@@ -393,20 +392,20 @@
                                         'closing' => true,
                                         'periode' => $periode,
                                     ));
-                                }
-
-                                if( !empty($status) ) {
-                                    echo $this->Html->link(__('Void'), array(
-                                        'controller' => 'revenues',
-                                        'action' => 'ttuj_toggle',
-                                        $id
-                                    ), array(
-                                        'class' => 'btn btn-danger btn-xs trigger-disabled',
-                                        'title' => 'disable status brand',
-                                        'closing' => true,
-                                        'periode' => $periode,
-                                        'data-alert' => __('Apakah Anda yakin akan membatalkan data ini?'),
-                                    ));
+                                    
+                                    if( !empty($status) ) {
+                                        echo $this->Html->link(__('Void'), array(
+                                            'controller' => 'revenues',
+                                            'action' => 'ttuj_toggle',
+                                            $id
+                                        ), array(
+                                            'class' => 'btn btn-danger btn-xs trigger-disabled',
+                                            'title' => 'disable status brand',
+                                            'closing' => true,
+                                            'periode' => $periode,
+                                            'data-alert' => __('Apakah Anda yakin akan membatalkan data ini?'),
+                                        ));
+                                    }
                                 }
 
                                 // if( empty($is_draft) && !empty($status) ) {

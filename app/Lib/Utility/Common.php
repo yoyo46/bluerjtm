@@ -784,4 +784,19 @@ class Common {
 	        return $letter;
 	    }
 	}
+
+    public static function _callTtujPaid ( $value ) {
+        $status_sj = Common::hashEmptyField($value, 'Ttuj.status_sj', 'none');
+        $is_invoice = Common::hashEmptyField($value, 'Ttuj.is_invoice');
+        $status = Common::hashEmptyField($value, 'Ttuj.status', true, array(
+        	'isset' => true,
+    	));
+        $allowEdit = true;
+
+        if( $status_sj != 'none' || !empty($is_invoice) || empty($status) ) {
+            $allowEdit = false;
+        }
+
+        return $allowEdit;
+    }
 }
