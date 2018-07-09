@@ -150,7 +150,7 @@
                             $attr = '';
                         }
         ?>
-        <tr data-value="<?php echo $result;?>" data-change="#<?php echo $data_change;?>" <?php echo $attr; ?>>
+        <tr data-text="<?php echo $value['Ttuj']['no_ttuj'];?>" data-value="<?php echo $result;?>" data-change="#<?php echo $data_change;?>" <?php echo $attr; ?>>
             <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
             <td><?php echo date('d/m/Y', strtotime($value['Ttuj']['ttuj_date']));?></td>
             <td><?php echo $value['Ttuj']['nopol'];?></td>

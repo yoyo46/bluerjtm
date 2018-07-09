@@ -670,6 +670,7 @@
         $('.browse-form table tr').click(function(){
             var vthis = $(this);
             var data_value = vthis.attr('data-value');
+            var data_text = vthis.attr('data-text');
             var data_change = vthis.attr('data-change');
             var data_ajax = vthis.attr('href');
             var data_change_extra = vthis.attr('data-change-extra');
@@ -687,7 +688,27 @@
                 data_change = vthis.attr('data-rel')+' '+data_change;
             }
 
+            if( $(data_change).hasClass('chosen-select') ) {
+                $.callChoosen({
+                    obj: $(data_change),
+                    init: 'destroy',
+                });
+
+                if( $(data_change+' option:eq('+data_value+')').length <= 0 ) {
+                    $(data_change).append($('<option>', {
+                        value: data_value,
+                        text: data_text,
+                    }));
+                }
+
+                $.callChoosen({
+                    obj: $(data_change),
+                });
+            }
+
             $(data_change).val(data_value);
+
+            if( $(data_change) )
 
             if( type != 'text' ) {
                 $(data_change).trigger('change');

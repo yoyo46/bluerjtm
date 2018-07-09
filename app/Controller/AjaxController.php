@@ -1461,6 +1461,7 @@ class AjaxController extends AppController {
             'dateTo' => $dateTo,
         ));
         $options =  $this->Ttuj->_callRefineParams($params, $options);
+        $action_type = Common::hashEmptyField($params, 'named.action_type', $action_type);
 
         switch ($action_type) {
             case 'bongkaran':
