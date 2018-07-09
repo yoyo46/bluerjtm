@@ -708,8 +708,6 @@
 
             $(data_change).val(data_value);
 
-            if( $(data_change) )
-
             if( type != 'text' ) {
                 $(data_change).trigger('change');
             }
