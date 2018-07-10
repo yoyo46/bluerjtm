@@ -473,7 +473,6 @@
                     $dataMenu = array(
                         'leasings' => array(
                             'index', 'leasing_report',
-                            'payments',
                         ),
                     );
 
@@ -481,7 +480,6 @@
                         $activeTruck = false;
                         $truckMenu = array(
                             'view_leasing', 'leasing_report',
-                            'leasing_payments',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -505,15 +503,6 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'view_leasing' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Leasing', array(
-                                'controller' => 'leasings',
-                                'action' => 'payments',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'leasing_payments' )?'active':'',
-                            ));
-
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Leasing', array(
                                 'controller' => 'leasings',
                                 'action' => 'leasing_report',
@@ -531,7 +520,6 @@
                     $dataMenu = array(
                         'insurances' => array(
                             'index', 'report',
-                            'payments',
                         ),
                     );
 
@@ -539,7 +527,6 @@
                         $activeTruck = false;
                         $listMenu = array(
                             'insurance', 'insurance_report',
-                            'insurance_payments',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $listMenu) ) {
@@ -561,15 +548,6 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'insurance' )?'active':'',
-                            ));
-
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Asuransi', array(
-                                'controller' => 'insurances',
-                                'action' => 'payments',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'insurance_payments' )?'active':'',
                             ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Asuransi', array(
@@ -1196,7 +1174,8 @@
                         'prepayment_report', 'ledger_report',
                         'report_ttuj_payment', 'report_ttuj_outstanding',
                         'document_payments', 'laka_payments',
-                        'asset_sells',
+                        'asset_sells', 'leasing_payments',
+                        'insurance_payments',
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
@@ -1219,6 +1198,12 @@
                         ),
                         'assets' => array(
                             'sells',
+                        ),
+                        'insurances' => array(
+                            'payments',
+                        ),
+                        'leasings' => array(
+                            'payments',
                         ),
                     );
 
@@ -1299,11 +1284,23 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'ksu_payments' )?'active':'',
                             ));
 
-                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Asuransi', '#', array(
-                            //     'escape' => false
-                            // )), array(
-                            //     // 'class' => ( !empty($active_menu) && $active_menu == 'invoice_payments' )?'active':'',
-                            // ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Leasing', array(
+                                'controller' => 'leasings',
+                                'action' => 'payments',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'leasing_payments' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Asuransi', array(
+                                'controller' => 'insurances',
+                                'action' => 'payments',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'insurance_payments' )?'active':'',
+                            ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Surat-surat Truk', array(
                                 'controller' => 'trucks',
@@ -1715,12 +1712,58 @@
 
                     $dataMenu = array(
                         'settings' => array(
+                            'cogs', 'cogs_setting'
+                        ),
+                    );
+
+                    if( $this->Common->allowMenu( $dataMenu ) ) {
+                        $activeSetting = false;
+                        $settingMenu = array(
+                            'cogs', 'cogs_setting'
+                        );
+
+                        if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
+                            $activeSetting = 'active';
+                        }
+            ?>
+            <li class="treeview <?php echo $activeSetting; ?>">
+                <a href="#">
+                    <i class="fa fa-wrench"></i>
+                    <span>COGS</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Cost Center', array(
+                                'controller' => 'settings',
+                                'action' => 'cogs',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'cogs' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pengaturan Cost Center', array(
+                                'controller' => 'settings',
+                                'action' => 'cogs_setting',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'cogs_setting' )?'active':'',
+                            ));
+                    ?>
+                </ul>
+            </li>
+            <?php 
+                    }
+
+                    $dataMenu = array(
+                        'settings' => array(
                             'perlengkapan', 'banks',
                             'cities', 'companies', 'vendors',
                             'jenis_sim', 'classifications',
                             'calendar_colors', 'calendar_icons',
                             'parts_motor', 'index', 'approval_setting',
-                            'branches'
+                            'branches',
                         ),
                     );
 
@@ -1731,7 +1774,7 @@
                             'perlengkapan', 'branches', 
                             'classifications', 'calendar_colors',
                             'calendar_icons', 'settings', 'jenis_sim',
-                            'parts_motor', 'approval_setting'
+                            'parts_motor', 'approval_setting',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {

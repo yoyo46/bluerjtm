@@ -42,7 +42,11 @@ class DocumentPayment extends AppModel {
         'Coa' => array(
             'className' => 'Coa',
             'foreignKey' => 'coa_id',
-        )
+        ),
+        'Cogs' => array(
+            'className' => 'Cogs',
+            'foreignKey' => 'cogs_id',
+        ),
     );
 
     function getData( $find, $options = false, $elements = array() ){

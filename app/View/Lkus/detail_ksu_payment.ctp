@@ -6,6 +6,7 @@
 		$this->Html->addCrumb($sub_module_title);
 		
 		$coa_name = $this->Common->filterEmptyField($KsuPayment, 'Coa', 'coa_name', '-');
+		$cogs_name = $this->Common->filterEmptyField($KsuPayment, 'Cogs', 'cogs_name', '-');
 		$id = $this->Common->filterEmptyField($KsuPayment, 'KsuPayment', 'id');
         $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
 ?>
@@ -30,6 +31,10 @@
 			<tr>
 				<th><?php echo __('Account Kas/Bank');?></th>
 				<td><?php echo $coa_name;?></td>
+			</tr>
+			<tr>
+				<th><?php echo __('Cost Center');?></th>
+				<td><?php echo $cogs_name;?></td>
 			</tr>
 			<tr>
 				<th><?php echo __('Tgl Pembayaran');?></th>

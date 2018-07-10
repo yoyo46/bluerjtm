@@ -2,6 +2,10 @@
 App::uses('Sanitize', 'Utility');
 class RjSettingComponent extends Component {
 
+	var $components = array(
+		'MkCommon'
+	); 
+
 	function initialize(Controller $controller, $settings = array()) {
 		$this->controller = $controller;
 	}
@@ -339,6 +343,62 @@ class RjSettingComponent extends Component {
         }
 
         return $params;
+    }
+
+    function _callBeforeSaveCogsSetting ( $data, $id = false ) {
+        if( !empty($data) ) {
+            $dataSave = array();
+            $dataDetail = $this->MkCommon->filterEmptyField($data, 'CogsSetting');
+
+            if( !empty($dataDetail) ) {
+                $values = array_filter($dataDetail);
+                unset($data['CogsSetting']);
+
+                foreach ($values as $type => $cogs) {
+                    $cogs_id = !empty($cogs['cogs_id'])?$cogs['cogs_id']:false;
+                    $cogs_setting_id = !empty($cogs['id'])?$cogs['id']:false;
+
+                    if( !empty($cogs_id) ) {
+	                    $detail['CogsSetting'] = array(
+	                        'id' => $cogs_setting_id,
+	                        'user_id' => Configure::read('__Site.config_user_id'),
+	                        'cogs_id' => $cogs_id,
+	                        'label' => $type,
+	                    );
+                    	$dataSave[] = $detail;
+	                }
+                }
+            }
+
+            if( !empty($dataSave) ) {
+                $data['CogsSetting'] = $dataSave;
+            }
+        }
+
+        return $data;
+    }
+
+    function _callBeforeRenderCogsSetting ( $data, $values ) {
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'CogsSetting', 'id');
+                $label = $this->MkCommon->filterEmptyField($value, 'CogsSetting', 'label');
+                $cogs_id = $this->MkCommon->filterEmptyField($value, 'CogsSetting', 'cogs_id');
+
+                $data['CogsSetting'][$label]['id'] = $id;
+                $data['CogsSetting'][$label]['label'] = $label;
+                $data['CogsSetting'][$label]['cogs_id'] = $cogs_id;
+            }
+        }
+
+        $cogs = $this->controller->User->Cogs->_callOptGroup();
+        $this->MkCommon->_layout_file('select');
+
+        $this->controller->set(compact(
+            'cogs'
+        ));
+
+        return $data;
     }
 }
 ?>

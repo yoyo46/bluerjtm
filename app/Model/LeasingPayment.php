@@ -49,6 +49,10 @@ class LeasingPayment extends AppModel {
             'className' => 'Leasing',
             'foreignKey' => 'leasing_id',
         ),
+        'Cogs' => array(
+            'className' => 'Cogs',
+            'foreignKey' => 'cogs_id',
+        ),
     );
 
     var $hasMany = array(

@@ -8,6 +8,7 @@
 		$receiver_name = $this->Common->filterEmptyField($invoice, 'TtujPayment', 'receiver_name');
 		$description = $this->Common->filterEmptyField($invoice, 'TtujPayment', 'description', false, true, 'EOL');
 		$coa = $this->Common->filterEmptyField($invoice, 'Coa', 'coa_name');
+		$cogs = $this->Common->filterEmptyField($invoice, 'Cogs', 'cogs_name');
 		
         $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
         $datePayment = $this->Common->customDate($date_payment, 'd/m/Y');
@@ -29,6 +30,10 @@
 			<tr>
 				<th><?php echo __('Account Kas/Bank');?></th>
 				<td><?php echo $coa;?></td>
+			</tr>
+			<tr>
+				<th><?php echo __('Cost Center');?></th>
+				<td><?php echo $cogs;?></td>
 			</tr>
 			<tr>
 				<th><?php echo __('Tgl Dibayar');?></th>

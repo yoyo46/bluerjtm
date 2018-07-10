@@ -154,6 +154,14 @@
 								));
 						?>
 					</div>
+					<?php
+							echo $this->Common->buildInputForm('cogs_id', __('Cost Center'), array(
+								'label'=> __('Cost Center'), 
+								'class'=>'form-control chosen-select',
+								'empty' => __('Pilih Cost Center '),
+								'options' => $cogs,
+							));
+					?>
 					<div class="form-group" id="customer-form">
 						<?php 
 								echo $this->Form->input('Revenue.customer_id',array(

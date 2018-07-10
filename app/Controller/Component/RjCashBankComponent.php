@@ -392,7 +392,7 @@ class RjCashBankComponent extends Component {
 	}
 
     function _callBeforeRenderGeneralLedger ( $value = false ) {
-        $data = $this->controller->request->data;
+        $tmpData = $data = $this->controller->request->data;
 
         if( empty($data) && !empty($value) ) {
             $data = $value;
@@ -401,11 +401,18 @@ class RjCashBankComponent extends Component {
         $transaction_date = $this->MkCommon->filterEmptyField($data, 'GeneralLedger', 'transaction_date', date('Y-m-d'));
         $data['GeneralLedger']['transaction_date'] = $this->MkCommon->getDate($transaction_date, true);
 
+        $cogs = $this->MkCommon->_callCogsOptGroup('GeneralLedger');
+
+        if( empty($tmpData) && empty($value) ) {
+            $data['GeneralLedger']['cogs_id'] = Common::hashEmptyField($cogs, 'cogs_id');
+        }
+
         $this->controller->request->data = $data;
         
         $coas = $this->controller->GroupBranch->Branch->BranchCoa->getCoas(false, false, array(
             'status' => 'non-cashbank',
         ));
+
         $this->MkCommon->_layout_file('select');
         $this->controller->set(compact(
         	'coas'

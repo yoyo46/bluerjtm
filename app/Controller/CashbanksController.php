@@ -432,6 +432,7 @@ class CashbanksController extends AppController {
         }else{
             if($id && $data_local){
                 $data_local = $this->CashBank->getDataCashBank($data_local, $prepayment_out_id);
+
                 $this->request->data = $data = $data_local;
                 $this->request->data['CashBank']['tgl_cash_bank'] = $this->MkCommon->getDate($this->request->data['CashBank']['tgl_cash_bank'], true);
             } else {
@@ -448,6 +449,7 @@ class CashbanksController extends AppController {
                 ));
 
                 if( !empty($lastCashBank) ) {
+                    $this->request->data['CashBank']['cogs_id'] = $this->MkCommon->filterEmptyField($lastCashBank, 'CashBank', 'cogs_id');
                     $this->request->data['CashBank']['coa_id'] = $this->MkCommon->filterEmptyField($lastCashBank, 'CashBank', 'coa_id');
                     $this->request->data['CashBank']['receiving_cash_type'] = $this->MkCommon->filterEmptyField($lastCashBank, 'CashBank', 'receiving_cash_type');
                     $this->request->data['CashBank']['receiver_type'] = $this->MkCommon->filterEmptyField($lastCashBank, 'CashBank', 'receiver_type');
@@ -527,6 +529,7 @@ class CashbanksController extends AppController {
         $user_otorisasi_approvals = $this->User->Employe->EmployePosition->Approval->getUserOtorisasiApproval('cash-bank', $employe_position_id, $grand_total, $id);
 
         $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
+        $cogs = $this->MkCommon->_callCogsOptGroup('CashBank');
         $branches = $this->User->Branch->City->branchCities();
 
         if( !empty($id) ) {
@@ -880,6 +883,11 @@ class CashbanksController extends AppController {
                 'contain' => array(
                     'Coa',
                     'Truck',
+                ),
+            ));
+            $cashbank = $this->CashBank->getMergeList($cashbank, array(
+                'contain' => array(
+                    'Cogs',
                 ),
             ));
 

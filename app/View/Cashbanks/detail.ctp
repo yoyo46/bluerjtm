@@ -12,6 +12,7 @@
         $grand_total = $this->Common->filterEmptyField($cashbank, 'CashBank', 'grand_total', 0);
         $completed = $this->Common->filterEmptyField($cashbank, 'CashBank', 'completed');
         
+        $cogs_name = $this->Common->filterEmptyField($cashbank, 'Cogs', 'cogs_name', '-');
         $coa_name = $this->Common->filterEmptyField($cashbank, 'Coa', 'coa_name', '-');
 
         $revenue_id = $this->Common->filterEmptyField($cashbank, 'Revenue', 'id');
@@ -72,6 +73,9 @@
 
                     <dt><?php echo __('Account Kas/Bank')?></dt>
                     <dd><?php echo $coa_name;?></dd>
+
+                    <dt><?php echo __('Cost Center')?></dt>
+                    <dd><?php echo $cogs_name;?></dd>
 
                     <dt><?php echo __('Tgl Kas/Bank')?></dt>
                     <dd><?php echo $customDate;?></dd>

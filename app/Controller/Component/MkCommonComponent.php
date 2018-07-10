@@ -2453,5 +2453,33 @@ class MkCommonComponent extends Component {
 
         return $customStatus;
     }
+
+    function _callCogsOptGroup($modelName, $dataModel = null) {
+        $data = $this->controller->request->data;
+        $cogs = $this->controller->User->Cogs->_callOptGroup();
+        $cogsSetting = $this->controller->User->Cogs->CogsSetting->getData('first', array(
+            'conditions' => array(
+                'CogsSetting.label' => $modelName,
+            ),
+        ));
+        $cogs_id = false;
+
+        if( empty($dataModel) ) {
+            $dataModel = $modelName;
+        }
+
+        if( empty($data) ) {
+            $cogs_id = $this->controller->request->data[$dataModel]['cogs_id'] = Common::hashEmptyField($cogsSetting, 'CogsSetting.cogs_id');
+        }
+
+        $this->controller->set(compact(
+            'cogs'
+        ));
+
+        return array(
+            'cogs_id' => $cogs_id,
+            'cogs' => $cogs,
+        );
+    }
 }
 ?>

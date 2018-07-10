@@ -69,6 +69,10 @@ class CashBank extends AppModel {
             'className' => 'Driver',
             'foreignKey' => 'receiver_id',
         ),
+        'Cogs' => array(
+            'className' => 'Cogs',
+            'foreignKey' => 'cogs_id',
+        ),
 	);
 
     var $hasMany = array(

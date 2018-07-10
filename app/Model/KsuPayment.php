@@ -52,6 +52,10 @@ class KsuPayment extends AppModel {
             'className' => 'Coa',
             'foreignKey' => 'coa_id',
         ),
+        'Cogs' => array(
+            'className' => 'Cogs',
+            'foreignKey' => 'cogs_id',
+        ),
     );
 
     var $hasMany = array(

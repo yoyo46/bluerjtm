@@ -389,6 +389,7 @@ class InsurancesController extends AppController {
 
     function _callDataSupport () {
         $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
+        $cogs = $this->MkCommon->_callCogsOptGroup('InsurancePayment');
 
         $this->MkCommon->_layout_file('select');
         $this->set(compact(
@@ -439,6 +440,11 @@ class InsurancesController extends AppController {
 
         if( !empty($value) ) {
             $value = $this->Insurance->InsurancePayment->InsurancePaymentDetail->getMerge($value, $id);
+            $value = $this->Insurance->InsurancePayment->getMergeList($value, array(
+                'contain' => array(
+                    'Cogs',
+                ),
+            ));
 
             if( !empty($value['InsurancePaymentDetail']) ) {
                 foreach ($value['InsurancePaymentDetail'] as $key => $detail) {
@@ -484,6 +490,7 @@ class InsurancesController extends AppController {
         if( !empty($value) ) {
             $value = $this->Insurance->InsurancePayment->getMergeList($value, array(
                 'contain' => array(
+                    'Cogs',
                     'Coa',
                     'InsurancePaymentDetail' => array(
                         'Insurance',

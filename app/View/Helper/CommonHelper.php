@@ -2893,4 +2893,52 @@ class CommonHelper extends AppHelper {
             return $default_mime;
         }
     }
+
+    function printDataTreeCogs($data, $level){
+        $cogs_title = '';
+        $cogs_id = $data['Cogs']['id'];
+        if(!empty($data['Cogs']['code'])){
+            $codeCogs = $data['Cogs']['code'];
+
+            if( !empty($parent['Cogs']['code']) ) {
+                $codeCogs = sprintf('%s-%s', $parent['Cogs']['code'], $codeCogs);
+            }
+
+            $cogs_title = $this->Html->tag('label', $codeCogs);
+        }
+        $cogs_title .= $data['Cogs']['name'];
+        $dataTree = $this->Html->tag('span', $cogs_title, array(
+            'title' => $cogs_title,
+        ));
+        $dataTree .= $this->Html->link('<i class="fa fa-plus-circle"></i>', array(
+            'controller' => 'settings',
+            'action' => 'cogs_add',
+            $cogs_id,
+        ), array(
+            'escape' => false,
+            'class' => 'bg-green'
+        ));
+
+        $dataTree .= $this->Html->link('<i class="fa fa-pencil-square-o"></i>', array(
+            'controller' => 'settings',
+            'action' => 'cogs_edit',
+            $cogs_id,
+            $data['Cogs']['parent_id'],
+        ), array(
+            'escape' => false,
+            'class' => 'bg-primary',
+            'title' => 'edit'
+        ));
+        
+        $dataTree .= $this->Html->link('<i class="fa fa-minus-circle"></i>', array(
+            'controller' => 'settings',
+            'action' => 'cogs_toggle',
+            $cogs_id,
+        ), array(
+            'escape' => false,
+            'class' => 'bg-red'
+        ), __('Anda yakin ingin menghapus Cost Center ini ?'));
+
+        return $dataTree;
+    }
 }

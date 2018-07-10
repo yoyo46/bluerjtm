@@ -1306,211 +1306,217 @@ class RevenuesController extends AppController {
                     ),
                 ),
             ));
+            $locale = $this->Ttuj->Revenue->getPaid( $locale, $id );
+            $allowSave = Common::_callTtujPaid($locale);
 
-            $driver_name = $this->MkCommon->_callGetDriver($locale);
-            $document_no = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'no_ttuj');
-            $truck_id = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'truck_id');
-            $to_city_name = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'to_city_name');
-            $nopol = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'nopol');
-            $ttuj_date = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'ttuj_date');
+            if( !empty($allowSave) ) {
+                $driver_name = $this->MkCommon->_callGetDriver($locale);
+                $document_no = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'no_ttuj');
+                $truck_id = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'truck_id');
+                $to_city_name = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'to_city_name');
+                $nopol = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'nopol');
+                $ttuj_date = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'ttuj_date');
 
-            $value = true;
-            if($locale['Ttuj']['status']){
-                $value = false;
-            }
-
-            $this->Ttuj->id = $id;
-            $deleteJournal = false;
-
-            switch ($action_type) {
-                case 'truk_tiba':
-                    $this->Ttuj->set('is_arrive', 0);
-                    break;
-
-                case 'bongkaran':
-                    $this->Ttuj->set('is_bongkaran', 0);
-                    break;
-
-                case 'balik':
-                    $this->Ttuj->set('is_balik', 0);
-                    break;
-
-                case 'pool':
-                    $this->Ttuj->set('is_pool', 0);
-                    break;
-                
-                default:
-                    $this->Ttuj->set('status', 0);
-                    $deleteJournal = true;
-                    break;
-            }
-
-            if($this->Ttuj->save()){
-                if( $deleteJournal && empty($locale['Ttuj']['is_draft']) ) {
-                    if( !empty($locale['Ttuj']['commission']) ) {
-                        $commissionJournal = $locale['Ttuj']['commission'];
-                        $titleJournalKomisi = sprintf(__('<i>Pembatalan</i> komisi untuk supir %s'), $driver_name);
-
-                        if( !empty($locale['Ttuj']['commission_extra']) ) {
-                            $commissionJournal += $locale['Ttuj']['commission_extra'];
-                        }
-
-                        $this->User->Journal->setJournal($commissionJournal, array(
-                            'credit' => 'commission_coa_debit_id',
-                            'debit' => 'commission_coa_credit_id',
-                        ), array(
-                            'date' => $ttuj_date,
-                            'document_id' => $id,
-                            'truck_id' => $truck_id,
-                            'nopol' => $nopol,
-                            'title' => $titleJournalKomisi,
-                            'document_no' => $document_no,
-                            'type' => 'commission_void',
-                        ));
-                    }
-
-                    if( !empty($locale['Ttuj']['uang_jalan_1']) ) {
-                        $uangJalanJournal = $locale['Ttuj']['uang_jalan_1'];
-                        $titleJournalUj = sprintf(__('<i>Pembatalan</i> biaya uang jalan %s tujuan %s'), $nopol, $to_city_name);
-
-                        if( !empty($locale['Ttuj']['uang_jalan_2']) ) {
-                            $uangJalanJournal += $locale['Ttuj']['uang_jalan_2'];
-                        }
-
-                        if( !empty($locale['Ttuj']['uang_jalan_extra']) ) {
-                            $uangJalanJournal += $locale['Ttuj']['uang_jalan_extra'];
-                        }
-
-                        $this->User->Journal->setJournal($uangJalanJournal, array(
-                            'credit' => 'uang_jalan_coa_debit_id',
-                            'debit' => 'uang_jalan_coa_credit_id',
-                        ), array(
-                            'date' => $ttuj_date,
-                            'document_id' => $id,
-                            'truck_id' => $truck_id,
-                            'nopol' => $nopol,
-                            'title' => $titleJournalUj,
-                            'document_no' => $document_no,
-                            'type' => 'uang_jalan_void',
-                        ));
-                    }
-
-                    if( !empty($locale['Ttuj']['uang_kuli_muat']) ) {
-                        $titleJournalKuliMuat = sprintf(__('<i>Pembatalan</i> biaya kuli muat %s tujuan %s'), $nopol, $to_city_name);
-                        $uangKuli = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'uang_kuli_muat');
-
-                        $this->User->Journal->setJournal($uangKuli, array(
-                            'credit' => 'uang_kuli_muat_coa_debit_id',
-                            'debit' => 'uang_kuli_muat_coa_credit_id',
-                        ), array(
-                            'date' => $ttuj_date,
-                            'document_id' => $id,
-                            'truck_id' => $truck_id,
-                            'nopol' => $nopol,
-                            'title' => $titleJournalKuliMuat,
-                            'document_no' => $document_no,
-                            'type' => 'uang_kuli_muat_void',
-                        ));
-                    }
-
-                    if( !empty($locale['Ttuj']['uang_kuli_bongkar']) ) {
-                        $titleJournalKuliBongkar = sprintf(__('<i>Pembatalan</i> biaya kuli bongkar %s tujuan %s'), $nopol, $to_city_name);
-                        $uangKuliBongkar = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'uang_kuli_bongkar');
-
-                        $this->User->Journal->setJournal($uangKuliBongkar, array(
-                            'credit' => 'uang_kuli_bongkar_coa_debit_id',
-                            'debit' => 'uang_kuli_bongkar_coa_credit_id',
-                        ), array(
-                            'date' => $ttuj_date,
-                            'document_id' => $id,
-                            'truck_id' => $truck_id,
-                            'nopol' => $nopol,
-                            'title' => $titleJournalKuliBongkar,
-                            'document_no' => $document_no,
-                            'type' => 'uang_kuli_bongkar_void',
-                        ));
-                    }
-
-                    if( !empty($locale['Ttuj']['asdp']) ) {
-                        $titleJournalAsdp = sprintf(__('<i>Pembatalan</i> biaya penyebrangan %s tujuan %s'), $nopol, $to_city_name);
-                        $asdp = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'asdp');
-
-                        $this->User->Journal->setJournal($asdp, array(
-                            'credit' => 'asdp_coa_debit_id',
-                            'debit' => 'asdp_coa_credit_id',
-                        ), array(
-                            'date' => $ttuj_date,
-                            'document_id' => $id,
-                            'truck_id' => $truck_id,
-                            'nopol' => $nopol,
-                            'title' => $titleJournalAsdp,
-                            'document_no' => $document_no,
-                            'type' => 'asdp_void',
-                        ));
-                    }
-
-                    if( !empty($locale['Ttuj']['uang_kawal']) ) {
-                        $titleJournalUangKawal = sprintf(__('<i>Pembatalan</i> biaya uang kawal %s tujuan %s'), $nopol, $to_city_name);
-                        $uangKawal = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'uang_kawal');
-
-                        $this->User->Journal->setJournal($uangKawal, array(
-                            'credit' => 'uang_kawal_coa_debit_id',
-                            'debit' => 'uang_kawal_coa_credit_id',
-                        ), array(
-                            'date' => $ttuj_date,
-                            'document_id' => $id,
-                            'truck_id' => $truck_id,
-                            'nopol' => $nopol,
-                            'title' => $titleJournalUangKawal,
-                            'document_no' => $document_no,
-                            'type' => 'uang_kawal_void',
-                        ));
-                    }
-
-                    if( !empty($locale['Ttuj']['uang_keamanan']) ) {
-                        $titleJournalUangKeamanan = sprintf(__('<i>Pembatalan</i> biaya uang keamanan %s tujuan %s'), $nopol, $to_city_name);
-                        $uangKeamanan = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'uang_keamanan');
-
-                        $this->User->Journal->setJournal($uangKeamanan, array(
-                            'credit' => 'uang_keamanan_coa_debit_id',
-                            'debit' => 'uang_keamanan_coa_credit_id',
-                        ), array(
-                            'date' => $ttuj_date,
-                            'document_id' => $id,
-                            'truck_id' => $truck_id,
-                            'nopol' => $nopol,
-                            'title' => $titleJournalUangKeamanan,
-                            'document_no' => $document_no,
-                            'type' => 'uang_keamanan_void',
-                        ));
-                    }
+                $value = true;
+                if($locale['Ttuj']['status']){
+                    $value = false;
                 }
 
-                if( $action_type == 'status' ) {
-                    $this->loadModel('Revenue');
+                $this->Ttuj->id = $id;
+                $deleteJournal = false;
 
-                    $revenue = $this->Revenue->getData('first', array(
-                        'conditions' => array(
-                            'Revenue.ttuj_id' => $id,
-                        ),
-                    ));
+                switch ($action_type) {
+                    case 'truk_tiba':
+                        $this->Ttuj->set('is_arrive', 0);
+                        break;
 
-                    $transaction_status = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'transaction_status');
-                    $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'id');
+                    case 'bongkaran':
+                        $this->Ttuj->set('is_bongkaran', 0);
+                        break;
 
-                    if( $transaction_status != 'posting' ) {
-                        $this->Revenue->id = $revenue_id;
-                        $this->Revenue->set('status', 0);
-                        $this->Revenue->save();
-                        $this->Log->logActivity( sprintf(__('Berhasil membatalkan Revenue #%s dari TTUJ #%s'), $revenue_id, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $revenue_id, 'revenue_ttuj_toggle' );
-                    }
+                    case 'balik':
+                        $this->Ttuj->set('is_balik', 0);
+                        break;
+
+                    case 'pool':
+                        $this->Ttuj->set('is_pool', 0);
+                        break;
+                    
+                    default:
+                        $this->Ttuj->set('status', 0);
+                        $deleteJournal = true;
+                        break;
                 }
 
-                $this->MkCommon->setCustomFlash(__('TTUJ berhasil dibatalkan.'), 'success');
-                $this->Log->logActivity( sprintf(__('TTUJ ID #%s berhasil dibatalkan.'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+                if($this->Ttuj->save()){
+                    if( $deleteJournal && empty($locale['Ttuj']['is_draft']) ) {
+                        if( !empty($locale['Ttuj']['commission']) ) {
+                            $commissionJournal = $locale['Ttuj']['commission'];
+                            $titleJournalKomisi = sprintf(__('<i>Pembatalan</i> komisi untuk supir %s'), $driver_name);
+
+                            if( !empty($locale['Ttuj']['commission_extra']) ) {
+                                $commissionJournal += $locale['Ttuj']['commission_extra'];
+                            }
+
+                            $this->User->Journal->setJournal($commissionJournal, array(
+                                'credit' => 'commission_coa_debit_id',
+                                'debit' => 'commission_coa_credit_id',
+                            ), array(
+                                'date' => $ttuj_date,
+                                'document_id' => $id,
+                                'truck_id' => $truck_id,
+                                'nopol' => $nopol,
+                                'title' => $titleJournalKomisi,
+                                'document_no' => $document_no,
+                                'type' => 'commission_void',
+                            ));
+                        }
+
+                        if( !empty($locale['Ttuj']['uang_jalan_1']) ) {
+                            $uangJalanJournal = $locale['Ttuj']['uang_jalan_1'];
+                            $titleJournalUj = sprintf(__('<i>Pembatalan</i> biaya uang jalan %s tujuan %s'), $nopol, $to_city_name);
+
+                            if( !empty($locale['Ttuj']['uang_jalan_2']) ) {
+                                $uangJalanJournal += $locale['Ttuj']['uang_jalan_2'];
+                            }
+
+                            if( !empty($locale['Ttuj']['uang_jalan_extra']) ) {
+                                $uangJalanJournal += $locale['Ttuj']['uang_jalan_extra'];
+                            }
+
+                            $this->User->Journal->setJournal($uangJalanJournal, array(
+                                'credit' => 'uang_jalan_coa_debit_id',
+                                'debit' => 'uang_jalan_coa_credit_id',
+                            ), array(
+                                'date' => $ttuj_date,
+                                'document_id' => $id,
+                                'truck_id' => $truck_id,
+                                'nopol' => $nopol,
+                                'title' => $titleJournalUj,
+                                'document_no' => $document_no,
+                                'type' => 'uang_jalan_void',
+                            ));
+                        }
+
+                        if( !empty($locale['Ttuj']['uang_kuli_muat']) ) {
+                            $titleJournalKuliMuat = sprintf(__('<i>Pembatalan</i> biaya kuli muat %s tujuan %s'), $nopol, $to_city_name);
+                            $uangKuli = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'uang_kuli_muat');
+
+                            $this->User->Journal->setJournal($uangKuli, array(
+                                'credit' => 'uang_kuli_muat_coa_debit_id',
+                                'debit' => 'uang_kuli_muat_coa_credit_id',
+                            ), array(
+                                'date' => $ttuj_date,
+                                'document_id' => $id,
+                                'truck_id' => $truck_id,
+                                'nopol' => $nopol,
+                                'title' => $titleJournalKuliMuat,
+                                'document_no' => $document_no,
+                                'type' => 'uang_kuli_muat_void',
+                            ));
+                        }
+
+                        if( !empty($locale['Ttuj']['uang_kuli_bongkar']) ) {
+                            $titleJournalKuliBongkar = sprintf(__('<i>Pembatalan</i> biaya kuli bongkar %s tujuan %s'), $nopol, $to_city_name);
+                            $uangKuliBongkar = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'uang_kuli_bongkar');
+
+                            $this->User->Journal->setJournal($uangKuliBongkar, array(
+                                'credit' => 'uang_kuli_bongkar_coa_debit_id',
+                                'debit' => 'uang_kuli_bongkar_coa_credit_id',
+                            ), array(
+                                'date' => $ttuj_date,
+                                'document_id' => $id,
+                                'truck_id' => $truck_id,
+                                'nopol' => $nopol,
+                                'title' => $titleJournalKuliBongkar,
+                                'document_no' => $document_no,
+                                'type' => 'uang_kuli_bongkar_void',
+                            ));
+                        }
+
+                        if( !empty($locale['Ttuj']['asdp']) ) {
+                            $titleJournalAsdp = sprintf(__('<i>Pembatalan</i> biaya penyebrangan %s tujuan %s'), $nopol, $to_city_name);
+                            $asdp = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'asdp');
+
+                            $this->User->Journal->setJournal($asdp, array(
+                                'credit' => 'asdp_coa_debit_id',
+                                'debit' => 'asdp_coa_credit_id',
+                            ), array(
+                                'date' => $ttuj_date,
+                                'document_id' => $id,
+                                'truck_id' => $truck_id,
+                                'nopol' => $nopol,
+                                'title' => $titleJournalAsdp,
+                                'document_no' => $document_no,
+                                'type' => 'asdp_void',
+                            ));
+                        }
+
+                        if( !empty($locale['Ttuj']['uang_kawal']) ) {
+                            $titleJournalUangKawal = sprintf(__('<i>Pembatalan</i> biaya uang kawal %s tujuan %s'), $nopol, $to_city_name);
+                            $uangKawal = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'uang_kawal');
+
+                            $this->User->Journal->setJournal($uangKawal, array(
+                                'credit' => 'uang_kawal_coa_debit_id',
+                                'debit' => 'uang_kawal_coa_credit_id',
+                            ), array(
+                                'date' => $ttuj_date,
+                                'document_id' => $id,
+                                'truck_id' => $truck_id,
+                                'nopol' => $nopol,
+                                'title' => $titleJournalUangKawal,
+                                'document_no' => $document_no,
+                                'type' => 'uang_kawal_void',
+                            ));
+                        }
+
+                        if( !empty($locale['Ttuj']['uang_keamanan']) ) {
+                            $titleJournalUangKeamanan = sprintf(__('<i>Pembatalan</i> biaya uang keamanan %s tujuan %s'), $nopol, $to_city_name);
+                            $uangKeamanan = $this->MkCommon->filterEmptyField($locale, 'Ttuj', 'uang_keamanan');
+
+                            $this->User->Journal->setJournal($uangKeamanan, array(
+                                'credit' => 'uang_keamanan_coa_debit_id',
+                                'debit' => 'uang_keamanan_coa_credit_id',
+                            ), array(
+                                'date' => $ttuj_date,
+                                'document_id' => $id,
+                                'truck_id' => $truck_id,
+                                'nopol' => $nopol,
+                                'title' => $titleJournalUangKeamanan,
+                                'document_no' => $document_no,
+                                'type' => 'uang_keamanan_void',
+                            ));
+                        }
+                    }
+
+                    if( $action_type == 'status' ) {
+                        $this->loadModel('Revenue');
+
+                        $revenue = $this->Revenue->getData('first', array(
+                            'conditions' => array(
+                                'Revenue.ttuj_id' => $id,
+                            ),
+                        ));
+
+                        $transaction_status = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'transaction_status');
+                        $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'id');
+
+                        if( $transaction_status != 'posting' ) {
+                            $this->Revenue->id = $revenue_id;
+                            $this->Revenue->set('status', 0);
+                            $this->Revenue->save();
+                            $this->Log->logActivity( sprintf(__('Berhasil membatalkan Revenue #%s dari TTUJ #%s'), $revenue_id, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $revenue_id, 'revenue_ttuj_toggle' );
+                        }
+                    }
+
+                    $this->MkCommon->setCustomFlash(__('TTUJ berhasil dibatalkan.'), 'success');
+                    $this->Log->logActivity( sprintf(__('TTUJ ID #%s berhasil dibatalkan.'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+                }else{
+                    $this->MkCommon->setCustomFlash(__('Gagal membatalkan TTUJ.'), 'error');
+                    $this->Log->logActivity( sprintf(__('Gagal membatalkan TTUJ ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
+                }
             }else{
-                $this->MkCommon->setCustomFlash(__('Gagal membatalkan TTUJ.'), 'error');
-                $this->Log->logActivity( sprintf(__('Gagal membatalkan TTUJ ID #%s.'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );
+                $this->MkCommon->setCustomFlash(__('TTUJ tidak ditemukan.'), 'error');
             }
         }else{
             $this->MkCommon->setCustomFlash(__('TTUJ tidak ditemukan.'), 'error');
@@ -3575,9 +3581,9 @@ class RevenuesController extends AppController {
         $this->loadModel('City');
         $data_revenue_detail = array();
         $allow_closing = true;
+        $data = $this->request->data;
 
-        if(!empty($this->request->data)){
-            $data = $this->request->data;
+        if(!empty($data)){
             $data = $this->MkCommon->dataConverter($data, array(
                 'price' => array(
                     'Revenue' => array(
@@ -3637,7 +3643,8 @@ class RevenuesController extends AppController {
             }
         }
 
-        $ttuj_id = !empty($data_local['Ttuj']['id'])?$data_local['Ttuj']['id']:false;
+        $ttuj_id = Common::hashEmptyField($data_local, 'Ttuj.id');
+        $ttuj_id = Common::hashEmptyField($data, 'Revenue.ttuj_id', $ttuj_id);
         
         $this->Ttuj->virtualFields['current_document_sort'] = 'CASE WHEN Ttuj.id = \''.$ttuj_id.'\' THEN 1 ELSE 0 END';
         $ttujs = $this->Ttuj->getData('list', array(
@@ -3676,6 +3683,7 @@ class RevenuesController extends AppController {
 
         $toCities = $this->City->getListCities();
         $groupMotors = $this->Ttuj->Revenue->RevenueDetail->GroupMotor->getData('list');
+        $cogs = $this->MkCommon->_callCogsOptGroup('Revenue');
 
         $this->MkCommon->_layout_file('select');
         $this->set(compact(
@@ -5182,7 +5190,11 @@ class RevenuesController extends AppController {
             if(!empty($invoice)){
                 $customer_id = $this->MkCommon->filterEmptyField($invoice, 'InvoicePayment', 'customer_id');
                 $invoice = $this->InvoicePayment->Customer->getMerge($invoice, $customer_id);
-
+                $invoice = $this->InvoicePayment->getMergeList($invoice, array(
+                    'contain' => array(
+                        'Cogs',
+                    ),
+                ));
 
                 $this->RjRevenue->_callBeforeViewInvoicePayment(array(), $invoice);
         
@@ -7263,6 +7275,17 @@ class RevenuesController extends AppController {
                 'status' => 'cash_bank_child',
             ));
 
+            switch ($action_type) {
+                case 'biaya_ttuj':
+                    $cogs = $this->MkCommon->_callCogsOptGroup('TtujPaymentCost', 'TtujPayment');
+                    break;
+                
+                default:
+                    $cogs = $this->MkCommon->_callCogsOptGroup('TtujPayment');
+                    break;
+            }
+
+            $this->MkCommon->_layout_file('select');
             $this->set(compact(
                 'invoice', 'sub_module_title', 'title_for_layout',
                 'action_type', 'module_title', 'coas'
@@ -7300,7 +7323,12 @@ class RevenuesController extends AppController {
 
         if(!empty($invoice)){
             $coa_id = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'coa_id');
-            $invoice = $this->User->Journal->Coa->getMerge($invoice, $coa_id);
+            $invoice = $this->Ttuj->TtujPaymentDetail->TtujPayment->getMergeList($invoice, array(
+                'contain' => array(
+                    'Coa',
+                    'Cogs',
+                ),
+            ));
 
             if( !empty($invoice['TtujPaymentDetail']) ) {
 
@@ -7552,6 +7580,16 @@ class RevenuesController extends AppController {
         }
 
         $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
+
+        switch ($action_type) {
+            case 'biaya_ttuj':
+                $cogs = $this->MkCommon->_callCogsOptGroup('TtujPaymentCost', 'TtujPayment');
+                break;
+            
+            default:
+                $cogs = $this->MkCommon->_callCogsOptGroup('TtujPayment');
+                break;
+        }
 
         $this->MkCommon->_layout_file('select');
         $this->set(compact(

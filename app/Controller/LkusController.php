@@ -614,6 +614,11 @@ class LkusController extends AppController {
         if(!empty($value)){
             $transaction_status = $this->MkCommon->filterEmptyField($value, 'LkuPayment', 'transaction_status');
             $value = $this->LkuPayment->LkuPaymentDetail->getMerge($value, $id);
+            $value = $this->LkuPayment->getMergeList($value, array(
+                'contain' => array(
+                    'Cogs',
+                ),
+            ));
 
             if( $transaction_status == 'posting' ) {
                 $this->MkCommon->setCustomFlash(__('Data tidak ditemukan'), 'error');
@@ -1040,6 +1045,7 @@ class LkusController extends AppController {
         }
         
         $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
+        $cogs = $this->MkCommon->_callCogsOptGroup('LkuKsuPayment', 'LkuPayment');
 
         $this->MkCommon->_layout_file('select');
         $this->set('active_menu', 'lku_payments');
@@ -2049,6 +2055,7 @@ class LkusController extends AppController {
         }
 
         $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
+        $cogs = $this->MkCommon->_callCogsOptGroup('LkuKsuPayment', 'KsuPayment');
 
         $this->MkCommon->_layout_file('select');
         $this->set(compact(
@@ -2291,7 +2298,12 @@ class LkusController extends AppController {
 
             if(!empty($LkuPayment)){
                 $coa_id = $this->MkCommon->filterEmptyField($LkuPayment, 'LkuPayment', 'coa_id');
-                $LkuPayment = $this->LkuPayment->Coa->getMerge( $LkuPayment, $coa_id );
+                $LkuPayment = $this->LkuPayment->getMergeList($LkuPayment, array(
+                    'contain' => array(
+                        'Cogs',
+                        'Coa',
+                    ),
+                ));
 
                 if(!empty($LkuPayment['LkuPaymentDetail'])){
                     foreach ($LkuPayment['LkuPaymentDetail'] as $key => $value) {
@@ -2376,7 +2388,12 @@ class LkusController extends AppController {
             
             if(!empty($KsuPayment)){
                 $coa_id = $this->MkCommon->filterEmptyField($KsuPayment, 'KsuPayment', 'coa_id');
-                $KsuPayment = $this->KsuPayment->Coa->getMerge( $KsuPayment, $coa_id );
+                $KsuPayment = $this->KsuPayment->getMergeList($KsuPayment, array(
+                    'contain' => array(
+                        'Cogs',
+                        'Coa',
+                    ),
+                ));
 
                 if(!empty($KsuPayment['KsuPaymentDetail'])){
                     foreach ($KsuPayment['KsuPaymentDetail'] as $key => $value) {

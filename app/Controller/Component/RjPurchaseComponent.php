@@ -446,8 +446,10 @@ class RjPurchaseComponent extends Component {
                     ),
                 ),
             ), true);
+            $data_empty = false;
         } else {
             $data['PurchaseOrderPayment']['transaction_date'] = date('d/m/Y');
+            $data_empty = true;
         }
 
         $document_type = $this->MkCommon->filterEmptyField($data, 'PurchaseOrderPayment', 'document_type');
@@ -463,6 +465,13 @@ class RjPurchaseComponent extends Component {
         }
 
         $coas = $this->controller->GroupBranch->Branch->BranchCoa->getCoas();
+        $cogs_result = $this->MkCommon->_callCogsOptGroup('PurchaseOrderPayment');
+        $cogs_id = Common::hashEmptyField($cogs_result, 'cogs_id');
+        
+        if( !empty($data_empty) ) {
+            $data['PurchaseOrderPayment']['cogs_id'] = $cogs_id;
+        }
+
         $this->MkCommon->_layout_file(array(
             'select',
         ));

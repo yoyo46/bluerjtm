@@ -41,6 +41,10 @@ class InsurancePayment extends AppModel {
             'className' => 'Insurance',
             'foreignKey' => 'insurance_id',
         ),
+        'Cogs' => array(
+            'className' => 'Cogs',
+            'foreignKey' => 'cogs_id',
+        ),
     );
 
     var $hasMany = array(

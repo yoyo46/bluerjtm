@@ -689,6 +689,7 @@ class LakasController extends AppController {
         }
 
         $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
+        $cogs = $this->MkCommon->_callCogsOptGroup('LakaPayment');
 
         $this->MkCommon->_layout_file('select');
         $this->set(compact(

@@ -56,12 +56,18 @@
 								)), array(
 									'class' => 'form-group'
 								));
+								echo $this->Common->buildInputForm('cogs_id', __('Cost Center'), array(
+									'label'=> __('Cost Center'), 
+									'class'=>'form-control chosen-select',
+									'empty' => __('Pilih Cost Center '),
+									'options' => $cogs,
+								));
 						?>
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('customer_id',array(
 										'label'=> __('Customer *'), 
-										'class'=>'form-control',
+										'class'=>'form-control chosen-select',
 										'required' => false,
 										'options' => $ttujs,
 										'empty' => __('Pilih Customer'),

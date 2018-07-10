@@ -389,12 +389,22 @@ class RjAssetComponent extends Component {
                     ),
                 ),
             ), true);
+            $data_empty = false;
         } else {
             $data['AssetSell']['transaction_date'] = date('d/m/Y');
             $data['AssetSell']['transfer_date'] = date('d/m/Y');
+            $data_empty = true;
         }
 
         $coas = $this->controller->GroupBranch->Branch->BranchCoa->getCoas();
+        
+        $cogs_result = $this->MkCommon->_callCogsOptGroup('AssetSell');
+        $cogs_id = Common::hashEmptyField($cogs_result, 'cogs_id');
+        
+        if( !empty($data_empty) ) {
+            $data['AssetSell']['cogs_id'] = $cogs_id;
+        }
+
         $this->MkCommon->_layout_file(array(
             'select',
         ));

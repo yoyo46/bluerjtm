@@ -11,6 +11,7 @@
         $rejected = $this->Common->filterEmptyField($value, 'InsurancePayment', 'rejected');
         $note = $this->Common->filterEmptyField($value, 'InsurancePayment', 'note', '-', true, 'EOL');
 		$coa_name = $this->Common->filterEmptyField($value, 'Coa', 'coa_name', '-');
+		$cogs_name = $this->Common->filterEmptyField($value, 'Cogs', 'cogs_name', '-');
 
         $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
         $payment_date = $this->Common->formatDate($payment_date, 'd/m/Y');
@@ -30,8 +31,12 @@
 				<td><?php echo $nodoc;?></td>
 			</tr>
 			<tr>
-				<th><?php echo __('Account');?></th>
+				<th><?php echo __('Account Kas/Bank');?></th>
 				<td><?php echo $coa_name;?></td>
+			</tr>
+			<tr>
+				<th><?php echo __('Cost Center');?></th>
+				<td><?php echo $cogs_name;?></td>
 			</tr>
 			<tr>
 				<th><?php echo __('Tgl Bayar');?></th>

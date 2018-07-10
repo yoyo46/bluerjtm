@@ -41,7 +41,15 @@
 				)), array(
 					'class' => 'form-group'
 				));
-
+				echo $this->Html->tag('div', $this->Form->input('cogs_id',array(
+					'label'=> __('Cost Center'), 
+					'class'=>'form-control chosen-select',
+					'required' => false,
+					'empty' => __('Pilih Cost Center '),
+					'options' => $cogs,
+				)), array(
+					'class' => 'form-group'
+				));
 				echo $this->Html->tag('div', $this->Form->input('receiving_cash_type',array(
 					'label'=> __('Jenis Kas/Bank *'), 
 					'class'=>'form-control cash-bank-handle',

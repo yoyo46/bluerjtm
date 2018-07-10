@@ -5740,6 +5740,7 @@ class TrucksController extends AppController {
         }
 
         $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
+        $cogs = $this->MkCommon->_callCogsOptGroup('DocumentPayment');
 
         $this->MkCommon->_layout_file('select');
         $this->set(compact(
@@ -5906,10 +5907,13 @@ class TrucksController extends AppController {
         $sub_module_title = $title_for_layout = 'Detail Pembayaran Surat-surat Truk';
 
         if(!empty($value)){
-            $coa_id = $this->MkCommon->filterEmptyField($value, 'DocumentPayment', 'coa_id');
-
-            $value = $this->User->Journal->Coa->getMerge($value, $coa_id);
             $value = $this->DocumentPayment->DocumentPaymentDetail->getMerge($value, $id);
+            $value = $this->DocumentPayment->getMergeList($value, array(
+                'contain' => array(
+                    'Cogs',
+                    'Coa',
+                ),
+            ));
 
             if( !empty($value['DocumentPaymentDetail']) ) {
                 foreach ($value['DocumentPaymentDetail'] as $key => $val) {

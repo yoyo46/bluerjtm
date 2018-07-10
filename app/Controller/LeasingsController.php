@@ -450,6 +450,7 @@ class LeasingsController extends AppController {
         ), array(
             'status' => 'unpaid',
         ));
+        $cogs = $this->MkCommon->_callCogsOptGroup('LeasingPayment');
 
         $this->MkCommon->_layout_file('select');
         $this->set(compact(
@@ -531,11 +532,16 @@ class LeasingsController extends AppController {
 
         if( !empty($value) ) {
             $vendor_id = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'vendor_id');
-            $coa_id = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'coa_id');
 
-            $value = $this->Leasing->LeasingPayment->Coa->getMerge($value, $coa_id);
             $value = $this->Leasing->LeasingPayment->Vendor->getMerge($value, $vendor_id);
             $value = $this->Leasing->LeasingPayment->LeasingPaymentDetail->getMerge($value, $id);
+            $value = $this->Leasing->LeasingPayment->getMergeList($value, array(
+                'contain' => array(
+                    'Cogs',
+                    'Coa',
+                ),
+            ));
+
             $value = $this->_calDataIndexConvertion($value, true);
 
             if( !empty($value['LeasingPaymentDetail']) ) {

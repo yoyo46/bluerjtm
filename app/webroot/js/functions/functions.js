@@ -2439,7 +2439,7 @@ var leasing_action = function(){
 }
 
 function _callTotalInvoice () {
-    var invoice_price = $('.document-pick-info-detail .total-payment');
+    var invoice_price = $('.document-pick-info-detail .total-payment,.document-pick-price');
     var length = invoice_price.length;
     var total_price = 0;
     var grand_total = 0;
@@ -2450,10 +2450,16 @@ function _callTotalInvoice () {
 
     $.each( invoice_price, function( i, val ) {
         var self = $(this);
-        var price = self.html();
+        var type = self.attr('type');
         var parent = self.parents('tr.child');
         var ppn = $.convertNumber( parent.find('.tax-nominal[rel="ppn"]').val() );
         var total_document = parent.find('.total-document');
+
+        if( type == 'text' ) {
+            var price = self.val();
+        } else {
+            var price = self.html();
+        }
 
         var price = $.convertNumber( price );
 
@@ -2475,14 +2481,12 @@ function _callTotalInvoice () {
 }
 
 var invoice_price_payment = function(){
-    $('.document-pick-price').off('keyup');
-    $('.document-pick-price').keyup(function(){
+    $('.document-pick-price').off('keyup').keyup(function(){
         getTotalPick();
         calcPPNPPH();
     });
 
-    $('.document-pick-price').off('blur');
-    $('.document-pick-price').blur(function(){
+    $('.document-pick-price').off('blur').blur(function(){
         var self = $(this);
         var parent = self.parents('tr.child');
 
@@ -2517,13 +2521,11 @@ var invoice_price_payment = function(){
 
 function getTotalPick(){
     if( $('.document-pick-info-detail .document-pick-price').length > 0 || $('.document-calc[rel="ppn"]').length > 0 ) {
-        $('.pph-persen, .ppn-persen').off('keyup');
-        $('.pph-persen, .ppn-persen').keyup(function(){
+        $('.pph-persen, .ppn-persen').off('keyup').keyup(function(){
             calcPPNPPH();
         });
 
-        $('#pph-total,#ppn-total').off('keyup');
-        $('#pph-total,#ppn-total').keyup(function(){
+        $('#pph-total,#ppn-total').off('keyup').keyup(function(){
             calcPPNPPHNominal();
         });
 

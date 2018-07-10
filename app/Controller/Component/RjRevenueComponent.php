@@ -547,6 +547,7 @@ class RjRevenueComponent extends Component {
                 'Coa.id', 'Coa.coa_name'
             ),
         ));
+        $cogs = $this->MkCommon->_callCogsOptGroup('InvoicePayment');
 
         $this->MkCommon->_layout_file('select');
         $this->controller->set(array(

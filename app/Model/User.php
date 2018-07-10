@@ -60,6 +60,14 @@ class User extends AppModel {
             'className' => 'ProductAdjustment',
             'foreignKey' => 'user_id',
         ),
+        'Cogs' => array(
+            'className' => 'Cogs',
+            'foreignKey' => 'user_id',
+        ),
+        'CogsSetting' => array(
+            'className' => 'CogsSetting',
+            'foreignKey' => 'user_id',
+        ),
     );
     
     var $validate = array(

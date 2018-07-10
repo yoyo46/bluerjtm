@@ -9,6 +9,7 @@
 		$view = !empty($view)?$view:false;
 		$customer_name_code = $this->Common->filterEmptyField($data, 'Customer', 'customer_name_code');
 		$coa_name = $this->Common->filterEmptyField($data, 'Coa', 'coa_name');
+		$cogs_name = $this->Common->filterEmptyField($data, 'Cogs', 'cogs_name', '-');
 		$date_payment = $this->Common->filterEmptyField($data, 'InvoicePayment', 'date_payment', date('d/m/Y'));
 
 		echo $this->Form->create('InvoicePayment', array(
@@ -46,7 +47,7 @@
 					} else {
 						echo $this->Common->_callInputForm('customer_id',array(
 							'label' => __('Customer *'),
-							'class'=>'form-control customer-ajax',
+							'class'=>'form-control chosen-select customer-ajax',
 							'required' => false,
 							'empty' => __('Pilih Customer'),
 							'options' => $list_customer,
@@ -69,6 +70,23 @@
 							'required' => false,
 							'empty' => __('Pilih Kas/Bank'),
 							'options' => $coas
+						));
+					}
+
+					if( !empty($view) ) {
+            			echo $this->Html->tag('div', 
+            				$this->Html->tag('label', __('Cost Center')).
+            				$this->Html->tag('div', $cogs_name, array(
+            					'class' => 'form-control',
+        					)), array(
+        					'class' => 'form-group',
+    					));
+					} else {
+						echo $this->Common->buildInputForm('cogs_id', __('Cost Center'), array(
+							'label'=> __('Cost Center'), 
+							'class'=>'form-control chosen-select',
+							'empty' => __('Pilih Cost Center '),
+							'options' => $cogs,
 						));
 					}
 

@@ -6196,4 +6196,201 @@ class SettingsController extends AppController {
             }
         }
     }
+
+    public function cogs() {
+        $values = $this->User->Cogs->getData('threaded', array(
+            'conditions' => array(
+                'Cogs.status' => 1
+            ),
+            'order' => array(
+                'Cogs.code' => 'ASC',
+            )
+        ));
+
+        $title = __('Cost Center');
+        $this->set('active_menu', 'cogs');
+        $this->set('module_title', $title);
+        $this->set('sub_module_title', $title);
+        $this->set('values', $values);
+    }
+
+    public function cogs_add( $parent_id = false ) {
+        $value = false;
+
+        if( !empty($parent_id) ) {
+            $value = $this->User->Cogs->getData('first', array(
+                'conditions' => array(
+                    'Cogs.status' => 1,
+                    'Cogs.id' => $parent_id
+                ),
+            ));
+
+            if( !empty($value) ) {
+                $this->set('value', $value);
+                $this->set('sub_module_title', sprintf(__('Tambah Cost Center - %s', $value['Cogs']['name'])));
+            } else {
+                $this->MkCommon->setCustomFlash(__('Cost Center tidak ditemukan.'), 'error');
+                $this->redirect($this->referer());
+            }
+        } else {
+            $this->set('sub_module_title', 'Tambah Cost Center');
+        }
+
+        $this->doCogs( false, false, $parent_id, $value );
+    }
+
+    public function cogs_edit( $id = false, $parent_id = false ) {
+        $value = false;
+
+        if( !empty($id) ) {
+            $cogs_current = $this->User->Cogs->getData('first', array(
+                'conditions' => array(
+                    'Cogs.id' => $id,
+                    'Cogs.status' => 1,
+                ),
+            ));
+
+            if( !empty($cogs_current) ) {
+                $value = $this->User->Cogs->getData('first', array(
+                    'conditions' => array(
+                        'Cogs.id' => $parent_id,
+                        'Cogs.status' => 1,
+                    ),
+                ));
+                $this->set('sub_module_title', 'Edit Cost Center');
+                $this->set('value', $value);
+                $this->doCogs( $id, $cogs_current, $parent_id, $value );
+            } else {
+                $this->MkCommon->setCustomFlash(__('Cost Center tidak ditemukan.'), 'error');
+                $this->redirect($this->referer());
+            }
+        } 
+    }
+
+    function doCogs($id = false, $data_local = false, $parent_id = false, $value = false ){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+            $data['Cogs']['user_id'] = Configure::read('__Site.config_user_id');
+
+            if($id && $data_local){
+                $this->User->Cogs->id = $id;
+                $msg = 'mengubah';
+                $data['Cogs']['id'] = $id;
+            }else{
+                $this->User->Cogs->create();
+                $msg = 'menambah';
+            }
+
+            if( !empty($value) ) {
+                $data['Cogs']['parent_id'] = $parent_id;
+            }
+            
+            $this->User->Cogs->set($data);
+
+            if($this->User->Cogs->validates($data)){
+                if($this->User->Cogs->save($data)){
+                    $id = $this->User->Cogs->id;
+
+                    $this->params['old_data'] = $data_local;
+                    $this->params['data'] = $data;
+
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Cost Center'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Cost Center #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+
+                    if( !empty($saldo) && !empty($title) ) {
+                        $this->MkCommon->_saveLog(array(
+                            'activity' => $title,
+                            'old_data' => $data_local,
+                            'document_id' => $id,
+                        ));
+                    }
+
+                    $this->redirect(array(
+                        'controller' => 'settings',
+                        'action' => 'cogs'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Cost Center'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Cost Center #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id );   
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Cost Center'), $msg), 'error');
+            }
+        }else{
+            if($id && $data_local){
+                $this->request->data = $data_local;
+            }
+        }
+
+        $this->set('active_menu', 'cogs');
+        $this->set('module_title', 'Cost Center');
+        $this->set(compact(
+            'parent_id'
+        ));
+        $this->render('cogs_add');
+    }
+
+    function cogs_toggle($id){
+        $locale = $this->User->Cogs->getData('first', array(
+            'conditions' => array(
+                'Cogs.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['Cogs']['status']){
+                $value = false;
+            }
+
+            $this->User->Cogs->id = $id;
+            $this->User->Cogs->set('status', $value);
+            if($this->User->Cogs->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Cost Center ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Cost Center ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Cost Center tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
+
+    public function cogs_setting() {
+        $values = $this->User->Cogs->CogsSetting->getData('all');
+        $data = $this->request->data;
+
+        if(!empty($data)){
+            $data = $this->RjSetting->_callBeforeSaveCogsSetting($data);
+            $dataDetail = $this->MkCommon->filterEmptyField($data, 'CogsSetting');
+
+            $flag = $this->User->Cogs->CogsSetting->saveAll($dataDetail, array(
+                'validate' => 'only',
+            ));
+
+            if(!empty($flag) ){
+                $this->User->Cogs->CogsSetting->deleteAll(array(
+                    'CogsSetting.branch_id' => Configure::read('__Site.config_branch_id'),
+                ));
+                $this->User->Cogs->CogsSetting->saveAll($dataDetail);
+
+                $transaction_id = $this->User->CogsSetting->id;
+                $this->MkCommon->setCustomFlash(__('Sukses menyimpan pengaturan Cost Center'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses menyimpan pengaturan Cost Center #%s'), $transaction_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $transaction_id );
+                $this->redirect(array(
+                    'controller' => 'settings',
+                    'action' => 'cogs_setting'
+                ));
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal menyimpan pengaturan Cost Center'), 'error');
+                $this->Log->logActivity( __('Gagal menyimpan pengaturan Cost Center'), $this->user_data, $this->RequestHandler, $this->params, 1 );
+            }
+        }
+        
+        $this->request->data = $this->RjSetting->_callBeforeRenderCogsSetting($this->request->data, $values);
+        $this->set('active_menu', 'cogs_setting');
+    }
 }

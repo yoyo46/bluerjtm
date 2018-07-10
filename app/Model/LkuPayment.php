@@ -12,12 +12,6 @@ class LkuPayment extends AppModel {
             //     'message' => 'No Dokumen telah terdaftar',
             // ),
         ),
-        'coa_id' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-                'message' => 'Account Kas/Bank harap dipilih'
-            ),
-        ),
         'tgl_bayar' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -38,7 +32,7 @@ class LkuPayment extends AppModel {
         'coa_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
-                'message' => 'Account harap dipilih'
+                'message' => 'Account Kas/Bank harap dipilih'
             ),
         ),
 	);
@@ -51,6 +45,10 @@ class LkuPayment extends AppModel {
         'Coa' => array(
             'className' => 'Coa',
             'foreignKey' => 'coa_id',
+        ),
+        'Cogs' => array(
+            'className' => 'Cogs',
+            'foreignKey' => 'cogs_id',
         ),
     );
 

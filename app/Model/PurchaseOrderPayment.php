@@ -11,6 +11,14 @@ class PurchaseOrderPayment extends AppModel {
             'className' => 'Vendor',
             'foreignKey' => 'vendor_id',
         ),
+        'Coa' => array(
+            'className' => 'Coa',
+            'foreignKey' => 'coa_id',
+        ),
+        'Cogs' => array(
+            'className' => 'Cogs',
+            'foreignKey' => 'cogs_id',
+        ),
     );
 
     var $hasMany = array(
