@@ -5753,6 +5753,7 @@ class TrucksController extends AppController {
         $flagPaymentDetail = true;
         $totalPayment = 0;
         $date_payment = $this->MkCommon->filterEmptyField($data, 'DocumentPayment', 'date_payment');
+        $cogs_id = $this->MkCommon->filterEmptyField($data, 'DocumentPayment', 'cogs_id');
         $data = $this->request->data;
 
         if( !empty($document_payment_id) ) {
@@ -5873,6 +5874,7 @@ class TrucksController extends AppController {
                     'credit' => $coa_id,
                     'debit' => 'document_payment_coa_id',
                 ), array(
+                    'cogs_id' => $cogs_id,
                     'date' => $date_payment,
                     'document_id' => $document_payment_id,
                     'title' => $titleJournal,
@@ -5968,6 +5970,7 @@ class TrucksController extends AppController {
 
                 $value = $this->DocumentPayment->DocumentPaymentDetail->getMerge($value, $id);
                 $date_payment = $this->MkCommon->filterEmptyField($value, 'DocumentPayment', 'date_payment');
+                $cogs_id = $this->MkCommon->filterEmptyField($value, 'DocumentPayment', 'cogs_id');
 
                 if(!empty($data['DocumentPayment']['canceled_date'])){
                     $data['DocumentPayment']['canceled_date'] = $this->MkCommon->filterEmptyField($data, 'DocumentPayment', 'canceled_date');
@@ -6038,6 +6041,7 @@ class TrucksController extends AppController {
                                 'credit' => 'document_payment_coa_id',
                                 'debit' => $coa_id,
                             ), array(
+                                'cogs_id' => $cogs_id,
                                 'date' => $date_payment,
                                 'document_id' => $id,
                                 'title' => $titleJournal,

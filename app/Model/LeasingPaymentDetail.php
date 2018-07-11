@@ -219,6 +219,7 @@ class LeasingPaymentDetail extends AppModel {
         $vendor_id = !empty($value['LeasingPayment']['vendor_id'])?$value['LeasingPayment']['vendor_id']:false;
         $no_doc = !empty($value['LeasingPayment']['no_doc'])?$value['LeasingPayment']['no_doc']:false;
         $note = !empty($value['LeasingPayment']['note'])?$value['LeasingPayment']['note']:false;
+        $cogs_id = !empty($value['LeasingPayment']['cogs_id'])?$value['LeasingPayment']['cogs_id']:false;
         
         $vendor = $this->Leasing->Vendor->getMerge(array(), $vendor_id);
         $vendor_name = !empty($vendor['Vendor']['name'])?$vendor['Vendor']['name']:false;
@@ -316,6 +317,7 @@ class LeasingPaymentDetail extends AppModel {
                         'credit' => $coa_id,
                         'debit' => 'leasing_installment_coa_id',
                     ), array(
+                        'cogs_id' => $cogs_id,
                         'date' => $payment_date,
                         'document_id' => $leasing_payment_id,
                         'title' => $title,
@@ -328,6 +330,7 @@ class LeasingPaymentDetail extends AppModel {
                         'credit' => $coa_id,
                         'debit' => 'leasing_installment_rate_coa_id',
                     ), array(
+                        'cogs_id' => $cogs_id,
                         'date' => $payment_date,
                         'document_id' => $leasing_payment_id,
                         'title' => $title,
@@ -340,6 +343,7 @@ class LeasingPaymentDetail extends AppModel {
                         'credit' => $coa_id,
                         'debit' => 'leasing_denda_coa_id',
                     ), array(
+                        'cogs_id' => $cogs_id,
                         'date' => $payment_date,
                         'document_id' => $leasing_payment_id,
                         'title' => $title,

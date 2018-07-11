@@ -127,6 +127,7 @@ class GeneralLedgerDetail extends AppModel {
     function setJournal ( $id, $data, $nodoc = false ) {
         $transaction_date = $this->filterEmptyField($data, 'GeneralLedger', 'transaction_date');
         $transaction_status = $this->filterEmptyField($data, 'GeneralLedger', 'transaction_status');
+        $cogs_id = $this->filterEmptyField($data, 'GeneralLedger', 'cogs_id');
         $details = $this->filterEmptyField($data, 'GeneralLedgerDetail');
 
         if( $transaction_status == 'posting' && !empty($details) ) {
@@ -160,6 +161,7 @@ class GeneralLedgerDetail extends AppModel {
                 }
 
                 $this->GeneralLedger->User->Journal->setJournal($total, $options, array(
+                    'cogs_id' => $cogs_id,
                     'date' => $transaction_date,
                     'document_id' => $id,
                     'title' => $title,

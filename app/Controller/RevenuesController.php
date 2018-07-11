@@ -3721,6 +3721,7 @@ class RevenuesController extends AppController {
             $no_doc = $this->MkCommon->filterEmptyField($locale, 'Revenue', 'no_doc');
             $customer_id = $this->MkCommon->filterEmptyField($locale, 'Revenue', 'customer_id');
             $total = $this->MkCommon->filterEmptyField($locale, 'Revenue', 'total', 0);
+            $cogs_id = $this->MkCommon->filterEmptyField($locale, 'Revenue', 'cogs_id');
 
             $locale = $this->Ttuj->Customer->getMerge($locale, $customer_id);
             $customer_name = $this->MkCommon->filterEmptyField($locale, 'Customer', 'customer_name_code');
@@ -3744,6 +3745,7 @@ class RevenuesController extends AppController {
                     'credit' => 'revenue_coa_debit_id',
                     'debit' => 'revenue_coa_credit_id',
                 ), array(
+                    'cogs_id' => $cogs_id,
                     'date' => $date_revenue,
                     'document_id' => $id,
                     'title' => $titleJournal,
@@ -4084,6 +4086,7 @@ class RevenuesController extends AppController {
 
             $customer_id = $this->MkCommon->filterEmptyField($data, 'Invoice', 'customer_id');
             $invoice_date = $this->MkCommon->filterEmptyField($data, 'Invoice', 'invoice_date');
+            $cogs_id = $this->MkCommon->filterEmptyField($data, 'Invoice', 'cogs_id');
 
             if($id && $data_local){
                 $this->Invoice->id = $id;
@@ -4264,6 +4267,7 @@ class RevenuesController extends AppController {
                                 'credit' => 'invoice_coa_credit_id',
                                 'debit' => 'invoice_coa_debit_id',
                             ), array(
+                                // 'cogs_id' => $cogs_id,
                                 'date' => $invoice_date,
                                 'document_id' => $invoice_id,
                                 'title' => $titleJournalInv,
@@ -4274,6 +4278,7 @@ class RevenuesController extends AppController {
                                 'credit' => 'invoice_coa_2_credit_id',
                                 'debit' => 'invoice_coa_2_debit_id',
                             ), array(
+                                // 'cogs_id' => $cogs_id,
                                 'date' => $invoice_date,
                                 'document_id' => $invoice_id,
                                 'title' => $titleJournalInv,
@@ -4957,6 +4962,7 @@ class RevenuesController extends AppController {
                 $coa_id = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'coa_id');
                 $date_payment = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'date_payment');
                 $transaction_status = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'transaction_status');
+                $cogs_id = $this->MkCommon->filterEmptyField($invoice_payment, 'InvoicePayment', 'cogs_id');
                 
                 $invoice_payment = $this->Invoice->InvoicePaymentDetail->InvoicePayment->Customer->getMerge($invoice_payment, $customer_id);
                 $customer_name_code = $this->MkCommon->filterEmptyField($invoice_payment, 'Customer', 'customer_name_code');
@@ -5030,6 +5036,7 @@ class RevenuesController extends AppController {
                                 'credit' => $coa_id,
                                 'debit' => 'pembayaran_invoice_coa_id',
                             ), array(
+                                'cogs_id' => $cogs_id,
                                 'date' => $date_payment,
                                 'document_id' => $id,
                                 'title' => $titleJournalInv,
@@ -5055,6 +5062,7 @@ class RevenuesController extends AppController {
                                         'credit' => 'pph_coa_debit_id',
                                         'debit' => $coa_id,
                                     ), array(
+                                        'cogs_id' => $cogs_id,
                                         'date' => $tgl_cash_bank,
                                         'document_id' => $cash_bank_id,
                                         'title' => $description,
@@ -5113,6 +5121,7 @@ class RevenuesController extends AppController {
 
                     $date_revenue = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'date_revenue');
                     $customer_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'customer_id');
+                    $cogs_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'cogs_id');
 
                     $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'RevenueDetail', 'revenue_id');
                     $revenue = $this->Ttuj->Customer->getMerge($revenue, $customer_id);
@@ -5133,6 +5142,7 @@ class RevenuesController extends AppController {
                         'credit' => 'revenue_coa_credit_id',
                         'debit' => 'revenue_coa_debit_id',
                     ), array(
+                        'cogs_id' => $cogs_id,
                         'date' => $date_revenue,
                         'document_id' => $revenue_id,
                         'title' => $titleJournal,
@@ -7445,6 +7455,7 @@ class RevenuesController extends AppController {
                 $this->Log->logActivity( sprintf(__('Gagal mengubah total pembayaran ttuj #%s'), $ttuj_payment_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_payment_id );
             } else {
                 $document_no = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'nodoc');
+                $cogs_id = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'cogs_id');
                 $coa_id = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'coa_id');
                 $paidType = $this->MkCommon->filterEmptyField($this->request->data, 'TtujPayment', 'data_type');
                 $paidType = $this->RjRevenue->_callReceiverType($paidType);
@@ -7462,6 +7473,7 @@ class RevenuesController extends AppController {
                                 'credit' => $coa_id,
                                 'debit' => 'biaya_ttuj_payment_coa_id',
                             ), array(
+                                'cogs_id' => $cogs_id,
                                 'date' => $date_payment,
                                 'document_id' => $ttuj_payment_id,
                                 'title' => $titleJournalInv,
@@ -7481,6 +7493,7 @@ class RevenuesController extends AppController {
                                 'credit' => $coa_id,
                                 'debit' => 'uang_Jalan_commission_payment_coa_id',
                             ), array(
+                                'cogs_id' => $cogs_id,
                                 'date' => $date_payment,
                                 'document_id' => $ttuj_payment_id,
                                 'title' => $titleJournalInv,
@@ -7622,6 +7635,7 @@ class RevenuesController extends AppController {
                 $receiver_type = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'receiver_type', __('Supir'));
                 $date_payment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'date_payment');
                 $transaction_status = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'transaction_status');
+                $cogs_id = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'cogs_id');
 
                 switch ($action_type) {
                     case 'biaya_ttuj':
@@ -7687,6 +7701,7 @@ class RevenuesController extends AppController {
                                             'credit' => 'biaya_ttuj_payment_coa_id',
                                             'debit' => $coa_id,
                                         ), array(
+                                            'cogs_id' => $cogs_id,
                                             'date' => $date_payment,
                                             'document_id' => $id,
                                             'title' => $titleJournalInv,
@@ -7704,6 +7719,7 @@ class RevenuesController extends AppController {
                                             'credit' => 'uang_Jalan_commission_payment_coa_id',
                                             'debit' => $coa_id,
                                         ), array(
+                                            'cogs_id' => $cogs_id,
                                             'date' => $date_payment,
                                             'document_id' => $id,
                                             'title' => $titleJournalInv,

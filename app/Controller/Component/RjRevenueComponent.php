@@ -681,6 +681,7 @@ class RjRevenueComponent extends Component {
         $transaction_status = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'transaction_status');
         $grandTotal = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'grand_total_payment');
         $pph_total = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'pph_total');
+        $cogs_id = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'cogs_id');
 
         $customer_id = $this->MkCommon->filterEmptyField($data, 'InvoicePayment', 'customer_id');
         $customer = $this->controller->Ttuj->Customer->getMerge(array(), $customer_id, false);
@@ -700,6 +701,7 @@ class RjRevenueComponent extends Component {
                     'credit' => 'pembayaran_invoice_coa_id',
                     'debit' => $coa_id,
                 ), array(
+                    'cogs_id' => $cogs_id,
                     'date' => $date_payment,
                     'document_id' => $invoice_payment_id,
                     'title' => $titleJournalInv,
@@ -793,6 +795,7 @@ class RjRevenueComponent extends Component {
                                 'credit' => $coa_id,
                                 'debit' => 'pph_coa_debit_id',
                             ), array(
+                    			'cogs_id' => $cogs_id,
                                 'date' => $date_payment,
                                 'document_id' => $cash_bank_id,
                                 'title' => $pph_note,

@@ -220,6 +220,7 @@ class AssetSell extends AppModel {
             $transfer_date = $this->filterEmptyField($data, 'AssetSell', 'transfer_date');
             $nodoc = $this->filterEmptyField($data, 'AssetSell', 'nodoc');
             $coa_id = $this->filterEmptyField($data, 'AssetSell', 'coa_id');
+            $cogs_id = $this->filterEmptyField($data, 'AssetSell', 'cogs_id');
 
             $this->User->Journal->deleteJournal($id, array(
                 'asset_selling',
@@ -229,6 +230,7 @@ class AssetSell extends AppModel {
             $titleJournal = sprintf(__('Penjualan asset #%s '), $nodoc);
             $titleJournal = $this->filterEmptyField($data, 'AssetSell', 'note', $titleJournal);
             $options = array(
+                'cogs_id' => $cogs_id,
                 'date' => $transfer_date,
                 'document_id' => $id,
                 'title' => $titleJournal,

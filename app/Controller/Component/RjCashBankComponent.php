@@ -227,6 +227,87 @@ class RjCashBankComponent extends Component {
         return $values;
     }
 
+    function _callCalcProfitLossPerPoin ( $values, $dateFrom = false, $dateTo = false, $data_action = false ) {
+        if( !empty($values) ) {
+            $this->controller->User->Journal->virtualFields['balancing'] = 'CASE WHEN Coa.type = \'debit\' THEN SUM(Journal.debit) - SUM(Journal.credit) ELSE SUM(Journal.credit) - SUM(Journal.debit) END';
+
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'Coa', 'id');
+                $level = $this->MkCommon->filterEmptyField($value, 'Coa', 'level');
+                $coa_name = $this->MkCommon->filterEmptyField($value, 'Coa', 'name');
+                $parent_id = $this->MkCommon->filterEmptyField($value, 'Coa', 'parent_id');
+                $type = $this->MkCommon->filterEmptyField($value, 'Coa', 'type');
+                $childrens = $this->MkCommon->filterEmptyField($value, 'children');
+
+                if( !empty($childrens) ) {
+                    $childrens = $this->_callCalcProfitLoss($childrens, $dateFrom, $dateTo, $data_action);
+                    $value['children'] = $childrens;
+                }
+
+                if( !empty($dateFrom) && !empty($dateTo) ) {
+                    $tmpDateFrom = $dateFrom;
+                    $tmpDateTo = $dateTo;
+                    $value = $this->controller->User->Journal->Coa->getMerge($value, $parent_id, 'Parent');
+
+                    while( $tmpDateFrom <= $tmpDateTo ) {
+                        $fieldName = sprintf('month_%s', $tmpDateFrom);
+                        
+                        if( $level == 4 ) {
+                            // $summaryBalance = $this->controller->ViewCoaSummary->find('first', array(
+                            //     'conditions' => array(
+                            //         'ViewCoaSummary.date' => $tmpDateFrom,
+                            //     ),
+                            // ));
+
+                            if( $data_action == 'excel' ) {
+                                $summaryBalance = $this->controller->User->Journal->getData('first', array(
+                                    'conditions' => array(
+                                        'Journal.coa_id' => $id,
+                                        'DATE_FORMAT(Journal.date, \'%Y-%m\')' => $tmpDateFrom,
+                                    ),
+                                    'contain' => array(
+                                        'Coa',
+                                    ),
+                                    'group' => array(
+                                        'Journal.coa_id',
+                                    ),
+                                ), true, array(
+                                    'type' => 'active',
+                                ));
+
+                                $balancing = Common::hashEmptyField($summaryBalance, 'Journal.balancing', 0);
+                            } else {
+                                $balancing = 0;
+                            }
+
+                            // $balancing = Common::hashEmptyField($coaProfilLoss, $id.'-'.$tmpDateFrom, 0);
+                            $value['Coa'][$tmpDateFrom]['balancing'] = $balancing;
+                        
+                            $amount = !empty($values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'])?$values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing']:0;
+                            $values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'] = $amount + $balancing;
+                        } else if( $level == 1 ) {
+                            $balancing = !empty($value['children']['TotalCoa'][$id][$tmpDateFrom]['balancing'])?$value['children']['TotalCoa'][$id][$tmpDateFrom]['balancing']:0;
+                            $amount = !empty($values['TotalCoa'][$tmpDateFrom]['balancing'])?$values['TotalCoa'][$tmpDateFrom]['balancing']:0;
+
+                            $values['TotalCoa'][$tmpDateFrom]['balancing'] = $amount + $balancing;
+                        } else {
+                            $balancing = !empty($value['children']['TotalCoa'][$id][$tmpDateFrom]['balancing'])?$value['children']['TotalCoa'][$id][$tmpDateFrom]['balancing']:0;
+                            $amount = !empty($values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'])?$values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing']:0;
+
+                            $values['TotalCoa'][$parent_id][$tmpDateFrom]['balancing'] = $amount + $balancing;
+                        }
+
+                        $tmpDateFrom = date('Y-m', strtotime('+1 Month', strtotime($tmpDateFrom)));
+                    }
+                }
+
+                $values[$key] = $value;
+            }
+        }
+
+        return $values;
+    }
+
 	function _callCalcBalanceSheet ( $values, $dateFrom = false, $dateTo = false ) {
 		if( !empty($values) ) {
             foreach ($values as $key => $value) {

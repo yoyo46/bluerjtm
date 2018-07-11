@@ -535,6 +535,7 @@ class Revenue extends AppModel {
         $customer_id = !empty($data['Revenue']['customer_id'])?$data['Revenue']['customer_id']:false;
         $total_revenue = !empty($data['Revenue']['total'])?$data['Revenue']['total']:0;
         $date_revenue = !empty($data['Revenue']['date_revenue'])?$data['Revenue']['date_revenue']:false;
+        $cogs_id = !empty($data['Revenue']['cogs_id'])?$data['Revenue']['cogs_id']:false;
         $no_doc = str_pad($revenue_id, 5, '0', STR_PAD_LEFT);
 
         $dataCustomer = $this->Ttuj->Customer->getMerge(array(), $customer_id);
@@ -550,6 +551,7 @@ class Revenue extends AppModel {
                 'credit' => 'revenue_coa_credit_id',
                 'debit' => 'revenue_coa_debit_id',
             ), array(
+                'cogs_id' => $cogs_id,
                 'date' => $date_revenue,
                 'document_id' => $revenue_id,
                 'title' => $titleJournal,

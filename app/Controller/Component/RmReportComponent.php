@@ -53,6 +53,23 @@ class RmReportComponent extends Component {
 								if( count($value) == 1 ) {
 									$field = 'year';
 									$value = $search_value = implode(',', $value);
+								} else {
+									$from_month = Common::hashEmptyField($value, 'month');
+									$from_year = Common::hashEmptyField($value, 'year');
+
+									if( !empty($from_month) && !empty($from_year) ) {
+										$field = 'dateFrom';
+										$value = $search_value = __('%s-%s', $from_year, $from_month);
+									}
+								}
+								break;
+							case 'to':
+								$to_year = Common::hashEmptyField($value, 'year');
+								$to_month = Common::hashEmptyField($value, 'month');
+
+								if( !empty($to_year) && !empty($to_month) ) {
+									$field = 'dateTo';
+									$value = $search_value = __('%s-%s', $to_year, $to_month);
 								}
 								break;
 							default:
@@ -87,7 +104,7 @@ class RmReportComponent extends Component {
 							'field' => $field,
 							'value' => $value,
 						);
-						$dataSave['Search'][$field] = $search_value;
+						$dataSave['Search'][$field] = !empty($search_value)?$search_value:false;
 					}
 				}
 			}
@@ -4189,6 +4206,147 @@ class RmReportComponent extends Component {
 			'data' => $result,
 			'last_id' => $last_id,
 			'model' => 'Truck',
+		);
+	}
+
+	function _callCogsDisplay ( $value, $default_options ) {
+		$id = Common::hashEmptyField($value, 'Cogs.id');
+		$parent_id = Common::hashEmptyField($value, 'Cogs.parent_id');
+		$children = Common::hashEmptyField($value, 'children');
+		$result = array();
+
+		if( empty($children) ) {
+			$options = $default_options;
+			$options['conditions']['Journal.cogs_id'] = $id;
+
+            $optionsRev = $options;
+            $optionsRev['conditions']['Journal.type'] = array( 'in','revenue','general_ledger','invoice_payment','asset_selling' );
+            $summaryRev = $this->controller->User->Journal->find('first', $optionsRev);
+
+            $optionsExp = $options;
+            $optionsExp['conditions']['Journal.type'] = array( 'out','document_payment','insurance_payment','lku_payment','ksu_payment','laka_payment','leasing_payment','po_payment','uang_Jalan_commission_payment','biaya_ttuj_payment' );
+            $summaryExp = $this->controller->User->Journal->find('first', $optionsExp);
+
+            $optionsMaintain = $options;
+            $optionsMaintain['conditions']['Journal.type'] = array( 'spk_payment' );
+            $summaryMaintain = $this->controller->User->Journal->find('first', $optionsMaintain);
+
+            $revenue = Common::hashEmptyField($summaryRev, 'Journal.total_debit', 0);
+            $expense = Common::hashEmptyField($summaryExp, 'Journal.total_credit', 0);
+            $maintenance = Common::hashEmptyField($summaryMaintain, 'Journal.total_credit', 0);
+            $out = $expense + $maintenance;
+            $er = 0;
+            $gross_profit = $revenue - $out;
+
+            if( !empty($out) ) {
+                $er = $out / $revenue;
+            }
+
+			$revenue = Common::getFormatPrice($revenue);
+			$expense = Common::getFormatPrice($expense);
+			$maintenance = Common::getFormatPrice($maintenance);
+			$gross_profit = Common::getFormatPrice($gross_profit);
+
+			if( !empty($parent_id) ) {
+            	$excel = array();
+			} else {
+	            $excel = array(
+	    			'bold' => true,
+				);
+			}
+        } else {
+        	$revenue = '';
+            $expense = '';
+            $maintenance = '';
+            $out = '';
+            $er = '';
+            $gross_profit = '';
+            $excel = array(
+    			'bold' => true,
+			);
+        }
+		
+		$result = array(
+			__('Cost Center') => array(
+				'text' => Common::hashEmptyField($value, 'Cogs.name'),
+        		'excel' => $excel,
+			),
+			__('Revenue') => array(
+				'text' => $revenue,
+			),
+			__('Expense') => array(
+				'text' => $expense,
+			),
+			__('Maintenance') => array(
+				'text' => $maintenance,
+			),
+			__('Gross Profit') => array(
+				'text' => $gross_profit,
+			),
+			__('E/R (%)') => array(
+				'text' => $er,
+			),
+		);
+
+		if( !empty($children) ) {
+	    	foreach ($children as $key => $child) {
+	    		$result = array_merge($result, $this->_callCogsDisplay($child, $default_options));
+	    	}
+	    }
+
+		return $result;
+	}
+
+	function _callDataProfit_loss_per_point ( $params, $limit = 30, $offset = 0, $view = false ) {
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+
+        $date_from = Common::hashEmptyField($params, 'named.dateFrom');
+        $date_to = Common::hashEmptyField($params, 'named.dateTo');
+		$result = array();
+
+        if( empty($offset) ) {
+	        $options = $this->controller->User->Journal->getData('paginate', array(
+	            'conditions' => array(
+	                'DATE_FORMAT(Journal.date, \'%Y-%m-%d\') >=' => $date_from,
+	                'DATE_FORMAT(Journal.date, \'%Y-%m-%d\') <=' => $date_to,
+	            ),
+	            'contain' => false,
+	            'group' => array(
+	                'Journal.cogs_id',
+	            ),
+	        ), true, array(
+	            'type' => 'active',
+	        ));
+            $options['contain'] = array(
+                'JournalVoid',
+            );
+			$options = $this->controller->User->Journal->_callRefineParams($params, $options);
+
+			$data = $this->controller->User->Cogs->getData('threaded', array(
+	            'conditions' => array(
+	                'Cogs.status' => 1,
+	            ),
+	            'order' => array(
+	                'Cogs.order_sort' => 'ASC',
+	                'Cogs.order' => 'ASC',
+	                'Cogs.code' => 'ASC',
+	            )
+	        ));
+
+			if( !empty($data) ) {
+				foreach ($data as $key => $value) {
+					$result = array_merge($result, $this->_callCogsDisplay($value, $options));
+				}
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'model' => 'Cogs',
 		);
 	}
 

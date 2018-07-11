@@ -205,7 +205,7 @@ modelName<?php
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
-							echo $this->Form->label('CogsSetting.PurchaseOrderPayment.cogs_id', __('Pembayaran PO'));
+							echo $this->Form->label('CogsSetting.PurchaseOrderPayment.cogs_id', __('Pembayaran PO/SPK'));
 					?>
 				</div>
 				<div class="col-sm-4">
@@ -222,6 +222,8 @@ modelName<?php
 				</div>
 			</div>
         </div>
+        <?php
+        /*
         <div class="form-group">
 			<div class="row">
 				<div class="col-sm-4">
@@ -243,6 +245,8 @@ modelName<?php
 				</div>
 			</div>
         </div>
+        */
+        ?>
         <div class="form-group">
 			<div class="row">
 				<div class="col-sm-4">

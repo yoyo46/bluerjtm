@@ -1051,13 +1051,13 @@
                         'general_ledgers', 'journal_report', 'profit_loss',
                         'balance_sheets', 'cash_flows', 'journal_rinci_report',
                         'coas', 'banks', 'coa_setting',
-                        'closing'
+                        'closing', 'profit_loss_per_point'
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
                             'general_ledgers', 'journal_report', 'profit_loss',
                             'balance_sheets', 'cash_flows', 'journal_rinci_report',
-                            'coa_setting', 'closing',
+                            'coa_setting', 'closing', 'profit_loss_per_point'
                         ),
                         'settings' => array(
                             'coas', 'banks',
@@ -1141,6 +1141,14 @@
                                     'escape' => false
                                 )), array(
                                     'class' => ( !empty($active_menu) && $active_menu == 'profit_loss' )?'active':'',
+                                )).
+                                $this->Html->tag('li', $this->Html->link(__('%s Laporan Laba Rugi Per Poin', $this->Common->icon('angle-double-right')), array(
+                                    'controller' => 'cashbanks',
+                                    'action' => 'profit_loss_per_point',
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'profit_loss_per_point' )?'active':'',
                                 )).
                                 $this->Html->tag('li', $this->Html->link(__('%s Laporan Neraca', $this->Common->icon('angle-double-right')), array(
                                     'controller' => 'cashbanks',

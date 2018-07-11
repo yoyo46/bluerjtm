@@ -268,6 +268,7 @@ class SpkPayment extends AppModel {
             $transaction_date = $this->filterEmptyField($data, 'SpkPayment', 'transaction_date');
             $nodoc = $this->filterEmptyField($data, 'SpkPayment', 'nodoc');
             $coa_id = $this->filterEmptyField($data, 'SpkPayment', 'coa_id');
+            $cogs_id = $this->filterEmptyField($data, 'SpkPayment', 'cogs_id');
 
             $vendor = $this->Vendor->getMerge(array(), $vendor_id);
             $vendor_name = $this->filterEmptyField($vendor, 'Vendor', 'name');
@@ -286,6 +287,7 @@ class SpkPayment extends AppModel {
                 'credit' => $coa_id,
                 'debit' => $hutang_usaha_coa_id,
             ), array(
+                'cogs_id' => $cogs_id,
                 'date' => $transaction_date,
                 'document_id' => $id,
                 'title' => $titleJournal,

@@ -582,6 +582,7 @@ class LeasingsController extends AppController {
             $coa_id = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'coa_id');
             $payment_date = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'payment_date');
             $vendor_id = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'vendor_id');
+            $cogs_id = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'cogs_id');
             
             $value = $this->Leasing->Vendor->getMerge($value, $vendor_id);
             $vendor_name = $this->MkCommon->filterEmptyField($value, 'Vendor', 'name');
@@ -658,6 +659,7 @@ class LeasingsController extends AppController {
                                     'credit' => 'leasing_installment_coa_id',
                                     'debit' => $coa_id,
                                 ), array(
+                                    'cogs_id' => $cogs_id,
                                     'date' => $payment_date,
                                     'document_id' => $id,
                                     'title' => $title,
@@ -670,6 +672,7 @@ class LeasingsController extends AppController {
                                     'credit' => 'leasing_installment_rate_coa_id',
                                     'debit' => $coa_id,
                                 ), array(
+                                    'cogs_id' => $cogs_id,
                                     'date' => $payment_date,
                                     'document_id' => $id,
                                     'title' => $title,
@@ -682,6 +685,7 @@ class LeasingsController extends AppController {
                                     'credit' => 'leasing_denda_coa_id',
                                     'debit' => $coa_id,
                                 ), array(
+                                    'cogs_id' => $cogs_id,
                                     'date' => $payment_date,
                                     'document_id' => $id,
                                     'title' => $title,

@@ -12,7 +12,9 @@
 		<div class="head-page">
 			<div class="callout callout-info">
 			    <?php 
-			            echo $this->Html->tag('h4', __('%s Data ditemukan', $this->Common->getFormatPrice($total_data)));
+			    		if( !empty($total_data) ) {
+			            	echo $this->Html->tag('h4', __('%s Data ditemukan', $this->Common->getFormatPrice($total_data)));
+			            }
 
 						if( $document_status == 'completed' ) {
 			            	echo $this->Html->tag('p', __('Klik link dibawah ini utk download laporan:'));

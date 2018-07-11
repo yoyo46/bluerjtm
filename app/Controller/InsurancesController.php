@@ -528,6 +528,7 @@ class InsurancesController extends AppController {
             $coa_id = $this->MkCommon->filterEmptyField($value, 'InsurancePayment', 'coa_id');
             $payment_date = $this->MkCommon->filterEmptyField($value, 'InsurancePayment', 'payment_date');
             $vendor_id = $this->MkCommon->filterEmptyField($value, 'InsurancePayment', 'vendor_id');
+            $cogs_id = $this->MkCommon->filterEmptyField($value, 'InsurancePayment', 'cogs_id');
             
             $value = $this->Insurance->Vendor->getMerge($value, $vendor_id);
             $vendor_name = $this->MkCommon->filterEmptyField($value, 'Vendor', 'name');
@@ -604,6 +605,7 @@ class InsurancesController extends AppController {
                                     'credit' => 'insurance_installment_coa_id',
                                     'debit' => $coa_id,
                                 ), array(
+                                    'cogs_id' => $cogs_id,
                                     'date' => $payment_date,
                                     'document_id' => $id,
                                     'title' => $title,
@@ -616,6 +618,7 @@ class InsurancesController extends AppController {
                                     'credit' => 'insurance_installment_rate_coa_id',
                                     'debit' => $coa_id,
                                 ), array(
+                                    'cogs_id' => $cogs_id,
                                     'date' => $payment_date,
                                     'document_id' => $id,
                                     'title' => $title,
@@ -628,6 +631,7 @@ class InsurancesController extends AppController {
                                     'credit' => 'insurance_denda_coa_id',
                                     'debit' => $coa_id,
                                 ), array(
+                                    'cogs_id' => $cogs_id,
                                     'date' => $payment_date,
                                     'document_id' => $id,
                                     'title' => $title,

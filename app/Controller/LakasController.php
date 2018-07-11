@@ -702,6 +702,7 @@ class LakasController extends AppController {
         $flagPaymentDetail = true;
         $totalPayment = 0;
         $date_payment = $this->MkCommon->filterEmptyField($data, 'LakaPayment', 'date_payment');
+        $cogs_id = $this->MkCommon->filterEmptyField($data, 'LakaPayment', 'cogs_id');
         $data = $this->request->data;
 
         if( !empty($laka_payment_id) ) {
@@ -796,6 +797,7 @@ class LakasController extends AppController {
                     'credit' => $coa_id,
                     'debit' => 'laka_payment_coa_id',
                 ), array(
+                    'cogs_id' => $cogs_id,
                     'date' => $date_payment,
                     'document_id' => $laka_payment_id,
                     'title' => $titleJournal,
@@ -892,6 +894,7 @@ class LakasController extends AppController {
 
                 $value = $this->LakaPayment->LakaPaymentDetail->getMerge($value, $id);
                 $date_payment = $this->MkCommon->filterEmptyField($value, 'LakaPayment', 'date_payment');
+                $cogs_id = $this->MkCommon->filterEmptyField($value, 'LakaPayment', 'cogs_id');
 
                 if(!empty($data['LakaPayment']['canceled_date'])){
                     $data['LakaPayment']['canceled_date'] = $this->MkCommon->filterEmptyField($data, 'LakaPayment', 'canceled_date');
@@ -936,6 +939,7 @@ class LakasController extends AppController {
                                 'credit' => 'laka_payment_coa_id',
                                 'debit' => $coa_id,
                             ), array(
+                                'cogs_id' => $cogs_id,
                                 'date' => $date_payment,
                                 'document_id' => $id,
                                 'title' => $titleJournal,

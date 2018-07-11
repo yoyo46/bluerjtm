@@ -652,6 +652,7 @@ class LkusController extends AppController {
             $customer_id = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'customer_id');
             $coa_id = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'coa_id');
             $transaction_status = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'transaction_status');
+            $cogs_id = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'cogs_id');
 
             $customer = $this->LkuPayment->Customer->getMerge(array(), $customer_id);
             $customer_name = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_name_code');
@@ -753,6 +754,7 @@ class LkusController extends AppController {
                                 'credit' => $coa_id,
                                 'debit' => 'lku_payment_coa_id',
                             ), array(
+                                'cogs_id' => $cogs_id,
                                 'date' => $tgl_bayar,
                                 'document_id' => $lku_payment_id,
                                 'title' => $title,
@@ -1656,6 +1658,7 @@ class LkusController extends AppController {
             $customer_id = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'customer_id');
             $coa_id = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'coa_id');
             $transaction_status = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'transaction_status');
+            $cogs_id = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'cogs_id');
 
             $customer = $this->KsuPayment->Customer->getMerge(array(), $customer_id);
             $customer_name = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_name_code');
@@ -1756,6 +1759,7 @@ class LkusController extends AppController {
                                 'credit' => $coa_id,
                                 'debit' => 'ksu_payment_coa_id',
                             ), array(
+                                'cogs_id' => $cogs_id,
                                 'date' => $tgl_bayar,
                                 'document_id' => $ksu_payment_id,
                                 'title' => $title,
@@ -2087,6 +2091,7 @@ class LkusController extends AppController {
             $no_doc = $this->MkCommon->filterEmptyField($payments, 'LkuPayment', 'no_doc');
             $tgl_bayar = $this->MkCommon->filterEmptyField($payments, 'LkuPayment', 'tgl_bayar');
             $transaction_status = $this->MkCommon->filterEmptyField($payments, 'LkuPayment', 'transaction_status');
+            $cogs_id = $this->MkCommon->filterEmptyField($payments, 'LkuPayment', 'cogs_id');
 
             $customer = $this->LkuPayment->Customer->getMerge(array(), $customer_id);
             $customer_name = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_name_code');
@@ -2151,6 +2156,7 @@ class LkusController extends AppController {
                         'credit' => 'lku_payment_coa_id',
                         'debit' => $coa_id,
                     ), array(
+                        'cogs_id' => $cogs_id,
                         'date' => $tgl_bayar,
                         'document_id' => $id,
                         'title' => $title,
@@ -2198,6 +2204,7 @@ class LkusController extends AppController {
             $no_doc = $this->MkCommon->filterEmptyField($payments, 'KsuPayment', 'no_doc');
             $tgl_bayar = $this->MkCommon->filterEmptyField($payments, 'KsuPayment', 'tgl_bayar');
             $transaction_status = $this->MkCommon->filterEmptyField($payments, 'KsuPayment', 'transaction_status');
+            $cogs_id = $this->MkCommon->filterEmptyField($payments, 'KsuPayment', 'cogs_id');
 
             $customer = $this->KsuPayment->Customer->getMerge(array(), $customer_id);
             $customer_name = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_name_code');
@@ -2262,6 +2269,7 @@ class LkusController extends AppController {
                         'credit' => 'ksu_payment_coa_id',
                         'debit' => $coa_id,
                     ), array(
+                        'cogs_id' => $cogs_id,
                         'date' => $tgl_bayar,
                         'document_id' => $id,
                         'title' => $title,

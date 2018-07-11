@@ -129,6 +129,7 @@ class InsurancePaymentDetail extends AppModel {
 
     function doSave( $data, $id = false ) {
         $coa_id = Common::hashEmptyField($data, 'InsurancePayment.coa_id');
+        $cogs_id = Common::hashEmptyField($data, 'InsurancePayment.cogs_id');
         $payment_date = Common::hashEmptyField($data, 'InsurancePayment.payment_date');
         $nodoc = Common::hashEmptyField($data, 'InsurancePayment.nodoc');
         $note = Common::hashEmptyField($data, 'InsurancePayment.note');
@@ -170,6 +171,7 @@ class InsurancePaymentDetail extends AppModel {
                     'credit' => $coa_id,
                     'debit' => $insurance_coa_id,
                 ), array(
+                    'cogs_id' => $cogs_id,
                     'date' => $payment_date,
                     'document_id' => $id,
                     'title' => $title,

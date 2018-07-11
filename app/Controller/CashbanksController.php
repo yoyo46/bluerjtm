@@ -164,6 +164,7 @@ class CashbanksController extends AppController {
             $total_coa = 0;
             $prepayment_status = false;
 
+            $cogs_id = $this->MkCommon->filterEmptyField($data, 'CashBank', 'cogs_id');
             $document_id = $this->MkCommon->filterEmptyField($data, 'CashBank', 'document_id');
             $document_type = $this->MkCommon->filterEmptyField($data, 'CashBank', 'document_type');
             $document_no = $this->MkCommon->filterEmptyField($data, 'CashBank', 'nodoc');
@@ -364,6 +365,7 @@ class CashbanksController extends AppController {
                                 }
 
                                 $this->User->Journal->setJournal($total, $coaArr, array(
+                                    'cogs_id' => $cogs_id,
                                     'document_id' => $cash_bank_id,
                                     'title' => $title,
                                     'document_no' => $document_no,
@@ -385,6 +387,7 @@ class CashbanksController extends AppController {
                             }
 
                             $this->User->Journal->setJournal($totalCashBank, $coaArr, array(
+                                'cogs_id' => $cogs_id,
                                 'document_id' => $cash_bank_id,
                                 'title' => $title,
                                 'document_no' => $document_no,
@@ -742,6 +745,7 @@ class CashbanksController extends AppController {
             $grand_total = $this->MkCommon->filterEmptyField($locale, 'CashBank', 'grand_total');
             $description = $this->MkCommon->filterEmptyField($locale, 'CashBank', 'description');
             $completed = $this->MkCommon->filterEmptyField($locale, 'CashBank', 'completed');
+            $cogs_id = $this->MkCommon->filterEmptyField($locale, 'CashBank', 'cogs_id');
 
             if($locale['CashBank']['status']){
                 $value = false;
@@ -801,6 +805,7 @@ class CashbanksController extends AppController {
                             }
 
                             $this->User->Journal->setJournal($total, $coaArr, array(
+                                'cogs_id' => $cogs_id,
                                 'document_id' => $id,
                                 'title' => $title,
                                 'document_no' => $nodoc,
@@ -822,6 +827,7 @@ class CashbanksController extends AppController {
                         }
 
                         $this->User->Journal->setJournal($grand_total, $coaArr, array(
+                            'cogs_id' => $cogs_id,
                             'document_id' => $id,
                             'title' => $title,
                             'document_no' => $nodoc,
@@ -864,6 +870,7 @@ class CashbanksController extends AppController {
             $document_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'document_id');
             $document_coa_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'coa_id');
             $receiver_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'receiver_id');
+            $cogs_id = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'cogs_id');
 
             $tgl_cash_bank = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'tgl_cash_bank');
             $document_type = $this->MkCommon->filterEmptyField($cashbank, 'CashBank', 'document_type');
@@ -1083,6 +1090,7 @@ class CashbanksController extends AppController {
                                                 }
 
                                                 $this->User->Journal->setJournal($total, $coaArr, array(
+                                                    'cogs_id' => $cogs_id,
                                                     'document_id' => $id,
                                                     'title' => $title,
                                                     'document_no' => $nodoc,
@@ -1102,6 +1110,7 @@ class CashbanksController extends AppController {
                                             }
 
                                             $this->User->Journal->setJournal($grand_total, $coaArr, array(
+                                                'cogs_id' => $cogs_id,
                                                 'document_id' => $id,
                                                 'title' => $title,
                                                 'document_no' => $nodoc,
@@ -2496,6 +2505,11 @@ class CashbanksController extends AppController {
                                 
                                 $debit = str_replace(array('*',' ',','), array('','',''), $debit);
                                 $kredit = str_replace(array('*',' ',','), array('','',''), $kredit);
+                                $tgl_tmp = Common::formatDate($tgl, 'Y-m-d');
+
+                                if( $tgl_tmp == '1970-01-01' ) {
+                                    $tgl = Common::getDate($tgl);
+                                }
 
                                 $coa = $this->User->Coa->getData('first', array(
                                     'conditions' => array(
@@ -2559,5 +2573,102 @@ class CashbanksController extends AppController {
             }
             $this->redirect(array('action'=>'import_journal'));
         }
+    }
+
+    function profit_loss_per_point () {
+        $module_title = $sub_module_title = __('Laporan Laba Rugi Per Poin');
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $values = $this->User->Cogs->getData('threaded', array(
+            'conditions' => array(
+                'Cogs.status' => 1,
+            ),
+            'order' => array(
+                'Cogs.order_sort' => 'ASC',
+                'Cogs.order' => 'ASC',
+                'Cogs.code' => 'ASC',
+            )
+        ));
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'monthFrom' => $dateFrom,
+            'monthTo' => $dateTo,
+        ));
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'MonthFrom');
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'MonthTo');
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $sub_module_title = sprintf('%s - Periode %s', $module_title, $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
+        } else {
+            $sub_module_title = false;
+        }
+
+        $this->set('active_menu', 'profit_loss');
+        $this->set(compact(
+            'values', 'module_title', 'dateFrom',
+            'dateTo', 'sub_module_title'
+        ));
+    }
+
+    function profit_loss_per_point_amount ( $id = NULL, $dateFrom = NULL, $dateTo = NULL ) {
+        $this->User->Journal->virtualFields['total_debit'] = 'SUM(Journal.debit)';
+        $this->User->Journal->virtualFields['total_credit'] = 'SUM(Journal.credit)';
+
+        $value = $this->User->Journal->Cogs->getMerge(array(), $id);
+
+        $parent_id = Common::hashEmptyField($value, 'Cogs.parent_id');
+        $result = array();
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $options = $this->User->Journal->getData('paginate', array(
+                'conditions' => array(
+                    'Journal.cogs_id' => $id,
+                    'DATE_FORMAT(Journal.date, \'%Y-%m-%d\') >=' => $dateFrom,
+                    'DATE_FORMAT(Journal.date, \'%Y-%m-%d\') <=' => $dateTo,
+                ),
+                'contain' => false,
+                'group' => array(
+                    'Journal.cogs_id',
+                ),
+            ), true, array(
+                'type' => 'active',
+            ));
+            $options['contain'] = array(
+                'JournalVoid',
+            );
+
+            $optionsRev = $options;
+            $optionsRev['conditions']['Journal.type'] = array( 'in','revenue','general_ledger','invoice_payment','asset_selling' );
+            $summaryRev = $this->User->Journal->find('first', $optionsRev);
+
+            $optionsExp = $options;
+            $optionsExp['conditions']['Journal.type'] = array( 'out','document_payment','insurance_payment','lku_payment','ksu_payment','laka_payment','leasing_payment','po_payment','uang_Jalan_commission_payment','biaya_ttuj_payment' );
+            $summaryExp = $this->User->Journal->find('first', $optionsExp);
+
+            $optionsMaintain = $options;
+            $optionsMaintain['conditions']['Journal.type'] = array( 'spk_payment' );
+            $summaryMaintain = $this->User->Journal->find('first', $optionsMaintain);
+
+            $revenue = Common::hashEmptyField($summaryRev, 'Journal.total_debit', 0);
+            $expense = Common::hashEmptyField($summaryExp, 'Journal.total_credit', 0);
+            $maintenance = Common::hashEmptyField($summaryMaintain, 'Journal.total_credit', 0);
+            $out = $expense + $maintenance;
+            $er = 0;
+
+            if( !empty($out) ) {
+                $er = $out / $revenue;
+            }
+
+            $result['revenue'] = $revenue;
+            $result['expense'] = $expense;
+            $result['maintenance'] = $maintenance;
+            $result['gross-profit'] = $revenue - $out;
+            $result['er'] = $er;
+        }
+
+        $this->set(compact(
+            'result', 'id', 'tmpDateFrom', 'coa_type'
+        ));
+        $this->render('profit_loss_per_point_amount');
     }
 }
