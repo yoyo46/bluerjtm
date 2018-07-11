@@ -1051,13 +1051,15 @@
                         'general_ledgers', 'journal_report', 'profit_loss',
                         'balance_sheets', 'cash_flows', 'journal_rinci_report',
                         'coas', 'banks', 'coa_setting',
-                        'closing', 'profit_loss_per_point'
+                        'closing', 'profit_loss_per_point',
+                        'budgets',
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
                             'general_ledgers', 'journal_report', 'profit_loss',
                             'balance_sheets', 'cash_flows', 'journal_rinci_report',
-                            'coa_setting', 'closing', 'profit_loss_per_point'
+                            'coa_setting', 'closing', 'profit_loss_per_point',
+                            'budgets'
                         ),
                         'settings' => array(
                             'coas', 'banks',
@@ -1101,6 +1103,14 @@
                                     'escape' => false
                                 )), array(
                                     'class' => ( $active_menu == 'coa_setting' )?'active':'',
+                                )).
+                                $this->Html->tag('li', $this->Html->link(__('%s Budget', $this->Common->icon('angle-double-right')), array(
+                                    'controller' => 'cashbanks',
+                                    'action' => 'budgets'
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'budgets' )?'active':'',
                                 )).
                                 $this->Html->tag('li', $this->Html->link(__('%s Closing', $this->Common->icon('angle-double-right')), array(
                                     'controller' => 'cashbanks',

@@ -2671,4 +2671,194 @@ class CashbanksController extends AppController {
         ));
         $this->render('profit_loss_per_point_amount');
     }
+
+    function budgets(){
+        $this->loadModel('Budget');
+        $options = array();
+
+        if(!empty($this->params['named'])){
+            $refine = $this->params['named'];
+
+            if(!empty($refine['name'])){
+                $name = urldecode($refine['name']);
+                $this->request->data['Search']['name'] = $name;
+                $coas = $this->User->Journal->Coa->getData('list', array(
+                    'conditions' => array(
+                        'OR' => array(
+                            'Coa.code LIKE' => '%'.$name.'%',
+                            'Coa.name LIKE' => '%'.$name.'%',
+                        ),
+                    ),
+                    'fields' => array(
+                        'Coa.id',
+                    ),
+                ));
+                $options['conditions']['Budget.coa_id'] = $coas;
+            }
+        }
+
+        $this->paginate = $this->Budget->getData('paginate', $options);
+        $values = $this->paginate('Budget');
+        $values = $this->Budget->getMergeList($values, array(
+            'contain' => array(
+                'Coa',
+            ),
+        ));
+
+        $this->set('active_menu', 'budgets');
+        $this->set('sub_module_title', __('Budget'));
+        $this->set('values', $values);
+    }
+
+    function budget_add(){
+        $this->set('sub_module_title', __('Tambah Budget'));
+        $this->doBudget();
+    }
+
+    function budget_edit($id){
+        $this->set('sub_module_title', __('Edit Budget'));
+        $value = $this->User->Journal->Coa->Budget->getData('first', array(
+            'conditions' => array(
+                'Budget.id' => $id
+            )
+        ));
+
+        if(!empty($value)){
+            $value = $this->User->Journal->Coa->Budget->getMergeList($value, array(
+                'contain' => array(
+                    'BudgetDetail',
+                ),
+            ));
+            $this->doBudget($id, $value);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Budget tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'settings',
+                'action' => 'budgets'
+            ));
+        }
+    }
+
+    function doBudget($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+
+            if($id && $data_local){
+                $this->User->Journal->Coa->Budget->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->User->Journal->Coa->Budget->create();
+                $msg = 'menambah';
+            }
+            $this->User->Journal->Coa->Budget->set($data);
+            $dataDetail = array();
+            $validateDetail = true;
+
+            if( !empty($data['BudgetDetail']['budget']) ) {
+                foreach ($data['BudgetDetail']['budget'] as $key => $budget) {
+                    if( !empty($budget) ) {
+                        $dataTemp = array(
+                            'month' => date('m', mktime(0, 0, 0, $key+1, 1, date("Y"))),
+                            'budget' => $budget,
+                        );
+                        $this->User->Journal->Coa->Budget->BudgetDetail->set($dataTemp);
+
+                        if( !$this->User->Journal->Coa->Budget->BudgetDetail->validates() ) {
+                            $validateDetail = false;
+                        }
+                    }
+                }
+            }
+
+            if( $this->User->Journal->Coa->Budget->validates($data) && $validateDetail ){
+                if($this->User->Journal->Coa->Budget->save($data)){
+                    $id = $this->User->Journal->Coa->Budget->id;
+
+                    if( !empty($data['BudgetDetail']['budget']) ) {
+                        $idx = 0;
+                        foreach ($data['BudgetDetail']['budget'] as $key => $budget) {
+                            if( !empty($budget) ) {
+                                $dataDetail[$idx]['BudgetDetail'] = array(
+                                    'budget_id' => $id,
+                                    'month' => date('m', mktime(0, 0, 0, $key+1, 1, date("Y"))),
+                                    'budget' => Common::_callPriceConverter($budget),
+                                );
+                                $idx++;
+                            }
+                        }
+                    }
+
+                    $this->User->Journal->Coa->Budget->BudgetDetail->deleteAll(array( 
+                        'BudgetDetail.budget_id' => $id,
+                    ));
+
+                    $this->User->Journal->Coa->Budget->BudgetDetail->saveMany( $dataDetail );
+
+                    $this->params['old_data'] = $data_local;
+                    $this->params['data'] = $data;
+
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Budget'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Budget #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+                    $this->redirect(array(
+                        'controller' => 'cashbanks',
+                        'action' => 'budgets'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Budget'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Budget #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Budget'), $msg), 'error');
+            }
+        }else{
+            if($id && $data_local){
+                $this->request->data = $data_local;
+
+                if( !empty($this->request->data['BudgetDetail']) ) {
+                    $budgetDetail = $this->request->data['BudgetDetail'];
+                    unset($this->request->data['BudgetDetail']);
+
+                    foreach ($budgetDetail as $key => $value) {
+                        $this->request->data['BudgetDetail']['budget'][$value['BudgetDetail']['month']-1] = $value['BudgetDetail']['budget'];
+                    }
+                }
+            }
+        }
+
+        $coas = $this->User->Journal->Coa->_callOptGroup();
+        $this->MkCommon->_layout_file('select');
+
+        $this->set('active_menu', 'budgets');
+        $this->set('coas', $coas);
+        $this->render('budget_form');
+    }
+
+    function budget_toggle($id){
+        $locale = $this->User->Journal->Coa->Budget->getData('first', array(
+            'conditions' => array(
+                'Budget.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['Budget']['status']){
+                $value = false;
+            }
+
+            $this->User->Journal->Coa->Budget->id = $id;
+            $this->User->Journal->Coa->Budget->set('status', $value);
+            if($this->User->Journal->Coa->Budget->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Budget ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Budget ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Budget tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
+    }
 }
