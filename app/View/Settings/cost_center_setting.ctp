@@ -1,4 +1,4 @@
-modelName<?php
+<?php
 		$this->Html->addCrumb(__('Pengaturan Cost Center'));
 
 		echo $this->Form->create('CogsSetting', array(

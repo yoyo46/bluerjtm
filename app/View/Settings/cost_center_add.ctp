@@ -1,7 +1,7 @@
 <?php
 		$this->Html->addCrumb(__('Cost Center'), array(
 			'controller' => 'settings',
-			'action' => 'cogs'
+			'action' => 'cost_centers'
 		));
 		$this->Html->addCrumb($sub_module_title);
 		$cogsCode = '';
@@ -65,7 +65,7 @@
 					'type' => 'submit',
 				));
 	    		echo $this->Html->link(__('Kembali'), array(
-					'action' => 'cogs', 
+					'action' => 'cost_centers', 
 				), array(
 					'class'=> 'btn btn-default',
 				));

@@ -6197,7 +6197,7 @@ class SettingsController extends AppController {
         }
     }
 
-    public function cogs() {
+    public function cost_centers() {
         $values = $this->User->Cogs->getData('threaded', array(
             'conditions' => array(
                 'Cogs.status' => 1
@@ -6214,7 +6214,7 @@ class SettingsController extends AppController {
         $this->set('values', $values);
     }
 
-    public function cogs_add( $parent_id = false ) {
+    public function cost_center_add( $parent_id = false ) {
         $value = false;
 
         if( !empty($parent_id) ) {
@@ -6239,7 +6239,7 @@ class SettingsController extends AppController {
         $this->doCogs( false, false, $parent_id, $value );
     }
 
-    public function cogs_edit( $id = false, $parent_id = false ) {
+    public function cost_center_edit( $id = false, $parent_id = false ) {
         $value = false;
 
         if( !empty($id) ) {
@@ -6307,7 +6307,7 @@ class SettingsController extends AppController {
 
                     $this->redirect(array(
                         'controller' => 'settings',
-                        'action' => 'cogs'
+                        'action' => 'cost_centers'
                     ));
                 }else{
                     $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Cost Center'), $msg), 'error'); 
@@ -6322,15 +6322,15 @@ class SettingsController extends AppController {
             }
         }
 
-        $this->set('active_menu', 'cogs');
+        $this->set('active_menu', 'cost_centers');
         $this->set('module_title', 'Cost Center');
         $this->set(compact(
             'parent_id'
         ));
-        $this->render('cogs_add');
+        $this->render('cost_center_add');
     }
 
-    function cogs_toggle($id){
+    function cost_center_toggle($id){
         $locale = $this->User->Cogs->getData('first', array(
             'conditions' => array(
                 'Cogs.id' => $id
@@ -6359,7 +6359,7 @@ class SettingsController extends AppController {
         $this->redirect($this->referer());
     }
 
-    public function cogs_setting() {
+    public function cost_center_setting() {
         $values = $this->User->Cogs->CogsSetting->getData('all');
         $data = $this->request->data;
 
@@ -6382,7 +6382,7 @@ class SettingsController extends AppController {
                 $this->Log->logActivity( sprintf(__('Sukses menyimpan pengaturan Cost Center #%s'), $transaction_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $transaction_id );
                 $this->redirect(array(
                     'controller' => 'settings',
-                    'action' => 'cogs_setting'
+                    'action' => 'cost_center_setting'
                 ));
             }else{
                 $this->MkCommon->setCustomFlash(__('Gagal menyimpan pengaturan Cost Center'), 'error');
@@ -6391,6 +6391,6 @@ class SettingsController extends AppController {
         }
         
         $this->request->data = $this->RjSetting->_callBeforeRenderCogsSetting($this->request->data, $values);
-        $this->set('active_menu', 'cogs_setting');
+        $this->set('active_menu', 'cost_center_setting');
     }
 }

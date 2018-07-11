@@ -1720,14 +1720,14 @@
 
                     $dataMenu = array(
                         'settings' => array(
-                            'cogs', 'cogs_setting'
+                            'cost_centers', 'cost_center_setting'
                         ),
                     );
 
                     if( $this->Common->allowMenu( $dataMenu ) ) {
                         $activeSetting = false;
                         $settingMenu = array(
-                            'cogs', 'cogs_setting'
+                            'cost_centers', 'cost_center_setting'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1737,26 +1737,26 @@
             <li class="treeview <?php echo $activeSetting; ?>">
                 <a href="#">
                     <i class="fa fa-wrench"></i>
-                    <span>COGS</span>
+                    <span>Cost Center</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
                     <?php 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Cost Center', array(
                                 'controller' => 'settings',
-                                'action' => 'cogs',
+                                'action' => 'cost_centers',
                             ), array(
                                 'escape' => false
                             )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'cogs' )?'active':'',
+                                'class' => ( !empty($active_menu) && $active_menu == 'cost_centers' )?'active':'',
                             ));
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pengaturan Cost Center', array(
                                 'controller' => 'settings',
-                                'action' => 'cogs_setting',
+                                'action' => 'cost_center_setting',
                             ), array(
                                 'escape' => false
                             )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'cogs_setting' )?'active':'',
+                                'class' => ( !empty($active_menu) && $active_menu == 'cost_center_setting' )?'active':'',
                             ));
                     ?>
                 </ul>

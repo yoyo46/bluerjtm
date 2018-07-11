@@ -5,33 +5,15 @@
     <div class="box-header">
         <h3 class="box-title"><?php echo __('Cost Center');?></h3>
         <div class="box-tools">
-            <div class="btn-group pull-right">
-                <?php 
-                        echo $this->Html->tag('button', '<i class="fa fa-plus"></i> Tambah', array(
-                            'data-toggle' => 'dropdown',
-                            'class' => 'btn btn-app btn-success dropdown-toggle'
-                        ));
-                ?>
-                <ul class="dropdown-menu" role="menu">
-                    <?php 
-                            echo $this->Html->tag('li', $this->Html->link(__('Cost Center'), array(
-                                'controller' => 'settings',
-                                'action' => 'cogs_add'
-                            ), array(
-                                'escape' => false,
-                            )));
-                            echo $this->Html->tag('li', '', array(
-                                'class' => 'divider',
-                            ));
-                            echo $this->Html->tag('li', $this->Html->link(__('Import Excel'), array(
-                                'controller' => 'settings',
-                                'action' => 'cogs_import'
-                            ), array(
-                                'escape' => false,
-                            )));
-                    ?>
-                </ul>
-            </div>
+            <?php
+                echo $this->Html->link('<i class="fa fa-plus"></i> Cost Center', array(
+                    'controller' => 'settings',
+                    'action' => 'cost_center_add'
+                ), array(
+                    'escape' => false,
+                    'class' => 'btn btn-app pull-right'
+                ));
+            ?>
         </div>
     </div><!-- /.box-header -->
     <div class="box-body">

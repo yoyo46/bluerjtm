@@ -2912,7 +2912,7 @@ class CommonHelper extends AppHelper {
         ));
         $dataTree .= $this->Html->link('<i class="fa fa-plus-circle"></i>', array(
             'controller' => 'settings',
-            'action' => 'cogs_add',
+            'action' => 'cost_center_add',
             $cogs_id,
         ), array(
             'escape' => false,
@@ -2921,7 +2921,7 @@ class CommonHelper extends AppHelper {
 
         $dataTree .= $this->Html->link('<i class="fa fa-pencil-square-o"></i>', array(
             'controller' => 'settings',
-            'action' => 'cogs_edit',
+            'action' => 'cost_center_edit',
             $cogs_id,
             $data['Cogs']['parent_id'],
         ), array(
@@ -2932,7 +2932,7 @@ class CommonHelper extends AppHelper {
         
         $dataTree .= $this->Html->link('<i class="fa fa-minus-circle"></i>', array(
             'controller' => 'settings',
-            'action' => 'cogs_toggle',
+            'action' => 'cost_center_toggle',
             $cogs_id,
         ), array(
             'escape' => false,
