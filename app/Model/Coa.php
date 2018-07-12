@@ -311,5 +311,43 @@ class Coa extends AppModel {
         
         return $default_options;
     }
+
+    function _callGenerateParent ( $values, $data ) {
+        $result = array();
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $flag = false;
+                $id = Common::hashEmptyField($value, 'Coa.id');
+                $name = Common::hashEmptyField($value, 'Coa.coa_name');
+                $children = Common::hashEmptyField($value, 'children');
+                $result_tmp = array();
+
+                if( !empty($children) ) {
+                    $tmp = $this->_callGenerateParent($children, $data);
+                    $result_tmp = Common::hashEmptyField($tmp, 'data');
+                    $flag = Common::hashEmptyField($tmp, 'flag');
+                }
+
+                if( !empty($data[$id]) && empty($flag) ) {
+                    $flag = true;
+                }
+
+                if( !empty($flag) ) {
+                    $result[$id] = array(
+                        'name' => $name,
+                    );
+
+                    if( !empty($result_tmp) ) {
+                        $result[$id] = $result[$id] + $result_tmp;
+                    }
+                }
+            }
+        }
+
+        return array(
+            'data' => $result,
+            'flag' => $flag,
+        );
+    }
 }
 ?>

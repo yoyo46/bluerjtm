@@ -4350,6 +4350,314 @@ class RmReportComponent extends Component {
 		);
 	}
 
+	function _callBudgetRecursive ( $options ) {
+		$data = Common::hashEmptyField($options, 'data');
+		$tmp = Common::hashEmptyField($options, 'tmp');
+		$params = Common::hashEmptyField($options, 'params');
+		$summaryBalances = Common::hashEmptyField($options, 'summaryBalances');
+		$summaryBudgets = Common::hashEmptyField($options, 'summaryBudgets');
+		$view = Common::hashEmptyField($options, 'view');
+		$result = Common::hashEmptyField($options, 'result', array());
+
+		$data = Common::hashEmptyField($data, 'data');
+		$dateFrom = Common::hashEmptyField($params, 'named.dateFrom');
+		$MonthFrom = Common::hashEmptyField($params, 'named.MonthFrom', $dateFrom);
+		$dateTo = Common::hashEmptyField($params, 'named.dateTo');
+		$MonthTo = Common::hashEmptyField($params, 'named.MonthTo', $dateTo);
+		$flag = true;
+		$monthHeaderArr = array();
+		$MonthFromTmp = $MonthFrom;
+
+		if( !empty($view) ) {
+			$width = false;
+		} else {
+			$width = 15;
+		}
+
+
+		while ($flag) {
+			$month_name = Common::formatDate($MonthFromTmp, 'F Y');
+			$month = Common::formatDate($MonthFromTmp, 'Ym');
+
+			$monthHeaderArr[$month_name] = array(
+				'text' => $month_name,
+                'data-options' => 'field:\'month_'.$month.'\',width:100',
+                'align' => 'center',
+        		'excel' => array(
+        			'headercolspan' => 2,
+        			'align' => 'center',
+    			),
+                'child' => array(
+                	__('Budget') => array(
+						'name' => __('Budget'),
+						'text' => '',
+		                'style' => 'text-align: right;',
+		                'data-options' => 'field:\'month_budget_'.$month.'\',width:120',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+						'width' => $width,
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+            		),
+                	__('Saldo') => array(
+						'name' => __('Saldo'),
+						'text' => '',
+		                'style' => 'text-align: right;',
+		                'data-options' => 'field:\'month_saldo_'.$month.'\',width:120,styler:targetBudget',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+        				'rel' => $month,
+						'width' => $width,
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+            		),
+            	),
+			);
+
+			$nextMonth = strtotime('+1 MONTH', strtotime($MonthFromTmp));
+			$MonthFromTmp = date('Y-m', $nextMonth);
+
+			if( $MonthFromTmp > $MonthTo ) {
+				$flag = false;
+			}
+		}
+
+		if( !empty($data) ) {
+			foreach ($data as $id => $value) {
+				$name = Common::hashEmptyField($value, 'name');
+
+				if( !empty($view) ) {
+					$label = $this->Html->tag('strong', $name);
+				} else {
+					$label = $name;
+				}
+
+				$result[] = array_merge(array(
+					__('COA') => array(
+						'text' => $label,
+                		'field_model' => 'Coa.coa_name',
+		                'style' => 'text-align: left;font-weight:bold;',
+		                'data-options' => 'field:\'coa_name\',width:250',
+                		'excel' => array(
+                			'bold' => true,
+        					'headerrowspan' => 2,
+            			),
+            			// 'rowspan' => 2,
+                		'fix_column' => true,
+					),
+				), $monthHeaderArr);
+
+				if( !empty($tmp[$id]) ) {
+					foreach ($tmp[$id] as $key => $coa) {
+						$coa_id = Common::hashEmptyField($coa, 'Coa.id');
+						$coa_name = Common::hashEmptyField($coa, 'Coa.coa_name');
+
+						$MonthFromTmp = $MonthFrom;
+						$flag = true;
+						$monthArr = array();
+
+						while ($flag) {
+							$month_name = Common::formatDate($MonthFromTmp, 'F Y');
+							$month = Common::formatDate($MonthFromTmp, 'Y_m');
+							$balance = Common::hashEmptyField($summaryBalances, __('%s-%s', $coa_id, $MonthFromTmp), 0);
+							$budget = Common::hashEmptyField($summaryBudgets, __('%s-%s', $coa_id, $MonthFromTmp), 0);
+
+							$monthArr[$month_name] = array(
+								'text' => $month_name,
+				                'style' => 'text-align: center;',
+				                'data-options' => 'field:\'month_'.$month.'\',width:100',
+				                'align' => 'center',
+				        		'excel' => array(
+				        			'headercolspan' => 2,
+        							'align' => 'center',
+				    			),
+				                'child' => array(
+				                	__('Budget') => array(
+										'name' => __('Budget'),
+										'text' => Common::getFormatPrice($budget, 2, '-'),
+						                'style' => 'text-align: right;',
+						                'data-options' => 'field:\'month_budget_'.$month.'\',width:120',
+						                'align' => 'right',
+										'width' => $width,
+				                		'excel' => array(
+				                			'align' => 'right',
+				            			),
+				            		),
+				                	__('Saldo') => array(
+										'name' => __('Saldo'),
+										'text' => Common::getFormatPrice($balance, 2, '-'),
+						                'style' => 'text-align: right;',
+						                'data-options' => 'field:\'month_saldo_'.$month.'\',width:120',
+						                'align' => 'right',
+										'width' => $width,
+				                		'excel' => array(
+				                			'align' => 'right',
+				            			),
+				            		),
+				            	),
+							);
+
+							$nextMonth = strtotime('+1 MONTH', strtotime($MonthFromTmp));
+							$MonthFromTmp = date('Y-m', $nextMonth);
+
+							if( $MonthFromTmp > $MonthTo ) {
+								$flag = false;
+							}
+						}
+
+						$result[] = array_merge(array(
+							__('COA') => array(
+								'text' => $coa_name,
+		                		'field_model' => 'Coa.coa_name',
+				                'style' => 'text-align: left;',
+				                'data-options' => 'field:\'coa_name\',width:250',
+            					// 'rowspan' => 2,
+                				'fix_column' => true,
+							),
+						), $monthArr);
+					}
+				} else {
+					$value = Common::_callUnset($value, array(
+						'name',
+					));
+					$val['data'] = $value;
+
+					$result = $this->_callBudgetRecursive(array(
+			        	'data' => $val,
+			        	'tmp' => $tmp,
+			        	'params' => $params,
+			        	'summaryBalances' => $summaryBalances,
+			        	'summaryBudgets' => $summaryBudgets,
+			        	'result' => $result,
+			    	));
+				}
+			}
+		}
+
+		return $result;
+	}
+
+	function _callDataBudget_report ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('Coa');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+
+		$dateFrom = Common::hashEmptyField($params, 'named.dateFrom');
+		$MonthFrom = Common::hashEmptyField($params, 'named.MonthFrom', $dateFrom);
+		$dateTo = Common::hashEmptyField($params, 'named.dateTo');
+		$MonthTo = Common::hashEmptyField($params, 'named.MonthTo', $dateTo);
+
+		App::import('Helper', 'Html');
+        $this->Html = new HtmlHelper(new View(null));
+
+		$options = array(
+			'conditions' => array(
+				'Coa.level' => 4,
+			),
+			'order' => array(
+				'Coa.parent_id',
+                'Coa.with_parent_code' => 'ASC',
+                'Coa.code' => 'ASC',
+                'Coa.id' => 'ASC',
+			),
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+		$options = $this->controller->Coa->_callRefineParams($params, $options);
+		$this->controller->paginate	= $this->controller->Coa->getData('paginate', $options);
+		$data_tmp = $this->controller->paginate('Coa');
+
+		$result = array();
+		$data = array();
+		$tmp = array();
+		$coa_ids = array();
+
+		if( !empty($data_tmp) ) {
+			foreach ($data_tmp as $key => $value) {
+				$id = Common::hashEmptyField($value, 'Coa.id');
+				$parent_id = Common::hashEmptyField($value, 'Coa.parent_id');
+
+				$tmp[$parent_id][] = $value;
+				$coa_ids[$id] = $id;
+			}
+		}
+
+        $parents = $this->controller->Coa->getData('threaded', array(
+            'conditions' => array(
+                'Coa.level <>' => 4,
+                'Coa.status' => 1,
+            ),
+            'order' => array(
+                'Coa.order_sort' => 'ASC',
+                'Coa.order' => 'ASC',
+                'Coa.code IS NULL' => 'ASC',
+                'Coa.code' => 'ASC',
+            )
+        ));
+        $data = $this->controller->Coa->_callGenerateParent($parents, $tmp);
+
+        $this->controller->User->Journal->virtualFields['balancing'] = 'CASE WHEN Coa.type = \'debit\' THEN SUM(Journal.debit) - SUM(Journal.credit) ELSE SUM(Journal.credit) - SUM(Journal.debit) END';
+        $this->controller->User->Journal->virtualFields['date_month'] = 'DATE_FORMAT(Journal.date, \'%Y-%m\')';
+        $this->controller->User->Journal->virtualFields['index'] = 'CONCAT(Journal.coa_id, \'-\', DATE_FORMAT(Journal.date, \'%Y-%m\'))';
+        $summaryBalances = $this->controller->User->Journal->getData('list', array(
+        	'fields' => array(
+        		'Journal.index',
+        		'Journal.balancing',
+    		),
+            'conditions' => array(
+                'Journal.coa_id' => $coa_ids,
+                'DATE_FORMAT(Journal.date, \'%Y-%m\') >=' => $MonthFrom,
+                'DATE_FORMAT(Journal.date, \'%Y-%m\') <=' => $MonthTo,
+            ),
+            'group' => array(
+                'Journal.coa_id',
+                'DATE_FORMAT(Journal.date, \'%Y-%m\')',
+            ),
+        ));
+
+        $this->controller->Coa->Budget->BudgetDetail->virtualFields['index'] = 'CONCAT(Budget.coa_id, \'-\', CONCAT(Budget.year, \'-\', LPAD(BudgetDetail.month, 2, \'0\')))';
+        $summaryBudgets = $this->controller->Coa->Budget->BudgetDetail->getData('list', array(
+        	'fields' => array(
+        		'BudgetDetail.index',
+        		'BudgetDetail.budget',
+    		),
+            'conditions' => array(
+                'Budget.coa_id' => $coa_ids,
+                'CONCAT(Budget.year, \'-\', LPAD(BudgetDetail.month, 2, \'0\')) >=' => $MonthFrom,
+                'CONCAT(Budget.year, \'-\', LPAD(BudgetDetail.month, 2, \'0\')) <=' => $MonthTo,
+            	'Budget.status' => 1,
+            	'BudgetDetail.status' => 1,
+            ),
+            'contain' => array(
+            	'Budget',
+        	),
+            'group' => array(
+                'Budget.coa_id',
+                'CONCAT(Budget.year, \'-\', LPAD(BudgetDetail.month, 2, \'0\'))',
+            ),
+        ));
+
+        $result = $this->_callBudgetRecursive(array(
+        	'data' => $data,
+        	'tmp' => $tmp,
+        	'params' => $params,
+        	'summaryBalances' => $summaryBalances,
+        	'summaryBudgets' => $summaryBudgets,
+        	'view' => $view,
+    	));
+
+		return array(
+			'data' => $result,
+			'model' => 'Coa',
+		);
+	}
+
 	function _callProcess( $modelName, $id, $value, $data ) {
 		$dataSave = false;
 		$file = false;

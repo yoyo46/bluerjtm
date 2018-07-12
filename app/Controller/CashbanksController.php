@@ -5,7 +5,7 @@ class CashbanksController extends AppController {
         'CashBank', 'DocumentAuth'
     );
     public $components = array(
-        'RjCashBank'
+        'RjCashBank', 'RmReport'
     );
     public $helpers = array(
         'CashBank'
@@ -2860,5 +2860,28 @@ class CashbanksController extends AppController {
         }
 
         $this->redirect($this->referer());
+    }
+
+    public function budget_report() {
+        $monthFrom = date('Y-01');
+        $monthTo = date('Y-m');
+        $params = $this->MkCommon->_callRefineParams($this->params->params, array(
+            'monthFrom' => $monthFrom,
+            'monthTo' => $monthTo,
+        ));
+
+        $dataReport = $this->RmReport->_callDataBudget_report($params, 30, 0, true);
+        $values = Common::hashEmptyField($dataReport, 'data');
+
+        $this->RjCashBank->_callBeforeViewBudgetReports($params);
+        $this->MkCommon->_layout_file(array(
+            'select',
+            'freeze',
+        ));
+        $this->set(array(
+            'values' => $values,
+            'active_menu' => 'budget_report',
+            '_freeze' => true,
+        ));
     }
 }

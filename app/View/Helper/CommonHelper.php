@@ -1022,6 +1022,7 @@ class CommonHelper extends AppHelper {
                 $data_options = !empty($dataColumn['data-options'])?$dataColumn['data-options']:false;
                 $align = !empty($dataColumn['align'])?$dataColumn['align']:false;
                 $mainalign = !empty($dataColumn['mainalign'])?$dataColumn['mainalign']:false;
+                $rel = !empty($dataColumn['rel'])?$dataColumn['rel']:false;
                 $content = false;
                 $addClass = '';
 
@@ -1069,6 +1070,7 @@ class CommonHelper extends AppHelper {
                                 'data-options' => $data_options,
                                 'align' => $align,
                                 'mainalign' => $mainalign,
+                                'rel' => $rel,
                                 'width' => $width,
                             ));
 

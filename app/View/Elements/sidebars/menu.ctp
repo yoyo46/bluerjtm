@@ -1052,14 +1052,14 @@
                         'balance_sheets', 'cash_flows', 'journal_rinci_report',
                         'coas', 'banks', 'coa_setting',
                         'closing', 'profit_loss_per_point',
-                        'budgets',
+                        'budgets', 'budget_report',
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
                             'general_ledgers', 'journal_report', 'profit_loss',
                             'balance_sheets', 'cash_flows', 'journal_rinci_report',
                             'coa_setting', 'closing', 'profit_loss_per_point',
-                            'budgets'
+                            'budgets', 'budget_report'
                         ),
                         'settings' => array(
                             'coas', 'banks',
@@ -1175,6 +1175,14 @@
                                     'escape' => false
                                 )), array(
                                     'class' => ( !empty($active_menu) && $active_menu == 'cash_flows' )?'active':'',
+                                )).
+                                $this->Html->tag('li', $this->Html->link(__('%s Laporan Budget', $this->Common->icon('angle-double-right')), array(
+                                    'controller' => 'cashbanks',
+                                    'action' => 'budget_report'
+                                ), array(
+                                    'escape' => false
+                                )), array(
+                                    'class' => ( !empty($active_menu) && $active_menu == 'budget_report' )?'active':'',
                                 )), array(
                                 'class' => 'treeview-menu',
                             )), array(

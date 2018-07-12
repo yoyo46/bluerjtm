@@ -554,5 +554,22 @@ class RjCashBankComponent extends Component {
 
         return $data;
     }
+
+    function _callBeforeViewBudgetReports( $params ) {
+        $monthFrom = Common::hashEmptyField($params, 'named.monthFrom');
+        $monthTo = Common::hashEmptyField($params, 'named.monthTo');
+        $title = __('Laporan Budget');
+        $period_text = false;
+
+        if( !empty($monthFrom) && !empty($monthTo) ) {
+            $period_text = __('Periode %s', $this->MkCommon->getCombineDate($monthFrom, $monthTo, 'short'));
+        }
+        
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('active_menu', $title);
+        $this->controller->set(compact(
+            'period_text'
+        ));
+    }
 }
 ?>
