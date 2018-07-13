@@ -47,36 +47,30 @@
 </div>
 <div class="form-group">
 	<?php 
-			echo $this->Form->label('Ttuj.from_city_name', __('Tujuan Dari'));
+			echo $this->Form->label('Revenue.from_city_id', __('Tujuan Dari'));
 	?>
 	<div class="row">
 		<div class="col-sm-6">
 			<?php 
-					echo $this->Form->input('Ttuj.from_city_name',array(
+					echo $this->Form->input('Revenue.from_city_id',array(
+						'id' => 'fromCityId',
 						'label'=> false, 
-						'class'=>'form-control',
-						'readonly' => true
-					));
-					echo $this->Form->hidden('Ttuj.from_city_id',array(
-						'label'=> false, 
-						'class'=>'form-control',
+						'class'=>'form-control chosen-select',
 						'readonly' => true,
-						'id' => 'fromCityId'
+						'empty' => __('Dari Kota --'),
+						'options' => !empty($toCities)?$toCities:false,
 					));
 			?>
 		</div>
 		<div class="col-sm-6">
 			<?php 
-					echo $this->Form->input('Ttuj.to_city_name',array(
+					echo $this->Form->input('Revenue.to_city_id',array(
+						'id' => 'toCityId',
 						'label'=> false, 
-						'class'=>'form-control',
+						'class'=>'form-control chosen-select',
 						'readonly' => true,
-					));
-					echo $this->Form->hidden('Ttuj.to_city_id',array(
-						'label'=> false, 
-						'class'=>'form-control',
-						'readonly' => true,
-						'id' => 'toCityId'
+						'empty' => __('Kota Tujuan --'),
+						'options' => !empty($toCities)?$toCities:false,
 					));
 			?>
 		</div>
