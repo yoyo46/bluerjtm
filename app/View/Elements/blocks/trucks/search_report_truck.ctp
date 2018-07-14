@@ -79,18 +79,17 @@
                             ));
                     ?>
                 </div>
-                <div class="form-group action">
-                    <?php
-                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
-                                'div' => false, 
-                                'class'=> 'btn btn-success btn-sm',
-                                'type' => 'submit',
-                            ));
-                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'reports', 
-                            ), array(
-                                'escape' => false, 
-                                'class'=> 'btn btn-default btn-sm',
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Truck.insurance_status',array(
+                                'label'=> __('Asuransi'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Pilih'),
+                                'options' => array(
+                                    'active' => __('Ada Asuransi'),
+                                    'inactive' => __('Tidak Ada Asuransi'),
+                                ),
                             ));
                     ?>
                 </div>
@@ -126,10 +125,27 @@
                             ));
                     ?>
                 </div>
-                <?php 
-                        // Custom Otorisasi
-                        echo $this->Common->getCheckboxBranch();
-                ?>
+                <div class="form-group">
+                    <?php 
+                            // Custom Otorisasi
+                            echo $this->Common->getCheckboxBranch();
+                    ?>
+                </div>
+                <div class="form-group action">
+                    <?php
+                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
+                                'div' => false, 
+                                'class'=> 'btn btn-success btn-sm',
+                                'type' => 'submit',
+                            ));
+                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'action' => 'reports', 
+                            ), array(
+                                'escape' => false, 
+                                'class'=> 'btn btn-default btn-sm',
+                            ));
+                    ?>
+                </div>
             </div>
         </div>
         <?php 

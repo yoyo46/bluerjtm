@@ -199,7 +199,7 @@ class Insurance extends AppModel {
                     break;
                 
                 case 'expired':
-                    $default_options['conditions']['DATE_FORMAT(Insurance.end_date, \'%Y-%m-%d\') >='] = date('Y-m-d');
+                    $default_options['conditions']['DATE_FORMAT(Insurance.end_date, \'%Y-%m-%d\') <'] = date('Y-m-d');
                     break;
             }
         }

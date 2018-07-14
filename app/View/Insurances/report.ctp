@@ -15,7 +15,7 @@
                 'align' => 'center',
             ),
             'start_date' => array(
-                'name' => __('Tgl Asuransi'),
+                'name' => __('Periode Pertanggungan'),
                 'style' => 'text-align: left;vertical-align: middle;',
                 'data-options' => 'field:\'start_date\',width:100',
                 'align' => 'center',

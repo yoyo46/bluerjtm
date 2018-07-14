@@ -101,6 +101,36 @@
                 'sorting' => false,
                 'display' => true,
             ),
+            'nopolis' => array(
+                'name' => __('No. Polis'),
+                'field_model' => 'Insurance.nodoc',
+                'sorting' => false,
+                'display' => false,
+            ),
+            'insurance_name' => array(
+                'name' => __('Nama Asuransi'),
+                'field_model' => 'Insurance.name',
+                'sorting' => false,
+                'display' => false,
+            ),
+            'insurance_to_name' => array(
+                'name' => __('Nama Tertanggung'),
+                'field_model' => 'Insurance.to_name',
+                'sorting' => false,
+                'display' => false,
+            ),
+            'insurance_date' => array(
+                'name' => __('Periode Pertanggungan'),
+                'field_model' => 'Insurance.date',
+                'sorting' => false,
+                'display' => false,
+            ),
+            'insurance_status' => array(
+                'name' => __('Status Asuransi'),
+                'field_model' => 'Insurance.status',
+                'sorting' => false,
+                'display' => false,
+            ),
         );
         $showHideColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'show-hide' );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table', $data_action );
@@ -132,6 +162,9 @@
                 $this->Html->addCrumb($sub_module_title);
                 echo $this->element('blocks/trucks/search_report_truck');
 ?>
+<style>
+    .string{ mso-number-format:\@; }
+</style>
 <section class="content invoice">
     <h2 class="page-header">
         <i class="fa fa-globe"></i> <?php echo __('Laporan Truk');?>
@@ -177,6 +210,32 @@
 
                             $brand_name = $this->Common->filterEmptyField($truck, 'TruckBrand', 'name');
                             $facility_name = $this->Common->filterEmptyField($truck, 'TruckFacility', 'name');
+
+
+                            $nopolis = Common::hashEmptyField($truck, 'Insurance.nodoc');
+                            $insurance_name = Common::hashEmptyField($truck, 'Insurance.name');
+                            $insurance_to_name = Common::hashEmptyField($truck, 'Insurance.to_name');
+                            $start_date = Common::hashEmptyField($truck, 'Insurance.start_date');
+                            $end_date = Common::hashEmptyField($truck, 'Insurance.end_date');
+                            $insurance_status = Common::hashEmptyField($truck, 'Insurance.status');
+
+                            $insurance_date = Common::getCombineDate($start_date, $end_date);
+
+                            if( !empty($nopolis) ) {
+                                $statusArr = Common::_callInsuranceStatus($truck);
+                                $status = Common::hashEmptyField($statusArr, 'status');
+                                $status_color = Common::hashEmptyField($statusArr, 'color');
+
+                                if( $data_action != 'excel' ) {
+                                    $insurance_status = $this->Html->tag('span', $status, array(
+                                        'class' => 'label label-'.$status_color,
+                                    ));
+                                } else {
+                                    $insurance_status = $status;
+                                }
+                            } else {
+                                $insurance_status = false;
+                            }
                             
                             $content = $this->Common->_getDataColumn(str_pad($id, 4, '0', STR_PAD_LEFT), 'Truck', 'id', array(
                                 'class' => 'hide nomor_id',
@@ -243,6 +302,26 @@
                             $content .= $this->Common->_getDataColumn($branch, 'Branch', 'name', array(
                                 'style' => 'text-align: left;',
                                 'class' => 'branch',
+                            ));
+                            $content .= $this->Common->_getDataColumn($nopolis, 'Insurance', 'nodoc', array(
+                                'style' => 'text-align: left;',
+                                'class' => 'hide nopolis string',
+                            ));
+                            $content .= $this->Common->_getDataColumn($insurance_name, 'Insurance', 'name', array(
+                                'style' => 'text-align: left;',
+                                'class' => 'hide insurance_name',
+                            ));
+                            $content .= $this->Common->_getDataColumn($insurance_to_name, 'Insurance', 'to_name', array(
+                                'style' => 'text-align: left;',
+                                'class' => 'hide insurance_to_name',
+                            ));
+                            $content .= $this->Common->_getDataColumn($insurance_date, 'Insurance', 'date', array(
+                                'style' => 'text-align: center;',
+                                'class' => 'hide insurance_date string',
+                            ));
+                            $content .= $this->Common->_getDataColumn($insurance_status, 'Insurance', 'status', array(
+                                'style' => 'text-align: center;',
+                                'class' => 'hide insurance_status',
                             ));
 
                             echo $this->Html->tag('tr', $content);

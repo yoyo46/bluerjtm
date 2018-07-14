@@ -189,13 +189,25 @@ class TrucksController extends AppController {
                         )
                     )
                 ));
+                $insurance = $this->Truck->InsuranceDetail->getData('first', array(
+                    'conditions' => array(
+                        'InsuranceDetail.truck_id' => $id,
+                        'Insurance.status' => 1,
+                    ),
+                    'contain' => array(
+                        'Insurance',
+                    ),
+                    'order' => array(
+                        'Insurance.end_date' => 'DESC',
+                    ),
+                ));
                 
                 $_show_perlengkapan = true;
                 $sub_module_title = __('Detail Truk');
                 $this->set('active_menu', 'trucks');
                 $this->set(compact(
                     'truck', 'sub_module_title', 'truckPerlengkapans',
-                    '_show_perlengkapan', 'leasing'
+                    '_show_perlengkapan', 'leasing', 'insurance'
                 ));
             }else{
                 $this->MkCommon->setCustomFlash(__('Truk tidak ditemukan.'), 'error');
@@ -3193,6 +3205,7 @@ class TrucksController extends AppController {
         $defaul_condition = array(
             'Truck.branch_id' => $allow_branch_id,
         );
+        $defaul_contain = array();
         $from_date = '';
         $to_date = '';
 
@@ -3264,6 +3277,57 @@ class TrucksController extends AppController {
                 $defaul_condition['Truck.company_id'] = $data;
                 $this->request->data['Truck']['company_id'] = $data;
             }
+            if(!empty($refine['insurance_status'])){
+                $insurance_status = $refine['insurance_status'];
+                $this->Truck->unBindModel(array(
+                    'hasMany' => array(
+                        'InsuranceDetail'
+                    )
+                ));
+                $this->Truck->bindModel(array(
+                    'hasOne' => array(
+                        'InsuranceDetail' => array(
+                            'className' => 'InsuranceDetail',
+                            'foreignKey' => 'truck_id',
+                            'conditions' => array(
+                                'InsuranceDetail.status' => 1
+                            )
+                        ),
+                        'Insurance' => array(
+                            'className' => 'Insurance',
+                            'foreignKey' => false,
+                            'conditions' => array(
+                                'Insurance.id = InsuranceDetail.insurance_id',
+                                'Insurance.status' => 1,
+                            )
+                        )
+                    )
+                ), false);
+                $defaul_contain[] = 'InsuranceDetail';
+                $defaul_contain[] = 'Insurance';
+
+                switch ($insurance_status) {
+                    case 'active':
+                        $defaul_condition[] = array(
+                            'Insurance.start_date'.' <=' => date('Y-m-d'),
+                            'Insurance.end_date'.' >=' => date('Y-m-d'),
+                        );
+                        break;
+                    
+                    default:
+                        $defaul_condition[]['OR'] = array(
+                            array(
+                                'Insurance.end_date'.' <' => date('Y-m-d'),
+                            ),
+                            array(
+                                'Insurance.id' => NULL,
+                            ),
+                        );
+                        break;
+                }
+                
+                $this->request->data['Truck']['insurance_status'] = $insurance_status;
+            }
 
             // Custom Otorisasi
             $defaul_condition = $this->MkCommon->getConditionGroupBranch( $refine, 'Truck', $defaul_condition, 'conditions' );
@@ -3302,12 +3366,15 @@ class TrucksController extends AppController {
         ), false);
 
         $options = array(
+            'group' => array(
+                'Truck.id',
+            ),
             'conditions' => $defaul_condition,
-            'contain' => array(
+            'contain' => array_merge(array(
                 'TruckCategory',
                 'TruckCustomer',
                 'CustomerNoType',
-            ),
+            ), $defaul_contain),
         );
 
         if(!empty($refine['sort'])){
@@ -3334,6 +3401,7 @@ class TrucksController extends AppController {
 
         if( !empty($trucks) ) {
             foreach ($trucks as $key => $truck) {
+                $id = !empty($truck['Truck']['id'])?$truck['Truck']['id']:false;
                 $branch_id = !empty($truck['Truck']['branch_id'])?$truck['Truck']['branch_id']:false;
                 $driver_id = !empty($truck['Truck']['driver_id'])?$truck['Truck']['driver_id']:false;
                 $truck_brand_id = !empty($truck['Truck']['truck_brand_id'])?$truck['Truck']['truck_brand_id']:false;
@@ -3345,6 +3413,21 @@ class TrucksController extends AppController {
                 $truck = $this->Truck->TruckFacility->getMerge($truck, $truck_facility_id);
                 $truck = $this->GroupBranch->Branch->getMerge($truck, $branch_id);
                 $truck = $this->Truck->Company->getMerge($truck, $company_id);
+
+                $insurance = $this->Truck->InsuranceDetail->getData('first', array(
+                    'conditions' => array(
+                        'InsuranceDetail.truck_id' => $id,
+                        'Insurance.status' => 1,
+                    ),
+                    'contain' => array(
+                        'Insurance',
+                    ),
+                    'order' => array(
+                        'Insurance.end_date' => 'DESC',
+                    ),
+                ));
+                $truck['Insurance'] = Common::hashEmptyField($insurance, 'Insurance');
+
                 $trucks[$key] = $truck;
             }
         }

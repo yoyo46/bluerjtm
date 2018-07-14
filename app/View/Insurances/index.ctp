@@ -21,7 +21,7 @@
                 'display' => true,
             ),
             'start_date' => array(
-                'name' => __('Tgl Insurance'),
+                'name' => __('Periode Pertanggungan'),
                 'field_model' => 'Insurance.start_date',
                 'class' => 'text-center',
                 'display' => true,

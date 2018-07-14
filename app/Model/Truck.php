@@ -284,6 +284,10 @@ class Truck extends AppModel {
         'Revenue' => array(
             'foreignKey' => 'truck_id',
         ),
+        'InsuranceDetail' => array(
+            'className' => 'InsuranceDetail',
+            'foreignKey' => 'truck_id',
+        ),
     );
 
     function checkUniq() {

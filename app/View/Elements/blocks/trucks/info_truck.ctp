@@ -281,5 +281,63 @@
     </div>
     <?php 
             }
+    
+            if( !empty($insurance) ) {
+    ?>
+    <div class="col-sm-6">
+        <div class="box box-warning">
+            <div class="box-header">
+                <?php 
+                        echo $this->Html->tag('h3', __('Asuransi Truk'), array(
+                            'class' => 'box-title',
+                        ));
+                ?>
+            </div>
+            <div class="box-body">
+                <dl class="dl-horizontal">
+                    <?php 
+                            $nopolis = Common::hashEmptyField($insurance, 'Insurance.nodoc');
+                            $name = Common::hashEmptyField($insurance, 'Insurance.name');
+                            $to_name = Common::hashEmptyField($insurance, 'Insurance.to_name');
+                            $start_date = Common::hashEmptyField($insurance, 'Insurance.start_date');
+                            $end_date = Common::hashEmptyField($insurance, 'Insurance.end_date');
+                            $insurance_date = Common::getCombineDate($start_date, $end_date);
+                
+                            $statusArr = Common::_callInsuranceStatus($insurance);
+                            $status = Common::hashEmptyField($statusArr, 'status');
+                            $status_color = Common::hashEmptyField($statusArr, 'color');
+
+                            echo $this->Html->tag('dt', __('No. Polis'), array(
+                                'title' => __('No. Polis'),
+                            ));
+                            echo $this->Html->tag('dd', $nopolis);
+
+                            echo $this->Html->tag('dt', __('Nama Asuransi'), array(
+                                'title' => __('Nama Asuransi'),
+                            ));
+                            echo $this->Html->tag('dd', $name);
+
+                            echo $this->Html->tag('dt', __('Nama Tertanggung'), array(
+                                'title' => __('Nama Tertanggung'),
+                            ));
+                            echo $this->Html->tag('dd', $to_name);
+
+                            echo $this->Html->tag('dt', __('Periode Pertanggungan'), array(
+                                'title' => __('Periode Pertanggungan'),
+                            ));
+                            echo $this->Html->tag('dd', $insurance_date);
+
+                            echo $this->Html->tag('dt', 'Status');
+                            echo $this->Html->tag('dd', $this->Html->tag('span', $status, array(
+                                'class' => 'label label-'.$status_color,
+                            )));
+                    ?>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <?php 
+            }
+    ?>
     ?>
 </div>

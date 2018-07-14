@@ -112,6 +112,9 @@ class RjTruckComponent extends Component {
 
 					$refine_conditions['Truck']['customer_group_id'] = $customer_group_id;
 				}
+				if( !empty($refine['Truck']['insurance_status']) ) {
+					$refine_conditions['Truck']['insurance_status'] = $refine['Truck']['insurance_status'];
+				}
 			}
 				
 			return $refine_conditions;
