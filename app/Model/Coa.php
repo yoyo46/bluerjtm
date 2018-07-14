@@ -319,6 +319,8 @@ class Coa extends AppModel {
                 $flag = false;
                 $id = Common::hashEmptyField($value, 'Coa.id');
                 $name = Common::hashEmptyField($value, 'Coa.coa_name');
+                $parent_id = Common::hashEmptyField($value, 'Coa.parent_id');
+                $level = Common::hashEmptyField($value, 'Coa.level');
                 $children = Common::hashEmptyField($value, 'children');
                 $result_tmp = array();
 
@@ -335,6 +337,8 @@ class Coa extends AppModel {
                 if( !empty($flag) ) {
                     $result[$id] = array(
                         'name' => $name,
+                        'parent_id' => $parent_id,
+                        'level' => $level,
                     );
 
                     if( !empty($result_tmp) ) {

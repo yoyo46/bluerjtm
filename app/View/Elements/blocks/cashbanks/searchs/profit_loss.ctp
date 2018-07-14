@@ -24,6 +24,7 @@
                     )), 
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
+                    'id' => 'form-search',
                 ));
         ?>
         <div class="row">

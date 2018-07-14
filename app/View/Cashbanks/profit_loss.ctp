@@ -1,84 +1,97 @@
 <?php 
-        $element = 'blocks/cashbanks/tables/profit_loss';
-        $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
-        $dataColumns = array(
-            'coa_name' => array(
-                'name' => __('Nama Rekening'),
-                'style' => 'text-align: left;vertical-align: middle;',
-                'data-options' => 'field:\'coa_name\',width:300,styler:cellStyler',
-                'align' => 'left',
-                // 'fix_column' => true,
-            ),
-        );
-
-        if( !empty($dateFrom) && !empty($dateTo) ) {
-            $tmpDateFrom = $dateFrom;
-            $tmpDateTo = $dateTo;
-
-            while( $tmpDateFrom <= $tmpDateTo ) {
-                $fieldName = sprintf('month_%s', $tmpDateFrom);
-                $dataColumns[$fieldName] = array(
-                    'name' => sprintf('%s %s', $this->Common->formatDate($tmpDateFrom, 'M'), $this->Common->formatDate($tmpDateFrom, 'Y')),
-                    'style' => 'text-align: right;vertical-align: middle;',
-                    'data-options' => sprintf('field:\'%s\',width:100', $fieldName),
-                    'align' => 'right',
-                    'class' => 'string',
-                );
-
-                $tmpDateFrom = date('Y-m', strtotime('+1 Month', strtotime($tmpDateFrom)));
-            }
-        }
-
-        if( !empty($data_action) ){
-            $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table', $data_action );
-
-            echo $this->element(sprintf('blocks/common/tables/export_%s', $data_action), array(
-                'tableHead' => $fieldColumn,
-                'tableBody' => $this->element($element, array(
-                    'main_total' => true,
-                )),
-                'sub_module_title' => $module_title,
-                'contentTr' => false,
-            ));
-        } else {
-            $this->Html->addCrumb($module_title);
-
-            $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
-            $addStyle = 'width: 100%;height: 550px;';
-            $addClass = 'easyui-datagrid';
-
-            echo $this->element('blocks/cashbanks/searchs/profit_loss');
+        $full_name = $this->Common->filterEmptyField($User, 'Employe', 'full_name');
+        
+        $this->Html->addCrumb($sub_module_title);
+        echo $this->element('blocks/cashbanks/searchs/profit_loss');
 ?>
 <section class="content invoice">
-    <h2 class="page-header">
-        <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
-    </h2>
     <?php 
-                echo $this->Common->_getPrint(array(
-                    '_attr' => array(
-                        'escape' => false,
-                    ),
-                ));
+            echo $this->element('blocks/common/box_header', array(
+                'title' => $sub_module_title,
+            ));
+            echo $this->Common->_getPrint(array(
+                '_attr' => array(
+                    'escape' => false,
+                    'class' => 'ajaxLink',
+                    'data-form' => '#form-search',
+                ),
+                '_ajax' => true,
+                'url_excel' => array(
+                    'controller' => 'reports',
+                    'action' => 'generate_excel',
+                    'profit_loss',
+                ),
+            ));
     ?>
     <div class="table-responsive">
         <?php 
                 if(!empty($values)){
+                    $dataColumns = array();
+
+                    if( !empty($values[0]) ) {
+                        foreach ($values[0] as $label => $value) {
+                            $attr = Common::_callUnset($value, array(
+                                'field_model',
+                                'width',
+                            ));
+
+                            $dataColumns[] = array_merge(array(
+                                'name' => $label,
+                                'field_model' => Common::hashEmptyField($value, 'field_model'),
+                                'class' => 'text-center',
+                            ), $attr);
+                        }
+                    }
+
+                    $fieldColumn = $this->Common->_generateShowHideColumn($dataColumns, 'field-table');
         ?>
-        <table id="tt" class="table sorting <?php echo $addClass; ?>" style="<?php echo $addStyle; ?>" singleSelect="true">
-            <thead frozen="true">
-                <tr>
-                    <?php
-                            if( !empty($fieldColumn) ) {
-                                echo $fieldColumn;
-                            }
-                    ?>
-                </tr>
-            </thead>
-            <?php 
-                    echo $this->Html->tag('tbody', $this->element($element, array(
-                        'main_total' => true,
-                    )));
+        <table class="table table-bordered easyui-datagrid" style="<?php echo !empty($_freeze)?'width: 100%;height: 550px;':''; ?>" singleSelect="true">
+            <?php
+                    if(!empty($fieldColumn)){
+                        echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn), array(
+                            'frozen' => 'true',
+                        ));
+                    }
             ?>
+            <tbody>
+                <?php
+                        $unset = array(
+                            'text',
+                            'field_model',
+                            'rowspan',
+                        );
+
+                        foreach($values as $key => $value){
+                            $content = array();
+
+                            if( !empty($value) ) {
+                                foreach ($value as $key => $val) {
+                                    $title = Common::hashEmptyField($val, 'text', false, false, false);
+                                    $childs = Common::hashEmptyField($val, 'child');
+                                    $attr = Common::_callUnset($val, $unset);
+
+                                    if( !empty($childs) ) {
+                                        foreach ($childs as $key => $child) {
+                                            $title = Common::hashEmptyField($child, 'text');
+                                            $attr = Common::_callUnset($child, $unset);
+
+                                            $content[] = array(
+                                                $title,
+                                                $attr,
+                                            );
+                                        }
+                                    } else {
+                                        $content[] = array(
+                                            $title,
+                                            $attr,
+                                        );
+                                    }
+                                }
+                            }
+                            echo($this->Html->tableCells(array($content)));
+                        }
+                ?>
+            </tbody>
         </table>
         <?php 
                 } else {
@@ -94,6 +107,3 @@
             ));
     ?>
 </div>
-<?php 
-        }
-?>

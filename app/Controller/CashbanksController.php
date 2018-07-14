@@ -1766,71 +1766,94 @@ class CashbanksController extends AppController {
         ));
     }
 
-    function profit_loss ( $data_action = false ) {
-        $module_title = $sub_module_title = __('Laporan Laba Rugi');
-        $dateFrom = date('Y-m', strtotime('-1 Month'));
-        $dateTo = $dateFrom;
-        // $dateFrom = '2017-01';
-        // $dateTo = '2017-01';
+    // function profit_loss ( $data_action = false ) {
+    //     $module_title = $sub_module_title = __('Laporan Laba Rugi');
+    //     $dateFrom = date('Y-m', strtotime('-1 Month'));
+    //     $dateTo = $dateFrom;
+    //     // $dateFrom = '2017-01';
+    //     // $dateTo = '2017-01';
 
-        $values = $this->User->Coa->getData('threaded', array(
-            'conditions' => array(
-                'Coa.coa_profit_loss >=' => 3,
-                'Coa.status' => 1,
-            ),
-            'order' => array(
-                'Coa.order_sort' => 'ASC',
-                'Coa.order' => 'ASC',
-                'Coa.code IS NULL' => 'ASC',
-                'Coa.code' => 'ASC',
-            )
-        ));
-        $params = $this->MkCommon->_callRefineParams($this->params, array(
-            'monthFrom' => $dateFrom,
-            'monthTo' => $dateTo,
-        ));
-        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'MonthFrom');
-        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'MonthTo');
+    //     $values = $this->User->Coa->getData('threaded', array(
+    //         'conditions' => array(
+    //             'Coa.coa_profit_loss >=' => 3,
+    //             'Coa.status' => 1,
+    //         ),
+    //         'order' => array(
+    //             'Coa.order_sort' => 'ASC',
+    //             'Coa.order' => 'ASC',
+    //             'Coa.code IS NULL' => 'ASC',
+    //             'Coa.code' => 'ASC',
+    //         )
+    //     ));
+    //     $params = $this->MkCommon->_callRefineParams($this->params, array(
+    //         'monthFrom' => $dateFrom,
+    //         'monthTo' => $dateTo,
+    //     ));
+    //     $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'MonthFrom');
+    //     $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'MonthTo');
 
-        $values = $this->RjCashBank->_callCalcProfitLoss($values, $dateFrom, $dateTo, $data_action);
+    //     $values = $this->RjCashBank->_callCalcProfitLoss($values, $dateFrom, $dateTo, $data_action);
         
-        // $this->User->Journal->virtualFields['debit_total'] = 'SUM(Journal.debit)';
-        // $this->User->Journal->virtualFields['credit_total'] = 'SUM(Journal.credit)';
-        // $summaryProfitLoss = $this->User->Journal->getData('first', array(
-        //     'conditions' => array(
-        //         'DATE_FORMAT(Journal.date, \'%Y-%m\')' => $dateFrom,
-        //         'CASE WHEN SUBSTR(Coa.code, 1, 1) REGEXP \'[0-9]+\' THEN SUBSTR(Coa.code, 1, 1) ELSE 5 END >=' => 3,
-        //         'Coa.status' => 1,
-        //     ),
-        //     'contain' => array(
-        //         'Coa',
-        //     ),
-        // ), true, array(
-        //     'type' => 'active',
-        // ));
+    //     // $this->User->Journal->virtualFields['debit_total'] = 'SUM(Journal.debit)';
+    //     // $this->User->Journal->virtualFields['credit_total'] = 'SUM(Journal.credit)';
+    //     // $summaryProfitLoss = $this->User->Journal->getData('first', array(
+    //     //     'conditions' => array(
+    //     //         'DATE_FORMAT(Journal.date, \'%Y-%m\')' => $dateFrom,
+    //     //         'CASE WHEN SUBSTR(Coa.code, 1, 1) REGEXP \'[0-9]+\' THEN SUBSTR(Coa.code, 1, 1) ELSE 5 END >=' => 3,
+    //     //         'Coa.status' => 1,
+    //     //     ),
+    //     //     'contain' => array(
+    //     //         'Coa',
+    //     //     ),
+    //     // ), true, array(
+    //     //     'type' => 'active',
+    //     // ));
 
-        if( !empty($dateFrom) && !empty($dateTo) ) {
-            $sub_module_title = sprintf('%s - Periode %s', $module_title, $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
-        } else {
-            $sub_module_title = false;
-        }
+    //     if( !empty($dateFrom) && !empty($dateTo) ) {
+    //         $sub_module_title = sprintf('%s - Periode %s', $module_title, $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
+    //     } else {
+    //         $sub_module_title = false;
+    //     }
 
-        if( !empty($data_action) ) {
-            $module_title = $sub_module_title;
+    //     if( !empty($data_action) ) {
+    //         $module_title = $sub_module_title;
 
-            if($data_action == 'pdf'){
-                $this->layout = 'pdf';
-            }else if($data_action == 'excel'){
-                $this->layout = 'ajax';
-            }
-        }
+    //         if($data_action == 'pdf'){
+    //             $this->layout = 'pdf';
+    //         }else if($data_action == 'excel'){
+    //             $this->layout = 'ajax';
+    //         }
+    //     }
 
-        // debug($values);die();
-        $this->set('active_menu', 'profit_loss');
-        $this->set(compact(
-            'values', 'module_title', 'dateFrom',
-            'dateTo', 'sub_module_title', 'data_action'
-            // 'summaryProfitLoss'
+    //     // debug($values);die();
+    //     $this->set('active_menu', 'profit_loss');
+    //     $this->set(compact(
+    //         'values', 'module_title', 'dateFrom',
+    //         'dateTo', 'sub_module_title', 'data_action'
+    //         // 'summaryProfitLoss'
+    //     ));
+    // }
+
+    public function profit_loss() {
+        $monthFrom = date('Y-01');
+        $monthTo = date('Y-m');
+        $params = $this->MkCommon->_callRefineParams($this->params->params, array(
+            'monthFrom' => $monthFrom,
+            'monthTo' => $monthTo,
+        ));
+
+        $dataReport = $this->RmReport->_callDataProfit_loss($params, 30, 0, true);
+        $values = Common::hashEmptyField($dataReport, 'data');
+
+        $this->RjCashBank->_callBeforeViewProfitLoss($params);
+        $this->MkCommon->_layout_file(array(
+            'select',
+            'freeze',
+        ));
+        $this->set(array(
+            'values' => $values,
+            'active_menu' => 'profit_loss',
+            '_freeze' => true,
         ));
     }
 
