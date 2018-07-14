@@ -799,4 +799,32 @@ class Common {
 
         return $allowEdit;
     }
+
+    public static function _callInsuranceStatus ( $data ) {
+        $status = Common::hashEmptyField($data, 'Insurance.status');
+        $start_date = Common::hashEmptyField($data, 'Insurance.start_date');
+        $end_date = Common::hashEmptyField($data, 'Insurance.end_date');
+        $customStatus = false;
+        $customColor = false;
+        $nowDate = date('Y-m-d');
+
+    	if( $end_date < $nowDate ) {
+            $customStatus = __('Expired');
+    		$customColor = 'danger';
+        } else if( !empty($status) ) {
+            $customStatus = __('Aktif');
+    		$customColor = 'success';
+        } else if( empty($status) ) {
+            $customStatus = __('Void');
+        	$customColor = 'danger';
+        } else {
+            $customStatus = __('Aktif');
+    		$customColor = 'success';
+        }
+
+        return array(
+        	'status' => $customStatus,
+        	'color' => $customColor,
+    	);
+    }
 }

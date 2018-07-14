@@ -33,6 +33,11 @@
             ),
             'status' => array(
                 'name' => __('Status'),
+                'field_model' => 'Insurance.status',
+                'display' => true,
+            ),
+            'status_paid' => array(
+                'name' => __('Pembayaran'),
                 'field_model' => 'Insurance.transaction_status',
                 'display' => true,
             ),
@@ -96,13 +101,12 @@
                             $branch_id = Common::hashEmptyField($value, 'Insurance.branch_id');
                             $branch = Common::hashEmptyField($value, 'Branch.code');
 
-                            if( empty($status) ) {
-                                $transaction_status = 'void';
-                                $value = Hash::insert($value, 'Insurance.transaction_status', $transaction_status);
-                            }
-
                             $date = Common::getCombineDate($start_date, $end_date);
-                            $status = $this->Common->_callTransactionStatus($value, 'Insurance');
+                            $status_paid = $this->Common->_callTransactionStatus($value, 'Insurance');
+                
+                            $statusArr = Common::_callInsuranceStatus($value);
+                            $status = Common::hashEmptyField($statusArr, 'status');
+                            $status_color = Common::hashEmptyField($statusArr, 'color');
             ?>
             <tr>
                 <td><?php echo $branch;?></td>
@@ -111,7 +115,14 @@
                 <td><?php echo $to_name;?></td>
                 <td><?php echo $date;?></td>
                 <td class="text-right"><?php echo $grandtotal;?></td>
-                <td class="text-center"><?php echo $status;?></td>
+                <td class="text-center">
+                    <?php
+                            echo $this->Html->tag('span', $status, array(
+                                'class' => 'label label-'.$status_color,
+                            ));
+                    ?>
+                </td>
+                <td class="text-center"><?php echo $status_paid;?></td>
                 <td class="action">
                     <?php
                             echo $this->Html->link(__('Info'), array(

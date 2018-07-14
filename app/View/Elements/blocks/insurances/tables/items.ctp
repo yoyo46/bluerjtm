@@ -14,12 +14,22 @@
         $condition = Common::hashEmptyField($value, 'InsuranceDetail.condition');
 
         $capacity = Common::hashEmptyField($value, 'Truck.capacity');
-        $year = Common::hashEmptyField($value, 'Truck.year');
+        $year = Common::hashEmptyField($value, 'Truck.tahun');
         $color = Common::hashEmptyField($value, 'Truck.color');
         $no_rangka = Common::hashEmptyField($value, 'Truck.no_rangka');
         $no_machine = Common::hashEmptyField($value, 'Truck.no_machine');
         $brand = Common::hashEmptyField($value, 'TruckBrand.name');
         $category = Common::hashEmptyField($value, 'TruckCategory.name');
+        $tmpYear = array();
+
+        if( !empty($year) ) {
+            $tmpYear[] = $year;
+        }
+        if( !empty($color) ) {
+            $tmpYear[] = $color;
+        }
+
+        $nopolError = $this->Form->error(__('InsuranceDetail.%s.nopol', $idx));
 ?>
 <tr class="pick-document" rel="<?php echo $truck_id; ?>" data-type="single-total">
     <?php
@@ -48,6 +58,10 @@
                 }
                 if( !empty($no_machine) ) {
                     echo $this->Html->tag('p', $no_machine);
+                }
+
+                if( !empty($nopolError) ) {
+                    echo $nopolError;
                 }
         ?>
     </td>

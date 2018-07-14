@@ -94,6 +94,11 @@ class Insurance extends AppModel {
             return false;
         }
     }
+    
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['status'] = 'CASE WHEN Insurance.end_date < DATE_FORMAT(NOW(), \'%Y-%m-%d\') THEN -1 ELSE Insurance.status END';
+    }
 
     function getData( $find, $options = false, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:false;
@@ -125,8 +130,8 @@ class Insurance extends AppModel {
             case 'publish':
                 $default_options['conditions']['Insurance.status'] = 1;
                 $defaultOptions['conditions'][] = array(
-                    'Insurance.eshop_from'.' <=' => date('Y-m-d'),
-                    'Insurance.eshop_to'.' >=' => date('Y-m-d'),
+                    'Insurance.start_date'.' <=' => date('Y-m-d'),
+                    'Insurance.end_date'.' >=' => date('Y-m-d'),
                 );
                 break;
         }
@@ -186,10 +191,14 @@ class Insurance extends AppModel {
                     break;
                 
                 case 'inactive':
-                    $default_options['conditions']['DATE_FORMAT(Insurance.end_date, \'%Y-%m-%d\') <'] = date('Y-m-d');
+                    $default_options['conditions']['Insurance.status'] = 0;
                     break;
                 
                 case 'active':
+                    $default_options['conditions']['DATE_FORMAT(Insurance.end_date, \'%Y-%m-%d\') >='] = date('Y-m-d');
+                    break;
+                
+                case 'expired':
                     $default_options['conditions']['DATE_FORMAT(Insurance.end_date, \'%Y-%m-%d\') >='] = date('Y-m-d');
                     break;
             }

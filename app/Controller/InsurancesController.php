@@ -200,40 +200,43 @@ class InsurancesController extends AppController {
             $data = $value;
         }
 
-        if( !empty($data) ) {
-            $details = Common::hashEmptyField($data, 'InsuranceDetail');
+        $details = Common::hashEmptyField($data, 'InsuranceDetail');
+
+        if( !empty($details) ) {
             $rowspan = array();
 
-            if(!empty($details)){
-                foreach ($details as &$detail) {
-                    $truck_id = Common::hashEmptyField($detail, 'InsuranceDetail.truck_id');
-                    $detail = $this->Insurance->InsuranceDetail->getMergeList($detail, array(
-                        'contain' => array(
-                            'Truck' => array(
-                                'elements' => array(
-                                    'branch' => false,
-                                ),
+            foreach ($details as &$detail) {
+                $truck_id = Common::hashEmptyField($detail, 'InsuranceDetail.truck_id');
+                $detail = $this->Insurance->InsuranceDetail->getMergeList($detail, array(
+                    'contain' => array(
+                        'Truck' => array(
+                            'elements' => array(
+                                'branch' => false,
                             ),
                         ),
-                    ));
-                    $detail = $this->Insurance->InsuranceDetail->Truck->getMergeList($detail, array(
-                        'contain' => array(
-                            'Company',
-                            'TruckBrand',
-                            'TruckCategory',
-                        ),
-                    ));
+                    ),
+                ));
+                $detail = $this->Insurance->InsuranceDetail->Truck->getMergeList($detail, array(
+                    'contain' => array(
+                        'Company',
+                        'TruckBrand',
+                        'TruckCategory',
+                    ),
+                ));
 
-                    if( !empty($rowspan[$truck_id]) ) {
-                        $rowspan[$truck_id]++;
-                    } else {
-                        $rowspan[$truck_id] = 1;
-                    }
+                if( !empty($rowspan[$truck_id]) ) {
+                    $rowspan[$truck_id]++;
+                } else {
+                    $rowspan[$truck_id] = 1;
                 }
             }
             
             $data = Hash::insert($data, 'InsuranceDetail', $details);
             $this->request->data = $data;
+
+            if( !empty($value) ) {
+                $value = Hash::insert($value, 'InsuranceDetail', $details);
+            }
         }
 
         $this->set('active_menu', 'insurance');

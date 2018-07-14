@@ -60,7 +60,8 @@
                                 'empty' => __('Semua'),
                                 'options' => array(
                                     'active' => __('Aktif'),
-                                    'inactive' => __('Non Aktif'),
+                                    'inactive' => __('Void'),
+                                    'expired' => __('Expired'),
                                     'unpaid' => __('Belum dibayar'),
                                     'paid' => __('Sudah dibayar'),
                                 ),

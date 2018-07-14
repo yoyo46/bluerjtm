@@ -95,7 +95,9 @@
                 </tr>
             </thead>
             <?php 
-                    echo $this->Html->tag('tbody', $this->element($element));
+                    echo $this->Html->tag('tbody', $this->element($element, array(
+                        'main_total' => true,
+                    )));
             ?>
         </table>
         <?php 

@@ -33,6 +33,12 @@
                 'data-options' => 'field:\'status\',width:150',
                 'align' => 'center',
             ),
+            'status_paid' => array(
+                'name' => __('Pembayaran'),
+                'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'status_paid\',width:150',
+                'align' => 'center',
+            ),
             'grandtotal' => array(
                 'name' => __('Total'),
                 'style' => 'text-align: left;vertical-align: middle;',

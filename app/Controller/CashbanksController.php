@@ -2603,7 +2603,7 @@ class CashbanksController extends AppController {
             $sub_module_title = false;
         }
 
-        $this->set('active_menu', 'profit_loss');
+        $this->set('active_menu', 'profit_loss_per_point');
         $this->set(compact(
             'values', 'module_title', 'dateFrom',
             'dateTo', 'sub_module_title'
@@ -2623,19 +2623,14 @@ class CashbanksController extends AppController {
             $options = $this->User->Journal->getData('paginate', array(
                 'conditions' => array(
                     'Journal.cogs_id' => $id,
-                    'DATE_FORMAT(Journal.date, \'%Y-%m-%d\') >=' => $dateFrom,
-                    'DATE_FORMAT(Journal.date, \'%Y-%m-%d\') <=' => $dateTo,
+                    'DATE_FORMAT(Journal.date, \'%Y-%m\') >=' => $dateFrom,
+                    'DATE_FORMAT(Journal.date, \'%Y-%m\') <=' => $dateTo,
                 ),
                 'contain' => false,
                 'group' => array(
                     'Journal.cogs_id',
                 ),
-            ), true, array(
-                'type' => 'active',
             ));
-            $options['contain'] = array(
-                'JournalVoid',
-            );
 
             $optionsRev = $options;
             $optionsRev['conditions']['Journal.type'] = array( 'in','revenue','general_ledger','invoice_payment','asset_selling' );

@@ -4318,12 +4318,7 @@ class RmReportComponent extends Component {
 	            'group' => array(
 	                'Journal.cogs_id',
 	            ),
-	        ), true, array(
-	            'type' => 'active',
 	        ));
-            $options['contain'] = array(
-                'JournalVoid',
-            );
 			$options = $this->controller->User->Journal->_callRefineParams($params, $options);
 
 			$data = $this->controller->User->Cogs->getData('threaded', array(

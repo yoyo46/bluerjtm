@@ -17,13 +17,12 @@
                 $branch_id = Common::hashEmptyField($value, 'Insurance.branch_id');
                 $branch = Common::hashEmptyField($value, 'Branch.code');
 
-                if( empty($status) ) {
-                    $transaction_status = 'void';
-                    $value = Hash::insert($value, 'Insurance.transaction_status', $transaction_status);
-                }
-
                 $date = Common::getCombineDate($start_date, $end_date);
-                $status = $this->Common->_callTransactionStatus($value, 'Insurance');
+                $status_paid = $this->Common->_callTransactionStatus($value, 'Insurance');
+                
+                $statusArr = Common::_callInsuranceStatus($value);
+                $status = Common::hashEmptyField($statusArr, 'status');
+                $status_color = Common::hashEmptyField($statusArr, 'color');
 
                 $total_payment = $this->Common->filterEmptyField($value, 'InsurancePayment', 'grandtotal');
                 $sisa = $total - $total_payment;
@@ -35,9 +34,16 @@
 <tr>
     <td><?php echo $nodoc;?></td>
     <td><?php echo $name;?></td>
-    <td><?php echo $date;?></td>
+    <td class="text-center"><?php echo $date;?></td>
     <td><?php echo $to_name;?></td>
-    <td class="text-center"><?php echo $status;?></td>
+    <td class="text-center">
+        <?php
+                echo $this->Html->tag('span', $status, array(
+                    'class' => 'label label-'.$status_color,
+                ));
+        ?>
+    </td>
+    <td class="text-center"><?php echo $status_paid;?></td>
     <td class="text-right"><?php echo Common::getFormatPrice($total, 2);?></td>
     <td class="text-right"><?php echo Common::getFormatPrice($total_payment, 2);?></td>
     <td class="text-right"><?php echo Common::getFormatPrice($sisa, 2);?></td>
@@ -51,6 +57,7 @@
 ?>
 <tr>
     <?php 
+            echo $this->Html->tag('td', '');
             echo $this->Html->tag('td', '');
             echo $this->Html->tag('td', '');
             echo $this->Html->tag('td', '');

@@ -118,8 +118,44 @@
                 ));
 
                 echo $this->Html->tag('tr', $tmpTr, array(
-                    'class' => 'cogs-parent wrapper-cogs-'.$parent_id,
-                    'cogs-id' => $parent_id,
+                    'class' => 'coa-parent wrapper-coa-'.$parent_id,
+                    'coa-id' => $parent_id,
+                ));
+            }
+
+            if( !empty($main_total) ) {
+                $tmpTr = $this->Html->tag('td', __('Total'), array(
+                    'style' => 'font-weight: bold;padding-left: 10px;font-style: italic;',
+                ));
+                $tmpTr .= $this->Html->tag('td', 0, array(
+                    'style' => 'text-align: right;font-weight: bold;',
+                    'class' => 'wrapper-profit-loss',
+                    'rel' => 'revenue',
+                ));
+                $tmpTr .= $this->Html->tag('td', 0, array(
+                    'style' => 'text-align: right;font-weight: bold;',
+                    'class' => 'wrapper-profit-loss',
+                    'rel' => 'expense',
+                ));
+                $tmpTr .= $this->Html->tag('td', 0, array(
+                    'style' => 'text-align: right;font-weight: bold;',
+                    'class' => 'wrapper-profit-loss',
+                    'rel' => 'maintenance',
+                ));
+                $tmpTr .= $this->Html->tag('td', 0, array(
+                    'style' => 'text-align: right;font-weight: bold;',
+                    'class' => 'wrapper-profit-loss',
+                    'rel' => 'gross-profit',
+                ));
+                $tmpTr .= $this->Html->tag('td', 0, array(
+                    'style' => 'text-align: center;font-weight: bold;',
+                    'class' => 'wrapper-profit-loss',
+                    'rel' => 'er',
+                ));
+
+                echo $this->Html->tag('tr', $tmpTr, array(
+                    'class' => 'coa-parent',
+                    'data-type' => 'end',
                 ));
             }
         }

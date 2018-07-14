@@ -47,7 +47,7 @@
                             $id = Common::hashEmptyField($value, 'Truck.id');
                             $nopol = Common::hashEmptyField($value, 'Truck.nopol');
                             $capacity = Common::hashEmptyField($value, 'Truck.capacity');
-                            $year = Common::hashEmptyField($value, 'Truck.year');
+                            $year = Common::hashEmptyField($value, 'Truck.tahun');
                             $color = Common::hashEmptyField($value, 'Truck.color');
                             $no_rangka = Common::hashEmptyField($value, 'Truck.no_rangka');
                             $no_machine = Common::hashEmptyField($value, 'Truck.no_machine');
@@ -55,6 +55,7 @@
                             $branch = Common::hashEmptyField($value, 'Branch.code');
                             $brand = Common::hashEmptyField($value, 'TruckBrand.name');
                             $category = Common::hashEmptyField($value, 'TruckCategory.name');
+                            $tmpYear = array();
 
                             if( !empty($year) ) {
                                 $tmpYear[] = $year;
@@ -165,6 +166,7 @@
 <?php
         echo $this->element('pagination', array(
             'options' => array(
+                'urlTitle' => __('Pilih Truk'),
                 'urlClass' => 'ajaxCustomModal',
                 'title' => $title,
             ),
