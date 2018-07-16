@@ -4853,7 +4853,7 @@ class RmReportComponent extends Component {
         ));
         $data = $this->controller->Coa->_callGenerateParentByType($parents, $tmp);
 
-        $this->controller->User->Journal->virtualFields['balancing'] = 'CASE WHEN Coa.type = \'debit\' THEN SUM(Journal.debit) - SUM(Journal.credit) ELSE SUM(Journal.credit) - SUM(Journal.debit) END';
+        $this->controller->User->Journal->virtualFields['balancing'] = 'CASE WHEN Coa.type = \'debit\' THEN IFNULL(Coa.balance, 0) + IFNULL(SUM(Journal.debit) - SUM(Journal.credit), 0) ELSE IFNULL(Coa.balance, 0) - IFNULL(SUM(Journal.credit) - SUM(Journal.debit), 0) END';
         $this->controller->User->Journal->virtualFields['date_month'] = 'DATE_FORMAT(Journal.date, \'%Y-%m\')';
         $this->controller->User->Journal->virtualFields['index'] = 'Journal.coa_id';
         $summaryBalances = $this->controller->User->Journal->getData('list', array(
@@ -4991,47 +4991,236 @@ class RmReportComponent extends Component {
 		return $result;
 	}
 
+	// function _callDataProfit_loss_per_point ( $params, $limit = 30, $offset = 0, $view = false ) {
+ //        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+ //        	'strict' => true,
+ //    	));
+	// 	$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+	// 	$params = $this->MkCommon->_callRefineParams($params);
+
+ //        $date_from = Common::hashEmptyField($params, 'named.dateFrom');
+ //        $date_to = Common::hashEmptyField($params, 'named.dateTo');
+	// 	$result = array();
+
+ //        if( empty($offset) ) {
+	//         $options = $this->controller->User->Journal->getData('paginate', array(
+	//             'conditions' => array(
+	//                 'DATE_FORMAT(Journal.date, \'%Y-%m-%d\') >=' => $date_from,
+	//                 'DATE_FORMAT(Journal.date, \'%Y-%m-%d\') <=' => $date_to,
+	//             ),
+	//             'contain' => false,
+	//             'group' => array(
+	//                 'Journal.cogs_id',
+	//             ),
+	//         ));
+	// 		$options = $this->controller->User->Journal->_callRefineParams($params, $options);
+
+	// 		$data = $this->controller->User->Cogs->getData('threaded', array(
+	//             'conditions' => array(
+	//                 'Cogs.status' => 1,
+	//             ),
+	//             'order' => array(
+	//                 'Cogs.order_sort' => 'ASC',
+	//                 'Cogs.order' => 'ASC',
+	//                 'Cogs.code' => 'ASC',
+	//             )
+	//         ));
+
+	// 		if( !empty($data) ) {
+	// 			foreach ($data as $key => $value) {
+	// 				$result = array_merge($result, $this->_callCogsDisplay($value, $options));
+	// 			}
+	// 		}
+	// 	}
+
+	// 	return array(
+	// 		'data' => $result,
+	// 		'model' => 'Cogs',
+	// 	);
+	// }
+
+	function _callProfitLossPerPointRecursive ( $options ) {
+		$data = Common::hashEmptyField($options, 'data');
+		$summaryRev = Common::hashEmptyField($options, 'summaryRev');
+		$summaryExp = Common::hashEmptyField($options, 'summaryExp');
+		$summaryMaintain = Common::hashEmptyField($options, 'summaryMaintain');
+
+		if( !empty($data) ) {			
+			foreach ($data as &$value) {
+				$id = Common::hashEmptyField($value, 'Cogs.id');
+				$parent_name = Common::hashEmptyField($value, 'Cogs.name');
+				$parent_id = Common::hashEmptyField($value, 'Cogs.parent_id');
+				$children = Common::hashEmptyField($value, 'children');
+
+				if( !empty($children) ) {
+					$total_balance_rev = 0;
+					$total_balance_exp = 0;
+					$total_balance_maintain = 0;
+
+					foreach ($children as $key => &$cogs) {
+						$cogs_id = Common::hashEmptyField($cogs, 'Cogs.id');
+						$child = Common::hashEmptyField($cogs, 'children');
+						$balance_rev = 0;
+						$balance_exp = 0;
+						$balance_maintain = 0;
+
+						if( !empty($child) ) {
+							$child = $this->_callProfitLossPerPointRecursive(array(
+					        	'data' => $child,
+					        	'summaryRev' => $summaryRev,
+					        	'summaryExp' => $summaryExp,
+					        	'summaryMaintain' => $summaryMaintain,
+					    	));
+
+					    	foreach ($child as $key => $val) {
+								$balance_rev += Common::hashEmptyField($val, 'Cogs.balance_rev');
+								$balance_exp += Common::hashEmptyField($val, 'Cogs.balance_exp');
+								$balance_maintain += Common::hashEmptyField($val, 'Cogs.balance_maintain');
+					    	}
+
+							$cogs['children'] = $child;
+							$cogs['Cogs']['balance_rev'] = $balance_rev;
+							$cogs['Cogs']['balance_exp'] = $balance_exp;
+							$cogs['Cogs']['balance_maintain'] = $balance_maintain;
+						} else {
+							if( !empty($summaryRev[$cogs_id]) ) {
+								$balance_rev = $summaryRev[$cogs_id];
+							}
+							if( !empty($summaryExp[$cogs_id]) ) {
+								$balance_exp = $summaryExp[$cogs_id];
+							}
+							if( !empty($summaryMaintain[$cogs_id]) ) {
+								$balance_maintain = $summaryMaintain[$cogs_id];
+							}
+
+							$cogs['Cogs']['balance_rev'] = $balance_rev;
+							$cogs['Cogs']['balance_exp'] = $balance_exp;
+							$cogs['Cogs']['balance_maintain'] = $balance_maintain;
+						}
+
+						$total_balance_rev += $balance_rev;
+						$total_balance_exp += $balance_exp;
+						$total_balance_maintain += $balance_maintain;
+					}
+
+					$value['children'] = $children;
+					$value['Cogs']['balance_rev'] = $total_balance_rev;
+					$value['Cogs']['balance_exp'] = $total_balance_exp;
+					$value['Cogs']['balance_maintain'] = $total_balance_maintain;
+				} else {
+					$balance_rev = 0;
+					$balance_exp = 0;
+					$balance_maintain = 0;
+
+					if( !empty($summaryRev[$id]) ) {
+						$balance_rev = $summaryRev[$id];
+					}
+					if( !empty($summaryExp[$id]) ) {
+						$balance_exp = $summaryExp[$id];
+					}
+					if( !empty($summaryMaintain[$id]) ) {
+						$balance_maintain = $summaryMaintain[$id];
+					}
+
+					$value['Cogs']['balance_rev'] = $balance_rev;
+					$value['Cogs']['balance_exp'] = $balance_exp;
+					$value['Cogs']['balance_maintain'] = $balance_maintain;
+				}
+			}
+		}
+
+		return $data;
+	}
+
 	function _callDataProfit_loss_per_point ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('Cogs');
+
         $params_named = Common::hashEmptyField($params, 'named', array(), array(
         	'strict' => true,
     	));
 		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
 		$params = $this->MkCommon->_callRefineParams($params);
 
-        $date_from = Common::hashEmptyField($params, 'named.dateFrom');
-        $date_to = Common::hashEmptyField($params, 'named.dateTo');
-		$result = array();
+		$dateFrom = Common::hashEmptyField($params, 'named.dateFrom');
+		// $MonthFrom = Common::hashEmptyField($params, 'named.MonthFrom', $dateFrom);
+		$MonthFrom = '2017-01';
+		$dateTo = Common::hashEmptyField($params, 'named.dateTo');
+		$MonthTo = Common::hashEmptyField($params, 'named.MonthTo', $dateTo);
+		$MonthTo = '2017-12';
 
-        if( empty($offset) ) {
-	        $options = $this->controller->User->Journal->getData('paginate', array(
-	            'conditions' => array(
-	                'DATE_FORMAT(Journal.date, \'%Y-%m-%d\') >=' => $date_from,
-	                'DATE_FORMAT(Journal.date, \'%Y-%m-%d\') <=' => $date_to,
-	            ),
-	            'contain' => false,
-	            'group' => array(
-	                'Journal.cogs_id',
-	            ),
-	        ));
-			$options = $this->controller->User->Journal->_callRefineParams($params, $options);
+		$data = $this->controller->User->Cogs->getData('threaded', array(
+            'conditions' => array(
+                'Cogs.status' => 1,
+            ),
+            'order' => array(
+                'Cogs.order_sort' => 'ASC',
+                'Cogs.order' => 'ASC',
+                'Cogs.code' => 'ASC',
+            )
+        ));
 
-			$data = $this->controller->User->Cogs->getData('threaded', array(
-	            'conditions' => array(
-	                'Cogs.status' => 1,
-	            ),
-	            'order' => array(
-	                'Cogs.order_sort' => 'ASC',
-	                'Cogs.order' => 'ASC',
-	                'Cogs.code' => 'ASC',
-	            )
-	        ));
+        $this->controller->User->Journal->virtualFields['total_debit'] = 'SUM(Journal.debit)';
+        $this->controller->User->Journal->virtualFields['total_credit'] = 'SUM(Journal.credit)';
+        $options = $this->controller->User->Journal->getData('paginate', array(
+            'conditions' => array(
+                'DATE_FORMAT(Journal.date, \'%Y-%m\') >=' => $MonthFrom,
+                'DATE_FORMAT(Journal.date, \'%Y-%m\') <=' => $MonthTo,
+            ),
+            'contain' => false,
+            'group' => array(
+                'Journal.cogs_id',
+            ),
+        ));
 
-			if( !empty($data) ) {
-				foreach ($data as $key => $value) {
-					$result = array_merge($result, $this->_callCogsDisplay($value, $options));
-				}
-			}
-		}
+        $optionsRev = $options;
+        $optionsRev['conditions']['Journal.type'] = array( 'in','revenue','general_ledger','invoice_payment','asset_selling' );
+        $optionsRev['fields'] = array(
+        	'Journal.cogs_id',
+        	'Journal.total_debit',
+    	);
+        $summaryRev = $this->controller->User->Journal->find('list', $optionsRev);
+
+        $optionsExp = $options;
+        $optionsExp['conditions']['Journal.type'] = array( 'out','document_payment','insurance_payment','lku_payment','ksu_payment','laka_payment','leasing_payment','po_payment','uang_Jalan_commission_payment','biaya_ttuj_payment' );
+        $optionsRev['fields'] = array(
+        	'Journal.cogs_id',
+        	'Journal.total_credit',
+    	);
+        $summaryExp = $this->controller->User->Journal->find('list', $optionsExp);
+
+        $optionsMaintain = $options;
+        $optionsMaintain['conditions']['Journal.type'] = array( 'spk_payment' );
+        $optionsRev['fields'] = array(
+        	'Journal.cogs_id',
+        	'Journal.total_credit',
+    	);
+        $summaryMaintain = $this->controller->User->Journal->find('list', $optionsMaintain);
+
+		$result = $this->_callProfitLossPerPointRecursive(array(
+        	'data' => $data,
+        	'summaryRev' => $summaryRev,
+        	'summaryExp' => $summaryExp,
+        	'summaryMaintain' => $summaryMaintain,
+    	));
+
+    	if( !empty($result) ) {
+			$total_balance_rev = 0;
+			$total_balance_exp = 0;
+			$total_balance_maintain = 0;
+
+    		foreach ($result as $key => $value) {
+				$total_balance_rev += Common::hashEmptyField($value, 'Cogs.balance_rev');
+				$total_balance_exp += Common::hashEmptyField($value, 'Cogs.balance_exp');
+				$total_balance_maintain += Common::hashEmptyField($value, 'Cogs.balance_maintain');
+    		}
+
+    		$result = array(
+    			'data' => $result,
+    			'total_balance_rev' => $total_balance_rev,
+    			'total_balance_exp' => $total_balance_exp,
+    			'total_balance_maintain' => $total_balance_maintain,
+			);
+    	}
 
 		return array(
 			'data' => $result,

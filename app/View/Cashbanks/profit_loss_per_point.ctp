@@ -10,28 +10,28 @@
             ),
             'revenue' => array(
                 'name' => __('Revenue'),
-                'style' => 'text-align: right;vertical-align: middle;',
+                'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'revenue\',width:100',
                 'align' => 'right',
                 'class' => 'string',
             ),
             'expense' => array(
                 'name' => __('Expense'),
-                'style' => 'text-align: right;vertical-align: middle;',
+                'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'expense\',width:100',
                 'align' => 'right',
                 'class' => 'string',
             ),
             'maintenance' => array(
                 'name' => __('Maintenance'),
-                'style' => 'text-align: right;vertical-align: middle;',
+                'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'maintenance\',width:100',
                 'align' => 'right',
                 'class' => 'string',
             ),
             'gross_profit' => array(
                 'name' => __('Gross Profit'),
-                'style' => 'text-align: right;vertical-align: middle;',
+                'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'gross_profit\',width:100',
                 'align' => 'right',
                 'class' => 'string',
@@ -46,39 +46,30 @@
         );
 
         if( !empty($data_action) ){
-            $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table', $data_action );
+            $filename = $this->Common->toSlug($sub_module_title);
 
-            echo $this->element(sprintf('blocks/common/tables/export_%s', $data_action), array(
-                'tableHead' => $fieldColumn,
-                'tableBody' => $this->element($element),
-                'sub_module_title' => $module_title,
-                'contentTr' => false,
-            ));
+            header('Content-type: application/ms-excel');
+            header('Content-Disposition: attachment; filename='.$filename.'.xls');
         } else {
             $this->Html->addCrumb($module_title);
 
-            $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
-
             echo $this->element('blocks/cashbanks/searchs/profit_loss_per_point');
+        }
+
+        $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 ?>
 <section class="content invoice">
     <h2 class="page-header">
         <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
     </h2>
     <?php 
+            if( empty($data_action) ){
                 echo $this->Common->_getPrint(array(
                     '_attr' => array(
                         'escape' => false,
-                        'class' => 'ajaxLink',
-                        'data-form' => '#form-search',
-                    ),
-                    '_ajax' => true,
-                    'url_excel' => array(
-                        'controller' => 'reports',
-                        'action' => 'generate_excel',
-                        'profit_loss_per_point',
                     ),
                 ));
+            }
     ?>
     <div class="table-responsive">
         <?php 
@@ -96,7 +87,8 @@
             </thead>
             <?php 
                     echo $this->Html->tag('tbody', $this->element($element, array(
-                        'main_total' => true,
+                        'values' => Common::hashEmptyField($values, 'data'),
+                        'result' => $values,
                     )));
             ?>
         </table>
@@ -114,6 +106,3 @@
             ));
     ?>
 </div>
-<?php 
-        }
-?>

@@ -2626,40 +2626,68 @@ class CashbanksController extends AppController {
         }
     }
 
-    function profit_loss_per_point () {
-        $module_title = $sub_module_title = __('Laporan Laba Rugi Per Poin');
-        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
-        $dateTo = date('Y-m-d');
-
-        $values = $this->User->Cogs->getData('threaded', array(
-            'conditions' => array(
-                'Cogs.status' => 1,
-            ),
-            'order' => array(
-                'Cogs.order_sort' => 'ASC',
-                'Cogs.order' => 'ASC',
-                'Cogs.code' => 'ASC',
-            )
+    public function profit_loss_per_point( $data_action = false ) {
+        $monthFrom = date('Y-m', strtotime('-1 Month'));
+        $monthTo = $monthFrom;
+        $params = $this->MkCommon->_callRefineParams($this->params->params, array(
+            'monthFrom' => $monthFrom,
+            'monthTo' => $monthTo,
         ));
-        $params = $this->MkCommon->_callRefineParams($this->params, array(
-            'monthFrom' => $dateFrom,
-            'monthTo' => $dateTo,
-        ));
-        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'MonthFrom');
-        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'MonthTo');
 
-        if( !empty($dateFrom) && !empty($dateTo) ) {
-            $sub_module_title = sprintf('%s - Periode %s', $module_title, $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
+        $dataReport = $this->RmReport->_callDataProfit_loss_per_point($params, 30, 0, true);
+        $values = Common::hashEmptyField($dataReport, 'data');
+
+        $this->RjCashBank->_callBeforeViewProfitLossPerPoint($params);
+
+        if($data_action == 'excel'){
+            $this->layout = 'ajax';
         } else {
-            $sub_module_title = false;
+            $this->MkCommon->_layout_file(array(
+                'select',
+            ));
         }
 
-        $this->set('active_menu', 'profit_loss_per_point');
-        $this->set(compact(
-            'values', 'module_title', 'dateFrom',
-            'dateTo', 'sub_module_title'
+        $this->set(array(
+            'values' => $values,
+            'data_action' => $data_action,
+            'active_menu' => 'profit_loss_per_point',
         ));
     }
+
+    // function profit_loss_per_point () {
+    //     $module_title = $sub_module_title = __('Laporan Laba Rugi Per Poin');
+    //     $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+    //     $dateTo = date('Y-m-d');
+
+    //     $values = $this->User->Cogs->getData('threaded', array(
+    //         'conditions' => array(
+    //             'Cogs.status' => 1,
+    //         ),
+    //         'order' => array(
+    //             'Cogs.order_sort' => 'ASC',
+    //             'Cogs.order' => 'ASC',
+    //             'Cogs.code' => 'ASC',
+    //         )
+    //     ));
+    //     $params = $this->MkCommon->_callRefineParams($this->params, array(
+    //         'monthFrom' => $dateFrom,
+    //         'monthTo' => $dateTo,
+    //     ));
+    //     $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'MonthFrom');
+    //     $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'MonthTo');
+
+    //     if( !empty($dateFrom) && !empty($dateTo) ) {
+    //         $sub_module_title = sprintf('%s - Periode %s', $module_title, $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
+    //     } else {
+    //         $sub_module_title = false;
+    //     }
+
+    //     $this->set('active_menu', 'profit_loss_per_point');
+    //     $this->set(compact(
+    //         'values', 'module_title', 'dateFrom',
+    //         'dateTo', 'sub_module_title'
+    //     ));
+    // }
 
     function profit_loss_per_point_amount ( $id = NULL, $dateFrom = NULL, $dateTo = NULL ) {
         $this->User->Journal->virtualFields['total_debit'] = 'SUM(Journal.debit)';

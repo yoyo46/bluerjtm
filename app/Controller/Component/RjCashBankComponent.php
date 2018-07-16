@@ -606,5 +606,23 @@ class RjCashBankComponent extends Component {
             'dateTo'
         ));
     }
+
+    function _callBeforeViewProfitLossPerPoint( $params ) {
+        $dateFrom = Common::hashEmptyField($params, 'named.MonthFrom');
+        $dateTo = $dateFrom;
+        $title = __('Laporan Laba Rugi Per Poin');
+        $period_text = false;
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $period_text = __('Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
+        }
+        
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('active_menu', $title);
+        $this->controller->set(compact(
+            'period_text', 'dateFrom',
+            'dateTo'
+        ));
+    }
 }
 ?>
