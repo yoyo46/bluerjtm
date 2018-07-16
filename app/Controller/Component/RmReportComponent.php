@@ -4296,6 +4296,7 @@ class RmReportComponent extends Component {
 				if( !empty($tmp[$id]) ) {
 					foreach ($tmp[$id] as $key => $coa) {
 						$coa_id = Common::hashEmptyField($coa, 'Coa.id');
+						$coa_type = Common::hashEmptyField($coa, 'Coa.type');
 						$parent_id = Common::hashEmptyField($coa, 'Coa.parent_id');
 						$coa_name = Common::hashEmptyField($coa, 'Coa.coa_name');
 						$parent_name = Common::hashEmptyField($coa, 'CoaParent.coa_name');
@@ -4325,10 +4326,10 @@ class RmReportComponent extends Component {
 				    			),
 							);
 
-							if( !empty($this->total_profit_loss['grandtotal'][$MonthFromTmp]) ) {
-								$this->total_profit_loss['grandtotal'][$MonthFromTmp] += $balance;
+							if( !empty($this->total_profit_loss['grandtotal'][$coa_type][$MonthFromTmp]) ) {
+								$this->total_profit_loss['grandtotal'][$coa_type][$MonthFromTmp] += $balance;
 							} else {
-								$this->total_profit_loss['grandtotal'][$MonthFromTmp] = $balance;
+								$this->total_profit_loss['grandtotal'][$coa_type][$MonthFromTmp] = $balance;
 							}
 
 							if( !empty($this->total_profit_loss['Parent'][$parent_id][$MonthFromTmp]) ) {
@@ -4626,8 +4627,11 @@ class RmReportComponent extends Component {
 				$month_name = Common::formatDate($MonthFromTmp, 'F Y');
 				$month = Common::formatDate($MonthFromTmp, 'Ym');
 
-				if( !empty($this->total_profit_loss['grandtotal'][$MonthFromTmp]) ) {
-					$balance = $this->total_profit_loss['grandtotal'][$MonthFromTmp];
+				if( !empty($this->total_profit_loss['grandtotal']) ) {
+					$balance_credit = $this->total_profit_loss['grandtotal']['credit'][$MonthFromTmp];
+					$balance_debit = $this->total_profit_loss['grandtotal']['debit'][$MonthFromTmp];
+
+					$balance = $balance_credit - $balance_debit;
 				} else {
 					$balance = 0;
 				}
