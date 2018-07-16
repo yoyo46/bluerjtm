@@ -33,49 +33,50 @@
             }
         }
 
+        $this->Html->addCrumb($module_title);
+
+        $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
+        $addStyle = 'width: 100%;height: 550px;';
+        $addClass = 'easyui-datagrid';
+
         if( !empty($data_action) ){
-            $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table', $data_action );
+            $filename = $this->Common->toSlug($sub_module_title);
 
-            echo $this->element(sprintf('blocks/common/tables/export_%s', $data_action), array(
-                'tableHead' => $fieldColumn,
-                'tableBody' => $this->element($element),
-                'sub_module_title' => $module_title,
-                'contentTr' => false,
-            ));
+            header('Content-type: application/ms-excel');
+            header('Content-Disposition: attachment; filename='.$filename.'.xls');
         } else {
-            $this->Html->addCrumb($module_title);
-
-            $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
-            $addStyle = 'width: 100%;height: 550px;';
-            $addClass = 'easyui-datagrid';
-
             echo $this->element('blocks/cashbanks/searchs/balance_sheets');
+        }
 ?>
 <section class="content invoice">
     <h2 class="page-header">
         <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
     </h2>
     <?php 
+            if( empty($data_action) ){
                 echo $this->Common->_getPrint(array(
                     '_attr' => array(
                         'escape' => false,
                     ),
                 ));
+            }
     ?>
-    <div class="row">
-        <?php
-                if( !empty($values) ) {
-                    foreach ($values as $type => $value) {
-                        echo $this->Html->tag('div', $this->element('blocks/cashbanks/tables/balance_sheets_col', array(
-                            'dataColumns' => $dataColumns,
-                            'values' => $value,
-                            'coa_type' => $type,
-                        )), array(
-                            'class' => 'col-sm-6',
-                        ));
-                    }
-                }
-        ?>
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <?php
+                        if( !empty($values) ) {
+                            foreach ($values as $type => $value) {
+                                echo $this->Html->tag('td', $this->element('blocks/cashbanks/tables/balance_sheets_col', array(
+                                    'dataColumns' => $dataColumns,
+                                    'values' => $value,
+                                    'coa_type' => $type,
+                                )));
+                            }
+                        }
+                ?>
+            </tr>
+        </table>
     </div>
     <?php 
             echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
@@ -83,6 +84,3 @@
             ));
     ?>
 </div>
-<?php 
-        }
-?>

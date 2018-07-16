@@ -1857,7 +1857,7 @@ class CashbanksController extends AppController {
         ));
     }
 
-    public function balance_sheets() {
+    public function balance_sheets( $data_action = false ) {
         $monthFrom = date('Y-m', strtotime('-1 Month'));
         $monthTo = $monthFrom;
         $params = $this->MkCommon->_callRefineParams($this->params->params, array(
@@ -1869,11 +1869,18 @@ class CashbanksController extends AppController {
         $values = Common::hashEmptyField($dataReport, 'data');
 
         $this->RjCashBank->_callBeforeViewBalanceSheets($params);
-        $this->MkCommon->_layout_file(array(
-            'select',
-        ));
+
+        if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $this->MkCommon->_layout_file(array(
+                'select',
+            ));
+        }
+
         $this->set(array(
             'values' => $values,
+            'data_action' => $data_action,
             'active_menu' => 'balance_sheets',
         ));
     }
