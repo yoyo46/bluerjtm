@@ -4695,6 +4695,214 @@ class RmReportComponent extends Component {
 		);
 	}
 
+	function _callBalanceSheetRecursive ( $options ) {
+		$data = Common::hashEmptyField($options, 'data');
+		$tmp = Common::hashEmptyField($options, 'tmp');
+		$params = Common::hashEmptyField($options, 'params');
+		$summaryBalances = Common::hashEmptyField($options, 'summaryBalances');
+		$view = Common::hashEmptyField($options, 'view');
+		$result = Common::hashEmptyField($options, 'result', array());
+
+		$data = Common::hashEmptyField($data, 'data');
+
+		if( !empty($view) ) {
+			$width = false;
+		} else {
+			$width = 15;
+		}
+
+		if( !empty($data) ) {
+			foreach ($data as $id => &$value) {
+				$name = Common::hashEmptyField($value, 'name');
+				$coa_parent_id = Common::hashEmptyField($value, 'parent_id');
+				$coa_level = Common::hashEmptyField($value, 'level');
+				$padding_left = $coa_level * 10;
+
+				if( !empty($view) ) {
+					$label = $this->Html->tag('strong', $name, array(
+						'style' => __('padding-left:%spx;', $padding_left),
+					));
+				} else {
+					$label = $name;
+				}
+
+				if( !empty($tmp[$id]) ) {
+					foreach ($tmp[$id] as $key => $coa) {
+						$coa_id = Common::hashEmptyField($coa, 'Coa.id');
+						$coa_type = Common::hashEmptyField($coa, 'Coa.type');
+						$parent_id = Common::hashEmptyField($coa, 'Coa.parent_id');
+						$coa_name = Common::hashEmptyField($coa, 'Coa.coa_name');
+						$parent_name = Common::hashEmptyField($coa, 'CoaParent.coa_name');
+						$parent_level = Common::hashEmptyField($coa, 'CoaParent.level');
+						$parent_parent_id = Common::hashEmptyField($coa, 'CoaParent.parent_id');
+						$level = Common::hashEmptyField($coa, 'Coa.level');
+						$padding_left = $level * 10;
+						$balance = Common::hashEmptyField($summaryBalances, $coa_id);
+
+						$value['children'][] = array(
+							'name' => $coa_name,
+			                'parent_id' => $parent_id,
+			                'level' => $level,
+			                'balance' => $balance,
+						);
+
+						if( !empty($value['balance']) ) {
+							$value['balance'] += $balance;
+						} else {
+							$value['balance'] = $balance;
+						}
+					}
+				} else {
+					$callSet = array(
+						'name',
+						'parent_id',
+						'level',
+						'balance',
+					);
+					$val['data'] = Common::_callUnset($value, $callSet);
+					$dataSet = Common::_callSet($value, $callSet);
+
+					$result = $this->_callBalanceSheetRecursive(array(
+			        	'data' => $val,
+			        	'tmp' => $tmp,
+			        	'params' => $params,
+			        	'summaryBalances' => $summaryBalances,
+			        	'result' => $result,
+			        	'view' => $view,
+			    	));
+					$value = $dataSet + $result;
+
+					if( !empty($result) ) {
+						foreach ($result as $key => $val) {
+							$balance = Common::hashEmptyField($val, 'balance');
+
+							if( !empty($value['balance']) ) {
+								$value['balance'] += $balance;
+							} else {
+								$value['balance'] = $balance;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return $data;
+	}
+
+	function _callDataBalance_sheets ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('Coa');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+
+		$dateFrom = Common::hashEmptyField($params, 'named.dateFrom');
+		$MonthFrom = Common::hashEmptyField($params, 'named.MonthFrom', $dateFrom);
+		$MonthTo = $MonthFrom;
+
+		App::import('Helper', 'Html');
+        $this->Html = new HtmlHelper(new View(null));
+
+		$options = array(
+			'conditions' => array(
+				'Coa.level' => 4,
+                'Coa.coa_balance_sheets <' => 3,
+			),
+			'order' => array(
+				'Coa.parent_id',
+                'Coa.with_parent_code' => 'ASC',
+                'Coa.code' => 'ASC',
+                'Coa.id' => 'ASC',
+			),
+        );
+		$options = $this->controller->Coa->_callRefineParams($params, $options);
+		$data_tmp	= $this->controller->Coa->getData('all', $options);
+
+		$result = array();
+		$data = array();
+		$tmp = array();
+		$coa_ids = array();
+
+		if( !empty($data_tmp) ) {
+			foreach ($data_tmp as $key => &$value) {
+				$id = Common::hashEmptyField($value, 'Coa.id');
+				$parent_id = Common::hashEmptyField($value, 'Coa.parent_id');
+
+				$value = $this->controller->Coa->getMerge($value, $parent_id, 'CoaParent');
+
+				$tmp[$parent_id][] = $value;
+				$coa_ids[$id] = $id;
+			}
+		}
+
+        $parents = $this->controller->Coa->getData('threaded', array(
+            'conditions' => array(
+                'Coa.coa_balance_sheets <' => 3,
+                'Coa.level <>' => 4,
+                'Coa.status' => 1,
+            ),
+            'order' => array(
+                'Coa.order_sort' => 'ASC',
+                'Coa.order' => 'ASC',
+                'Coa.code IS NULL' => 'ASC',
+                'Coa.code' => 'ASC',
+            )
+        ));
+        $data = $this->controller->Coa->_callGenerateParentByType($parents, $tmp);
+
+        $this->controller->User->Journal->virtualFields['balancing'] = 'CASE WHEN Coa.type = \'debit\' THEN SUM(Journal.debit) - SUM(Journal.credit) ELSE SUM(Journal.credit) - SUM(Journal.debit) END';
+        $this->controller->User->Journal->virtualFields['date_month'] = 'DATE_FORMAT(Journal.date, \'%Y-%m\')';
+        $this->controller->User->Journal->virtualFields['index'] = 'Journal.coa_id';
+        $summaryBalances = $this->controller->User->Journal->getData('list', array(
+        	'fields' => array(
+        		'Journal.index',
+        		'Journal.balancing',
+    		),
+            'conditions' => array(
+                'Journal.coa_id' => $coa_ids,
+                'DATE_FORMAT(Journal.date, \'%Y-%m\') <=' => $MonthFrom,
+            ),
+            'group' => array(
+                'Journal.coa_id',
+            ),
+        ));
+
+        if( !empty($data) ) {
+        	foreach ($data as $type => $value) {
+        		$coas = $this->_callBalanceSheetRecursive(array(
+		        	'data' => array(
+		        		'data' => $value,
+	        		),
+		        	'tmp' => $tmp,
+		        	'params' => $params,
+		        	'summaryBalances' => $summaryBalances,
+		        	'view' => $view,
+		    	));
+		        $result[$type] = $coas;
+
+		        if( !empty($coas) ) {
+		        	$grandtotal = 0;
+
+		        	foreach ($coas as $key => $val) {
+		        		$balance = Common::hashEmptyField($val, 'balance');
+	
+			        	$grandtotal += $balance;
+		        	}
+		        	
+		        	$result[$type]['balance'] = $grandtotal;
+		        }
+        	}
+        }
+
+		return array(
+			'data' => $result,
+			'model' => 'Coa',
+		);
+	}
+
 	function _callCogsDisplay ( $value, $default_options ) {
 		$id = Common::hashEmptyField($value, 'Cogs.id');
 		$parent_id = Common::hashEmptyField($value, 'Cogs.parent_id');

@@ -1857,66 +1857,87 @@ class CashbanksController extends AppController {
         ));
     }
 
-    function balance_sheets ( $data_action = false ) {
-        $module_title = __('Laporan Neraca');
-        $dateFrom = date('Y-m', strtotime('-1 Month'));
-        $dateTo = $dateFrom;
-
-        $options = array(
-            'conditions' => array(
-                'Coa.coa_balance_sheets <' => 3,
-                'Coa.status' => 1,
-            ),
-            'order' => array(
-                'Coa.order_sort' => 'ASC',
-                'Coa.order' => 'ASC',
-                'Coa.code IS NULL' => 'ASC',
-                'Coa.code' => 'ASC',
-            )
-        );
-
-        $debitOptions = $options;
-        $debitOptions['conditions']['Coa.type'] = 'debit';
-        $debits = $this->User->Coa->getData('threaded', $debitOptions);
-
-        $creditOptions = $options;
-        $creditOptions['conditions']['Coa.type'] = 'credit';
-        $credits = $this->User->Coa->getData('threaded', $creditOptions);
-
-        $params = $this->MkCommon->_callRefineParams($this->params, array(
-            'monthFrom' => $dateFrom,
-            'monthTo' => $dateTo,
+    public function balance_sheets() {
+        $monthFrom = date('Y-m', strtotime('-1 Month'));
+        $monthTo = $monthFrom;
+        $params = $this->MkCommon->_callRefineParams($this->params->params, array(
+            'monthFrom' => $monthFrom,
+            'monthTo' => $monthTo,
         ));
-        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'MonthFrom');
-        $dateTo = $dateFrom;
 
-        $debits = $this->RjCashBank->_callCalcBalanceSheet($debits, $dateFrom, $dateTo);
-        $credits = $this->RjCashBank->_callCalcBalanceSheet($credits, $dateFrom, $dateTo);
+        $dataReport = $this->RmReport->_callDataBalance_sheets($params, 30, 0, true);
+        $values = Common::hashEmptyField($dataReport, 'data');
 
-        if( !empty($dateFrom) && !empty($dateTo) ) {
-            $sub_module_title = sprintf('%s - Periode %s', $module_title, $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
-        } else {
-            $sub_module_title = false;
-        }
-
-        if( !empty($data_action) ) {
-            $module_title = $sub_module_title;
-
-            if($data_action == 'pdf'){
-                $this->layout = 'pdf';
-            }else if($data_action == 'excel'){
-                $this->layout = 'ajax';
-            }
-        }
-
-        // debug($values);die();
-        $this->set('active_menu', 'balance_sheets');
-        $this->set(compact(
-            'module_title', 'dateFrom',
-            'dateTo', 'sub_module_title', 'data_action',
-            'debits', 'credits'
+        $this->RjCashBank->_callBeforeViewBalanceSheets($params);
+        $this->MkCommon->_layout_file(array(
+            'select',
+        ));
+        $this->set(array(
+            'values' => $values,
+            'active_menu' => 'balance_sheets',
         ));
     }
+
+    // function balance_sheets ( $data_action = false ) {
+    //     $module_title = __('Laporan Neraca');
+    //     $dateFrom = date('Y-m', strtotime('-1 Month'));
+    //     $dateTo = $dateFrom;
+
+    //     $options = array(
+    //         'conditions' => array(
+    //             'Coa.coa_balance_sheets <' => 3,
+    //             'Coa.status' => 1,
+    //         ),
+    //         'order' => array(
+    //             'Coa.order_sort' => 'ASC',
+    //             'Coa.order' => 'ASC',
+    //             'Coa.code IS NULL' => 'ASC',
+    //             'Coa.code' => 'ASC',
+    //         )
+    //     );
+
+    //     $debitOptions = $options;
+    //     $debitOptions['conditions']['Coa.type'] = 'debit';
+    //     $debits = $this->User->Coa->getData('threaded', $debitOptions);
+
+    //     $creditOptions = $options;
+    //     $creditOptions['conditions']['Coa.type'] = 'credit';
+    //     $credits = $this->User->Coa->getData('threaded', $creditOptions);
+
+    //     $params = $this->MkCommon->_callRefineParams($this->params, array(
+    //         'monthFrom' => $dateFrom,
+    //         'monthTo' => $dateTo,
+    //     ));
+    //     $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'MonthFrom');
+    //     $dateTo = $dateFrom;
+
+    //     $debits = $this->RjCashBank->_callCalcBalanceSheet($debits, $dateFrom, $dateTo);
+    //     $credits = $this->RjCashBank->_callCalcBalanceSheet($credits, $dateFrom, $dateTo);
+
+    //     if( !empty($dateFrom) && !empty($dateTo) ) {
+    //         $sub_module_title = sprintf('%s - Periode %s', $module_title, $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
+    //     } else {
+    //         $sub_module_title = false;
+    //     }
+
+    //     if( !empty($data_action) ) {
+    //         $module_title = $sub_module_title;
+
+    //         if($data_action == 'pdf'){
+    //             $this->layout = 'pdf';
+    //         }else if($data_action == 'excel'){
+    //             $this->layout = 'ajax';
+    //         }
+    //     }
+
+    //     // debug($values);die();
+    //     $this->set('active_menu', 'balance_sheets');
+    //     $this->set(compact(
+    //         'module_title', 'dateFrom',
+    //         'dateTo', 'sub_module_title', 'data_action',
+    //         'debits', 'credits'
+    //     ));
+    // }
 
     function profit_loss_amount ( $id = NULL, $dateFrom = NULL, $dateTo = NULL ) {
         $this->User->Journal->virtualFields['balancing'] = 'CASE WHEN Coa.type = \'debit\' THEN SUM(Journal.debit) - SUM(Journal.credit) ELSE SUM(Journal.credit) - SUM(Journal.debit) END';

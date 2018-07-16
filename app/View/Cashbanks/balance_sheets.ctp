@@ -9,7 +9,7 @@
         $dataColumns = array(
             'coa_name' => array(
                 'name' => __('Nama Rekening'),
-                'style' => 'text-align: center;vertical-align: middle;',
+                'style' => 'text-align: left;vertical-align: middle;',
                 'data-options' => 'field:\'coa_name\',width:300,styler:cellStyler',
                 'align' => 'left',
                 'rowspan' => $headerRowspan,
@@ -63,24 +63,19 @@
                 ));
     ?>
     <div class="row">
-        <div class="col-sm-6">
-            <?php 
-                    echo $this->Html->tag('tbody', $this->element('blocks/cashbanks/tables/balance_sheets_col', array(
-                        'values' => $debits,
-                        'dataColumns' => $dataColumns,
-                        'coa_type' => 'debit',
-                    )));
-            ?>
-        </div>
-        <div class="col-sm-6">
-            <?php 
-                    echo $this->Html->tag('tbody', $this->element('blocks/cashbanks/tables/balance_sheets_col', array(
-                        'values' => $credits,
-                        'dataColumns' => $dataColumns,
-                        'coa_type' => 'credit',
-                    )));
-            ?>
-        </div>
+        <?php
+                if( !empty($values) ) {
+                    foreach ($values as $type => $value) {
+                        echo $this->Html->tag('div', $this->element('blocks/cashbanks/tables/balance_sheets_col', array(
+                            'dataColumns' => $dataColumns,
+                            'values' => $value,
+                            'coa_type' => $type,
+                        )), array(
+                            'class' => 'col-sm-6',
+                        ));
+                    }
+                }
+        ?>
     </div>
     <?php 
             echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(

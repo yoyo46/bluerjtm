@@ -353,5 +353,45 @@ class Coa extends AppModel {
             'flag' => $flag,
         );
     }
+
+    function _callGenerateParentByType ( $values, $data ) {
+        $result = array();
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $flag = false;
+                $id = Common::hashEmptyField($value, 'Coa.id');
+                $name = Common::hashEmptyField($value, 'Coa.coa_name');
+                $parent_id = Common::hashEmptyField($value, 'Coa.parent_id');
+                $level = Common::hashEmptyField($value, 'Coa.level');
+                $type = Common::hashEmptyField($value, 'Coa.type');
+                $children = Common::hashEmptyField($value, 'children');
+                $result_tmp = array();
+
+                if( !empty($children) ) {
+                    $tmp = $this->_callGenerateParent($children, $data);
+                    $result_tmp = Common::hashEmptyField($tmp, 'data');
+                    $flag = Common::hashEmptyField($tmp, 'flag');
+                }
+
+                if( !empty($data[$type][$id]) && empty($flag) ) {
+                    $flag = true;
+                }
+
+                if( !empty($flag) ) {
+                    $result[$type][$id] = array(
+                        'name' => $name,
+                        'parent_id' => $parent_id,
+                        'level' => $level,
+                    );
+
+                    if( !empty($result_tmp) ) {
+                        $result[$type][$id] = $result[$type][$id] + $result_tmp;
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
 }
 ?>

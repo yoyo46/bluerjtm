@@ -573,8 +573,8 @@ class RjCashBankComponent extends Component {
     }
 
     function _callBeforeViewProfitLoss( $params ) {
-        $monthFrom = Common::hashEmptyField($params, 'named.monthFrom');
-        $monthTo = Common::hashEmptyField($params, 'named.monthTo');
+        $monthFrom = Common::hashEmptyField($params, 'named.MonthFrom');
+        $monthTo = Common::hashEmptyField($params, 'named.MonthTo');
         $title = __('Laporan Laba Rugi');
         $period_text = false;
 
@@ -586,6 +586,24 @@ class RjCashBankComponent extends Component {
         $this->controller->set('active_menu', $title);
         $this->controller->set(compact(
             'period_text'
+        ));
+    }
+
+    function _callBeforeViewBalanceSheets( $params ) {
+        $dateFrom = Common::hashEmptyField($params, 'named.MonthFrom');
+        $dateTo = $dateFrom;
+        $title = __('Laporan Neraca');
+        $period_text = false;
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $period_text = __('Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
+        }
+        
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('active_menu', $title);
+        $this->controller->set(compact(
+            'period_text', 'dateFrom',
+            'dateTo'
         ));
     }
 }
