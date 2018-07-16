@@ -4628,8 +4628,8 @@ class RmReportComponent extends Component {
 				$month = Common::formatDate($MonthFromTmp, 'Ym');
 
 				if( !empty($this->total_profit_loss['grandtotal']) ) {
-					$balance_credit = $this->total_profit_loss['grandtotal']['credit'][$MonthFromTmp];
-					$balance_debit = $this->total_profit_loss['grandtotal']['debit'][$MonthFromTmp];
+					$balance_credit = !empty($this->total_profit_loss['grandtotal']['credit'][$MonthFromTmp])?$this->total_profit_loss['grandtotal']['credit'][$MonthFromTmp]:0;
+					$balance_debit = !empty($this->total_profit_loss['grandtotal']['debit'][$MonthFromTmp])?$this->total_profit_loss['grandtotal']['debit'][$MonthFromTmp]:0;
 
 					$balance = $balance_credit - $balance_debit;
 				} else {
