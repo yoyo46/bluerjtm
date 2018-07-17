@@ -4736,8 +4736,16 @@ class RmReportComponent extends Component {
 						$parent_level = Common::hashEmptyField($coa, 'CoaParent.level');
 						$parent_parent_id = Common::hashEmptyField($coa, 'CoaParent.parent_id');
 						$level = Common::hashEmptyField($coa, 'Coa.level');
+						$saldo_awal = Common::hashEmptyField($coa, 'Coa.balance');
 						$padding_left = $level * 10;
 						$balance = Common::hashEmptyField($summaryBalances, $coa_id);
+
+						// if( $coa_type == 'credit' ) {
+						// 	$balance = $saldo_awal - $balance;
+						// } else if( $coa_type == 'debit' ) {
+						// 	$balance = $saldo_awal + $balance;
+						// }
+						$balance = $saldo_awal + $balance;
 
 						$value['children'][] = array(
 							'name' => $coa_name,
@@ -4853,7 +4861,7 @@ class RmReportComponent extends Component {
         ));
         $data = $this->controller->Coa->_callGenerateParentByType($parents, $tmp);
 
-        $this->controller->User->Journal->virtualFields['balancing'] = 'CASE WHEN Coa.type = \'debit\' THEN IFNULL(Coa.balance, 0) + IFNULL(SUM(Journal.debit) - SUM(Journal.credit), 0) ELSE IFNULL(Coa.balance, 0) - IFNULL(SUM(Journal.credit) - SUM(Journal.debit), 0) END';
+        $this->controller->User->Journal->virtualFields['balancing'] = 'CASE WHEN Coa.type = \'debit\' THEN IFNULL(SUM(Journal.debit) - SUM(Journal.credit), 0) ELSE IFNULL(SUM(Journal.credit) - SUM(Journal.debit), 0) END';
         $this->controller->User->Journal->virtualFields['date_month'] = 'DATE_FORMAT(Journal.date, \'%Y-%m\')';
         $this->controller->User->Journal->virtualFields['index'] = 'Journal.coa_id';
         $summaryBalances = $this->controller->User->Journal->getData('list', array(
@@ -5322,7 +5330,6 @@ class RmReportComponent extends Component {
                 			'bold' => true,
         					'headerrowspan' => 2,
             			),
-            			// 'rowspan' => 2,
                 		'fix_column' => true,
 					),
 				), $monthHeaderArr);
@@ -5391,13 +5398,14 @@ class RmReportComponent extends Component {
 		                		'field_model' => 'Coa.coa_name',
 				                'style' => 'text-align: left;',
 				                'data-options' => 'field:\'coa_name\',width:250',
-            					// 'rowspan' => 2,
                 				'fix_column' => true,
 							),
 						), $monthArr);
 					}
 				} else {
 					$value = Common::_callUnset($value, array(
+						'parent_id',
+						'level',
 						'name',
 					));
 					$val['data'] = $value;
