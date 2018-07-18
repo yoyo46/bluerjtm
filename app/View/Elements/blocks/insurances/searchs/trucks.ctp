@@ -4,10 +4,11 @@
                 'controller' => 'insurances',
                 'action' => 'search',
                 'trucks',
-                'bypass' => true,
+                'bypass',
+                'bypass' => false,
             )), 
-            'role' => 'form',
-            'inputDefaults' => array('div' => false),
+            'class' => 'ajax-form',
+            'data-wrapper-write' => '#wrapper-modal-write',
         ));
 ?>
 <div class="row">
@@ -56,25 +57,18 @@
         </div>
     </div>
 </div>
-<div class="form-group action">
-    <?php
-            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
-                'div' => false, 
-                'class'=> 'btn btn-success btn-sm ajaxModal',
-                'data-parent' => true,
-                'title' => $title,
-            ));
-            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+<?php 
+        echo $this->element('blocks/common/searchs/box_action', array(
+            '_url' => array(
                 'controller' => 'insurances',
                 'action' => 'trucks',
                 'bypass' => true,
-            ), array(
+            ),
+            'linkOptions' => array(
                 'escape' => false, 
-                'class'=> 'btn btn-default btn-sm ajaxModal',
+                'class'=> 'btn btn-default btn-sm ajaxCustomModal',
                 'title' => $title,
-            ));
-    ?>
-</div>
-<?php 
+            ),
+        ));
         echo $this->Form->end();
 ?>

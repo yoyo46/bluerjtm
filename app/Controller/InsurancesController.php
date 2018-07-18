@@ -786,7 +786,7 @@ class InsurancesController extends AppController {
             ),
         ));
 
-        $title = __('List Truk');
+        $title = __('Pilih Truk');
 
         $this->set(compact(
             'title', 'values'

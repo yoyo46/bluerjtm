@@ -162,13 +162,13 @@
             ?>
         </tbody>
     </table>
+    <?php
+            echo $this->element('pagination', array(
+                'options' => array(
+                    'urlTitle' => __('Pilih Truk'),
+                    'urlClass' => 'ajaxCustomModal',
+                    'title' => $title,
+                ),
+            ));
+    ?>
 </div>
-<?php
-        echo $this->element('pagination', array(
-            'options' => array(
-                'urlTitle' => __('Pilih Truk'),
-                'urlClass' => 'ajaxCustomModal',
-                'title' => $title,
-            ),
-        ));
-?>
