@@ -52,12 +52,18 @@ class InsuranceDetail extends AppModel {
         $nopol = $this->filterEmptyField($this->data, 'InsuranceDetail', 'nopol');
         $insurance_id = $this->filterEmptyField($this->Insurance->data, 'Insurance', 'id');
 
-        $value = $this->getData('first', array(
+        $options = $this->Insurance->getData('paginate', array(
             'conditions' => array(
                 'InsuranceDetail.nopol' => $nopol,
                 'InsuranceDetail.insurance_id <>' => $insurance_id,
             ),
+            'contain' => array(
+                'Insurance',
+            ),
+        ), array(
+            'status' => 'publish',
         ));
+        $value = $this->getData('first', $options);
 
         if( !empty($value) ) {
             return false;
