@@ -1,6 +1,6 @@
 <?php
 		$this->Html->addCrumb(__('Cashbank'), array(
-			'controller' => 'cashbaks',
+			'controller' => 'cashbanks',
 			'action' => 'index'
 		));
 		$this->Html->addCrumb($sub_module_title);
@@ -17,7 +17,7 @@
         <h3 class="box-title">
         	<?php
         			printf(__('Upload By Excel ( %s )'), $this->Html->link($this->Html->tag('small', __('Download Template')), array(
-						'controller' => 'cashbaks', 
+						'controller' => 'cashbanks', 
 						'action' => 'import',
 						'download'
 					), array(

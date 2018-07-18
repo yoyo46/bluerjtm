@@ -193,11 +193,11 @@ class Coa extends AppModel {
         }
     }
 
-    function getMerge($data, $id, $modelName = 'Coa'){
+    function getMerge($data, $id, $modelName = 'Coa', $field = 'Coa.id'){
         if(empty($data[$modelName])){
             $data_merge = $this->find('first', array(
                 'conditions' => array(
-                    'Coa.id' => $id,
+                    $field => $id,
                 )
             ));
 

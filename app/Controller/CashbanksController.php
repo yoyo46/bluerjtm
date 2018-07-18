@@ -2958,4 +2958,207 @@ class CashbanksController extends AppController {
             '_freeze' => true,
         ));
     }
+
+    public function budget_import( $download = false ) {
+        if(!empty($download)){
+            $link_url = FULL_BASE_URL . '/files/budgets.xls';
+            $this->redirect($link_url);
+            exit;
+        } else {
+            App::import('Vendor', 'excelreader'.DS.'excel_reader2');
+
+            $this->set('module_title', __('Budget'));
+            $this->set('active_menu', 'budgets');
+            $this->set('sub_module_title', __('Import Excel'));
+
+            if(!empty($this->request->data)) { 
+                $Zipped = $this->request->data['Import']['importdata'];
+
+                if($Zipped["name"]) {
+                    $filename = $Zipped["name"];
+                    $source = $Zipped["tmp_name"];
+                    $type = $Zipped["type"];
+                    $name = explode(".", $filename);
+                    $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
+
+                    if(!empty($accepted_types)) {
+                        foreach($accepted_types as $mime_type) {
+                            if($mime_type == $type) {
+                                $okay = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+
+                    if(!$continue) {
+                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
+                        $this->redirect(array('action'=>'import'));
+                    } else {
+                        $path = APP.'webroot'.DS.'files'.DS.date('Y').DS.date('m').DS;
+                        $filenoext = basename ($filename, '.xls');
+                        $filenoext = basename ($filenoext, '.XLS');
+                        $fileunique = uniqid() . '_' . $filenoext;
+
+                        if( !file_exists($path) ) {
+                            mkdir($path, 0755, true);
+                        }
+
+                        $targetdir = $path . $fileunique . $filename;
+                         
+                        ini_set('memory_limit', '96M');
+                        ini_set('post_max_size', '64M');
+                        ini_set('upload_max_filesize', '64M');
+
+                        if(!move_uploaded_file($source, $targetdir)) {
+                            $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                            $this->redirect(array('action'=>'import'));
+                        }
+                    }
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                    $this->redirect(array('action'=>'import'));
+                }
+
+                $xls_files = glob( $targetdir );
+
+                if(empty($xls_files)) {
+                    $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
+                    $this->redirect(array('action'=>'import'));
+                } else {
+                    $uploadedXls = $this->MkCommon->addToFiles('xls', $xls_files[0]);
+                    $uploaded_file = $uploadedXls['xls'];
+                    $file = explode(".", $uploaded_file['name']);
+                    $extension = array_pop($file);
+                    
+                    if($extension == 'xls') {
+                        $dataimport = new Spreadsheet_Excel_Reader();
+                        $dataimport->setUTFEncoder('iconv');
+                        $dataimport->setOutputEncoding('UTF-8');
+                        $dataimport->read($uploaded_file['tmp_name']);
+                        
+                        if(!empty($dataimport)) {
+                            $data = $dataimport;
+                            $row_submitted = 1;
+                            $successfull_row = 0;
+                            $failed_row = 0;
+                            $error_message = '';
+                            $cnt = 0;
+
+                            for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
+                                $datavar = array();
+                                $flag = true;
+                                $i = 1;
+
+                                while ($flag) {
+                                    if( !empty($data->sheets[0]["cells"][1][$i]) ) {
+                                        $variable = $this->MkCommon->toSlug($data->sheets[0]["cells"][1][$i], '_');
+                                        $thedata = !empty($data->sheets[0]["cells"][$x][$i])?$data->sheets[0]["cells"][$x][$i]:NULL;
+                                        $$variable = $thedata;
+                                        $datavar[] = $thedata;
+                                    } else {
+                                        $flag = false;
+                                    }
+                                    $i++;
+                                }
+
+                                if(array_filter($datavar)) {
+                                    $kode_coa = !empty($kode_coa)?$kode_coa:false;
+                                    $tahun = !empty($tahun)?$tahun:false;
+                                    $detail = array();
+
+                                    if( !empty($kode_coa) ) {
+                                        $coa = $this->User->Journal->Coa->getMerge(array(), $kode_coa, 'Coa', 'Coa.code');
+                                        $coa_id = Common::hashEmptyField($coa, 'Coa.id');
+                                    } else {
+                                        $coa_id = false;
+                                    }
+
+                                    for ($i=1; $i <=12 ; $i++) { 
+                                        $bln = str_pad($i, 2,'0',STR_PAD_LEFT);
+                                        $budget = !empty($$bln)?$$bln:0;
+
+                                        $detail[] = array(
+                                            'BudgetDetail' => array(
+                                                'month' => $i,
+                                                'budget' => $budget,
+                                            ),
+                                        );
+                                    }
+
+                                    $checkExisting = $this->User->Journal->Coa->Budget->getData('first', array(
+                                        'conditions' => array(
+                                            'Budget.coa_id' => $coa_id,
+                                            'Budget.year' => $tahun,
+                                        ),
+                                    ));
+                                    $id = Common::hashEmptyField($checkExisting, 'Budget.id');
+
+                                    $dataSave = array(
+                                        'Budget' => array(
+                                            'id' => $id,
+                                            'coa_id' => $coa_id,
+                                            'year' => $tahun,
+                                        ),
+                                        'BudgetDetail' => $detail,
+                                    );
+
+                                    $flag = $this->User->Journal->Coa->Budget->saveAll($dataSave, array(
+                                        'validate' => 'only',
+                                        'deep' => true,
+                                    ));
+
+                                    if( $flag ){
+                                        $this->User->Journal->Coa->Budget->BudgetDetail->deleteAll(array( 
+                                            'BudgetDetail.budget_id' => $id,
+                                        ));
+                                        $this->User->Journal->Coa->Budget->saveAll($dataSave);
+
+                                        $this->Log->logActivity( __('Sukses upload by Import Excel'), $this->user_data, $this->RequestHandler, $this->params );
+                                        $successfull_row++;
+                                    } else {
+                                        $validationErrors = $this->User->Journal->Coa->Budget->validationErrors;
+                                        $textError = array();
+
+                                        if( !empty($validationErrors) ) {
+                                            foreach ($validationErrors as $key => $validationError) {
+                                                if( !empty($validationError) ) {
+                                                    foreach ($validationError as $key => $error) {
+                                                        $textError[] = $error;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if( !empty($textError) ) {
+                                            $textError = implode(', ', $textError);
+                                        } else {
+                                            $textError = '';
+                                        }
+
+                                        $failed_row++;
+                                        $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal Upload Data. %s'), $row_submitted, $textError) . '<br>';
+                                    }
+
+                                    $row_submitted++;
+                                    $cnt++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(!empty($successfull_row)) {
+                    $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, $cnt);
+                    $this->MkCommon->setCustomFlash(__($message_import1), 'success');
+                }
+                
+                if(!empty($error_message)) {
+                    $this->MkCommon->setCustomFlash(__($error_message), 'error');
+                }
+                $this->redirect(array('action'=>'budget_import'));
+            }
+        }
+    }
 }

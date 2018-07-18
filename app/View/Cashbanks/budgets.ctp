@@ -3,20 +3,30 @@
         echo $this->element('blocks/cashbanks/searchs/budgets');
 ?>
 <div class="box">
-    <div class="box-header">
-        <h3 class="box-title"><?php echo $sub_module_title;?></h3>
-        <div class="box-tools">
-            <?php
-                echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
-                    'controller' => 'cashbanks',
-                    'action' => 'budget_add'
-                ), array(
-                    'escape' => false,
-                    'class' => 'btn btn-app pull-right'
-                ));
-            ?>
-        </div>
-    </div><!-- /.box-header -->
+    <?php 
+            echo $this->element('blocks/common/box_header', array(
+                'title' => $sub_module_title,
+                '_label_multiple' => __('Tambah'),
+                '_add_multiple' => array(
+                    array(
+                        'label' => __('Tambah'),
+                        'url' => array(
+                            'controller' => 'cashbanks',
+                            'action' => 'budget_add',
+                            'admin' => false,
+                        ),
+                    ),
+                    array(
+                        'label' => __('Import'),
+                        'url' => array(
+                            'controller' => 'cashbanks',
+                            'action' => 'budget_import',
+                            'admin' => false,
+                        ),
+                    ),
+                ),
+            ));
+    ?>
     <div class="box-body table-responsive">
         <table class="table table-hover">
             <tr>
