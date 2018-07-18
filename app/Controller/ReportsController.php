@@ -24,6 +24,7 @@ class ReportsController extends AppController {
 
 		if( !empty($data) ) {
 			$dataSave = $this->RmReport->_callAddBeforeSave($data, $type);
+			// $dataSave = array();
 
 			switch ($type) {
 				case 'stock_cards':

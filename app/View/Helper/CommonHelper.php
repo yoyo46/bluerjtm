@@ -1761,7 +1761,7 @@ class CommonHelper extends AppHelper {
         return $result;
     }
 
-    function getCheckboxBranch () {
+    function getCheckboxBranch ( $modelName = 'GroupBranch' ) {
         $result = '';
         $branches = Configure::read('__Site.config_allow_branchs');
 
@@ -1774,7 +1774,7 @@ class CommonHelper extends AppHelper {
                 'div' => false,
             );
 
-            if( empty($this->request->data['GroupBranch']['group_branch']) ) {
+            if( empty($this->request->data[$modelName]['group_branch']) ) {
                 $default_options['checked'] = true;
             }
 
@@ -1783,7 +1783,7 @@ class CommonHelper extends AppHelper {
                 $branchCheckboxOptions['value'] = $branch_id;
                 $branchCheckboxOptions['class'] = 'check-branch';
 
-                $tmpArr[] = $this->Html->tag('li', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('GroupBranch.group_branch.'.$branch_id, $branchCheckboxOptions).$city_name), array(
+                $tmpArr[] = $this->Html->tag('li', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input($modelName.'.group_branch.'.$branch_id, $branchCheckboxOptions).$city_name), array(
                     'class' => 'checkbox',
                 )));
             }
@@ -1802,7 +1802,7 @@ class CommonHelper extends AppHelper {
                 $branchCheckboxOptions = $default_options;
                 $branchCheckboxOptions['class'] = 'check-all';
 
-                $headLi = $this->Html->tag('li', $this->Html->tag('li', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('GroupBranch.group_branch.'.$branch_id, $branchCheckboxOptions).__('Check/Uncheck All')), array(
+                $headLi = $this->Html->tag('li', $this->Html->tag('li', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input($modelName.'.group_branch.'.$branch_id, $branchCheckboxOptions).__('Check/Uncheck All')), array(
                     'class' => 'checkbox',
                 ))));
                 $divider = $this->Html->tag('li', '', array(

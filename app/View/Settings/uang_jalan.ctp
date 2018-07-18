@@ -46,6 +46,7 @@
             <div class="clear"></div>
         </div>
     </div><!-- /.box-header -->
+    <div class="wrapper-download"></div>
     <div class="box-body table-responsive">
         <table class="table table-hover">
             <tr>

@@ -1894,6 +1894,7 @@
         var func = $.checkUndefined(obj_content.attr('data-function'), false);
         var func_type = $.checkUndefined(obj_content.attr('data-function-type'), false);
         var data_empty = $.checkUndefined(obj_content.attr('data-empty'), null);
+        var data_modal_close = $.checkUndefined(obj_content.attr('data-modal-close'), null);
         var formData = false; 
 
         if( url == false ) {
@@ -2008,6 +2009,10 @@
 
                     if(typeof data_show != 'undefined' ) {
                         $(data_show).show().removeClass('hide');
+                    }
+
+                    if( data_modal_close == 'true' ) {
+                        $('#myModal .close.btn,#myModal button.close').trigger("click");
                     }
 
                     if( infinity == 'true' ) {

@@ -180,6 +180,9 @@ class UangJalan extends AppModel {
             'className' => 'City',
             'foreignKey' => 'to_city_id',
         ),
+        'Branch' => array(
+            'foreignKey' => 'branch_id',
+        ),
     );
 
     var $hasMany = array(
@@ -217,6 +220,21 @@ class UangJalan extends AppModel {
             'conditions' => array(
                 'UangKeamananGroupMotor.status' => 1,
             ),
+        ),
+        'ViewUangJalanTipeMotor' => array(
+            'foreignKey' => 'uang_jalan_id',
+        ),
+        'ViewCommissionGroupMotor' => array(
+            'foreignKey' => 'uang_jalan_id',
+        ),
+        'ViewAsdpGroupMotor' => array(
+            'foreignKey' => 'uang_jalan_id',
+        ),
+        'ViewUangKawalGroupMotor' => array(
+            'foreignKey' => 'uang_jalan_id',
+        ),
+        'ViewUangKeamananGroupMotor' => array(
+            'foreignKey' => 'uang_jalan_id',
         ),
     );
 
@@ -476,6 +494,39 @@ class UangJalan extends AppModel {
         } else {
             return true;
         }
+    }
+
+    public function _callRefineParams( $data = '', $default_options = null ) {
+        $sort = Common::hashEmptyField($data, 'named.sort');
+
+        $default_options = $this->defaultOptionParams($data, $default_options, array(
+            'name' => array(
+                'field' => 'UangJalan.title',
+                'type' => 'like',
+            ),
+            'capacity' => array(
+                'field'=> 'UangJalan.capacity',
+                'type' => 'like',
+            ),
+            'noref' => array(
+                'field'=> 'UangJalan.id',
+            ),
+            'from' => array(
+                'field'=> 'FromCity.id',
+                'contain' => 'FromCity',
+                'type' => 'like',
+            ),
+            'to' => array(
+                'field'=> 'ToCity.id',
+                'contain' => 'ToCity',
+                'type' => 'like',
+            ),
+            'group_branch' => array(
+                'field'=> 'UangJalan.branch_id',
+            ),
+        ));
+
+        return $default_options;
     }
 }
 ?>

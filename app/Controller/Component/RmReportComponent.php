@@ -5868,6 +5868,365 @@ class RmReportComponent extends Component {
 		);
 	}
 
+	function _callDataUang_jalan ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('UangJalan');
+		$this->controller->loadModel('GroupClassification');
+		$this->controller->loadModel('City');
+		$this->controller->loadModel('GroupMotor');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+
+		$options = array(
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+		$options = $this->controller->UangJalan->_callRefineParams($params, $options);
+
+		$this->controller->paginate	= $this->controller->UangJalan->getData('paginate', $options);
+		$data = $this->controller->paginate('UangJalan');
+		$result = array();
+
+		if( !empty($data) ) {
+	        $groupClassifications = $this->controller->GroupClassification->getData('list', array(
+	            'fields' => array(
+	                'GroupClassification.id', 'GroupClassification.name',
+	            ),
+	        ));
+	        $values = $data;
+
+			// foreach ($values as &$val) {
+   //              $id = Common::hashEmptyField($val, 'UangJalan.id');
+   //              $val = $this->controller->UangJalan->gerMergeBiaya( $val, $id, true );
+			// }
+
+        	$this->controller->UangJalan->ViewUangJalanTipeMotor->virtualFields['cnt'] = 'MAX(ViewUangJalanTipeMotor.cnt)';
+        	$this->controller->UangJalan->ViewCommissionGroupMotor->virtualFields['cnt'] = 'MAX(ViewCommissionGroupMotor.cnt)';
+        	$this->controller->UangJalan->ViewAsdpGroupMotor->virtualFields['cnt'] = 'MAX(ViewAsdpGroupMotor.cnt)';
+        	$this->controller->UangJalan->ViewUangKawalGroupMotor->virtualFields['cnt'] = 'MAX(ViewUangKawalGroupMotor.cnt)';
+        	$this->controller->UangJalan->ViewUangKeamananGroupMotor->virtualFields['cnt'] = 'MAX(ViewUangKeamananGroupMotor.cnt)';
+
+			$uangJalanTipeMotor = $this->controller->UangJalan->ViewUangJalanTipeMotor->find('first');
+			$commissionGroupMotor = $this->controller->UangJalan->ViewCommissionGroupMotor->find('first');
+			$asdpGroupMotor = $this->controller->UangJalan->ViewAsdpGroupMotor->find('first');
+			$uangKawalGroupMotor = $this->controller->UangJalan->ViewUangKawalGroupMotor->find('first');
+			$uangKeamananGroupMotor = $this->controller->UangJalan->ViewUangKeamananGroupMotor->find('first');
+
+            $UangJalanTipeMotorCnt = Common::hashEmptyField($uangJalanTipeMotor, 'ViewUangJalanTipeMotor.cnt');
+            $CommissionGroupMotorCnt = Common::hashEmptyField($commissionGroupMotor, 'ViewCommissionGroupMotor.cnt');
+            $AsdpGroupMotorCnt = Common::hashEmptyField($asdpGroupMotor, 'ViewAsdpGroupMotor.cnt');
+            $UangKawalGroupMotorCnt = Common::hashEmptyField($uangKawalGroupMotor, 'ViewUangKawalGroupMotor.cnt');
+            $UangKeamananGroupMotorCnt = Common::hashEmptyField($uangKeamananGroupMotor, 'ViewUangKeamananGroupMotor.cnt');
+
+			foreach ($data as $key => $value) {
+                $branch_id = Common::hashEmptyField($value, 'UangJalan.branch_id');
+                $from_city_id = Common::hashEmptyField($value, 'UangJalan.from_city_id');
+                $to_city_id = Common::hashEmptyField($value, 'UangJalan.to_city_id');
+
+                $value = $this->controller->City->getMerge($value, $from_city_id, 'FromCity');
+                $value = $this->controller->City->getMerge($value, $to_city_id, 'ToCity');
+                $value = $this->controller->UangJalan->Branch->getMerge($value, $branch_id);
+
+                $value = $this->controller->UangJalan->getMergeList($value, array(
+					'contain' => array(
+						'UangJalanTipeMotor' => array(
+							'contain' => array(
+								'GroupMotor',
+							),
+						),
+						'CommissionGroupMotor' => array(
+							'contain' => array(
+								'GroupMotor',
+							),
+						),
+						'AsdpGroupMotor' => array(
+							'contain' => array(
+								'GroupMotor',
+							),
+						),
+						'UangKawalGroupMotor' => array(
+							'contain' => array(
+								'GroupMotor',
+							),
+						),
+						'UangKeamananGroupMotor' => array(
+							'contain' => array(
+								'GroupMotor',
+							),
+						),
+					),
+				));
+
+                $group_classification_1_id = Common::hashEmptyField($value, 'UangJalan.group_classification_1_id', 0);
+                $group_classification_2_id = Common::hashEmptyField($value, 'UangJalan.group_classification_2_id', 0);
+                $group_classification_3_id = Common::hashEmptyField($value, 'UangJalan.group_classification_3_id', 0);
+                $group_classification_4_id = Common::hashEmptyField($value, 'UangJalan.group_classification_4_id', 0);
+
+                $classifications1 = Common::hashEmptyField($groupClassifications, $group_classification_1_id, '');
+                $classifications2 = Common::hashEmptyField($groupClassifications, $group_classification_2_id, '');
+                $classifications3 = Common::hashEmptyField($groupClassifications, $group_classification_3_id, '');
+                $classifications4 = Common::hashEmptyField($groupClassifications, $group_classification_4_id, '');
+
+				$result[$key] = array(
+					__('ID/No. Ref') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.id'),
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Kode Cabang') => array(
+						'text' => Common::hashEmptyField($value, 'Branch.code'),
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Nama') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.title'),
+					),
+					__('Dari') => array(
+						'text' => Common::hashEmptyField($value, 'FromCity.name'),
+					),
+					__('Tujuan') => array(
+						'text' => Common::hashEmptyField($value, 'ToCity.name'),
+					),
+					__('Kapasitas') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.capacity'),
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Jarak Tempuh') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.distance'),
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Lead Time Sampai Tujuan') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.arrive_lead_time'),
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Lead Time Ke Pool') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.back_lead_time'),
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Klasifikasi 1') => array(
+						'text' => $classifications1,
+					),
+					__('Klasifikasi 2') => array(
+						'text' => $classifications2,
+					),
+					__('Klasifikasi 3') => array(
+						'text' => $classifications3,
+					),
+					__('Klasifikasi 4') => array(
+						'text' => $classifications4,
+					),
+					__('Uang Jalan Pertama') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.uang_jalan_1'),
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Uang Jalan Per Unit ?') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.uang_jalan_per_unit'),
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+				);
+
+		        for ($i=1; $i <= $UangJalanTipeMotorCnt; $i++) {
+	            	$index = $i-1;
+		            $result[$key] = array_merge($result[$key], array(
+						__('Group Motor Uang Jalan %s', $i) => array(
+							'text' => Common::hashEmptyField($value, __('UangJalanTipeMotor.%s.GroupMotor.name', $index)),
+						),
+						__('Biaya Uang Jalan Per Group %s', $i) => array(
+							'text' => Common::hashEmptyField($value, __('UangJalanTipeMotor.%s.UangJalanTipeMotor.uang_jalan_1', $index)),
+	                		'excel' => array(
+	                			'align' => 'right',
+	            			),
+						),
+		            ));
+		        }
+
+	            $result[$key] = array_merge($result[$key], array(
+					__('Uang Jalan Kedua') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.uang_jalan_2'),
+	            		'excel' => array(
+	            			'align' => 'right',
+	        			),
+					),
+					__('Uang Jalan Extra') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.uang_jalan_extra'),
+	            		'excel' => array(
+	            			'align' => 'right',
+	        			),
+					),
+					__('Uang Jalan Extra Per Unit ?') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.uang_jalan_extra_per_unit'),
+	            		'excel' => array(
+	            			'align' => 'center',
+	        			),
+					),
+					__('Min Kapasitas Ujalan Extra') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.min_capacity'),
+	            		'excel' => array(
+	            			'align' => 'right',
+	        			),
+					),
+					__('Komisi') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.commission'),
+	            		'excel' => array(
+	            			'align' => 'right',
+	        			),
+					),
+					__('Komisi Per Unit ?') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.commission_per_unit'),
+	            		'excel' => array(
+	            			'align' => 'center',
+	        			),
+					),
+	            ));
+
+		        for ($i=1; $i <= $CommissionGroupMotorCnt; $i++) {
+	            	$index = $i-1;
+		            $result[$key] = array_merge($result[$key], array(
+						__('Group Motor Komisi %s', $i) => array(
+							'text' => Common::hashEmptyField($value, __('CommissionGroupMotor.%s.GroupMotor.name', $index)),
+						),
+						__('Biaya Komisi Per Group %s', $i) => array(
+							'text' => Common::hashEmptyField($value, __('CommissionGroupMotor.%s.CommissionGroupMotor.commission', $index)),
+		            		'excel' => array(
+		            			'align' => 'right',
+		        			),
+						),
+		            ));
+		        }
+
+		        $result[$key] = array_merge($result[$key], array(
+					__('Komisi Extra') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.commission_extra'),
+	            		'excel' => array(
+	            			'align' => 'right',
+	        			),
+					),
+					__('Min Kapasitas Komisi Extra') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.commission_min_qty'),
+	            		'excel' => array(
+	            			'align' => 'right',
+	        			),
+					),
+					__('Komisi Extra Per Unit ?') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.commission_extra_per_unit'),
+	            		'excel' => array(
+	            			'align' => 'center',
+	        			),
+					),
+					__('Uang Penyebrangan') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.asdp'),
+	            		'excel' => array(
+	            			'align' => 'right',
+	        			),
+					),
+					__('Uang Penyebrangan Per Unit ?') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.asdp_per_unit'),
+	            		'excel' => array(
+	            			'align' => 'center',
+	        			),
+					),
+		        ));
+
+		        for ($i=1; $i <= $AsdpGroupMotorCnt; $i++) {
+	            	$index = $i-1;
+		            $result[$key] = array_merge($result[$key], array(
+						__('Group Motor Uang Penyebrangan %s', $i) => array(
+							'text' => Common::hashEmptyField($value, __('AsdpGroupMotor.%s.GroupMotor.name', $index)),
+						),
+						__('Biaya Uang Penyebrangan Per Group %s', $i) => array(
+							'text' => Common::hashEmptyField($value, __('AsdpGroupMotor.%s.AsdpGroupMotor.asdp', $index)),
+		            		'excel' => array(
+		            			'align' => 'right',
+		        			),
+						),
+		            ));
+		        }
+
+		        $result[$key] = array_merge($result[$key], array(
+					__('Uang Kawal') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.uang_kawal'),
+	            		'excel' => array(
+	            			'align' => 'right',
+	        			),
+					),
+					__('Uang Kawal Per Unit ?') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.uang_kawal_per_unit'),
+	            		'excel' => array(
+	            			'align' => 'center',
+	        			),
+					),
+		        ));
+
+		        for ($i=1; $i <= $UangKawalGroupMotorCnt; $i++) {
+	            	$index = $i-1;
+		            $result[$key] = array_merge($result[$key], array(
+						__('Group Motor Uang Kawal %s', $i) => array(
+							'text' => Common::hashEmptyField($value, __('UangKawalGroupMotor.%s.GroupMotor.name', $index)),
+						),
+						__('Biaya Uang Kawal Per Group %s', $i) => array(
+							'text' => Common::hashEmptyField($value, __('UangKawalGroupMotor.%s.UangKawalGroupMotor.uang_kawal', $index)),
+		            		'excel' => array(
+		            			'align' => 'right',
+		        			),
+						),
+		            ));
+		        }
+
+		        $result[$key] = array_merge($result[$key], array(
+					__('Uang Keamanan') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.uang_keamanan'),
+	            		'excel' => array(
+	            			'align' => 'right',
+	        			),
+					),
+					__('Uang Keamanan Per Unit ?') => array(
+						'text' => Common::hashEmptyField($value, 'UangJalan.uang_keamanan_per_unit'),
+	            		'excel' => array(
+	            			'align' => 'center',
+	        			),
+					),
+		        ));
+
+		        for ($i=1; $i <= $UangKeamananGroupMotorCnt; $i++) {
+	            	$index = $i-1;
+		            $result[$key] = array_merge($result[$key], array(
+						__('Group Motor Uang Keamanan %s', $i) => array(
+							'text' => Common::hashEmptyField($value, __('UangKeamananGroupMotor.%s.GroupMotor.name', $index)),
+						),
+						__('Biaya Uang Keamanan Per Group %s', $i) => array(
+							'text' => Common::hashEmptyField($value, __('UangKeamananGroupMotor.%s.UangKeamananGroupMotor.uang_keamanan', $index)),
+		            		'excel' => array(
+		            			'align' => 'right',
+		        			),
+						),
+		            ));
+		        }
+		    }
+		}
+
+		return array(
+			'data' => $result,
+			'model' => 'UangJalan',
+		);
+	}
+
 	function _callProcess( $modelName, $id, $value, $data ) {
 		$dataSave = false;
 		$file = false;

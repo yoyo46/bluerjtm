@@ -4,7 +4,8 @@ class SettingsController extends AppController {
 	public $uses = array();
 
     public $components = array(
-        'RjSetting', 'RjImage'
+        'RjSetting', 'RjImage',
+        'RmReport'
     );
 
     function beforeFilter() {

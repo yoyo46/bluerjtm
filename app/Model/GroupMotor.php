@@ -10,6 +10,24 @@ class GroupMotor extends AppModel {
 		)
 	);
 
+    var $hasMany = array(
+        'UangJalanTipeMotor' => array(
+            'foreignKey' => 'group_motor_id',
+        ),
+        'CommissionGroupMotor' => array(
+            'foreignKey' => 'group_motor_id',
+        ),
+        'AsdpGroupMotor' => array(
+            'foreignKey' => 'group_motor_id',
+        ),
+        'UangKawalGroupMotor' => array(
+            'foreignKey' => 'group_motor_id',
+        ),
+        'UangKeamananGroupMotor' => array(
+            'foreignKey' => 'group_motor_id',
+        ),
+    );
+
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         $this->virtualFields['lower_name'] = sprintf('LOWER(%s.name)', $this->alias);
