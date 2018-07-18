@@ -6176,7 +6176,7 @@ class TrucksController extends AppController {
             'dateTo' => $dateTo,
         ));
 
-        $dataReport = $this->RmReport->_callDataProfit_loss($params, 30, 0, true);
+        $dataReport = $this->RmReport->_callDataProfit_loss_per_truck($params, 30, 0, true);
         $values = Common::hashEmptyField($dataReport, 'data');
 
         $this->RjTruck->_callBeforeViewProfitLoss($params);

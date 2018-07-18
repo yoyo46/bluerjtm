@@ -17,6 +17,11 @@
                     'data-request' => '#form-search',
                 ),
                 '_ajax' => true,
+                'url_excel' => array(
+                    'controller' => 'reports',
+                    'action' => 'generate_excel',
+                    'profit_loss_per_truck',
+                ),
             ));
     ?>
     <div class="table-responsive">
@@ -87,8 +92,8 @@
             echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
                 'style' => 'font-size: 14px;font-style: italic;margin-top: 10px;'
             ));
-            echo $this->Html->tag('div', $this->element('pagination'), array(
-                'class' => 'pagination-report'
-            ));
+            // echo $this->Html->tag('div', $this->element('pagination'), array(
+            //     'class' => 'pagination-report'
+            // ));
     ?>
 </div>
