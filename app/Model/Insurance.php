@@ -129,10 +129,8 @@ class Insurance extends AppModel {
 
             case 'publish':
                 $default_options['conditions']['Insurance.status'] = 1;
-                $defaultOptions['conditions'][] = array(
-                    'Insurance.start_date'.' <=' => date('Y-m-d'),
-                    'Insurance.end_date'.' >=' => date('Y-m-d'),
-                );
+                $default_options['conditions']['Insurance.start_date'.' <='] = date('Y-m-d');
+                $default_options['conditions']['Insurance.end_date'.' >='] = date('Y-m-d');
                 break;
         }
 
