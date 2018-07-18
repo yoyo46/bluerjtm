@@ -4700,6 +4700,7 @@ class RmReportComponent extends Component {
 		$tmp = Common::hashEmptyField($options, 'tmp');
 		$params = Common::hashEmptyField($options, 'params');
 		$summaryBalances = Common::hashEmptyField($options, 'summaryBalances');
+		$lastSummaryProfitLoss = Common::hashEmptyField($options, 'lastSummaryProfitLoss');
 		$view = Common::hashEmptyField($options, 'view');
 		$result = Common::hashEmptyField($options, 'result', array());
 
@@ -4737,15 +4738,15 @@ class RmReportComponent extends Component {
 						$parent_parent_id = Common::hashEmptyField($coa, 'CoaParent.parent_id');
 						$level = Common::hashEmptyField($coa, 'Coa.level');
 						$saldo_awal = Common::hashEmptyField($coa, 'Coa.balance');
+						$is_profit_loss = Common::hashEmptyField($coa, 'Coa.is_profit_loss');
 						$padding_left = $level * 10;
-						$balance = Common::hashEmptyField($summaryBalances, $coa_id);
 
-						// if( $coa_type == 'credit' ) {
-						// 	$balance = $saldo_awal - $balance;
-						// } else if( $coa_type == 'debit' ) {
-						// 	$balance = $saldo_awal + $balance;
-						// }
-						$balance = $saldo_awal + $balance;
+						if( !empty($is_profit_loss) ) {
+							$balance = Common::hashEmptyField($lastSummaryProfitLoss, 'Journal.profit_loss');
+						} else {
+							$balance = Common::hashEmptyField($summaryBalances, $coa_id);
+							$balance = $saldo_awal + $balance;
+						}
 
 						$value['children'][] = array(
 							'name' => $coa_name,
@@ -4775,6 +4776,7 @@ class RmReportComponent extends Component {
 			        	'tmp' => $tmp,
 			        	'params' => $params,
 			        	'summaryBalances' => $summaryBalances,
+			        	'lastSummaryProfitLoss' => $lastSummaryProfitLoss,
 			        	'result' => $result,
 			        	'view' => $view,
 			    	));
@@ -4878,6 +4880,29 @@ class RmReportComponent extends Component {
             ),
         ));
 
+		$coa_profit_loss = $this->controller->Coa->getData('list', array(
+        	'fields' => array(
+        		'Coa.id',
+    		),
+			'conditions' => array(
+				'Coa.level' => 4,
+                'Coa.coa_profit_loss >=' => 3,
+			),
+        ));
+        
+        $this->controller->User->Journal->virtualFields['profit_loss'] = 'IFNULL(SUM(Journal.credit) - SUM(Journal.debit), 0)';
+        $lastSummaryProfitLoss = $this->controller->User->Journal->getData('first', array(
+        	'fields' => array(
+        		'Journal.index',
+        		'Journal.profit_loss',
+    		),
+    		'contain' => false,
+            'conditions' => array(
+                'Journal.coa_id' => $coa_profit_loss,
+                'DATE_FORMAT(Journal.date, \'%Y-%m\') <=' => $MonthFrom,
+            ),
+        ));
+
         if( !empty($data) ) {
         	foreach ($data as $type => $value) {
         		$coas = $this->_callBalanceSheetRecursive(array(
@@ -4887,6 +4912,7 @@ class RmReportComponent extends Component {
 		        	'tmp' => $tmp,
 		        	'params' => $params,
 		        	'summaryBalances' => $summaryBalances,
+		        	'lastSummaryProfitLoss' => $lastSummaryProfitLoss,
 		        	'view' => $view,
 		    	));
 		        $result[$type] = $coas;
