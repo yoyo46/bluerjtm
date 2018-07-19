@@ -82,7 +82,7 @@ class Revenue extends AppModel {
 
         $default_options = array(
             'conditions'=> array(
-                'Revenue.import_code' => 0,
+                // 'Revenue.import_code' => 0,
             ),
             'order'=> array(
                 'Revenue.created' => 'DESC',
@@ -837,7 +837,8 @@ class Revenue extends AppModel {
             $default_options['conditions']['Revenue.ttuj_id'] = $ttuj;
         }
         if(!empty($noref)){
-            $default_options['conditions']['LPAD(Revenue.id, 5, 0) LIKE'] = '%'.$noref.'%';
+            $noref = intval($noref);
+            $default_options['conditions']['Revenue.id LIKE'] = '%'.$noref.'%';
         }
         if(!empty($status)){
             if( $status == 'paid' ) {
