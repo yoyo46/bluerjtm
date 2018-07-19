@@ -187,10 +187,6 @@ class Truck extends AppModel {
                 'Laka.completed' => 0,
             ),
         ),
-        'Asset' => array(
-            'className' => 'Asset',
-            'foreignKey' => 'asset_id',
-        ),
         'PurchaseOrderAsset' => array(
             'className' => 'PurchaseOrderAsset',
             'foreignKey' => 'truck_id',
@@ -288,13 +284,20 @@ class Truck extends AppModel {
             'className' => 'InsuranceDetail',
             'foreignKey' => 'truck_id',
         ),
+        'Asset' => array(
+            'className' => 'Asset',
+            'foreignKey' => 'asset_id',
+        ),
     );
 
     function checkUniq() {
         $id = $this->id;
+        $id = Common::hashEmptyField($this->data, 'Truck.id', $id);
         $nopol = Common::hashEmptyField($this->data, 'Truck.nopol');
+
         $check = $this->getData('first', array(
             'conditions' => array(
+                'Truck.id <>' => $id,
                 'Truck.nopol' => $nopol,
             ),
         ), true, array(

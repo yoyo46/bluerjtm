@@ -191,8 +191,10 @@ class LeasingsController extends AppController {
                 $msg = 'menambah';
             }
 
+            $paid_date = (!empty($data['Leasing']['paid_date'])) ? $this->MkCommon->getDate($data['Leasing']['paid_date']) : '';
+
             $data['Leasing']['id'] = $id;
-            $data['Leasing']['paid_date'] = (!empty($data['Leasing']['paid_date'])) ? $this->MkCommon->getDate($data['Leasing']['paid_date']) : '';
+            $data['Leasing']['paid_date'] = $paid_date;
             $data['Leasing']['date_first_installment'] = (!empty($data['Leasing']['date_first_installment'])) ? $this->MkCommon->getDate($data['Leasing']['date_first_installment']) : '';
             $data['Leasing']['date_last_installment'] = !empty($data['Leasing']['tgl_last_installment'])?$this->MkCommon->getDateSelectbox($data['Leasing']['tgl_last_installment']):false;
 
@@ -226,17 +228,41 @@ class LeasingsController extends AppController {
                     $asset_group_id = !empty($assetGroupArr[$key])?$assetGroupArr[$key]:false;
                     $note = !empty($noteArr[$key])?$noteArr[$key]:false;
 
+                    $asset = $this->Leasing->LeasingDetail->Truck->Asset->getMerge(array(), $truck_id, 'Asset.truck_id');
+                    $asset_id = Common::hashEmptyField($asset, 'Asset.id');
+
+                    $asset = $this->Leasing->LeasingDetail->Truck->Asset->AssetGroup->getMerge($asset, $asset_group_id);
+                    $asset = $this->Leasing->LeasingDetail->Truck->Asset->AssetGroup->AssetGroupCoa->getMerge($asset, $asset_group_id, 'first', 'Asset');
+
                     $company = $this->Leasing->LeasingDetail->Truck->Company->getData('first', array(
                         'conditions' => array(
                             'Company.code LIKE' => '%RJTM%'
                         ),
                     ));
-                    $company_id = $this->MkCommon->filterEmptyField($company, 'Company', 'id', 0);
+                    $company_id = Common::hashEmptyField($company, 'Company.id', 0);
+                    $branch_id = Configure::read('__Site.config_branch_id');
+
+                    $ak_penyusutan = Common::hashEmptyField($asset, 'Asset.ak_penyusutan', 0);
+                    $is_truck = Common::hashEmptyField($asset, 'AssetGroup.is_truck');
+                    $nilai_sisa = Common::hashEmptyField($asset, 'AssetGroup.nilai_sisa');
+                    $umur_ekonomis = Common::hashEmptyField($asset, 'AssetGroup.umur_ekonomis');
+                    $coa_id = Common::hashEmptyField($asset, 'AssetGroupCoa.coa_id');
+
+                    $nilai_buku = $price - $ak_penyusutan;
+                    $depr_bulan = 0;
+
+                    if( !empty($umur_ekonomis) ) {
+                        $depr_bulan = ( ( $price - $nilai_sisa ) / $umur_ekonomis );
+                    }
+
+                    if( !empty($depr_bulan) ) {
+                        $depr_bulan = $depr_bulan / 12;
+                    }
 
                     $dataSave['LeasingDetail'][] = array(
                         'Truck' => array(
                             'id' => $truck_id,
-                            'branch_id' => Configure::read('__Site.config_branch_id'),
+                            'branch_id' => $branch_id,
                             'company_id' => $company_id,
                             'nopol' => $nopol,
                             'tahun' => $thn,
@@ -294,6 +320,64 @@ class LeasingsController extends AppController {
                         'deep' => true,
                     ));
                     $id = $this->Leasing->id;
+
+                    if(!empty($data['LeasingDetail']['nopol'])){
+                        $dataAsset = array();
+
+                        foreach ($data['LeasingDetail']['nopol'] as $key => $nopol) {
+                            $priceArr = $this->MkCommon->filterEmptyField($data, 'LeasingDetail', 'price');
+                            $assetGroupArr = $this->MkCommon->filterEmptyField($data, 'LeasingDetail', 'asset_group_id');
+                            $noteArr = $this->MkCommon->filterEmptyField($data, 'LeasingDetail', 'note');
+
+                            $price = !empty($priceArr[$key])?$this->MkCommon->_callPriceConverter($priceArr[$key]):false;
+                            $asset_group_id = !empty($assetGroupArr[$key])?$assetGroupArr[$key]:false;
+                            $note = !empty($noteArr[$key])?$noteArr[$key]:false;
+
+                            $truck = $this->Leasing->LeasingDetail->Truck->getMerge(array(), $nopol, 'Truck.nopol');
+                            $truck_id = Common::hashEmptyField($truck, 'Truck.id');
+
+                            $asset = $this->Leasing->LeasingDetail->Truck->Asset->getMerge(array(), $truck_id, 'Asset.truck_id');
+                            $asset_id = Common::hashEmptyField($asset, 'Asset.id');
+
+                            $asset = $this->Leasing->LeasingDetail->Truck->Asset->AssetGroup->getMerge($asset, $asset_group_id);
+                            $asset = $this->Leasing->LeasingDetail->Truck->Asset->AssetGroup->AssetGroupCoa->getMerge($asset, $asset_group_id, 'first', 'Asset');
+
+                            $branch_id = Configure::read('__Site.config_branch_id');
+
+                            $ak_penyusutan = Common::hashEmptyField($asset, 'Asset.ak_penyusutan', 0);
+                            $is_truck = Common::hashEmptyField($asset, 'AssetGroup.is_truck');
+                            $nilai_sisa = Common::hashEmptyField($asset, 'AssetGroup.nilai_sisa');
+                            $umur_ekonomis = Common::hashEmptyField($asset, 'AssetGroup.umur_ekonomis');
+
+                            $nilai_buku = $price - $ak_penyusutan;
+                            $depr_bulan = 0;
+
+                            if( !empty($umur_ekonomis) ) {
+                                $depr_bulan = ( ( $price - $nilai_sisa ) / $umur_ekonomis );
+                            }
+
+                            if( !empty($depr_bulan) ) {
+                                $depr_bulan = $depr_bulan / 12;
+                            }
+
+                            $dataAsset[] = array(
+                                'id' => $asset_id,
+                                'branch_id' => $branch_id,
+                                'truck_id' => $truck_id,
+                                'asset_group_id' => $asset_group_id,
+                                'name' => $nopol,
+                                'purchase_date' => $paid_date,
+                                'neraca_date' => $paid_date,
+                                'nilai_perolehan' => $price,
+                                'depr_bulan' => $depr_bulan,
+                                'nilai_buku' => $nilai_buku,
+                                'note' => $note,
+                                'is_po' => true,
+                            );
+                        }
+                            
+                        $this->Leasing->LeasingDetail->Truck->Asset->saveMany($dataAsset);
+                    }
 
                     $this->params['old_data'] = $data_local;
                     $this->params['data'] = $data;
