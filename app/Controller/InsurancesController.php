@@ -533,10 +533,7 @@ class InsurancesController extends AppController {
             $vendor_id = $this->MkCommon->filterEmptyField($value, 'InsurancePayment', 'vendor_id');
             $cogs_id = $this->MkCommon->filterEmptyField($value, 'InsurancePayment', 'cogs_id');
             
-            $value = $this->Insurance->Vendor->getMerge($value, $vendor_id);
-            $vendor_name = $this->MkCommon->filterEmptyField($value, 'Vendor', 'name');
-
-            $title = sprintf(__('Pembayaran Insurance #%s kepada supplier %s'), $no_doc, $vendor_name);
+            $title = sprintf(__('Pembayaran Asuransi #%s'), $no_doc);
             $title = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($value, 'InsurancePayment', 'note', $title));
 
             if(!empty($this->request->data)){
@@ -552,24 +549,14 @@ class InsurancesController extends AppController {
 
                     if($this->Insurance->InsurancePayment->save()){
                         if( !empty($value['InsurancePaymentDetail']) ) {
-                            $installment = 0;
-                            $installment_rate = 0;
-                            $denda = 0;
+                            $total = 0;
 
                             foreach ($value['InsurancePaymentDetail'] as $key => $detail) {
                                 $detail_id = $this->MkCommon->filterEmptyField($detail, 'InsurancePaymentDetail', 'id');
-                                $insurance_payment_id = $this->MkCommon->filterEmptyField($detail, 'InsurancePaymentDetail', 'insurance_installment_id');
                                 $insurance_id = $this->MkCommon->filterEmptyField($detail, 'InsurancePaymentDetail', 'insurance_id');
 
-                                $installment += $this->MkCommon->filterEmptyField($detail, 'InsurancePaymentDetail', 'installment', 0);
-                                $installment_rate += $this->MkCommon->filterEmptyField($detail, 'InsurancePaymentDetail', 'installment_rate', 0);
-                                $denda += $this->MkCommon->filterEmptyField($detail, 'InsurancePaymentDetail', 'denda', 0);
+                                $total += $this->MkCommon->filterEmptyField($detail, 'InsurancePaymentDetail', 'total', 0);
 
-                                $totalInstallmentPaid = $this->Insurance->InsurancePayment->InsurancePaymentDetail->getData('count', array(
-                                    'conditions' => array(
-                                        'InsurancePaymentDetail.insurance_installment_id <>' => $insurance_payment_id,
-                                    ),
-                                ));
                                 $totalInsurancePaid = $this->Insurance->InsurancePayment->InsurancePaymentDetail->getData('count', array(
                                     'conditions' => array(
                                         'InsurancePayment.status' => 1,
@@ -588,50 +575,17 @@ class InsurancesController extends AppController {
                                     $statusInsurancePayment = 'unpaid';
                                 }
 
-                                if( !empty($totalInstallmentPaid) ) {
-                                    $statusInstallmentPayment = 'half_paid';
-                                } else {
-                                    $statusInstallmentPayment = 'unpaid';
-                                }
-
                                 $this->Insurance->id = $insurance_id;
-                                $this->Insurance->set('payment_status', $statusInsurancePayment);
+                                $this->Insurance->set('transaction_status', $statusInsurancePayment);
                                 $this->Insurance->save();
-
-                                $this->Insurance->InsuranceInstallment->id = $insurance_payment_id;
-                                $this->Insurance->InsuranceInstallment->set('payment_status', $statusInstallmentPayment);
-                                $this->Insurance->InsuranceInstallment->save();
                             }
 
-                            if( !empty($installment) ) {
-                                $this->User->Journal->setJournal($installment, array(
-                                    'credit' => 'insurance_installment_coa_id',
-                                    'debit' => $coa_id,
-                                ), array(
-                                    'cogs_id' => $cogs_id,
-                                    'date' => $payment_date,
-                                    'document_id' => $id,
-                                    'title' => $title,
-                                    'document_no' => $no_doc,
-                                    'type' => 'insurance_payment_void',
-                                ));
-                            }
-                            if( !empty($installment_rate) ) {
-                                $this->User->Journal->setJournal($installment_rate, array(
-                                    'credit' => 'insurance_installment_rate_coa_id',
-                                    'debit' => $coa_id,
-                                ), array(
-                                    'cogs_id' => $cogs_id,
-                                    'date' => $payment_date,
-                                    'document_id' => $id,
-                                    'title' => $title,
-                                    'document_no' => $no_doc,
-                                    'type' => 'insurance_payment_void',
-                                ));
-                            }
-                            if( !empty($denda) ) {
-                                $this->User->Journal->setJournal($denda, array(
-                                    'credit' => 'insurance_denda_coa_id',
+                            if( !empty($total) ) {
+                                $coaAsuransi = $this->Insurance->InsurancePayment->Coa->CoaSettingDetail->getMerge(array(), 'Asuransi', 'CoaSettingDetail.label');
+                                $insurance_coa_id = Common::hashEmptyField($coaAsuransi, 'CoaSettingDetail.coa_id');
+
+                                $this->User->Journal->setJournal($total, array(
+                                    'credit' => $insurance_coa_id,
                                     'debit' => $coa_id,
                                 ), array(
                                     'cogs_id' => $cogs_id,
@@ -646,17 +600,17 @@ class InsurancesController extends AppController {
 
                         $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                         $msg = array(
-                            'msg' => sprintf(__('Berhasil membatalkan pembayaran insurance #%s'), $noref),
+                            'msg' => sprintf(__('Berhasil membatalkan pembayaran asuransi #%s'), $noref),
                             'type' => 'success'
                         );
                         $this->MkCommon->setCustomFlash( $msg['msg'], $msg['type']);  
-                        $this->Log->logActivity( sprintf(__('Berhasil membatalkan pembayaran insurance #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
+                        $this->Log->logActivity( sprintf(__('Berhasil membatalkan pembayaran asuransi #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
                     }else{
-                        $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran insurance #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+                        $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran asuransi #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
                     }
                 }else{
                     $msg = array(
-                        'msg' => __('Harap masukkan tanggal pembatalan pembayaran insurance.'),
+                        'msg' => __('Harap masukkan tanggal pembatalan pembayaran asuransi.'),
                         'type' => 'error'
                     );
                 }
@@ -665,7 +619,7 @@ class InsurancesController extends AppController {
             $this->set('value', $value);
         }else{
             $msg = array(
-                'msg' => __('Pembayaran insurance tidak ditemukan'),
+                'msg' => __('Pembayaran asuransi tidak ditemukan'),
                 'type' => 'error'
             );
         }
