@@ -311,9 +311,7 @@ class Coa extends AppModel {
         }
         if(!empty($keyword)){
             $keyword = trim($keyword);
-            $default_options['conditions']['OR']['Coa.name LIKE'] = '%'.$keyword.'%';
-            $default_options['conditions']['OR']['Coa.code LIKE'] = '%'.$keyword.'%';
-            $default_options['conditions']['OR']['Coa.with_parent_code LIKE'] = '%'.$keyword.'%';
+            $default_options['conditions']['CASE WHEN Coa.with_parent_code IS NOT NULL AND Coa.with_parent_code <> \'\' THEN CONCAT(Coa.with_parent_code, \' - \', Coa.name) WHEN Coa.code <> \'\' THEN CONCAT(Coa.code, \' - \', Coa.name) ELSE Coa.name END LIKE'] = '%'.$keyword.'%';
         }
         
         return $default_options;

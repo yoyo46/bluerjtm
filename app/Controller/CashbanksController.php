@@ -2758,10 +2758,7 @@ class CashbanksController extends AppController {
                 $this->request->data['Search']['name'] = $name;
                 $coas = $this->User->Journal->Coa->getData('list', array(
                     'conditions' => array(
-                        'OR' => array(
-                            'Coa.code LIKE' => '%'.$name.'%',
-                            'Coa.name LIKE' => '%'.$name.'%',
-                        ),
+                        'CASE WHEN Coa.with_parent_code IS NOT NULL AND Coa.with_parent_code <> \'\' THEN CONCAT(Coa.with_parent_code, \' - \', Coa.name) WHEN Coa.code <> \'\' THEN CONCAT(Coa.code, \' - \', Coa.name) ELSE Coa.name END LIKE' => '%'.$name.'%',
                     ),
                     'fields' => array(
                         'Coa.id',
