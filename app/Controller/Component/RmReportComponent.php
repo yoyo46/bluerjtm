@@ -5286,7 +5286,6 @@ class RmReportComponent extends Component {
 			$width = 15;
 		}
 
-
 		while ($flag) {
 			$month_name = Common::formatDate($MonthFromTmp, 'F Y');
 			$month = Common::formatDate($MonthFromTmp, 'Ym');
@@ -5296,7 +5295,7 @@ class RmReportComponent extends Component {
                 'data-options' => 'field:\'month_'.$month.'\',width:100',
                 'align' => 'center',
         		'excel' => array(
-        			'headercolspan' => 2,
+					'headercolspan' => 4,
         			'align' => 'center',
     			),
                 'child' => array(
@@ -5325,6 +5324,32 @@ class RmReportComponent extends Component {
                 			'align' => 'center',
             			),
             		),
+                	__('Selisih') => array(
+						'name' => __('Selisih'),
+						'text' => '',
+		                'style' => 'text-align: right;',
+		                'data-options' => 'field:\'month_selisih_'.$month.'\',width:120',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+        				'rel' => $month,
+						'width' => $width,
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+            		),
+                	__('%') => array(
+						'name' => __('%'),
+						'text' => '',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'month_percent_'.$month.'\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+        				'rel' => $month,
+						'width' => $width,
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+            		),
             	),
 			);
 
@@ -5335,6 +5360,70 @@ class RmReportComponent extends Component {
 				$flag = false;
 			}
 		}
+
+		$labelTotal = __('Total');
+		$monthHeaderArr[$labelTotal] = array(
+			'text' => $labelTotal,
+            'data-options' => 'field:\'month_total\',width:100',
+            'align' => 'center',
+    		'excel' => array(
+				'headercolspan' => 4,
+    			'align' => 'center',
+			),
+            'child' => array(
+            	__('Budget') => array(
+					'name' => __('Budget'),
+					'text' => '',
+	                'style' => 'text-align: right;',
+	                'data-options' => 'field:\'month_budget_total\',width:120',
+	                'align' => 'right',
+	                'mainalign' => 'center',
+					'width' => $width,
+            		'excel' => array(
+            			'align' => 'center',
+        			),
+        		),
+            	__('Saldo') => array(
+					'name' => __('Saldo'),
+					'text' => '',
+	                'style' => 'text-align: right;',
+	                'data-options' => 'field:\'month_saldo_total\',width:120,styler:targetBudget',
+	                'align' => 'right',
+	                'mainalign' => 'center',
+    				'rel' => $month,
+					'width' => $width,
+            		'excel' => array(
+            			'align' => 'center',
+        			),
+        		),
+            	__('Selisih') => array(
+					'name' => __('Selisih'),
+					'text' => '',
+	                'style' => 'text-align: right;',
+	                'data-options' => 'field:\'month_selisih_total\',width:120',
+	                'align' => 'right',
+	                'mainalign' => 'center',
+    				'rel' => $month,
+					'width' => $width,
+            		'excel' => array(
+            			'align' => 'center',
+        			),
+        		),
+            	__('%') => array(
+					'name' => __('%'),
+					'text' => '',
+	                'style' => 'text-align: center;',
+	                'data-options' => 'field:\'month_percent_'.$month.'\',width:80',
+	                'align' => 'center',
+	                'mainalign' => 'center',
+    				'rel' => $month,
+					'width' => $width,
+            		'excel' => array(
+            			'align' => 'center',
+        			),
+        		),
+        	),
+		);
 
 		if( !empty($data) ) {
 			foreach ($data as $id => $value) {
@@ -5354,7 +5443,7 @@ class RmReportComponent extends Component {
 		                'data-options' => 'field:\'coa_name\',width:250',
                 		'excel' => array(
                 			'bold' => true,
-        					'headerrowspan' => 2,
+							'headerrowspan' => 2,
             			),
                 		'fix_column' => true,
 					),
@@ -5368,12 +5457,20 @@ class RmReportComponent extends Component {
 						$MonthFromTmp = $MonthFrom;
 						$flag = true;
 						$monthArr = array();
+						$grandtotal = array();
 
 						while ($flag) {
 							$month_name = Common::formatDate($MonthFromTmp, 'F Y');
 							$month = Common::formatDate($MonthFromTmp, 'Y_m');
 							$balance = Common::hashEmptyField($summaryBalances, __('%s-%s', $coa_id, $MonthFromTmp), 0);
 							$budget = Common::hashEmptyField($summaryBudgets, __('%s-%s', $coa_id, $MonthFromTmp), 0);
+							$selisih = $budget-$balance;
+
+							if( !empty($budget) ) {
+								$selisih_percent = (abs($selisih)/abs($budget))*100;
+							} else {
+								$selisih_percent = 0;
+							}
 
 							$monthArr[$month_name] = array(
 								'text' => $month_name,
@@ -5381,7 +5478,7 @@ class RmReportComponent extends Component {
 				                'data-options' => 'field:\'month_'.$month.'\',width:100',
 				                'align' => 'center',
 				        		'excel' => array(
-				        			'headercolspan' => 2,
+				        			'headercolspan' => 4,
         							'align' => 'center',
 				    			),
 				                'child' => array(
@@ -5407,8 +5504,52 @@ class RmReportComponent extends Component {
 				                			'align' => 'right',
 				            			),
 				            		),
+				                	__('Selisih') => array(
+										'name' => __('Selisih'),
+										'text' => Common::getFormatPrice($selisih, 2, '-'),
+						                'style' => 'text-align: right;',
+						                'data-options' => 'field:\'month_selisih_'.$month.'\',width:120',
+						                'align' => 'right',
+										'width' => $width,
+				                		'excel' => array(
+				                			'align' => 'right',
+				            			),
+				            		),
+				                	__('%') => array(
+										'name' => __('%'),
+										'text' => Common::getFormatPrice($selisih_percent, 2, '-'),
+						                'style' => 'text-align: center;',
+						                'data-options' => 'field:\'month_percent_'.$month.'\',width:80',
+						                'align' => 'center',
+										'width' => $width,
+				                		'excel' => array(
+				                			'align' => 'center',
+				            			),
+				            		),
 				            	),
 							);
+
+							if( !empty($this->total_budgets['total']['budget'][$month_name]) ) {
+								$this->total_budgets['total']['budget'][$month_name] += $budget;
+							} else {
+								$this->total_budgets['total']['budget'][$month_name] = $budget;
+							}
+							if( !empty($this->total_budgets['total']['balance'][$month_name]) ) {
+								$this->total_budgets['total']['balance'][$month_name] += $balance;
+							} else {
+								$this->total_budgets['total']['balance'][$month_name] = $balance;
+							}
+
+							if( !empty($grandtotal['budget']) ) {
+								$grandtotal['budget'] += $budget;
+							} else {
+								$grandtotal['budget'] = $budget;
+							}
+							if( !empty($grandtotal['balance']) ) {
+								$grandtotal['balance'] += $balance;
+							} else {
+								$grandtotal['balance'] = $balance;
+							}
 
 							$nextMonth = strtotime('+1 MONTH', strtotime($MonthFromTmp));
 							$MonthFromTmp = date('Y-m', $nextMonth);
@@ -5417,6 +5558,73 @@ class RmReportComponent extends Component {
 								$flag = false;
 							}
 						}
+
+						$total_budget = Common::hashEmptyField($grandtotal, 'budget');
+						$total_balance = Common::hashEmptyField($grandtotal, 'balance');
+						$total_selisih = $total_budget-$total_balance;
+
+						if( !empty($total_budget) ) {
+							$total_selisih_percent = (abs($total_selisih)/abs($total_budget))*100;
+						} else {
+							$total_selisih_percent = 0;
+						}
+
+						$monthArr[$labelTotal] = array(
+							'text' => $labelTotal,
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'month_total\',width:100',
+			                'align' => 'center',
+			        		'excel' => array(
+			        			'headercolspan' => 4,
+    							'align' => 'center',
+			    			),
+			                'child' => array(
+			                	__('Budget') => array(
+									'name' => __('Budget'),
+									'text' => Common::getFormatPrice($total_budget, 2, '-'),
+					                'style' => 'text-align: right;',
+					                'data-options' => 'field:\'month_budget_total\',width:120',
+					                'align' => 'right',
+									'width' => $width,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+			            		),
+			                	__('Saldo') => array(
+									'name' => __('Saldo'),
+									'text' => Common::getFormatPrice($total_balance, 2, '-'),
+					                'style' => 'text-align: right;',
+					                'data-options' => 'field:\'month_saldo_total\',width:120',
+					                'align' => 'right',
+									'width' => $width,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+			            		),
+			                	__('Selisih') => array(
+									'name' => __('Selisih'),
+									'text' => Common::getFormatPrice($total_selisih, 2, '-'),
+					                'style' => 'text-align: right;',
+					                'data-options' => 'field:\'month_selisih_total\',width:120',
+					                'align' => 'right',
+									'width' => $width,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+			            		),
+			                	__('%') => array(
+									'name' => __('%'),
+									'text' => Common::getFormatPrice($total_selisih_percent, 2, '-'),
+					                'style' => 'text-align: center;',
+					                'data-options' => 'field:\'month_percent_total\',width:80',
+					                'align' => 'center',
+									'width' => $width,
+			                		'excel' => array(
+			                			'align' => 'center',
+			            			),
+			            		),
+			            	),
+						);
 
 						$result[] = array_merge(array(
 							__('COA') => array(
@@ -5464,6 +5672,7 @@ class RmReportComponent extends Component {
 		$MonthFrom = Common::hashEmptyField($params, 'named.MonthFrom', $dateFrom);
 		$dateTo = Common::hashEmptyField($params, 'named.dateTo');
 		$MonthTo = Common::hashEmptyField($params, 'named.MonthTo', $dateTo);
+		$this->total_budgets = array();
 
 		App::import('Helper', 'Html');
         $this->Html = new HtmlHelper(new View(null));
@@ -5563,6 +5772,184 @@ class RmReportComponent extends Component {
         	'summaryBudgets' => $summaryBudgets,
         	'view' => $view,
     	));
+
+    	$MonthFromTmp = $MonthFrom;
+		$flag = true;
+		$monthArr = array();
+		$grandtotal = array();
+
+		if( !empty($view) ) {
+			$width = false;
+		} else {
+			$width = 15;
+		}
+
+		while ($flag) {
+			$month_name = Common::formatDate($MonthFromTmp, 'F Y');
+			$month = Common::formatDate($MonthFromTmp, 'Y_m');
+			$balance = Common::hashEmptyField($this->total_budgets, __('total.balance.%s', $month_name), 0);
+			$budget = Common::hashEmptyField($this->total_budgets, __('total.budget.%s', $month_name), 0);
+			$selisih = $budget-$balance;
+
+			if( !empty($budget) ) {
+				$selisih_percent = (abs($selisih)/abs($budget))*100;
+			} else {
+				$selisih_percent = 0;
+			}
+
+			$monthArr[$month_name] = array(
+				'text' => $month_name,
+                'style' => 'text-align: center;',
+                'data-options' => 'field:\'month_'.$month.'\',width:100',
+                'align' => 'center',
+        		'excel' => array(
+        			'headercolspan' => 4,
+					'align' => 'center',
+    			),
+                'child' => array(
+                	__('Budget') => array(
+						'name' => __('Budget'),
+						'text' => Common::getFormatPrice($budget, 2, '-'),
+		                'style' => 'text-align: right;',
+		                'data-options' => 'field:\'month_budget_'.$month.'\',width:120',
+		                'align' => 'right',
+						'width' => $width,
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+            		),
+                	__('Saldo') => array(
+						'name' => __('Saldo'),
+						'text' => Common::getFormatPrice($balance, 2, '-'),
+		                'style' => 'text-align: right;',
+		                'data-options' => 'field:\'month_saldo_'.$month.'\',width:120',
+		                'align' => 'right',
+						'width' => $width,
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+            		),
+                	__('Selisih') => array(
+						'name' => __('Selisih'),
+						'text' => Common::getFormatPrice($selisih, 2, '-'),
+		                'style' => 'text-align: right;',
+		                'data-options' => 'field:\'month_selisih_'.$month.'\',width:120',
+		                'align' => 'right',
+						'width' => $width,
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+            		),
+                	__('%') => array(
+						'name' => __('%'),
+						'text' => Common::getFormatPrice($selisih_percent, 2, '-'),
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'month_percent_'.$month.'\',width:80',
+		                'align' => 'center',
+						'width' => $width,
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+            		),
+            	),
+			);
+
+			if( !empty($grandtotal['budget']) ) {
+				$grandtotal['budget'] += $budget;
+			} else {
+				$grandtotal['budget'] = $budget;
+			}
+			if( !empty($grandtotal['balance']) ) {
+				$grandtotal['balance'] += $balance;
+			} else {
+				$grandtotal['balance'] = $balance;
+			}
+
+			$nextMonth = strtotime('+1 MONTH', strtotime($MonthFromTmp));
+			$MonthFromTmp = date('Y-m', $nextMonth);
+
+			if( $MonthFromTmp > $MonthTo ) {
+				$flag = false;
+			}
+		}
+
+		$total_budget = Common::hashEmptyField($grandtotal, 'budget');
+		$total_balance = Common::hashEmptyField($grandtotal, 'balance');
+		$total_selisih = $total_budget-$total_balance;
+
+		if( !empty($total_budget) ) {
+			$total_selisih_percent = (abs($total_selisih)/abs($total_budget))*100;
+		} else {
+			$total_selisih_percent = 0;
+		}
+
+		$labelTotal = __('Total');
+		$monthArr[$labelTotal] = array(
+			'text' => $labelTotal,
+            'style' => 'text-align: center;',
+            'data-options' => 'field:\'month_total\',width:100',
+            'align' => 'center',
+    		'excel' => array(
+    			'headercolspan' => 4,
+				'align' => 'center',
+			),
+            'child' => array(
+            	__('Budget') => array(
+					'name' => __('Budget'),
+					'text' => Common::getFormatPrice($total_budget, 2, '-'),
+	                'style' => 'text-align: right;',
+	                'data-options' => 'field:\'month_budget_total\',width:120',
+	                'align' => 'right',
+					'width' => $width,
+            		'excel' => array(
+            			'align' => 'right',
+        			),
+        		),
+            	__('Saldo') => array(
+					'name' => __('Saldo'),
+					'text' => Common::getFormatPrice($total_balance, 2, '-'),
+	                'style' => 'text-align: right;',
+	                'data-options' => 'field:\'month_saldo_total\',width:120',
+	                'align' => 'right',
+					'width' => $width,
+            		'excel' => array(
+            			'align' => 'right',
+        			),
+        		),
+            	__('Selisih') => array(
+					'name' => __('Selisih'),
+					'text' => Common::getFormatPrice($total_selisih, 2, '-'),
+	                'style' => 'text-align: right;',
+	                'data-options' => 'field:\'month_selisih_total\',width:120',
+	                'align' => 'right',
+					'width' => $width,
+            		'excel' => array(
+            			'align' => 'right',
+        			),
+        		),
+            	__('%') => array(
+					'name' => __('%'),
+					'text' => Common::getFormatPrice($total_selisih_percent, 2, '-'),
+	                'style' => 'text-align: center;',
+	                'data-options' => 'field:\'month_percent_total\',width:80',
+	                'align' => 'center',
+					'width' => $width,
+            		'excel' => array(
+            			'align' => 'center',
+        			),
+        		),
+        	),
+		);
+
+		$result[] = array_merge(array(
+			__('COA') => array(
+				'text' => __('Total'),
+        		'field_model' => 'Coa.coa_name',
+                'style' => 'text-align: left;',
+                'data-options' => 'field:\'coa_name\',width:250',
+				'fix_column' => true,
+			),
+		), $monthArr);
 
 		return array(
 			'data' => $result,

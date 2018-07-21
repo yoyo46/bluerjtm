@@ -2769,6 +2769,11 @@ class CashbanksController extends AppController {
                 ));
                 $options['conditions']['Budget.coa_id'] = $coas;
             }
+            if(!empty($refine['year'])){
+                $year = urldecode($refine['year']);
+                $this->request->data['Search']['from']['year'] = $year;
+                $options['conditions']['Budget.year'] = $year;
+            }
         }
 
         $this->paginate = $this->Budget->getData('paginate', $options);

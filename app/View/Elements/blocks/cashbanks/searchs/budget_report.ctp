@@ -18,6 +18,16 @@
                     'id' => 'form-search',
                 ));
         ?>
+        <div class="form-group">
+            <?php 
+                echo $this->Form->input('name',array(
+                    'label'=> __('COA'),
+                    'class'=>'form-control',
+                    'required' => false,
+                    'placeholder' => __('COA')
+                ));
+            ?>
+        </div>
         <div class="row">
             <div class="col-sm-6">
                 <?php 
