@@ -297,6 +297,7 @@ class Coa extends AppModel {
     }
 
     public function _callRefineParams( $data = '', $default_options = false ) {
+        $keyword = !empty($data['named']['keyword'])?urldecode($data['named']['keyword']):false;
         $name = !empty($data['named']['name'])?urldecode($data['named']['name']):false;
         $code = !empty($data['named']['code'])?urldecode($data['named']['code']):false;
 
@@ -307,6 +308,12 @@ class Coa extends AppModel {
             $code = trim($code);
             $default_options['conditions']['OR']['Coa.code LIKE'] = '%'.$code.'%';
             $default_options['conditions']['OR']['Coa.with_parent_code LIKE'] = '%'.$code.'%';
+        }
+        if(!empty($keyword)){
+            $keyword = trim($keyword);
+            $default_options['conditions']['OR']['Coa.name LIKE'] = '%'.$keyword.'%';
+            $default_options['conditions']['OR']['Coa.code LIKE'] = '%'.$keyword.'%';
+            $default_options['conditions']['OR']['Coa.with_parent_code LIKE'] = '%'.$keyword.'%';
         }
         
         return $default_options;

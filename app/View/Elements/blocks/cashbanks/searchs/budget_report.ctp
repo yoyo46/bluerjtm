@@ -20,7 +20,7 @@
         ?>
         <div class="form-group">
             <?php 
-                echo $this->Form->input('name',array(
+                echo $this->Form->input('keyword',array(
                     'label'=> __('COA'),
                     'class'=>'form-control',
                     'required' => false,
