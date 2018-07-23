@@ -164,15 +164,28 @@ class InsurancePayment extends AppModel {
 
                 if( !empty($flagSave) ) {
                     $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                    $msg = sprintf(__('Berhasil %s #%s'), $default_msg, $noref);
+
                     $result = array(
-                        'msg' => sprintf(__('Berhasil %s #%s'), $default_msg, $noref),
+                        'msg' => $msg,
                         'status' => 'success',
+                        'Log' => array(
+                            'document_id' => $id,
+                            'activity' => $msg,
+                            'old_data' => $value,
+                        ),
                     );
                 } else {
+                    $msg = sprintf(__('Gagal %s'), $default_msg);
                     $result = array(
-                        'msg' => sprintf(__('Gagal %s'), $default_msg),
+                        'msg' => $msg,
                         'status' => 'error',
                         'data' => $data,
+                        'Log' => array(
+                            'document_id' => $id,
+                            'activity' => $msg,
+                            'old_data' => $value,
+                        ),
                     );
                 }
             } else {

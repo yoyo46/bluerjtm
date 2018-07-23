@@ -1250,6 +1250,10 @@ class RevenuesController extends AppController {
         $branches = Configure::read('__Site.config_allow_branchs');
         $this->MkCommon->_layout_file('select');
 
+        if( !empty($id) ) {
+            $this->MkCommon->getLogs($this->params['controller'], array( 'ttuj_add', 'ttuj_edit', 'ttuj_toggle', 'truk_tiba_add', 'ttuj_lanjutan_edit', 'bongkaran_add', 'balik_add', 'pool_add' ), $id);
+        }
+
         $this->set('module_title', __('TTUJ'));
         $this->set('active_menu', 'ttuj');
         $this->set(compact(
@@ -1544,6 +1548,11 @@ class RevenuesController extends AppController {
                 $this->request->data['Ttuj']['nottuj'] = $nottuj;
                 $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
             }
+            if(!empty($refine['nodoc'])){
+                $nottuj = urldecode($refine['nodoc']);
+                $this->request->data['Ttuj']['nodoc'] = $nottuj;
+                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
+            }
             if(!empty($refine['nopol'])){
                 $nopol = urldecode($refine['nopol']);
                 $this->request->data['Ttuj']['nopol'] = $nopol;
@@ -1630,6 +1639,7 @@ class RevenuesController extends AppController {
         if( !empty($ttuj) ) {
             $ttuj = $this->Ttuj->getMergeContain( $ttuj, $id );
             $to_city_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'to_city_id');
+            $this->MkCommon->getLogs($this->params['controller'], array( 'ttuj_add', 'ttuj_edit', 'ttuj_toggle', 'truk_tiba_add', 'ttuj_lanjutan_edit', 'bongkaran_add', 'balik_add', 'pool_add' ), $id);
 
             $this->doTTUJLanjutan( $action_type, $id, $ttuj );
         } else {
@@ -1963,6 +1973,7 @@ class RevenuesController extends AppController {
                     'ColorMotor.id', 'ColorMotor.name',
                 ),
             ));
+            $this->MkCommon->getLogs($this->params['controller'], array( 'ttuj_add', 'ttuj_edit', 'ttuj_toggle', 'truk_tiba_add', 'ttuj_lanjutan_edit', 'bongkaran_add', 'balik_add', 'pool_add' ), $ttuj_id);
 
             $this->set('info_truk', true);
             $this->set('sub_module_title', $module_title);
@@ -2000,6 +2011,11 @@ class RevenuesController extends AppController {
             if(!empty($refine['nottuj'])){
                 $nottuj = urldecode($refine['nottuj']);
                 $this->request->data['Ttuj']['nottuj'] = $nottuj;
+                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
+            }
+            if(!empty($refine['nodoc'])){
+                $nottuj = urldecode($refine['nodoc']);
+                $this->request->data['Ttuj']['nodoc'] = $nottuj;
                 $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
             }
             if(!empty($refine['nopol'])){
@@ -2081,6 +2097,11 @@ class RevenuesController extends AppController {
             if(!empty($refine['nottuj'])){
                 $nottuj = urldecode($refine['nottuj']);
                 $this->request->data['Ttuj']['nottuj'] = $nottuj;
+                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
+            }
+            if(!empty($refine['nodoc'])){
+                $nottuj = urldecode($refine['nodoc']);
+                $this->request->data['Ttuj']['nodoc'] = $nottuj;
                 $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
             }
             if(!empty($refine['nopol'])){
@@ -2166,6 +2187,11 @@ class RevenuesController extends AppController {
             if(!empty($refine['nottuj'])){
                 $nottuj = urldecode($refine['nottuj']);
                 $this->request->data['Ttuj']['nottuj'] = $nottuj;
+                $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
+            }
+            if(!empty($refine['nodoc'])){
+                $nottuj = urldecode($refine['nodoc']);
+                $this->request->data['Ttuj']['nodoc'] = $nottuj;
                 $conditions['Ttuj.no_ttuj LIKE '] = '%'.$nottuj.'%';
             }
             if(!empty($refine['nopol'])){
@@ -4874,6 +4900,7 @@ class RevenuesController extends AppController {
 
             $invoice = $this->User->Journal->Coa->getMerge($invoice, $coa_id);
             $invoice = $this->InvoicePayment->InvoicePaymentDetail->getMergeAll($invoice, $id);
+            $this->MkCommon->getLogs($this->params['controller'], array( 'invoice_payment_add', 'invoice_payment_edit', 'invoice_payment_delete' ), $id);
 
             $module_title = __('Edit Pembayaran Invoice');
             $this->set('sub_module_title', $module_title);
@@ -5206,6 +5233,7 @@ class RevenuesController extends AppController {
                     ),
                 ));
 
+                $this->MkCommon->getLogs($this->params['controller'], array( 'invoice_payment_add', 'invoice_payment_edit', 'invoice_payment_delete' ), $id);
                 $this->RjRevenue->_callBeforeViewInvoicePayment(array(), $invoice);
         
                 $this->set(array(
@@ -6124,6 +6152,10 @@ class RevenuesController extends AppController {
             ), true);
         } else {
             $this->request->data['SuratJalan']['tgl_surat_jalan'] = date('d/m/Y');
+        }
+
+        if( !empty($id) ) {
+            $this->MkCommon->getLogs($this->params['controller'], array( 'surat_jalan_add', 'surat_jalan_edit', 'surat_jalan_delete' ), $id);
         }
 
         $this->MkCommon->_layout_file('select');
@@ -7294,6 +7326,8 @@ class RevenuesController extends AppController {
                     $cogs = $this->MkCommon->_callCogsOptGroup('TtujPayment');
                     break;
             }
+            
+            $this->MkCommon->getLogs($this->params['controller'], array( 'ttuj_payment_add', 'edit_ttuj_payment', 'ttuj_payment_delete' ), $id);
 
             $this->MkCommon->_layout_file('select');
             $this->set(compact(
@@ -7354,6 +7388,8 @@ class RevenuesController extends AppController {
                     $invoice['TtujPayment']['data_type'][] = $dataTtujType;
                 }
             }
+
+            $this->MkCommon->getLogs($this->params['controller'], array( 'ttuj_payment_add', 'edit_ttuj_payment', 'ttuj_payment_delete' ), $id);
 
             $this->set('document_info', true);
             $this->set(compact(

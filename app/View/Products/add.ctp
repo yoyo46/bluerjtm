@@ -225,21 +225,19 @@
 		</div>
     </div>
 </div>
-
-    <div class="box-footer text-center action">
-    	<?php
-	    		echo $this->Form->button(__('Simpan'), array(
-					'div' => false, 
-					'class'=> 'btn btn-success',
-					'type' => 'submit',
-				));
-	    		echo $this->Html->link(__('Kembali'), array(
-					'action' => 'index', 
-				), array(
-					'class'=> 'btn btn-default',
-				));
-    	?>
-    </div>
+<div class="box-footer text-center action">
+	<?php
+    		echo $this->Form->button(__('Simpan'), array(
+				'div' => false, 
+				'class'=> 'btn btn-success',
+				'type' => 'submit',
+			));
+    		echo $this->Html->link(__('Kembali'), array(
+				'action' => 'index', 
+			), array(
+				'class'=> 'btn btn-default',
+			));
+	?>
 </div>
 <?php
 		echo $this->Form->end();

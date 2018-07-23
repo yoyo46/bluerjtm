@@ -186,6 +186,7 @@ class AssetSell extends AppModel {
                     'msg' => $msg,
                     'status' => 'success',
                     'Log' => array(
+                        'document_id' => $id,
                         'activity' => $msg,
                         'old_data' => $value,
                     ),
@@ -196,6 +197,7 @@ class AssetSell extends AppModel {
                     'msg' => $msg,
                     'status' => 'error',
                     'Log' => array(
+                        'document_id' => $id,
                         'activity' => $msg,
                         'old_data' => $value,
                         'error' => 1,
@@ -333,6 +335,7 @@ class AssetSell extends AppModel {
                         'msg' => $msg,
                         'status' => 'success',
                         'Log' => array(
+                            'document_id' => $id,
                             'activity' => $msg,
                             'old_data' => $value,
                         ),
@@ -343,6 +346,7 @@ class AssetSell extends AppModel {
                         'msg' => $msg,
                         'status' => 'error',
                         'Log' => array(
+                            'document_id' => $id,
                             'activity' => $msg,
                             'old_data' => $value,
                             'error' => 1,
@@ -355,6 +359,7 @@ class AssetSell extends AppModel {
                     'msg' => $msg,
                     'status' => 'error',
                     'Log' => array(
+                        'document_id' => $id,
                         'activity' => $msg,
                         'old_data' => $value,
                         'error' => 1,

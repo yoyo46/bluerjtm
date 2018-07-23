@@ -211,6 +211,8 @@ class LkusController extends AppController {
                     }
                 }
 
+                $this->MkCommon->getLogs($this->params['controller'], array( 'add', 'edit', 'toggle' ), $id);
+
                 $sub_module_title = __('Detail LKU');
                 $this->set(compact('Lku', 'sub_module_title'));
                 $this->set('active_menu', 'lkus');
@@ -241,6 +243,7 @@ class LkusController extends AppController {
         ));
 
         if(!empty($Lku)){
+            $this->MkCommon->getLogs($this->params['controller'], array( 'add', 'edit', 'toggle' ), $id);
             $this->DoLku($id, $Lku);
         }else{
             $this->MkCommon->setCustomFlash(__('LKU tidak ditemukan'), 'error');  
@@ -626,6 +629,7 @@ class LkusController extends AppController {
                 die();
             }
 
+            $this->MkCommon->getLogs($this->params['controller'], array( 'payment_add', 'payment_edit', 'payment_delete' ), $id);
             $this->DoLkuPayment($id, $value);
         }else{
             $this->MkCommon->setCustomFlash(__('ID Pembayaran LKU tidak ditemukan'), 'error');  
@@ -1216,6 +1220,7 @@ class LkusController extends AppController {
                         }
                     }
                 }
+                $this->MkCommon->getLogs($this->params['controller'], array( 'ksu_add', 'ksu_edit', 'ksu_toggle' ), $id);
 
                 $sub_module_title = __('Detail KSU');
                 $this->set(compact('Ksu', 'sub_module_title'));
@@ -1248,6 +1253,7 @@ class LkusController extends AppController {
         ));
 
         if(!empty($Ksu)){
+            $this->MkCommon->getLogs($this->params['controller'], array( 'ksu_add', 'ksu_edit', 'ksu_toggle' ), $id);
             $this->DoKsu($id, $Ksu);
         }else{
             $this->MkCommon->setCustomFlash(__('KSU tidak ditemukan'), 'error');  
@@ -1629,6 +1635,7 @@ class LkusController extends AppController {
                 die();
             }
 
+            $this->MkCommon->getLogs($this->params['controller'], array( 'ksu_payment_add', 'ksu_payment_edit', 'ksu_payment_delete' ), $id);
             $this->DoKsuPayment($id, $value);
         }else{
             $this->MkCommon->setCustomFlash(__('ID Pembayaran KSU tidak ditemukan'), 'error');  
@@ -2375,6 +2382,8 @@ class LkusController extends AppController {
                     }
                 }
                 
+                $this->MkCommon->getLogs($this->params['controller'], array( 'ksu_payment_add', 'ksu_payment_edit', 'ksu_payment_delete' ), $id);
+                
                 $sub_module_title = __('Detail Pembayaran LKU');
                 $this->set(compact('LkuPayment', 'sub_module_title'));
                 $this->set('active_menu', 'lku_payments');
@@ -2454,6 +2463,7 @@ class LkusController extends AppController {
                     }
                 }
                 
+                $this->MkCommon->getLogs($this->params['controller'], array( 'ksu_payment_add', 'ksu_payment_edit', 'ksu_payment_delete' ), $id);
                 $sub_module_title = __('Detail Pembayaran KSU');
                 $this->set(compact('KsuPayment', 'sub_module_title'));
                 $this->set('active_menu', 'ksu_payments');

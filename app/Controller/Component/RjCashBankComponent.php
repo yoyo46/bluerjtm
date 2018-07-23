@@ -489,6 +489,11 @@ class RjCashBankComponent extends Component {
         }
 
         $this->controller->request->data = $data;
+
+        if( !empty($value) ) {
+            $id = Common::hashEmptyField($value, 'GeneralLedger.id');
+            $this->MkCommon->getLogs($this->controller->params['controller'], array( 'general_ledger_add', 'general_ledger_edit', 'general_ledger_toggle' ), $id);
+        }
         
         $coas = $this->controller->GroupBranch->Branch->BranchCoa->getCoas(false, false, array(
             'status' => 'non-cashbank',

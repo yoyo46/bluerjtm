@@ -75,6 +75,8 @@ class RjAssetComponent extends Component {
     }
 
     function _callBeforeRender ( $data = false ) {
+        $id = Common::hashEmptyField($data, 'Asset.id');
+
         if( !empty($data) ) {
             $asset_group_id = $this->MkCommon->filterEmptyField($data, 'Asset', 'asset_group_id');
             $data = $this->controller->Asset->AssetGroup->getMerge($data, $asset_group_id);
@@ -97,6 +99,10 @@ class RjAssetComponent extends Component {
                 'AssetGroup.id', 'AssetGroup.group_name',
             ),
         ));
+
+        if( !empty($id) ) {
+            $this->MkCommon->getLogs($this->controller->params['controller'], array( 'add', 'edit', 'toggle' ), $id);
+        }
 
         $this->controller->set(compact(
             'assetGroups'
@@ -259,6 +265,8 @@ class RjAssetComponent extends Component {
     }
 
     function _callBeforeRenderPO ( $data ) {
+        $id = Common::hashEmptyField($data, 'PurchaseOrder.id');
+
         if( !empty($data) ) {
             $data = $this->MkCommon->dataConverter($data, array(
                 'date' => array(
@@ -277,6 +285,10 @@ class RjAssetComponent extends Component {
             ),
         ));
         $vendors = $this->controller->Asset->Truck->PurchaseOrderAsset->PurchaseOrder->Vendor->getData('list');
+
+        if( !empty($id) ) {
+            $this->MkCommon->getLogs($this->controller->params['controller'], array( 'purchase_order_add', 'purchase_order_edit', 'purchase_order_toggle' ), $id);
+        }
 
         $this->controller->set(compact(
             'assetGroups', 'vendors'
@@ -380,6 +392,8 @@ class RjAssetComponent extends Component {
     }
 
     function _callBeforeRenderSell ( $data, $asset_id = false ) {
+        $id = Common::hashEmptyField($data, 'AssetSell.id');
+
         if( !empty($data) ) {
             $data = $this->MkCommon->dataConverter($data, array(
                 'date' => array(
@@ -403,6 +417,10 @@ class RjAssetComponent extends Component {
         
         if( !empty($data_empty) ) {
             $data['AssetSell']['cogs_id'] = $cogs_id;
+        }
+
+        if( !empty($id) ) {
+            $this->MkCommon->getLogs($this->controller->params['controller'], array( 'sell_add', 'sell_edit', 'sell_toggle' ), $id);
         }
 
         $this->MkCommon->_layout_file(array(

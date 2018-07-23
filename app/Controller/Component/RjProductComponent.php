@@ -685,6 +685,7 @@ class RjProductComponent extends Component {
     }
 
     function _callBeforeRenderReceipt ( $data, $value = false ) {
+        $id = Common::hashEmptyField($value, 'ProductReceipt.id');
         $document_id = false;
 
         if( empty($data) ) {
@@ -694,7 +695,6 @@ class RjProductComponent extends Component {
                 $data['ProductReceipt']['document_type'] = 'po';
             }
 
-            $id = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'id');
             $type = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'document_type');
             $document_id = $this->MkCommon->filterEmptyField($value, 'ProductReceipt', 'document_id');
             $details = $this->MkCommon->filterEmptyField($value, 'ProductReceiptDetail');
@@ -774,6 +774,10 @@ class RjProductComponent extends Component {
         }
 
         $this->controller->request->data = $data;
+
+        if( !empty($id) ) {
+            $this->MkCommon->getLogs($this->controller->params['controller'], array( 'receipt_edit', 'receipt_add', 'receipt_toggle' ), $id);
+        }
 
         $employes = $this->controller->User->Employe->getData('list', array(
         	'fields' => array(
@@ -924,12 +928,12 @@ class RjProductComponent extends Component {
     }
 
     function _callBeforeRenderExpenditure ( $data, $value = false ) {
+        $id = Common::hashEmptyField($value, 'ProductExpenditure.id');
         $document_id = false;
 
         if( empty($data) ) {
             $data = $value;
 
-            $id = $this->MkCommon->filterEmptyField($value, 'ProductExpenditure', 'id');
             $type = $this->MkCommon->filterEmptyField($value, 'ProductExpenditure', 'document_type');
             $document_id = $this->MkCommon->filterEmptyField($value, 'ProductExpenditure', 'document_id');
             $document_number = $this->MkCommon->filterEmptyField($value, 'ProductExpenditure', 'document_number');
@@ -1027,6 +1031,10 @@ class RjProductComponent extends Component {
         $document_type = $this->MkCommon->filterEmptyField($data, 'ProductExpenditure', 'document_type');
 
         $this->controller->request->data = $data;
+
+        if( !empty($id) ) {
+            $this->MkCommon->getLogs($this->controller->params['controller'], array( 'expenditure_add', 'expenditure_edit', 'expenditure_toggle' ), $id);
+        }
 
         $employes = $this->controller->User->Employe->getData('list', array(
             'fields' => array(
@@ -1709,6 +1717,7 @@ class RjProductComponent extends Component {
     }
 
     function _callBeforeRenderRetur ( $data, $value = false ) {
+        $id = Common::hashEmptyField($value, 'ProductRetur.id');
         $document_id = false;
 
         if( empty($data) ) {
@@ -1718,7 +1727,6 @@ class RjProductComponent extends Component {
                 $data['ProductRetur']['document_type'] = 'po';
             }
 
-            $id = $this->MkCommon->filterEmptyField($value, 'ProductRetur', 'id');
             $type = $this->MkCommon->filterEmptyField($value, 'ProductRetur', 'document_type');
             $document_id = $this->MkCommon->filterEmptyField($value, 'ProductRetur', 'document_id');
             $details = $this->MkCommon->filterEmptyField($value, 'ProductReturDetail');
@@ -1784,6 +1792,10 @@ class RjProductComponent extends Component {
         }
 
         $this->controller->request->data = $data;
+
+        if( !empty($id) ) {
+            $this->MkCommon->getLogs($this->controller->params['controller'], array( 'retur_add', 'retur_edit', 'retur_toggle' ), $id);
+        }
 
         $employes = $this->controller->User->Employe->getData('list', array(
             'fields' => array(

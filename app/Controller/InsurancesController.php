@@ -85,6 +85,7 @@ class InsurancesController extends AppController {
                 ),
             ));
 
+            $this->MkCommon->getLogs($this->params['controller'], array( 'edit', 'add', 'toggle' ), $id);
             $this->doInsurance($id, $value);
         }else{
             $this->MkCommon->setCustomFlash(__('Asuransi tidak ditemukan'), 'error');  
@@ -306,6 +307,7 @@ class InsurancesController extends AppController {
             $value = Hash::insert($value, 'InsuranceDetail', $details);
             
             $this->request->data = $value;
+            $this->MkCommon->getLogs($this->params['controller'], array( 'edit', 'add', 'toggle' ), $id);
 
             $this->set('active_menu', 'insurance');
             $this->set('view', true);
@@ -469,6 +471,7 @@ class InsurancesController extends AppController {
                 'admin' => false,
             ));
             $this->request->data = $this->_calDataIndexConvertion($this->request->data, true);
+            $this->MkCommon->getLogs($this->params['controller'], array( 'payment_add', 'payment_edit', 'payment_delete' ), $id);
 
             $this->_callDataSupport();
             $this->set(compact(
@@ -501,6 +504,7 @@ class InsurancesController extends AppController {
                 ),
             ));
             $value = $this->_calDataIndexConvertion($value, true);
+            $this->MkCommon->getLogs($this->params['controller'], array( 'payment_add', 'payment_edit', 'payment_delete' ), $id);
 
             $this->set(compact(
                 'id', 'value'

@@ -295,6 +295,7 @@ class RjSpkComponent extends Component {
     }
 
     function _callSpkBeforeRender ( $data, $value = false ) {
+        $id = Common::hashEmptyField($value, 'Spk.id');
         $document_id = false;
 
         if( empty($data) ) {
@@ -340,6 +341,10 @@ class RjSpkComponent extends Component {
             )
         ), true);
         $this->controller->request->data = $data;
+        
+        if( !empty($id) ) {
+            $this->MkCommon->getLogs($this->controller->params['controller'], array( 'add', 'edit', 'toggle' ), $id);
+        }
 
         $employes = $this->controller->User->Employe->getData('list', array(
         	'fields' => array(
@@ -509,6 +514,8 @@ class RjSpkComponent extends Component {
     }
 
     function _callBeforeRenderPayment ( $data, $spk_id = false ) {
+        $id = Common::hashEmptyField($value, 'SpkPayment.id');
+        
         if( !empty($data) ) {
             $data = $this->MkCommon->dataConverter($data, array(
                 'date' => array(
@@ -526,6 +533,10 @@ class RjSpkComponent extends Component {
         $this->MkCommon->_layout_file(array(
             'select',
         ));
+
+        if( !empty($id) ) {
+            $this->MkCommon->getLogs($this->controller->params['controller'], array( 'payment_add', 'payment_edit', 'payment_toggle' ), $id);
+        }
 
         $this->controller->set(compact(
             'vendors', 'coas'

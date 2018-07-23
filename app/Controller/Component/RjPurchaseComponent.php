@@ -97,6 +97,8 @@ class RjPurchaseComponent extends Component {
     }
 
     function _callBeforeRenderQuotation ( $data ) {
+        $id = Common::hashEmptyField($data, 'SupplierQuotation.id');
+
         if( !empty($data) ) {
             $nodoc_tmp = Common::hashEmptyField($data, 'SupplierQuotation.nodoc_tmp');
             // $available_from = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'available_from');
@@ -121,6 +123,10 @@ class RjPurchaseComponent extends Component {
         $data['SupplierQuotation']['transaction_date'] = $this->MkCommon->getDate($transaction_date, true);
         
         $vendors = $this->controller->SupplierQuotation->Vendor->getData('list');
+
+        if( !empty($id) ) {
+            $this->MkCommon->getLogs($this->controller->params['controller'], array( 'supplier_quotation_add', 'supplier_quotation_edit', 'supplier_quotation_toggle' ), $id);
+        }
         
         $this->MkCommon->_layout_file('select');
         $this->controller->set('active_menu', 'Penawaran Supplier');
@@ -276,6 +282,8 @@ class RjPurchaseComponent extends Component {
     }
 
     function _callBeforeRenderPO ( $data ) {
+        $id = Common::hashEmptyField($data, 'PurchaseOrder.id');
+
         if( !empty($data) ) {
             $nodoc_tmp = Common::hashEmptyField($data, 'PurchaseOrder.nodoc_tmp');
 
@@ -292,6 +300,10 @@ class RjPurchaseComponent extends Component {
 
         if( empty($data['PurchaseOrder']['no_sq']) ) {
             $data['PurchaseOrder']['no_sq'] = $this->MkCommon->filterEmptyField($data, 'SupplierQuotation', 'nodoc');
+        }
+
+        if( !empty($id) ) {
+            $this->MkCommon->getLogs($this->controller->params['controller'], array( 'purchase_order_add', 'purchase_order_edit', 'purchase_order_toggle' ), $id);
         }
 
         return $data;
@@ -438,6 +450,8 @@ class RjPurchaseComponent extends Component {
     }
 
     function _callBeforeRenderPayment ( $data, $document_id = false ) {
+        $id = Common::hashEmptyField($data, 'PurchaseOrderPayment.id');
+
         if( !empty($data) ) {
             $data = $this->MkCommon->dataConverter($data, array(
                 'date' => array(
@@ -467,6 +481,10 @@ class RjPurchaseComponent extends Component {
         $coas = $this->controller->GroupBranch->Branch->BranchCoa->getCoas();
         $cogs_result = $this->MkCommon->_callCogsOptGroup('PurchaseOrderPayment');
         $cogs_id = Common::hashEmptyField($cogs_result, 'cogs_id');
+
+        if( !empty($id) ) {
+            $this->MkCommon->getLogs($this->controller->params['controller'], array( 'payment_add', 'payment_edit', 'payment_toggle' ), $id);
+        }
         
         if( !empty($data_empty) ) {
             $data['PurchaseOrderPayment']['cogs_id'] = $cogs_id;

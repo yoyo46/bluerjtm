@@ -431,6 +431,7 @@ class ProductsController extends AppController {
                 'admin' => false,
             ));
 
+            $this->MkCommon->getLogs($this->params['controller'], array( 'add', 'edit', 'toggle' ), $id);
             $this->_callGeneralProduct();
         } else {
             $this->MkCommon->setCustomFlash(__('Barang tidak ditemukan.'), 'error');

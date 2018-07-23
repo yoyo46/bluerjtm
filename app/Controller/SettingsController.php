@@ -1574,6 +1574,10 @@ class SettingsController extends AppController {
 
         $branches = $this->City->branchCities();
 
+        if( !empty($id) ) {
+            $this->MkCommon->getLogs($this->params['controller'], array( 'uang_jalan_edit', 'uang_jalan_add', 'uang_jalan_toggle' ), $id);
+        }
+
         $this->set('active_menu', 'uang_jalan');
         $this->set('module_title', __('TTUJ'));
         $this->set(compact(
@@ -1829,6 +1833,7 @@ class SettingsController extends AppController {
         ));
 
         if(!empty($uangKuli)){
+            $this->MkCommon->getLogs($this->params['controller'], array( 'uang_kuli_add', 'uang_kuli_edit', 'uang_kuli_toggle' ), $id);
             $this->doUangKuli($data_action, $id, $uangKuli);
         }else{
             $this->MkCommon->setCustomFlash(__('Uang Kuli tidak ditemukan'), 'error');  
@@ -3249,6 +3254,7 @@ class SettingsController extends AppController {
         ));
 
         if(!empty($tarif_angkutan)){
+            $this->MkCommon->getLogs($this->params['controller'], array( 'tarif_angkutan_add', 'tarif_angkutan_edit', 'tarif_angkutan_toggle' ), $id);
             $this->doTarifAngkutan($id, $tarif_angkutan);
         }else{
             $this->MkCommon->setCustomFlash(__('Tarif Angkutan tidak ditemukan'), 'error');  

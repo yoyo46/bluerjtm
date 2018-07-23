@@ -31,10 +31,10 @@
             <tr>
                 <td>
                     <?php
-                            if( strstr($action, 'add') ) {
-                                $tmpMsg = __('Created by');
-                            } else if( strstr($action, 'edit') ) {
+                            if( strstr($action, 'edit') || in_array($action, array( 'bongkaran_add', 'balik_add', 'pool_add', 'truk_tiba_add' )) ) {
                                 $tmpMsg = __('Modified by');
+                            } else if( strstr($action, 'add') ) {
+                                $tmpMsg = __('Created by');
                             } else if( strstr($action, 'rejected') ) {
                                 $tmpMsg = __('Rejected by');
                             } else if( strstr($action, 'void') || strstr($action, 'toggle') || strstr($action, 'delete') ) {

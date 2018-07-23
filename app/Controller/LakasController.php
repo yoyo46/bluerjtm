@@ -60,6 +60,8 @@ class LakasController extends AppController {
 
             if(!empty($Laka)){
                 $sub_module_title = __('Detail LAKA');
+                
+                $this->MkCommon->getLogs($this->params['controller'], array( 'add', 'edit', 'toggle' ), $id);
                 $this->set(compact('Laka', 'sub_module_title'));
             }else{
                 $this->MkCommon->setCustomFlash(__('Laka tidak ditemukan.'), 'error');
@@ -90,6 +92,7 @@ class LakasController extends AppController {
         ));
 
         if(!empty($Laka)){
+            $this->MkCommon->getLogs($this->params['controller'], array( 'add', 'edit', 'toggle' ), $id);
             $this->DoLaka($id, $Laka);
         }else{
             $this->MkCommon->setCustomFlash(__('LAKA tidak ditemukan'), 'error');  
@@ -599,6 +602,7 @@ class LakasController extends AppController {
         ), $elementRevenue);
         $value = $this->LakaPayment->LakaPaymentDetail->getMerge($value, $id);
 
+        $this->MkCommon->getLogs($this->params['controller'], array( 'payment_add', 'payment_edit', 'payment_delete' ), $id);
         $this->doLakaPayment( $id, $value );
     }
 
@@ -851,6 +855,7 @@ class LakasController extends AppController {
             }
 
             $this->request->data = $value;
+            $this->MkCommon->getLogs($this->params['controller'], array( 'payment_add', 'payment_edit', 'payment_delete' ), $id);
 
             $this->MkCommon->_layout_file('select');
             $this->set('view', true);

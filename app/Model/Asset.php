@@ -294,6 +294,7 @@ class Asset extends AppModel {
                     'msg' => $msg,
                     'status' => 'success',
                     'Log' => array(
+                        'document_id' => $id,
                         'activity' => $msg,
                         'old_data' => $value,
                     ),
@@ -304,6 +305,7 @@ class Asset extends AppModel {
                     'data' => $data,
                     'status' => 'error',
                     'Log' => array(
+                        'document_id' => $id,
                         'activity' => $msg,
                         'old_data' => $value,
                         'model' => array(
@@ -342,6 +344,7 @@ class Asset extends AppModel {
                     'msg' => $msg,
                     'status' => 'success',
                     'Log' => array(
+                        'document_id' => $id,
                         'activity' => $msg,
                         'old_data' => $value,
                     ),
@@ -352,6 +355,7 @@ class Asset extends AppModel {
                     'msg' => $msg,
                     'status' => 'error',
                     'Log' => array(
+                        'document_id' => $id,
                         'activity' => $msg,
                         'old_data' => $value,
                         'error' => 1,

@@ -5727,6 +5727,7 @@ class TrucksController extends AppController {
         ), $elementRevenue);
         $value = $this->DocumentPayment->DocumentPaymentDetail->getMerge($value, $id);
 
+        $this->MkCommon->getLogs($this->params['controller'], array( 'document_payment_add', 'document_payment_edit', 'document_payment_delete' ), $id);
         $this->doDocumentPayment( $id, $value );
     }
 
@@ -6012,6 +6013,7 @@ class TrucksController extends AppController {
                 }
             }
 
+            $this->MkCommon->getLogs($this->params['controller'], array( 'document_payment_add', 'document_payment_edit', 'document_payment_delete' ), $id);
             $this->MkCommon->_layout_file(array(
                 'freeze',
             ));

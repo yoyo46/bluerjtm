@@ -89,6 +89,7 @@ class SuratJalanDetail extends AppModel {
             $values = $this->getData('all', array(
                 'conditions' => array(
                     'SuratJalanDetail.surat_jalan_id' => $id,
+                    'SuratJalanDetail.status' => array( 0,1 ),
                 ),
             ));
 
