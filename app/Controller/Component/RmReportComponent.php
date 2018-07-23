@@ -5176,11 +5176,9 @@ class RmReportComponent extends Component {
 		$params = $this->MkCommon->_callRefineParams($params);
 
 		$dateFrom = Common::hashEmptyField($params, 'named.dateFrom');
-		// $MonthFrom = Common::hashEmptyField($params, 'named.MonthFrom', $dateFrom);
-		$MonthFrom = '2017-01';
+		$MonthFrom = Common::hashEmptyField($params, 'named.MonthFrom', $dateFrom);
 		$dateTo = Common::hashEmptyField($params, 'named.dateTo');
 		$MonthTo = Common::hashEmptyField($params, 'named.MonthTo', $dateTo);
-		$MonthTo = '2017-12';
 
 		$data = $this->controller->User->Cogs->getData('threaded', array(
             'conditions' => array(
@@ -5200,33 +5198,35 @@ class RmReportComponent extends Component {
                 'DATE_FORMAT(Journal.date, \'%Y-%m\') >=' => $MonthFrom,
                 'DATE_FORMAT(Journal.date, \'%Y-%m\') <=' => $MonthTo,
             ),
-            'contain' => false,
+            'contain' => array(
+            	'Coa',
+        	),
             'group' => array(
                 'Journal.cogs_id',
             ),
         ));
 
         $optionsRev = $options;
-        $optionsRev['conditions']['Journal.type'] = array( 'in','revenue','general_ledger','invoice_payment','asset_selling' );
+        $optionsRev['conditions']['Coa.transaction_category'] = 'revenue';
         $optionsRev['fields'] = array(
         	'Journal.cogs_id',
-        	'Journal.total_debit',
+        	'Journal.total_credit',
     	);
         $summaryRev = $this->controller->User->Journal->find('list', $optionsRev);
 
         $optionsExp = $options;
-        $optionsExp['conditions']['Journal.type'] = array( 'out','document_payment','insurance_payment','lku_payment','ksu_payment','laka_payment','leasing_payment','po_payment','uang_Jalan_commission_payment','biaya_ttuj_payment' );
-        $optionsRev['fields'] = array(
+        $optionsExp['conditions']['Coa.transaction_category'] = 'expense';
+        $optionsExp['fields'] = array(
         	'Journal.cogs_id',
-        	'Journal.total_credit',
+        	'Journal.total_debit',
     	);
         $summaryExp = $this->controller->User->Journal->find('list', $optionsExp);
 
         $optionsMaintain = $options;
-        $optionsMaintain['conditions']['Journal.type'] = array( 'spk_payment' );
-        $optionsRev['fields'] = array(
+        $optionsMaintain['conditions']['Coa.transaction_category'] = 'maintenance';
+        $optionsMaintain['fields'] = array(
         	'Journal.cogs_id',
-        	'Journal.total_credit',
+        	'Journal.total_debit',
     	);
         $summaryMaintain = $this->controller->User->Journal->find('list', $optionsMaintain);
 

@@ -2548,6 +2548,7 @@ class CashbanksController extends AppController {
 
                             if(array_filter($datavar)) {
                                 $src = !empty($src)?$src:false;
+                                $cost_center = !empty($cost_center)?$cost_center:false;
                                 $kode_acc = !empty($kode_acc)?$kode_acc:false;
                                 $tgl = !empty($tgl)?$tgl:false;
                                 $ket = !empty($ket)?$ket:false;
@@ -2568,11 +2569,31 @@ class CashbanksController extends AppController {
                                         'Coa.status' => 1,
                                     ),
                                 ));
+                                $cogs = $this->User->Cogs->getData('first', array(
+                                    'conditions' => array(
+                                        'Cogs.name' => $cost_center,
+                                        'Cogs.status' => 1,
+                                    ),
+                                ));
+
+                                if( empty($cogs) ) {
+                                    $this->User->Cogs->saveAll(array(
+                                        'Cogs' => array(
+                                            'branch_id' => 15,
+                                            'code' => Common::toSlug($cost_center),
+                                            'name' => $cost_center,
+                                        ),
+                                    ));
+                                    $cogs_id = $this->User->Cogs->id;
+                                } else {
+                                    $cogs_id = Common::hashEmptyField($cogs, 'Cogs.id');
+                                }
 
                                 $dataTmp = array(
                                     'branch_id' => 15,
                                     'document_id' => $src,
                                     'coa_id' => Common::hashEmptyField($coa, 'Coa.id'),
+                                    'cogs_id' => $cogs_id,
                                     'date' => Common::formatDate($tgl, 'Y-m-d'),
                                     'title' => $ket,
                                     'debit' => $debit,

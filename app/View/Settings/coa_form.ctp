@@ -129,6 +129,20 @@
 					)), array(
 						'class' => 'form-group'
 					));
+
+					echo $this->Html->tag('div', $this->Form->input('transaction_category', array(
+						'label'=> __('Jenis Transaksi'), 
+						'class'=>'form-control',
+						'required' => false,
+						'empty' => __('Pilih Jenis Transaksi'),
+						'options' => array(
+							'revenue' => __('Revenue'),
+							'expense' => __('Expense'),
+							'maintenance' => __('Maintenance'),
+						),
+					)), array(
+						'class' => 'form-group'
+					));
 		?>
 			    	<div class="form-group">
 			    		<div class="checkbox">

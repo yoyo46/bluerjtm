@@ -49,7 +49,7 @@
                 echo $this->Html->tag('td', Common::getFormatPrice($gross_profit, 2), array(
                     'style' => 'text-align: right',
                 ));
-                echo $this->Html->tag('td', $er, array(
+                echo $this->Html->tag('td', __('%s%%', round($er, 2)), array(
                     'style' => 'text-align: center',
                 ));
             }
@@ -77,7 +77,7 @@
                     $tmpTr .= $this->Html->tag('td', Common::getFormatPrice($gross_profit, 2), array(
                         'style' => 'text-align: right;font-weight: bold;',
                     ));
-                    $tmpTr .= $this->Html->tag('td', $er, array(
+                    $tmpTr .= $this->Html->tag('td', __('%s%%', round($er, 2)), array(
                         'style' => 'text-align: center;font-weight: bold;',
                     ));
 
@@ -113,7 +113,7 @@
                 $tmpTr .= $this->Html->tag('td', Common::getFormatPrice($gross_profit, 2), array(
                     'style' => 'text-align: right;font-weight: bold;',
                 ));
-                $tmpTr .= $this->Html->tag('td', $er, array(
+                $tmpTr .= $this->Html->tag('td', __('%s%%', round($er, 2)), array(
                     'style' => 'text-align: center;font-weight: bold;',
                 ));
 
