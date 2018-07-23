@@ -112,6 +112,7 @@ class LeasingsController extends AppController {
                         'AssetGroup.id', 'AssetGroup.group_name',
                     ),
                 ));
+                $this->MkCommon->getLogs($this->params['controller'], array( 'edit', 'add', 'toggle' ), $id);
 
                 $this->set('active_menu', 'view_leasing');
                 $this->set('view', 'detail');
@@ -150,6 +151,7 @@ class LeasingsController extends AppController {
             // $branch_id = $this->MkCommon->filterEmptyField($value, 'Leasing', 'branch_id');
             // $this->MkCommon->allowPage($branch_id);
             $value = $this->Leasing->LeasingDetail->getMergeAll($value, $id, 'LeasingDetail.leasing_id');
+            $this->MkCommon->getLogs($this->params['controller'], array( 'edit', 'add', 'toggle' ), $id);
 
             $this->doLeasing($id, $value);
         }else{
@@ -593,6 +595,7 @@ class LeasingsController extends AppController {
                 'admin' => false,
             ));
             $this->request->data = $this->_calDataIndexConvertion($this->request->data, true);
+            $this->MkCommon->getLogs($this->params['controller'], array( 'payment_edit', 'payment_add', 'payment_delete' ), $id);
 
             $this->_callDataSupport();
             $this->set(compact(
