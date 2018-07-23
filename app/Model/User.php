@@ -256,6 +256,8 @@ class User extends AppModel {
                 'conditions' => array(
                     'User.id' => $id
                 ),
+            ), true, array(
+                'status' => 'all',
             ));
 
             if(!empty($data_merge)){
