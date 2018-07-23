@@ -5328,7 +5328,7 @@ class RmReportComponent extends Component {
 						'name' => __('Selisih'),
 						'text' => '',
 		                'style' => 'text-align: right;',
-		                'data-options' => 'field:\'month_selisih_'.$month.'\',width:120',
+		                'data-options' => 'field:\'month_selisih_'.$month.'\',width:120,styler:targetSelisih',
 		                'align' => 'right',
 		                'mainalign' => 'center',
         				'rel' => $month,
@@ -5465,9 +5465,10 @@ class RmReportComponent extends Component {
 							$balance = Common::hashEmptyField($summaryBalances, __('%s-%s', $coa_id, $MonthFromTmp), 0);
 							$budget = Common::hashEmptyField($summaryBudgets, __('%s-%s', $coa_id, $MonthFromTmp), 0);
 							$selisih = $budget-$balance;
+							$tmpBudget = intval($budget);
 
-							if( !empty($budget) ) {
-								$selisih_percent = (abs($selisih)/abs($budget))*100;
+							if( !empty($tmpBudget) ) {
+								$selisih_percent = ($selisih/$budget)*100;
 							} else {
 								$selisih_percent = 0;
 							}
@@ -5517,7 +5518,7 @@ class RmReportComponent extends Component {
 				            		),
 				                	__('%') => array(
 										'name' => __('%'),
-										'text' => Common::getFormatPrice($selisih_percent, 2, '-'),
+										'text' => __('%s%%', round($selisih_percent, 2)),
 						                'style' => 'text-align: center;',
 						                'data-options' => 'field:\'month_percent_'.$month.'\',width:80',
 						                'align' => 'center',
@@ -5562,9 +5563,10 @@ class RmReportComponent extends Component {
 						$total_budget = Common::hashEmptyField($grandtotal, 'budget');
 						$total_balance = Common::hashEmptyField($grandtotal, 'balance');
 						$total_selisih = $total_budget-$total_balance;
+						$tmpTotalSelisih = intval($total_budget);
 
-						if( !empty($total_budget) ) {
-							$total_selisih_percent = (abs($total_selisih)/abs($total_budget))*100;
+						if( !empty($tmpTotalSelisih) ) {
+							$total_selisih_percent = ($total_selisih/$total_budget)*100;
 						} else {
 							$total_selisih_percent = 0;
 						}
@@ -5614,7 +5616,7 @@ class RmReportComponent extends Component {
 			            		),
 			                	__('%') => array(
 									'name' => __('%'),
-									'text' => Common::getFormatPrice($total_selisih_percent, 2, '-'),
+									'text' => __('%s%%', round($total_selisih_percent, 2)),
 					                'style' => 'text-align: center;',
 					                'data-options' => 'field:\'month_percent_total\',width:80',
 					                'align' => 'center',
@@ -5790,9 +5792,10 @@ class RmReportComponent extends Component {
 			$balance = Common::hashEmptyField($this->total_budgets, __('total.balance.%s', $month_name), 0);
 			$budget = Common::hashEmptyField($this->total_budgets, __('total.budget.%s', $month_name), 0);
 			$selisih = $budget-$balance;
+			$tmpBudget = intval($budget);
 
-			if( !empty($budget) ) {
-				$selisih_percent = (abs($selisih)/abs($budget))*100;
+			if( !empty($tmpBudget) ) {
+				$selisih_percent = ($selisih/$budget)*100;
 			} else {
 				$selisih_percent = 0;
 			}
@@ -5842,7 +5845,7 @@ class RmReportComponent extends Component {
             		),
                 	__('%') => array(
 						'name' => __('%'),
-						'text' => Common::getFormatPrice($selisih_percent, 2, '-'),
+						'text' => __('%s%%', round($selisih_percent, 2)),
 		                'style' => 'text-align: center;',
 		                'data-options' => 'field:\'month_percent_'.$month.'\',width:80',
 		                'align' => 'center',
@@ -5876,9 +5879,10 @@ class RmReportComponent extends Component {
 		$total_budget = Common::hashEmptyField($grandtotal, 'budget');
 		$total_balance = Common::hashEmptyField($grandtotal, 'balance');
 		$total_selisih = $total_budget-$total_balance;
+		$tmpTotalBudget = $total_budget;
 
-		if( !empty($total_budget) ) {
-			$total_selisih_percent = (abs($total_selisih)/abs($total_budget))*100;
+		if( !empty($tmpTotalBudget) ) {
+			$total_selisih_percent = ($total_selisih/$total_budget)*100;
 		} else {
 			$total_selisih_percent = 0;
 		}
@@ -5929,7 +5933,7 @@ class RmReportComponent extends Component {
         		),
             	__('%') => array(
 					'name' => __('%'),
-					'text' => Common::getFormatPrice($total_selisih_percent, 2, '-'),
+					'text' => __('%s%%', round($total_selisih_percent, 2)),
 	                'style' => 'text-align: center;',
 	                'data-options' => 'field:\'month_percent_total\',width:80',
 	                'align' => 'center',
