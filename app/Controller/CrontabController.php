@@ -217,16 +217,17 @@ class CrontabController extends AppController {
                         'contain' => false,
                     ));
                     $month_closing = Configure::read('__Site.Closing.Year.SettingGeneral.value');
+                    
+                    $this->User->Journal->Coa->CoaClosing->updateAll(array(
+                        'CoaClosing.status'=> 0,
+                    ), array(
+                        'CoaClosing.status' => 1,
+                        'DATE_FORMAT(CoaClosing.periode, \'%Y-%m\') >='=> $closingPeriod,
+                    ));
 
                     if( !empty($values) ) {
                         $dataValue = array();
                         $dataSaldoAkhir = array();
-                        $this->User->Journal->Coa->CoaClosing->updateAll(array(
-                            'CoaClosing.status'=> 0,
-                        ), array(
-                            'CoaClosing.status' => 1,
-                            'DATE_FORMAT(CoaClosing.periode, \'%Y-%m\') >='=> $closingPeriod,
-                        ));
 
                         foreach ($values as $key => $value) {
                             $coa_id = $this->MkCommon->filterEmptyField($value, 'Journal', 'coa_id');
