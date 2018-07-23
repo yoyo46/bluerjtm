@@ -3080,6 +3080,7 @@ class CashbanksController extends AppController {
                                     for ($i=1; $i <=12 ; $i++) { 
                                         $bln = str_pad($i, 2,'0',STR_PAD_LEFT);
                                         $budget = !empty($$bln)?$$bln:0;
+                                        $budget = str_replace(array('*',' ',','), array('','',''), $budget);
 
                                         $detail[] = array(
                                             'BudgetDetail' => array(
