@@ -36,6 +36,7 @@ var getUangjalan = function ( response ) {
     $('.truck_capacity').val($(response).filter('#truck_capacity').html());
     $('.driver_name').val($(response).filter('#driver_name').html());
     $('.driver_id').val($(response).filter('#driver_id').html());
+    $('.wrapper-ttuj-alert-msg').html($(response).filter('.wrapper-ttuj-alert-msg').html());
 
     $('#converter-uang-jalan-extra').html($(response).filter('#list-converter-uang-jalan-extra').html());
 
@@ -3714,8 +3715,33 @@ $(function() {
 
     $('.submit-form').click(function() {
         var action_type = $(this).attr('action_type');
+        var alert_msg = $('#ttuj-alert-msg');
 
-        if( action_type == 'commit' ) {
+        if( alert_msg.length > 0 ) {
+            alert_msg_text = alert_msg.val().replace(/TenterT/gi, "\n");
+
+            if( confirm(alert_msg_text) ) {
+                if( action_type == 'commit' ) {
+                    if( confirm('Anda yakin ingin mengunci data ini?') ) {
+                        $('#is_draft').val(0);
+                    } else {
+                        return false;
+                    }
+                } else if(action_type == 'posting' || action_type == 'unposting'){
+                    if(action_type == 'posting'){
+                        if( confirm('Anda yakin ingin mengunci posting data ini?') ) {
+                            $('#transaction_status').val(action_type);
+                        } else {
+                            return false;
+                        }
+                    }else{
+                        $('#transaction_status').val(action_type);
+                    }
+                }
+            } else {
+                return false;
+            }
+        } else if( action_type == 'commit' ) {
             if( confirm('Anda yakin ingin mengunci data ini?') ) {
                 $('#is_draft').val(0);
             } else {

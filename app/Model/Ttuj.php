@@ -1219,5 +1219,35 @@ class Ttuj extends AppModel {
             'plant' => true,
         ));
     }
+
+    function checkTtujSameDay ( $value ) {
+        $value = Common::dataConverter($value, array(
+            'date' => array(
+                'Ttuj' => array(
+                    'ttuj_date',
+                ),
+            )
+        ));
+
+        $no_ttuj = Common::hashEmptyField($value, 'Ttuj.no_ttuj');
+        $ttuj_date = Common::hashEmptyField($value, 'Ttuj.ttuj_date');
+        $truck_id = Common::hashEmptyField($value, 'Ttuj.truck_id');
+
+        if( empty($no_ttuj) && !empty($truck_id) ) {
+            $ttuj = $this->getData('first', array(
+                'conditions' => array(
+                    'Ttuj.ttuj_date' => $ttuj_date,
+                    'Ttuj.truck_id' => $truck_id,
+                ),
+                'order'=> array(
+                    'Ttuj.created' => 'ASC',
+                    'Ttuj.id' => 'ASC',
+                ),
+            ));
+            return $ttuj;
+        } else {
+            return false;
+        }
+    }
 }
 ?>

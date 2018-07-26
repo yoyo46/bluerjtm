@@ -77,6 +77,7 @@ class AjaxController extends AppController {
 
         $plantCityId = Configure::read('__Site.Branch.Plant.id');
 		$isAjax = $this->RequestHandler->isAjax();
+		$data = $this->request->data;
 		// $result = $this->Ttuj->Truck->getInfoTruck($truck_id, $plantCityId);
 		$result = $this->Ttuj->Truck->getInfoTruck($truck_id);
 
@@ -99,10 +100,12 @@ class AjaxController extends AppController {
 			$uangKuliBongkar = !empty($uangKuli['UangKuliBongkar'])?$uangKuli['UangKuliBongkar']:false;
 		}
 
+		$checkTtujSameDay = $this->Ttuj->checkTtujSameDay($data);
+
 		$this->set(compact(
 			'result', 'uangJalan', 'uangKuliMuat',
 			'uangKuliBongkar', 'sjOutstanding',
-			'converterUjs', 'isAjax'
+			'converterUjs', 'isAjax', 'checkTtujSameDay'
 		));
 		$this->render('get_nopol');
 	}
@@ -2711,6 +2714,7 @@ class AjaxController extends AppController {
 	}
 
 	function change_lead_time ( $type = 'tgl_berangkat' ) {
+		$this->loadModel('Ttuj');
 		$isAjax = $this->RequestHandler->isAjax();
 		$data = $this->request->data;
 
@@ -2740,12 +2744,14 @@ class AjaxController extends AppController {
 				break;
 		}
 
+		$checkTtujSameDay = $this->Ttuj->checkTtujSameDay($data);
+
 		$jam_berangkat = $this->MkCommon->filterEmptyField($data, 'Ttuj', 'jam_berangkat');
         $tgl_jam_berangkat = sprintf('%s %s', $tgl_berangkat, $jam_berangkat);
 		$this->request->data['Ttuj']['tgl_berangkat'] = false;
 
         $this->set(compact(
-        	'isAjax', 'tgl_jam_berangkat'
+        	'isAjax', 'tgl_jam_berangkat', 'checkTtujSameDay'
     	));
     	$this->render('/Elements/blocks/ttuj/forms/ttuj_lanjutan');
 	}

@@ -1230,6 +1230,7 @@ class RevenuesController extends AppController {
         $tipeMotors = array();
         $groupTipeMotors = array();
         $tipeMotorTemps = $this->Ttuj->TtujTipeMotor->TipeMotor->getData('all');
+        $checkTtujSameDay = $this->Ttuj->checkTtujSameDay($this->request->data);
 
         if( !empty($tipeMotorTemps) ) {
             foreach ($tipeMotorTemps as $key => $tipeMotorTemp) {
@@ -1265,7 +1266,7 @@ class RevenuesController extends AppController {
             'groupTipeMotors', 'uangKuli',
             'id', 'tmpCities', 'branches',
             'allowEditTtujBranch', 'converterUjs',
-            'allowClosingTtuj'
+            'allowClosingTtuj', 'checkTtujSameDay'
         ));
         $this->render('ttuj_form');
     }

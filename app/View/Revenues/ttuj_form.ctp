@@ -35,7 +35,7 @@
 										'label'=> __('No. TTUJ *'), 
 										'class'=>'form-control',
 										'required' => false,
-										'disabled' => true,
+										'readonly' => true,
 										'placeholder' => __('No. TTUJ'),
 										'div' => array(
 											'class' => 'form-group',
@@ -70,7 +70,7 @@
 											'admin' => false,
 										)),
 										'data-form' => '#ttuj-form',
-										'data-wrapper-write' => '#ttuj-lanjutan-lead-time',
+										'data-wrapper-write-page' => '#ttuj-lanjutan-lead-time,.wrapper-ttuj-alert-msg',
 									));
 							?>
 				        </div>
@@ -162,6 +162,7 @@
 													'class' => 'truck_id'
 												),
 												'id' => 'truckID',
+												'data-form' => '#ttuj-form',
 											));
 									?>
 		                        </div>
@@ -700,3 +701,6 @@
 		?>
 	</div>
 </div>
+<?php
+		echo $this->element('blocks/ttuj/check_ttuj_sameday');
+?>

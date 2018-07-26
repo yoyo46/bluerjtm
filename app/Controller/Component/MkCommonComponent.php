@@ -1885,7 +1885,7 @@ class MkCommonComponent extends Component {
     }
 
     function _callDemoVersion () {
-        if( in_array(FULL_BASE_URL, array( 'http://ww.erprjtm.com', 'http://erp.rjtm.co.id', 'http://yukblanja.com' )) ) {
+        if( in_array(FULL_BASE_URL, array( 'http://ww.erprjtm.com', 'http://erp.rjtm.co.id', 'http://e.rjtm.co.id' )) ) {
             return true;
         } else {
             return false;

@@ -112,6 +112,8 @@
 				'values' => $converterUjs,
 			));
 		}
+
+		echo $this->element('blocks/ttuj/check_ttuj_sameday');
 ?>
 <div id="list-tipe-motor">
 	<?php 

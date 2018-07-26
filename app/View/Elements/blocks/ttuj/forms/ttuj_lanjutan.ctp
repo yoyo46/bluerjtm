@@ -33,6 +33,8 @@
 				));
 			}
 		}
+		
+		echo $this->element('blocks/ttuj/check_ttuj_sameday');
 ?>
 <div id="ttuj-lanjutan-lead-time">
 	<div class="col-sm-6">

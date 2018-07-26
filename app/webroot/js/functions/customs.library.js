@@ -431,11 +431,19 @@
         if( self.length > 0 ) {
             var action_type = self.attr('data-action');
             var truck_id = self.val();
+            var data_form = $.checkUndefined(self.attr('data-form'), false);
+            
+            if( data_form != false ) {
+                formData = $(data_form).serialize(); 
+            } else {
+                formData = false;
+            }
 
             if( action_type == 'truck-mutation' ) {
                 $.ajax({
                     url: '/ajax/getDataTruck/' + truck_id + '/',
                     type: 'POST',
+                    data: formData,
                     success: function(response, status) {
                         var branch_name = $(response).filter('#branch_name').html();
                         var category_name = $(response).filter('#category_name').html();
@@ -465,6 +473,7 @@
                     $.ajax({
                         url: '/ajax/getInfoTruck/' + from_city_id + '/' + to_city_id + '/' + self.val() + '/' + customer_id + '/',
                         type: 'POST',
+                        data: formData,
                         success: function(response, status) {
                             getUangjalan( response );
                         },
