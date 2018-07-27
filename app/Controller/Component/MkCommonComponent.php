@@ -2454,7 +2454,7 @@ class MkCommonComponent extends Component {
         return $customStatus;
     }
 
-    function _callCogsOptGroup($modelName, $dataModel = null, $no_data = true) {
+    function _callCogsOptGroup($modelName, $dataModel = null, $no_data = false) {
         $data = $this->controller->request->data;
         $cogs = $this->controller->User->Cogs->_callOptGroup();
         $cogsSetting = $this->controller->User->Cogs->CogsSetting->getData('first', array(

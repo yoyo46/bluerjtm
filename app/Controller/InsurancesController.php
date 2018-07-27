@@ -387,6 +387,7 @@ class InsurancesController extends AppController {
 
         if( empty($reverse) && !empty($data) ) {
             $this->MkCommon->_callAllowClosing($data, 'InsurancePayment', 'payment_date');
+            $data = Common::_callCheckCostCenter($data, 'InsurancePayment');
         }
 
         return $data;

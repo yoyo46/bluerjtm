@@ -7554,11 +7554,13 @@ class RevenuesController extends AppController {
             case 'biaya_ttuj':
                 $labelName = 'Biaya TTUJ';
                 $this->set('active_menu', 'biaya_ttuj_payments');
+                $modelName = 'TtujPaymentCost';
                 break;
             
             default:
                 $labelName = 'Uang Jalan/Komisi';
                 $this->set('active_menu', 'uang_jalan_commission_payments');
+                $modelName = 'TtujPayment';
                 break;
         }
 
@@ -7575,6 +7577,7 @@ class RevenuesController extends AppController {
 
             $data['TtujPayment']['type'] = $action_type;
             $data['TtujPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $data = Common::_callCheckCostCenter($data, $modelName, 'TtujPayment');
 
             $dataAmount = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'amount_payment');
             $flagTtujPaymentDetail = $this->doTtujPaymentDetail($dataAmount, $data);
@@ -7630,6 +7633,7 @@ class RevenuesController extends AppController {
             }
 
             $this->request->data['TtujPayment']['date_payment'] = !empty($data['TtujPayment']['date_payment']) ? $data['TtujPayment']['date_payment'] : '';
+            $this->request->data['TtujPayment']['cogs_id'] = Common::hashEmptyField($data, 'TtujPayment.cogs_id');
         }
 
         $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();

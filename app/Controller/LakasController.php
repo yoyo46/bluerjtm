@@ -621,6 +621,7 @@ class LakasController extends AppController {
             $this->MkCommon->_callAllowClosing($data, 'LakaPayment', 'date_payment');
 
             $data['LakaPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $data = Common::_callCheckCostCenter($data, 'LakaPayment');
 
             $dataAmount = $this->MkCommon->filterEmptyField($data, 'LakaPaymentDetail', 'amount');
             $flagPaymentDetail = $this->doLakaPaymentDetail($dataAmount, $data);
@@ -675,6 +676,7 @@ class LakasController extends AppController {
             }
 
             $this->request->data['LakaPayment']['date_payment'] = !empty($data['LakaPayment']['date_payment']) ? $data['LakaPayment']['date_payment'] : '';
+            $this->request->data['LakaPayment']['cogs_id'] = Common::hashEmptyField($data, 'LakaPayment.cogs_id');;
         } else if( !empty($value) ) {
             if( !empty($value['LakaPaymentDetail']) ) {
                 foreach ($value['LakaPaymentDetail'] as $key => $val) {

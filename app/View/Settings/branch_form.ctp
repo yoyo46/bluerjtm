@@ -299,19 +299,19 @@
 					<div class="row">
 						<div class="col-sm-4 text-right">
 					    	<?php 
-									echo $this->Form->label('CogsSetting.Cashbank.cogs_id', __('Kas/Bank'));
+									echo $this->Form->label('CogsSetting.CashBank.cogs_id', __('Kas/Bank'));
 							?>
 						</div>
 						<div class="col-sm-8">
 				        	<?php 
-									echo $this->Form->input('CogsSetting.Cashbank.cogs_id',array(
+									echo $this->Form->input('CogsSetting.CashBank.cogs_id',array(
 										'label'=> false, 
 										'class'=>'form-control chosen-select',
 										'required' => false,
 										'empty' => __('Pilih Cost Center'),
 										'options' => $cogs,
 									));
-									echo $this->Form->hidden('CogsSetting.Cashbank.id');
+									echo $this->Form->hidden('CogsSetting.CashBank.id');
 							?>
 						</div>
 					</div>

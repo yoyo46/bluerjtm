@@ -66,12 +66,7 @@
 							?>
 				        </div>
 						<?php
-								echo $this->Common->buildInputForm('cogs_id', __('Cost Center'), array(
-									'label'=> __('Cost Center'), 
-									'class'=>'form-control chosen-select',
-									'empty' => __('Pilih Cost Center '),
-									'options' => $cogs,
-								));
+								echo $this->element('blocks/common/forms/cost_center');
 						?>
 				        <div class="form-group">
 				        	<?php 

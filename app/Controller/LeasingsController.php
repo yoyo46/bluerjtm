@@ -516,6 +516,7 @@ class LeasingsController extends AppController {
 
         if( empty($reverse) && !empty($data) ) {
             $this->MkCommon->_callAllowClosing($data, 'LeasingPayment', 'payment_date');
+            $data = Common::_callCheckCostCenter($data, 'LeasingPayment');
         }
 
         return $data;

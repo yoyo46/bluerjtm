@@ -524,6 +524,7 @@ class RjCashBankComponent extends Component {
             $data['GeneralLedger']['id'] = $id;
             $data['GeneralLedger']['branch_id'] = Configure::read('__Site.config_branch_id');
             $data['GeneralLedger']['user_id'] = Configure::read('__Site.config_user_id');
+            $data = Common::_callCheckCostCenter($data, 'GeneralLedger');
 
             if( !empty($dataDetail) ) {
                 $grandtotal_debit = 0;

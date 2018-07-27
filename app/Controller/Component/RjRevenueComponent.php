@@ -576,6 +576,7 @@ class RjRevenueComponent extends Component {
         $this->MkCommon->_callAllowClosing($data, 'InvoicePayment', 'date_payment');
 
         $id = $this->MkCommon->filterEmptyField($value, 'InvoicePayment', 'id');
+        $data = Common::_callCheckCostCenter($data, 'InvoicePayment');
 
         if( !empty($id) ){
             $data['InvoicePayment']['id'] = $id;

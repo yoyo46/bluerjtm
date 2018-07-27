@@ -652,6 +652,7 @@ class LkusController extends AppController {
             ));
             $tgl_bayar = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'tgl_bayar');
             $this->MkCommon->_callAllowClosing($data, 'LkuPayment', 'tgl_bayar');
+            $data = Common::_callCheckCostCenter($data, 'LkuKsuPayment', 'LkuPayment');
 
             $customer_id = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'customer_id');
             $coa_id = $this->MkCommon->filterEmptyField($data, 'LkuPayment', 'coa_id');
@@ -865,6 +866,8 @@ class LkusController extends AppController {
 
                 $this->MkCommon->setCustomFlash($text, 'error');
             }
+
+            $this->request->data['LkuPayment']['cogs_id'] = Common::hashEmptyField($data, 'LkuPayment.cogs_id');
         } else if($id && $data_local){
             $dataDetail = $this->MkCommon->filterEmptyField($data_local, 'LkuPaymentDetail');
             unset($data_local['LkuPaymentDetail']);
@@ -1661,6 +1664,7 @@ class LkusController extends AppController {
             ));
             $tgl_bayar = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'tgl_bayar');
             $this->MkCommon->_callAllowClosing($data, 'KsuPayment', 'tgl_bayar');
+            $data = Common::_callCheckCostCenter($data, 'LkuKsuPayment', 'KsuPayment');
 
             $customer_id = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'customer_id');
             $coa_id = $this->MkCommon->filterEmptyField($data, 'KsuPayment', 'coa_id');
@@ -1873,6 +1877,8 @@ class LkusController extends AppController {
 
                 $this->MkCommon->setCustomFlash($text, 'error');
             }
+            
+            $this->request->data['KsuPayment']['cogs_id'] = Common::hashEmptyField($data, 'KsuPayment.cogs_id');
         } else if($id && $data_local){
             $dataDetail = $this->MkCommon->filterEmptyField($data_local, 'KsuPaymentDetail');
             unset($data_local['KsuPaymentDetail']);

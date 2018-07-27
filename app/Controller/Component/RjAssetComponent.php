@@ -318,6 +318,7 @@ class RjAssetComponent extends Component {
             $dataSave['AssetSell']['id'] = $id;
             $dataSave['AssetSell']['branch_id'] = Configure::read('__Site.config_branch_id');
             $dataSave['AssetSell']['user_id'] = Configure::read('__Site.config_user_id');
+            $dataSave = Common::_callCheckCostCenter($dataSave, 'AssetSell');
 
             if( !empty($values) ) {
                 $grandtotal = 0;

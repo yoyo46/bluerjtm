@@ -5747,6 +5747,7 @@ class TrucksController extends AppController {
 
             $data['DocumentPayment']['date_payment'] = !empty($data['DocumentPayment']['date_payment']) ? $this->MkCommon->getDate($data['DocumentPayment']['date_payment']) : '';
             $data['DocumentPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $data = Common::_callCheckCostCenter($data, 'DocumentPayment');
 
             $dataAmount = $this->MkCommon->filterEmptyField($data, 'DocumentPaymentDetail', 'amount');
             $flagPaymentDetail = $this->doDocumentPaymentDetail($dataAmount, $data);
@@ -5801,6 +5802,7 @@ class TrucksController extends AppController {
             }
 
             $this->request->data['DocumentPayment']['date_payment'] = !empty($data['DocumentPayment']['date_payment']) ? $data['DocumentPayment']['date_payment'] : '';
+            $this->request->data['DocumentPayment']['cogs_id'] = Common::hashEmptyField($data, 'DocumentPayment.cogs_id');
         } else if( !empty($value) ) {
             if( !empty($value['DocumentPaymentDetail']) ) {
                 foreach ($value['DocumentPaymentDetail'] as $key => $val) {

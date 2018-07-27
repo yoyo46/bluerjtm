@@ -144,8 +144,10 @@ class CashbanksController extends AppController {
         $grand_total = $this->MkCommon->filterEmptyField($data_local, 'CashBank', 'grand_total');
         $user_id = $this->MkCommon->filterEmptyField($data_local, 'CashBank', 'user_id');
         $prepayment_out_id = $this->MkCommon->filterEmptyField($data_local, 'CashBank', 'document_id');
+        $no_data = true;
 
         if(!empty($this->request->data)){
+            $no_data = false;
             $data = $this->request->data;
             $data = $this->MkCommon->dataConverter($data, array(
                 'date' => array(
@@ -155,6 +157,7 @@ class CashbanksController extends AppController {
                 )
             ));
             $this->MkCommon->_callAllowClosing($data, 'CashBank', 'tgl_cash_bank');
+            $data = Common::_callCheckCostCenter($data, 'CashBank');
 
             $coas_validate = true;
             $totalTagihanCredit = 0;
@@ -432,6 +435,8 @@ class CashbanksController extends AppController {
                 }
                 $this->MkCommon->setCustomFlash($text, 'error');
             }
+
+            $this->request->data['CashBank']['cogs_id'] = Common::hashEmptyField($data, 'CashBank.cogs_id');
         }else{
             if($id && $data_local){
                 $data_local = $this->CashBank->getDataCashBank($data_local, $prepayment_out_id);
@@ -532,7 +537,7 @@ class CashbanksController extends AppController {
         $user_otorisasi_approvals = $this->User->Employe->EmployePosition->Approval->getUserOtorisasiApproval('cash-bank', $employe_position_id, $grand_total, $id);
 
         $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
-        $cogs = $this->MkCommon->_callCogsOptGroup('CashBank');
+        $cogs = $this->MkCommon->_callCogsOptGroup('CashBank', null, $no_data);
         $branches = $this->User->Branch->City->branchCities();
 
         if( !empty($id) ) {
