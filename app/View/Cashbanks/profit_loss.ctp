@@ -7,7 +7,7 @@
 <section class="content invoice">
     <?php 
             echo $this->element('blocks/common/box_header', array(
-                'title' => $sub_module_title,
+                'title' => $title,
             ));
             echo $this->Common->_getPrint(array(
                 '_attr' => array(

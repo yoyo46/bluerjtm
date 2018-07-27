@@ -581,17 +581,26 @@ class RjCashBankComponent extends Component {
     function _callBeforeViewProfitLoss( $params ) {
         $monthFrom = Common::hashEmptyField($params, 'named.MonthFrom');
         $monthTo = Common::hashEmptyField($params, 'named.MonthTo');
-        $title = __('Laporan Laba Rugi');
-        $period_text = false;
+        $cost_center_id = Common::hashEmptyField($params, 'named.cost_center_id');
+
+        $costCenter = $this->controller->User->Cogs->getMerge(array(), $cost_center_id);
+
+        $sub_module_title = $title = __('Laporan Laba Rugi');
 
         if( !empty($monthFrom) && !empty($monthTo) ) {
-            $period_text = __('Periode %s', $this->MkCommon->getCombineDate($monthFrom, $monthTo, 'short'));
+            $title .= __('<br>Periode %s', $this->MkCommon->getCombineDate($monthFrom, $monthTo, 'short'));
         }
+        if( !empty($costCenter) ) {
+            $title .= __('<br>Cost Center: %s', Common::hashEmptyField($costCenter, 'Cogs.cogs_name'));
+        }
+
+        $cogs = $this->controller->User->Cogs->_callOptGroup();
         
-        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('title', $title);
+        $this->controller->set('sub_module_title', $sub_module_title);
         $this->controller->set('active_menu', $title);
         $this->controller->set(compact(
-            'period_text'
+            'period_text', 'cogs'
         ));
     }
 

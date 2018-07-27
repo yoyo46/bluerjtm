@@ -4539,6 +4539,7 @@ class RmReportComponent extends Component {
 		$MonthFrom = Common::hashEmptyField($params, 'named.MonthFrom', $dateFrom);
 		$dateTo = Common::hashEmptyField($params, 'named.dateTo');
 		$MonthTo = Common::hashEmptyField($params, 'named.MonthTo', $dateTo);
+		$cost_center_id = Common::hashEmptyField($params, 'named.cost_center_id');
 		$this->total_profit_loss = array();
 
 		App::import('Helper', 'Html');
@@ -4594,16 +4595,22 @@ class RmReportComponent extends Component {
         $this->controller->User->Journal->virtualFields['balancing'] = 'CASE WHEN Coa.type = \'debit\' THEN SUM(Journal.debit) - SUM(Journal.credit) ELSE SUM(Journal.credit) - SUM(Journal.debit) END';
         $this->controller->User->Journal->virtualFields['date_month'] = 'DATE_FORMAT(Journal.date, \'%Y-%m\')';
         $this->controller->User->Journal->virtualFields['index'] = 'CONCAT(Journal.coa_id, \'-\', DATE_FORMAT(Journal.date, \'%Y-%m\'))';
+        $conditionsJournal = array(
+            'Journal.coa_id' => $coa_ids,
+            'DATE_FORMAT(Journal.date, \'%Y-%m\') >=' => $MonthFrom,
+            'DATE_FORMAT(Journal.date, \'%Y-%m\') <=' => $MonthTo,
+        );
+
+        if( !empty($cost_center_id) ) {
+        	$conditionsJournal['Journal.cogs_id'] = $cost_center_id;
+        }
+
         $summaryBalances = $this->controller->User->Journal->getData('list', array(
         	'fields' => array(
         		'Journal.index',
         		'Journal.balancing',
     		),
-            'conditions' => array(
-                'Journal.coa_id' => $coa_ids,
-                'DATE_FORMAT(Journal.date, \'%Y-%m\') >=' => $MonthFrom,
-                'DATE_FORMAT(Journal.date, \'%Y-%m\') <=' => $MonthTo,
-            ),
+            'conditions' => $conditionsJournal,
             'group' => array(
                 'Journal.coa_id',
                 'DATE_FORMAT(Journal.date, \'%Y-%m\')',

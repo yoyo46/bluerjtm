@@ -1,11 +1,5 @@
 <?php
-        // if( !empty($dateFrom) ) {
-        //     $monthFrom = Common::formatDate($dateFrom, 'm');
-        //     $yearFrom = Common::formatDate($dateFrom, 'Y');
-        // } else {
-        //     $monthFrom = false;
-        //     $yearFrom = false;
-        // }
+        $cogs = !empty($cogs)?$cogs:false;
 ?>
 <div class="box">
     <div class="box-header">
@@ -27,6 +21,17 @@
                     'id' => 'form-search',
                 ));
         ?>
+        <div class="form-group">
+            <?php 
+                echo $this->Form->input('cost_center_id',array(
+                    'label'=> __('Cost Center'),
+                    'class'=>'form-control  chosen-select',
+                    'required' => false,
+                    'empty' => __('Pilih Cost Center'),
+                    'options' => $cogs,
+                ));
+            ?>
+        </div>
         <div class="row">
             <div class="col-sm-6">
                 <?php 
@@ -111,6 +116,9 @@
             </div>
         </div>
         <?php 
+                echo $this->Form->hidden('title',array(
+                    'value'=> str_replace('<br>', ' - ', $title),
+                ));
                 echo $this->Form->end();
         ?>
     </div>
