@@ -6368,38 +6368,38 @@ class SettingsController extends AppController {
         $this->redirect($this->referer());
     }
 
-    public function cost_center_setting() {
-        $values = $this->User->Cogs->CogsSetting->getData('all');
-        $data = $this->request->data;
+    // public function cost_center_setting() {
+    //     $values = $this->User->Cogs->CogsSetting->getData('all');
+    //     $data = $this->request->data;
 
-        if(!empty($data)){
-            $data = $this->RjSetting->_callBeforeSaveCogsSetting($data);
-            $dataDetail = $this->MkCommon->filterEmptyField($data, 'CogsSetting');
+    //     if(!empty($data)){
+    //         $data = $this->RjSetting->_callBeforeSaveCogsSetting($data);
+    //         $dataDetail = $this->MkCommon->filterEmptyField($data, 'CogsSetting');
 
-            $flag = $this->User->Cogs->CogsSetting->saveAll($dataDetail, array(
-                'validate' => 'only',
-            ));
+    //         $flag = $this->User->Cogs->CogsSetting->saveAll($dataDetail, array(
+    //             'validate' => 'only',
+    //         ));
 
-            if(!empty($flag) ){
-                $this->User->Cogs->CogsSetting->deleteAll(array(
-                    'CogsSetting.branch_id' => Configure::read('__Site.config_branch_id'),
-                ));
-                $this->User->Cogs->CogsSetting->saveAll($dataDetail);
+    //         if(!empty($flag) ){
+    //             $this->User->Cogs->CogsSetting->deleteAll(array(
+    //                 'CogsSetting.branch_id' => Configure::read('__Site.config_branch_id'),
+    //             ));
+    //             $this->User->Cogs->CogsSetting->saveAll($dataDetail);
 
-                $transaction_id = $this->User->CogsSetting->id;
-                $this->MkCommon->setCustomFlash(__('Sukses menyimpan pengaturan Cost Center'), 'success');
-                $this->Log->logActivity( sprintf(__('Sukses menyimpan pengaturan Cost Center #%s'), $transaction_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $transaction_id );
-                $this->redirect(array(
-                    'controller' => 'settings',
-                    'action' => 'cost_center_setting'
-                ));
-            }else{
-                $this->MkCommon->setCustomFlash(__('Gagal menyimpan pengaturan Cost Center'), 'error');
-                $this->Log->logActivity( __('Gagal menyimpan pengaturan Cost Center'), $this->user_data, $this->RequestHandler, $this->params, 1 );
-            }
-        }
+    //             $transaction_id = $this->User->CogsSetting->id;
+    //             $this->MkCommon->setCustomFlash(__('Sukses menyimpan pengaturan Cost Center'), 'success');
+    //             $this->Log->logActivity( sprintf(__('Sukses menyimpan pengaturan Cost Center #%s'), $transaction_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $transaction_id );
+    //             $this->redirect(array(
+    //                 'controller' => 'settings',
+    //                 'action' => 'cost_center_setting'
+    //             ));
+    //         }else{
+    //             $this->MkCommon->setCustomFlash(__('Gagal menyimpan pengaturan Cost Center'), 'error');
+    //             $this->Log->logActivity( __('Gagal menyimpan pengaturan Cost Center'), $this->user_data, $this->RequestHandler, $this->params, 1 );
+    //         }
+    //     }
         
-        $this->request->data = $this->RjSetting->_callBeforeRenderCogsSetting($this->request->data, $values);
-        $this->set('active_menu', 'cost_center_setting');
-    }
+    //     $this->request->data = $this->RjSetting->_callBeforeRenderCogsSetting($this->request->data, $values);
+    //     $this->set('active_menu', 'cost_center_setting');
+    // }
 }
