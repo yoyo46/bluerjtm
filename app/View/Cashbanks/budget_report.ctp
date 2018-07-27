@@ -163,4 +163,24 @@
             return false;
         }
     }
+    function targetPercent(value,row,index, rel){
+        value = value.toString().replace(/,/gi, "");
+
+        if( value.toString().indexOf('(') >= 0 ) {
+            value = value.toString().replace(/\(/gi, "").replace(/\)/gi, "");
+            value = value * -1;
+        }
+
+        value = parseInt(value);
+
+        if ( !isNaN(value) ){
+            if( value < 0 ) {
+                return 'background-color:#f2dede;color:#a94442;';
+            } else {
+                return 'background-color:#dff0d8;color:#3c763d;';
+            }
+        } else {
+            return false;
+        }
+    }
 </script>
