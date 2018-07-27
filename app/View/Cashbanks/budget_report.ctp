@@ -164,8 +164,17 @@
         }
     }
     function targetPercent(value,row,index, rel){
-        value = value.toString().replace(/,/gi, "");
+        var tmp = 'row.month_selisih_'+rel;
 
+        var selisih = eval(tmp);
+        selisih = selisih.replace(/,/gi, "").replace(/-/gi, "");
+        if( selisih.toString().indexOf('(') >= 0 ) {
+            selisih = selisih.toString().replace(/\(/gi, "").replace(/\)/gi, "");
+            selisih = selisih * -1;
+        }
+        selisih = parseInt(selisih);
+
+        value = value.toString().replace(/,/gi, "");
         if( value.toString().indexOf('(') >= 0 ) {
             value = value.toString().replace(/\(/gi, "").replace(/\)/gi, "");
             value = value * -1;
@@ -173,11 +182,15 @@
 
         value = parseInt(value);
 
-        if ( !isNaN(value) ){
-            if( value < 0 ) {
-                return 'background-color:#f2dede;color:#a94442;';
+        if( !isNaN(selisih) ) {
+            if ( !isNaN(value) ){
+                if( value < 0 ) {
+                    return 'background-color:#f2dede;color:#a94442;';
+                } else {
+                    return 'background-color:#dff0d8;color:#3c763d;';
+                }
             } else {
-                return 'background-color:#dff0d8;color:#3c763d;';
+                return false;
             }
         } else {
             return false;
