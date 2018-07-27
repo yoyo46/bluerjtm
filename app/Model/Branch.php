@@ -202,10 +202,12 @@ class Branch extends AppModel {
                     $data = $this->CogsSetting->_callBeforeSaveCogsSetting($data, false, $id);
                     $dataDetail = Common::hashEmptyField($data, 'CogsSetting');
 
-                    $this->CogsSetting->deleteAll(array(
-                        'CogsSetting.branch_id' => $id,
-                    ));
-                    $this->CogsSetting->saveAll($dataDetail);
+                    if( !empty($dataDetail) ) {
+                        $this->CogsSetting->deleteAll(array(
+                            'CogsSetting.branch_id' => $id,
+                        ));
+                        $this->CogsSetting->saveAll($dataDetail);
+                    }
 
                     if( !empty($head_office) ) {
                         $this->updateAll( array(
