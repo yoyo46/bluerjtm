@@ -827,4 +827,34 @@ class Common {
         	'color' => $customColor,
     	);
     }
+
+    public static function _callCheckCostCenter ( $data, $label, $modelName = null ) {
+		$is_cost_center_readonly = Configure::read('__Site.config_cost_center_readonly');
+		$modelName = !empty($modelName)?$modelName:$label;
+
+		if( !empty($is_cost_center_readonly) ) {
+    		$current = Configure::read('__Site.Branch.CogsSetting.CogsSetting.'.$label.'.cogs_id');
+    		$data[$modelName]['cogs_id'] = $current;
+		}
+
+		return $data;
+    }
+
+    public static function _callGenerateCogs ( $values ) {
+    	$data = array();
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = Common::hashEmptyField($value, 'CogsSetting.id');
+                $label = Common::hashEmptyField($value, 'CogsSetting.label');
+                $cogs_id = Common::hashEmptyField($value, 'CogsSetting.cogs_id');
+
+                $data['CogsSetting'][$label]['id'] = $id;
+                $data['CogsSetting'][$label]['label'] = $label;
+                $data['CogsSetting'][$label]['cogs_id'] = $cogs_id;
+            }
+        }
+
+        return $data;
+    }
 }

@@ -2454,7 +2454,7 @@ class MkCommonComponent extends Component {
         return $customStatus;
     }
 
-    function _callCogsOptGroup($modelName, $dataModel = null) {
+    function _callCogsOptGroup($modelName, $dataModel = null, $no_data = true) {
         $data = $this->controller->request->data;
         $cogs = $this->controller->User->Cogs->_callOptGroup();
         $cogsSetting = $this->controller->User->Cogs->CogsSetting->getData('first', array(
@@ -2468,7 +2468,7 @@ class MkCommonComponent extends Component {
             $dataModel = $modelName;
         }
 
-        if( empty($data) ) {
+        if( empty($data) || $no_data ) {
             $cogs_id = $this->controller->request->data[$dataModel]['cogs_id'] = Common::hashEmptyField($cogsSetting, 'CogsSetting.cogs_id');
         }
 

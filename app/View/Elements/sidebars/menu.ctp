@@ -1738,58 +1738,12 @@
 
                     $dataMenu = array(
                         'settings' => array(
-                            'cost_centers', 'cost_center_setting'
-                        ),
-                    );
-
-                    if( $this->Common->allowMenu( $dataMenu ) ) {
-                        $activeSetting = false;
-                        $settingMenu = array(
-                            'cost_centers', 'cost_center_setting'
-                        );
-
-                        if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
-                            $activeSetting = 'active';
-                        }
-            ?>
-            <li class="treeview <?php echo $activeSetting; ?>">
-                <a href="#">
-                    <i class="fa fa-wrench"></i>
-                    <span>Cost Center</span>
-                    <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu">
-                    <?php 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Cost Center', array(
-                                'controller' => 'settings',
-                                'action' => 'cost_centers',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'cost_centers' )?'active':'',
-                            ));
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pengaturan Cost Center', array(
-                                'controller' => 'settings',
-                                'action' => 'cost_center_setting',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'cost_center_setting' )?'active':'',
-                            ));
-                    ?>
-                </ul>
-            </li>
-            <?php 
-                    }
-
-                    $dataMenu = array(
-                        'settings' => array(
                             'perlengkapan', 'banks',
                             'cities', 'companies', 'vendors',
                             'jenis_sim', 'classifications',
                             'calendar_colors', 'calendar_icons',
                             'parts_motor', 'index', 'approval_setting',
-                            'branches',
+                            'branches', 'cost_centers',
                         ),
                     );
 
@@ -1800,7 +1754,7 @@
                             'perlengkapan', 'branches', 
                             'classifications', 'calendar_colors',
                             'calendar_icons', 'settings', 'jenis_sim',
-                            'parts_motor', 'approval_setting',
+                            'parts_motor', 'approval_setting', 'cost_centers',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1815,6 +1769,24 @@
                 </a>
                 <ul class="treeview-menu">
                     <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Cost Center', array(
+                                'controller' => 'settings',
+                                'action' => 'cost_centers',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'cost_centers' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> '.__('Cabang'), array(
+                                'controller' => 'settings',
+                                'action' => 'branches',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'branches' )?'active':'',
+                            ));
+
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Perlengkapan', array(
                                 'controller' => 'settings',
                                 'action' => 'perlengkapan',
@@ -1841,15 +1813,6 @@
                             // )), array(
                             //     'class' => ( !empty($active_menu) && $active_menu == 'cities' )?'active':'',
                             // ));
-
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> '.__('Cabang'), array(
-                                'controller' => 'settings',
-                                'action' => 'branches',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'branches' )?'active':'',
-                            ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Company', array(
                                 'controller' => 'settings',

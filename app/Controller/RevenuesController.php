@@ -3608,9 +3608,11 @@ class RevenuesController extends AppController {
         $this->loadModel('City');
         $data_revenue_detail = array();
         $allow_closing = true;
+        $no_data = true;
         $data = $this->request->data;
 
         if(!empty($data)){
+            $no_data = false;
             $data = $this->MkCommon->dataConverter($data, array(
                 'price' => array(
                     'Revenue' => array(
@@ -3629,6 +3631,7 @@ class RevenuesController extends AppController {
             $dataTtuj = $this->MkCommon->filterEmptyField($data, 'Ttuj');
             $ttuj_id = $this->MkCommon->filterEmptyField($data, 'Revenue', 'ttuj_id');
 
+            $data = Common::_callCheckCostCenter($data, 'Revenue');
             $data['Revenue']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             if( $action_type == 'manual' ) {
@@ -3669,7 +3672,7 @@ class RevenuesController extends AppController {
                 $this->request->data['Revenue']['date_revenue'] = '';
             }
         }
-
+        
         $ttuj_id = Common::hashEmptyField($data_local, 'Ttuj.id');
         $ttuj_id = Common::hashEmptyField($data, 'Revenue.ttuj_id', $ttuj_id);
         
@@ -3710,7 +3713,7 @@ class RevenuesController extends AppController {
 
         $toCities = $this->City->getListCities();
         $groupMotors = $this->Ttuj->Revenue->RevenueDetail->GroupMotor->getData('list');
-        $cogs = $this->MkCommon->_callCogsOptGroup('Revenue');
+        $cogs = $this->MkCommon->_callCogsOptGroup('Revenue', null, $no_data);
 
         $this->MkCommon->_layout_file('select');
         $this->set(compact(

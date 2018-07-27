@@ -345,39 +345,6 @@ class RjSettingComponent extends Component {
         return $params;
     }
 
-    function _callBeforeSaveCogsSetting ( $data, $id = false ) {
-        if( !empty($data) ) {
-            $dataSave = array();
-            $dataDetail = $this->MkCommon->filterEmptyField($data, 'CogsSetting');
-
-            if( !empty($dataDetail) ) {
-                $values = array_filter($dataDetail);
-                unset($data['CogsSetting']);
-
-                foreach ($values as $type => $cogs) {
-                    $cogs_id = !empty($cogs['cogs_id'])?$cogs['cogs_id']:false;
-                    $cogs_setting_id = !empty($cogs['id'])?$cogs['id']:false;
-
-                    if( !empty($cogs_id) ) {
-	                    $detail['CogsSetting'] = array(
-	                        'id' => $cogs_setting_id,
-	                        'user_id' => Configure::read('__Site.config_user_id'),
-	                        'cogs_id' => $cogs_id,
-	                        'label' => $type,
-	                    );
-                    	$dataSave[] = $detail;
-	                }
-                }
-            }
-
-            if( !empty($dataSave) ) {
-                $data['CogsSetting'] = $dataSave;
-            }
-        }
-
-        return $data;
-    }
-
     function _callBeforeRenderCogsSetting ( $data, $values ) {
         if( !empty($values) ) {
             foreach ($values as $key => $value) {

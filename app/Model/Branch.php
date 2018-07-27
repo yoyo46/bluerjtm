@@ -72,6 +72,10 @@ class Branch extends AppModel {
             'className' => 'GeneralLedger',
             'foreignKey' => 'branch_id',
         ),
+        'CogsSetting' => array(
+            'className' => 'CogsSetting',
+            'foreignKey' => 'branch_id',
+        ),
     );
 
     function __construct($id = false, $table = null, $ds = null) {
@@ -194,6 +198,14 @@ class Branch extends AppModel {
 
                     $id = $this->id;
                     $this->saveBranchCity($data, false, $id);
+                    
+                    $data = $this->CogsSetting->_callBeforeSaveCogsSetting($data, false, $id);
+                    $dataDetail = Common::hashEmptyField($data, 'CogsSetting');
+
+                    $this->CogsSetting->deleteAll(array(
+                        'CogsSetting.branch_id' => $id,
+                    ));
+                    $this->CogsSetting->saveAll($dataDetail);
 
                     if( !empty($head_office) ) {
                         $this->updateAll( array(
@@ -229,6 +241,13 @@ class Branch extends AppModel {
                 );
             }
         } else if( !empty($value) ) {
+            $cogs = $this->CogsSetting->getData('all', array(
+                'conditions' => array(
+                    'CogsSetting.branch_id' => $id,
+                ),
+            ), array(
+                'branch' => false,
+            ));
             $value = $this->BranchCity->getMerge($value, $id);
 
             if( !empty($value['BranchCity']) ) {
@@ -238,6 +257,18 @@ class Branch extends AppModel {
                 foreach ($branchCities as $key => $branchCity) {
                     $branch_city_id = !empty($branchCity['BranchCity']['branch_city_id'])?$branchCity['BranchCity']['branch_city_id']:false;
                     $value['BranchCity']['branch_city_id'][$key] = $branch_city_id;
+                }
+            }
+
+            if( !empty($cogs) ) {
+                foreach ($cogs as $key => $val) {
+                    $id = Common::hashEmptyField($val, 'CogsSetting.id');
+                    $label = Common::hashEmptyField($val, 'CogsSetting.label');
+                    $cogs_id = Common::hashEmptyField($val, 'CogsSetting.cogs_id');
+
+                    $value['CogsSetting'][$label]['id'] = $id;
+                    $value['CogsSetting'][$label]['label'] = $label;
+                    $value['CogsSetting'][$label]['cogs_id'] = $cogs_id;
                 }
             }
 

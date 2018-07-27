@@ -5553,11 +5553,13 @@ class SettingsController extends AppController {
                 'Coa.code' => 'ASC',
             )
         ));
+        $cogs = $this->User->Cogs->_callOptGroup();
 
         $this->set('active_menu', 'branches');
         $this->set(compact(
             'cities', 'coas', 'branch_cities',
-            'list_coas', 'id', 'branchCoas'
+            'list_coas', 'id', 'branchCoas',
+            'cogs'
         ));
         $this->render('branch_form');
     }
@@ -6215,7 +6217,7 @@ class SettingsController extends AppController {
         ));
 
         $title = __('Cost Center');
-        $this->set('active_menu', 'cogs');
+        $this->set('active_menu', 'cost_centers');
         $this->set('module_title', $title);
         $this->set('sub_module_title', $title);
         $this->set('values', $values);

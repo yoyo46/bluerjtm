@@ -68,7 +68,7 @@ class Cogs extends AppModel {
 
     function getData( $find, $options = false, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:false;
-        $branch = isset($elements['branch'])?$elements['branch']:true;
+        // $branch = isset($elements['branch'])?$elements['branch']:true;
 
         $default_options = array(
             'conditions'=> array(
@@ -83,9 +83,9 @@ class Cogs extends AppModel {
             'fields' => array(),
         );
 
-        if( !empty($branch) ) {
-            $default_options['conditions']['Cogs.branch_id'] = Configure::read('__Site.config_branch_id');
-        }
+        // if( !empty($branch) ) {
+        //     $default_options['conditions']['Cogs.branch_id'] = Configure::read('__Site.config_branch_id');
+        // }
 
         if(!empty($options['conditions'])){
             $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);

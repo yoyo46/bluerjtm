@@ -9,9 +9,9 @@ class CogsSetting extends AppModel {
         )
     );
 
-    function beforeSave( $options = array() ) {
-        $this->data = Hash::insert($this->data, 'CogsSetting.branch_id', Configure::read('__Site.config_branch_id'));
-    }
+    // function beforeSave( $options = array() ) {
+    //     $this->data = Hash::insert($this->data, 'CogsSetting.branch_id', Configure::read('__Site.config_branch_id'));
+    // }
 
 	function getData($find, $options = false, $elements = array()){
         $branch = isset($elements['branch'])?$elements['branch']:true;
@@ -64,6 +64,40 @@ class CogsSetting extends AppModel {
 
             if(!empty($data_merge)){
                 $data = array_merge($data, $data_merge);
+            }
+        }
+
+        return $data;
+    }
+
+    function _callBeforeSaveCogsSetting ( $data, $id = false, $branch_id = null ) {
+        if( !empty($data) ) {
+            $dataSave = array();
+            $dataDetail = Common::hashEmptyField($data, 'CogsSetting');
+
+            if( !empty($dataDetail) ) {
+                $values = array_filter($dataDetail);
+                unset($data['CogsSetting']);
+
+                foreach ($values as $type => $cogs) {
+                    $cogs_id = !empty($cogs['cogs_id'])?$cogs['cogs_id']:false;
+                    $cogs_setting_id = !empty($cogs['id'])?$cogs['id']:false;
+
+                    if( !empty($cogs_id) ) {
+                        $detail['CogsSetting'] = array(
+                            'id' => $cogs_setting_id,
+                            'branch_id' => $branch_id,
+                            'user_id' => Configure::read('__Site.config_user_id'),
+                            'cogs_id' => $cogs_id,
+                            'label' => $type,
+                        );
+                        $dataSave[] = $detail;
+                    }
+                }
+            }
+
+            if( !empty($dataSave) ) {
+                $data['CogsSetting'] = $dataSave;
             }
         }
 
