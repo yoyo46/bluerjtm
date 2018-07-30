@@ -194,6 +194,12 @@ class LeasingsController extends AppController {
             }
 
             $paid_date = (!empty($data['Leasing']['paid_date'])) ? $this->MkCommon->getDate($data['Leasing']['paid_date']) : '';
+            $no_contract = Common::hashEmptyField($data, 'Leasing.no_contract');
+            $vendor_id = Common::hashEmptyField($data, 'Leasing.vendor_id');
+            $total_leasing = Common::hashEmptyField($data, 'Leasing.total_leasing');
+
+            $vendor = $this->Leasing->Vendor->getMerge(array(), $vendor_id);
+            $vendor_name = Common::hashEmptyField($vendor, 'Vendor.name');
 
             $data['Leasing']['id'] = $id;
             $data['Leasing']['paid_date'] = $paid_date;
@@ -204,7 +210,7 @@ class LeasingsController extends AppController {
             $data['Leasing']['installment'] = $this->MkCommon->convertPriceToString($this->MkCommon->filterEmptyField($data, 'Leasing', 'installment'), '');
             $data['Leasing']['installment_rate'] = $this->MkCommon->convertPriceToString($this->MkCommon->filterEmptyField($data, 'Leasing', 'installment_rate'), '');
             $data['Leasing']['denda'] = $this->MkCommon->convertPriceToString($this->MkCommon->filterEmptyField($data, 'Leasing', 'denda'), 0);
-            $data['Leasing']['total_leasing'] = $this->MkCommon->convertPriceToString($this->MkCommon->filterEmptyField($data, 'Leasing', 'total_leasing'), 0);
+            $data['Leasing']['total_leasing'] = $this->MkCommon->convertPriceToString($total_leasing, 0);
 
             $data['Leasing']['total_biaya'] = $data['Leasing']['installment'] + $data['Leasing']['denda'];
             $data['Leasing']['branch_id'] = Configure::read('__Site.config_branch_id');
@@ -295,10 +301,10 @@ class LeasingsController extends AppController {
 
             if ( !empty($leasing_month) ) {
                 for ($i=0; $i < $leasing_month; $i++) { 
-                    $paid_date = date ("Y-m-d", strtotime("+$i month", strtotime($date_first_installment)));
+                    $paid_dt = date ("Y-m-d", strtotime("+$i month", strtotime($date_first_installment)));
                     $dataSave['LeasingInstallment'][] = array(
                         'LeasingInstallment' => array(
-                            'paid_date' => $paid_date,
+                            'paid_date' => $paid_dt,
                             'installment' => $installment,
                         ),
                     );
@@ -325,6 +331,28 @@ class LeasingsController extends AppController {
                         'deep' => true,
                     ));
                     $id = $this->Leasing->id;
+
+                    $coaLeasing = $this->User->Journal->Coa->CoaSettingDetail->getMerge(array(), 'LeasingDebit', 'CoaSettingDetail.label');
+                    $leasing_coa_debit_id = Common::hashEmptyField($coaLeasing, 'CoaSettingDetail.coa_id');
+
+                    $coaLeasing = $this->User->Journal->Coa->CoaSettingDetail->getMerge(array(), 'LeasingCredit', 'CoaSettingDetail.label');
+                    $leasing_coa_credit_id = Common::hashEmptyField($coaLeasing, 'CoaSettingDetail.coa_id');
+
+                    $titleJournal = __('Leasing No #%s kepada Supplier %s', $no_contract, $vendor_name);
+
+                    $this->User->Journal->deleteJournal($id, array(
+                        'leasing',
+                    ));
+                    $this->User->Journal->setJournal($total_leasing, array(
+                        'credit' => $leasing_coa_credit_id,
+                        'debit' => $leasing_coa_debit_id,
+                    ), array(
+                        'date' => $paid_date,
+                        'document_id' => $id,
+                        'title' => $titleJournal,
+                        'document_no' => $no_contract,
+                        'type' => 'leasing',
+                    ));
 
                     if(!empty($data['LeasingDetail']['nopol'])){
                         $dataAsset = array();

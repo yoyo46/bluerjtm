@@ -615,12 +615,12 @@
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
-							echo $this->Form->label('CoaSettingDetail.LeasingInstallment.coa_debit_id', __('Angsuran Pokok'));
+							echo $this->Form->label('CoaSettingDetail.LeasingDebit.coa_id', __('Leasing'));
 					?>
 				</div>
 				<div class="col-sm-4">
 		        	<?php 
-							echo $this->Form->input('CoaSettingDetail.LeasingInstallment.coa_debit_id',array(
+							echo $this->Form->input('CoaSettingDetail.LeasingDebit.coa_id',array(
 								'label'=> false, 
 								'class'=>'form-control chosen-select',
 								'required' => false,
@@ -631,38 +631,7 @@
 				</div>
 				<div class="col-sm-4">
 		        	<?php 
-							echo $this->Form->input('CoaSettingDetail.LeasingInstallment.coa_credit_id',array(
-								'label'=> false, 
-								'class'=>'form-control chosen-select',
-								'required' => false,
-								'empty' => __('Pilih COA'),
-								'options' => $coas,
-							));
-					?>
-				</div>
-			</div>
-        </div>
-        <div class="form-group">
-			<div class="row">
-				<div class="col-sm-4">
-			    	<?php 
-							echo $this->Form->label('CoaSettingDetail.LeasingRate.coa_debit_id', __('Angsuran Bunga'));
-					?>
-				</div>
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->input('CoaSettingDetail.LeasingRate.coa_debit_id',array(
-								'label'=> false, 
-								'class'=>'form-control chosen-select',
-								'required' => false,
-								'empty' => __('Pilih COA'),
-								'options' => $coas,
-							));
-					?>
-				</div>
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->input('CoaSettingDetail.LeasingRate.coa_credit_id',array(
+							echo $this->Form->input('CoaSettingDetail.LeasingCredit.coa_id',array(
 								'label'=> false, 
 								'class'=>'form-control chosen-select',
 								'required' => false,
@@ -677,45 +646,7 @@
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
-							echo $this->Form->label('CoaSettingDetail.LeasingDenda.coa_debit_id', __('Denda'));
-					?>
-				</div>
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->input('CoaSettingDetail.LeasingDenda.coa_debit_id',array(
-								'label'=> false, 
-								'class'=>'form-control chosen-select',
-								'required' => false,
-								'empty' => __('Pilih COA'),
-								'options' => $coas,
-							));
-					?>
-				</div>
-				<div class="col-sm-4">
-		        	<?php 
-							echo $this->Form->input('CoaSettingDetail.LeasingDenda.coa_credit_id',array(
-								'label'=> false, 
-								'class'=>'form-control chosen-select',
-								'required' => false,
-								'empty' => __('Pilih COA'),
-								'options' => $coas,
-							));
-					?>
-				</div>
-			</div>
-        </div>
-    </div>
-</div>
-<div class="box">
-    <div class="box-header">
-        <h3 class="box-title"><?php echo __('Pembayaran Leasing'); ?></h3>
-    </div>
-    <div class="box-body">
-        <div class="form-group">
-			<div class="row">
-				<div class="col-sm-4">
-			    	<?php 
-							echo $this->Form->label('leasing_installment_coa_id', __('Angsuran Pokok'));
+							echo $this->Form->label('leasing_installment_coa_id', __('Pembayaran Angsuran Pokok'));
 					?>
 				</div>
 				<div class="col-sm-4">

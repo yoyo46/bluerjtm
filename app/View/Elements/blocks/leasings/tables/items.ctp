@@ -26,7 +26,15 @@
                     'required' => false,
                     'value' => $nopol,
                 ));
-                echo $this->Form->error('LeasingDetail.'.$idx.'.nopol');
+                
+                $nopolError = $this->Form->error('LeasingDetail.'.$idx.'.nopol');
+
+                if( empty($nopolError) ) {
+                    echo $this->Form->error('LeasingDetail.'.$idx.'.Truck.nopol');
+                } else {
+                    echo $nopolError;
+                }
+
                 echo $hiddenContent;
         ?>
     </td>
