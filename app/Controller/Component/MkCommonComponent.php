@@ -2457,19 +2457,14 @@ class MkCommonComponent extends Component {
     function _callCogsOptGroup($modelName, $dataModel = null, $no_data = false) {
         $data = $this->controller->request->data;
         $cogs = $this->controller->User->Cogs->_callOptGroup();
-        $cogsSetting = $this->controller->User->Cogs->CogsSetting->getData('first', array(
-            'conditions' => array(
-                'CogsSetting.label' => $modelName,
-            ),
-        ));
-        $cogs_id = false;
+        $cogs_id = Configure::read('__Site.Branch.cogs_id');
 
         if( empty($dataModel) ) {
             $dataModel = $modelName;
         }
 
         if( empty($data) || $no_data ) {
-            $cogs_id = $this->controller->request->data[$dataModel]['cogs_id'] = Common::hashEmptyField($cogsSetting, 'CogsSetting.cogs_id');
+            $cogs_id = $this->controller->request->data[$dataModel]['cogs_id'] = $cogs_id;
         }
 
         $this->controller->set(compact(

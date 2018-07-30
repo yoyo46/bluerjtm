@@ -139,12 +139,6 @@ class AppController extends Controller {
 		    	));
 
 		    	if( !empty($branch) ){
-		    		$branch = $this->GroupBranch->Branch->getMergeList($branch, array(
-		    			'contain' => array(
-		    				'CogsSetting',
-	    				),
-	    			));
-
 					$current_branch_plant = $this->MkCommon->filterEmptyField($branch, 'Branch', 'is_plant');
 					$current_branch_code = $this->MkCommon->filterEmptyField($branch, 'Branch', 'code');
 					$current_branch_city_id = $this->MkCommon->filterEmptyField($branch, 'Branch', 'city_id');
@@ -154,12 +148,10 @@ class AppController extends Controller {
 					$branch_cities = $this->GroupBranch->Branch->BranchCity->getMerge($branch, $current_branch_id, 'list');
 					$branch_cities = !empty($branch_cities['BranchCity'])?$branch_cities['BranchCity']:false;
 
-					$cogsSetting = Common::hashEmptyField($branch, 'CogsSetting');
-					
                 	Configure::write('__Site.Branch.code', $current_branch_code);
                 	Configure::write('__Site.Branch.City.Bongkar.id', $branch_cities);
                 	Configure::write('__Site.Branch.City.id', $current_branch_city_id);
-                	Configure::write('__Site.Branch.CogsSetting', Common::_callGenerateCogs($cogsSetting));
+                	Configure::write('__Site.Branch.cogs_id', Common::hashEmptyField($branch, 'Branch.cogs_id'));
 					Configure::write('__Site.config_branch_plant', $current_branch_plant);
 					Configure::write('__Site.config_branch_head_office', $current_branch_head_office);
 					Configure::write('__Site.config_cost_center_readonly', Common::hashEmptyField($branch, 'Branch.is_cost_center_readonly'));

@@ -217,6 +217,9 @@ class LeasingsController extends AppController {
             $truck_collect = array();
             $truck_same = true;
             $thn = $this->MkCommon->customDate($data['Leasing']['paid_date'], 'Y');
+            $installment = 0;
+            $installment_rate = 0;
+            $denda = 0;
 
             if(!empty($data['LeasingDetail']['nopol'])){
                 foreach ($data['LeasingDetail']['nopol'] as $key => $nopol) {
