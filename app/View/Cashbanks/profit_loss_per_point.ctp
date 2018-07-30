@@ -16,7 +16,7 @@
                 'class' => 'string',
             ),
             'expense' => array(
-                'name' => __('Expense'),
+                'name' => __('Biaya Jalan'),
                 'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'expense\',width:100',
                 'align' => 'right',
@@ -26,6 +26,13 @@
                 'name' => __('Maintenance'),
                 'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'maintenance\',width:100',
+                'align' => 'right',
+                'class' => 'string',
+            ),
+            'other' => array(
+                'name' => __('Biaya Lain-lain'),
+                'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'other\',width:100',
                 'align' => 'right',
                 'class' => 'string',
             ),

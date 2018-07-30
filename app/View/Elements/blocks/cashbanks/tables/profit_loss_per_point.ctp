@@ -10,12 +10,13 @@
                 $balance_rev = Common::hashEmptyField($value, 'Cogs.balance_rev');
                 $balance_exp = Common::hashEmptyField($value, 'Cogs.balance_exp');
                 $balance_maintain = Common::hashEmptyField($value, 'Cogs.balance_maintain');
+                $balance_other = Common::hashEmptyField($value, 'Cogs.balance_other');
 
-                $out = $balance_exp + $balance_maintain;
+                $out = $balance_exp + $balance_maintain + $balance_other;
                 $gross_profit = $balance_rev + $out;
                 $er = 0;
 
-                if( !empty($out) ) {
+                if( !empty($balance_rev) ) {
                     $er = $out / $balance_rev;
                 }
             
@@ -46,6 +47,9 @@
                 echo $this->Html->tag('td', Common::getFormatPrice($balance_maintain, 2), array(
                     'style' => 'text-align: right',
                 ));
+                echo $this->Html->tag('td', Common::getFormatPrice($balance_other, 2), array(
+                    'style' => 'text-align: right',
+                ));
                 echo $this->Html->tag('td', Common::getFormatPrice($gross_profit, 2), array(
                     'style' => 'text-align: right',
                 ));
@@ -74,6 +78,9 @@
                     $tmpTr .= $this->Html->tag('td', Common::getFormatPrice($balance_maintain, 2), array(
                         'style' => 'text-align: right;font-weight: bold;',
                     ));
+                    $tmpTr .= $this->Html->tag('td', Common::getFormatPrice($balance_other, 2), array(
+                        'style' => 'text-align: right;font-weight: bold;',
+                    ));
                     $tmpTr .= $this->Html->tag('td', Common::getFormatPrice($gross_profit, 2), array(
                         'style' => 'text-align: right;font-weight: bold;',
                     ));
@@ -89,12 +96,13 @@
                 $balance_rev = Common::hashEmptyField($result, 'total_balance_rev');
                 $balance_exp = Common::hashEmptyField($result, 'total_balance_exp');
                 $balance_maintain = Common::hashEmptyField($result, 'total_balance_maintain');
+                $balance_other = Common::hashEmptyField($result, 'total_balance_other');
 
-                $out = $balance_exp + $balance_maintain;
+                $out = $balance_exp + $balance_maintain + $balance_other;
                 $gross_profit = $balance_rev + $out;
                 $er = 0;
 
-                if( !empty($out) ) {
+                if( !empty($balance_rev) ) {
                     $er = $out / $balance_rev;
                 }
 
@@ -108,6 +116,9 @@
                     'style' => 'text-align: right;font-weight: bold;',
                 ));
                 $tmpTr .= $this->Html->tag('td', Common::getFormatPrice($balance_maintain, 2), array(
+                    'style' => 'text-align: right;font-weight: bold;',
+                ));
+                $tmpTr .= $this->Html->tag('td', Common::getFormatPrice($balance_other, 2), array(
                     'style' => 'text-align: right;font-weight: bold;',
                 ));
                 $tmpTr .= $this->Html->tag('td', Common::getFormatPrice($gross_profit, 2), array(

@@ -137,8 +137,9 @@
 						'empty' => __('Pilih Jenis Transaksi'),
 						'options' => array(
 							'revenue' => __('Revenue'),
-							'expense' => __('Expense'),
+							'expense' => __('Biaya Jalan'),
 							'maintenance' => __('Maintenance'),
+							'other' => __('Biaya Lain-lain'),
 						),
 					)), array(
 						'class' => 'form-group'

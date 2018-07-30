@@ -4973,7 +4973,7 @@ class RmReportComponent extends Component {
             $er = 0;
             $gross_profit = $revenue - $out;
 
-            if( !empty($out) ) {
+            if( !empty($revenue) ) {
                 $er = $out / $revenue;
             }
 
@@ -5085,6 +5085,7 @@ class RmReportComponent extends Component {
 		$summaryRev = Common::hashEmptyField($options, 'summaryRev');
 		$summaryExp = Common::hashEmptyField($options, 'summaryExp');
 		$summaryMaintain = Common::hashEmptyField($options, 'summaryMaintain');
+		$summaryOther = Common::hashEmptyField($options, 'summaryOther');
 
 		if( !empty($data) ) {			
 			foreach ($data as &$value) {
@@ -5097,6 +5098,7 @@ class RmReportComponent extends Component {
 					$total_balance_rev = 0;
 					$total_balance_exp = 0;
 					$total_balance_maintain = 0;
+					$total_balance_other = 0;
 
 					foreach ($children as $key => &$cogs) {
 						$cogs_id = Common::hashEmptyField($cogs, 'Cogs.id');
@@ -5104,6 +5106,7 @@ class RmReportComponent extends Component {
 						$balance_rev = 0;
 						$balance_exp = 0;
 						$balance_maintain = 0;
+						$balance_other = 0;
 
 						if( !empty($child) ) {
 							$child = $this->_callProfitLossPerPointRecursive(array(
@@ -5111,18 +5114,21 @@ class RmReportComponent extends Component {
 					        	'summaryRev' => $summaryRev,
 					        	'summaryExp' => $summaryExp,
 					        	'summaryMaintain' => $summaryMaintain,
+					        	'summaryOther' => $summaryOther,
 					    	));
 
 					    	foreach ($child as $key => $val) {
 								$balance_rev += Common::hashEmptyField($val, 'Cogs.balance_rev');
 								$balance_exp += Common::hashEmptyField($val, 'Cogs.balance_exp');
 								$balance_maintain += Common::hashEmptyField($val, 'Cogs.balance_maintain');
+								$balance_other += Common::hashEmptyField($val, 'Cogs.balance_other');
 					    	}
 
 							$cogs['children'] = $child;
 							$cogs['Cogs']['balance_rev'] = $balance_rev;
 							$cogs['Cogs']['balance_exp'] = $balance_exp;
 							$cogs['Cogs']['balance_maintain'] = $balance_maintain;
+							$cogs['Cogs']['balance_other'] = $balance_other;
 						} else {
 							if( !empty($summaryRev[$cogs_id]) ) {
 								$balance_rev = $summaryRev[$cogs_id];
@@ -5133,25 +5139,32 @@ class RmReportComponent extends Component {
 							if( !empty($summaryMaintain[$cogs_id]) ) {
 								$balance_maintain = $summaryMaintain[$cogs_id];
 							}
+							if( !empty($summaryOther[$cogs_id]) ) {
+								$balance_other = $summaryOther[$cogs_id];
+							}
 
 							$cogs['Cogs']['balance_rev'] = $balance_rev;
 							$cogs['Cogs']['balance_exp'] = $balance_exp;
 							$cogs['Cogs']['balance_maintain'] = $balance_maintain;
+							$cogs['Cogs']['balance_other'] = $balance_other;
 						}
 
 						$total_balance_rev += $balance_rev;
 						$total_balance_exp += $balance_exp;
 						$total_balance_maintain += $balance_maintain;
+						$total_balance_other += $balance_other;
 					}
 
 					$value['children'] = $children;
 					$value['Cogs']['balance_rev'] = $total_balance_rev;
 					$value['Cogs']['balance_exp'] = $total_balance_exp;
 					$value['Cogs']['balance_maintain'] = $total_balance_maintain;
+					$value['Cogs']['balance_other'] = $total_balance_other;
 				} else {
 					$balance_rev = 0;
 					$balance_exp = 0;
 					$balance_maintain = 0;
+					$balance_other = 0;
 
 					if( !empty($summaryRev[$id]) ) {
 						$balance_rev = $summaryRev[$id];
@@ -5162,10 +5175,14 @@ class RmReportComponent extends Component {
 					if( !empty($summaryMaintain[$id]) ) {
 						$balance_maintain = $summaryMaintain[$id];
 					}
+					if( !empty($summaryOther[$id]) ) {
+						$balance_other = $summaryOther[$id];
+					}
 
 					$value['Cogs']['balance_rev'] = $balance_rev;
 					$value['Cogs']['balance_exp'] = $balance_exp;
 					$value['Cogs']['balance_maintain'] = $balance_maintain;
+					$value['Cogs']['balance_other'] = $balance_other;
 				}
 			}
 		}
@@ -5237,22 +5254,33 @@ class RmReportComponent extends Component {
     	);
         $summaryMaintain = $this->controller->User->Journal->find('list', $optionsMaintain);
 
+        $optionsOther = $options;
+        $optionsOther['conditions']['Coa.transaction_category'] = 'other';
+        $optionsOther['fields'] = array(
+        	'Journal.cogs_id',
+        	'Journal.total_debit',
+    	);
+        $summaryOther = $this->controller->User->Journal->find('list', $optionsOther);
+
 		$result = $this->_callProfitLossPerPointRecursive(array(
         	'data' => $data,
         	'summaryRev' => $summaryRev,
         	'summaryExp' => $summaryExp,
         	'summaryMaintain' => $summaryMaintain,
+        	'summaryOther' => $summaryOther,
     	));
 
     	if( !empty($result) ) {
 			$total_balance_rev = 0;
 			$total_balance_exp = 0;
 			$total_balance_maintain = 0;
+			$total_balance_other = 0;
 
     		foreach ($result as $key => $value) {
 				$total_balance_rev += Common::hashEmptyField($value, 'Cogs.balance_rev');
 				$total_balance_exp += Common::hashEmptyField($value, 'Cogs.balance_exp');
 				$total_balance_maintain += Common::hashEmptyField($value, 'Cogs.balance_maintain');
+				$total_balance_other += Common::hashEmptyField($value, 'Cogs.balance_other');
     		}
 
     		$result = array(
@@ -5260,6 +5288,7 @@ class RmReportComponent extends Component {
     			'total_balance_rev' => $total_balance_rev,
     			'total_balance_exp' => $total_balance_exp,
     			'total_balance_maintain' => $total_balance_maintain,
+    			'total_balance_other' => $total_balance_other,
 			);
     	}
 
