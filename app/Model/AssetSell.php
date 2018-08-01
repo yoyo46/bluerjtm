@@ -246,14 +246,20 @@ class AssetSell extends AppModel {
 
             if( !empty($details) ) {
                 foreach ($details as $key => $value) {
+                    $asset_id = $this->filterEmptyField($value, 'AssetSellDetail', 'asset_id');
                     $nilai_perolehan = $this->filterEmptyField($value, 'AssetSellDetail', 'nilai_perolehan');
                     $ak_penyusutan = $this->filterEmptyField($value, 'AssetSellDetail', 'ak_penyusutan');
                     $price = $this->filterEmptyField($value, 'AssetSellDetail', 'price');
                     $grandtotal = $nilai_perolehan - $price - $ak_penyusutan;
 
+                    $asset = $this->AssetSellDetail->Asset->getMerge(array(), $asset_id);
+
+                    $truck_id = $this->filterEmptyField($asset, 'Asset', 'truck_id');
                     $nilai_perolehan_coa_id = $this->filterEmptyField($value, 'AssetSellDetail', 'nilai_perolehan_coa_id');
                     $ak_penyusutan_coa_id = $this->filterEmptyField($value, 'AssetSellDetail', 'ak_penyusutan_coa_id');
                     $price_coa_id = $this->filterEmptyField($value, 'AssetSellDetail', 'price_coa_id');
+
+                    $options['truck_id'] = $truck_id;
 
                     $this->User->Journal->setJournal($nilai_perolehan, array(
                         'credit' => $nilai_perolehan_coa_id,

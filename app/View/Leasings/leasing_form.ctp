@@ -34,7 +34,7 @@
 		        	<?php 
 							echo $this->Form->input('vendor_id',array(
 								'label'=> __('Supplier Leasing *'), 
-								'class'=>'form-control',
+								'class'=>'form-control chosen-select',
 								'required' => false,
 								'empty' => __('Pilih Supplier'),
 								'options' => $leasing_companies

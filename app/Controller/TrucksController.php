@@ -6173,11 +6173,11 @@ class TrucksController extends AppController {
     }
 
     function profit_loss () {
-        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
-        $dateTo = date('Y-m-d');
+        $monthFrom = date('Y-01');
+        $monthTo = date('Y-m');
         $params = $this->MkCommon->_callRefineParams($this->params, array(
-            'dateFrom' => $dateFrom,
-            'dateTo' => $dateTo,
+            'monthFrom' => $monthFrom,
+            'monthTo' => $monthTo,
         ));
 
         $dataReport = $this->RmReport->_callDataProfit_loss_per_truck($params, 30, 0, true);

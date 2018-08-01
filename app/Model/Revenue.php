@@ -532,6 +532,7 @@ class Revenue extends AppModel {
     function _callSetJournal ( $revenue_id, $data ) {
         $this->Journal = ClassRegistry::init('Journal');
 
+        $truck_id = !empty($data['Revenue']['truck_id'])?$data['Revenue']['truck_id']:false;
         $customer_id = !empty($data['Revenue']['customer_id'])?$data['Revenue']['customer_id']:false;
         $total_revenue = !empty($data['Revenue']['total'])?$data['Revenue']['total']:0;
         $date_revenue = !empty($data['Revenue']['date_revenue'])?$data['Revenue']['date_revenue']:false;
@@ -551,6 +552,7 @@ class Revenue extends AppModel {
                 'credit' => 'revenue_coa_credit_id',
                 'debit' => 'revenue_coa_debit_id',
             ), array(
+                'truck_id' => $truck_id,
                 'cogs_id' => $cogs_id,
                 'date' => $date_revenue,
                 'document_id' => $revenue_id,

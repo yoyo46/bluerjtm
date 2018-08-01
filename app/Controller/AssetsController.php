@@ -211,7 +211,7 @@ class AssetsController extends AppController {
                 'PurchaseOrder.id' => $id,
             ),
         ), array(
-            'status' => 'pending',
+            'status' => 'active',
         ));
 
         if( !empty($value) ) {

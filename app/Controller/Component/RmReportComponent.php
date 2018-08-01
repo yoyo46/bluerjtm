@@ -6007,8 +6007,10 @@ class RmReportComponent extends Component {
 		$params = $this->MkCommon->_callRefineParams($params);
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
 
-        $date_from = Common::hashEmptyField($params, 'named.DateFrom');
-        $date_to = Common::hashEmptyField($params, 'named.DateTo');
+		$dateFrom = Common::hashEmptyField($params, 'named.dateFrom');
+		$MonthFrom = Common::hashEmptyField($params, 'named.MonthFrom', $dateFrom);
+		$dateTo = Common::hashEmptyField($params, 'named.dateTo');
+		$MonthTo = Common::hashEmptyField($params, 'named.MonthTo', $dateTo);
 
 		$options = array(
             'conditions' => array(
@@ -6029,8 +6031,26 @@ class RmReportComponent extends Component {
 		$last_id = Common::hashEmptyField($last_data, 'Truck.id');
 
 		if( !empty($data) ) {
-        	$this->controller->Truck->Revenue->virtualFields['total'] = 'SUM(Revenue.total)';
-        	$this->controller->Truck->Ttuj->virtualFields['total'] = 'SUM(Ttuj.uang_jalan_1+Ttuj.uang_jalan_2+Ttuj.uang_jalan_extra+Ttuj.commission+Ttuj.uang_kuli_muat+Ttuj.uang_kuli_bongkar+Ttuj.asdp+Ttuj.uang_kawal+Ttuj.uang_keamanan+Ttuj.commission_extra)';
+
+	        $this->controller->User->Journal->virtualFields['total_debit'] = 'SUM(Journal.debit)';
+	        $this->controller->User->Journal->virtualFields['total_credit'] = 'SUM(Journal.credit)';
+        	// $this->controller->Truck->Revenue->virtualFields['total'] = 'SUM(Revenue.total)';
+        	// $this->controller->Truck->Ttuj->virtualFields['total'] = 'SUM(Ttuj.uang_jalan_1+Ttuj.uang_jalan_2+Ttuj.uang_jalan_extra+Ttuj.commission+Ttuj.uang_kuli_muat+Ttuj.uang_kuli_bongkar+Ttuj.asdp+Ttuj.uang_kawal+Ttuj.uang_keamanan+Ttuj.commission_extra)';
+
+
+	        $optionsCost = $this->controller->User->Journal->getData('paginate', array(
+	            'conditions' => array(
+	                'DATE_FORMAT(Journal.date, \'%Y-%m\') >=' => $MonthFrom,
+	                'DATE_FORMAT(Journal.date, \'%Y-%m\') <=' => $MonthTo,
+	            ),
+	            'contain' => array(
+	            	'Coa',
+	        	),
+	        ));
+	        $revenue_total = 0;
+	        $expense_total = 0;
+	        $maintenance_total = 0;
+	        $other_total = 0;
 
 			foreach ($data as $key => $value) {
 				$id = Common::hashEmptyField($value, 'Truck.id');
@@ -6048,46 +6068,97 @@ class RmReportComponent extends Component {
 		                'TruckCategory',
 		                'TruckBrand',
 		                'Company',
-		                'Revenue' => array(
-		                	'type' => 'first',
-		                	'conditions' => array(
-		                		'Revenue.date_revenue >=' => $date_from,
-		                		'Revenue.date_revenue <=' => $date_to,
-	                		),
-		                	'elements' => array(
-		                		'branch' => false,
-		                		'status' => 'commit',
-	                		),
-	                	),
-		                'Ttuj' => array(
-		                	'type' => 'first',
-		                    'conditions' => array(
-		                        'Ttuj.is_draft' => 0,
-		                		'Ttuj.ttuj_date >=' => $date_from,
-		                		'Ttuj.ttuj_date <=' => $date_to,
-		                    ),
-		                	'elements' => array(
-		                		'branch' => false,
-	                		),
-	                	),
+		                // 'Revenue' => array(
+		                // 	'type' => 'first',
+		                // 	'conditions' => array(
+		                // 		'Revenue.date_revenue >=' => $MonthFrom,
+		                // 		'Revenue.date_revenue <=' => $MonthTo,
+	                	// 	),
+		                // 	'elements' => array(
+		                // 		'branch' => false,
+		                // 		'status' => 'commit',
+	                	// 	),
+	                	// ),
+		                // 'Ttuj' => array(
+		                // 	'type' => 'first',
+		                //     'conditions' => array(
+		                //         'Ttuj.is_draft' => 0,
+		                // 		'Ttuj.ttuj_date >=' => $MonthFrom,
+		                // 		'Ttuj.ttuj_date <=' => $MonthTo,
+		                //     ),
+		                // 	'elements' => array(
+		                // 		'branch' => false,
+	                	// 	),
+	                	// ),
 		            ),
 		        ));
-		        $value = $this->controller->Truck->CashBankDetail->getTotalPerTruck($value, array(
-		        	'conditions' => array(
-                		'CashBank.tgl_cash_bank >=' => $date_from,
-                		'CashBank.tgl_cash_bank <=' => $date_to,
-                		'CashBankDetail.truck_id' => $id,
-	        		),
-	        	));
-		        $revenue_total = Common::hashEmptyField($value, 'Revenue.total', 0);
-		        $ttuj_total = Common::hashEmptyField($value, 'Ttuj.total', 0);
-		        $out_total = Common::hashEmptyField($value, 'CashBankDetail.total', 0);
-		        $expense = $ttuj_total + $out_total;
-		        $er = 0;
+		        // $value = $this->controller->Truck->CashBankDetail->getTotalPerTruck($value, array(
+		        // 	'conditions' => array(
+          //       		'CashBank.tgl_cash_bank >=' => $MonthFrom,
+          //       		'CashBank.tgl_cash_bank <=' => $MonthTo,
+          //       		'CashBankDetail.truck_id' => $id,
+	        	// 	),
+	        	// ));
+		        // $revenue_total = Common::hashEmptyField($value, 'Revenue.total', 0);
+		        // $ttuj_total = Common::hashEmptyField($value, 'Ttuj.total', 0);
+		        // $out_total = Common::hashEmptyField($value, 'CashBankDetail.total', 0);
+		        // $expense = $ttuj_total + $out_total;
+		        // $er = 0;
 
-		        if( !empty($revenue_total) ) {
-		        	$er = $expense/$revenue_total;
-		        }
+		        // if( !empty($revenue_total) ) {
+		        // 	$er = $expense/$revenue_total;
+		        // }
+		        $optionsCostTmp = $optionsCost;
+		        $optionsCostTmp['conditions']['Journal.truck_id'] = $id;
+
+		        $optionsRev = $optionsCostTmp;
+		        $optionsRev['conditions']['Coa.transaction_category'] = 'revenue';
+		        $optionsRev['fields'] = array(
+		        	'Journal.cogs_id',
+		        	'Journal.total_credit',
+		    	);
+		        $summaryRev = $this->controller->User->Journal->find('first', $optionsRev);
+
+		        $optionsExp = $optionsCostTmp;
+		        $optionsExp['conditions']['Coa.transaction_category'] = 'expense';
+		        $optionsExp['fields'] = array(
+		        	'Journal.cogs_id',
+		        	'Journal.total_debit',
+		    	);
+		        $summaryExp = $this->controller->User->Journal->find('first', $optionsExp);
+
+		        $optionsMaintain = $optionsCostTmp;
+		        $optionsMaintain['conditions']['Coa.transaction_category'] = 'maintenance';
+		        $optionsMaintain['fields'] = array(
+		        	'Journal.cogs_id',
+		        	'Journal.total_debit',
+		    	);
+		        $summaryMaintain = $this->controller->User->Journal->find('first', $optionsMaintain);
+
+		        $optionsOther = $optionsCostTmp;
+		        $optionsOther['conditions']['Coa.transaction_category'] = 'other';
+		        $optionsOther['fields'] = array(
+		        	'Journal.cogs_id',
+		        	'Journal.total_debit',
+		    	);
+		        $summaryOther = $this->controller->User->Journal->find('first', $optionsOther);
+
+		        $revenue = Common::hashEmptyField($summaryRev, 'Journal.total_credit', 0);
+	            $expense = Common::hashEmptyField($summaryExp, 'Journal.total_debit', 0);
+	            $maintenance = Common::hashEmptyField($summaryMaintain, 'Journal.total_debit', 0);
+	            $other = Common::hashEmptyField($summaryMaintain, 'Journal.total_debit', 0);
+	            $out = $expense + $maintenance + $other;
+	            $er = 0;
+	            $gross_profit = $revenue - $out;
+
+	            if( !empty($revenue) ) {
+	                $er = $out / $revenue;
+	            }
+
+		        $revenue_total += $revenue;
+		        $expense_total += $expense;
+		        $maintenance_total += $maintenance;
+		        $other_total += $other;
 
 				$result[$key] = array(
 					__('No. ID') => array(
@@ -6136,7 +6207,7 @@ class RmReportComponent extends Component {
             			),
 					),
 					__('Revenue') => array(
-						'text' => Common::getFormatPrice($revenue_total, 2),
+						'text' => Common::getFormatPrice($revenue, 2),
 		                'style' => 'text-align: right;',
 		                'data-options' => 'field:\'revenue\',width:120',
 		                'align' => 'center',
@@ -6144,10 +6215,28 @@ class RmReportComponent extends Component {
                 			'align' => 'right',
             			),
 					),
-					__('Expense') => array(
-						'text' => Common::getFormatPrice($ttuj_total+$out_total, 2),
+					__('Biaya Jalan') => array(
+						'text' => Common::getFormatPrice($expense, 2),
 		                'style' => 'text-align: right;',
 		                'data-options' => 'field:\'expense\',width:120',
+		                'align' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Maintenance') => array(
+						'text' => Common::getFormatPrice($maintenance, 2),
+		                'style' => 'text-align: right;',
+		                'data-options' => 'field:\'maintenance\',width:120',
+		                'align' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Biaya Lain-lain') => array(
+						'text' => Common::getFormatPrice($other, 2),
+		                'style' => 'text-align: right;',
+		                'data-options' => 'field:\'maintenance\',width:120',
 		                'align' => 'center',
                 		'excel' => array(
                 			'align' => 'right',
@@ -6163,7 +6252,7 @@ class RmReportComponent extends Component {
             			),
 					),
 					__('Gross Profit') => array(
-						'text' => Common::getFormatPrice($revenue_total-$expense, 2),
+						'text' => Common::getFormatPrice($gross_profit, 2),
 		                'style' => 'text-align: right;',
 		                'data-options' => 'field:\'gross_profit\',width:120',
 		                'align' => 'center',
@@ -6181,62 +6270,124 @@ class RmReportComponent extends Component {
 				'branch' => false,
 			));
 
-			if( empty($last) ) {
-            	$options = Common::_callUnset($options, array(
-					'group',
-					'limit',
-					'offset',
-				));
+			if( empty($last) && empty($view) ) {
+		        $optionsCostTmp = $optionsCost;
 
-				$revenue = $this->controller->Truck->Revenue->getData('first', array(
-                	'conditions' => array(
-                		'Truck.status' => 1,
-                		'Revenue.date_revenue >=' => $date_from,
-                		'Revenue.date_revenue <=' => $date_to,
-            		),
-            		'contain' => array(
-            			'Truck',
-        			),
-				), array(
-            		'branch' => false,
-            		'status' => 'commit',
-				));
-                $ttuj = $this->controller->Truck->Ttuj->getData('first', array(
-                	'conditions' => array(
-                		'Truck.status' => 1,
-                        'Ttuj.is_draft' => 0,
-                		'Ttuj.ttuj_date >=' => $date_from,
-                		'Ttuj.ttuj_date <=' => $date_to,
-            		),
-            		'contain' => array(
-            			'Truck',
-        			),
-				), array(
-            		'branch' => false,
-				));
-		        $cash_out = $this->controller->Truck->CashBankDetail->getTotalPerTruck(array(), array(
-		        	'conditions' => array(
-                		'Truck.status' => 1,
-                		'CashBank.tgl_cash_bank >=' => $date_from,
-                		'CashBank.tgl_cash_bank <=' => $date_to,
-	        		),
-            		'contain' => array(
-            			'Truck',
-            			'CashBank',
-        			),
-	        	));
+		        $optionsRev = $optionsCostTmp;
+		        $optionsRev['conditions']['Coa.transaction_category'] = 'revenue';
+		        $optionsRev['fields'] = array(
+		        	'Journal.cogs_id',
+		        	'Journal.total_credit',
+		    	);
+		        $summaryRev = $this->controller->User->Journal->find('first', $optionsRev);
 
-				$revenue_total = Common::hashEmptyField($revenue, 'Revenue.total', 0);
-                $ttuj_total = Common::hashEmptyField($ttuj, 'Ttuj.total', 0);
-		        $out_total = Common::hashEmptyField($cash_out, 'CashBankDetail.total', 0);
-		        $expense = $ttuj_total + $out_total;
-		        $er = 0;
+		        $optionsExp = $optionsCostTmp;
+		        $optionsExp['conditions']['Coa.transaction_category'] = 'expense';
+		        $optionsExp['fields'] = array(
+		        	'Journal.cogs_id',
+		        	'Journal.total_debit',
+		    	);
+		        $summaryExp = $this->controller->User->Journal->find('first', $optionsExp);
 
-		        if( !empty($revenue_total) ) {
-		        	$er = $expense/$revenue_total;
-		        }
+		        $optionsMaintain = $optionsCostTmp;
+		        $optionsMaintain['conditions']['Coa.transaction_category'] = 'maintenance';
+		        $optionsMaintain['fields'] = array(
+		        	'Journal.cogs_id',
+		        	'Journal.total_debit',
+		    	);
+		        $summaryMaintain = $this->controller->User->Journal->find('first', $optionsMaintain);
+
+		        $optionsOther = $optionsCostTmp;
+		        $optionsOther['conditions']['Coa.transaction_category'] = 'other';
+		        $optionsOther['fields'] = array(
+		        	'Journal.cogs_id',
+		        	'Journal.total_debit',
+		    	);
+		        $summaryOther = $this->controller->User->Journal->find('first', $optionsOther);
+
+		        $revenue = Common::hashEmptyField($summaryRev, 'Journal.total_credit', 0);
+	            $expense = Common::hashEmptyField($summaryExp, 'Journal.total_debit', 0);
+	            $maintenance = Common::hashEmptyField($summaryMaintain, 'Journal.total_debit', 0);
+	            $other = Common::hashEmptyField($summaryMaintain, 'Journal.total_debit', 0);
+	            $out = $expense + $maintenance + $other;
+	            $er = 0;
+	            $gross_profit = $revenue - $out;
+
+	            if( !empty($revenue) ) {
+	                $er = $out / $revenue;
+	            }
 
 				$key++;
+
+				$result[$key] = array(
+					__('No. ID') => array(
+                		'field_model' => 'Truck.id',
+					),
+					__('Nopol') => array(
+                		'field_model' => 'Truck.nopol',
+					),
+					__('Merek') => array(
+                		'field_model' => 'TruckBrand.name',
+					),
+					__('Jenis') => array(
+                		'field_model' => 'TruckCategory.name',
+					),
+					__('Tahun') => array(
+                		'field_model' => 'Truck.tahun',
+					),
+					__('Alokasi') => array(
+                		'field_model' => 'CustomerNoType.code',
+					),
+					__('Kapasitas') => array(
+						'text' => __('Total'),
+					),
+					__('Revenue') => array(
+						'text' => Common::getFormatPrice($revenue, 2),
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Biaya Jalan') => array(
+						'text' => Common::getFormatPrice($expense, 2),
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Maintenance') => array(
+						'text' => Common::getFormatPrice($maintenance, 2),
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Biaya Lain-lain') => array(
+						'text' => Common::getFormatPrice($other, 2),
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('E/R (%)') => array(
+						'text' => Common::getFormatPrice($er, 2),
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Gross Profit') => array(
+						'text' => Common::getFormatPrice($gross_profit, 2),
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+				);
+			} else {
+				$key++;
+
+	            $out = $expense_total + $maintenance_total + $other_total;
+	            $er = 0;
+	            $gross_profit = $revenue_total - $out;
+
+	            if( !empty($revenue_total) ) {
+	                $er = $out / $revenue_total;
+	            }
 
 				$result[$key] = array(
 					__('No. ID') => array(
@@ -6266,8 +6417,20 @@ class RmReportComponent extends Component {
                 			'align' => 'right',
             			),
 					),
-					__('Expense') => array(
-						'text' => Common::getFormatPrice($ttuj_total+$out_total, 2),
+					__('Biaya Jalan') => array(
+						'text' => Common::getFormatPrice($expense_total, 2),
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Maintenance') => array(
+						'text' => Common::getFormatPrice($maintenance_total, 2),
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Biaya Lain-lain') => array(
+						'text' => Common::getFormatPrice($other_total, 2),
                 		'excel' => array(
                 			'align' => 'right',
             			),
@@ -6279,7 +6442,7 @@ class RmReportComponent extends Component {
             			),
 					),
 					__('Gross Profit') => array(
-						'text' => Common::getFormatPrice($revenue_total-$expense, 2),
+						'text' => Common::getFormatPrice($gross_profit, 2),
                 		'excel' => array(
                 			'align' => 'right',
             			),

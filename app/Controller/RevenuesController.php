@@ -3747,6 +3747,7 @@ class RevenuesController extends AppController {
         if($locale){
             $this->MkCommon->_callAllowClosing($locale, 'Revenue', 'date_revenue');
 
+            $truck_id = $this->MkCommon->filterEmptyField($locale, 'Revenue', 'truck_id');
             $date_revenue = $this->MkCommon->filterEmptyField($locale, 'Revenue', 'date_revenue');
             $no_doc = $this->MkCommon->filterEmptyField($locale, 'Revenue', 'no_doc');
             $customer_id = $this->MkCommon->filterEmptyField($locale, 'Revenue', 'customer_id');
@@ -3775,6 +3776,7 @@ class RevenuesController extends AppController {
                     'credit' => 'revenue_coa_debit_id',
                     'debit' => 'revenue_coa_credit_id',
                 ), array(
+                    'truck_id' => $truck_id,
                     'cogs_id' => $cogs_id,
                     'date' => $date_revenue,
                     'document_id' => $id,
@@ -5153,6 +5155,7 @@ class RevenuesController extends AppController {
                     $date_revenue = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'date_revenue');
                     $customer_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'customer_id');
                     $cogs_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'cogs_id');
+                    $truck_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'truck_id');
 
                     $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'RevenueDetail', 'revenue_id');
                     $revenue = $this->Ttuj->Customer->getMerge($revenue, $customer_id);
@@ -5173,6 +5176,7 @@ class RevenuesController extends AppController {
                         'credit' => 'revenue_coa_credit_id',
                         'debit' => 'revenue_coa_debit_id',
                     ), array(
+                        'truck_id' => $truck_id,
                         'cogs_id' => $cogs_id,
                         'date' => $date_revenue,
                         'document_id' => $revenue_id,
@@ -7506,41 +7510,51 @@ class RevenuesController extends AppController {
                             $titleJournalInv = sprintf(__('Pembayaran biaya %s kepada %s %s'), $paidType, $receiver_type, $receiver_name);
                             $titleJournalInv = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'description', $titleJournalInv);
 
-                            $this->User->Journal->deleteJournal($ttuj_payment_id, array(
-                                'biaya_ttuj_payment',
-                            ));
-                            $this->User->Journal->setJournal($totalPayment, array(
-                                'credit' => $coa_id,
-                                'debit' => 'biaya_ttuj_payment_coa_id',
-                            ), array(
-                                'cogs_id' => $cogs_id,
-                                'date' => $date_payment,
-                                'document_id' => $ttuj_payment_id,
-                                'title' => $titleJournalInv,
-                                'document_no' => $document_no,
-                                'type' => 'biaya_ttuj_payment',
-                            ));
+                            $debit_id = 'biaya_ttuj_payment_coa_id';
+                            $journal_type = 'biaya_ttuj_payment';
                             break;
                         
                         default:
                             $titleJournalInv = sprintf(__('Pembayaran biaya %s'), $paidType);
                             $titleJournalInv = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'description', $titleJournalInv);
 
-                            $this->User->Journal->deleteJournal($ttuj_payment_id, array(
-                                'uang_Jalan_commission_payment',
-                            ));
-                            $this->User->Journal->setJournal($totalPayment, array(
-                                'credit' => $coa_id,
-                                'debit' => 'uang_Jalan_commission_payment_coa_id',
+                            $debit_id = 'uang_Jalan_commission_payment_coa_id';
+                            $journal_type = 'uang_Jalan_commission_payment';
+                            break;
+                    }
+
+                    $this->User->Journal->deleteJournal($ttuj_payment_id, array(
+                        $journal_type,
+                    ));
+                    $this->User->Journal->setJournal($totalPayment, array(
+                        'credit' => $coa_id,
+                    ), array(
+                        'cogs_id' => $cogs_id,
+                        'date' => $date_payment,
+                        'document_id' => $ttuj_payment_id,
+                        'title' => $titleJournalInv,
+                        'document_no' => $document_no,
+                        'type' => $journal_type,
+                    ));
+
+                    if( !empty($dataAmount) ) {
+                        foreach ($dataAmount as $key => $amount) {
+                            $ttuj_id = !empty($this->request->data['TtujPayment']['ttuj_id'][$key])?$this->request->data['TtujPayment']['ttuj_id'][$key]:false;
+                            $amount = !empty($amount)?$this->MkCommon->convertPriceToString($amount, 0):0;
+                            $dataTtuj = $this->Ttuj->getMerge(array(), $ttuj_id);
+                            
+                            $this->User->Journal->setJournal($amount, array(
+                                'debit' => $debit_id,
                             ), array(
+                                'truck_id' => Common::hashEmptyField($dataTtuj, 'Ttuj.truck_id'),
                                 'cogs_id' => $cogs_id,
                                 'date' => $date_payment,
                                 'document_id' => $ttuj_payment_id,
                                 'title' => $titleJournalInv,
                                 'document_no' => $document_no,
-                                'type' => 'uang_Jalan_commission_payment',
+                                'type' => $journal_type,
                             ));
-                            break;
+                        }
                     }
                 }
             }
@@ -7741,17 +7755,8 @@ class RevenuesController extends AppController {
                                         $titleJournalInv = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'description', $titleJournalInv));
                                         $totalPayment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'total_payment');
 
-                                        $this->User->Journal->setJournal($totalPayment, array(
-                                            'credit' => 'biaya_ttuj_payment_coa_id',
-                                            'debit' => $coa_id,
-                                        ), array(
-                                            'cogs_id' => $cogs_id,
-                                            'date' => $date_payment,
-                                            'document_id' => $id,
-                                            'title' => $titleJournalInv,
-                                            'document_no' => $document_no,
-                                            'type' => 'biaya_ttuj_payment_void',
-                                        ));
+                                        $credit_id = 'biaya_ttuj_payment_coa_id';
+                                        $journal_type = 'biaya_ttuj_payment_void';
                                         break;
                                     
                                     default:
@@ -7759,18 +7764,40 @@ class RevenuesController extends AppController {
                                         $titleJournalInv = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'description', $titleJournalInv));
                                         $totalPayment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'total_payment');
 
-                                        $this->User->Journal->setJournal($totalPayment, array(
-                                            'credit' => 'uang_Jalan_commission_payment_coa_id',
-                                            'debit' => $coa_id,
+                                        $credit_id = 'uang_Jalan_commission_payment_coa_id';
+                                        $journal_type = 'uang_Jalan_commission_payment_void';
+                                        break;
+                                }
+
+                                $this->User->Journal->setJournal($totalPayment, array(
+                                    'debit' => $coa_id,
+                                ), array(
+                                    'cogs_id' => $cogs_id,
+                                    'date' => $date_payment,
+                                    'document_id' => $id,
+                                    'title' => $titleJournalInv,
+                                    'document_no' => $document_no,
+                                    'type' => $journal_type,
+                                ));
+
+                                if( !empty($invoice['TtujPaymentDetail']) ) {
+                                    foreach ($invoice['TtujPaymentDetail'] as $key => $ttujPaymentDetail) {
+                                        $ttuj_id = !empty($ttujPaymentDetail['ttuj_id'])?$ttujPaymentDetail['ttuj_id']:false;
+                                        $amount = !empty($ttujPaymentDetail['amount'])?$ttujPaymentDetail['amount']:false;
+                                        $dataTtuj = $this->Ttuj->getMerge(array(), $ttuj_id);
+                                        
+                                        $this->User->Journal->setJournal($amount, array(
+                                            'credit' => $credit_id,
                                         ), array(
+                                            'truck_id' => Common::hashEmptyField($dataTtuj, 'Ttuj.truck_id'),
                                             'cogs_id' => $cogs_id,
                                             'date' => $date_payment,
                                             'document_id' => $id,
                                             'title' => $titleJournalInv,
                                             'document_no' => $document_no,
-                                            'type' => 'uang_Jalan_commission_payment_void',
+                                            'type' => $journal_type,
                                         ));
-                                        break;
+                                    }
                                 }
                             }
                         }

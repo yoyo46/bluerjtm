@@ -3368,6 +3368,10 @@ class SettingsController extends AppController {
             'customers', 'group_motors', 'fromCities',
             'toCities', 'branches'
         ));
+        
+        $this->MkCommon->_layout_file(array(
+            'select',
+        ));
 
         $this->set('active_menu', 'tarif_angkutan');
         $this->render('tarif_angkutan_form');

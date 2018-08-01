@@ -341,6 +341,7 @@ class CashbanksController extends AppController {
                             $value['cash_bank_id'] = $cash_bank_id;
                             $coa_id = $value['coa_id'];
                             $total = $value['total'];
+                            $truck_id = Common::hashEmptyField($value, 'truck_id');
 
                             $this->CashBank->CashBankDetail->create();
                             $this->CashBank->CashBankDetail->set($value);
@@ -368,6 +369,7 @@ class CashbanksController extends AppController {
                                 }
 
                                 $this->User->Journal->setJournal($total, $coaArr, array(
+                                    'truck_id' => $truck_id,
                                     'cogs_id' => $cogs_id,
                                     'document_id' => $cash_bank_id,
                                     'title' => $title,
@@ -780,6 +782,7 @@ class CashbanksController extends AppController {
                 if( !empty($completed) ) {
                     if( !empty($locale['CashBankDetail']) ) {
                         foreach ($locale['CashBankDetail'] as $key => $value) {
+                            $truck_id = $this->MkCommon->filterEmptyField($value, 'CashBankDetail', 'truck_id');
                             $coa_id = $this->MkCommon->filterEmptyField($value, 'CashBankDetail', 'coa_id');
                             $total = $this->MkCommon->filterEmptyField($value, 'CashBankDetail', 'total');
 
@@ -810,6 +813,7 @@ class CashbanksController extends AppController {
                             }
 
                             $this->User->Journal->setJournal($total, $coaArr, array(
+                                'truck_id' => $truck_id,
                                 'cogs_id' => $cogs_id,
                                 'document_id' => $id,
                                 'title' => $title,
@@ -1071,6 +1075,7 @@ class CashbanksController extends AppController {
 
                                         if( !empty($cashbank['CashBankDetail']) ) {
                                             foreach ($cashbank['CashBankDetail'] as $key => $cashBankDetail) {
+                                                $truck_id = $this->MkCommon->filterEmptyField($cashBankDetail, 'CashBankDetail', 'truck_id');
                                                 $coa_id = $this->MkCommon->filterEmptyField($cashBankDetail, 'CashBankDetail', 'coa_id');
                                                 $total = $this->MkCommon->filterEmptyField($cashBankDetail, 'CashBankDetail', 'total');
 
@@ -1095,6 +1100,7 @@ class CashbanksController extends AppController {
                                                 }
 
                                                 $this->User->Journal->setJournal($total, $coaArr, array(
+                                                    'truck_id' => $truck_id,
                                                     'cogs_id' => $cogs_id,
                                                     'document_id' => $id,
                                                     'title' => $title,

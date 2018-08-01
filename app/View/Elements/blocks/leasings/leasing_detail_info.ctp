@@ -111,7 +111,7 @@
                                     echo $this->Form->input('denda',array(
                                         'type' => 'text',
                                         'label'=> false, 
-                                        'class'=>'form-control input_price denda-leasing text-right',
+                                        'class'=>'form-control input_number denda-leasing text-right',
                                         'required' => false,
                                         'error' => false,
                                     ));

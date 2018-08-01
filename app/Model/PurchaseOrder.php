@@ -575,6 +575,7 @@ class PurchaseOrder extends AppModel {
 
         if( !empty($details) ) {
             foreach ($details as $key => $value) {
+                $truck_id = !empty($value['PurchaseOrderAsset']['truck_id'])?$value['PurchaseOrderAsset']['truck_id']:false;
                 $price = !empty($value['PurchaseOrderAsset']['price'])?$value['PurchaseOrderAsset']['price']:false;
                 $coa_id = !empty($value['PurchaseOrderAsset']['coa_id'])?$value['PurchaseOrderAsset']['coa_id']:false;
                 $name = !empty($value['PurchaseOrderAsset']['name'])?$value['PurchaseOrderAsset']['name']:false;
@@ -586,6 +587,7 @@ class PurchaseOrder extends AppModel {
                     'credit' => $hutang_usaha_coa_id,
                     'debit' => $coa_id,
                 ), array(
+                    'truck_id' => $truck_id,
                     'date' => $transaction_date,
                     'document_id' => $id,
                     'title' => $titleJournal,

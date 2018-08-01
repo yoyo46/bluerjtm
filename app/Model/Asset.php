@@ -214,6 +214,7 @@ class Asset extends AppModel {
                     $fieldName => $id
                 )
             ), array(
+                'branch' => false,
                 'status' => $status,
             ));
 

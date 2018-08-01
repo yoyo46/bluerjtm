@@ -338,24 +338,11 @@ class LeasingsController extends AppController {
                     $coaLeasing = $this->User->Journal->Coa->CoaSettingDetail->getMerge(array(), 'LeasingCredit', 'CoaSettingDetail.label');
                     $leasing_coa_credit_id = Common::hashEmptyField($coaLeasing, 'CoaSettingDetail.coa_id');
 
-                    $titleJournal = __('Leasing No #%s kepada Supplier %s', $no_contract, $vendor_name);
-
-                    $this->User->Journal->deleteJournal($id, array(
-                        'leasing',
-                    ));
-                    $this->User->Journal->setJournal($total_leasing, array(
-                        'credit' => $leasing_coa_credit_id,
-                        'debit' => $leasing_coa_debit_id,
-                    ), array(
-                        'date' => $paid_date,
-                        'document_id' => $id,
-                        'title' => $titleJournal,
-                        'document_no' => $no_contract,
-                        'type' => 'leasing',
-                    ));
-
                     if(!empty($data['LeasingDetail']['nopol'])){
                         $dataAsset = array();
+                        $this->User->Journal->deleteJournal($id, array(
+                            'leasing',
+                        ));
 
                         foreach ($data['LeasingDetail']['nopol'] as $key => $nopol) {
                             $priceArr = $this->MkCommon->filterEmptyField($data, 'LeasingDetail', 'price');
@@ -410,6 +397,19 @@ class LeasingsController extends AppController {
                         }
                             
                         $this->Leasing->LeasingDetail->Truck->Asset->saveMany($dataAsset);
+                        $titleJournal = __('Leasing No #%s kepada Supplier %s untuk Truk %s', $no_contract, $vendor_name, $nopol);
+
+                        $this->User->Journal->setJournal($price, array(
+                            'credit' => $leasing_coa_credit_id,
+                            'debit' => $leasing_coa_debit_id,
+                        ), array(
+                            'truck_id' => $truck_id,
+                            'date' => $paid_date,
+                            'document_id' => $id,
+                            'title' => $titleJournal,
+                            'document_no' => $no_contract,
+                            'type' => 'leasing',
+                        ));
                     }
 
                     $this->params['old_data'] = $data_local;
@@ -463,6 +463,8 @@ class LeasingsController extends AppController {
             ),
         ));
 
+        $this->MkCommon->_layout_file('select');
+        
         $this->set('active_menu', 'view_leasing');
         $this->set(compact(
             'leasing_companies', 'trucks', 'data_local',

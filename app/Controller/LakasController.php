@@ -709,6 +709,7 @@ class LakasController extends AppController {
         $totalPayment = 0;
         $date_payment = $this->MkCommon->filterEmptyField($data, 'LakaPayment', 'date_payment');
         $cogs_id = $this->MkCommon->filterEmptyField($data, 'LakaPayment', 'cogs_id');
+        $laka_no = $this->MkCommon->filterEmptyField($data, 'LakaPayment', 'nodoc');
         $data = $this->request->data;
 
         if( !empty($laka_payment_id) ) {
@@ -790,10 +791,9 @@ class LakasController extends AppController {
             if( !$this->LakaPayment->save() ) {
                 $this->Log->logActivity( sprintf(__('Gagal mengubah total pembayaran Surat-surat #%s'), $laka_payment_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $laka_payment_id );
             } else {
-                $laka_no = $this->MkCommon->filterEmptyField($data, 'LakaPayment', 'nodoc');
                 $coa_id = $this->MkCommon->filterEmptyField($data, 'LakaPayment', 'coa_id');
 
-                $titleJournal = sprintf(__('Pembayaran Surat-surat Truk'));
+                $titleJournal = sprintf(__('Pembayaran Laka Truk'));
                 $titleJournal = $this->MkCommon->filterEmptyField($data, 'LakaPayment', 'description', $titleJournal);
 
                 $this->User->Journal->deleteJournal($laka_payment_id, array(
@@ -801,7 +801,6 @@ class LakasController extends AppController {
                 ));
                 $this->User->Journal->setJournal($totalPayment, array(
                     'credit' => $coa_id,
-                    'debit' => 'laka_payment_coa_id',
                 ), array(
                     'cogs_id' => $cogs_id,
                     'date' => $date_payment,
@@ -810,6 +809,31 @@ class LakasController extends AppController {
                     'document_no' => $laka_no,
                     'type' => 'laka_payment',
                 ));
+
+                if( !empty($dataAmount) ) {
+                    foreach ($dataAmount as $key => $amount) {
+                        $laka_id = !empty($data['LakaPaymentDetail']['laka_id'][$key])?$data['LakaPaymentDetail']['laka_id'][$key]:false;
+                        $amount = !empty($amount)?$this->MkCommon->convertPriceToString($amount, 0):0;
+
+                        $value = $this->LakaPayment->LakaPaymentDetail->Laka->getMerge(array(), $laka_id);
+                        $truck_id = $this->MkCommon->filterEmptyField($value, 'Laka', 'truck_id');
+
+                        $titleJournal = __('Pembayaran Laka Truk');
+                        $titleJournal = $this->MkCommon->filterEmptyField($data, 'LakaPayment', 'description', $titleJournal);
+
+                        $this->User->Journal->setJournal($amount, array(
+                            'debit' => 'laka_payment_coa_id',
+                        ), array(
+                            'truck_id' => $truck_id,
+                            'cogs_id' => $cogs_id,
+                            'date' => $date_payment,
+                            'document_id' => $laka_payment_id,
+                            'title' => $titleJournal,
+                            'document_no' => $laka_no,
+                            'type' => 'laka_payment',
+                        ));
+                    }
+                }
             }
         }
 

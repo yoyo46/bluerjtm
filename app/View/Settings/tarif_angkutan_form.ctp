@@ -46,7 +46,7 @@
 				    	<?php 
 								echo $this->Form->input('from_city_id',array(
 									'label'=> __('Dari *'), 
-									'class'=>'form-control',
+									'class'=>'form-control chosen-select',
 									'required' => false,
 									'options' => $fromCities,
 									'empty' => __('pilih kota awal'),
@@ -60,7 +60,7 @@
 				    	<?php 
 								echo $this->Form->input('to_city_id',array(
 									'label'=> __('Tujuan *'), 
-									'class'=>'form-control',
+									'class'=>'form-control chosen-select',
 									'required' => false,
 									'options' => $toCities,
 									'empty' => __('pilih kota tujuan'),
@@ -74,7 +74,7 @@
 		    	<?php 
 						echo $this->Form->input('customer_id',array(
 							'label'=> __('Customer *'), 
-							'class'=>'form-control',
+							'class'=>'form-control chosen-select',
 							'required' => false,
 							'options' => $customers,
 							'empty' => __('pilih customer'),
