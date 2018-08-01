@@ -6243,7 +6243,7 @@ class RmReportComponent extends Component {
             			),
 					),
 					__('E/R (%)') => array(
-						'text' => Common::getFormatPrice($er, 2),
+						'text' => __('%s%%', round($er, 2)),
 		                'style' => 'text-align: right;',
 		                'data-options' => 'field:\'er\',width:120',
 		                'align' => 'center',
@@ -6366,7 +6366,7 @@ class RmReportComponent extends Component {
             			),
 					),
 					__('E/R (%)') => array(
-						'text' => Common::getFormatPrice($er, 2),
+						'text' => __('%s%%', round($er, 2)),
                 		'excel' => array(
                 			'align' => 'center',
             			),
@@ -6436,7 +6436,7 @@ class RmReportComponent extends Component {
             			),
 					),
 					__('E/R (%)') => array(
-						'text' => Common::getFormatPrice($er, 2),
+						'text' => __('%s%%', round($er, 2)),
                 		'excel' => array(
                 			'align' => 'center',
             			),
