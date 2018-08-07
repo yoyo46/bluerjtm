@@ -59,6 +59,10 @@ class Revenue extends AppModel {
             'className' => 'Truck',
             'foreignKey' => 'truck_id',
         ),
+        'Branch' => array(
+            'className' => 'Branch',
+            'foreignKey' => 'branch_id',
+        ),
     );
 
     var $hasMany = array(
@@ -134,6 +138,9 @@ class Revenue extends AppModel {
             }
             if(!empty($options['group'])){
                 $default_options['group'] = $options['group'];
+            }
+            if(!empty($options['offset'])){
+                $default_options['offset'] = $options['offset'];
             }
         } else if( !empty($options) ) {
             $default_options = $options;

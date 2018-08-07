@@ -126,6 +126,9 @@ class RevenueDetail extends AppModel {
             if(!empty($options['limit'])){
                 $default_options['limit'] = $options['limit'];
             }
+            if(!empty($options['offset'])){
+                $default_options['offset'] = $options['offset'];
+            }
         } else if( !empty($options) && empty($is_merge) ) {
             $default_options = $options;
         }

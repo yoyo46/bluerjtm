@@ -5,24 +5,24 @@
             $totalInvoice = 0;
 
             foreach ($values as $key => $value) {
-                $date = $this->Common->filterEmptyField($value, 'Revenue', 'date_revenue');
-                $unit = $this->Common->filterEmptyField($value, 'qty_unit', false, '-');
-                $total = $this->Common->filterEmptyField($value, 'Revenue', 'total');
+                $date = Common::hashEmptyField($value, 'Revenue.date_revenue');
+                $unit = Common::hashEmptyField($value, 'qty_unit', '-');
+                $total = Common::hashEmptyField($value, 'Revenue.total');
 
-                $customer = $this->Common->filterEmptyField($value, 'Customer', 'code');
-                $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
-                $total_qty = $this->Common->filterEmptyField($value, 'Ttuj', 'total_qty', '-');
-                $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
+                $customer = Common::hashEmptyField($value, 'Customer.code');
+                $no_ttuj = Common::hashEmptyField($value, 'Ttuj.no_ttuj');
+                $total_qty = Common::hashEmptyField($value, 'Ttuj.total_qty', '-');
+                $branch = Common::hashEmptyField($value, 'Branch.code');
 
                 $no_invoices = Set::extract('/Invoice/Invoice/no_invoice', $value);
                 $no_invoice = !empty($no_invoices)?implode(', ', $no_invoices):false;
 
-                $from_city_name = $this->Common->filterEmptyField($value, 'FromCity', 'name');
-                $to_city_name = $this->Common->filterEmptyField($value, 'ToCity', 'name');
+                $from_city_name = Common::hashEmptyField($value, 'FromCity.name');
+                $to_city_name = Common::hashEmptyField($value, 'ToCity.name');
                 
-                $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
-                $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol', $nopol);
-                $nopol = $this->Common->filterEmptyField($value, 'Revenue', 'nopol', $nopol);
+                $nopol = Common::hashEmptyField($value, 'Truck.nopol');
+                $nopol = Common::hashEmptyField($value, 'Ttuj.nopol', $nopol);
+                $nopol = Common::hashEmptyField($value, 'Revenue.nopol', $nopol);
 
                 $status = $this->Revenue->_callStatus($value, 'Ttuj', 'nodoc');
                 $customTotal = $this->Common->getFormatPrice($total);

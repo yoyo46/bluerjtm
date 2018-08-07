@@ -831,5 +831,53 @@ class RjRevenueComponent extends Component {
             'action' => 'invoice_payments'
         ));
 	}
+
+    function _callBeforeViewRevenuePeriod( $params ) {
+        $dateFrom = Common::hashEmptyField($params, 'named.dateFrom');
+        $dateTo = Common::hashEmptyField($params, 'named.dateTo');
+        $title = __('Laporan Detail Revenue per Priode');
+        $period_text = false;
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $period_text = __('Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
+        }
+        
+        $cities = $this->controller->City->getListCities();
+        $customers = $this->controller->Ttuj->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('active_menu', $title);
+        $this->controller->set(compact(
+            'period_text', 'cities', 'customers'
+        ));
+    }
+
+    function _callBeforeViewRevenueDetail( $params ) {
+        $dateFrom = Common::hashEmptyField($params, 'named.dateFrom');
+        $dateTo = Common::hashEmptyField($params, 'named.dateTo');
+        $title = __('Laporan Detail Revenue');
+        $period_text = false;
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $period_text = __('Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
+        }
+        
+        $cities = $this->controller->City->getListCities();
+        $customers = $this->controller->Ttuj->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+
+        $this->controller->set('sub_module_title', $title);
+        $this->controller->set('active_menu', $title);
+        $this->controller->set(compact(
+            'period_text', 'cities', 'customers'
+        ));
+    }
 }
 ?>

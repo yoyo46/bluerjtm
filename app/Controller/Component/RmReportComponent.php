@@ -6817,6 +6817,824 @@ class RmReportComponent extends Component {
 		);
 	}
 
+	function _callDataRevenue_period ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('ViewRevenueQty');
+		$this->controller->loadModel('Ttuj');
+		$this->controller->loadModel('City');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+
+		$options = array(
+			'contain' => array(
+				'ViewTtujQty',
+			),
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+		$options = $this->controller->ViewRevenueQty->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'ViewRevenueQty', $options );
+        $options = $this->controller->ViewRevenueQty->getData('paginate', $options, true, array(
+            'branch' => false,
+        ));
+
+		$this->controller->paginate	= $options;
+		$data = $this->controller->paginate('ViewRevenueQty');
+		$result = array();
+
+        App::import('Helper', 'Html');
+        $this->Html = new HtmlHelper(new View(null));
+
+		if( !empty($data) ) {
+			$total_qty_unit = 0;
+			$total_qty = 0;
+			$grandtotal = 0;
+
+			foreach ($data as $key => $value) {
+                $id = Common::hashEmptyField($value, 'ViewRevenueQty.id');
+                $ttuj_id = Common::hashEmptyField($value, 'ViewRevenueQty.ttuj_id');
+                $branch_id = Common::hashEmptyField($value, 'ViewRevenueQty.branch_id');
+                
+                $customer_id = Common::hashEmptyField($value, 'ViewTtujQty.customer_id');
+                $customer_id = Common::hashEmptyField($value, 'ViewRevenueQty.customer_id', $customer_id);
+                $truck_id = Common::hashEmptyField($value, 'ViewTtujQty.truck_id');
+                $truck_id = Common::hashEmptyField($value, 'ViewRevenueQty.truck_id', $truck_id);
+
+                $from_city_id = Common::hashEmptyField($value, 'ViewTtujQty.from_city_id');
+                $to_city_id = Common::hashEmptyField($value, 'ViewTtujQty.to_city_id');
+                $from_city_id = Common::hashEmptyField($value, 'ViewRevenueQty.from_city_id', $from_city_id);
+                $to_city_id = Common::hashEmptyField($value, 'ViewRevenueQty.to_city_id', $to_city_id);
+
+                $value = $this->controller->ViewRevenueQty->Branch->getMerge($value, $branch_id);
+                $value = $this->controller->ViewRevenueQty->Truck->getMerge($value, $truck_id);
+
+                $invoice_id = $this->controller->Ttuj->Revenue->RevenueDetail->getData('list', array(
+                    'conditions' => array(
+                        'RevenueDetail.revenue_id' => $id,
+                        'RevenueDetail.status' => 1,
+                    ),
+                    'fields' => array(
+                        'RevenueDetail.invoice_id', 'RevenueDetail.invoice_id',
+                    ),
+                    'group' => array(
+                        'RevenueDetail.revenue_id',
+                        'RevenueDetail.invoice_id',
+                    ),
+                ), array(
+                    'branch' => false,
+                ));
+
+                $value = $this->controller->Ttuj->Customer->getMerge($value, $customer_id);
+                $value = $this->controller->Ttuj->Revenue->RevenueDetail->Invoice->getMerge($value, $invoice_id, 'all');
+                
+                $value = $this->controller->City->getMerge($value, $from_city_id, 'FromCity');
+                $value = $this->controller->City->getMerge($value, $to_city_id, 'ToCity');
+                
+                $nopol = Common::hashEmptyField($value, 'Truck.nopol');
+                $nopol = Common::hashEmptyField($value, 'ViewTtujQty.nopol', $nopol);
+                $nopol = Common::hashEmptyField($value, 'ViewRevenueQty.nopol', $nopol);
+                $total = Common::hashEmptyField($value, 'ViewRevenueQty.total');
+
+                $qty = Common::hashEmptyField($value, 'ViewTtujQty.qty');
+                $qty_unit = Common::hashEmptyField($value, 'ViewRevenueQty.qty_unit');
+
+                $no_invoices = Set::extract('/Invoice/Invoice/no_invoice', $value);
+                $no_invoice = !empty($no_invoices)?implode(', ', $no_invoices):'-';
+				
+				$total_qty_unit += $qty_unit;
+				$total_qty += $qty;
+				$grandtotal += $total;
+
+				$result[$key] = array(
+					__('Tgl') => array(
+						'text' => Common::hashEmptyField($value, 'ViewRevenueQty.date_revenue', null, array(
+		                	'date' => 'd M Y',
+		            	)),
+                		'field_model' => 'ViewRevenueQty.date_revenue',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'date_revenue\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Cabang') => array(
+						'text' => Common::hashEmptyField($value, 'Branch.code'),
+                		'field_model' => 'Branch.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'branch\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Customer') => array(
+						'text' => Common::hashEmptyField($value, 'Customer.code'),
+                		'field_model' => 'CustomerNoType.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'customer\',width:120',
+		                'align' => 'left',
+                		'fix_column' => true,
+					),
+					__('No TTUJ') => array(
+						'text' => Common::hashEmptyField($value, 'ViewTtujQty.no_ttuj'),
+                		'field_model' => 'ViewTtujQty.no_ttuj',
+		                'data-options' => 'field:\'no_ttuj\',width:100',
+		                'align' => 'left',
+					),
+					__('Nopol') => array(
+						'text' => $nopol,
+                		'field_model' => 'ViewRevenueQty.nopol',
+		                'data-options' => 'field:\'nopol\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Dari') => array(
+						'text' => Common::hashEmptyField($value, 'FromCity.name'),
+		                'data-options' => 'field:\'from_city\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'center',
+					),
+					__('Tujuan') => array(
+						'text' => Common::hashEmptyField($value, 'ToCity.name'),
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'to_city\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'center',
+					),
+					__('Qty TTUJ') => array(
+						'text' => !empty($qty)?$qty:'-',
+		                'data-options' => 'field:\'total_qty\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Jumlah Unit') => array(
+						'text' => !empty($qty_unit)?$qty_unit:'-',
+		                'data-options' => 'field:\'qty_unit\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Total') => array(
+						'text' => Common::getFormatPrice($total),
+		                'data-options' => 'field:\'total\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+					),
+					__('No Invoice') => array(
+						'text' => $no_invoice,
+		                'data-options' => 'field:\'no_invoice\',width:100',
+		                'align' => 'left',
+					),
+					__('Status') => array(
+						'text' => Common::_callStatusRevenue($value, 'ViewRevenueQty'),
+                		'field_model' => 'Revenue.transaction_status',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+		                'data-options' => 'field:\'transaction_status\',width:100',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+				);
+			}
+
+			$key++;
+
+			if( !empty($view) ) {
+				$result[$key] = array(
+					__('Tgl') => array(
+                		'field_model' => 'ViewRevenueQty.date_revenue',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'date_revenue\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Cabang') => array(
+                		'field_model' => 'Branch.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'branch\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Customer') => array(
+                		'field_model' => 'CustomerNoType.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'customer\',width:120',
+		                'align' => 'left',
+                		'fix_column' => true,
+					),
+					__('No TTUJ') => array(
+                		'field_model' => 'ViewTtujQty.no_ttuj',
+		                'data-options' => 'field:\'no_ttuj\',width:100',
+		                'align' => 'left',
+					),
+					__('Nopol') => array(
+                		'field_model' => 'ViewRevenueQty.nopol',
+		                'data-options' => 'field:\'nopol\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Dari') => array(
+		                'data-options' => 'field:\'from_city\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'center',
+					),
+					__('Tujuan') => array(
+						'text' => $this->Html->tag('strong', __('Total')),
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'to_city\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'center',
+					),
+					__('Qty TTUJ') => array(
+						'text' => $this->Html->tag('strong', $total_qty),
+		                'data-options' => 'field:\'total_qty\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Jumlah Unit') => array(
+						'text' => $this->Html->tag('strong', $total_qty_unit),
+		                'data-options' => 'field:\'qty_unit\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Total') => array(
+						'text' => $this->Html->tag('strong', Common::getFormatPrice($grandtotal)),
+		                'data-options' => 'field:\'total\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+					),
+					__('No Invoice') => array(
+		                'data-options' => 'field:\'no_invoice\',width:100',
+		                'align' => 'left',
+					),
+					__('Status') => array(
+                		'field_model' => 'ViewRevenueQty.transaction_status',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+		                'data-options' => 'field:\'transaction_status\',width:100',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+				);
+			} else {
+				$last = $this->controller->ViewRevenueQty->getData('first', array_merge($options, array(
+					'offset' => $offset+$limit,
+					'limit' => $limit,
+				)));
+
+				if( empty($last) ) {
+	            	$options = Common::_callUnset($options, array(
+						'group',
+						'limit',
+						'offset',
+					));
+
+	        		$this->controller->ViewRevenueQty->virtualFields['total_qty'] = 'SUM(IFNULL(ViewTtujQty.qty, 0))';
+	        		$this->controller->ViewRevenueQty->virtualFields['total_qty_unit'] = 'SUM(IFNULL(ViewRevenueQty.qty_unit, 0))';
+	        		$this->controller->ViewRevenueQty->virtualFields['grandtotal'] = 'SUM(IFNULL(ViewRevenueQty.total, 0))';
+
+					$value = $this->controller->ViewRevenueQty->getData('first', $options);
+					unset($this->controller->ViewRevenueQty->virtualFields);
+
+	                $total_qty = Common::hashEmptyField($value, 'ViewRevenueQty.total_qty');
+	                $total_qty_unit = Common::hashEmptyField($value, 'ViewRevenueQty.total_qty_unit');
+	                $grandtotal = Common::hashEmptyField($value, 'ViewRevenueQty.grandtotal');
+
+					$result[$key] = array(
+					__('Tgl') => array(
+                		'field_model' => 'ViewRevenueQty.date_revenue',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'date_revenue\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Cabang') => array(
+                		'field_model' => 'Branch.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'branch\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Customer') => array(
+                		'field_model' => 'CustomerNoType.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'customer\',width:120',
+		                'align' => 'left',
+                		'fix_column' => true,
+					),
+					__('No TTUJ') => array(
+                		'field_model' => 'Ttuj.no_ttuj',
+		                'data-options' => 'field:\'no_ttuj\',width:100',
+		                'align' => 'left',
+					),
+					__('Nopol') => array(
+                		'field_model' => 'ViewRevenueQty.nopol',
+		                'data-options' => 'field:\'nopol\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Dari') => array(
+		                'data-options' => 'field:\'from_city\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'center',
+					),
+					__('Tujuan') => array(
+						'text' => __('Total'),
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'to_city\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'center',
+					),
+					__('Qty TTUJ') => array(
+						'text' => $total_qty,
+		                'data-options' => 'field:\'total_qty\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Jumlah Unit') => array(
+						'text' => $total_qty_unit,
+		                'data-options' => 'field:\'qty_unit\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Total') => array(
+						'text' => Common::getFormatPrice($grandtotal),
+		                'data-options' => 'field:\'total\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+					),
+					__('No Invoice') => array(
+		                'data-options' => 'field:\'no_invoice\',width:100',
+		                'align' => 'left',
+					),
+					__('Status') => array(
+                		'field_model' => 'ViewRevenueQty.transaction_status',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+		                'data-options' => 'field:\'transaction_status\',width:100',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					);
+				}
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'model' => 'ViewRevenueQty',
+		);
+	}
+
+	function _callDataRevenue_detail ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('RevenueDetail');
+		$this->controller->loadModel('City');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+
+		$options = array(
+            'conditions' => array(
+                'RevenueDetail.status' => 1,
+            ),
+            'contain' => array(
+                'Revenue',
+            ),
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+		$options = $this->controller->RevenueDetail->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'Revenue', $options );
+        $options = $this->controller->RevenueDetail->Revenue->getData('paginate', $options, true, array(
+            'branch' => false,
+        ));
+
+		$this->controller->paginate	= $options;
+		$data = $this->controller->paginate('RevenueDetail');
+		$result = array();
+
+        App::import('Helper', 'Html');
+        $this->Html = new HtmlHelper(new View(null));
+
+		if( !empty($data) ) {
+            $totalUnit = 0;
+            $totalInvoice = 0;
+
+			foreach ($data as $key => $value) {
+                $id = Common::hashEmptyField($value, 'Revenue.id');
+                $ttuj_id = Common::hashEmptyField($value, 'Revenue.ttuj_id');
+                $invoice_id = Common::hashEmptyField($value, 'RevenueDetail.invoice_id');
+                $branch_id = Common::hashEmptyField($value, 'Revenue.branch_id');
+
+                $is_charge = Common::hashEmptyField($value, 'RevenueDetail.is_charge');
+                $total_price_unit = Common::hashEmptyField($value, 'RevenueDetail.total_price_unit');
+                $price_unit = Common::hashEmptyField($value, 'RevenueDetail.price_unit');
+                $unit = Common::hashEmptyField($value, 'RevenueDetail.qty_unit');
+                
+                $value = $this->controller->RevenueDetail->Revenue->Ttuj->getMerge($value, $ttuj_id);
+                $value = $this->controller->RevenueDetail->Revenue->Branch->getMerge($value, $branch_id);
+
+                $customer_id = Common::hashEmptyField($value, 'Ttuj.customer_id');
+                $customer_id = Common::hashEmptyField($value, 'Revenue.customer_id', $customer_id);
+
+                $from_city_id = Common::hashEmptyField($value, 'Ttuj.from_city_id');
+                $from_city_id = Common::hashEmptyField($value, 'Revenue.from_city_id', $from_city_id);
+                
+                $to_city_id = Common::hashEmptyField($value, 'Ttuj.to_city_id');
+                $city_id = Common::hashEmptyField($value, 'RevenueDetail.city_id', $to_city_id);
+
+                $value = $this->controller->RevenueDetail->Revenue->Ttuj->Customer->getMerge($value, $customer_id);
+                $value = $this->controller->RevenueDetail->Invoice->getMerge($value, $invoice_id);
+                $value = $this->controller->City->getMerge($value, $city_id, 'ToCity');
+                $value = $this->controller->City->getMerge($value, $from_city_id, 'FromCity');
+
+                $truck_id = Common::hashEmptyField($value, 'Ttuj.truck_id');
+                $truck_id = Common::hashEmptyField($value, 'Revenue.truck_id', $truck_id);
+                $value = $this->controller->RevenueDetail->Revenue->Truck->getMerge($value, $truck_id);
+                
+                $nopol = Common::hashEmptyField($value, 'Truck.nopol');
+                $nopol = Common::hashEmptyField($value, 'Ttuj.nopol', $nopol);
+                $nopol = Common::hashEmptyField($value, 'Revenue.nopol', $nopol);
+
+                $no_invoices = Set::extract('/Invoice/Invoice/no_invoice', $value);
+                $no_invoice = !empty($no_invoices)?implode(', ', $no_invoices):'-';
+
+                if( !empty($is_charge) ) {
+                    $totalPriceFormat = !empty($total_price_unit)?Common::getFormatPrice($total_price_unit):'-';
+                    $customPrice = !empty($price_unit)?Common::getFormatPrice($price_unit, false):'-';
+                } else {
+                    $total_price_unit = 0;
+                    $customPrice = '';
+                }
+
+                $totalUnit += $unit;
+                $totalInvoice += $total_price_unit;
+
+				$result[$key] = array(
+					__('Tgl') => array(
+						'text' => Common::hashEmptyField($value, 'Revenue.date_revenue', null, array(
+		                	'date' => 'd M Y',
+		            	)),
+                		'field_model' => 'Revenue.date_revenue',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'date_revenue\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Cabang') => array(
+						'text' => Common::hashEmptyField($value, 'Branch.code'),
+                		'field_model' => 'Branch.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'branch\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Customer') => array(
+						'text' => Common::hashEmptyField($value, 'Customer.code'),
+                		'field_model' => 'CustomerNoType.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'customer\',width:120',
+		                'align' => 'left',
+                		'fix_column' => true,
+					),
+					__('No TTUJ') => array(
+						'text' => Common::hashEmptyField($value, 'Ttuj.no_ttuj'),
+                		'field_model' => 'Ttuj.no_ttuj',
+		                'data-options' => 'field:\'no_ttuj\',width:100',
+		                'align' => 'left',
+					),
+					__('Nopol') => array(
+						'text' => $nopol,
+                		'field_model' => 'Revenue.nopol',
+		                'data-options' => 'field:\'nopol\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Dari') => array(
+						'text' => Common::hashEmptyField($value, 'FromCity.name'),
+		                'data-options' => 'field:\'from_city\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'center',
+					),
+					__('Tujuan') => array(
+						'text' => Common::hashEmptyField($value, 'ToCity.name'),
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'to_city\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'center',
+					),
+					__('Jumlah Unit') => array(
+						'text' => !empty($unit)?$unit:'-',
+		                'data-options' => 'field:\'qty_unit\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Harga Unit') => array(
+						'text' => $customPrice,
+		                'data-options' => 'field:\'price\',width:120',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Total') => array(
+						'text' => $totalPriceFormat,
+		                'data-options' => 'field:\'total\',width:120',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('No Invoice') => array(
+						'text' => $no_invoice,
+		                'data-options' => 'field:\'no_invoice\',width:120',
+		                'align' => 'left',
+					),
+					__('Status') => array(
+						'text' => Common::_callStatusRevenue($value),
+                		'field_model' => 'Revenue.transaction_status',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+		                'data-options' => 'field:\'transaction_status\',width:100',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+				);
+			}
+
+			$key++;
+
+			if( !empty($view) ) {
+				$result[$key] = array(
+					__('Tgl') => array(
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'date_revenue\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Cabang') => array(
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'branch\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Customer') => array(
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'customer\',width:120',
+		                'align' => 'left',
+					),
+					__('No TTUJ') => array(
+		                'data-options' => 'field:\'no_ttuj\',width:100',
+		                'align' => 'left',
+					),
+					__('Nopol') => array(
+		                'data-options' => 'field:\'nopol\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Dari') => array(
+		                'data-options' => 'field:\'from_city\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'center',
+					),
+					__('Tujuan') => array(
+						'text' => $this->Html->tag('strong', __('Total')),
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'to_city\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'center',
+					),
+					__('Jumlah Unit') => array(
+						'text' => $this->Html->tag('strong', $totalUnit),
+		                'data-options' => 'field:\'qty_unit\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Harga Unit') => array(
+		                'data-options' => 'field:\'price\',width:120',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Total') => array(
+						'text' => $this->Html->tag('strong', Common::getFormatPrice($totalInvoice)),
+		                'data-options' => 'field:\'total\',width:120',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('No Invoice') => array(
+		                'data-options' => 'field:\'no_invoice\',width:120',
+		                'align' => 'left',
+					),
+					__('Status') => array(
+		                'align' => 'center',
+		                'mainalign' => 'center',
+		                'data-options' => 'field:\'transaction_status\',width:100',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+				);
+			} else {
+				$last = $this->controller->RevenueDetail->getData('first', array_merge($options, array(
+					'offset' => $offset+$limit,
+					'limit' => $limit,
+				)));
+
+				if( empty($last) ) {
+	            	$options = Common::_callUnset($options, array(
+						'group',
+						'limit',
+						'offset',
+					));
+
+	        		$this->controller->RevenueDetail->virtualFields['total_qty_unit'] = 'SUM(IFNULL(RevenueDetail.qty_unit, 0))';
+	        		$this->controller->RevenueDetail->virtualFields['grandtotal_price_unit'] = 'SUM(IFNULL(RevenueDetail.total_price_unit, 0))';
+
+					$value = $this->controller->RevenueDetail->getData('first', $options);
+
+					$total_unit = Common::hashEmptyField($value, 'RevenueDetail.total_qty_unit');
+	                $grandtotal = Common::hashEmptyField($value, 'RevenueDetail.grandtotal_price_unit');
+
+					$result[$key] = array(
+						__('Tgl') => array(
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'date_revenue\',width:100',
+			                'align' => 'center',
+			                'mainalign' => 'center',
+	                		'excel' => array(
+	                			'align' => 'center',
+	            			),
+						),
+						__('Cabang') => array(
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'branch\',width:100',
+			                'align' => 'center',
+			                'mainalign' => 'center',
+	                		'excel' => array(
+	                			'align' => 'center',
+	            			),
+						),
+						__('Customer') => array(
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'customer\',width:120',
+			                'align' => 'left',
+						),
+						__('No TTUJ') => array(
+			                'data-options' => 'field:\'no_ttuj\',width:100',
+			                'align' => 'left',
+						),
+						__('Nopol') => array(
+			                'data-options' => 'field:\'nopol\',width:100',
+			                'align' => 'center',
+			                'mainalign' => 'center',
+	                		'excel' => array(
+	                			'align' => 'center',
+	            			),
+						),
+						__('Dari') => array(
+			                'data-options' => 'field:\'from_city\',width:100',
+			                'align' => 'left',
+			                'mainalign' => 'center',
+						),
+						__('Tujuan') => array(
+							'text' => __('Total'),
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'to_city\',width:100',
+			                'align' => 'left',
+			                'mainalign' => 'center',
+						),
+						__('Jumlah Unit') => array(
+							'text' => Common::getFormatPrice($total_unit),
+			                'data-options' => 'field:\'qty_unit\',width:80',
+			                'align' => 'center',
+			                'mainalign' => 'center',
+	                		'excel' => array(
+	                			'align' => 'center',
+	            			),
+						),
+						__('Harga Unit') => array(
+			                'data-options' => 'field:\'price\',width:120',
+			                'align' => 'right',
+			                'mainalign' => 'center',
+	                		'excel' => array(
+	                			'align' => 'right',
+	            			),
+						),
+						__('Total') => array(
+							'text' => Common::getFormatPrice($grandtotal),
+			                'data-options' => 'field:\'total\',width:120',
+			                'align' => 'right',
+			                'mainalign' => 'center',
+	                		'excel' => array(
+	                			'align' => 'right',
+	            			),
+						),
+						__('No Invoice') => array(
+			                'data-options' => 'field:\'no_invoice\',width:120',
+			                'align' => 'left',
+						),
+						__('Status') => array(
+			                'align' => 'center',
+			                'mainalign' => 'center',
+			                'data-options' => 'field:\'transaction_status\',width:100',
+	                		'excel' => array(
+	                			'align' => 'center',
+	            			),
+						),
+					);
+				}
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'model' => 'RevenueDetail',
+		);
+	}
+
 	function _callProcess( $modelName, $id, $value, $data ) {
 		$dataSave = false;
 		$file = false;

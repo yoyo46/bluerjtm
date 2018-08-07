@@ -857,4 +857,26 @@ class Common {
 
         return $data;
     }
+
+    public static function _callStatusRevenue ( $value, $modelName = 'Revenue' ) {
+        $result = false;
+        $status = Common::hashEmptyField($value, $modelName.'.transaction_status');
+
+        switch ($status) {
+            case 'unposting':
+                $result = __('Unposting');
+                break;
+            case 'posting':
+                $result = __('Posting');
+                break;
+            case 'invoiced':
+                $result = __('Invoiced');
+                break;
+            case 'half_invoiced':
+                $result = __('Posting');
+                break;
+        }
+
+        return $result;
+    }
 }
