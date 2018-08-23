@@ -2107,7 +2107,9 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                         });
                     }
                     
-                    popup_checkbox();
+                    if( type_action != 'browse-invoice' && type_action != 'browse-cash-banks' && type_action != 'browse-check-docs' && type_action == 'getTtujCustomerInfo' && type_action == 'getTtujCustomerInfoKsu' ) {
+                        popup_checkbox();
+                    }
 
                     return false;
                 },

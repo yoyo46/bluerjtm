@@ -72,18 +72,24 @@ class LeasingPaymentDetail extends AppModel {
     );
 
     function validateMax ( $data, $fieldName ) {
-        if( $fieldName == 'installment_rate' ) {
-            $default = !empty($this->data['Leasing'][$fieldName])?$this->data['Leasing'][$fieldName]:0;
-        } else {
-            $default = !empty($this->data['LeasingInstallment'][$fieldName])?$this->data['LeasingInstallment'][$fieldName]:0;
-        }
-        
-        $paid = !empty($this->data['LeasingPaymentDetail'][$fieldName])?$this->data['LeasingPaymentDetail'][$fieldName]:0;
+        $type = Common::hashEmptyField($this->LeasingPayment->data, 'LeasingPayment.type');
 
-        if( $paid > $default ) {
-            return false;
-        } else {
+        if( $type == 'dp' ) {
             return true;
+        } else {
+            if( $fieldName == 'installment_rate' ) {
+                $default = !empty($this->data['Leasing'][$fieldName])?$this->data['Leasing'][$fieldName]:0;
+            } else {
+                $default = !empty($this->data['LeasingInstallment'][$fieldName])?$this->data['LeasingInstallment'][$fieldName]:0;
+            }
+            
+            $paid = !empty($this->data['LeasingPaymentDetail'][$fieldName])?$this->data['LeasingPaymentDetail'][$fieldName]:0;
+
+            if( $paid > $default ) {
+                return false;
+            } else {
+                return true;
+            }
         }
     }
 

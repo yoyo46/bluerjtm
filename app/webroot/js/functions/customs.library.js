@@ -542,9 +542,9 @@
         }, options );
 
         var getTotal = function ( parent ) {
-            var installment = convert_number(parent.find('.installment').val(), 'int');
-            var installmentRate = convert_number(parent.find('.installment-rate').val(), 'int');
-            var denda = convert_number(parent.find('.denda').val(), 'int');
+            var installment = $.checkUndefined(convert_number(parent.find('.installment').val(), 'int'), 0);
+            var installmentRate = $.checkUndefined(convert_number(parent.find('.installment-rate').val(), 'int'), 0);
+            var denda = $.checkUndefined(convert_number(parent.find('.denda').val(), 'int'), 0);
 
             var total = installment+installmentRate+denda;
             var formatTotal = formatNumber( total, 0 );

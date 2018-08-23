@@ -21,9 +21,16 @@
                 'class' => 'text-center',
                 'display' => true,
             ),
+            'down_payment' => array(
+                'name' => __('DP'),
+                'field_model' => 'Leasing.down_payment',
+                'class' => 'text-right',
+                'display' => true,
+            ),
             'installment' => array(
                 'name' => __('Cicilan PerBln'),
                 'field_model' => 'Leasing.installment',
+                'class' => 'text-right',
                 'display' => true,
             ),
             'date_first_installment' => array(
@@ -32,9 +39,14 @@
                 'class' => 'text-center',
                 'display' => true,
             ),
-            'status' => array(
-                'name' => __('Status'),
-                'field_model' => 'Leasing.status',
+            'payment_status' => array(
+                'name' => __('Status Angsuran'),
+                'field_model' => 'Leasing.payment_status',
+                'display' => true,
+            ),
+            'dp_payment_status' => array(
+                'name' => __('Status DP'),
+                'field_model' => 'Leasing.dp_payment_status',
                 'display' => true,
             ),
             'action' => array(
@@ -86,6 +98,7 @@
                             $id = $this->Common->filterEmptyField($value, 'Leasing', 'id');
                             $no_contract = $this->Common->filterEmptyField($value, 'Leasing', 'no_contract');
                             $installment = $this->Common->filterEmptyField($value, 'Leasing', 'installment');
+                            $down_payment = $this->Common->filterEmptyField($value, 'Leasing', 'down_payment');
                             $paid_date = $this->Common->filterEmptyField($value, 'Leasing', 'paid_date', false, false, array(
                                 'date' => 'd/m/Y',
                             ));
@@ -94,6 +107,7 @@
                             ));
                             $status = $this->Common->filterEmptyField($value, 'Leasing', 'status');
                             $payment_status = $this->Common->filterEmptyField($value, 'Leasing', 'payment_status');
+                            $dp_payment_status = $this->Common->filterEmptyField($value, 'Leasing', 'dp_payment_status');
                             $branch_id = $this->Common->filterEmptyField($value, 'Leasing', 'branch_id');
                             // $company = $this->Common->filterEmptyField($value, 'LeasingCompany', 'name');
                             $company = $this->Common->filterEmptyField($value, 'Vendor', 'name');
@@ -104,7 +118,8 @@
                 <td><?php echo $no_contract;?></td>
                 <td><?php echo $company;?></td>
                 <td class="text-center"><?php echo $paid_date;?></td>
-                <td><?php echo $this->Number->currency($installment, Configure::read('__Site.config_currency_code').' ', array('places' => 0));?></td>
+                <td class="text-right"><?php echo Common::getFormatPrice($down_payment);?></td>
+                <td class="text-right"><?php echo Common::getFormatPrice($installment);?></td>
                 <td class="text-center"><?php echo $date_first_installment;?></td>
                 <td>
                     <?php 
@@ -114,6 +129,29 @@
                                         'class' => 'label label-success',
                                     ));
                                 } else if( $payment_status == 'half_paid' ) {
+                                    echo $this->Html->tag('span', __('Dibayar Sebagian'), array(
+                                        'class' => 'label label-primary',
+                                    ));
+                                } else {
+                                    echo $this->Html->tag('span', __('Belum Dibayar'), array(
+                                        'class' => 'label label-info',
+                                    ));
+                                }
+                            }else{
+                                echo $this->Html->tag('span', __('Void'), array(
+                                    'class' => 'label label-danger',
+                                ));
+                            }
+                    ?>
+                </td>
+                <td>
+                    <?php 
+                            if(!empty($status)){
+                                if( $dp_payment_status == 'paid' ) {
+                                    echo $this->Html->tag('span', __('Lunas'), array(
+                                        'class' => 'label label-success',
+                                    ));
+                                } else if( $dp_payment_status == 'half_paid' ) {
                                     echo $this->Html->tag('span', __('Dibayar Sebagian'), array(
                                         'class' => 'label label-primary',
                                     ));
@@ -140,7 +178,7 @@
                                 'branch_id' => $branch_id,
                             ));
 
-                            if( $payment_status == 'unpaid' ) {
+                            if( $payment_status == 'unpaid' && $dp_payment_status == 'unpaid' ) {
                                 if(!empty($status)){
                                     echo $this->Html->link(__('Edit'), array(
                                         'controller' => 'leasings',
@@ -181,7 +219,7 @@
                     }else{
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '9'
+                            'colspan' => '10'
                         )));
                     }
             ?>

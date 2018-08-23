@@ -46,19 +46,17 @@
                             ));
                     ?>
                 </div>
-                <div class="form-group action">
-                    <?php
-                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
-                                'div' => false, 
-                                'class'=> 'btn btn-success btn-sm',
-                                'type' => 'submit',
-                            ));
-                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'controller' => 'leasings', 
-                                'action' => 'payments', 
-                            ), array(
-                                'escape' => false, 
-                                'class'=> 'btn btn-default btn-sm',
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('type',array(
+                                'label'=> __('Jenis Pembayaran'),
+                                'class'=>'form-control',
+                                'empty' => __('Semua'),
+                                'options' => array(
+                                    'installment' => __('Angsuran'),
+                                    'dp' => __('DP'),
+                                ),
+                                'required' => false,
                             ));
                     ?>
                 </div>
@@ -80,6 +78,22 @@
                                 'class'=>'form-control',
                                 'empty' => __('Pilih Supplier'),
                                 'required' => false,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group action">
+                    <?php
+                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
+                                'div' => false, 
+                                'class'=> 'btn btn-success btn-sm',
+                                'type' => 'submit',
+                            ));
+                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'controller' => 'leasings', 
+                                'action' => 'payments', 
+                            ), array(
+                                'escape' => false, 
+                                'class'=> 'btn btn-default btn-sm',
                             ));
                     ?>
                 </div>

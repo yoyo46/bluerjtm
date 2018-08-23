@@ -29,14 +29,44 @@
                             ));
                     ?>
                 </div>
-            </div>
-            <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('vendor_id',array(
                                 'label'=> __('Supplier'),
                                 'class'=>'form-control',
                                 'empty' => __('Pilih Supplier'),
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('payment_status',array(
+                                'label'=> __('Status Angsuran'),
+                                'class'=>'form-control',
+                                'empty' => __('Semua'),
+                                'options' => array(
+                                    'unpaid' => __('Belum dibayar'),
+                                    'half_paid' => __('Dibayar sebagian'),
+                                    'paid' => __('Lunas'),
+                                ),
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('dp_payment_status',array(
+                                'label'=> __('Status DP'),
+                                'class'=>'form-control',
+                                'empty' => __('Semua'),
+                                'options' => array(
+                                    'unpaid' => __('Belum dibayar'),
+                                    'half_paid' => __('Dibayar sebagian'),
+                                    'paid' => __('Lunas'),
+                                ),
                                 'required' => false,
                             ));
                     ?>

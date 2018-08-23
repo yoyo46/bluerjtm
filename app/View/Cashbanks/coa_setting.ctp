@@ -702,6 +702,26 @@
 				</div>
 			</div>
         </div>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
+							echo $this->Form->label('CoaSettingDetail.LeasingDPDebit.coa_id', __('DP'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('CoaSettingDetail.LeasingDPDebit.coa_id',array(
+								'label'=> false, 
+								'class'=>'form-control chosen-select',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+					?>
+				</div>
+			</div>
+        </div>
     </div>
 </div>
 <?php 

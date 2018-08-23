@@ -477,6 +477,8 @@ class LeasingsController extends AppController {
         $locale = $this->Leasing->getData('first', array(
             'conditions' => array(
                 'Leasing.id' => $id,
+                'Leasing.payment_status' => 'unpaid',
+                'Leasing.dp_payment_status' => 'unpaid',
             )
         ), array(
             'status' => 'all',
@@ -555,7 +557,7 @@ class LeasingsController extends AppController {
         return $data;
     }
 
-    function _callDataSupport () {
+    function _callDataSupport ( $type = 'unpaid' ) {
         $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
         $vendors = $this->Leasing->getData('list', array(
             'fields' => array(
@@ -568,7 +570,7 @@ class LeasingsController extends AppController {
                 'Leasing.vendor_id',
             ),
         ), array(
-            'status' => 'unpaid',
+            'status' => $type,
         ));
         $cogs = $this->MkCommon->_callCogsOptGroup('LeasingPayment');
 
@@ -739,6 +741,7 @@ class LeasingsController extends AppController {
 
                                 $totalInstallmentPaid = $this->Leasing->LeasingPayment->LeasingPaymentDetail->getData('count', array(
                                     'conditions' => array(
+                                        'LeasingPaymentDetail.leasing_id' => $leasing_id,
                                         'LeasingPaymentDetail.leasing_installment_id <>' => $leasing_payment_id,
                                     ),
                                 ));
@@ -926,6 +929,8 @@ class LeasingsController extends AppController {
 
                 $value = $this->Leasing->LeasingPayment->getPayment($value, $id);
                 $value = $this->Leasing->LeasingInstallment->getCountInstallment($value, $id);
+                
+                $value['LeasingDP'] = $this->Leasing->LeasingPayment->getPayment(array(), $id, 'dp');
 
                 $values[$key] = $value;
             }
@@ -949,5 +954,308 @@ class LeasingsController extends AppController {
                 'freeze',
             ));
         }
+    }
+
+    function dp_add(){
+        $this->set('sub_module_title', __('Bayar DP'));
+        $this->set('active_menu', 'leasing_payments');
+
+        $data = $this->request->data;
+
+        if( !empty($data) ) {
+            $data = $this->_calDataIndexConvertion( $data );
+            $result = $this->Leasing->LeasingPayment->doSaveDP( $data );
+            $this->MkCommon->setProcessParams($result, array(
+                'controller' => 'leasings',
+                'action' => 'payments',
+                'admin' => false,
+            ));
+        }
+
+        $this->request->data = $this->_calDataIndexConvertion($this->request->data, true);
+
+        $this->_callDataSupport('dp_unpaid');
+        $this->render('dp_form');
+    }
+
+    function dp_edit( $id = false ){
+        $this->set('sub_module_title', __('Edit Pembayaran DP'));
+        $this->set('active_menu', 'leasing_payments');
+
+        $value = $this->Leasing->LeasingPayment->getData('first', array(
+            'conditions' => array(
+                'LeasingPayment.id' => $id,
+                'LeasingPayment.type' => 'dp',
+            ),
+        ));
+
+        if( !empty($value) ) {
+            $value = $this->Leasing->LeasingPayment->LeasingPaymentDetail->getMerge($value, $id);
+
+            if( !empty($value['LeasingPaymentDetail']) ) {
+                foreach ($value['LeasingPaymentDetail'] as $key => $detail) {
+                    $leasing_id = $this->MkCommon->filterEmptyField($detail, 'LeasingPaymentDetail', 'leasing_id');
+
+                    $detail = $this->Leasing->getMerge($detail, $leasing_id);
+                    $value['LeasingPaymentDetail'][$key] = $detail;
+                }
+            }
+
+            $data = $this->request->data;
+            $data = $this->_calDataIndexConvertion( $data );
+            $result = $this->Leasing->LeasingPayment->doSaveDP( $data, $value, $id );
+            $this->MkCommon->setProcessParams($result, array(
+                'controller' => 'leasings',
+                'action' => 'payments',
+                'admin' => false,
+            ));
+
+            $this->request->data = $this->_calDataIndexConvertion($this->request->data, true);
+            $this->MkCommon->getLogs($this->params['controller'], array( 'dp_edit', 'pd_add', 'dp_delete' ), $id);
+
+            $this->_callDataSupport();
+            $this->set(compact(
+                'id'
+            ));
+            $this->render('dp_form');
+        } else {
+            $this->MkCommon->redirectReferer(__('Pembayaran DP tidak ditemukan'), 'error');
+        }
+    }
+
+    function detail_dp_payment( $id = false ){
+        $this->set('sub_module_title', __('Info Pembayaran DP'));
+        $this->set('active_menu', 'leasing_payments');
+
+        $value = $this->Leasing->LeasingPayment->getData('first', array(
+            'conditions' => array(
+                'LeasingPayment.id' => $id,
+                'LeasingPayment.type' => 'dp',
+            ),
+        ));
+
+        if( !empty($value) ) {
+            $vendor_id = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'vendor_id');
+
+            $value = $this->Leasing->LeasingPayment->Vendor->getMerge($value, $vendor_id);
+            $value = $this->Leasing->LeasingPayment->LeasingPaymentDetail->getMerge($value, $id);
+            $value = $this->Leasing->LeasingPayment->getMergeList($value, array(
+                'contain' => array(
+                    'Cogs',
+                    'Coa',
+                ),
+            ));
+
+            $value = $this->_calDataIndexConvertion($value, true);
+
+            if( !empty($value['LeasingPaymentDetail']) ) {
+                foreach ($value['LeasingPaymentDetail'] as $key => $detail) {
+                    $leasing_id = $this->MkCommon->filterEmptyField($detail, 'LeasingPaymentDetail', 'leasing_id');
+
+                    $detail = $this->Leasing->getMerge($detail, $leasing_id);
+                    $value['LeasingPaymentDetail'][$key] = $detail;
+                }
+            }
+
+            $this->set(compact(
+                'id', 'value'
+            ));
+        } else {
+            $this->MkCommon->redirectReferer(__('Pembayaran DP tidak ditemukan'), 'error');
+        }
+    }
+
+    function dp_delete($id){
+        $is_ajax = $this->RequestHandler->isAjax();
+        $action_type = 'leasing_payments';
+        $msg = array(
+            'msg' => '',
+            'type' => 'error'
+        );
+        $value = $this->Leasing->LeasingPayment->getData('first', array(
+            'conditions' => array(
+                'LeasingPayment.id' => $id,
+                'LeasingPayment.type' => 'dp',
+            ),
+        ));
+
+        if( !empty($value) ){
+            $this->MkCommon->_callAllowClosing($value, 'LeasingPayment', 'payment_date');
+            
+            $value = $this->Leasing->LeasingPayment->LeasingPaymentDetail->getMerge($value, $id);
+            $no_doc = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'no_doc');
+            $coa_id = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'coa_id');
+            $payment_date = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'payment_date');
+            $vendor_id = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'vendor_id');
+            $cogs_id = $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'cogs_id');
+            
+            $value = $this->Leasing->Vendor->getMerge($value, $vendor_id);
+            $vendor_name = $this->MkCommon->filterEmptyField($value, 'Vendor', 'name');
+
+            $title = sprintf(__('Pembayaran DP #%s kepada supplier %s'), $no_doc, $vendor_name);
+            $title = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($value, 'LeasingPayment', 'note', $title));
+
+            if(!empty($this->request->data)){
+                $data = $this->request->data;
+                $rejected_date = $this->MkCommon->filterEmptyField($data, 'LeasingPayment', 'canceled_date');
+
+                if(!empty($rejected_date)){
+                    $data['LeasingPayment']['rejected_date'] = $this->MkCommon->getDate($rejected_date);
+                    $data['LeasingPayment']['rejected'] = 1;
+
+                    $this->Leasing->LeasingPayment->id = $id;
+                    $this->Leasing->LeasingPayment->set($data);
+
+                    if($this->Leasing->LeasingPayment->save()){
+                        if( !empty($value['LeasingPaymentDetail']) ) {
+                            $installment = 0;
+                            $installment_rate = 0;
+                            $denda = 0;
+
+                            foreach ($value['LeasingPaymentDetail'] as $key => $detail) {
+                                $detail_id = $this->MkCommon->filterEmptyField($detail, 'LeasingPaymentDetail', 'id');
+                                $leasing_id = $this->MkCommon->filterEmptyField($detail, 'LeasingPaymentDetail', 'leasing_id');
+
+                                $installment += $this->MkCommon->filterEmptyField($detail, 'LeasingPaymentDetail', 'installment', 0);
+                                $denda += $this->MkCommon->filterEmptyField($detail, 'LeasingPaymentDetail', 'denda', 0);
+
+                                $totalPaid = $this->Leasing->LeasingPayment->LeasingPaymentDetail->getData('count', array(
+                                    'conditions' => array(
+                                        'LeasingPayment.status' => true,
+                                        'LeasingPayment.rejected' => false,
+                                        'LeasingPayment.type' => 'dp',
+                                        'LeasingPaymentDetail.leasing_id' => $leasing_id,
+                                        'LeasingPaymentDetail.leasing_payment_id <>' => $id,
+                                    ),
+                                    'contain' => array(
+                                        'LeasingPayment',
+                                    ),
+                                ));
+
+                                if( !empty($totalPaid) ) {
+                                    $status = 'half_paid';
+                                } else {
+                                    $status = 'unpaid';
+                                }
+
+                                $this->Leasing->id = $leasing_id;
+                                $this->Leasing->set('dp_payment_status', $status);
+                                $this->Leasing->save();
+                            }
+
+                            if( !empty($installment) ) {
+                                $coaLeasing = $this->User->Journal->Coa->CoaSettingDetail->getMerge(array(), 'LeasingDPDebit', 'CoaSettingDetail.label');
+                                $leasing_coa_debit_id = Common::hashEmptyField($coaLeasing, 'CoaSettingDetail.coa_id');
+
+                                $this->User->Journal->setJournal($installment, array(
+                                    'credit' => $leasing_coa_debit_id,
+                                    'debit' => $coa_id,
+                                ), array(
+                                    'cogs_id' => $cogs_id,
+                                    'date' => $payment_date,
+                                    'document_id' => $id,
+                                    'title' => $title,
+                                    'document_no' => $no_doc,
+                                    'type' => 'leasing_payment_void',
+                                ));
+                            }
+                            if( !empty($denda) ) {
+                                $this->User->Journal->setJournal($denda, array(
+                                    'credit' => 'leasing_denda_coa_id',
+                                    'debit' => $coa_id,
+                                ), array(
+                                    'cogs_id' => $cogs_id,
+                                    'date' => $payment_date,
+                                    'document_id' => $id,
+                                    'title' => $title,
+                                    'document_no' => $no_doc,
+                                    'type' => 'leasing_payment_void',
+                                ));
+                            }
+                        }
+
+                        $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                        $msg = array(
+                            'msg' => sprintf(__('Berhasil membatalkan pembayaran DP #%s'), $noref),
+                            'type' => 'success'
+                        );
+                        $this->MkCommon->setCustomFlash( $msg['msg'], $msg['type']);  
+                        $this->Log->logActivity( sprintf(__('Berhasil membatalkan pembayaran DP #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
+                    }else{
+                        $this->Log->logActivity( sprintf(__('Gagal membatalkan pembayaran DP #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+                    }
+                }else{
+                    $msg = array(
+                        'msg' => __('Harap masukkan tanggal pembatalan pembayaran DP.'),
+                        'type' => 'error'
+                    );
+                }
+            }
+
+            $this->set('value', $value);
+        }else{
+            $msg = array(
+                'msg' => __('Pembayaran DP tidak ditemukan'),
+                'type' => 'error'
+            );
+        }
+
+        $modelName = 'LeasingPayment';
+        $canceled_date = !empty($this->request->data['LeasingPayment']['canceled_date']) ? $this->request->data['LeasingPayment']['canceled_date'] : false;
+        $this->set(compact(
+            'msg', 'is_ajax', 'action_type',
+            'canceled_date', 'modelName'
+        ));
+        $this->render('/Elements/blocks/common/form_delete');
+    }
+
+    function leasings_dp_unpaid($vendor_id = false){
+        $dateFrom = date('2012-m-d', strtotime('-2 Month'));
+        $dateTo = date('Y-m-d', strtotime('+2 Month'));
+        $named = $this->MkCommon->filterEmptyField($this->params, 'named');
+        $payment_id = $this->MkCommon->filterEmptyField($named, 'payment_id');
+
+        $options = array(
+            'conditions' => array(
+                'Leasing.vendor_id' => $vendor_id,
+            ),
+            'contain' => false,
+            'limit' => Configure::read('__Site.config_pagination'),
+        );
+        $payments = $this->Leasing->LeasingPaymentDetail->getData('list', array(
+            'conditions' => array(
+                'LeasingPaymentDetail.leasing_payment_id' => $payment_id,
+            ),
+            'fields' => array(
+                'LeasingPaymentDetail.id', 'LeasingPaymentDetail.leasing_installment_id',
+            )
+        ));
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->Leasing->_callRefineParams($params, $options, 'Leasing', $payments);
+
+        $this->paginate = $this->Leasing->getData('paginate', $options, array(
+            'status' => 'dp_unpaid',
+        ));
+        $values = $this->paginate('Leasing');
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $leasing_id = $this->MkCommon->filterEmptyField($value, 'Leasing', 'id');
+
+                $value = $this->Leasing->_callLastDpPayment($value, $leasing_id, $payment_id, $payments);
+                $values[$key] = $value;
+            }
+        }
+        
+        $data_change = $data_action = 'browse-invoice';
+        $title = __('Detail Pembayaran');
+        $this->set(compact(
+            'data_change', 'title', 'values',
+            'vendor_id', 'data_action'
+        ));
     }
 }

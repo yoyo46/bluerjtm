@@ -136,6 +136,10 @@ class Leasing extends AppModel {
             case 'unpaid':
                 $default_options['conditions']['Leasing.payment_status'] = array( 'unpaid', 'half_paid' );
                 break;
+
+            case 'dp_unpaid':
+                $default_options['conditions']['Leasing.dp_payment_status'] = array( 'unpaid', 'half_paid' );
+                break;
             
             default:
                 $default_options['conditions']['Leasing.status'] = 1;
@@ -201,6 +205,8 @@ class Leasing extends AppModel {
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
         $vendor_id = !empty($data['named']['vendor_id'])?$data['named']['vendor_id']:false;
         $status = !empty($data['named']['status'])?$data['named']['status']:false;
+        $payment_status = !empty($data['named']['payment_status'])?$data['named']['payment_status']:false;
+        $dp_payment_status = !empty($data['named']['dp_payment_status'])?$data['named']['dp_payment_status']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             switch ($modelName) {
@@ -275,8 +281,53 @@ class Leasing extends AppModel {
                     break;
             }
         }
+        if( !empty($payment_status) ) {
+            $payment_status = explode(',', $payment_status);
+            $default_options['conditions']['Leasing.payment_status'] = $payment_status;
+        }
+        if( !empty($dp_payment_status) ) {
+            $dp_payment_status = explode(',', $dp_payment_status);
+            $default_options['conditions']['Leasing.dp_payment_status'] = $dp_payment_status;
+        }
         
         return $default_options;
+    }
+
+    function _callLastPaidDP( $data, $id, $leasing_payment_id = false ) {
+        $conditions = array(
+            'LeasingPaymentDetail.leasing_id' => $id,
+            'LeasingPayment.type' => 'dp',
+            'LeasingPayment.status' => 1,
+            'LeasingPayment.rejected' => 0,
+        );
+
+        if( !empty($leasing_payment_id) ) {
+            $conditions['LeasingPayment.id <>'] = $leasing_payment_id;
+        }
+
+        $this->LeasingPaymentDetail->virtualFields['paid_dp'] = 'SUM(LeasingPaymentDetail.installment)';
+        $paid = $this->LeasingPaymentDetail->getData('first', array(
+            'conditions' => $conditions,
+            'contain' => array(
+                'LeasingPayment',
+            ),
+        ));
+
+        if( !empty($paid) ) {
+            $total_paid = Common::hashEmptyField($paid, 'LeasingPaymentDetail.paid_dp');
+            $dp = Common::hashEmptyField($data, 'Leasing.down_payment');
+
+            $data['Leasing']['down_payment'] = $dp - $total_paid;
+            $data['Leasing']['paid_dp'] = $total_paid;
+        }
+
+        return $data;
+    }
+
+    function _callLastDpPayment ( $data, $leasing_id, $leasing_payment_id = false ) {
+        $data = $this->_callLastPaidDP($data, $leasing_id, $leasing_payment_id);
+
+        return $data;
     }
 }
 ?>

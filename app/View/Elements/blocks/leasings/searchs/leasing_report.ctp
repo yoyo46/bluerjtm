@@ -33,17 +33,31 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('dp_payment_status',array(
+                                'label'=> __('Status DP'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'empty' => __('Semua'),
+                                'options' => array(
+                                    'unpaid,half_paid' => __('Outstanding'),
+                                    'paid' => __('Closed'),
+                                ),
+                            ));
+                    ?>
+                </div>
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('status',array(
-                                'label'=> __('Status'),
+                            echo $this->Form->input('payment_status',array(
+                                'label'=> __('Status Angsuran'),
                                 'class'=>'form-control',
                                 'required' => false,
-                                'empty' => __('Pilih Status'),
+                                'empty' => __('Semua'),
                                 'options' => array(
-                                    'unpaid' => __('Outstanding'),
+                                    'unpaid,half_paid' => __('Outstanding'),
                                     'paid' => __('Closed'),
                                 ),
                             ));

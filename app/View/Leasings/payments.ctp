@@ -19,6 +19,11 @@
                 'class' => 'text-center',
                 'display' => true,
             ),
+            'type' => array(
+                'name' => __('Jenis'),
+                'field_model' => 'LeasingPayment.type',
+                'display' => true,
+            ),
             'vendor' => array(
                 'name' => __('Supplier'),
                 'field_model' => false,
@@ -50,25 +55,30 @@
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 ?>
 <div class="box box-success">
-    <div class="box-header">
-        <?php 
-                echo $this->Html->tag('h3', $sub_module_title, array(
-                    'class' => 'box-title'
-                ));
-        ?>
-        <div class="box-tools">
-            <?php
-                    echo $this->Html->link('<i class="fa fa-plus"></i> Tambah', array(
-                        'controller' => 'leasings',
-                        'action' => 'payment_add'
-                    ), array(
-                        'escape' => false,
-                        'class' => 'btn btn-app btn-success pull-right'
-                    ));
-            ?>
-            <div class="clear"></div>
-        </div>
-    </div>
+    <?php 
+            echo $this->element('blocks/common/box_header', array(
+                'title' => $sub_module_title,
+                '_label_multiple' => __('Bayar'),
+                '_add_multiple' => array(
+                    array(
+                        'label' => __('Angsuran'),
+                        'url' => array(
+                            'controller' => 'leasings',
+                            'action' => 'payment_add',
+                            'admin' => false,
+                        ),
+                    ),
+                    array(
+                        'label' => __('DP'),
+                        'url' => array(
+                            'controller' => 'leasings',
+                            'action' => 'dp_add',
+                            'admin' => false,
+                        ),
+                    ),
+                ),
+            ));
+    ?>
     <div class="box-body table-responsive">
         <table class="table table-hover sorting">
             <?php
@@ -81,6 +91,7 @@
                     if(!empty($payments)){
                         foreach ($payments as $key => $value) {
                             $id = $this->Common->filterEmptyField($value, 'LeasingPayment', 'id');
+                            $type = $this->Common->filterEmptyField($value, 'LeasingPayment', 'type');
                             $no_doc = $this->Common->filterEmptyField($value, 'LeasingPayment', 'no_doc');
                             $payment_date = $this->Common->filterEmptyField($value, 'LeasingPayment', 'payment_date');
                             $periode = $this->Common->filterEmptyField($value, 'LeasingPayment', 'payment_date', false, false, array(
@@ -105,6 +116,7 @@
                         echo $this->Html->tag('td', $customDate, array(
                             'class' => 'text-center',
                         ));
+                        echo $this->Html->tag('td', ($type=='dp')?__('DP'):__('Angsuran'));
                         echo $this->Html->tag('td', $vendor);
                         echo $this->Html->tag('td', $customGrandtotal, array(
                             'class' => 'text-right',
@@ -127,18 +139,31 @@
                 ?>
                 <td class="action">
                     <?php
-                            echo $this->Html->link('Info', array(
-                                'controller' => 'leasings',
-                                'action' => 'detail_payment',
-                                $id
-                            ), array(
-                                'class' => 'btn btn-info btn-xs'
-                            ));
-
                             if( empty($rejected) ){
+                                switch ($type) {
+                                    case 'dp':
+                                        $action_edit = 'dp_edit';
+                                        $action_detail = 'detail_dp_payment';
+                                        $action_delete = 'dp_delete';
+                                        break;
+                                    
+                                    default:
+                                        $action_edit = 'payment_edit';
+                                        $action_detail = 'detail_payment';
+                                        $action_delete = 'payment_delete';
+                                        break;
+                                }
+                                
+                                echo $this->Html->link('Info', array(
+                                    'controller' => 'leasings',
+                                    'action' => $action_detail,
+                                    $id
+                                ), array(
+                                    'class' => 'btn btn-info btn-xs'
+                                ));
                                 echo $this->Html->link(__('Edit'), array(
                                     'controller' => 'leasings',
-                                    'action' => 'payment_edit',
+                                    'action' => $action_edit,
                                     $id
                                 ), array(
                                     'class' => 'btn btn-primary btn-xs',
@@ -148,7 +173,7 @@
 
                                 echo $this->Html->link('Void', array(
                                     'controller' => 'leasings',
-                                    'action' => 'payment_delete',
+                                    'action' => $action_delete,
                                     $id
                                 ), array(
                                     'class' => 'btn btn-danger btn-xs ajaxModal',

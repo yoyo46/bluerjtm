@@ -200,6 +200,141 @@ class LeasingPayment extends AppModel {
         return $result;
     }
 
+    function doSaveDP( $data, $value = false, $id = false ) {
+        $result = false;
+        $default_msg = __('melakukan pembayaran DP');
+
+        if ( !empty($data) ) {
+            if( !empty($id) ) {
+                $this->id = $id;
+            } else {
+                $this->create();
+            }
+
+            $no_doc = Common::hashEmptyField($data, 'LeasingPayment.no_doc');
+            $coa_id = Common::hashEmptyField($data, 'LeasingPayment.coa_id');
+            $cogs_id = Common::hashEmptyField($data, 'LeasingPayment.cogs_id');
+            $payment_date = Common::hashEmptyField($data, 'LeasingPayment.payment_date');
+            $detail = Common::hashEmptyField($data, 'LeasingPaymentDetail.leasing_id');
+            
+            $vendor_id = Common::hashEmptyField($data, 'LeasingPayment.vendor_id');
+            $vendor = $this->Vendor->getMerge(array(), $vendor_id);
+            $vendor_name = Common::hashEmptyField($vendor, 'Vendor.name');
+
+            $data['LeasingPayment']['id'] = $id;
+            $data['LeasingPayment']['type'] = 'dp';
+            $data['LeasingPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
+            $data['LeasingPayment']['user_id'] = Configure::read('__Site.config_user_id');
+
+            if( !empty($detail) ) {
+                $result = array();
+                $total_installment = 0;
+                $total_denda = 0;
+                $grandtotal = 0;
+
+                foreach ($detail as $leasing_id => $value) {
+                    $dp = Common::hashEmptyField($data, 'LeasingPaymentDetail.installment.'.$leasing_id, 0, array(
+                        'type' => 'unprice',
+                    ));
+                    $denda = Common::hashEmptyField($data, 'LeasingPaymentDetail.denda.'.$leasing_id, 0, array(
+                        'type' => 'unprice',
+                    ));
+                    $total = $dp+$denda;
+                    
+                    $paid = $this->LeasingPaymentDetail->Leasing->_callLastPaidDP(array(), $leasing_id, $id);
+                    $paid_dp = Common::hashEmptyField($paid, 'Leasing.paid_dp', 0);
+                    $total_paid = $dp + $paid_dp;
+
+                    $leasing = $this->LeasingPaymentDetail->Leasing->getMerge(array(), $leasing_id);
+                    $total_dp = Common::hashEmptyField($leasing, 'Leasing.down_payment', 0);
+                    $no_contract = Common::hashEmptyField($leasing, 'Leasing.no_contract');
+
+                    if( $total_paid >= $total_dp ) {
+                        $status = 'paid';
+                    } else {
+                        $status = 'half_paid';
+                    }
+
+                    $result[] = array(
+                        'LeasingPaymentDetail' => array(
+                            'leasing_id' => $leasing_id,
+                            'installment' => $dp,
+                            'denda' => $denda,
+                            'total' => $total,
+                        ),
+                        'Leasing' => array(
+                            'id' => $leasing_id,
+                            'no_contract' => $no_contract,
+                            'dp_payment_status' => $status,
+                        ),
+                    );
+
+                    $total_installment += $dp;
+                    $total_denda += $denda;
+                    $grandtotal += $total;
+                }
+
+                $data['LeasingPaymentDetail'] = $result;
+                $data = hash::insert($data, 'LeasingPayment.total_installment', $total_installment);
+                $data = hash::insert($data, 'LeasingPayment.total_denda', $total_denda);
+                $data = hash::insert($data, 'LeasingPayment.grandtotal', $grandtotal);
+            }
+
+            if($this->saveAll($data, array(
+                'deep' => true,
+            ))) {
+                $id = $this->id;
+                $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+                $title = __('Pembayaran DP #%s kepada supplier %s', $no_doc, $vendor_name);
+
+                if( !empty($total_installment) ) {
+                    $coaLeasing = $this->Coa->CoaSettingDetail->getMerge(array(), 'LeasingDPDebit', 'CoaSettingDetail.label');
+                    $leasing_coa_debit_id = Common::hashEmptyField($coaLeasing, 'CoaSettingDetail.coa_id');
+
+                    $this->Coa->Journal->setJournal($total_installment, array(
+                        'credit' => $coa_id,
+                        'debit' => $leasing_coa_debit_id,
+                    ), array(
+                        'cogs_id' => $cogs_id,
+                        'date' => $payment_date,
+                        'document_id' => $id,
+                        'title' => $title,
+                        'document_no' => $no_doc,
+                        'type' => 'leasing_payment',
+                    ));
+                }
+                if( !empty($total_denda) ) {
+                    $this->Coa->Journal->setJournal($total_denda, array(
+                        'credit' => $coa_id,
+                        'debit' => 'leasing_denda_coa_id',
+                    ), array(
+                        'cogs_id' => $cogs_id,
+                        'date' => $payment_date,
+                        'document_id' => $id,
+                        'title' => $title,
+                        'document_no' => $no_doc,
+                        'type' => 'leasing_payment',
+                    ));
+                }
+
+                $result = array(
+                    'msg' => sprintf(__('Berhasil %s #%s'), $default_msg, $noref),
+                    'status' => 'success',
+                );
+            } else {
+                $result = array(
+                    'msg' => sprintf(__('Gagal %s'), $default_msg),
+                    'status' => 'error',
+                    'data' => $data,
+                );
+            }
+        } else if( !empty($value) ) {
+            $result['data'] = $value;
+        }
+
+        return $result;
+    }
+
     function _callLastPayment ($leasing_id) {
         $value = $this->getData('first', array(
             
@@ -212,6 +347,7 @@ class LeasingPayment extends AppModel {
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
         $vendor_id = !empty($data['named']['vendor_id'])?$data['named']['vendor_id']:false;
         $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
+        $type = !empty($data['named']['type'])?$data['named']['type']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -231,14 +367,18 @@ class LeasingPayment extends AppModel {
         if(!empty($noref)){
             $default_options['conditions']['LPAD(LeasingPayment.id, 6, 0) LIKE'] = '%'.$noref.'%';
         }
+        if( !empty($type) ) {
+            $default_options['conditions']['LeasingPayment.type'] = $type;
+        }
         
         return $default_options;
     }
 
-    function getPayment ( $data, $id ) {
+    function getPayment ( $data, $id, $type = 'installment' ) {
         $default_options = array(
             'conditions' => array(
                 'LeasingPaymentDetail.leasing_id' => $id,
+                'LeasingPayment.type' => $type,
                 'LeasingPayment.status' => 1,
                 'LeasingPayment.rejected' => 0,
             ),

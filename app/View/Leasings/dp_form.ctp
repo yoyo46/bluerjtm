@@ -110,7 +110,7 @@
 			                            'data-change-message' => __('Mohon pilih supplier terlebih dahulu'),
 			                            'url' => $this->Html->url( array(
 				                            'controller'=> 'leasings', 
-				                            'action' => 'leasings_unpaid',
+				                            'action' => 'leasings_dp_unpaid',
 	                            			'payment_id' => $id,
 				                        ))
 			                        );
@@ -132,9 +132,7 @@
 			        	<thead>
 			        		<tr>
 			        			<th width="20%"><?php echo __('No Kontrak');?></th>
-			        			<th><?php echo __('Tgl Jth Tempo');?></th>
-				                <th><?php echo __('Pokok');?></th>
-				                <th><?php echo __('Bunga');?></th>
+				                <th><?php echo __('DP');?></th>
 				                <th><?php echo __('Denda');?></th>
 				                <th><?php echo __('Total');?></th>
 			                    <th class="text-center"><?php echo __('Action');?></th>
@@ -142,7 +140,7 @@
 			        	</thead>
 			        	<tbody>
 			                <?php
-					    			echo $this->element('blocks/leasings/forms/leasing_payment_detail');
+					    			echo $this->element('blocks/leasings/forms/leasing_payment_dp_detail');
 					    	?>
 			        	</tbody>
 			    	</table>

@@ -2,6 +2,8 @@
         if(!empty($values)){
             $grandtotalLeasing = 0;
             $grandtotalDp = 0;
+            $grandtotalPaidDp = 0;
+            $grandtotalUnpaidDp = 0;
             $grandtotalAnnualInterest = 0;
             $grandtotalLeasingMonth = 0;
             $grandtotalPokok = 0;
@@ -25,7 +27,6 @@
                 $start_date = $this->Common->filterEmptyField($value, 'Leasing', 'date_first_installment');
                 $end_date = $this->Common->filterEmptyField($value, 'Leasing', 'date_last_installment');
                 $total_leasing = $this->Common->filterEmptyField($value, 'Leasing', 'total_leasing');
-                $down_payment = $this->Common->filterEmptyField($value, 'Leasing', 'down_payment');
                 $leasing_month = $this->Common->filterEmptyField($value, 'Leasing', 'leasing_month');
                 $installment = $this->Common->filterEmptyField($value, 'Leasing', 'installment');
                 $installment_rate = $this->Common->filterEmptyField($value, 'Leasing', 'installment_rate');
@@ -34,6 +35,14 @@
                 $grandtotal_installment = $this->Common->filterEmptyField($value, 'LeasingPayment', 'grandtotal_installment');
                 $grandtotal_installment_rate = $this->Common->filterEmptyField($value, 'LeasingPayment', 'grandtotal_installment_rate');
                 $count_installment = $this->Common->filterEmptyField($value, 'LeasingInstallment', 'count_installment');
+
+                $dp = Common::hashEmptyField($value, 'Leasing.down_payment');
+                $paid_dp = Common::hashEmptyField($value, 'LeasingDP.LeasingPayment.grandtotal_installment');
+                $unpaid_dp = $dp - $paid_dp;
+
+                if( $paid_dp > $dp || $paid_dp < 0 ) {
+                    $unpaid_dp = 0;
+                }
 
                 $pokok = $leasing_month * $installment;
                 $bunga = $leasing_month * $installment_rate;
@@ -47,7 +56,6 @@
                 $grandtotal_sisa_angsuran = $grandtotal_sisa + $grandtotal_sisa_rate;
 
                 $customTotalLeasing = $this->Common->getFormatPrice($total_leasing);
-                $customDp = $this->Common->getFormatPrice($down_payment);
                 $customPokok = $this->Common->getFormatPrice($pokok);
                 $customBunga = $this->Common->getFormatPrice($bunga);
                 $customTotalFacility = $this->Common->getFormatPrice($totalFacility);
@@ -67,7 +75,6 @@
                 $customEndDate = $this->Common->formatDate($end_date, 'd/m/Y');
 
                 $grandtotalLeasing += $total_leasing;
-                $grandtotalDp += $down_payment;
                 $grandtotalAnnualInterest += $annual_interest;
                 $grandtotalLeasingMonth += $leasing_month;
                 $grandtotalPokok += $pokok;
@@ -84,6 +91,11 @@
                 $grandtotalSisa += $grandtotal_sisa;
                 $grandtotalSisaRate += $grandtotal_sisa_rate;
                 $grandtotalSisaAngsuran += $grandtotal_sisa_angsuran;
+                
+                // DP
+                $grandtotalDp += $dp;
+                $grandtotalPaidDp += $dp;
+                $grandtotalUnpaidDp += $dp;
 ?>
 <tr>
     <?php 
@@ -98,9 +110,17 @@
             echo $this->Html->tag('td', $customTotalLeasing, array(
                 'style' => 'text-align: right',
             ));
-            echo $this->Html->tag('td', $customDp, array(
+
+            echo $this->Html->tag('td', Common::getFormatPrice($dp), array(
                 'style' => 'text-align: right',
             ));
+            echo $this->Html->tag('td', Common::getFormatPrice($paid_dp), array(
+                'style' => 'text-align: right',
+            ));
+            echo $this->Html->tag('td', Common::getFormatPrice($unpaid_dp), array(
+                'style' => 'text-align: right',
+            ));
+
             echo $this->Html->tag('td', $annual_interest);
             echo $this->Html->tag('td', $leasing_month);
             echo $this->Html->tag('td', $customPokok);
@@ -123,7 +143,6 @@
             }
 
             $grandtotalLeasing = $this->Common->getFormatPrice($grandtotalLeasing);
-            $grandtotalDp = $this->Common->getFormatPrice($grandtotalDp);
             $grandtotalPokok = $this->Common->getFormatPrice($grandtotalPokok);
             $grandtotalBunga = $this->Common->getFormatPrice($grandtotalBunga);
             $grandtotalFacility = $this->Common->getFormatPrice($grandtotalFacility);
@@ -136,6 +155,10 @@
             $grandtotalSisa = $this->Common->getFormatPrice($grandtotalSisa);
             $grandtotalSisaRate = $this->Common->getFormatPrice($grandtotalSisaRate);
             $grandtotalSisaAngsuran = $this->Common->getFormatPrice($grandtotalSisaAngsuran);
+            
+            $grandtotalDp = $this->Common->getFormatPrice($grandtotalDp);
+            $grandtotalPaidDp = $this->Common->getFormatPrice($grandtotalPaidDp);
+            $grandtotalUnpaidDp = $this->Common->getFormatPrice($grandtotalUnpaidDp);
 ?>
 <tr>
     <?php 
@@ -149,6 +172,12 @@
                 'style' => 'text-align: right',
             ));
             echo $this->Html->tag('td', $grandtotalDp, array(
+                'style' => 'text-align: right',
+            ));
+            echo $this->Html->tag('td', $grandtotalPaidDp, array(
+                'style' => 'text-align: right',
+            ));
+            echo $this->Html->tag('td', $grandtotalUnpaidDp, array(
                 'style' => 'text-align: right',
             ));
             echo $this->Html->tag('td', $grandtotalAnnualInterest);
