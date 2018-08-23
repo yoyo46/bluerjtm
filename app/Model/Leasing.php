@@ -208,7 +208,10 @@ class Leasing extends AppModel {
         $payment_status = !empty($data['named']['payment_status'])?$data['named']['payment_status']:false;
         $dp_payment_status = !empty($data['named']['dp_payment_status'])?$data['named']['dp_payment_status']:false;
 
-        if( !empty($dateFrom) || !empty($dateTo) ) {
+        $MonthFrom = !empty($data['named']['MonthFrom'])?$data['named']['MonthFrom']:false;
+        $MonthTo = !empty($data['named']['MonthTo'])?$data['named']['MonthTo']:false;
+
+        if( !empty($dateFrom) || !empty($dateTo) || !empty($MonthFrom) || !empty($MonthTo) ) {
             switch ($modelName) {
                 case 'LeasingInstallment':
                     $fieldName = 'MIN(LeasingInstallment.paid_date)';
@@ -250,16 +253,24 @@ class Leasing extends AppModel {
                         unset($default_options['group']);
                     }
 
-                    $default_options['group'][] = 'LeasingInstallment.leasing_id HAVING MIN(LeasingInstallment.paid_date) >= \''.$dateFrom.'\' AND MIN(LeasingInstallment.paid_date) <= \''.$dateTo.'\'';
+                    if( !empty($MonthFrom) || !empty($MonthTo) ) {
+                        $default_options['group'][] = 'LeasingInstallment.leasing_id HAVING MIN(DATE_FORMAT(LeasingInstallment.paid_date, \'%Y-%m\')) >= \''.$MonthFrom.'\' AND MIN(DATE_FORMAT(LeasingInstallment.paid_date, \'%Y-%m\')) <= \''.$MonthTo.'\'';
+                    } else {
+                        $default_options['group'][] = 'LeasingInstallment.leasing_id HAVING MIN(LeasingInstallment.paid_date) >= \''.$dateFrom.'\' AND MIN(LeasingInstallment.paid_date) <= \''.$dateTo.'\'';
+                    }
                     break;
                 
                 default:
                     if( !empty($dateFrom) ) {
                         $default_options['conditions']['DATE_FORMAT(Leasing.paid_date, \'%Y-%m-%d\') >='] = $dateFrom;
+                    } else if( !empty($MonthFrom) ) {
+                        $default_options['conditions']['DATE_FORMAT(Leasing.paid_date, \'%Y-%m\') >='] = $MonthFrom;
                     }
 
                     if( !empty($dateTo) ) {
                         $default_options['conditions']['DATE_FORMAT(Leasing.paid_date, \'%Y-%m-%d\') <='] = $dateTo;
+                    } else if( !empty($MonthTo) ) {
+                        $default_options['conditions']['DATE_FORMAT(Leasing.paid_date, \'%Y-%m\') <='] = $MonthTo;
                     }
                     break;
             }

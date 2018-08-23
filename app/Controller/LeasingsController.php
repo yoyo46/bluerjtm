@@ -855,8 +855,8 @@ class LeasingsController extends AppController {
     }
 
     function leasings_unpaid($vendor_id = false){
-        $dateFrom = date('Y-m-d', strtotime('-2 Month'));
-        $dateTo = date('Y-m-d', strtotime('+2 Month'));
+        $monthFrom = date('Y-01');
+        $monthTo = date('Y-m');
         $named = $this->MkCommon->filterEmptyField($this->params, 'named');
         $payment_id = $this->MkCommon->filterEmptyField($named, 'payment_id');
 
@@ -878,8 +878,8 @@ class LeasingsController extends AppController {
         ));
 
         $params = $this->MkCommon->_callRefineParams($this->params, array(
-            'dateFrom' => $dateFrom,
-            'dateTo' => $dateTo,
+            'monthFrom' => $monthFrom,
+            'monthTo' => $monthTo,
         ));
         $options =  $this->Leasing->_callRefineParams($params, $options, 'LeasingInstallment', $payments);
 
@@ -1210,8 +1210,8 @@ class LeasingsController extends AppController {
     }
 
     function leasings_dp_unpaid($vendor_id = false){
-        $dateFrom = date('2012-m-d', strtotime('-2 Month'));
-        $dateTo = date('Y-m-d', strtotime('+2 Month'));
+        $monthFrom = date('Y-01');
+        $monthTo = date('Y-m');
         $named = $this->MkCommon->filterEmptyField($this->params, 'named');
         $payment_id = $this->MkCommon->filterEmptyField($named, 'payment_id');
 
@@ -1232,8 +1232,8 @@ class LeasingsController extends AppController {
         ));
 
         $params = $this->MkCommon->_callRefineParams($this->params, array(
-            'dateFrom' => $dateFrom,
-            'dateTo' => $dateTo,
+            'monthFrom' => $monthFrom,
+            'monthTo' => $monthTo,
         ));
         $options =  $this->Leasing->_callRefineParams($params, $options, 'Leasing', $payments);
 
