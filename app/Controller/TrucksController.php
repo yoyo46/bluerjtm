@@ -522,6 +522,9 @@ class TrucksController extends AppController {
             $years[$now_year] = $now_year;
         }
 
+        $this->MkCommon->_layout_file(array(
+            'select',
+        ));
         $this->set('active_menu', 'trucks');
         $this->set(compact(
             'truck_brands', 'truck_categories', 'truck_brands', 

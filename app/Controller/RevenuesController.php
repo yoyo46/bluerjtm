@@ -4242,7 +4242,7 @@ class RevenuesController extends AppController {
 
                                     if($this->Invoice->save()){
                                         $invoice_id = $this->Invoice->id;
-                                        $invoice_number = $this->CustomerGroupPattern->addPattern($customer, $data);
+                                        // $invoice_number = $this->CustomerGroupPattern->addPattern($customer, $data);
                                         $this->CustomerGroupPattern->addPattern($customer, $data);
 
                                         $titleJournalInv = sprintf(__('Invoice customer: %s, No: %s'), $customer_name_code, $invoice_number);
@@ -7669,7 +7669,7 @@ class RevenuesController extends AppController {
         $this->render('ttuj_payment_form');
     }
 
-    function ttuj_payment_delete($id, $action_type){
+    function ttuj_payment_delete($action_type, $id){
         $is_ajax = $this->RequestHandler->isAjax();
         $msg = array(
             'msg' => '',
@@ -8824,7 +8824,7 @@ class RevenuesController extends AppController {
         $this->RjRevenue->_callBeforeViewRevenuePeriod($params);
         $this->MkCommon->_layout_file(array(
             'select',
-            'freeze',
+            // 'freeze',
         ));
         $this->set(array(
             'values' => $values,
@@ -8848,7 +8848,7 @@ class RevenuesController extends AppController {
         $this->RjRevenue->_callBeforeViewRevenueDetail($params);
         $this->MkCommon->_layout_file(array(
             'select',
-            'freeze',
+            // 'freeze',
         ));
         $this->set(array(
             'values' => $values,
@@ -8856,6 +8856,229 @@ class RevenuesController extends AppController {
             '_freeze' => true,
         ));
     }
+
+    // public function report_revenue_period( $data_action = false ) {
+    //     $this->loadModel('City');
+    //     $module_title = __('Laporan Detail Revenue per Priode');
+    //     $values = array();
+    //     $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+    //     $dateTo = date('Y-m-d');
+
+    //     $this->set('sub_module_title', $module_title);
+        
+    //     $options =  $this->Ttuj->Revenue->getData('paginate', array(
+    //         'conditions' => array(
+    //             'RevenueDetail.status' => 1,
+    //         ),
+    //         'contain' => array(
+    //             'Revenue',
+    //         ),
+    //         'group' => array(
+    //             'RevenueDetail.revenue_id',
+    //         ),
+    //     ), true, array(
+    //         'branch' => false,
+    //     ));
+
+    //     $params = $this->MkCommon->_callRefineParams($this->params, array(
+    //         'dateFrom' => $dateFrom,
+    //         'dateTo' => $dateTo,
+    //     ));
+    //     $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+    //     $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+    //     $options =  $this->Ttuj->Revenue->RevenueDetail->_callRefineParams($params, $options);
+
+    //     if(!empty($this->params['named'])){
+    //         $refine = $this->params['named'];
+
+    //         // Custom Otorisasi
+    //         $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Revenue', $options );
+    //     }
+
+    //     if( !empty($dateFrom) && !empty($dateTo) ) {
+    //         $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+    //     }
+
+    //     if( !empty($data_action) ){
+    //         $values = $this->Ttuj->Revenue->RevenueDetail->find('all', $options);
+    //     } else {
+    //         $this->loadModel('RevenueDetail');
+    //         $options['limit'] = Configure::read('__Site.config_pagination');
+    //         $this->paginate = $options;
+    //         $values = $this->paginate('RevenueDetail');
+    //     }
+
+    //     if( !empty($values) ) {
+    //         foreach ($values as $key => $value) {
+    //             $id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'id');
+    //             $branch_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'branch_id');
+    //             $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'ttuj_id');
+    //             $value = $this->Ttuj->getMerge($value, $ttuj_id);
+    //             $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                
+    //             $value['Ttuj']['total_qty'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
+
+    //             $invoice_id = $this->Ttuj->Revenue->RevenueDetail->getData('list', array(
+    //                 'conditions' => array(
+    //                     'RevenueDetail.revenue_id' => $id,
+    //                     'RevenueDetail.status' => 1,
+    //                 ),
+    //                 'fields' => array(
+    //                     'RevenueDetail.invoice_id', 'RevenueDetail.invoice_id',
+    //                 ),
+    //                 'group' => array(
+    //                     'RevenueDetail.revenue_id',
+    //                     'RevenueDetail.invoice_id',
+    //                 ),
+    //             ), array(
+    //                 'branch' => false,
+    //             ));
+
+    //             $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
+    //             $customer_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'customer_id', $customer_id);
+
+    //             $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
+    //             $truck_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'truck_id', $truck_id);
+    //             $value = $this->Ttuj->Truck->getMerge($value, $truck_id);
+
+    //             $from_city_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'from_city_id');
+    //             $to_city_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'to_city_id');
+    //             $from_city_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'from_city_id', $from_city_id);
+    //             $to_city_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'to_city_id', $to_city_id);
+
+    //             $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
+    //             $value = $this->Ttuj->Revenue->RevenueDetail->getSumUnit($value, $id, 'revenue', 'RevenueDetail.revenue_id');
+    //             $value = $this->Ttuj->Revenue->RevenueDetail->Invoice->getMerge($value, $invoice_id, 'all');
+                
+    //             $value = $this->City->getMerge($value, $from_city_id, 'FromCity');
+    //             $value = $this->City->getMerge($value, $to_city_id, 'ToCity');
+
+    //             $values[$key] = $value;
+    //         }
+    //     }
+
+    //     $cities = $this->City->getListCities();
+    //     $customers = $this->Ttuj->Customer->getData('list', array(
+    //         'fields' => array(
+    //             'Customer.id', 'Customer.customer_name_code'
+    //         ),
+    //     ));
+
+    //     $this->set('active_menu', 'report_revenue_period');
+    //     $this->set(compact(
+    //         'values', 'module_title', 'data_action',
+    //         'cities', 'customers'
+    //     ));
+
+    //     if($data_action == 'pdf'){
+    //         $this->layout = 'pdf';
+    //     }else if($data_action == 'excel'){
+    //         $this->layout = 'ajax';
+    //     } else {
+    //         $this->MkCommon->_layout_file('select');
+    //     }
+    // }
+
+    // public function report_revenue( $data_action = false ) {
+    //     $this->loadModel('City');
+    //     $module_title = __('Laporan Detail Revenue');
+    //     $values = array();
+    //     $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+    //     $dateTo = date('Y-m-d');
+
+    //     $this->set('sub_module_title', $module_title);
+    //     $options =  $this->Ttuj->Revenue->getData('paginate', array(
+    //         'conditions' => array(
+    //             'RevenueDetail.status' => 1,
+    //         ),
+    //         'contain' => array(
+    //             'Revenue',
+    //         ),
+    //     ), true, array(
+    //         'branch' => false,
+    //     ));
+
+    //     $params = $this->MkCommon->_callRefineParams($this->params, array(
+    //         'dateFrom' => $dateFrom,
+    //         'dateTo' => $dateTo,
+    //     ));
+    //     $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+    //     $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+    //     $options =  $this->Ttuj->Revenue->RevenueDetail->_callRefineParams($params, $options);
+
+    //     if(!empty($this->params['named'])){
+    //         $refine = $this->params['named'];
+
+    //         // Custom Otorisasi
+    //         $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Revenue', $options );
+    //     }
+
+    //     if( !empty($dateFrom) && !empty($dateTo) ) {
+    //         $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+    //     }
+
+    //     if( !empty($data_action) ){
+    //         $values = $this->Ttuj->Revenue->RevenueDetail->find('all', $options);
+    //     } else {
+    //         $this->loadModel('RevenueDetail');
+    //         $options['limit'] = Configure::read('__Site.config_pagination');
+    //         $this->paginate = $options;
+    //         $values = $this->paginate('RevenueDetail');
+    //     }
+
+    //     if( !empty($values) ) {
+    //         foreach ($values as $key => $value) {
+    //             $id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'id');
+    //             $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'ttuj_id');
+    //             $invoice_id = $this->MkCommon->filterEmptyField($value, 'RevenueDetail', 'invoice_id');
+    //             $branch_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'branch_id');
+                
+    //             $value = $this->Ttuj->getMerge($value, $ttuj_id);
+    //             $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+
+    //             $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
+    //             $customer_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'customer_id', $customer_id);
+
+    //             $from_city_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'from_city_id');
+    //             $from_city_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'from_city_id', $from_city_id);
+                
+    //             $to_city_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'to_city_id');
+    //             $city_id = $this->MkCommon->filterEmptyField($value, 'RevenueDetail', 'city_id', $to_city_id);
+
+    //             $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
+    //             $value = $this->Ttuj->Revenue->RevenueDetail->Invoice->getMerge($value, $invoice_id);
+    //             $value = $this->Ttuj->Revenue->RevenueDetail->City->getMerge($value, $city_id, 'ToCity');
+    //             $value = $this->City->getMerge($value, $from_city_id, 'FromCity');
+
+    //             $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
+    //             $truck_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'truck_id', $truck_id);
+    //             $value = $this->Ttuj->Truck->getMerge($value, $truck_id);
+
+    //             $values[$key] = $value;
+    //         }
+    //     }
+
+    //     $cities = $this->City->getListCities();
+    //     $customers = $this->Ttuj->Customer->getData('list', array(
+    //         'fields' => array(
+    //             'Customer.id', 'Customer.customer_name_code'
+    //         ),
+    //     ));
+
+    //     $this->set('active_menu', 'report_revenue');
+    //     $this->set(compact(
+    //         'values', 'module_title', 'data_action',
+    //         'cities', 'customers'
+    //     ));
+
+    //     if($data_action == 'pdf'){
+    //         $this->layout = 'pdf';
+    //     }else if($data_action == 'excel'){
+    //         $this->layout = 'ajax';
+    //     } else {
+    //         $this->MkCommon->_layout_file('select');
+    //     }
+    // }
 
     public function report_expense_per_truck( $data_action = false ) {
         $this->loadModel('Truck');

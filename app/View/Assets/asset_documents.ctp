@@ -1,3 +1,6 @@
+<?php
+        $payment_id = !empty($payment_id)?$payment_id:false;
+?>
 <div id="wrapper-modal-write">
     <?php 
             $modelName = false;
@@ -29,7 +32,18 @@
 
             $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
-            echo $this->element('blocks/assets/searchs/index');
+            echo $this->element('blocks/assets/searchs/index', array(
+                'urlBack' => array(
+                    'controller' => 'assets',
+                    'action' => 'asset_documents',
+                    'payment_id' => $payment_id,
+                ),
+                'urlForm' => array(
+                    'action' => 'search',
+                    'asset_documents',
+                    'payment_id' => $payment_id,
+                ),
+            ));
     ?>
     <div class="box-body table-responsive">
         <table class="table table-hover document-picker">

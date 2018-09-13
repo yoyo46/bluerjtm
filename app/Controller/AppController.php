@@ -49,7 +49,6 @@ class AppController extends Controller {
 	);
 
 	function beforeFilter() {
-		// debug(unserialize('a:2:{s:13:"GeneralLedger";a:3:{s:16:"transaction_date";s:10:"21/11/2016";s:4:"note";s:29:"biaya depresiasi bulan nov 16";s:18:"transaction_status";s:7:"posting";}s:19:"GeneralLedgerDetail";a:3:{s:6:"coa_id";a:2:{i:0;s:3:"234";i:1;s:3:"113";}s:5:"debit";a:2:{i:0;s:12:"2,000,000.00";i:1;s:4:"0.00";}s:6:"credit";a:2:{i:0;s:4:"0.00";i:1;s:12:"2,000,000.00";}}}'));die();
 		// Configure Default
 		$this->MkCommon->configureDefaultApp();
 
@@ -207,6 +206,15 @@ class AppController extends Controller {
 					'po_documents', 'search',
 				),
 				'spk' => array(
+					'search',
+				),
+				'assets' => array(
+					'search',
+				),
+				'insurances' => array(
+					'search',
+				),
+				'lakas' => array(
 					'search',
 				),
 			);

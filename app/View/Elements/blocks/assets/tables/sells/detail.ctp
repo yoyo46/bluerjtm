@@ -53,6 +53,7 @@
                     'escape' => false,
                     'title' => __('Daftar Asset'),
                     'class' => 'btn bg-maroon ajaxCustomModal',
+                    'allow' => true,
                 )), array(
                     'class' => "form-group",
                 ));

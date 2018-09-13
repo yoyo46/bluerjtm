@@ -6915,7 +6915,7 @@ class RmReportComponent extends Component {
 		            	)),
                 		'field_model' => 'ViewRevenueQty.date_revenue',
 		                'style' => 'text-align: center;',
-		                'data-options' => 'field:\'date_revenue\',width:100',
+		                'data-options' => 'field:\'date_revenue\',width:120',
 		                'align' => 'center',
 		                'mainalign' => 'center',
                 		'excel' => array(
@@ -6937,9 +6937,9 @@ class RmReportComponent extends Component {
 						'text' => Common::hashEmptyField($value, 'Customer.code'),
                 		'field_model' => 'CustomerNoType.code',
 		                'style' => 'text-align: center;',
-		                'data-options' => 'field:\'customer\',width:120',
+		                'data-options' => 'field:\'customer\',width:150',
 		                'align' => 'left',
-                		'fix_column' => true,
+                		// 'fix_column' => true,
 					),
 					__('No TTUJ') => array(
 						'text' => Common::hashEmptyField($value, 'ViewTtujQty.no_ttuj'),
@@ -6959,14 +6959,14 @@ class RmReportComponent extends Component {
 					),
 					__('Dari') => array(
 						'text' => Common::hashEmptyField($value, 'FromCity.name'),
-		                'data-options' => 'field:\'from_city\',width:100',
+		                'data-options' => 'field:\'from_city\',width:80',
 		                'align' => 'left',
 		                'mainalign' => 'center',
 					),
 					__('Tujuan') => array(
 						'text' => Common::hashEmptyField($value, 'ToCity.name'),
 		                'style' => 'text-align: center;',
-		                'data-options' => 'field:\'to_city\',width:100',
+		                'data-options' => 'field:\'to_city\',width:80',
 		                'align' => 'left',
 		                'mainalign' => 'center',
 					),
@@ -7306,8 +7306,9 @@ class RmReportComponent extends Component {
                 $nopol = Common::hashEmptyField($value, 'Ttuj.nopol', $nopol);
                 $nopol = Common::hashEmptyField($value, 'Revenue.nopol', $nopol);
 
-                $no_invoices = Set::extract('/Invoice/Invoice/no_invoice', $value);
-                $no_invoice = !empty($no_invoices)?implode(', ', $no_invoices):'-';
+                // $no_invoices = Set::extract('/Invoice/Invoice/no_invoice', $value);
+                // $no_invoice = !empty($no_invoices)?implode(', ', $no_invoices):'-';
+                $no_invoice = Common::hashEmptyField($value, 'Invoice.no_invoice');
 
                 if( !empty($is_charge) ) {
                     $totalPriceFormat = !empty($total_price_unit)?Common::getFormatPrice($total_price_unit):'-';
@@ -7351,7 +7352,7 @@ class RmReportComponent extends Component {
 		                'style' => 'text-align: center;',
 		                'data-options' => 'field:\'customer\',width:120',
 		                'align' => 'left',
-                		'fix_column' => true,
+                		// 'fix_column' => true,
 					),
 					__('No TTUJ') => array(
 						'text' => Common::hashEmptyField($value, 'Ttuj.no_ttuj'),

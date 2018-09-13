@@ -45,7 +45,7 @@
 
                     $fieldColumn = $this->Common->_generateShowHideColumn($dataColumns, 'field-table');
         ?>
-        <table class="table table-bordered easyui-datagrid" style="<?php echo !empty($_freeze)?'width: 100%;height: 550px;':''; ?>" singleSelect="true">
+        <table class="table table-bordered">
             <?php
                     if(!empty($fieldColumn)){
                         echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn), array(

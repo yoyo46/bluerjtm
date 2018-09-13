@@ -472,9 +472,10 @@ class AssetsController extends AppController {
         $values = $this->paginate('Asset');
         $values = $this->Asset->AssetGroup->getMergeAll($values, 'Asset');
 
-        $this->set('module_title', __('Asset'));
+        $title = __('Daftar Asset');
+        $this->set('module_title', $title);
         $this->set(compact(
-            'values', 'payment_id'
+            'values', 'payment_id', 'title'
         ));
     }
 

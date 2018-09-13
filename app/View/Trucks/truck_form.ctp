@@ -129,6 +129,7 @@
 										'empty' => __('Pilih Supir Truk'),
 										'id' => 'driverID',
 				    					'readonly' => $disabled,
+				    					'class' => 'form-control chosen-select',
 			    					));
 							?>
 		        		</div>

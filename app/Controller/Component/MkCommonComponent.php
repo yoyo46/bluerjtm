@@ -652,6 +652,7 @@ class MkCommonComponent extends Component {
 
             if( is_array($branchs) ) {
                 $moduleAllow = Configure::read('__Site.config_allow_module');
+                $moduleAllowDefault = Configure::read('__Site.allowed_module');
                 $branchAllow = Configure::read('__Site.Data.Branch.id');
 
                 $branchs = array_values($branchs);
@@ -660,7 +661,12 @@ class MkCommonComponent extends Component {
                 $extendName = !empty($this->controller->params['pass'][0])?$this->controller->params['pass'][0]:false;
                 $allowBranch = array_intersect($branchs, $branchAllow);
 
-                if( !empty($allowBranch) && !empty($branchs) ) {
+                $allowDefaults = !empty($moduleAllowDefault[$controllerName])?$moduleAllowDefault[$controllerName]:array();
+                $allowAction = in_array($actionName, $allowDefaults);
+
+                if( !empty($allowAction) ) {
+                    $result = true;
+                } else if( !empty($allowBranch) && !empty($branchs) ) {
                     foreach ($branchs as $key => $branch_id) {
                         if( !empty($moduleAllow[$branch_id]) ) {
                             if( !empty($moduleAllow[$branch_id][$controllerName]['action']) ) {

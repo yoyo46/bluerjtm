@@ -703,12 +703,14 @@
                     init: 'destroy',
                 });
 
-                if( $(data_change+' option:eq('+data_value+')').length <= 0 ) {
-                    $(data_change).append($('<option>', {
-                        value: data_value,
-                        text: data_text,
-                    }));
+                if( $(data_change+' option:eq('+data_value+')').length > 0 ) {
+                    $(data_change+' option[value='+data_value+']').remove();
                 }
+
+                $(data_change).append($('<option>', {
+                    value: data_value,
+                    text: data_text,
+                }));
 
                 $.callChoosen({
                     obj: $(data_change),

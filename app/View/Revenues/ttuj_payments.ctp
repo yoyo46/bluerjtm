@@ -122,8 +122,8 @@
                             $actionDoc .= $this->Html->link(__('Void'), array(
                                 'controller' => 'revenues',
                                 'action' => 'ttuj_payment_delete',
-                                $id,
                                 $action_type,
+                                $id,
                             ), array(
                                 'class' => 'btn btn-danger btn-xs ajaxModal',
                                 'data-action' => 'cancel_invoice',
