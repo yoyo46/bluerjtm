@@ -7,10 +7,10 @@ class Invoice extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'Kode Invoice harap diisi, atau masukan kode pattern pada group customer'
             ),
-            // 'isUnique' => array(
-            //     'rule' => array('isUnique'),
-            //     'message' => 'Kode Invoice telah terdaftar',
-            // ),
+            'checkUnique' => array(
+                'rule' => array('checkUnique'),
+                'message' => 'Kode Invoice telah terdaftar',
+            ),
         ),
         'invoice_date' => array(
             'notempty' => array(
@@ -322,6 +322,28 @@ class Invoice extends AppModel {
         }
 
         return $data;
+    }
+
+    function checkUnique () {
+        $id = $this->id;
+        $id = Common::hashEmptyField($this->data, 'Invoice.id', $id);
+
+        $no_invoice = !empty($this->data['Invoice']['no_invoice'])?$this->data['Invoice']['no_invoice']:false;
+        $value = $this->getData('count', array(
+            'conditions' => array(
+                'Invoice.no_invoice' => $no_invoice,
+                'Invoice.id NOT' => $id,
+            ),
+        ), true, array(
+            'status' => 'active',
+            'branch' => false,
+        ));
+        
+        if( !empty($value) ) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
 ?>

@@ -403,6 +403,9 @@ class PhpExcelComponent extends Component {
                     case 'string':
                         $type = PHPExcel_Cell_DataType::TYPE_STRING;
                         break;
+                    case 'number':
+                        $type = PHPExcel_Cell_DataType::TYPE_NUMERIC;
+                        break;
                 }
 
                 switch ($align) {

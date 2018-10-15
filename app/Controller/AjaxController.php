@@ -2573,7 +2573,7 @@ class AjaxController extends AppController {
 
 				if( !empty($default_msg) ) {
 	        		if( !empty($flagSave) ) {
-						$this->Log->logActivity( sprintf(__('Berhasil %s kpd group #%s utk semua module #%s di cabang #%s'), $default_msg, $group_id, $parent_id, $branch_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+						$this->Log->logActivity( sprintf(__('Berhasil %s kpd group #%s utk semua module #%s di cabang #%s'), $default_msg, $group_id, $parent_id, $branch_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $group_id );
 	        		} else {
 						$this->Log->logActivity( sprintf(__('Gagal %s kpd group #%s utk semua module #%s di cabang #%s'), $default_msg, $group_id, $parent_id, $branch_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $group_id );
 	        		}

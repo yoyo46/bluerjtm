@@ -35,6 +35,10 @@ class ReportsController extends AppController {
 					$limit = 30;
 					$this->limit_paging = 30;
 					break;
+				case 'ttuj_outstanding':
+					$limit = 50;
+					$this->limit_paging = 50;
+					break;
 			}
 
 			$type = ucwords($type);

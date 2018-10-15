@@ -18,6 +18,7 @@
                     )), 
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
+                    'id' => 'form-search',
                 ));
         ?>
         <div class="row">
@@ -247,6 +248,9 @@
             </div>
         </div>
         <?php 
+                echo $this->Form->hidden('title',array(
+                    'value'=> $sub_module_title,
+                ));
                 echo $this->Form->end();
         ?>
     </div>

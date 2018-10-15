@@ -4,236 +4,201 @@ class TtujOutstanding extends AppModel {
 	public $useTable = false;
 
 	public function paginate($conditions, $fields, $order, $limit, $page = 1, $recursive = null, $extra = array()) {
-        $this->Ttuj = ClassRegistry::init('Ttuj');
+        $this->ViewUangJalan = ClassRegistry::init('ViewUangJalan');
+        $this->ViewUangJalanDua = ClassRegistry::init('ViewUangJalanDua');
+        $this->ViewUangJalanExtra = ClassRegistry::init('ViewUangJalanExtra');
+        $this->ViewCommission = ClassRegistry::init('ViewCommission');
+        $this->ViewCommissionExtra = ClassRegistry::init('ViewCommissionExtra');
+        $this->ViewUangKuliMuat = ClassRegistry::init('ViewUangKuliMuat');
+        $this->ViewUangKuliBongkar = ClassRegistry::init('ViewUangKuliBongkar');
+        $this->ViewAsdp = ClassRegistry::init('ViewAsdp');
+        $this->ViewUangKawal = ClassRegistry::init('ViewUangKawal');
+        $this->ViewUangKeamanan = ClassRegistry::init('ViewUangKeamanan');
 
 		$page = !empty($page)?$page:1;
 	    $recursive = -1;
-	    $default_conditions = array(
-        	'TtujOutstanding.status' => 1,
-        	'TtujOutstanding.is_draft' => 0,
-    	);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewUangJalan->getDataSource();
 		$uj1Query = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'uang_jalan' AS data_type",
-		        	'paid_uang_jalan AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewUangJalan),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.uang_jalan_1 <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewUangJalan
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewUangJalanDua->getDataSource();
 		$uj2Query = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'uang_jalan_2' AS data_type",
-		        	'paid_uang_jalan_2 AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewUangJalanDua),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.uang_jalan_2 <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewUangJalanDua
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewUangJalanExtra->getDataSource();
 		$ujExtraQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'uang_jalan_extra' AS data_type",
-		        	'paid_uang_jalan_extra AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewUangJalanExtra),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.uang_jalan_extra <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewUangJalanExtra
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewCommission->getDataSource();
 		$commissionQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'commission' AS data_type",
-		        	'paid_commission AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewCommission),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.commission <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewCommission
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewCommissionExtra->getDataSource();
 		$commissionExtraQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'commission_extra' AS data_type",
-		        	'paid_commission_extra AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewCommissionExtra),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.commission_extra <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewCommissionExtra
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewUangKuliMuat->getDataSource();
 		$uangKuliQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'uang_kuli_muat' AS data_type",
-		        	'paid_uang_kuli_muat AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewUangKuliMuat),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.uang_kuli_muat <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewUangKuliMuat
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewUangKuliBongkar->getDataSource();
 		$uangKuliBongkarQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'uang_kuli_bongkar' AS data_type",
-		        	'paid_uang_kuli_bongkar AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewUangKuliBongkar),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.uang_kuli_bongkar <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewUangKuliBongkar
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewAsdp->getDataSource();
 		$asdpQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'asdp' AS data_type",
-		        	'paid_asdp AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewAsdp),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.asdp <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewAsdp
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewUangKawal->getDataSource();
 		$uangKawalQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'uang_kawal' AS data_type",
-		        	'paid_uang_kawal AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewUangKawal),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.uang_kawal <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewUangKawal
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewUangKeamanan->getDataSource();
 		$uangKeamananQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'uang_keamanan' AS data_type",
-		        	'paid_uang_keamanan AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewUangKeamanan),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.uang_keamanan <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewUangKeamanan
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewUangJalan->getDataSource();
 		$conditionsQuery = $db->conditionKeysToString($conditions);
 		$default_conditions = '';
 
@@ -258,234 +223,198 @@ class TtujOutstanding extends AppModel {
 	}
 
 	public function paginateCount($conditions = null, $recursive = 0, $extra = array()) {
-		$this->Ttuj = ClassRegistry::init('Ttuj');
+        $this->ViewUangJalan = ClassRegistry::init('ViewUangJalan');
+        $this->ViewUangJalanDua = ClassRegistry::init('ViewUangJalanDua');
+        $this->ViewUangJalanExtra = ClassRegistry::init('ViewUangJalanExtra');
+        $this->ViewCommission = ClassRegistry::init('ViewCommission');
+        $this->ViewCommissionExtra = ClassRegistry::init('ViewCommissionExtra');
+        $this->ViewUangKuliMuat = ClassRegistry::init('ViewUangKuliMuat');
+        $this->ViewUangKuliBongkar = ClassRegistry::init('ViewUangKuliBongkar');
+        $this->ViewAsdp = ClassRegistry::init('ViewAsdp');
+        $this->ViewUangKawal = ClassRegistry::init('ViewUangKawal');
+        $this->ViewUangKeamanan = ClassRegistry::init('ViewUangKeamanan');
 
-		$default_conditions = array(
-        	'TtujOutstanding.status' => 1,
-        	'TtujOutstanding.is_draft' => 0,
-    	);
-
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewUangJalan->getDataSource();
 		$uj1Query = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'uang_jalan' AS data_type",
-		        	'paid_uang_jalan AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewUangJalan),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.uang_jalan_1 <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewUangJalan
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewUangJalanDua->getDataSource();
 		$uj2Query = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'uang_jalan_2' AS data_type",
-		        	'paid_uang_jalan_2 AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewUangJalanDua),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.uang_jalan_2 <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewUangJalanDua
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewUangJalanExtra->getDataSource();
 		$ujExtraQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'uang_jalan_extra' AS data_type",
-		        	'paid_uang_jalan_extra AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewUangJalanExtra),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.uang_jalan_extra <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewUangJalanExtra
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewCommission->getDataSource();
 		$commissionQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'commission' AS data_type",
-		        	'paid_commission AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewCommission),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.commission <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewCommission
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewCommissionExtra->getDataSource();
 		$commissionExtraQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'commission_extra' AS data_type",
-		        	'paid_commission_extra AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewCommissionExtra),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.commission_extra <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewCommissionExtra
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewUangKuliMuat->getDataSource();
 		$uangKuliQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'uang_kuli_muat' AS data_type",
-		        	'paid_uang_kuli_muat AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewUangKuliMuat),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.uang_kuli_muat <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewUangKuliMuat
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewUangKuliBongkar->getDataSource();
 		$uangKuliBongkarQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'uang_kuli_bongkar' AS data_type",
-		        	'paid_uang_kuli_bongkar AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewUangKuliBongkar),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.uang_kuli_bongkar <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewUangKuliBongkar
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewAsdp->getDataSource();
 		$asdpQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'asdp' AS data_type",
-		        	'paid_asdp AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewAsdp),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.asdp <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewAsdp
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewUangKawal->getDataSource();
 		$uangKawalQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'uang_kawal' AS data_type",
-		        	'paid_uang_kawal AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewUangKawal),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.uang_kawal <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewUangKawal
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewUangKeamanan->getDataSource();
 		$uangKeamananQuery = $db->buildStatement(
 		    array(
 		        'fields'     => array(
 		        	'TtujOutstanding.*',
-		        	"'uang_keamanan' AS data_type",
-		        	'paid_uang_keamanan AS paid_status',
 	        	),
-		        'table'      => $db->fullTableName($this->Ttuj),
+		        'table'      => $db->fullTableName($this->ViewUangKeamanan),
 		        'alias'      => 'TtujOutstanding',
 		        'limit'      => null,
 		        'offset'     => null,
 		        'joins'      => array(),
-		        'conditions' => array_merge($default_conditions, array(
-		        	'TtujOutstanding.uang_keamanan <>' => 0,
-	        	)),
+		        'conditions' => array(),
 		        'order'      => null,
 		        'group'      => null
 		    ),
-		    $this->Ttuj
+		    $this->ViewUangKeamanan
 		);
 
-		$db = $this->Ttuj->getDataSource();
+		$db = $this->ViewUangJalan->getDataSource();
 		$conditionsQuery = $db->conditionKeysToString($conditions);
 		$default_conditions = '';
 

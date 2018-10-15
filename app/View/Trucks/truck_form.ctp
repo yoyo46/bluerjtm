@@ -474,7 +474,7 @@
 		        	?>
 	        		<div class="list-alocation">
 		        		<?php 
-								echo $this->Form->label('TruckCustomer.customer_id.',__('Alokasi *')); 
+								echo $this->Form->label('TruckCustomer.customer_id.',__('Alokasi')); 
 		        		?>
 		        		<div class="row">
 		        			<div class="col-sm-11">

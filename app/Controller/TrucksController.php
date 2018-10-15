@@ -2566,7 +2566,7 @@ class TrucksController extends AppController {
                                 ));
                             } else {
                                 $this->MkCommon->setCustomFlash(sprintf(__('kelengkapan truk gagal %s'), $message), 'error');
-                                $this->Log->logActivity(sprintf(__('kelengkapan truk gagal %s #%s'), $message, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $truck_id ); 
+                                $this->Log->logActivity(sprintf(__('kelengkapan truk gagal %s #%s'), $message, $truck_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $truck_id ); 
                             }
                         } else {
                             $this->MkCommon->setCustomFlash(__('Mohon lengkapi Perlengkapan Truk'), 'error'); 
