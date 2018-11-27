@@ -103,6 +103,7 @@ class AppController extends Controller {
 		    	} else {
 			    	$list_branches = $this->GroupBranch->getData('list', array(
 			    		'conditions' => array(
+			    			'Branch.status' => true,
 			    			'GroupBranch.group_id' => $GroupId,
 		    			),
 		    			'contain' => array(

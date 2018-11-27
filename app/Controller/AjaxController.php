@@ -921,7 +921,7 @@ class AjaxController extends AppController {
 			'status' => 'all',
 			'plant' => true,
 		));
-		$from_city_id = $this->MkCommon->filterEmptyField($data_ttuj, 'Ttuj', 'from_city_id', $from_city_id);
+		$from_city_id = !empty($from_city_id)?$from_city_id:$this->MkCommon->filterEmptyField($data_ttuj, 'Ttuj', 'from_city_id');
 
 		if( !empty($truck_id) ) {
 			$truck = $this->Ttuj->Truck->getMerge(array(), $truck_id);

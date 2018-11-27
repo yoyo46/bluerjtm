@@ -304,12 +304,14 @@ class PurchaseOrderDetail extends AppModel {
                 $qty_retur = $this->Product->ProductReturDetail->getTotalRetur(false, $id, 'po', $product_id);
                 $qty -= $qty_retur;
 
-                $total = ($qty*$price) - $disc;
+                // $total = ($qty*$price) - $disc;
+                $total = $price - $disc;
 
                 if( empty($ppn_include) ) {
                     $total += $ppn;
                 }
                 
+                $total = ($qty*$total);
                 $grandtotal += $total;
             }
         }

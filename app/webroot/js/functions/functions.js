@@ -1196,6 +1196,7 @@ var duplicate_row = function(){
 var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge, qty ) {
     var ttuj_id = $('#getTtujInfoRevenue').val();
     var customer_id = $('.change-customer-revenue').val();
+    var from_city_id = $.checkUndefined($('#fromCityId').val(), 0);
     var to_city_id = $('#toCityId').val();
     var data_type = $.checkUndefined($('.revenue-data-type').val(), 0);
 
@@ -1212,7 +1213,7 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge,
         group_motor_id = 0;
     }
     
-    var url = '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/0/0/';
+    var url = '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+ from_city_id +'/0/';
     
     if( data_type == 'manual' ) {
         customer_id = $('#customer-revenue-manual').val();
