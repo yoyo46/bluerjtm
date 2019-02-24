@@ -45,7 +45,13 @@ if($action_print == 'pdf'){
 	$customer_name = sprintf(': %s', $invoice['Customer']['name']);
 	$total = sprintf(': %s', $this->Html->tag('strong', $this->Number->currency($invoice['Invoice']['total'], Configure::read('__Site.config_currency_second_code'), array('places' => 0))));
 	$terbilang = sprintf(': %s', $this->Common->terbilang($invoice['Invoice']['total']));
-	$totalUnit = sprintf(__(': JASA ANGKUT SEPEDA MOTOR<br>&nbsp;&nbsp;Sebanyak %s unit<br>&nbsp;&nbsp;PERIODE : <i>%s s/d %s</i>'), $qty_unit, $this->Common->customDate($invoice['Invoice']['period_from'], 'd F Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd F Y'));
+
+	if( !empty($invoice['Invoice']['note']) ) {
+		$totalUnit = str_replace(PHP_EOL, '<br>', $invoice['Invoice']['note']);
+	} else {
+		$totalUnit = sprintf(__(': JASA ANGKUT SEPEDA MOTOR<br>&nbsp;&nbsp;Sebanyak %s unit<br>&nbsp;&nbsp;PERIODE : <i>%s s/d %s</i>'), $qty_unit, $this->Common->customDate($invoice['Invoice']['period_from'], 'd F Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd F Y'));
+	}
+
 	$dateLocation = sprintf('%s, %s', $this->Common->getDataSetting( $setting, 'pusat' ), date('d F Y'));
 	$billing_name = $full_name;
 	// $note = sprintf(__('*Mohon pembayaran dilakukan paling lambat %s hari dari tanggal kwitansi.'), $invoice['Invoice']['due_invoice']);
@@ -247,21 +253,29 @@ readfile($path.'/'.$filename);
 				<?php 
 						echo $this->Html->tag('td', __('Untuk pembayaran'));
 
-                        switch ($invoice['Invoice']['tarif_type']) {
-                        	case 'kuli':
-                        		$ket = __('BIAYA KULI MUAT SEPEDA MOTOR');
-                        		break;
+						if( !empty($invoice['Invoice']['note']) ) {
+							$invoice_note = str_replace(PHP_EOL, '<br>', $invoice['Invoice']['note']);
+						} else {
+	                        switch ($invoice['Invoice']['tarif_type']) {
+	                        	case 'kuli':
+	                        		$ket = __('BIAYA KULI MUAT SEPEDA MOTOR');
+	                        		break;
 
-                        	case 'asuransi':
-                        		$ket = __('BIAYA ASURANSI SEPEDA MOTOR');
-                        		break;
-                        	
-                        	default:
-                        		$ket = __('JASA ANGKUT SEPEDA MOTOR');
-                        		break;
-                        }
+	                        	case 'asuransi':
+	                        		$ket = __('BIAYA ASURANSI SEPEDA MOTOR');
+	                        		break;
+	                        	
+	                        	default:
+	                        		$ket = __('JASA ANGKUT SEPEDA MOTOR');
+	                        		break;
+	                        }
 
-						echo $this->Html->tag('td', sprintf(__(': %s<br>&nbsp;&nbsp;Sebanyak %s unit<br>&nbsp;&nbsp;PERIODE : <i>%s s/d %s</i>'), $ket, $qty_unit, $this->Common->customDate($invoice['Invoice']['period_from'], 'd F Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd F Y')), array(
+							$invoice_note = $this->Html->tag('td', sprintf(__(': %s<br>&nbsp;&nbsp;Sebanyak %s unit<br>&nbsp;&nbsp;PERIODE : <i>%s s/d %s</i>'), $ket, $qty_unit, $this->Common->customDate($invoice['Invoice']['period_from'], 'd F Y'), $this->Common->customDate($invoice['Invoice']['period_to'], 'd F Y')), array(
+								'style' => 'padding-left: 5px;',
+							));
+						}
+
+						echo $this->Html->tag('td', $invoice_note, array(
 							'style' => 'padding-left: 5px;',
 						));
 				?>

@@ -16,6 +16,7 @@ if($action_print == 'pdf'){
     $tcpdf->setHeaderFont(array($textfont,'',10));
     $tcpdf->xheadercolor = array(255,255,255);
     $tcpdf->AddPage('L');
+    
     // Table with rowspans and THEAD
     $table_tr_head = 'background-color: #ccc; border-right: 1px solid #FFFFFF; color: #333; font-weight: bold; padding: 0 10px; text-align: center;';
     $table_th = 'padding-top: 3px';
@@ -286,7 +287,6 @@ if($action_print == 'pdf'){
 				}
 
 				if( !empty($ppn) || !empty($pph) ) {
-					// $grandTotalInvoice = $grandTotal + $ppn - $pph;
 					$grandTotalInvoice = $grandTotal + $ppn;
 					$colom = $this->Html->tag('td', '&nbsp;', array(
 						'colspan' => $totalMergeTotal+1,
@@ -324,7 +324,6 @@ if($action_print == 'pdf'){
     $Customer = $invoice['Customer']['name'];
     $Periode = $invoice['Invoice']['period_from'].' sampai '.$invoice['Invoice']['period_to'];
     $masa_berlaku = $invoice['Invoice']['term_of_payment'];
-    // $masa_berlaku = $invoice['Invoice']['due_invoice'];
 
     $title_tipe_invoice = '';
     if( $action == 'tarif_name' ) {
@@ -339,8 +338,6 @@ $tbl = <<<EOD
 	<h2 class="grid_8" style="text-align: center;">Laporan $date_title</h2>
 	$content
 EOD;
-// echo $tbl;
-// die();
 
 // output the HTML content
 $tcpdf->writeHTML($tbl, true, false, false, false, '');
@@ -382,10 +379,6 @@ $tcpdf->Output($path.'/'.$filename, 'F');
                 ));
                 echo $this->Common->_getPrint();
             }
-
-     //    echo $this->element('blocks/common/tables/logo', array(
-     //    	'value' => $invoice,
-    	// ));
 ?>
 <div class="clear"></div>
 <div class="invoice-print">

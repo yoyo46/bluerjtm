@@ -54,6 +54,12 @@ class Invoice extends AppModel {
                 'message' => 'Jenis tarif harap dipilih'
             ),
         ),
+        'note' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Keterangan harap diisi'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(
