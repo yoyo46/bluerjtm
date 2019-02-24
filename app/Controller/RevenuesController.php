@@ -6920,7 +6920,8 @@ class RevenuesController extends AppController {
                                     $detail = $this->Ttuj->getMerge($detail, $ttuj_id);
                                     $detail = $this->Ttuj->Truck->getMerge($detail, $truck_id);
                                     
-                                    $resultDetails[$price_unit][] = $detail;
+                                    // $resultDetails[$price_unit][] = $detail;
+                                    $resultDetails[0][] = $detail;
                                     $invoice['InvoiceDetail'][$key] = $detail;
                                 }
 
@@ -7678,6 +7679,7 @@ class RevenuesController extends AppController {
         $invoice = $this->Ttuj->TtujPaymentDetail->TtujPayment->getData('first', array(
             'conditions' => array(
                 'TtujPayment.id' => $id,
+                'TtujPayment.is_canceled' => 0,
             ),
             'contain' => array(
                 'TtujPaymentDetail',

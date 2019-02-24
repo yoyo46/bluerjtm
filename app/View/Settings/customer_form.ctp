@@ -156,6 +156,25 @@
 				?>
 		    </div>
 		</div>
+		<div class="box box-success">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Pengaturan Invoice'); ?></h3>
+		    </div>
+		    <div class="box-body">
+		        <div class="form-group">
+			        <div class="checkbox aset-handling">
+		                <label>
+		                    <?php 
+									echo $this->Form->checkbox('is_diff_periode',array(
+										'label'=> false, 
+										'required' => false,
+									)).__('Perbolehkan beda periode saat Invoice?');
+							?>
+		                </label>
+		            </div>
+		        </div>
+		    </div>
+		</div>
 	</div>
 	<?php
 	/*

@@ -80,6 +80,7 @@ class PurchaseOrderDetail extends AppModel {
             case 'unreceipt':
                 $default_options['conditions']['PurchaseOrderDetail.status'] = 1;
                 $default_options['conditions']['PurchaseOrderDetail.receipt_status <>'] = 'full';
+                $default_options['conditions']['PurchaseOrderDetail.retur_status <>'] = 'full';
                 break;
             case 'unretur':
                 $default_options['conditions']['PurchaseOrderDetail.status'] = 1;

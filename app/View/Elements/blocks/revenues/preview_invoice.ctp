@@ -3,6 +3,11 @@
 </style>
 <?php
 		$data_print = !empty($data_print)?$data_print:'invoice';
+		$invoice_pattern_number = !empty($invoice_pattern_number)?$invoice_pattern_number:false;
+		$invoice_idx = Common::hashEmptyField($invoice_pattern_number, 'last_number');
+		$invoice_min_digit = Common::hashEmptyField($invoice_pattern_number, 'min_digit');
+		$invoice_pattern = Common::hashEmptyField($invoice_pattern_number, 'pattern');
+
 		$footerGrandTotal = 0;
 		$footerGrandTotalUnit = 0;
 		$idx = 0;
@@ -20,7 +25,7 @@
 				}
 ?>
 <table border="1" width="100%" style="margin-top: 20px;">
-	<?php 
+	<?php
 			if( !in_array($data_print, array( 'date', 'hso-smg', 'sa' )) ) {
 	?>
 	<tr>
@@ -45,6 +50,15 @@
 		</th>
 	</tr>
 	<?php 
+			}
+			
+			if( !empty($invoice_pattern_number) ) {
+				echo $this->Html->tag('tr', 
+					$this->Html->tag('th', __('No. Invoice: %s%s', str_pad($invoice_idx, $invoice_min_digit, '0', STR_PAD_LEFT), $invoice_pattern), array(
+						'colspan' => $totalMerge,
+						'style' => 'text-transform:uppercase;text-align:left;',
+					))
+				);
 			}
 	?>
 	<tr>
@@ -359,6 +373,7 @@
 	?>
 </table>
 <?php
+				$invoice_idx++;
 			}
 		} else {
             echo $this->Html->tag('p', $this->Html->tag('td', __('Data belum tersedia.'), array(

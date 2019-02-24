@@ -163,6 +163,24 @@
 			                </label>
 			            </div>
 			    	</div>
+			    	<div class="form-group">
+			    		<div class="checkbox">
+			                <label>
+			                	<?php 
+			                			echo $this->Form->checkbox('is_neraca').' Tampil di Neraca?';
+			                	?>
+			                </label>
+			            </div>
+			    	</div>
+			    	<div class="form-group">
+			    		<div class="checkbox">
+			                <label>
+			                	<?php 
+			                			echo $this->Form->checkbox('is_laba_rugi').' Tampil di Laba Rugi?';
+			                	?>
+			                </label>
+			            </div>
+			    	</div>
 		<?php
 				}
 		?>

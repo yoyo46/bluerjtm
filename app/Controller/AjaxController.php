@@ -982,6 +982,7 @@ class AjaxController extends AppController {
             );
         }
 
+        $this->Revenue->RevenueDetail->virtualFields['total_qty_unit'] = 'SUM(RevenueDetail.qty_unit)';
         $this->Revenue->RevenueDetail->virtualFields['total'] = 'SUM(RevenueDetail.total_price_unit)';
         $this->Revenue->RevenueDetail->virtualFields['period_to'] = 'MAX(Revenue.date_revenue)';
         $this->Revenue->RevenueDetail->virtualFields['period_from'] = 'MIN(Revenue.date_revenue)';
@@ -1025,16 +1026,18 @@ class AjaxController extends AppController {
 			$total = $this->MkCommon->filterEmptyField($revenueDetail, 'RevenueDetail', 'total');
 			$period_from = $this->MkCommon->filterEmptyField($revenueDetail, 'RevenueDetail', 'period_from');
 			$period_to = $this->MkCommon->filterEmptyField($revenueDetail, 'RevenueDetail', 'period_to');
+			$is_diff_periode = Common::hashEmptyField($customer, 'Customer.is_diff_periode');
+			$total_qty_unit = $this->MkCommon->filterEmptyField($revenueDetail, 'RevenueDetail', 'total_qty_unit');
 
 			$monthFrom = $this->MkCommon->customDate($period_from, 'Y-m');
 			$monthTo = $this->MkCommon->customDate($period_to, 'Y-m');
 
-			$period_from = $this->MkCommon->customDate($period_from, 'd/m/Y');
-			$period_to = $this->MkCommon->customDate($period_to, 'd/m/Y');
+			$period_from_tmp = $this->MkCommon->customDate($period_from, 'd/m/Y');
+			$period_to_tmp = $this->MkCommon->customDate($period_to, 'd/m/Y');
 			
 			$this->request->data['Invoice']['bank_id'] = !empty($customer['Customer']['bank_id'])?$customer['Customer']['bank_id']:false;
-			$this->request->data['Invoice']['period_from'] = $period_from;
-			$this->request->data['Invoice']['period_to'] = $period_to;
+			$this->request->data['Invoice']['period_from'] = $period_from_tmp;
+			$this->request->data['Invoice']['period_to'] = $period_to_tmp;
 			$this->request->data['Invoice']['total'] = $total;
 			$this->request->data['Invoice']['total_revenue'] = $total;
 			$this->request->data['Invoice']['total_pph'] = $total_pph;
@@ -1042,7 +1045,7 @@ class AjaxController extends AppController {
 			$customer_group_id = $this->MkCommon->filterEmptyField($customer, 'Customer', 'customer_group_id');
 			$customer = $this->Customer->CustomerGroup->getMerge($customer, $customer_group_id);
 
-			if( $monthFrom != $monthTo ) {
+			if( $monthFrom != $monthTo && empty($is_diff_periode) ) {
 		        $msg = array(
 		        	'error' => 1,
 		        	'text' => sprintf(__('Revenue dengan periode bulan yang berbeda tidak bisa dibuatkan invoice( %s s/d %s ). Mohon cek kembali revenue Anda.'), $this->request->data['Invoice']['period_from'], $this->request->data['Invoice']['period_to']),
@@ -1050,6 +1053,27 @@ class AjaxController extends AppController {
 	    	} else if( !empty($customer['CustomerGroupPattern']) ) {
                 $this->request->data['Invoice']['pattern'] = $this->MkCommon->getNoInvoice( $customer );
 			}
+
+			switch ($tarif_type) {
+            	case 'kuli':
+            		$ket = __('BIAYA KULI MUAT SEPEDA MOTOR');
+            		break;
+
+            	case 'asuransi':
+            		$ket = __('BIAYA ASURANSI SEPEDA MOTOR');
+            		break;
+
+            	case 'subsidi':
+            		$ket = __('BIAYA SUBSIDI SEPEDA MOTOR');
+            		break;
+            	
+            	default:
+            		$ket = __('JASA ANGKUT SEPEDA MOTOR');
+            		break;
+            }
+
+            $ket = strtolower($ket);
+			$this->request->data['Invoice']['note'] = __('%s%sSebanyak %s unit%sPeriode : %s', ucwords($ket), PHP_EOL, $total_qty_unit, PHP_EOL, Common::getCombineDate($period_from, $period_to, 'long', 's/d'));
 		}
 
 		$this->set(compact(
@@ -1087,6 +1111,7 @@ class AjaxController extends AppController {
 
 	function previewInvoice($customer_id = false, $invoice_type = 'angkut', $action = false){
 		$this->loadModel('Revenue');
+		$this->loadModel('Customer');
 
         $head_office = Configure::read('__Site.config_branch_head_office');
         $elementRevenue = false;
@@ -1115,6 +1140,24 @@ class AjaxController extends AppController {
             $revenue_detail = $this->Revenue->RevenueDetail->getPreviewInvoice($revenue_id, $invoice_type, $action, 'preview');
 		}
 
+		switch ($action) {
+			case 'tarif':
+			case 'tarif_name':
+		        $customer = $this->Customer->getMerge(array(), $customer_id);
+		        $customer = $this->Customer->getMergeList($customer, array(
+		        	'contain' => array(
+		        		'CustomerGroup' => array(
+		        			'contain' => array(
+		        				'CustomerGroupPattern',
+		        			),
+		        		),
+		        	),
+		        ));
+
+		        $invoice_pattern_number = $this->MkCommon->getNoInvoice( $customer, 'all' );
+				break;
+		}
+
 		$this->layout = 'ajax';
 		$layout_css = array(
 			'print',
@@ -1123,7 +1166,7 @@ class AjaxController extends AppController {
 		$this->set('data_print', 'preview');
 		$this->set(compact(
 			'revenue_detail', 'action', 'layout_css',
-			'invoice_type'
+			'invoice_type', 'invoice_pattern_number'
 		));
 	}
 

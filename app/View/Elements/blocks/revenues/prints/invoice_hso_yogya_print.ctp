@@ -58,25 +58,25 @@
 						$idx = 1;
 
 						foreach ($resultDetails as $price_unit => $values) {
-							$price_unit = $this->Common->getFormatPrice($price_unit);
+							// $price_unit = $this->Common->getFormatPrice($price_unit);
 			?>
 				<table border="1" width="100%" style="margin-top: 20px;<?php echo $table; ?>">
 				<?php 
 	                    if( !empty($fieldColumn) ) {
-	                    	if( $idx == 2 ) {
-	                    		$label = $this->Html->tag('tr', 
-		                        	$this->Html->tag('td', __('%s - CBR/PCX', $tarif_name), array(
-			                        	'style' => 'text-transform:uppercase;text-align:center;font-weight: bold;',
-			                        	'colspan' => '10',
-		                        	)), array(
-		                        	'style' => $table_tr_head,
-	                        	));
-	                    	} else {
-	                    		$label = '';
-	                    	}
+	                    	// if( $idx == 2 ) {
+	                    	// 	$label = $this->Html->tag('tr', 
+		                    //     	$this->Html->tag('td', __('%s - CBR/PCX', $tarif_name), array(
+			                   //      	'style' => 'text-transform:uppercase;text-align:center;font-weight: bold;',
+			                   //      	'colspan' => '10',
+		                    //     	)), array(
+		                    //     	'style' => $table_tr_head,
+	                     //    	));
+	                    	// } else {
+	                    	// 	$label = '';
+	                    	// }
 
 	                        echo $this->Html->tag('thead', 
-	                        	$label.
+	                        	// $label.
 	                        	$this->Html->tag('tr', $fieldColumn, array(
 		                        	'style' => $table_tr_head,
 	                        	)), array(
@@ -223,6 +223,7 @@
 					?>
 				</tbody>
 				<?php 
+						/*
 						if( $idx == count($resultDetails) ) {
 							$totalUnitTfoot = $this->Common->getFormatPrice($totalUnitTfoot);
 							$totalPriceUnitTfoot = $this->Common->getFormatPrice($totalPriceUnitTfoot);
@@ -252,6 +253,7 @@
 				</tfoot>
 				<?php
 						}
+						*/
 				?>
 			</table>
 			<?php 

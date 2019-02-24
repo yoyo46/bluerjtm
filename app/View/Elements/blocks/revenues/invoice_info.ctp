@@ -80,6 +80,16 @@
 		</div>
 	</div>
 </div>
+<div class="form-group">
+	<?php 
+			echo $this->Form->input('Invoice.note',array(
+				'label'=> __('Keterangan *'), 
+				'class'=>'form-control',
+				'required' => false,
+				'type' => 'textarea',
+			));
+	?>
+</div>
 <?php 
 		echo $this->Form->hidden('Invoice.pattern',array(
 			'id' => 'pattern-code',

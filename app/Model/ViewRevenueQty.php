@@ -40,8 +40,7 @@ class ViewRevenueQty extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'ViewRevenueQty.created' => 'DESC',
-                'ViewRevenueQty.revenue_id' => 'DESC',
+                'ViewRevenueQty.id' => 'DESC',
             ),
             'contain' => array(),
             'fields' => array(),

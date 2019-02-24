@@ -148,7 +148,7 @@ class Invoice extends AppModel {
     }
 
     function getNoInvoice( $customer_id, $action = 'tarif' ){
-        $last_invoice = $this->getData('paginate', array(
+        $last_invoice = $this->getData('first', array(
             'conditions' => array(
                 'Invoice.customer_id' => $customer_id,
                 'Invoice.type_invoice' => $action,
@@ -159,7 +159,6 @@ class Invoice extends AppModel {
         ), true, array(
             'status' => 'all',
         ));
-        debug($last_invoice);die();
 
         if(!empty($last_invoice)){
             $arr_explode = explode('/', $last_invoice['Invoice']['no_invoice']);

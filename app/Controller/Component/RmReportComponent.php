@@ -4548,7 +4548,13 @@ class RmReportComponent extends Component {
 		$options = array(
 			'conditions' => array(
 				'Coa.level' => 4,
-                'Coa.coa_profit_loss >=' => 3,
+				array(
+					'OR' => array(
+                		'Coa.is_laba_rugi' => 1,
+                		'Coa.level <>' => 4,
+					),
+				),
+                // 'Coa.coa_profit_loss >=' => 3,
 			),
 			'order' => array(
 				'Coa.parent_id',
@@ -4579,7 +4585,13 @@ class RmReportComponent extends Component {
 
         $parents = $this->controller->Coa->getData('threaded', array(
             'conditions' => array(
-                'Coa.coa_profit_loss >=' => 3,
+				array(
+					'OR' => array(
+                		'Coa.is_laba_rugi' => 1,
+                		'Coa.level <>' => 4,
+					),
+				),
+                // 'Coa.coa_profit_loss >=' => 3,
                 'Coa.level <>' => 4,
                 'Coa.status' => 1,
             ),
@@ -4826,7 +4838,13 @@ class RmReportComponent extends Component {
 		$options = array(
 			'conditions' => array(
 				'Coa.level' => 4,
-                'Coa.coa_balance_sheets <' => 3,
+				array(
+					'OR' => array(
+                		'Coa.is_neraca' => 1,
+                		'Coa.level <>' => 4,
+					),
+				),
+                // 'Coa.coa_balance_sheets <' => 3,
 			),
 			'order' => array(
 				'Coa.parent_id',
@@ -4857,7 +4875,13 @@ class RmReportComponent extends Component {
 
         $parents = $this->controller->Coa->getData('threaded', array(
             'conditions' => array(
-                'Coa.coa_balance_sheets <' => 3,
+				array(
+					'OR' => array(
+                		'Coa.is_neraca' => 1,
+                		'Coa.level <>' => 4,
+					),
+				),
+                // 'Coa.coa_balance_sheets <' => 3,
                 'Coa.level <>' => 4,
                 'Coa.status' => 1,
             ),
@@ -4870,7 +4894,7 @@ class RmReportComponent extends Component {
         ));
         $data = $this->controller->Coa->_callGenerateParentByType($parents, $tmp);
 
-        $this->controller->User->Journal->virtualFields['balancing'] = 'CASE WHEN Coa.type = \'debit\' THEN IFNULL(SUM(Journal.debit) - SUM(Journal.credit), 0) ELSE IFNULL(SUM(Journal.credit) - SUM(Journal.debit), 0) END';
+        $this->controller->User->Journal->virtualFields['balancing'] = 'IFNULL(SUM(Journal.debit) - SUM(Journal.credit), 0)';
         $this->controller->User->Journal->virtualFields['date_month'] = 'DATE_FORMAT(Journal.date, \'%Y-%m\')';
         $this->controller->User->Journal->virtualFields['index'] = 'Journal.coa_id';
         $summaryBalances = $this->controller->User->Journal->getData('list', array(
@@ -4893,7 +4917,13 @@ class RmReportComponent extends Component {
     		),
 			'conditions' => array(
 				'Coa.level' => 4,
-                'Coa.coa_profit_loss >=' => 3,
+				array(
+					'OR' => array(
+                		'Coa.is_laba_rugi' => 1,
+                		'Coa.level <>' => 4,
+					),
+				),
+                // 'Coa.coa_profit_loss >=' => 3,
 			),
         ));
         

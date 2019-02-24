@@ -732,7 +732,8 @@ class CashbanksController extends AppController {
     function cashbank_delete($id){
         $locale = $this->CashBank->getData('first', array(
             'conditions' => array(
-                'CashBank.id' => $id
+                'CashBank.id' => $id,
+                'CashBank.is_rejected' => 0,
             )
         ), array(
             'branch' => false,

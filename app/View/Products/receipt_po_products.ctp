@@ -105,7 +105,9 @@
                                 'value' => $id,
                             )));
                             echo $this->Html->tag('td', $name);
-                            echo $this->Html->tag('td', $note);
+                            echo $this->Html->tag('td', $note, array(
+                                'class' => 'removed',
+                            ));
                             echo $this->Html->tag('td', $unit, array(
                                 'class' => 'text-center',
                             ));
