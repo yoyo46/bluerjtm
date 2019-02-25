@@ -7390,6 +7390,12 @@ class RmReportComponent extends Component {
 		                'data-options' => 'field:\'no_ttuj\',width:100',
 		                'align' => 'left',
 					),
+					__('No. SJ') => array(
+						'text' => Common::hashEmptyField($value, 'RevenueDetail.no_sj'),
+                		'field_model' => 'RevenueDetail.no_sj',
+		                'data-options' => 'field:\'no_sj\',width:100',
+		                'align' => 'left',
+					),
 					__('Nopol') => array(
 						'text' => $nopol,
                 		'field_model' => 'Revenue.nopol',

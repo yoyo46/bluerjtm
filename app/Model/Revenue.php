@@ -89,7 +89,6 @@ class Revenue extends AppModel {
                 // 'Revenue.import_code' => 0,
             ),
             'order'=> array(
-                'Revenue.created' => 'DESC',
                 'Revenue.id' => 'DESC',
             ),
             'contain' => array(),
