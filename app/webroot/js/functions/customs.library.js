@@ -1647,6 +1647,7 @@
         $.serialNumber();
         $.handle_toggle();
         $.new_handle_toggle();
+        $.FromCityRevenue();
     }
 
     $.checkAll = function() {
@@ -2705,6 +2706,26 @@
                 }
 
                 $('.grandtotal-calc').html($.formatDecimal(total, 2));
+            });
+        }
+    }
+
+    $.FromCityRevenue = function(options){
+        var settings = $.extend({
+            obj: $('.from-city-revenue-change'),
+        }, options );
+
+        if( settings.obj.length > 0 ) {
+            settings.obj.change(function(){
+                var to_cities = $('.city-revenue-change');
+
+                if( to_cities.length > 0 ) {
+                    $.each( to_cities, function( i, val ) {
+                        var self = $(this);
+
+                        self.trigger('change');
+                    });
+                }
             });
         }
     }

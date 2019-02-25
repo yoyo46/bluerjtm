@@ -1256,8 +1256,7 @@ var city_revenue_change = function( obj_city, obj_tipe_motor ){
         obj_tipe_motor = $('.revenue-group-motor')
     }
 
-    obj_city.off('change');
-    obj_city.change(function(){
+    obj_city.off('change').change(function(){
         var self = $(this);
         var val = self.val();
         var parent = self.parents('tr');
@@ -1267,8 +1266,7 @@ var city_revenue_change = function( obj_city, obj_tipe_motor ){
         changeDetailRevenue( parent, val, group_motor_id, 1, qty );
     });
 
-    obj_tipe_motor.off('change');
-    obj_tipe_motor.change(function() {
+    obj_tipe_motor.off('change').change(function() {
         var self = $(this);
         var val = self.val();
         var parent = self.parents('tr');
@@ -2367,6 +2365,8 @@ function findInfoTTujRevenue(url){
                     obj: $('#customer-form .chosen-select,#ttuj-info .chosen-select,.city-revenue-change.chosen-select'),
                 });
             }
+
+            $.FromCityRevenue($(response).filter('.from-city-revenue-change'));
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             alert('Gagal melakukan proses. Silahkan coba beberapa saat lagi.');

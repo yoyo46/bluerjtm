@@ -55,7 +55,7 @@
 					echo $this->Form->input('Revenue.from_city_id',array(
 						'id' => 'fromCityId',
 						'label'=> false, 
-						'class'=>'form-control chosen-select',
+						'class'=>'form-control chosen-select from-city-revenue-change',
 						'readonly' => true,
 						'empty' => __('Dari Kota --'),
 						'options' => !empty($toCities)?$toCities:false,
