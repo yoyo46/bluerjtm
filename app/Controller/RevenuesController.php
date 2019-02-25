@@ -9412,11 +9412,14 @@ class RevenuesController extends AppController {
             }
 
             $this->loadModel('Setting');
+            $this->loadModel('SettingInvoiceYamahaRit');
+
             $setting = $this->Setting->find('first');
+            $settingInvoiceYamahaRits = $this->SettingInvoiceYamahaRit->getData('all');
 
             $this->set(compact(
                 'value', 'action_print', 'invDetails',
-                'setting'
+                'setting', 'settingInvoiceYamahaRits'
             ));
 
             if($action_print == 'pdf'){
@@ -10138,5 +10141,121 @@ class RevenuesController extends AppController {
                 'select',
             ));
         }
+    }
+
+    public function invoice_yamaha_rit_setting() {
+        $this->loadModel('SettingInvoiceYamahaRit');
+        
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->SettingInvoiceYamahaRit->_callRefineParams($params);
+
+        $this->paginate = $this->SettingInvoiceYamahaRit->getData('paginate', $options);
+        $values = $this->paginate('SettingInvoiceYamahaRit');
+
+        $this->set('active_menu', 'invoice_yamaha_rit_setting');
+        $this->set('sub_module_title', __('Pengaturan Yamaha Per RIT'));
+        $this->set('values', $values);
+    }
+
+    function invoice_yamaha_rit_setting_add(){
+        $this->loadModel('SettingInvoiceYamahaRit');
+        $this->set('sub_module_title', __('Tambah'));
+        $this->doSettingInvoiceYamahaRit();
+    }
+
+    function invoice_yamaha_rit_setting_edit($id){
+        $this->loadModel('SettingInvoiceYamahaRit');
+        $this->set('sub_module_title', 'Ubah');
+        $value = $this->SettingInvoiceYamahaRit->getData('first', array(
+            'conditions' => array(
+                'SettingInvoiceYamahaRit.id' => $id
+            ),
+        ));
+
+        if(!empty($value)){
+            $this->doSettingInvoiceYamahaRit($id, $value);
+        }else{
+            $this->MkCommon->setCustomFlash(__('Pengaturan Yamaha Per RIT tidak ditemukan'), 'error');  
+            $this->redirect(array(
+                'controller' => 'revenues',
+                'action' => 'invoice_yamaha_rit_setting'
+            ));
+        }
+    }
+
+    function doSettingInvoiceYamahaRit($id = false, $data_local = false){
+        if(!empty($this->request->data)){
+            $data = $this->request->data;
+
+            if($id && $data_local){
+                $this->SettingInvoiceYamahaRit->id = $id;
+                $msg = 'merubah';
+            }else{
+                $this->SettingInvoiceYamahaRit->create();
+                $msg = 'menambah';
+            }
+
+            $this->SettingInvoiceYamahaRit->set($data);
+
+            if( $this->SettingInvoiceYamahaRit->validates($data) ){
+                if($this->SettingInvoiceYamahaRit->save($data)){
+                    $id = $this->SettingInvoiceYamahaRit->id;
+
+                    $this->params['old_data'] = $data_local;
+                    $this->params['data'] = $data;
+
+                    $this->MkCommon->setCustomFlash(sprintf(__('Sukses %s Pengaturan Yamaha Per RIT'), $msg), 'success');
+                    $this->Log->logActivity( sprintf(__('Sukses %s Pengaturan Yamaha Per RIT #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+                    $this->redirect(array(
+                        'controller' => 'revenues',
+                        'action' => 'invoice_yamaha_rit_setting'
+                    ));
+                }else{
+                    $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Pengaturan Yamaha Per RIT'), $msg), 'error'); 
+                    $this->Log->logActivity( sprintf(__('Gagal %s Pengaturan Yamaha Per RIT #%s'), $msg, $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+                }
+            }else{
+                $this->MkCommon->setCustomFlash(sprintf(__('Gagal %s Pengaturan Yamaha Per RIT'), $msg), 'error');
+            }
+        } else if( !empty($data_local) ){
+            $this->request->data = $data_local;
+        }
+
+        $this->set(compact(
+            'data_local'
+        ));
+        $this->set('active_menu', 'invoice_yamaha_rit_setting');
+        $this->render('invoice_yamaha_rit_setting_form');
+    }
+
+    function invoice_yamaha_rit_setting_toggle($id){
+        $this->loadModel('SettingInvoiceYamahaRit');
+        $locale = $this->SettingInvoiceYamahaRit->getData('first', array(
+            'conditions' => array(
+                'SettingInvoiceYamahaRit.id' => $id
+            )
+        ));
+
+        if($locale){
+            $value = true;
+            if($locale['SettingInvoiceYamahaRit']['status']){
+                $value = false;
+            }
+
+            $this->SettingInvoiceYamahaRit->id = $id;
+            $this->SettingInvoiceYamahaRit->set('status', $value);
+
+            if($this->SettingInvoiceYamahaRit->save()){
+                $this->MkCommon->setCustomFlash(__('Sukses merubah status.'), 'success');
+                $this->Log->logActivity( sprintf(__('Sukses merubah status Pengaturan Yamaha Per RIT ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id ); 
+            }else{
+                $this->MkCommon->setCustomFlash(__('Gagal merubah status.'), 'error');
+                $this->Log->logActivity( sprintf(__('Gagal merubah status Pengaturan Yamaha Per RIT ID #%s'), $id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $id ); 
+            }
+        }else{
+            $this->MkCommon->setCustomFlash(__('Pengaturan Yamaha Per RIT tidak ditemukan.'), 'error');
+        }
+
+        $this->redirect($this->referer());
     }
 }

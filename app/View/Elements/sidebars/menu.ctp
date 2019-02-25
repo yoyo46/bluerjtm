@@ -1743,7 +1743,7 @@
                             'jenis_sim', 'classifications',
                             'calendar_colors', 'calendar_icons',
                             'parts_motor', 'index', 'approval_setting',
-                            'branches', 'cost_centers',
+                            'branches', 'cost_centers', 'invoice_yamaha_rit_setting',
                         ),
                     );
 
@@ -1755,6 +1755,7 @@
                             'classifications', 'calendar_colors',
                             'calendar_icons', 'settings', 'jenis_sim',
                             'parts_motor', 'approval_setting', 'cost_centers',
+                            'invoice_yamaha_rit_setting',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
@@ -1883,6 +1884,14 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'approval_setting' )?'active':'',
+                            ));
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pengaturan Yamaha Per RIT', array(
+                                'controller' => 'revenues',
+                                'action' => 'invoice_yamaha_rit_setting'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'invoice_yamaha_rit_setting' )?'active':'',
                             ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-wrench"></i> Pengaturan', array(

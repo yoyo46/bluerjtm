@@ -1,8 +1,13 @@
 <?php 
         if( empty($action_print) || $action_print == 'excel' ){
+
+            if( $action_print != 'excel' ) {
 ?>
 <link href='https://fonts.googleapis.com/css?family=Cookie' rel='stylesheet' type='text/css'>
 <link href='https://fonts.googleapis.com/css?family=Carter+One' rel='stylesheet' type='text/css'>
+<?php
+        }
+?>
 <style type="text/css">
     body {
         margin: 0;
@@ -17,7 +22,6 @@
 <?php
         }
         
-        $element = 'blocks/revenues/tables/invoice_yamaha_rit';
         $widthColumn5 = '';
         $widthColumn8 = '';
         $widthColumn10 = '';
@@ -75,7 +79,7 @@
                 ),
             ),
             'tarif' => array(
-                'name' => __('Tarif/'),
+                'name' => __('Tarif'),
                 'style' => 'text-align: center;border-bottom: 1px solid #000;border-left: 1px solid #000;'.$widthColumn10.$background,
                 'child' => array(
                     'unit' => array(
@@ -84,25 +88,145 @@
                     ),
                 ),
             ),
-            'note' => array(
-                'name' => __('Ket'),
-                'style' => 'text-align: center;vertical-align: middle;border-bottom: 1px solid #000;border-left: 1px solid #000;border-right: 1px solid #000;'.$background,
-                'colspan' => 2,
-                'rowspan' => 2,
-            ),
+        );
+        $noteColumns = array(
+            'name' => __('Ket'),
+            'style' => 'text-align: center;vertical-align: middle;border-bottom: 1px solid #000;border-left: 1px solid #000;border-right: 1px solid #000;'.$background,
+            'colspan' => 2,
+            'rowspan' => 2,
         );
 
         if( !empty($action_print) ){
-            $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
+            $tmpDataColumns = $dataColumns;
+            $tmpDataColumns['note'] = $noteColumns;
 
-            echo $this->element(sprintf('blocks/common/tables/export_%s', $action_print), array(
-                'tableHead' => $fieldColumn,
-                'tableBody' => $this->element($element),
-                'sub_module_title' => __('Faktur Jasa Angkutan'),
-                'topHeader' => $this->element('blocks/common/tables/header_report'),
-                'contentHeader' => $this->element('blocks/revenues/tables/info_invoice'),
+            $element = 'blocks/revenues/tables/invoice_yamaha_rit_excel';
+            $fieldColumn = $this->Common->_generateShowHideColumn( $tmpDataColumns, 'field-table' );
+
+            $tableHead = $fieldColumn;
+            $tableBody = $this->element($element);
+            $sub_module_title = __('Faktur Jasa Angkutan');
+            $topHeader = $this->element('blocks/common/tables/header_report');
+            $contentHeader = $this->element('blocks/revenues/tables/info_invoice');
+?>
+<style>
+    .string{ mso-number-format:\@; }
+</style>
+<?php 
+        $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
+        $filename = !empty($filename)?$filename:$sub_module_title;
+        $filename = $this->Common->toSlug($filename);
+        
+        $contentHeader = !empty($contentHeader)?$contentHeader:false;
+        $topHeader = !empty($topHeader)?$topHeader:false;
+        $noHeader = !empty($noHeader)?$noHeader:false;
+
+        $contentTr = isset($contentTr)?$contentTr:true;
+        header('Content-type: application/ms-excel');
+        header('Content-Disposition: attachment; filename='.$filename.'.xls');
+?>
+<section class="content invoice">
+    <?php 
+            echo $topHeader;
+            
+            if( !empty($customHeader) ) {
+                echo $customHeader;
+            } else if( !empty($sub_module_title) && empty($noHeader) ) {
+    ?>
+    <h2 class="page-header" style="text-align: center;">
+        <i class="fa fa-globe"></i> <?php echo $sub_module_title;?>
+    </h2>
+    <?php 
+            }
+
+            echo $contentHeader;
+
+    ?>
+    <br>
+    <table style="width: 100%;" singleSelect="true" border="1">
+        <?php
+                if( !empty($tableHead) ) {
+                    echo $this->Html->tag('thead', $this->Html->tag('tr', $tableHead));
+                }
+                if( !empty($tableBody) ) {
+                    echo $this->Html->tag('tbody', $tableBody);
+                }
+        ?>
+    </table>
+
+    <?php
+            if( !empty($settingInvoiceYamahaRits) ) {
+                $tmpExtraTarifColumns = $dataColumns;
+
+                foreach ($settingInvoiceYamahaRits as $key => $settingYamahaRits) {
+                    $settingYamahaRitName = Common::hashEmptyField($settingYamahaRits, 'SettingInvoiceYamahaRit.name');
+                    $settingYamahaRitPercent = Common::hashEmptyField($settingYamahaRits, 'SettingInvoiceYamahaRit.percent');
+                    $settingYamahaRitSlug = Common::toSlug($settingYamahaRitName);
+
+                    $tmpDataColumns = $dataColumns;
+                    $tmpExtraTarifColumns['tarif_'.$settingYamahaRitSlug] = $tmpDataColumns['tarif_'.$settingYamahaRitSlug] = array(
+                        'name' => __('Tarif'),
+                        'style' => 'text-align: center;border-bottom: 1px solid #000;border-left: 1px solid #000;'.$widthColumn10.$background,
+                        'child' => array(
+                            'unit' => array(
+                                'name' => __('%s = %s%%', $settingYamahaRitName, $settingYamahaRitPercent),
+                                'style' => 'text-align: center;border-bottom: 1px solid #000;border-left: 1px solid #000;'.$background,
+                            ),
+                        ),
+                    );
+                    $tmpDataColumns['note'] = $noteColumns;
+
+                    $fieldColumn = $this->Common->_generateShowHideColumn( $tmpDataColumns, 'field-table' );
+                    $tableHead = $fieldColumn;
+    ?>
+    <br><br>
+    <table style="width: 100%;" singleSelect="true" border="1">
+        <?php
+                if( !empty($fieldColumn) ) {
+                    echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));
+                }
+                
+                echo $this->Html->tag('tbody', $this->element($element, array(
+                    'settingYamahaRits' => $settingYamahaRits,
+                )));
+        ?>
+    </table>
+    <?php
+                }
+
+                if( !empty($tmpExtraTarifColumns) ) {
+                    $tmpExtraTarifColumns['note'] = $noteColumns;
+
+                    $fieldColumn = $this->Common->_generateShowHideColumn( $tmpExtraTarifColumns, 'field-table' );
+                    $tableHead = $fieldColumn;
+    ?>
+    <br><br>
+    <table style="width: 100%;margin-top: 50px;" singleSelect="true" border="1">
+        <?php
+                if( !empty($fieldColumn) ) {
+                    echo $this->Html->tag('thead', $this->Html->tag('tr', $fieldColumn));
+                }
+                
+                echo $this->Html->tag('tbody', $this->element($element, array(
+                    'settingYamahaRits' => $settingInvoiceYamahaRits,
+                )));
+        ?>
+    </table>
+    <?php
+                }
+            }
+    ?>
+    <?php 
+            echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
+                'style' => 'font-size: 14px;font-style: italic;margin-top: 10px;'
             ));
+    ?>
+</div>
+<?php
         } else {
+            $dataColumns['note'] = $noteColumns;
+
+            $element = 'blocks/revenues/tables/invoice_yamaha_rit';
             $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );
 
         	$this->Html->addCrumb($sub_module_title);
