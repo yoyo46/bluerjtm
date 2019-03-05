@@ -105,8 +105,8 @@
                                 $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
                                 $customer_name_code = $this->Common->filterEmptyField($value, 'Customer', 'customer_name_code');
 
-                                $customTglLku = $this->Common->customDate($tgl_lku, 'd/m/Y');
-                                $customCreated = $this->Common->customDate($created, 'd/m/Y');
+                                $customTglLku = $this->Common->customDate($tgl_lku, 'd M Y');
+                                $customCreated = $this->Common->customDate($created, 'd M Y');
                                 $customTotalPrice = $this->Common->getCurrencyPrice($total_price);
                                 $customStatus = $this->Lku->getCheckStatus($value, 'Lku');
                 ?>

@@ -38,7 +38,7 @@
                                 $note = $this->Common->filterEmptyField($value, 'SupplierQuotation', 'note');
 
                                 $customAvailable = $this->Common->getCombineDate($availableFrom, $availableTo );
-                                $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
+                                $customDate = $this->Common->formatDate($transactionDate, 'd M Y');
                                 $urlAjax = $this->Html->url(array(
                                     'controller' => 'ajax',
                                     'action' => 'getSupplierQuotation',

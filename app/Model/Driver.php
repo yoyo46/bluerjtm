@@ -3,13 +3,6 @@ class Driver extends AppModel {
 	var $name = 'Driver';
 
 	var $validate = array(
-        // 'photo' => array(
-        //     'notempty' => array(
-        //         'on' => 'create',
-        //         'rule' => array('notempty'),
-        //         'message' => 'Foto harap diisi'
-        //     ),
-        // ),
         'no_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -60,44 +53,6 @@ class Driver extends AppModel {
                 'message' => 'No. HP harap diisi'
             ),
         ),
-        // 'birth_date' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'Tgl Lahir harap dipilih'
-        //     ),
-        //     'date' => array(
-        //         'rule' => array('date'),
-        //         'message' => 'Tgl Lahir tidak benar'
-        //     ),
-        // ),
-        // 'tempat_lahir' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'Tempat Lahir harap diisi'
-        //     ),
-        // ),
-        // 'jenis_sim_id' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'Jenis SIM harap dipilih'
-        //     ),
-        // ),
-        // 'no_sim' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'No. SIM harap diisi'
-        //     ),
-        // ),
-        // 'expired_date_sim' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'Tgl Berakhir SIM harap dipilih'
-        //     ),
-        //     'date' => array(
-        //         'rule' => array('date'),
-        //         'message' => 'Tgl Berakhir SIM tidak benar'
-        //     ),
-        // ),
         'kontak_darurat_name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -110,32 +65,24 @@ class Driver extends AppModel {
                 'message' => 'No. HP harap diisi'
             ),
         ),
-        // 'driver_relation_id' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'Hubungan kerabat harap dipilih'
-        //     ),
-        // ),
-        // 'join_date' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'Tgl Penerimaan harap dipilih'
-        //     ),
-        //     'date' => array(
-        //         'rule' => array('date'),
-        //         'message' => 'Tgl Penerimaan tidak benar'
-        //     ),
-        // ),
-        // 'branch_id' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'Cabang harap dipilih'
-        //     ),
-        //     'numeric' => array(
-        //         'rule' => array('numeric'),
-        //         'message' => 'Cabang harap dipilih'
-        //     ),
-        // ),
+        'account_name' => array(
+            'norekCheck' => array(
+                'rule' => array('norekCheck'),
+                'message' => 'Atas nama harap diisi'
+            ),
+        ),
+        'account_number' => array(
+            'norekCheck' => array(
+                'rule' => array('norekCheck'),
+                'message' => 'No. Rekening harap diisi'
+            ),
+        ),
+        'bank_name' => array(
+            'norekCheck' => array(
+                'rule' => array('norekCheck'),
+                'message' => 'Nama Bank harap diisi'
+            ),
+        ),
 	);
 
 	var $hasOne = array(
@@ -167,6 +114,32 @@ class Driver extends AppModel {
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         $this->virtualFields['driver_name'] = sprintf('CASE WHEN %s.alias = \'\' THEN %s.name ELSE CONCAT(%s.name, \' ( \', %s.alias, \' )\') END', $this->alias, $this->alias, $this->alias, $this->alias);
+    }
+
+    function norekCheck () {
+        $data = $this->data;
+
+        $account_name = Common::hashEmptyField($data, 'Driver.account_name');
+        $account_number = Common::hashEmptyField($data, 'Driver.account_number');
+        $bank_name = Common::hashEmptyField($data, 'Driver.bank_name');
+
+        if( !empty($account_name) || !empty($account_number) || !empty($bank_name) ) {
+            $flag = true;
+
+            if( empty($account_name) ) {
+                $flag = false;
+            }
+            if( empty($account_number) ) {
+                $flag = false;
+            }
+            if( empty($bank_name) ) {
+                $flag = false;
+            }
+
+            return $flag;
+        } else {
+            return false;
+        }
     }
 
     function uniqueUpdate($data){
@@ -341,12 +314,6 @@ class Driver extends AppModel {
                     'Driver.id' => $include_this_driver_id,
                     'Driver.id NOT' => $ttujs,
                 ),
-                // 'AND' => array(
-                //     'OR' => array(
-                //         'Driver.id' => $include_this_driver_id,
-                //         'Driver.branch_id' => Configure::read('__Site.config_branch_id'),
-                //     ),
-                // ),
             );
         } else {
             $conditions = array(
@@ -356,7 +323,6 @@ class Driver extends AppModel {
         }
 
         $branch_plant_id = Configure::read('__Site.Branch.Plant.id');
-        // $conditions['Truck.id'] = NULL;
 
         if( !empty($branch_plant_id) ) {
             $conditions['Driver.branch_id'] = $branch_plant_id;
@@ -368,9 +334,6 @@ class Driver extends AppModel {
                 'fields' => array(
                     'Driver.id', 'Driver.driver_name'
                 ),
-                // 'contain' => array(
-                //     'Truck',
-                // ),
             ), array(
                 'branch' => false,
             ));

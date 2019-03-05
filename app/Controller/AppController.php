@@ -1,41 +1,11 @@
 <?php
-/**
- * Application level Controller
- *
- * This file is application-wide controller file. You can put all
- * application-wide controller-related methods here.
- *
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- *
- * Licensed under The MIT License
- * For full copyright and license information, please see the LICENSE.txt
- * Redistributions of files must retain the above copyright notice.
- *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
- * @package       app.Controller
- * @since         CakePHP(tm) v 0.2.9
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
- */
-
 App::uses('Controller', 'Controller');
 App::uses('Common', 'Utility');
 
-/**
- * Application Controller
- *
- * Add your application-wide methods in the class below, your controllers
- * will inherit them.
- *
- * @package		app.Controller
- * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
- */
 class AppController extends Controller {
 	public $components = array(
 		'MkCommon', 
 		'Auth', 
-		// 'Acl', 
 		'Session', 'RequestHandler', 'Cookie'
 	);
 
@@ -95,35 +65,29 @@ class AppController extends Controller {
 				$cacheName = 'Branch.List';
 	    	}
 
-			// $branchList = Cache::read($cacheName, 'default');
 
-			if( empty($branchList) ) {
-		    	if( $GroupId == 1 ) {
-			    	$list_branches = $this->GroupBranch->Branch->getData('list');
-		    	} else {
-			    	$list_branches = $this->GroupBranch->getData('list', array(
-			    		'conditions' => array(
-			    			'Branch.status' => true,
-			    			'GroupBranch.group_id' => $GroupId,
-		    			),
-		    			'contain' => array(
-		    				'Branch',
-	    				),
-	    				'fields' => array(
-	    					'GroupBranch.branch_id', 'Branch.name'
-						),
-						'group' => array(
-							'GroupBranch.branch_id',
-						),
-		    		));
-		    	}
-
-				Cache::write($cacheName, array(
-					'list_branches' => $list_branches,
-				), 'default');
-			} else {
-				$list_branches = Hash::get($branchList, 'list_branches');
-			}
+	    	if( $GroupId == 1 ) {
+		    	$list_branches = $this->GroupBranch->Branch->getData('list', array(
+					'cache' => __('Branch.Admin'),
+		    	));
+	    	} else {
+		    	$list_branches = $this->GroupBranch->getData('list', array(
+		    		'conditions' => array(
+		    			'Branch.status' => true,
+		    			'GroupBranch.group_id' => $GroupId,
+	    			),
+	    			'contain' => array(
+	    				'Branch',
+    				),
+    				'fields' => array(
+    					'GroupBranch.branch_id', 'Branch.name'
+					),
+					'group' => array(
+						'GroupBranch.branch_id',
+					),
+					'cache' => __('Branch.User.%s', $GroupId),
+	    		));
+	    	}
 
 		    if( !empty($list_branches) ) {
 			    if( !empty($list_branches[$my_branch_id]) ) {
@@ -136,6 +100,7 @@ class AppController extends Controller {
 			    	'conditions' => array(
 			    		'Branch.id' => $current_branch_id,
 		    		),
+					'cache' => __('Branch.ID.%s', $current_branch_id),
 		    	));
 
 		    	if( !empty($branch) ){
@@ -393,7 +358,6 @@ class AppController extends Controller {
 	}
 
 	function isAuthorized($user) {
-	    // return false;
 	    return $this->Auth->loggedIn();
 	}
 }

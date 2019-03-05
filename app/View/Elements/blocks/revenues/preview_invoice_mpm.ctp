@@ -98,7 +98,7 @@
 	        			}
 
 						$revenue_temp = sprintf('%s-%s', $revenue_id, $is_charge);
-						$date_revenue = $this->Common->formatDate($date_revenue, 'd/m/Y');
+						$date_revenue = $this->Common->formatDate($date_revenue, 'd M Y');
 
 						$grandTotalUnit += $qty = $this->Common->filterEmptyField($value, 'RevenueDetail', 'qty_unit');
 						$payment_type = $this->Common->filterEmptyField($value, 'RevenueDetail', 'payment_type');

@@ -26,7 +26,7 @@
         $nodoc = $this->Common->filterEmptyField($value, $modelNameDocument, 'nodoc');
         $transaction_date = $this->Common->filterEmptyField($value, $modelNameDocument, 'transaction_date');
 
-        $transaction_date = $this->Common->formatDate($transaction_date, 'd/m/Y');
+        $transaction_date = $this->Common->formatDate($transaction_date, 'd M Y');
         $grandtotal = $this->Common->getFormatPrice($grandtotal, 0, 2);
         // $totalRemainFormat = $this->Common->getFormatPrice($total_remain, 0, 2);
         $total_paid = $this->Common->getFormatPrice($total_paid, 0, 2);

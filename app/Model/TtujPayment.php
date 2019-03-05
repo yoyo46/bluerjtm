@@ -13,10 +13,6 @@ class TtujPayment extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'No. Dokumen harap diisi'
             ),
-            // 'isUnique' => array(
-            //     'rule' => array('isUnique'),
-            //     'message' => 'No. Dokumen telah terdaftar',
-            // ),
         ),
         'coa_id' => array(
             'notempty' => array(
@@ -94,7 +90,7 @@ class TtujPayment extends AppModel {
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
-            if(!empty($options['order'])){
+            if(isset($options['order'])){
                 $default_options['order'] = $options['order'];
             }
             if( isset($options['contain']) && empty($options['contain']) ) {
@@ -183,12 +179,15 @@ class TtujPayment extends AppModel {
             if( !empty($dateToTtuj) ) {
                 $default_options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $dateToTtuj;
             }
+                
+            $default_options['contain'][] = 'Ttuj';
         }
         if(!empty($nodoc)){
             $default_options['conditions']['TtujPayment.nodoc LIKE'] = '%'.$nodoc.'%';
         }
         if(!empty($nottuj)){
             $default_options['conditions']['Ttuj.no_ttuj LIKE'] = '%'.$nottuj.'%';
+            $default_options['contain'][] = 'Ttuj';
         }
         if(!empty($name)){
             $default_options['conditions']['TtujPayment.receiver_name LIKE'] = '%'.$name.'%';
@@ -198,15 +197,19 @@ class TtujPayment extends AppModel {
         }
         if(!empty($note)){
             $default_options['conditions']['Ttuj.note LIKE'] = '%'.$note.'%';
+            $default_options['contain'][] = 'Ttuj';
         }
         if(!empty($nopol)){
             $default_options['conditions']['Ttuj.nopol LIKE'] = '%'.$nopol.'%';
+            $default_options['contain'][] = 'Ttuj';
         }
         if(!empty($nopol)){
             $default_options['conditions']['Ttuj.nopol LIKE'] = '%'.$nopol.'%';
+            $default_options['contain'][] = 'Ttuj';
         }
         if(!empty($nopol)){
             $default_options['conditions']['Ttuj.nopol LIKE'] = '%'.$nopol.'%';
+            $default_options['contain'][] = 'Ttuj';
         }
 
         if(!empty($uj1)){
@@ -242,9 +245,11 @@ class TtujPayment extends AppModel {
 
         if(!empty($fromcity)){
             $default_options['conditions']['Ttuj.from_city_id'] = $fromcity;
+            $default_options['contain'][] = 'Ttuj';
         }
         if(!empty($tocity)){
             $default_options['conditions']['Ttuj.to_city_id'] = $tocity;
+            $default_options['contain'][] = 'Ttuj';
         }
         if(!empty($status)){
             switch ($status) {
@@ -297,6 +302,8 @@ class TtujPayment extends AppModel {
                         );
                     break;
             }
+            
+            $default_options['contain'][] = 'Ttuj';
         }
         if( !empty($transaction_status) ) {
             switch ($transaction_status) {
@@ -332,6 +339,7 @@ class TtujPayment extends AppModel {
                 'TtujPaymentDetail.ttuj_id',
                 'TtujPaymentDetail.type',
             ),
+            'order' => false,
         );
 
         if( !empty($type) ) {

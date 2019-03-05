@@ -665,7 +665,7 @@ class LeasingsController extends AppController {
                 ),
             ));
 
-            $value = $this->_calDataIndexConvertion($value, true);
+            $value = $this->_calDataIndexConvertion($value);
 
             if( !empty($value['LeasingPaymentDetail']) ) {
                 foreach ($value['LeasingPaymentDetail'] as $key => $detail) {
@@ -1046,7 +1046,7 @@ class LeasingsController extends AppController {
                 ),
             ));
 
-            $value = $this->_calDataIndexConvertion($value, true);
+            $value = $this->_calDataIndexConvertion($value);
 
             if( !empty($value['LeasingPaymentDetail']) ) {
                 foreach ($value['LeasingPaymentDetail'] as $key => $detail) {

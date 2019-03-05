@@ -90,10 +90,10 @@
                             $nopol = $this->Common->filterEmptyField($value, 'Spk', 'nopol', '-');
                             $nolaka = $this->Common->filterEmptyField($value, 'Laka', 'nodoc', '-');
                             $estimation_date = $this->Common->filterEmptyField($value, 'Spk', 'estimation_date', '-', true, array(
-                                'date' => 'd/m/Y',
+                                'date' => 'd M Y',
                             ));
                             $complete_date = $this->Common->filterEmptyField($value, 'Spk', 'complete_date', '-', true, array(
-                                'date' => 'd/m/Y',
+                                'date' => 'd M Y',
                             ));
                             $receipt_status = $this->Common->filterEmptyField($value, 'Spk', 'receipt_status', 'none');
                             $transaction_status = $this->Common->filterEmptyField($value, 'Spk', 'transaction_status');
@@ -108,8 +108,7 @@
                             $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name', '-');
 
                             $customStatus = $this->Common->_callTransactionStatus($value, 'Spk');
-                            // $statusReceipt = $this->Common->_callStatusReceipt($value, 'Spk');
-                            $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
+                            $customDate = $this->Common->formatDate($transactionDate, 'd M Y');
 
                             $customAction = $this->Html->link(__('Detail'), array(
                                 'controller' => 'spk',
@@ -170,12 +169,6 @@
                         echo $this->Html->tag('td', $paymentStatus, array(
                             'class' => 'text-center',
                         ));
-
-                        // if( !empty($spk_internal_policy) && $spk_internal_policy == 'receipt' ) {
-                        //     echo $this->Html->tag('td', $statusReceipt, array(
-                        //         'class' => 'text-center',
-                        //     ));
-                        // }
 
                         echo $this->Html->tag('td', $customAction, array(
                             'class' => 'action text-left',

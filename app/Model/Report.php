@@ -47,7 +47,6 @@ class Report extends AppModel {
 				'Report.status' => 1,
 			),
 			'order'=> array(
-				'Report.created' => 'DESC',
 				'Report.id' => 'DESC',
 			),
 			'contain' => array(),

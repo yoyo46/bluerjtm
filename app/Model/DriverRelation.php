@@ -10,7 +10,6 @@ class DriverRelation extends AppModel {
             'contain' => array(),
             'order' => array(
                 'DriverRelation.id' => 'ASC',
-                'DriverRelation.created' => 'ASC',
             ),
         );
 

@@ -504,7 +504,7 @@ class InsurancesController extends AppController {
                     ),
                 ),
             ));
-            $value = $this->_calDataIndexConvertion($value, true);
+            $value = $this->_calDataIndexConvertion($value);
             $this->MkCommon->getLogs($this->params['controller'], array( 'payment_add', 'payment_edit', 'payment_delete' ), $id);
 
             $this->set(compact(

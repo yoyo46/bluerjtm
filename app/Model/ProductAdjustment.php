@@ -78,7 +78,6 @@ class ProductAdjustment extends AppModel {
             'conditions'=> array(),
             'order'=> array(
                 'ProductAdjustment.status' => 'DESC',
-                'ProductAdjustment.created' => 'DESC',
                 'ProductAdjustment.id' => 'DESC',
             ),
             'fields' => array(),

@@ -123,7 +123,7 @@ class Revenue extends AppModel {
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
-            if(!empty($options['order'])){
+            if(isset($options['order'])){
                 $default_options['order'] = $options['order'];
             }
             if(!empty($options['contain'])){
@@ -305,6 +305,7 @@ class Revenue extends AppModel {
                 'fields' => array(
                     'Revenue.id', 'Revenue.id',
                 ),
+                'order' => false,
             ), true, array(
                 'branch' => false,
             ));
@@ -313,15 +314,14 @@ class Revenue extends AppModel {
         switch ($data_type) {
             case 'unit':
                 if( !empty($revenues) ) {
-                    $revenueDetail = $this->RevenueDetail->getData('first', array(
+                    $revenueDetail = $this->RevenueDetail->find('first', array(
                         'conditions' => array(
                             'RevenueDetail.revenue_id' => $revenues,
+                            'RevenueDetail.status' => 1,
                         ),
                         'fields' => array(
                             'SUM(qty_unit) total_unit',
                         ),
-                    ), array(
-                        'branch' => false,
                     ));
 
                     if( !empty($revenueDetail[0]['total_unit']) ) {
@@ -360,6 +360,7 @@ class Revenue extends AppModel {
             default:
                 $revenue = $this->getData('first', array(
                     'conditions' => $conditions,
+                    'order' => false,
                 ), true, array(
                     'branch' => false,
                 ));
@@ -593,7 +594,9 @@ class Revenue extends AppModel {
         $capacity = $this->filterEmptyField($truck, 'Truck', 'capacity');
 
         $ttuj_id = !empty($data['Revenue']['ttuj_id'])?$data['Revenue']['ttuj_id']:false;
-        $tarif = $this->RevenueDetail->TarifAngkutan->findTarif($from_city_id, $to_city_id, $customer_id, $capacity);
+        $total_muatan = $this->Ttuj->TtujTipeMotor->getTotalMuatan($ttuj_id);
+
+        $tarif = $this->RevenueDetail->TarifAngkutan->findTarif($from_city_id, $to_city_id, $customer_id, $capacity, false, $total_muatan);
         $jenis_unit = $this->filterEmptyField($tarif, 'jenis_unit', false, 'per_unit');
 
         $data['Revenue']['revenue_tarif_type'] = $jenis_unit;
@@ -812,16 +815,6 @@ class Revenue extends AppModel {
                     'Revenue.nopol LIKE' => '%'.$nopol.'%',
                 );
             }
-
-            // $truckSearch = $this->Truck->getData('list', array(
-            //     'conditions' => $conditionsNopol,
-            //     'fields' => array(
-            //         'Truck.id', 'Truck.id',
-            //     ),
-            // ), true, array(
-            //     'status' => 'all',
-            //     'branch' => false,
-            // ));
 
             $default_options['contain'][] = 'Truck';
             $default_options['contain'][] = 'Ttuj';

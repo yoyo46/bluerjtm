@@ -155,8 +155,8 @@
                             $leasing_installment_id = $this->Common->filterEmptyField($value, 'LeasingInstallment', 'id');
                             $paid_date = $this->Common->filterEmptyField($value, 'LeasingInstallment', 'paid_date');
 
-                            $customLeasingDate = $this->Common->formatDate($leasing_date, 'd/m/Y');
-                            $customPaidDate = $this->Common->formatDate($paid_date, 'd/m/Y');
+                            $customLeasingDate = $this->Common->formatDate($leasing_date, 'd M Y');
+                            $customPaidDate = $this->Common->formatDate($paid_date, 'd M Y');
                             $customInstallment = $this->Common->getFormatPrice($installment);
                             $customInstallmentRate = $this->Common->getFormatPrice($installment_rate);
                             $customTotal = $this->Common->getFormatPrice($total);

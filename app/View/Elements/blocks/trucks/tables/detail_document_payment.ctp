@@ -96,8 +96,8 @@
 					                }
 
 					                $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
-					                $to_date = $this->Common->formatDate($to_date, 'd/m/Y');
-					                $document_date = $this->Common->formatDate($document_date, 'd/m/Y');
+					                $to_date = $this->Common->formatDate($to_date, 'd M Y');
+					                $document_date = $this->Common->formatDate($document_date, 'd M Y');
 					                $customPrice = $this->Common->getFormatPrice($price);
 					                $customDenda = $this->Common->getFormatPrice($denda);
 					                $customBiayaLain = $this->Common->getFormatPrice($biaya_lain);

@@ -240,7 +240,6 @@ class Spk extends AppModel {
             'conditions'=> array(),
             'order'=> array(
                 'Spk.status' => 'DESC',
-                'Spk.created' => 'DESC',
                 'Spk.id' => 'DESC',
             ),
             'fields' => array(),

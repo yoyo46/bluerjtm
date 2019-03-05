@@ -134,7 +134,7 @@
 				        				<ul>
 				        					<?php
 							        				if(!empty($tgl_stnk)){
-								        				$customTglStnk = $this->Common->formatDate($tgl_stnk, 'd/m/Y');
+								        				$customTglStnk = $this->Common->formatDate($tgl_stnk, 'd M Y');
 								        				$label = $this->Html->tag('label', 'Tgl STNK');
 
 								        				echo $this->Html->tag('li', sprintf('%s : %s', $label, $customTglStnk));
@@ -321,13 +321,13 @@
 		        				$arrive_over_time = $this->Common->filterEmptyField($value, 'UangJalan', 'arrive_lead_time');
 		        				$back_orver_time = $this->Common->filterEmptyField($value, 'UangJalan', 'back_lead_time');
 
-		        				$customTglBerangkat = $this->Common->formatDate($tgljam_berangkat, 'd/m/Y H:i:s');
-		        				$customTglTiba = $this->Common->formatDate($tgljam_tiba, 'd/m/Y H:i:s');
-		        				$customTglBongkaran = $this->Common->formatDate($tgljam_bongkaran, 'd/m/Y H:i:s');
-		        				$customTglBalik = $this->Common->formatDate($tgljam_balik, 'd/m/Y H:i:s');
-		        				$customTglPool = $this->Common->formatDate($tgljam_pool, 'd/m/Y H:i:s');
+		        				$customTglBerangkat = $this->Common->formatDate($tgljam_berangkat, 'd M Y H:i:s');
+		        				$customTglTiba = $this->Common->formatDate($tgljam_tiba, 'd M Y H:i:s');
+		        				$customTglBongkaran = $this->Common->formatDate($tgljam_bongkaran, 'd M Y H:i:s');
+		        				$customTglBalik = $this->Common->formatDate($tgljam_balik, 'd M Y H:i:s');
+		        				$customTglPool = $this->Common->formatDate($tgljam_pool, 'd M Y H:i:s');
 		        				$customStatus = $this->Revenue->_callStatusTTUJ($value, 'sort');
-		        				$customTtujDate = $this->Common->formatDate($ttuj_date, 'd/m/Y');
+		        				$customTtujDate = $this->Common->formatDate($ttuj_date, 'd M Y');
 
 		        				if( $arrive_leadtime_total > $arrive_over_time ){
 		        					$labelClass = 'danger';

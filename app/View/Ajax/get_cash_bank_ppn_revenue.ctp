@@ -28,6 +28,7 @@
                         'label'=> __('Tanggal'),
                         'class'=>'form-control date-range',
                         'required' => false,
+                        'autocomplete'=> 'off', 
                     ));
             ?>
         </div>
@@ -163,7 +164,7 @@
             <td><?php echo str_pad($value['Revenue']['id'], 5, '0', STR_PAD_LEFT);?></td>
             <td><?php echo $value['Revenue']['no_doc'];?></td>
             <td><?php echo ucfirst($value['Revenue']['type']);?></td>
-            <td><?php echo $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y');?></td>
+            <td><?php echo $this->Common->customDate($value['Revenue']['date_revenue'], 'd M Y');?></td>
             <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
             <td><?php echo !empty($value['Ttuj']['nopol'])?$value['Ttuj']['nopol']:'-';?></td>
             <td><?php echo !empty($value['Customer']['customer_name'])?$value['Customer']['customer_name']:'-';?></td>

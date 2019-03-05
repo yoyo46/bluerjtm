@@ -22,6 +22,16 @@
         $sisaAmount = $this->Common->getBiayaTtuj( $ttuj, $data_type );
         $amountPayment = !empty($ttujPayment['amount_payment'][$idx])?$ttujPayment['amount_payment'][$idx]:$sisaAmount;
 
+        $no_claim = !empty($ttujPayment['no_claim'][$idx])?$ttujPayment['no_claim'][$idx]:0;
+        $stood = !empty($ttujPayment['stood'][$idx])?$ttujPayment['stood'][$idx]:0;
+        $lainnya = !empty($ttujPayment['lainnya'][$idx])?$ttujPayment['lainnya'][$idx]:0;
+        $titipan = !empty($ttujPayment['titipan'][$idx])?$ttujPayment['titipan'][$idx]:0;
+        $claim = !empty($ttujPayment['claim'][$idx])?$ttujPayment['claim'][$idx]:0;
+        $unit_claim = !empty($ttujPayment['unit_claim'][$idx])?$ttujPayment['unit_claim'][$idx]:0;
+        $laka = !empty($ttujPayment['laka'][$idx])?$ttujPayment['laka'][$idx]:0;
+
+        $total = $amountPayment + $no_claim + $stood + $lainnya - $titipan - $claim - $laka;
+
         if( !empty($amountPayment) ) {
             if( !empty($checkbox) ) {
                 printf('<tr data-value="%s" data-type="%s" class="child %s">', $alias, $data_type, $alias);
@@ -42,8 +52,7 @@
                 printf('<tr class="child child-%s">', $alias);
             }
 ?>
-    
-    <td class="hide on-show">
+    <td>
         <div style="width: 350px;">
             <div class="row">
                 <div class="col-sm-6">
@@ -73,39 +82,8 @@
             </div>
         </div>
     </td>
-    <td class="on-remove"><?php echo $no_ttuj;?></td>
-    <td class="on-remove"><?php echo date('d M Y', strtotime($ttuj_date));?></td>
-    <td class="on-remove"><?php echo $nopol;?></td>
     <?php 
-            if( !empty($capacity) ) {
-                echo $this->Html->tag('td', $capacity, array(
-                    'class' => 'text-center on-remove',
-                ));
-            }
     ?>
-    <td class="on-remove"><?php echo $customer_name_code;?></td>
-    <td class="on-remove"><?php echo $from_city_name;?></td>
-    <td class="on-remove"><?php echo $to_city_name;?></td>
-    <td class="on-remove">
-    	<?php
-    			echo $driver;
-		?>
-	</td>
-    <td class="text-center on-remove">
-    	<?php
-                echo $this->Common->_callLabelBiayaTtuj($data_type);
-		?>
-	</td>
-    <td class="on-remove">
-        <?php
-                echo $note;
-        ?>
-    </td>
-    <td class="total-value text-right on-remove">
-    	<?php
-    			echo $this->Common->getBiayaTtuj( $ttuj, $data_type, true, false );
-		?>
-	</td>
     <td class="text-right">
     	<?php
                 if( !empty($document_info) ) {
@@ -127,71 +105,115 @@
                 }
 		?>
 	</td>
-    <td class="text-right hide on-show">
+    <td class="text-right">
         <?php
-                echo $this->Form->input('TtujPayment.no_claim.',array(
-                    'label'=> false,
-                    'class'=>'form-control input_price_min no-claim text-right',
-                    'required' => false,
-                ));
+                if( !empty($document_info) ) {
+                    $no_claim = $this->Common->getFormatPrice($no_claim);
+                    echo $no_claim;
+                } else {
+                    echo $this->Form->input('TtujPayment.no_claim.',array(
+                        'label'=> false,
+                        'class'=>'form-control input_price_min no-claim text-right',
+                        'required' => false,
+                        'value' => $no_claim,
+                    ));
+                }
         ?>
     </td>
-    <td class="text-right hide on-show">
+    <td class="text-right">
         <?php
-                echo $this->Form->input('TtujPayment.stood.',array(
-                    'label'=> false,
-                    'class'=>'form-control input_price_min stood text-right',
-                    'required' => false,
-                ));
+                if( !empty($document_info) ) {
+                    $stood = $this->Common->getFormatPrice($stood);
+                    echo $stood;
+                } else {
+                    echo $this->Form->input('TtujPayment.stood.',array(
+                        'label'=> false,
+                        'class'=>'form-control input_price_min stood text-right',
+                        'required' => false,
+                        'value' => $stood,
+                    ));
+                }
         ?>
     </td>
-    <td class="text-right hide on-show">
+    <td class="text-right">
         <?php
-                echo $this->Form->input('TtujPayment.lainnya.',array(
-                    'label'=> false,
-                    'class'=>'form-control input_price_min lainnya text-right',
-                    'required' => false,
-                ));
+                if( !empty($document_info) ) {
+                    $lainnya = $this->Common->getFormatPrice($lainnya);
+                    echo $lainnya;
+                } else {
+                    echo $this->Form->input('TtujPayment.lainnya.',array(
+                        'label'=> false,
+                        'class'=>'form-control input_price_min lainnya text-right',
+                        'required' => false,
+                        'value' => $lainnya,
+                    ));
+                }
         ?>
     </td>
-    <td class="text-right hide on-show">
+    <td class="text-right">
         <?php
-                echo $this->Form->input('TtujPayment.titipan.',array(
-                    'label'=> false,
-                    'class'=>'form-control input_price_min titipan text-right',
-                    'required' => false,
-                ));
+                if( !empty($document_info) ) {
+                    $titipan = $this->Common->getFormatPrice($titipan);
+                    echo $titipan;
+                } else {
+                    echo $this->Form->input('TtujPayment.titipan.',array(
+                        'label'=> false,
+                        'class'=>'form-control input_price_min titipan text-right',
+                        'required' => false,
+                        'value' => $titipan,
+                    ));
+                }
         ?>
     </td>
-    <td class="text-right hide on-show">
+    <td class="text-right">
         <?php
-                echo $this->Form->input('TtujPayment.claim.',array(
-                    'label'=> false,
-                    'class'=>'form-control input_price_min claim text-right',
-                    'required' => false,
-                ));
+                if( !empty($document_info) ) {
+                    $claim = $this->Common->getFormatPrice($claim);
+                    echo $claim;
+                } else {
+                    echo $this->Form->input('TtujPayment.claim.',array(
+                        'label'=> false,
+                        'class'=>'form-control input_price_min claim text-right',
+                        'required' => false,
+                        'value' => $claim,
+                    ));
+                }
         ?>
     </td>
-    <td class="text-right hide on-show">
+    <td class="text-right">
         <?php
-                echo $this->Form->input('TtujPayment.unit_claim.',array(
-                    'label'=> false,
-                    'class'=>'form-control input_price_min unit_claim text-right',
-                    'required' => false,
-                ));
+                if( !empty($document_info) ) {
+                    $unit_claim = $this->Common->getFormatPrice($unit_claim);
+                    echo $unit_claim;
+                } else {
+                    echo $this->Form->input('TtujPayment.unit_claim.',array(
+                        'label'=> false,
+                        'class'=>'form-control input_price_min unit_claim text-right',
+                        'required' => false,
+                        'value' => $unit_claim,
+                    ));
+                }
         ?>
     </td>
-    <td class="text-right hide on-show">
+    <td class="text-right">
         <?php
-                echo $this->Form->input('TtujPayment.laka.',array(
-                    'label'=> false,
-                    'class'=>'form-control input_price_min laka text-right',
-                    'required' => false,
-                ));
+                if( !empty($document_info) ) {
+                    $laka = $this->Common->getFormatPrice($laka);
+                    echo $laka;
+                } else {
+                    echo $this->Form->input('TtujPayment.laka.',array(
+                        'label'=> false,
+                        'class'=>'form-control input_price_min laka text-right',
+                        'required' => false,
+                        'value' => $laka,
+                    ));
+                }
         ?>
     </td>
-    <td class="text-right total-trans hide on-show">
-        0
+    <td class="text-right total-trans">
+        <?php
+                echo Common::getFormatPrice($total);
+        ?>
     </td>
     <?php 
             if( empty($document_info) ) {

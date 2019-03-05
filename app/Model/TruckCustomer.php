@@ -15,6 +15,10 @@ class TruckCustomer extends AppModel {
 			'className' => 'CustomerNoType',
 			'foreignKey' => 'customer_id',
 		),
+        'Branch' => array(
+            'className' => 'Branch',
+            'foreignKey' => 'branch_id',
+        ),
 	);
 
 	function getMergeTruckCustomer ( $data = false, $truck_id = false, $primary = 'all' ) {

@@ -2,16 +2,6 @@
         $element = 'blocks/revenues/tables/report_ttuj_payment';
         $full_name = !empty($User['Employe']['full_name'])?$User['Employe']['full_name']:false;
         $dataColumns = array(
-            'data' => array(
-                'name' => __('Tanggal Bayar'),
-                'style' => 'text-align: center;vertical-align: middle;',
-                'data-options' => 'field:\'date\',width:100',
-            ),
-            'nodoc' => array(
-                'name' => __('No Dok'),
-                'style' => 'text-align: center;left: 120px;vertical-align: middle;',
-                'data-options' => 'field:\'nodoc\',width:120',
-            ),
             'branch' => array(
                 'name' => __('Cabang'),
                 'style' => 'text-align: center;vertical-align: middle;',
@@ -53,6 +43,11 @@
                 'style' => 'text-align: left;vertical-align: middle;',
                 'data-options' => 'field:\'driver\',width:100',
             ),
+            'nodoc' => array(
+                'name' => __('No. Ref'),
+                'style' => 'text-align: center;left: 120px;vertical-align: middle;',
+                'data-options' => 'field:\'nodoc\',width:120',
+            ),
             'note' => array(
                 'name' => __('Keterangan'),
                 'style' => 'text-align: left;vertical-align: middle;',
@@ -69,11 +64,99 @@
                 'align' => 'right',
                 'data-options' => 'field:\'total\',width:100',
             ),
+            'date_now' => array(
+                'name' => __('TGL. Masuk TTUJ Biru'),
+                'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'date_now\',width:100',
+            ),
+            'driver_id' => array(
+                'name' => __('ID Supir'),
+                'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'driver_id\',width:80',
+            ),
+            'account_name' => array(
+                'name' => __('Atas Nama'),
+                'style' => 'text-align: left;vertical-align: middle;',
+                'data-options' => 'field:\'account_name\',width:120',
+            ),
+            'account_number' => array(
+                'name' => __('No. Rekening'),
+                'style' => 'text-align: left;vertical-align: middle;',
+                'data-options' => 'field:\'account_number\',width:100',
+            ),
+            'bank_name' => array(
+                'name' => __('Nama Bank'),
+                'style' => 'text-align: left;vertical-align: middle;',
+                'data-options' => 'field:\'bank_name\',width:100',
+            ),
+            'date' => array(
+                'name' => __('Tgl Transaksi'),
+                'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'date\',width:100',
+            ),
             'paid' => array(
                 'name' => __('Total Pembayaran'),
                 'style' => 'text-align: right;vertical-align: middle;',
                 'align' => 'right',
                 'data-options' => 'field:\'paid\',width:100',
+            ),
+            'no_claim' => array(
+                'name' => __('No Claim'),
+                'style' => 'text-align: right;vertical-align: middle;',
+                'align' => 'right',
+                'data-options' => 'field:\'no_claim\',width:100',
+            ),
+            'stood' => array(
+                'name' => __('Stood'),
+                'style' => 'text-align: right;vertical-align: middle;',
+                'align' => 'right',
+                'data-options' => 'field:\'stood\',width:100',
+            ),
+            'lainnya' => array(
+                'name' => __('Lain-lain'),
+                'style' => 'text-align: right;vertical-align: middle;',
+                'align' => 'right',
+                'data-options' => 'field:\'lainnya\',width:100',
+            ),
+            'titipan' => array(
+                'name' => __('Titipan'),
+                'style' => 'text-align: right;vertical-align: middle;',
+                'align' => 'right',
+                'data-options' => 'field:\'titipan\',width:100',
+            ),
+            'claim' => array(
+                'name' => __('Potongan Claim'),
+                'style' => 'text-align: right;vertical-align: middle;',
+                'align' => 'right',
+                'data-options' => 'field:\'claim\',width:100',
+            ),
+            'unit_claim' => array(
+                'name' => __('Jml Claim'),
+                'style' => 'text-align: center;vertical-align: middle;',
+                'align' => 'center',
+                'data-options' => 'field:\'unit_claim\',width:80',
+            ),
+            'laka' => array(
+                'name' => __('Potongan LAKA'),
+                'style' => 'text-align: right;vertical-align: middle;',
+                'align' => 'right',
+                'data-options' => 'field:\'laka\',width:100',
+            ),
+            'laka_note' => array(
+                'name' => __('Ket LAKA'),
+                'style' => 'vertical-align: middle;',
+                'data-options' => 'field:\'laka_note\',width:100',
+            ),
+            'grandtotal' => array(
+                'name' => __('Total Transfer'),
+                'style' => 'text-align: right;vertical-align: middle;',
+                'align' => 'right',
+                'data-options' => 'field:\'grandtotal\',width:100',
+            ),
+            'no_ref_cms' => array(
+                'name' => __('No.Ref CMS'),
+                'style' => 'vertical-align: middle;',
+                'data-options' => 'field:\'no_ref_cms\',width:100',
             ),
         );
 

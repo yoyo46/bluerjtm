@@ -10,7 +10,6 @@
 		$customer_name_code = $this->Common->filterEmptyField($data, 'Customer', 'customer_name_code');
 		$coa_name = $this->Common->filterEmptyField($data, 'Coa', 'coa_name');
 		$cogs_name = $this->Common->filterEmptyField($data, 'Cogs', 'cogs_name', '-');
-		$date_payment = $this->Common->filterEmptyField($data, 'InvoicePayment', 'date_payment', date('d/m/Y'));
 
 		echo $this->Form->create('InvoicePayment', array(
 			'url'=> $this->Html->url( null, true ), 
@@ -86,6 +85,8 @@
 					}
 
             		if( !empty($view) ) {
+						$date_payment = $this->Common->filterEmptyField($data, 'InvoicePayment', 'date_payment', date('d M Y'));
+
             			echo $this->Html->tag('div', 
             				$this->Html->tag('label', __('Tgl Pembayaran')).
             				$this->Html->tag('div', $date_payment, array(
@@ -94,6 +95,8 @@
         					'class' => 'form-group',
     					));
 					} else {
+						$date_payment = $this->Common->filterEmptyField($data, 'InvoicePayment', 'date_payment', date('d/m/Y'));
+						
 						echo $this->Common->_callInputForm('date_payment',array(
 							'type' => 'text',
 							'label'=> __('Tgl Pembayaran *'), 

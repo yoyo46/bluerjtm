@@ -35,7 +35,7 @@
                 $balance = $this->CashBank->_callCalcSaldo($value);
 
                 $new = sprintf('%s-%s', $type, $document_no);
-                $customDate = $this->Common->formatDate($date, 'd/m/Y');
+                $customDate = $this->Common->formatDate($date, 'd M Y');
                 $customDebit = $this->Common->getFormatPrice($debit, false, 2);
                 $customCredit = $this->Common->getFormatPrice($credit, false, 2);
                 

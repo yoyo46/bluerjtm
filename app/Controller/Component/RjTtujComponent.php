@@ -20,7 +20,7 @@ class RjTtujComponent extends Component {
             'branch' => false,
             'plant' => false,
         ));
-        $cities = $this->controller->City->getListCities();
+        $cities = $this->controller->GroupBranch->Branch->City->getListCities();
 
         $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom', false, array(
         	'date' => 'd M Y',

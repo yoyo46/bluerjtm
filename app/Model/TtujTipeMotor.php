@@ -42,9 +42,6 @@ class TtujTipeMotor extends AppModel {
         'Ttuj' => array(
             'className' => 'Ttuj',
             'foreignKey' => 'ttuj_id',
-            'conditions' => '',
-            'fields' => '',
-            'order' => ''
         ),
         'TipeMotor' => array(
             'className' => 'TipeMotor',

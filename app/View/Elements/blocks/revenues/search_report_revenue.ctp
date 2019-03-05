@@ -19,6 +19,7 @@
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
                     'id' => 'form-search',
+                    'autocomplete'=> 'off', 
                 ));
         ?>
         <div class="row">

@@ -1,4 +1,7 @@
-<?php 
+<?php   
+        $params = $this->params->params;
+        $named = Common::hashEmptyField($params, 'named');
+
         echo $this->Form->create('Search', array(
             'url'=> $this->Html->url(array(
                 'controller' => 'ajax',
@@ -11,6 +14,10 @@
             'role' => 'form',
             'inputDefaults' => array('div' => false),
         ));
+
+        echo $this->Form->hidden('ttuj_type',array(
+            'value'=> 'payment_picker',
+        ));
 ?>
 <div class="row">
     <div class="col-sm-6">
@@ -20,7 +27,8 @@
                         'label'=> __('Tanggal'),
                         'class'=>'form-control date-range',
                         'required' => false,
-                        'placeholder' => __('Tanggal')
+                        'placeholder' => __('Tanggal'),
+                        'autocomplete'=> 'off', 
                     ));
             ?>
         </div>
@@ -302,17 +310,124 @@
         <?php
                 if(!empty($ttujs)){
                     foreach ($ttujs as $key => $ttuj) {
-                        if( !empty($document_type) ) {
-                            $ttujTemp = !empty($this->request->data)?$this->request->data:false;
-                        } else {
-                            $ttujTemp = !empty($ttuj)?$ttuj:false;
-                        }
+                        switch ($action_type) {
+                            case 'biaya_ttuj':
+                                $uang_kuli_muat = Common::hashEmptyField($ttuj, 'Ttuj.uang_kuli_muat');
+                                $paid_uang_kuli_muat = Common::hashEmptyField($ttuj, 'Ttuj.paid_uang_kuli_muat');
 
-                        echo $this->element('blocks/ajax/biaya_uang_jalan', array(
-                            'ttuj' => $ttuj,
-                            'idx' => $key,
-                            'capacity' => true,
-                        ));
+                                $uang_kuli_bongkar = Common::hashEmptyField($ttuj, 'Ttuj.uang_kuli_bongkar');
+                                $paid_uang_kuli_bongkar = Common::hashEmptyField($ttuj, 'Ttuj.paid_uang_kuli_bongkar');
+                                
+                                $asdp = Common::hashEmptyField($ttuj, 'Ttuj.asdp');
+                                $paid_asdp = Common::hashEmptyField($ttuj, 'Ttuj.paid_asdp');
+                                
+                                $uang_kawal = Common::hashEmptyField($ttuj, 'Ttuj.uang_kawal');
+                                $paid_uang_kawal = Common::hashEmptyField($ttuj, 'Ttuj.paid_uang_kawal');
+                                
+                                $uang_keamanan = Common::hashEmptyField($ttuj, 'Ttuj.uang_keamanan');
+                                $paid_uang_keamanan = Common::hashEmptyField($ttuj, 'Ttuj.paid_uang_keamanan');
+
+                                if( $uang_kuli_muat <> 0 && $paid_uang_kuli_muat <> 'full' && ( empty($document_type) || !empty($named['uang_kuli_muat']) ) ) {
+                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                        'ttuj' => $ttuj,
+                                        'idx' => $key,
+                                        'capacity' => true,
+                                        'data_type' => 'uang_kuli_muat',
+                                    ));
+                                }
+                                if( $uang_kuli_bongkar <> 0 && $paid_uang_kuli_bongkar <> 'full' && ( empty($document_type) || !empty($named['uang_kuli_bongkar']) ) ) {
+                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                        'ttuj' => $ttuj,
+                                        'idx' => $key,
+                                        'capacity' => true,
+                                        'data_type' => 'uang_kuli_bongkar',
+                                    ));
+                                }
+                                if( $asdp <> 0 && $paid_asdp <> 'full' && ( empty($document_type) || !empty($named['asdp']) ) ) {
+                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                        'ttuj' => $ttuj,
+                                        'idx' => $key,
+                                        'capacity' => true,
+                                        'data_type' => 'asdp',
+                                    ));
+                                }
+                                if( $uang_kawal <> 0 && $paid_uang_kawal <> 'full' && ( empty($document_type) || !empty($named['uang_kawal']) ) ) {
+                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                        'ttuj' => $ttuj,
+                                        'idx' => $key,
+                                        'capacity' => true,
+                                        'data_type' => 'uang_kawal',
+                                    ));
+                                }
+                                if( $uang_keamanan <> 0 && $paid_uang_keamanan <> 'full' && ( empty($document_type) || !empty($named['uang_keamanan']) ) ) {
+                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                        'ttuj' => $ttuj,
+                                        'idx' => $key,
+                                        'capacity' => true,
+                                        'data_type' => 'uang_keamanan',
+                                    ));
+                                }
+                                break;
+                            
+                            default:
+                                $uang_jalan_1 = Common::hashEmptyField($ttuj, 'Ttuj.uang_jalan_1');
+                                $paid_uang_jalan = Common::hashEmptyField($ttuj, 'Ttuj.paid_uang_jalan');
+
+                                $uang_jalan_2 = Common::hashEmptyField($ttuj, 'Ttuj.uang_jalan_2');
+                                $paid_uang_jalan_2 = Common::hashEmptyField($ttuj, 'Ttuj.paid_uang_jalan_2');
+                                
+                                $uang_jalan_extra = Common::hashEmptyField($ttuj, 'Ttuj.uang_jalan_extra');
+                                $paid_uang_jalan_extra = Common::hashEmptyField($ttuj, 'Ttuj.paid_uang_jalan_extra');
+                                
+                                $commission = Common::hashEmptyField($ttuj, 'Ttuj.commission');
+                                $paid_commission = Common::hashEmptyField($ttuj, 'Ttuj.paid_commission');
+                                
+                                $commission_extra = Common::hashEmptyField($ttuj, 'Ttuj.commission_extra');
+                                $paid_commission_extra = Common::hashEmptyField($ttuj, 'Ttuj.paid_commission_extra');
+
+                                if( $uang_jalan_1 <> 0 && $paid_uang_jalan <> 'full' && ( empty($document_type) || !empty($named['uang_jalan_1']) ) ) {
+                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                        'ttuj' => $ttuj,
+                                        'idx' => $key,
+                                        'capacity' => true,
+                                        'data_type' => 'uang_jalan',
+                                    ));
+                                }
+                                if( $uang_jalan_2 <> 0 && $paid_uang_jalan_2 <> 'full' && ( empty($document_type) || !empty($named['uang_jalan_2']) ) ) {
+                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                        'ttuj' => $ttuj,
+                                        'idx' => $key,
+                                        'capacity' => true,
+                                        'data_type' => 'uang_jalan_2',
+                                    ));
+                                }
+                                if( $uang_jalan_extra <> 0 && $paid_uang_jalan_extra <> 'full' && ( empty($document_type) || !empty($named['uang_jalan_extra']) ) ) {
+                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                        'ttuj' => $ttuj,
+                                        'idx' => $key,
+                                        'capacity' => true,
+                                        'data_type' => 'uang_jalan_extra',
+                                    ));
+                                }
+                                if( $commission <> 0 && $paid_commission <> 'full' && ( empty($document_type) || !empty($named['commission']) ) ) {
+                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                        'ttuj' => $ttuj,
+                                        'idx' => $key,
+                                        'capacity' => true,
+                                        'data_type' => 'commission',
+                                    ));
+                                }
+                                if( $commission_extra <> 0 && $paid_commission_extra <> 'full' && ( empty($document_type) || !empty($named['commission_extra']) ) ) {
+                                    echo $this->element('blocks/ajax/biaya_uang_jalan', array(
+                                        'ttuj' => $ttuj,
+                                        'idx' => $key,
+                                        'capacity' => true,
+                                        'data_type' => 'commission_extra',
+                                    ));
+                                }
+
+                                break;
+                        }
         ?>
         
         <?php

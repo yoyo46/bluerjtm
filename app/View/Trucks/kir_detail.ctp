@@ -20,11 +20,11 @@
                     <dt><?php echo __('Account Kas/Bank')?></dt>
                     <dd><?php echo $coa_name;?></dd>
                     <dt><?php echo __('Tgl Perpanjang')?></dt>
-                    <dd><?php echo $this->Common->customDate($kir['Kir']['tgl_kir'], 'd/m/Y');?></dd>
+                    <dd><?php echo $this->Common->customDate($kir['Kir']['tgl_kir'], 'd M Y');?></dd>
                     <dt><?php echo __('Tgl Berakhir KIR')?></dt>
-                    <dd><?php echo $this->Common->customDate($kir['Kir']['from_date'], 'd/m/Y');?></dd>
+                    <dd><?php echo $this->Common->customDate($kir['Kir']['from_date'], 'd M Y');?></dd>
                     <dt><?php echo __('Diperpanjang Hingga')?></dt>
-                    <dd><?php echo $this->Common->customDate($kir['Kir']['to_date'], 'd/m/Y');?></dd>
+                    <dd><?php echo $this->Common->customDate($kir['Kir']['to_date'], 'd M Y');?></dd>
                     <dt><?php echo __('Estimasi Biaya')?></dt>
                     <dd><?php echo $this->Number->currency($kir['Kir']['price_estimate'], Configure::read('__Site.config_currency_code').' ', array('places' => 0));?></dd>
                     <dt><?php echo __('Keterangan')?></dt>
@@ -78,9 +78,9 @@
                     <dt><?php echo __('No. Referensi')?></dt>
                     <dd><?php echo $noref;?></dd>
                     <dt><?php echo __('Tgl Dibayar')?></dt>
-                    <dd><?php echo $this->Common->customDate($kir['KirPayment']['kir_payment_date'], 'd/m/Y');?></dd>
+                    <dd><?php echo $this->Common->customDate($kir['KirPayment']['kir_payment_date'], 'd M Y');?></dd>
                     <dt><?php echo __('Tgl Dokumen Dibuat')?></dt>
-                    <dd><?php echo $this->Common->customDate($kir['KirPayment']['created'], 'd/m/Y');?></dd>
+                    <dd><?php echo $this->Common->customDate($kir['KirPayment']['created'], 'd M Y');?></dd>
                     <dt><?php echo __('Keterangan')?></dt>
                     <dd><?php echo !empty($kir['KirPayment']['note'])?str_replace(PHP_EOL, '<br>', $kir['KirPayment']['note']):'-';?></dd>
                     <dt><?php echo __('Status')?></dt>

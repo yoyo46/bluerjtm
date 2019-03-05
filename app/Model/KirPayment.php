@@ -46,7 +46,6 @@ class KirPayment extends AppModel {
                 'KirPayment.branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
-                'KirPayment.created' => 'DESC',
                 'KirPayment.id' => 'DESC',
             ),
             'contain' => array(

@@ -26,7 +26,7 @@
 
                 $status = $this->Revenue->_callStatus($value, 'Ttuj', 'nodoc');
                 $customTotal = $this->Common->getFormatPrice($total);
-                $customDate = $this->Common->formatDate($date, 'd/m/Y');
+                $customDate = $this->Common->formatDate($date, 'd M Y');
 
                 $totalUnit += $unit;
                 $totalQtyTtuj += $total_qty;

@@ -121,7 +121,7 @@ class Log extends AppModel {
 				'Log.status'=> 1, 
 			),
 			'order'=> array(
-				'Log.created' => 'DESC',
+				'Log.id' => 'DESC',
 			),
 		);
 
@@ -145,7 +145,6 @@ class Log extends AppModel {
 				'Log.action' => $paramAction,
 			),
 			'order' => array(
-				'Log.created' => 'DESC',
 				'Log.id' => 'DESC',
 			),
 			'limit' => 50,

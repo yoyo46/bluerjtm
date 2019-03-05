@@ -63,7 +63,6 @@ class Approval extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'Approval.created' => 'DESC',
                 'Approval.id' => 'DESC',
             ),
             'contain' => array(

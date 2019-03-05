@@ -16,7 +16,7 @@
         $coa_name = $this->Common->filterEmptyField($cashbank, 'Coa', 'coa_name', '-');
 
         $revenue_id = $this->Common->filterEmptyField($cashbank, 'Revenue', 'id');
-        $customDate = $this->Common->formatDate($tgl, 'd/m/Y');
+        $customDate = $this->Common->formatDate($tgl, 'd M Y');
         $customTotal = $this->Common->getFormatPrice($grand_total, false, 2);
         $customStatus = $this->CashBank->_callStatus($cashbank);
         $noref = str_pad($id, 6, '0', STR_PAD_LEFT);

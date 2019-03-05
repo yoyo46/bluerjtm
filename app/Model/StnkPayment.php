@@ -46,7 +46,6 @@ class StnkPayment extends AppModel {
                 'StnkPayment.branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
-                'StnkPayment.created' => 'DESC',
                 'StnkPayment.id' => 'DESC',
             ),
             'contain' => array(

@@ -79,7 +79,6 @@ class PurchaseOrderPayment extends AppModel {
             'order'=> array(
                 'PurchaseOrderPayment.order' => 'ASC',
                 'PurchaseOrderPayment.status' => 'DESC',
-                'PurchaseOrderPayment.created' => 'DESC',
                 'PurchaseOrderPayment.id' => 'DESC',
             ),
             'fields' => array(),

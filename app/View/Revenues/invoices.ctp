@@ -89,9 +89,9 @@
             <tr>
                 <td><?php echo $value['Invoice']['no_invoice'];?></td>
                 <td><?php echo ucfirst($value['Invoice']['tarif_type']);?></td>
-                <td><?php echo $this->Common->customDate($value['Invoice']['invoice_date'], 'd/m/Y');?></td>
+                <td><?php echo $this->Common->customDate($value['Invoice']['invoice_date'], 'd M Y');?></td>
                 <td><?php echo $company;?></td>
-                <td><?php echo $value['Customer']['customer_name_code'];?></td>
+                <td><?php echo Common::hashEmptyField($value, 'Customer.customer_name_code', '-');?></td>
                 <td>
                     <?php 
                         echo $this->Common->customDate($value['Invoice']['period_from'], 'd M Y').' s/d '.$this->Common->customDate($value['Invoice']['period_to'], 'd M Y');

@@ -37,6 +37,7 @@
                                     'label'=> false,
                                     'class'=>'form-control pull-right date-range',
                                     'required' => false,
+                                    'autocomplete'=> 'off', 
                                 ));
                         ?>
                     </div>

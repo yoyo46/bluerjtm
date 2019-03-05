@@ -42,7 +42,6 @@ class Direction extends AppModel {
                 'Direction.status' => 1,
             ),
             'order'=> array(
-                'Direction.created' => 'DESC',
                 'Direction.id' => 'DESC'
             ),
             'contain' => array(),

@@ -101,8 +101,7 @@
                             $group = $this->Common->filterEmptyField($value, 'AssetGroup', 'group_name');
                             $customStatus = $this->Common->_callTransactionStatus($value, 'Asset', 'status_document');
 
-                            $purchase_date = $this->Common->formatDate($purchase_date, 'd/m/Y');
-                            $neraca_date = $this->Common->formatDate($neraca_date, 'd/m/Y');
+                            $tmp_purchase_date = $this->Common->formatDate($purchase_date, 'd/m/Y');
                             $created = $this->Common->formatDate($created);
                             $nilai_perolehan = $this->Common->getFormatPrice($nilai_perolehan, 0, 2);
                             $depr_bulan = $this->Common->getFormatPrice($depr_bulan, 0, 2);
@@ -110,10 +109,13 @@
                             $nilai_buku = $this->Common->getFormatPrice($nilai_buku, 0, 2);
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
 
-                            if( $purchase_date == '01/01/1970' ) {
+                            if( $tmp_purchase_date == '01/01/1970' ) {
                                 $purchase_date = '-';
+                            } else {
+                                $purchase_date = $this->Common->formatDate($purchase_date, 'd M Y');
                             }
 
+                            $neraca_date = $this->Common->formatDate($neraca_date, 'd M Y');
                             $action = $this->Html->link(__('Edit'), array(
                                 'action' => 'edit',
                                 $id,

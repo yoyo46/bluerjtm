@@ -98,7 +98,7 @@
                 $transaction_type = Common::hashEmptyField($value, 'ProductHistory.transaction_type');
                 // $balance = Common::hashEmptyField($value, 'ProductHistory.balance');
                 $transaction_date = Common::hashEmptyField($value, 'ProductHistory.transaction_date', null, array(
-                    'date' => 'd/m/Y',
+                    'date' => 'd M Y',
                 ));
 
                 $nopol = Common::hashEmptyField($value, 'Truck.nopol', '-');

@@ -58,7 +58,6 @@ class LkuDetail extends AppModel {
                 'LkuDetail.status' => 1,
             ),
             'order'=> array(
-                'LkuDetail.created' => 'DESC',
                 'LkuDetail.id' => 'DESC',
             ),
             'fields' => array(),

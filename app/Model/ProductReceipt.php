@@ -160,7 +160,6 @@ class ProductReceipt extends AppModel {
             'conditions'=> array(),
             'order'=> array(
                 'ProductReceipt.status' => 'DESC',
-                'ProductReceipt.created' => 'DESC',
                 'ProductReceipt.id' => 'DESC',
             ),
             'fields' => array(),

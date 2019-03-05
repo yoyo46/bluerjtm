@@ -18,7 +18,7 @@
 
                 $driver = $this->Common->_callGetDriver($value);
                 $tglSJ = $this->Common->filterEmptyField($value, 'SuratJalan', 'tgl_surat_jalan', '-', false, array(
-                    'date' => 'd/m/Y',
+                    'date' => 'd M Y',
                 ));
 
                 $unitSjNotRecipt = $unit - $unitSj;
@@ -50,7 +50,7 @@
                             ),
                         ),
                         array(
-                            $this->Common->customDate($ttuj_date, 'd/m/Y'),
+                            $this->Common->customDate($ttuj_date, 'd M Y'),
                             array(
                                 'style' => $style,
                             ),

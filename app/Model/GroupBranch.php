@@ -72,5 +72,20 @@ class GroupBranch extends AppModel {
             ),
         ));
     }
+
+    public function deleteCache( $group_id = null ){
+        Cache::delete('Branch.Admin', 'default');
+
+        if( !empty($group_id) ) {
+            Cache::delete('Branch.User.'.$group_id, 'default');
+        }
+    }
+
+    public function afterSave($created, $options = array()){
+        $data = $this->data;
+        $group_id = Common::hashEmptyField($data, 'GroupBranch.group_id');
+
+        $this->deleteCache($group_id);
+    }
 }
 ?>

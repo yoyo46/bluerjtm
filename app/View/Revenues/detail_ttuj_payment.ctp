@@ -11,7 +11,7 @@
 		$cogs = $this->Common->filterEmptyField($invoice, 'Cogs', 'cogs_name');
 		
         $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
-        $datePayment = $this->Common->customDate($date_payment, 'd/m/Y');
+        $datePayment = $this->Common->customDate($date_payment, 'd M Y');
 ?>
 <div class="box">
     <div class="box-header">

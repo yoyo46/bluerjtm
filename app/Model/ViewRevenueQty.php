@@ -33,7 +33,7 @@ class ViewRevenueQty extends AppModel {
         ),
     );
 
-	function getData( $find, $options = false, $is_merge = true, $elements = array() ){
+	function getData( $find, $options = false, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
         $branch = isset($elements['branch'])?$elements['branch']:true;
 
@@ -57,11 +57,11 @@ class ViewRevenueQty extends AppModel {
             $default_options['conditions']['ViewRevenueQty.branch_id'] = Configure::read('__Site.config_branch_id');
         }
 
-        if(!empty($options) && $is_merge){
+        if( !empty($options) ){
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
-            if(!empty($options['order'])){
+            if(isset($options['order'])){
                 $default_options['order'] = $options['order'];
             }
             if(!empty($options['contain'])){

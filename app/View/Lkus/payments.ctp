@@ -76,7 +76,7 @@
             <tr>
                 <td><?php echo $noref;?></td>
                 <td><?php echo $value['LkuPayment']['no_doc'];?></td>
-                <?php echo $this->Html->tag('td', date('d/m/Y', strtotime($value['LkuPayment']['tgl_bayar'])));?>
+                <?php echo $this->Html->tag('td', date('d M Y', strtotime($value['LkuPayment']['tgl_bayar'])));?>
                 <td><?php echo !empty($value['Customer']['customer_name_code']) ? $value['Customer']['customer_name_code'] : ' - ';?></td>
                 <td><?php echo $this->Number->currency($value['LkuPayment']['grandtotal'], Configure::read('__Site.config_currency_code'), array('places' => 0));?></td>
                 <?php 

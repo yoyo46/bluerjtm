@@ -365,9 +365,9 @@ class RevenueDetail extends AppModel {
             
             default:
                 $options = array(
-                    'contain' => array(
-                        'Revenue',
-                    ),
+                    // 'contain' => array(
+                    //     'Revenue',
+                    // ),
                     'conditions' => array(
                         $fieldName => $id,
                     ),
@@ -377,7 +377,11 @@ class RevenueDetail extends AppModel {
                 );
 
                 // $this->virtualFields['sum_pph'] = 'SUM(Revenue.total * (Revenue.pph/100))';
-                $data_merge = $this->getData('first', $options, $elementRevenue);
+                $options = $this->getData('paginate', $options, $elementRevenue);
+                $options = Common::_callUnset($options, array(
+                    'contain',
+                ));
+                $data_merge = $this->find('first', $options);
 
                 if(!empty($data_merge['RevenueDetail']['qty_unit'])){
                     $data['qty_unit'] = $data_merge['RevenueDetail']['qty_unit'];
@@ -397,9 +401,9 @@ class RevenueDetail extends AppModel {
                 'Revenue.ttuj_id' => $ttuj_id,
                 'Revenue.status' => 1,
             ),
-            'order' => array(
-                'City.name' => 'ASC',
-            ),
+            // 'order' => array(
+            //     'City.name' => 'ASC',
+            // ),
             'contain' => array(
                 'City',
             ),

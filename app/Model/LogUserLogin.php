@@ -73,7 +73,7 @@ class LogUserLogin extends AppModel {
 				'LogUserLogin.status'=> 1, 
 			),
 			'order'=> array(
-				'LogUserLogin.created' => 'DESC',
+				'LogUserLogin.id' => 'DESC',
 			),
 		);
 

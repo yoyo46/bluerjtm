@@ -64,7 +64,7 @@
                             $date = $this->Common->filterEmptyField($value, 'SuratJalan', 'tgl_surat_jalan');
 
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
-                            $date = $this->Common->formatDate($date, 'd/m/Y');
+                            $date = $this->Common->formatDate($date, 'd M Y');
                             $status = $this->Common->_callStatusVoid($value, 'SuratJalan');
                             $actionBtn = $this->Common->_callActionButtn($value, 'SuratJalan', array(
                                 'Detail' => array(

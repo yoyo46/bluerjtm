@@ -66,7 +66,6 @@ class Ksu extends AppModel {
             ),
             'order'=> array(
                 'KsuDetail.id' => 'ASC',
-                'KsuDetail.created' => 'ASC',
             ),
         ),
     );
@@ -114,7 +113,6 @@ class Ksu extends AppModel {
             'conditions'=> array(),
             'order'=> array(
                 'Ksu.status' => 'DESC',
-                'Ksu.created' => 'DESC',
                 'Ksu.id' => 'DESC',
             ),
             'contain' => array(),

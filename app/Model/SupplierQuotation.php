@@ -104,7 +104,6 @@ class SupplierQuotation extends AppModel {
             'conditions'=> array(),
             'order'=> array(
                 'SupplierQuotation.status' => 'DESC',
-                'SupplierQuotation.created' => 'DESC',
                 'SupplierQuotation.id' => 'DESC',
             ),
             'fields' => array(),

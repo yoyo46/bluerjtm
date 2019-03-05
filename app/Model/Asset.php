@@ -148,7 +148,6 @@ class Asset extends AppModel {
             'fields'=> array(),
             'group'=> array(),
             'order' => array(
-                'Asset.created' => 'DESC',
                 'Asset.id' => 'DESC',
             ),
         );

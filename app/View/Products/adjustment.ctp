@@ -69,7 +69,7 @@
                             $disabled_void = Common::hashEmptyField($value, 'ProductAdjustment.disabled_void');
 
                             $customStatus = $this->Common->_callTransactionStatus($value, 'ProductAdjustment');
-                            $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
+                            $customDate = $this->Common->formatDate($transactionDate, 'd M Y');
 
                             $customAction = $this->Html->link(__('Detail'), array(
                                 'action' => 'adjustment_detail',

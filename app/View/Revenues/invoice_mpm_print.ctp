@@ -123,7 +123,7 @@ if($action_print == 'pdf'){
 					$price = 0;
 					$total = 0;
 					$totalPriceFormat = '';
-					$date_revenue = $this->Common->formatDate($date_revenue, 'd/m/Y');
+					$date_revenue = $this->Common->formatDate($date_revenue, 'd M Y');
 
 					if( !empty($is_charge) ) {
 						$totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);

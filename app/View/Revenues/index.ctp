@@ -147,11 +147,14 @@
 
                             $from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name', $from_city);
                             $to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name', $to_city);
+
+                            $transaction_status = Common::hashEmptyFIeld($value, 'Revenue.transaction_status');
+                            $no_ttuj = Common::hashEmptyFIeld($value, 'Ttuj.no_ttuj');
             ?>
             <tr>
                 <td>
                     <?php
-                            if( !in_array($value['Revenue']['transaction_status'], array( 'invoiced', 'half_invoiced' )) ){
+                            if( !in_array($transaction_status, array( 'invoiced', 'half_invoiced' )) ){
                                 echo $this->Form->checkbox('revenue_id.', array(
                                     'class' => 'check-option',
                                     'value' => $id
@@ -162,8 +165,8 @@
                 <td><?php echo str_pad($value['Revenue']['id'], 5, '0', STR_PAD_LEFT);?></td>
                 <td><?php echo $value['Revenue']['no_doc'];?></td>
                 <!-- <td><?php // echo ucfirst($value['Revenue']['type']);?></td> -->
-                <td><?php echo $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y');?></td>
-                <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
+                <td><?php echo $this->Common->customDate($value['Revenue']['date_revenue'], 'd M Y');?></td>
+                <td><?php echo $no_ttuj;?></td>
                 <td>
                     <?php
                             if( !empty($value['Revenue']['nopol']) ) {
@@ -188,25 +191,27 @@
                 <td>
                     <?php 
                             $class_status = 'label label-default';
-                            $statusRevenue = ucfirst($value['Revenue']['transaction_status']);
+                            $statusRevenue = ucfirst($transaction_status);
                             $labelEdit = __('Ubah');
 
                             if(empty($value['Revenue']['status'])){
                                 $class_status = 'label label-danger';
                                 $statusRevenue = __('Non-Aktif');
                                 $labelEdit = __('Detail');
-                            } else if(!empty($value['Invoice']['complete_paid'])){
-                                $class_status = 'label label-success';
-                                $statusRevenue = __('Paid');
-                                $labelEdit = __('Detail');
-                            } else if($value['Revenue']['transaction_status'] == 'half_invoiced'){
+                            } else
+                            // if(!empty($value['Invoice']['complete_paid'])){
+                            //     $class_status = 'label label-success';
+                            //     $statusRevenue = __('Paid');
+                            //     $labelEdit = __('Detail');
+                            // } else
+                            if($transaction_status == 'half_invoiced'){
                                 $class_status = 'label label-warning';
                                 $statusRevenue = __('Half Invoiced');
                                 $labelEdit = __('Detail');
-                            } else if($value['Revenue']['transaction_status'] == 'invoiced'){
+                            } else if($transaction_status == 'invoiced'){
                                 $class_status = 'label label-primary';
                                 $labelEdit = __('Detail');
-                            } elseif($value['Revenue']['transaction_status'] == 'posting'){
+                            } elseif($transaction_status == 'posting'){
                                 $class_status = 'label label-info';
                             }
 
@@ -238,7 +243,7 @@
                                 'data-btn-replace-label' => __('Detail'),
                             ));
                             
-                            if( !in_array($value['Revenue']['transaction_status'], array( 'invoiced', 'half_invoiced' )) && !empty($value['Revenue']['status']) ){
+                            if( !in_array($transaction_status, array( 'invoiced', 'half_invoiced' )) && !empty($value['Revenue']['status']) ){
                                 echo $this->Html->link(__('Hapus'), array(
                                     'controller' => 'revenues',
                                     'action' => 'revenue_toggle',

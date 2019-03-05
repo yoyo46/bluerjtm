@@ -85,7 +85,7 @@ class RevenueHelper extends AppHelper {
         $status = $this->Common->filterEmptyField($data, 'InvoicePayment', 'status');
         $canceled_date = $this->Common->filterEmptyField($data, 'InvoicePayment', 'canceled_date');
 
-        $customDate = $this->Common->formatDate($canceled_date, 'd/m/Y', false);
+        $customDate = $this->Common->formatDate($canceled_date, 'd M Y', false);
         $content = false;
 
         if( empty($is_canceled) ){
@@ -163,7 +163,7 @@ class RevenueHelper extends AppHelper {
             ));
 
             if(!empty($canceled_date) && !empty($is_canceled)){
-                $result .= '<br>'.$this->Common->customDate($canceled_date, 'd/m/Y');
+                $result .= '<br>'.$this->Common->customDate($canceled_date, 'd M Y');
             }
 
             return $result;

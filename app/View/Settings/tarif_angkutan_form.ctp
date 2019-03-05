@@ -148,6 +148,60 @@
 				?>
 		    </div>
 		</div>
+
+		<div class="box box-primary">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Extra Charge'); ?></h3>
+		    </div>
+		    <div class="box-body">
+		    	<div class="form-group">
+		    		<?php 
+		    				echo $this->Form->label('tarif_extra', __('Tarif Extra'));
+		    		?>
+					<div class="row">
+						<div class="col-sm-3 no-pright">
+		                    <div class="input-group">
+								<span class="input-group-addon">></span>
+						    	<?php 
+										echo $this->Form->input('min_capacity',array(
+											'label'=> false, 
+											'class'=>'form-control input_number',
+											'required' => false,
+											'placeholder' => __('Kapasitas'),
+											'type' => 'text',
+										));
+								?>
+							</div>
+						</div>
+						<div class="col-sm-9">
+		                    <div class="input-group">
+						    	<?php 
+						    			echo $this->Html->tag('span', Configure::read('__Site.config_currency_code'), array(
+						    				'class' => 'input-group-addon'
+					    				));
+										echo $this->Form->input('tarif_extra',array(
+											'label'=> false, 
+											'class'=>'form-control input_price_min',
+											'required' => false,
+											'placeholder' => __('Tarif Extra'),
+											'type' => 'text',
+											'error' => false,
+										));
+								?>
+							</div>
+						</div>
+					</div>
+					<?php 
+							echo $this->Form->error('tarif_extra', array(
+								'notempty' => __('Mohon lengkapi data Tarif Extra'),
+							), array(
+								'wrap' => 'div', 
+								'class' => 'error-message',
+							));
+		        	?>
+				</div>
+		    </div>
+		</div>
 	</div>
 </div>
 <div class="box-footer text-center action">

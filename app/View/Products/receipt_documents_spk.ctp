@@ -38,7 +38,7 @@
                                 $id = $this->Common->filterEmptyField($value, 'Spk', 'id');
                                 $nodoc = $this->Common->filterEmptyField($value, 'Spk', 'nodoc');
                                 $transaction_date = $this->Common->filterEmptyField($value, 'Spk', 'transaction_date', false, true, array(
-                                    'date' => 'd/m/Y',
+                                    'date' => 'd M Y',
                                 ));
                                 $document_type = $this->Common->filterEmptyField($value, 'Spk', 'document_type');
                                 $note = $this->Common->filterEmptyField($value, 'Spk', 'note', '-');

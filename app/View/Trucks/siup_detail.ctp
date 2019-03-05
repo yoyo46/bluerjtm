@@ -20,11 +20,11 @@
                     <dt><?php echo __('Account Kas/Bank')?></dt>
                     <dd><?php echo $coa_name;?></dd>
                     <dt><?php echo __('Tgl Perpanjang')?></dt>
-                    <dd><?php echo $this->Common->customDate($siup['Siup']['tgl_siup'], 'd/m/Y');?></dd>
+                    <dd><?php echo $this->Common->customDate($siup['Siup']['tgl_siup'], 'd M Y');?></dd>
                     <dt><?php echo __('Tgl Berakhir Ijin Usaha')?></dt>
-                    <dd><?php echo $this->Common->customDate($siup['Siup']['from_date'], 'd/m/Y');?></dd>
+                    <dd><?php echo $this->Common->customDate($siup['Siup']['from_date'], 'd M Y');?></dd>
                     <dt><?php echo __('Diperpanjang Hingga')?></dt>
-                    <dd><?php echo $this->Common->customDate($siup['Siup']['to_date'], 'd/m/Y');?></dd>
+                    <dd><?php echo $this->Common->customDate($siup['Siup']['to_date'], 'd M Y');?></dd>
                     <dt><?php echo __('Estimasi Biaya')?></dt>
                     <dd><?php echo $this->Number->currency($siup['Siup']['price_estimate'], Configure::read('__Site.config_currency_code').' ', array('places' => 0));?></dd>
                     <dt><?php echo __('Keterangan')?></dt>
@@ -78,9 +78,9 @@
                     <dt><?php echo __('No. Referensi')?></dt>
                     <dd><?php echo $noref;?></dd>
                     <dt><?php echo __('Tgl Dibayar')?></dt>
-                    <dd><?php echo $this->Common->customDate($siup['SiupPayment']['siup_payment_date'], 'd/m/Y');?></dd>
+                    <dd><?php echo $this->Common->customDate($siup['SiupPayment']['siup_payment_date'], 'd M Y');?></dd>
                     <dt><?php echo __('Tgl Dokumen Dibuat')?></dt>
-                    <dd><?php echo $this->Common->customDate($siup['SiupPayment']['created'], 'd/m/Y');?></dd>
+                    <dd><?php echo $this->Common->customDate($siup['SiupPayment']['created'], 'd M Y');?></dd>
                     <dt><?php echo __('Keterangan')?></dt>
                     <dd><?php echo !empty($siup['SiupPayment']['note'])?str_replace(PHP_EOL, '<br>', $siup['SiupPayment']['note']):'-';?></dd>
                     <dt><?php echo __('Status')?></dt>

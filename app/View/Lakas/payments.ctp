@@ -63,7 +63,7 @@
 
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                             $total_payment = $this->Common->getFormatPrice($total_payment);
-                            $date_payment = $this->Common->formatDate($date_payment, 'd/m/Y');
+                            $date_payment = $this->Common->formatDate($date_payment, 'd M Y');
             ?>
             <tr>
                 <?php 
@@ -91,7 +91,7 @@
                                 'class' => 'label label-danger'
                             ));
                             if(!empty($canceled_date)){
-                                $canceled_date = $this->Common->formatDate($canceled_date, 'd/m/Y');
+                                $canceled_date = $this->Common->formatDate($canceled_date, 'd M Y');
                                 $statusDoc .= '<br>'.$canceled_date;
                             }
                         }
@@ -100,13 +100,6 @@
                         ));
 
                         $actionDoc = '';
-                        // $actionDoc = $this->Html->link('Detail', array(
-                        //     'controller' => 'lakas',
-                        //     'action' => 'payment_detail',
-                        //     $id,
-                        // ), array(
-                        //     'class' => 'btn btn-info btn-xs'
-                        // ));
                         
                         if(empty($is_canceled)){
                             $actionDoc = $this->Html->link(__('Edit'), array(

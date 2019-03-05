@@ -7,7 +7,7 @@
             ),
             'date' => array(
                 'name' => __('Tgl'),
-                'style' => 'text-align: center;',
+                'style' => 'text-align: left;',
             ),
             'desc' => array(
                 'name' => __('Keterangan'),

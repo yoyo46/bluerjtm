@@ -55,7 +55,7 @@
                                 'type' => 'currency',
                             ));
                             $created = Common::hashEmptyField($value, 'ProductCategoryTarget.created', '-', array(
-                                'date' => 'd/m/Y',
+                                'date' => 'd M Y',
                             ));
                             $status = Common::hashEmptyField($value, 'ProductCategoryTarget.status');
                             $group = $this->Common->filterEmptyField($value, 'ProductCategory', 'name');

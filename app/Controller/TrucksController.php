@@ -39,7 +39,7 @@ class TrucksController extends AppController {
 
         $conditions = array();
         $contain = array(
-            'Driver'
+            // 'Driver'
         );
         
         if(!empty($this->params['named'])){
@@ -73,6 +73,8 @@ class TrucksController extends AppController {
                 $data = urldecode($refine['name']);
                 $conditions['CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END LIKE'] = '%'.$data.'%';
                 $this->request->data['Driver']['name'] = $data;
+                
+                $contain[] = 'Driver';
             }
             if(!empty($refine['status'])){
                 $data = urldecode($refine['status']);
@@ -128,16 +130,18 @@ class TrucksController extends AppController {
         $trucks = $this->paginate('Truck');
 
         if(!empty($trucks)){
-            // $this->loadModel('City');
-
             foreach ($trucks as $key => $value) {
+                $value = $this->Truck->getMergeList($value, array(
+                    'contain' => array(
+                        'Driver',
+                    ),
+                ));
+
                 $id = $this->MkCommon->filterEmptyField($value, 'Truck', 'id');
-                // $branch_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'branch_id');
                 $truck_category_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'truck_category_id');
                 $truck_brand_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'truck_brand_id');
                 $company_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'company_id');
 
-                // $value = $this->City->getMerge($value, $branch_id);
                 $value = $this->Truck->TruckCategory->getMerge($value, $truck_category_id);
                 $value = $this->Truck->TruckBrand->getMerge($value, $truck_brand_id);
                 $value = $this->Truck->Company->getMerge($value, $company_id);
@@ -3264,6 +3268,8 @@ class TrucksController extends AppController {
                 $data = urldecode($refine['category']);
                 $defaul_condition['TruckCategory.name LIKE'] = '%'.$data.'%';
                 $this->request->data['Truck']['category'] = $data;
+                
+                $defaul_contain[] = 'TruckCategory';
             }
             if(!empty($refine['year'])){
                 $data = urldecode($refine['year']);
@@ -3271,6 +3277,30 @@ class TrucksController extends AppController {
                 $this->request->data['Truck']['year'] = $data;
             }
             if(!empty($refine['alokasi'])){
+                $this->Truck->unBindModel(array(
+                    'hasMany' => array(
+                        'TruckCustomer'
+                    )
+                ));
+                $this->Truck->bindModel(array(
+                    'hasOne' => array(
+                        'TruckCustomer' => array(
+                            'className' => 'TruckCustomer',
+                            'foreignKey' => 'truck_id',
+                            'conditions' => array(
+                                'TruckCustomer.primary' => 1
+                            )
+                        ),
+                        'CustomerNoType' => array(
+                            'className' => 'CustomerNoType',
+                            'foreignKey' => false,
+                            'conditions' => array(
+                                'TruckCustomer.customer_id = CustomerNoType.id',
+                            )
+                        )
+                    )
+                ), false);
+
                 $data = urldecode($refine['alokasi']);
                 $defaul_condition['CustomerNoType.code LIKE'] = '%'.$data.'%';
                 $this->request->data['Truck']['alokasi'] = $data;
@@ -3343,40 +3373,15 @@ class TrucksController extends AppController {
             $defaul_condition['DATE_FORMAT(Truck.created, \'%Y-%m-%d\') <= '] = $to_date;
         }
 
-        $this->Truck->unBindModel(array(
-            'hasMany' => array(
-                'TruckCustomer'
-            )
-        ));
-
-        $this->Truck->bindModel(array(
-            'hasOne' => array(
-                'TruckCustomer' => array(
-                    'className' => 'TruckCustomer',
-                    'foreignKey' => 'truck_id',
-                    'conditions' => array(
-                        'TruckCustomer.primary' => 1
-                    )
-                ),
-                'CustomerNoType' => array(
-                    'className' => 'CustomerNoType',
-                    'foreignKey' => false,
-                    'conditions' => array(
-                        'TruckCustomer.customer_id = CustomerNoType.id',
-                    )
-                )
-            )
-        ), false);
-
         $options = array(
             'group' => array(
                 'Truck.id',
             ),
             'conditions' => $defaul_condition,
             'contain' => array_merge(array(
-                'TruckCategory',
-                'TruckCustomer',
-                'CustomerNoType',
+                // 'TruckCategory',
+                // 'TruckCustomer',
+                // 'CustomerNoType',
             ), $defaul_contain),
         );
 
@@ -3404,6 +3409,23 @@ class TrucksController extends AppController {
 
         if( !empty($trucks) ) {
             foreach ($trucks as $key => $truck) {
+                $truck = $this->Truck->getMergeList($truck, array(
+                    'contain' => array(
+                        'TruckCategory',
+                        'TruckCustomer' => array(
+                            'type' => 'first',
+                            'conditions' => array(
+                                'TruckCustomer.primary' => 1,
+                            )
+                        ),
+                    ),
+                ));
+                $truck = $this->Truck->TruckCustomer->getMergeList($truck, array(
+                    'contain' => array(
+                        'CustomerNoType',
+                    ),
+                ));
+
                 $id = !empty($truck['Truck']['id'])?$truck['Truck']['id']:false;
                 $branch_id = !empty($truck['Truck']['branch_id'])?$truck['Truck']['branch_id']:false;
                 $driver_id = !empty($truck['Truck']['driver_id'])?$truck['Truck']['driver_id']:false;
@@ -3603,11 +3625,13 @@ class TrucksController extends AppController {
         if( !empty($data_action) ) {
             $customers = $this->Customer->getData('all', $options, true, array(
                 'branch' => false,
+                'customer_type' => false,
             ));
         } else {
             $options['limit'] = 50;
             $options = $this->Customer->getData('paginate', $options, true, array(
                 'branch' => false,
+                'customer_type' => false,
             ));
             $this->paginate = $options;
             $customers = $this->paginate('Customer');
@@ -3627,10 +3651,6 @@ class TrucksController extends AppController {
     }
 
     public function point_perday_report( $data_action = false ) {
-        $this->loadModel('Ttuj');
-        $this->loadModel('TtujTipeMotor');
-        $this->loadModel('Customer');
-        $this->loadModel('CustomerTargetUnitDetail');
         $this->set('active_menu', 'point_perday_report');
         $this->set('sub_module_title', __('Laporan Pencapaian Per Customer Per Hari'));
 
@@ -3661,7 +3681,7 @@ class TrucksController extends AppController {
 
         $currentMonth = !empty($currentMonth)?$currentMonth:date('Y-m');
         $lastDay = date('t', strtotime($currentMonth));
-        $customers = $this->Customer->getData('all', array(
+        $customers = $this->Truck->TruckCustomer->Customer->getData('all', array(
             'conditions' => $conditions,
             'order' => array(
                 'Customer.order_sort' => 'ASC',
@@ -3672,6 +3692,7 @@ class TrucksController extends AppController {
             ),
         ), true, array(
             'branch' => false,
+            'customer_type' => false,
         ));
 
         if( !empty($data_action) ) {
@@ -3682,33 +3703,32 @@ class TrucksController extends AppController {
 
         if( !empty($customers) ) {
             foreach ($customers as $key => $value) {
-                $branch_id = $this->MkCommon->filterEmptyField($value, 'Customer', 'branch_id');
-                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
-                
-                $customer_group_id = $this->MkCommon->filterEmptyField($value, 'Customer', 'customer_group_id');
-                $value = $this->Customer->CustomerGroup->getMerge($value, $customer_group_id);
+                $value = $this->Truck->TruckCustomer->Customer->getMergeList($value, array(
+                    'contain' => array(
+                        'Branch' => array(
+                            'elements' => array(
+                                'include_city' => false,
+                            ),
+                        ),
+                        'CustomerGroup',
+                    ),
+                ));
+
                 $customers[$key] = $value;
             }
         }
 
         $customerArr = Set::extract('/Customer/id', $customers);
-        $ttujs = $this->TtujTipeMotor->getData('all', array(
+        $ttujs = $this->Truck->Ttuj->getData('all', array(
             'conditions' => array(
-                'TtujTipeMotor.status'=> 1,
                 'Ttuj.status'=> 1,
                 'Ttuj.is_draft'=> 0,
                 'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\')' => $currentMonth,
                 'Ttuj.customer_id' => $customerArr,
             ),
-            'contain' => array(
-                'Ttuj',
-            ),
-            'order' => array(
-                'Ttuj.customer_name' => 'ASC', 
-            ),
             'fields' => array(
                 'Ttuj.id', 'Ttuj.ttuj_date',
-                'Ttuj.customer_id', 'SUM(TtujTipeMotor.qty) cnt'
+                'Ttuj.customer_id', 'SUM(Ttuj.ttuj_tipe_motor_count) cnt'
             ),
             'group' => array(
                 'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\')',
@@ -3717,14 +3737,11 @@ class TrucksController extends AppController {
         ), false);
         $dataTtuj = array();
         $targetUnit = array();
-        $customerTargetUnits = $this->CustomerTargetUnitDetail->find('all', array(
+        $customerTargetUnits = $this->Truck->TruckCustomer->Customer->CustomerTargetUnit->CustomerTargetUnitDetail->find('all', array(
             'conditions' => array(
                 'CustomerTargetUnit.status' => 1,
                 'CustomerTargetUnit.customer_id' => $customerArr,
                 'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\')' => $currentMonth,
-            ),
-            'order' => array(
-                'CustomerTargetUnit.customer_id' => 'ASC', 
             ),
             'contain' => array(
                 'CustomerTargetUnit'
@@ -3782,11 +3799,7 @@ class TrucksController extends AppController {
     }
 
     public function point_perplant_report( $data_type = 'depo', $data_action = false ) {
-        $this->loadModel('City');
-        $this->loadModel('Ttuj');
-        $this->loadModel('TtujTipeMotor');
         $this->loadModel('Customer');
-        $this->loadModel('CustomerTargetUnitDetail');
         $this->set('sub_module_title', __('Laporan Pencapaian Per Point Per Plant'));
 
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
@@ -3831,22 +3844,32 @@ class TrucksController extends AppController {
         if( !empty($data_action) ) {
             $customers = $this->Customer->getData('all', $options, true, array(
                 'branch' => false,
+                'customer_type' => false,
             ));
         } else {
             $options['limit'] = 50;
             $this->paginate = $this->Customer->getData('paginate', $options, true, array(
                 'branch' => false,
+                'customer_type' => false,
             ));
             $customers = $this->paginate('Customer');
         }
 
+
         if( !empty($customers) ) {
             foreach ($customers as $key => $value) {
-                $customer_group_id = $this->MkCommon->filterEmptyField($value, 'Customer', 'customer_group_id');
-                $branch_id = $this->MkCommon->filterEmptyField($value, 'Customer', 'branch_id');
+                $value = $this->Customer->getMergeList($value, array(
+                    'contain' => array(
+                        'CustomerType',
+                        'CustomerGroup',
+                        'Branch' => array(
+                            'elements' => array(
+                                'include_city' => false,
+                            ),
+                        ),
+                    ),
+                ));
 
-                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
-                $value = $this->Customer->CustomerGroup->getMerge($value, $customer_group_id);
                 $customers[$key] = $value;
             }
         }
@@ -3875,7 +3898,7 @@ class TrucksController extends AppController {
                 'Branch.code' => 'ASC'
             ),
         ));
-        $ttujs = $this->TtujTipeMotor->getData('all', array(
+        $ttujs = $this->Truck->Ttuj->getData('all', array(
             'conditions' => array(
                 'Ttuj.status'=> 1,
                 'Ttuj.is_draft'=> 0,
@@ -3884,29 +3907,20 @@ class TrucksController extends AppController {
                 // 'Ttuj.is_retail' => 0,
                 'Ttuj.branch_id' => $branch_plant_id,
             ),
-            'contain' => array(
-                'Ttuj',
-            ),
-            'order' => array(
-                'Ttuj.customer_name' => 'ASC', 
-            ),
             'fields' => array(
                 'Ttuj.id', 'Ttuj.branch_id',
-                'Ttuj.customer_id', 'SUM(TtujTipeMotor.qty) cnt'
+                'Ttuj.customer_id', 'SUM(Ttuj.ttuj_tipe_motor_count) cnt'
             ),
             'group' => $group,
         ), false);
         $dataTtuj = array();
         $targetUnit = array();
         $branches = array();
-        $customerTargetUnits = $this->CustomerTargetUnitDetail->find('all', array(
+        $customerTargetUnits = $this->Customer->CustomerTargetUnit->CustomerTargetUnitDetail->find('all', array(
             'conditions' => array(
                 'CustomerTargetUnit.status' => 1,
                 'CustomerTargetUnit.customer_id' => $customerArr,
                 'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\')' => $currentMonth,
-            ),
-            'order' => array(
-                'CustomerTargetUnit.customer_id' => 'ASC', 
             ),
             'contain' => array(
                 'CustomerTargetUnit'
@@ -3976,6 +3990,7 @@ class TrucksController extends AppController {
         $conditions = array(
             'Truck.branch_id' => $allow_branch_id,
         );
+        $contain = array();
 
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
@@ -4046,7 +4061,26 @@ class TrucksController extends AppController {
             if(!empty($refine['alocation'])){
                 $data = urldecode($refine['alocation']);
                 $conditions['TruckCustomer.customer_id'] = $data;
+                $contain[] = 'TruckCustomer';
                 $this->request->data['TruckCustomer']['customer_id'] = $data;
+
+                $this->Truck->unBindModel(array(
+                    'hasMany' => array(
+                        'TruckCustomer'
+                    )
+                ));
+
+                $this->Truck->bindModel(array(
+                    'hasOne' => array(
+                        'TruckCustomer' => array(
+                            'className' => 'TruckCustomer',
+                            'foreignKey' => 'truck_id',
+                            'conditions' => array(
+                                'TruckCustomer.primary' => 1
+                            )
+                        )
+                    )
+                ), false);
             }
             if(!empty($refine['company'])){
                 $data = urldecode($refine['company']);
@@ -4056,32 +4090,10 @@ class TrucksController extends AppController {
             
             $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Truck', $conditions, 'conditions' );
         }
-        
-        $this->Truck->unBindModel(array(
-            'hasMany' => array(
-                'TruckCustomer'
-            )
-        ));
-
-        $this->Truck->bindModel(array(
-            'hasOne' => array(
-                'TruckCustomer' => array(
-                    'className' => 'TruckCustomer',
-                    'foreignKey' => 'truck_id',
-                    'conditions' => array(
-                        'TruckCustomer.primary' => 1
-                    )
-                )
-            )
-        ), false);
 
         $options = array(
             'conditions' => $conditions,
-            'contain' => array(
-                'TruckCustomer' => array(
-                    'CustomerNoType'
-                )
-            ),
+            'contain' => $contain,
         );
 
         if( !empty($data_action) ) {
@@ -4093,13 +4105,31 @@ class TrucksController extends AppController {
             $this->paginate = $this->Truck->getData('paginate', $options, true, array(
                 'branch' => false,
             ));
+
             $trucks = $this->paginate('Truck');
         }
 
         if( !empty($trucks) ) {
             foreach ($trucks as $key => $value) {
-                $branch_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'branch_id');
-                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                $value = $this->Truck->getMergeList($value, array(
+                    'contain' => array(
+                        'Branch' => array(
+                            'elements' => array(
+                                'include_city' => false,
+                            ),
+                        ),
+                        'TruckCustomer' => array(
+                            'type' => 'first',
+                            'conditions' => array(
+                                'TruckCustomer.primary' => 1,
+                            ),
+                            'contain' => array(
+                                'CustomerNoType',
+                            ),
+                        ),
+                    ),
+                ));
+
                 $trucks[$key] = $value;
             }
         }
@@ -4630,7 +4660,6 @@ class TrucksController extends AppController {
 
     function daily_report($data_action = false) {
         $this->loadModel('Ttuj');
-        $this->loadModel('City');
 
         $dateFrom = date('Y-m-d');
         $dateTo = date('Y-m-d');
@@ -4798,7 +4827,7 @@ class TrucksController extends AppController {
         }
 
         $companies = $this->Truck->Company->getData('list');
-        $cities = $this->City->getListCities();
+        $cities = $this->Ttuj->Branch->City->getListCities();
         $customerGroups  = $this->Ttuj->Customer->CustomerGroup->getData('list');
 
         $this->set('active_menu', 'daily_report');
@@ -5572,7 +5601,6 @@ class TrucksController extends AppController {
             ),
             'order'=> array(
                 'Ttuj.is_pool' => 'ASC',
-                'Ttuj.created' => 'DESC',
                 'Ttuj.id' => 'DESC',
             ),
         ), true, array(

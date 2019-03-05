@@ -17,7 +17,11 @@ class CustomerGroup extends AppModel {
         ),
     );
 
-	function getData( $find, $options = false ){
+	function getData( $find, $options = false, $elements = array() ){
+        $include_pattern = Common::hashEmptyField($elements, 'include_pattern', true, array(
+            'isset' => true,
+        ));
+
         $default_options = array(
             'conditions'=> array(
                 'CustomerGroup.status' => 1,
@@ -26,9 +30,12 @@ class CustomerGroup extends AppModel {
                 'CustomerGroup.name' => 'ASC'
             ),
             'contain' => array(
-                'CustomerGroupPattern'
             ),
         );
+
+        if( !empty($include_pattern) ) {
+            $default_options['contain'][] = 'CustomerGroupPattern';
+        }
 
         if(!empty($options)){
             if(!empty($options['conditions'])){

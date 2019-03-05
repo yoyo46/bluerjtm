@@ -16,7 +16,7 @@
 
     	$document_type = Common::hashEmptyField($data, 'ProductReceipt.document_type');
     	$last_transaction_date = Common::hashEmptyField($data, 'ProductReceipt.last_transaction_date', null, array(
-    		'date' => 'd/m/Y',
+    		'date' => 'd M Y',
 		));
 
     	if( !empty($spk_internal_policy) && $spk_internal_policy == 'receipt' ) {

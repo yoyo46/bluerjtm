@@ -31,7 +31,7 @@
                 $no_contract = $this->Common->filterEmptyField($value, 'Leasing', 'no_contract', '-');
                 // $sisa_bulan = $umur_ekonomis - $month_use;
 
-                $customNeracaDate = $this->Common->formatDate($neraca_date, 'd/m/Y');
+                $customNeracaDate = $this->Common->formatDate($neraca_date, 'd M Y');
                 $customNilaiPerolehan = $this->Common->getFormatPrice($nilai_perolehan, 0, 2);
                 $customDeprBulan = $this->Common->getFormatPrice($depr_bulan, 0, 2);
                 $customPriceSold = $this->Common->getFormatPrice($price_sold, 0, 2);

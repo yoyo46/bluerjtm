@@ -17,10 +17,10 @@
                 $to_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
                 $total_leadtime = $this->Common->filterEmptyField($value, 'Ttuj', 'total_leadtime', '-');
 
-                $customDateBerangkat = $this->Common->formatDate($tgljam_berangkat, 'd/m/Y H:i');
-                $customDateTiba = $this->Common->formatDate($tgljam_tiba, 'd/m/Y H:i');
-                $customDateBalik = $this->Common->formatDate($tgljam_balik, 'd/m/Y H:i');
-                $customDatePool = $this->Common->formatDate($tgljam_pool, 'd/m/Y H:i');
+                $customDateBerangkat = $this->Common->formatDate($tgljam_berangkat, 'd M Y H:i');
+                $customDateTiba = $this->Common->formatDate($tgljam_tiba, 'd M Y H:i');
+                $customDateBalik = $this->Common->formatDate($tgljam_balik, 'd M Y H:i');
+                $customDatePool = $this->Common->formatDate($tgljam_pool, 'd M Y H:i');
                 $status = $this->Revenue->_callStatusTTUJ($value, 'sort', true);
 
                 $arrive_leadtime = $this->Ttuj->_callLeadTime($value, 'arrive');

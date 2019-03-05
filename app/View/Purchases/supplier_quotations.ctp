@@ -63,7 +63,7 @@
                             $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
 
                             $customAvailable = $this->Common->getCombineDate($availableFrom, $availableTo );
-                            $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
+                            $customDate = $this->Common->formatDate($transactionDate, 'd M Y');
                             $customStatus = $this->Common->_callTransactionStatus($value, 'SupplierQuotation');
 
                             if( !empty($availableTo) && date('Y-m-d') > $availableTo && $transaction_status == 'approved' ) {

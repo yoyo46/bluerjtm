@@ -40,7 +40,6 @@ class CashbanksController extends AppController {
     }
 
     function index(){
-        $this->loadModel('CashBank');
         $this->set('sub_module_title', 'index');
         
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
@@ -1364,8 +1363,6 @@ class CashbanksController extends AppController {
                         'Journal.type' => $type,
                     ),
                     'order'=> array(
-                        'Journal.date' => 'DESC',
-                        'Journal.document_id' => 'DESC',
                         'Journal.sorting_journal' => 'ASC',
                         'Journal.id' => 'ASC',
                     ),
@@ -1464,8 +1461,6 @@ class CashbanksController extends AppController {
                         'Journal.type' => $type,
                     ),
                     'order'=> array(
-                        'Journal.date' => 'DESC',
-                        'Journal.document_id' => 'DESC',
                         'Journal.sorting_journal' => 'ASC',
                         'Journal.id' => 'ASC',
                     ),
@@ -1547,6 +1542,7 @@ class CashbanksController extends AppController {
                     'group' => array(
                         'Journal.coa_id',
                     ),
+                    'order' => false,
                 ), true, array(
                     'type' => $type,
                 ));
@@ -1612,7 +1608,7 @@ class CashbanksController extends AppController {
 
         // Get Data COA
         $coa_id = $this->MkCommon->filterEmptyField($prepayment, 'CashBank', 'coa_id');
-        $prepayment = $this->Coa->getMerge($prepayment, $coa_id);
+        $prepayment = $this->User->Journal->Coa->getMerge($prepayment, $coa_id);
 
         return $prepayment;
     }
@@ -1627,7 +1623,6 @@ class CashbanksController extends AppController {
                 'CashBank.receiving_cash_type' => 'prepayment_out',
             ),
             'order' => array(
-                'CashBank.created' => 'DESC',
                 'CashBank.id' => 'DESC',
             ),
         );
@@ -1654,8 +1649,6 @@ class CashbanksController extends AppController {
         $prepayments = $this->CashBank->getData('all', $options);
 
         if( !empty($prepayments) ) {
-            $this->loadModel('Coa');
-
             foreach ($prepayments as $key => $prepayment) {
                 $prepayments[$key] = $this->getPrepaymentMerge( $prepayment );
             }
@@ -2210,8 +2203,7 @@ class CashbanksController extends AppController {
             ),
             'contain' => false,
             'order'=> array(
-                'Journal.created' => 'DESC',
-                'Journal.document_id' => 'ASC',
+                'Journal.id' => 'DESC',
             ),
             'group' => array(
                 'Journal.document_id',

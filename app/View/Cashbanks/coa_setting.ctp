@@ -494,6 +494,27 @@
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
+							echo $this->Form->label('CoaSettingDetail.PotonganUJ.coa_id', __('Potongan Uang Jalan / Komisi'));
+					?>
+				</div>
+				<div class="col-sm-4 col-sm-offset-4">
+		        	<?php 
+							echo $this->Form->input('CoaSettingDetail.PotonganUJ.coa_id',array(
+								'label'=> false, 
+								'class'=>'form-control chosen-select',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+							echo $this->Form->hidden('CoaSettingDetail.Asuransi.id');
+					?>
+				</div>
+			</div>
+        </div>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
 							echo $this->Form->label('biaya_ttuj_payment_coa_id', __('Pembayaran Biaya TTUJ'));
 					?>
 				</div>

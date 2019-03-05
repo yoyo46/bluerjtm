@@ -842,8 +842,8 @@ class RjRevenueComponent extends Component {
             $period_text = __('Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
         }
         
-        $cities = $this->controller->City->getListCities();
-        $customers = $this->controller->Ttuj->Customer->getData('list', array(
+        $cities = $this->controller->GroupBranch->Branch->City->getListCities();
+        $customers = $this->controller->GroupBranch->Branch->Ttuj->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
@@ -866,8 +866,8 @@ class RjRevenueComponent extends Component {
             $period_text = __('Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo, 'short'));
         }
         
-        $cities = $this->controller->City->getListCities();
-        $customers = $this->controller->Ttuj->Customer->getData('list', array(
+        $cities = $this->controller->GroupBranch->Branch->City->getListCities();
+        $customers = $this->controller->GroupBranch->Branch->Ttuj->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),

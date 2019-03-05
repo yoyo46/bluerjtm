@@ -105,7 +105,7 @@
                             $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
 
                             $customCreated = $this->Time->niceShort($created);
-                            $customDate = $this->Common->customDate($payment_date, 'd/m/Y');
+                            $customDate = $this->Common->customDate($payment_date, 'd M Y');
                             $customGrandtotal = $this->Common->getFormatPrice($grandtotal);
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
             ?>

@@ -6,7 +6,7 @@
 		$completed_nodoc = $this->Common->filterEmptyField($Lku, 'Lku', 'completed_nodoc', '-');
 		$completed = $this->Common->filterEmptyField($Lku, 'Lku', 'completed');
 
-		$customCompletedDate = $this->Common->customDate($completed_date, 'd/m/Y');
+		$customCompletedDate = $this->Common->customDate($completed_date, 'd M Y');
 ?>
 <div class="row">
     <div class="col-sm-12">
@@ -34,7 +34,7 @@
 					</tr>
 					<tr>
 						<th width="30%"><?php echo __('Tgl LKU');?></th>
-						<td><?php echo date('d/m/Y', strtotime($Lku['Lku']['tgl_lku']));?></td>
+						<td><?php echo date('d M Y', strtotime($Lku['Lku']['tgl_lku']));?></td>
 					</tr>
 					<tr>
 						<th width="30%"><?php echo __('Total Klaim');?></th>

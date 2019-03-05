@@ -577,7 +577,7 @@ class CommonHelper extends AppHelper {
             $result = array(
                 'class' => 'label label-danger',
                 'text' => __('Void'),
-                'void_date' => '<br>'.$this->customDate($data['Invoice']['canceled_date'], 'd/m/Y'),
+                'void_date' => '<br>'.$this->customDate($data['Invoice']['canceled_date'], 'd M Y'),
             );
         }else{
             if( empty($data['Invoice']['complete_paid']) && !empty($data['Invoice']['paid']) ){
@@ -797,14 +797,14 @@ class CommonHelper extends AppHelper {
             'title' => 'edit'
         ));
         
-        $dataTree .= $this->Html->link('<i class="fa fa-minus-circle"></i>', array(
-            'controller' => 'settings',
-            'action' => 'coa_toggle',
-            $coa_id,
-        ), array(
-            'escape' => false,
-            'class' => 'bg-red'
-        ), __('Anda yakin ingin menghapus COA ini ?'));
+        // $dataTree .= $this->Html->link('<i class="fa fa-minus-circle"></i>', array(
+        //     'controller' => 'settings',
+        //     'action' => 'coa_toggle',
+        //     $coa_id,
+        // ), array(
+        //     'escape' => false,
+        //     'class' => 'bg-red'
+        // ), __('Anda yakin ingin menghapus COA ini ?'));
 
         return $dataTree;
     }
@@ -859,7 +859,7 @@ class CommonHelper extends AppHelper {
         }
     }
 
-    function getBiayaTtuj ( $ttuj, $data_type, $format_currency = true, $tampilkan_sisa = true, $modelName = 'UangJalanKomisiPayment' ) {
+    function getBiayaTtuj ( $ttuj, $data_type, $format_currency = true, $tampilkan_sisa = true, $modelName = 'Ttuj' ) {
         $total = 0;
         $biaya = 0;
 
@@ -1576,7 +1576,7 @@ class CommonHelper extends AppHelper {
         $nodoc = $this->filterEmptyField($data, 'Leasing', 'no_contract');
         $to_name = $this->filterEmptyField($data, 'Vendor', 'name');
         $paid_date = $this->filterEmptyField($data, 'LeasingInstallment', 'paid_date');
-        $paid_date = $this->formatDate($paid_date, 'd/m/Y');
+        $paid_date = $this->formatDate($paid_date, 'd M Y');
 
         $content = sprintf(__('Pemberitahuan pembayaran Leasing #%s, jatuh tempo pada tanggal %s'), $nodoc, $paid_date);
         $content_url = array(
@@ -2492,7 +2492,7 @@ class CommonHelper extends AppHelper {
             ));
 
             if(!empty($canceled_date)){
-                $canceled_date = $this->formatDate($canceled_date, 'd/m/Y');
+                $canceled_date = $this->formatDate($canceled_date, 'd M Y');
                 $statusDoc .= '<br>'.$canceled_date;
             }
         }else{
@@ -2565,7 +2565,7 @@ class CommonHelper extends AppHelper {
                 ));
 
                 if(!empty($canceled_date)){
-                    $canceled_date = $this->formatDate($canceled_date, 'd/m/Y', false);
+                    $canceled_date = $this->formatDate($canceled_date, 'd M Y', false);
                     $customStatus .= '<br>'.$canceled_date;
                 }
                 break;
@@ -2863,6 +2863,13 @@ class CommonHelper extends AppHelper {
     function _callGetDriver ( $value ) {
         $driver = $this->filterEmptyField($value, 'Driver', 'driver_name');
         $driver = $this->filterEmptyField($value, 'DriverPengganti', 'driver_name', $driver);
+
+        return $driver;
+    }
+
+    function _callGetDataDriver ( $value ) {
+        $driver = Common::hashEmptyField($value, 'Driver');
+        $driver = Common::hashEmptyField($value, 'DriverPengganti', $driver);
 
         return $driver;
     }

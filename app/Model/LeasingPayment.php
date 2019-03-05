@@ -70,7 +70,6 @@ class LeasingPayment extends AppModel {
             'conditions'=> array(),
             'order'=> array(
                 'LeasingPayment.rejected' => 'ASC',
-                'LeasingPayment.created' => 'DESC',
                 'LeasingPayment.id' => 'DESC',
             ),
             'fields' => array(),

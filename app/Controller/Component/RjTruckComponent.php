@@ -225,7 +225,6 @@ class RjTruckComponent extends Component {
 	function _callTruckCustomer( $customers ) {
         $conditionsTruck = array();
         $conditionsCapacity = array(
-            // 'Truck.branch_id' => $allow_branch_id,
         );
     	$truckArr = array();
 

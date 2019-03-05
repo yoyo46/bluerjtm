@@ -65,7 +65,7 @@
 
                             $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
 
-                            $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
+                            $customDate = $this->Common->formatDate($transactionDate, 'd M Y');
                             $grandtotal = $this->Common->getFormatPrice($grandtotal, 0, 2);
                             $customStatus = $this->Common->_callTransactionStatus($value, 'SpkPayment');
 

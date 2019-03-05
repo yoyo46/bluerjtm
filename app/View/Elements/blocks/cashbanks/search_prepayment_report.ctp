@@ -25,6 +25,7 @@
                                 'label'=> __('Tgl Prepayment'),
                                 'class'=>'form-control date-range',
                                 'required' => false,
+                                'autocomplete'=> 'off', 
                             ));
                     ?>
                 </div>

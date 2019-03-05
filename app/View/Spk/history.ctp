@@ -68,7 +68,7 @@
                             $qty = Common::hashEmptyField($value, 'SpkProduct.qty', '-');
 
                             $customStatus = $this->Common->_callTransactionStatus($value, 'Spk');
-                            $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
+                            $customDate = $this->Common->formatDate($transactionDate, 'd M Y');
 
                             $customAction = $this->Html->link(__('Lihat'), array(
                                 'controller' => 'spk',

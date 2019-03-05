@@ -20,6 +20,7 @@
                 'name' => __('Tgl Transaksi'),
                 'field_model' => 'CashBank.tgl_cash_bank',
                 'class' => 'text-center',
+                'style' => 'width: 10%;'
             ),
             'receiving_cash_type' => array(
                 'name' => __('Tipe Kas'),
@@ -105,7 +106,7 @@
 
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                             $name_cash = $this->Common->filterEmptyField($value, 'name_cash', false, '-');
-                            $customDate = $this->Common->formatDate($tgl, 'd/m/Y');
+                            $customDate = $this->Common->formatDate($tgl, 'd M Y');
                             $customType = strtoupper(str_replace('_', ' ', $type));
                             $customStatus = $this->CashBank->_callStatus($value);
                             $customGrandTotal = $this->Common->getFormatPrice($grand_total, 0, 2);

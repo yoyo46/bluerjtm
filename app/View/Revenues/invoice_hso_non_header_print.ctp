@@ -48,7 +48,7 @@ if($action_print == 'pdf'){
 				}
 			}else{
                 if( $data_print == 'date' && !empty($val_detail[0]['Invoice']['invoice_date']) ) {
-					$cityName = $this->Common->customDate($val_detail[0]['Invoice']['invoice_date'], 'd/m/Y');
+					$cityName = $this->Common->customDate($val_detail[0]['Invoice']['invoice_date'], 'd M Y');
                 } else {
 					$cityName = $val_detail[0]['City']['name'];
                 }
@@ -106,7 +106,7 @@ if($action_print == 'pdf'){
 					// $colom .= $this->Html->tag('td', !empty($value['RevenueDetail']['note'])?$value['RevenueDetail']['note']:'');
 
 					if(!empty($value['Revenue']['date_revenue'])){
-						$date_revenue = $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y');
+						$date_revenue = $this->Common->customDate($value['Revenue']['date_revenue'], 'd M Y');
 					}
 					$colom .= $this->Html->tag('td', $date_revenue);
 					$colom .= $this->Html->tag('td', $qty, array(

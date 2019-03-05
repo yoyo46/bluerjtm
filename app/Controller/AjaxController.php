@@ -28,22 +28,6 @@ class AjaxController extends AppController {
             	$params = array_merge($params, $named);
             }
 
-            // if( !empty($named) ) {
-            // 	foreach ($named as $key => $value) {
-            // 		switch ($key) {
-            // 			case 'payment_id':
-            // 				$params[$key] = $value;
-            // 				break;
-            // 			case 'return_value':
-            // 				$params[$key] = $value;
-            // 				break;
-            // 			default:
-            // 				$params[] = $value;
-            // 				break;
-            // 		}
-            // 	}
-            // }
-
             $result = $this->MkCommon->processFilter($data);
             $params = array_merge($params, $result);
 
@@ -78,7 +62,6 @@ class AjaxController extends AppController {
         $plantCityId = Configure::read('__Site.Branch.Plant.id');
 		$isAjax = $this->RequestHandler->isAjax();
 		$data = $this->request->data;
-		// $result = $this->Ttuj->Truck->getInfoTruck($truck_id, $plantCityId);
 		$result = $this->Ttuj->Truck->getInfoTruck($truck_id);
 
 		if( !empty($result) ) {
@@ -278,8 +261,6 @@ class AjaxController extends AppController {
                 'Ttuj.is_draft' => 0,
 			),
 			'contain' => false,
-		), true, array(
-			// 'plant' => true,
 		));
 
 		if( !empty($data_ttuj) ) {
@@ -599,7 +580,9 @@ class AjaxController extends AppController {
 			$this->loadModel('TtujTipeMotor');
 
 			$data_ttuj = $this->TtujTipeMotor->getMergeTtujTipeMotor( $data_ttuj, $ttuj_id );
-            $tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $data_ttuj['Ttuj']['to_city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity']);
+			$total_muatan = $this->Ttuj->TtujTipeMotor->getTotalMuatan($ttuj_id);
+
+            $tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $data_ttuj['Ttuj']['to_city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity'], false, $total_muatan);
 
             if( !empty($tarif['jenis_unit']) && $tarif['jenis_unit'] == 'per_truck' ) {
                 $tarifTruck = $tarif;
@@ -650,12 +633,12 @@ class AjaxController extends AppController {
 							$to_city_id = $city['City']['id'];
 						}
 
-						$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $value['TtujTipeMotor']['city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id);
+						$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $value['TtujTipeMotor']['city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id, $total_muatan);
 					}else{
 						$to_city_name = $data_ttuj['Ttuj']['to_city_name'];
 						$to_city_id = $data_ttuj['Ttuj']['to_city_id'];
 
-						$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $data_ttuj['Ttuj']['to_city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id);
+						$tarif = $this->TarifAngkutan->findTarif($data_ttuj['Ttuj']['from_city_id'], $data_ttuj['Ttuj']['to_city_id'], $data_ttuj['Ttuj']['customer_id'], $data_ttuj['Ttuj']['truck_capacity'], $group_motor_id, $total_muatan);
 					}
 
 					if( !empty($qtyUnit) ) {
@@ -921,6 +904,8 @@ class AjaxController extends AppController {
 			'status' => 'all',
 			'plant' => true,
 		));
+
+		$total_muatan = $this->Ttuj->TtujTipeMotor->getTotalMuatan($ttuj_id);
 		$from_city_id = !empty($from_city_id)?$from_city_id:$this->MkCommon->filterEmptyField($data_ttuj, 'Ttuj', 'from_city_id');
 
 		if( !empty($truck_id) ) {
@@ -942,7 +927,7 @@ class AjaxController extends AppController {
 			}
 		}
 
-		$tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getTarifAngkut( $from_city_id, $main_city_id, $detail_city_id, $customer_id, $truck_capacity, $group_motor_id );
+		$tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getTarifAngkut( $from_city_id, $main_city_id, $detail_city_id, $customer_id, $truck_capacity, $group_motor_id, $total_muatan );
 		$this->set(compact(
 			'is_charge', 'tarif',
 			'qty', 'truck',
@@ -1081,34 +1066,6 @@ class AjaxController extends AppController {
 		));
 	}
 
-	// function getInvoicePaymentInfo($customer_id = false){
-	// 	$this->loadModel('Revenue');
-	// 	$revenues = $this->Revenue->getData('first', array(
-	// 		'conditions' => array(
-	// 			'Revenue.customer_id' => $customer_id,
-	// 			'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
-	// 			'Revenue.status' => 1,						
-	// 		),
-	// 		'order' => array(
-	// 			'Revenue.date_revenue' => 'ASC'
-	// 		),
-	// 		'fields' => array(
-	// 			'SUM(Revenue.total) total',
-	// 			'MAX(Revenue.date_revenue) period_to',
-	// 			'MIN(Revenue.date_revenue) period_from',
-	// 		),
-	// 		'group' => array(
-	// 			'Revenue.customer_id'
-	// 		),
-	// 	));
-
-	// 	if(!empty($revenues)){
-	// 		$this->request->data['Invoice']['period_from'] = !empty($revenues[0]['period_from'])?$this->MkCommon->customDate($revenues[0]['period_from'], 'd/m/Y'):false;
-	// 		$this->request->data['Invoice']['period_to'] = !empty($revenues[0]['period_to'])?$this->MkCommon->customDate($revenues[0]['period_to'], 'd/m/Y'):false;
-	// 		$this->request->data['Invoice']['total'] = !empty($revenues[0]['total'])?$revenues[0]['total']:0;;
-	// 	}
-	// }
-
 	function previewInvoice($customer_id = false, $invoice_type = 'angkut', $action = false){
 		$this->loadModel('Revenue');
 		$this->loadModel('Customer');
@@ -1189,7 +1146,6 @@ class AjaxController extends AppController {
         switch ($action_type) {
         	case 'pengganti':
         		$options['conditions'] = $this->Driver->getListDriverPengganti($id, true);
-        		// $options['contain'][] = 'Ttuj';
         		break;
         	
         	default:
@@ -1558,13 +1514,12 @@ class AjaxController extends AppController {
                 $options['conditions']['Ttuj.is_pool <>'] = 1;
                 $options['conditions']['Ttuj.truck_id'] = $ttuj_id;
 				$data_change = 'laka-ttuj-change';
-        		// $options['conditions'] = $this->MkCommon->_callConditionPlant($options['conditions'], 'Ttuj');
         		$element['branch'] = true;
                 break;
 
             case 'uang_jalan_payment':
                 $options['conditions']['Ttuj.is_laka'] = array( 0, 1 );
-                $options['conditions']['Ttuj.paid_uang_jalan'] = 0;
+                $options['conditions']['Ttuj.paid_uang_jalan <>'] = 'full';
 				$data_change = 'ttujID';
         		$options['order'] = array(
 	                'Ttuj.created' => 'ASC',
@@ -1583,9 +1538,6 @@ class AjaxController extends AppController {
 
         if( !empty($ttujs) ) {
         	foreach ($ttujs as $key => $ttuj) {
-				// $ttuj_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'id');
-				// $to_city_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'to_city_id');
-
 				$ttuj = $this->Ttuj->getMergeList($ttuj, array(
                     'contain' => array(
                         'DriverPengganti' => array(
@@ -1604,12 +1556,6 @@ class AjaxController extends AppController {
                     ),
                 ));
                 $ttujs[$key] = $ttuj;
-
-				// if( $this->Ttuj->validateTtujAfterLeave( $to_city_id, $this->GroupBranch->Branch ) ) {
-				// 	$ttujs[$key] = $ttuj;
-    //             } else {
-				// 	unset($ttujs[$key]);
-				// }
         	}
         }
 
@@ -1767,8 +1713,6 @@ class AjaxController extends AppController {
                 'Ttuj.id', 'Ttuj.no_ttuj'
             ),
             'contain' => false,
-        ), true, array(
-        	// 'plant' => true,
         ));
 
 		$this->set(compact('driver_name', 'no_sim', 'ttujs'));
@@ -1809,16 +1753,6 @@ class AjaxController extends AppController {
 			'limit' => 20,
     	));
 
-		// if( !empty($this->request->data) ) {
-		// 	$data = $this->request->data;
-
-		// 	if(!empty($data['UserCashBank']['model'])){
-		// 		$model = ucwords($data['UserCashBank']['model']);
-		// 	} else if(!empty($this->params['named']['model'])){
-		// 		$model = ucwords($this->params['named']['model']);
-		// 	}
-		// }
-
 		$this->paginate = $options;
 		$values = $this->paginate('Client');
 		$this->request->data['UserCashBank']['model'] = $model;
@@ -1846,9 +1780,6 @@ class AjaxController extends AppController {
         if( $param_code == 'none' ) {
         	$params['named']['code'] = false;
         }
-        // else {
-        // 	$params['named']['code'] = $this->MkCommon->filterEmptyField($params, 'named', 'code', $coa_code);
-        // }
 
         $params = $this->MkCommon->_callRefineParams($params);
         $options =  $this->BranchCoa->_callRefineParams($params, array(
@@ -2167,13 +2098,6 @@ class AjaxController extends AppController {
 		$this->render('get_customer');
 	}
 
-	// function getInfoTtujPayment( $ttuj_id, $action_type = 'uang_jalan'){
-	// 	$this->loadModel('Ttuj');
-	// 	$result = $this->Ttuj->getTtujPayment($ttuj_id, $action_type);
-	// 	echo json_encode($result);
-	// 	$this->render(false);
-	// }
-
 	function getInfoEmploye($id){
 		$this->loadModel('Employe');
 		$employes = $this->Employe->getData('first', array(
@@ -2191,13 +2115,36 @@ class AjaxController extends AppController {
 
 	function getBiayaTtuj( $action_type = false ){
 		$this->loadModel('Ttuj');
-		$this->loadModel('UangJalanKomisiPayment');
-    	$this->loadModel('City');
 
 		$document_type = false;
         $named = $this->MkCommon->filterEmptyField($this->params, 'named');
         $payment_id = $this->MkCommon->filterEmptyField($named, 'payment_id');
         $action_type = $this->MkCommon->filterEmptyField($named, 'action_type', false, $action_type);
+
+        $current_branch_id = Configure::read('__Site.config_branch_id');
+        $branch_city_id = Configure::read('__Site.Branch.City.id');
+        $head_office = Configure::read('__Site.config_branch_head_office');
+
+        $options = array(
+        	'conditions' => array(
+	        	'Ttuj.status' => 1,
+	        	'Ttuj.is_draft' => 0,
+	        	'Ttuj.is_rjtm' => 1,
+        	),
+        	'order' => array(
+				'Ttuj.ttuj_date' => 'DESC',
+				'Ttuj.id' => 'DESC',
+        	),
+            'limit' => Configure::read('__Site.config_pagination'),
+    	);
+
+        if( empty($head_office) ) {
+            $options['conditions']['Ttuj.branch_id'] = Configure::read('__Site.config_branch_id');
+	    	$options['conditions'][]['OR'] = array(
+        		'Ttuj.to_city_id' => $branch_city_id,
+        		'Ttuj.branch_id' => $current_branch_id,
+			);
+        }
 
         switch ($action_type) {
         	case 'biaya_ttuj':
@@ -2209,15 +2156,28 @@ class AjaxController extends AppController {
 	        		'uang_kawal' => __('Uang Kawal'),
 	        		'uang_keamanan' => __('Uang Keamanan'),
         		);
-        		$conditions = array(
-        			'UangJalanKomisiPayment.data_type' => array(
-        				'uang_kuli_muat',
-		        		'uang_kuli_bongkar',
-		        		'asdp',
-		        		'uang_kawal',
-		        		'uang_keamanan',
-    				),
-    			);
+    			$options['conditions']['OR'] = array(
+	        		array(
+			        	'Ttuj.uang_kuli_muat <>' => 0,
+			        	'Ttuj.paid_uang_kuli_muat_draft <>' => 'full',
+	        		),
+	        		array(
+			        	'Ttuj.uang_kuli_bongkar <>' => 0,
+			        	'Ttuj.paid_uang_kuli_bongkar_draft <>' => 'full',
+	        		),
+	        		array(
+			        	'Ttuj.asdp <>' => 0,
+			        	'Ttuj.paid_asdp_draft <>' => 'full',
+	        		),
+	        		array(
+			        	'Ttuj.uang_kawal <>' => 0,
+			        	'Ttuj.paid_uang_kawal_draft <>' => 'full',
+	        		),
+	        		array(
+			        	'Ttuj.uang_keamanan <>' => 0,
+			        	'Ttuj.paid_uang_keamanan_draft <>' => 'full',
+	        		),
+				);
         		break;
         	
         	default:
@@ -2229,23 +2189,33 @@ class AjaxController extends AppController {
 	        		'commission' => __('Komisi'),
 	        		'commission_extra' => __('Komisi Extra'),
         		);
-        		$conditions = array(
-        			'UangJalanKomisiPayment.data_type' => array(
-		        		'uang_jalan',
-		        		'uang_jalan_2',
-		        		'uang_jalan_extra',
-		        		'commission',
-		        		'commission_extra',
-    				),
-    			);
+    			$options['conditions']['OR'] = array(
+	        		array(
+	        			'Ttuj.uang_jalan_1 <>' => 0,
+		        		'Ttuj.paid_uang_jalan_draft <>' => 'full',
+	        		),
+	        		array(
+			        	'Ttuj.uang_jalan_2 <>' => 0,
+			        	'Ttuj.paid_uang_jalan_2_draft <>' => 'full',
+	        		),
+	        		array(
+			        	'Ttuj.uang_jalan_extra <>' => 0,
+			        	'Ttuj.paid_uang_jalan_extra_draft <>' => 'full',
+	        		),
+	        		array(
+			        	'Ttuj.commission <>' => 0,
+			        	'Ttuj.paid_commission_draft <>' => 'full',
+	        		),
+	        		array(
+			        	'Ttuj.commission_extra <>' => 0,
+			        	'Ttuj.paid_commission_extra_draft <>' => 'full',
+	        		),
+				);
         		break;
         }
 
         $params = $this->MkCommon->_callRefineParams($this->params);
-        $options =  $this->UangJalanKomisiPayment->_callRefineParams($params, array(
-        	'conditions' => $conditions,
-            'limit' => Configure::read('__Site.config_pagination'),
-    	));
+        $options =  $this->Ttuj->_callRefineParams($params, $options);
 
         if(!empty($this->params)){
             if(!empty($this->params['named']['uang_jalan_1']) || !empty($this->params['named']['uang_jalan_2']) || !empty($this->params['named']['uang_jalan_extra']) || !empty($this->params['named']['commission']) || !empty($this->params['named']['commission_extra']) || !empty($this->params['named']['uang_kuli_muat']) || !empty($this->params['named']['uang_kuli_bongkar']) || !empty($this->params['named']['asdp']) || !empty($this->params['named']['uang_kawal']) || !empty($this->params['named']['uang_keamanan'])){
@@ -2254,34 +2224,34 @@ class AjaxController extends AppController {
         }
 
         $this->paginate = $options;
-        $ttujs = $this->paginate('UangJalanKomisiPayment');
+        $ttujs = $this->paginate('Ttuj');
 
         if( !empty($ttujs) ) {
         	foreach ($ttujs as $key => $ttuj) {
-        		$customer_id = $this->MkCommon->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'customer_id');
-            	$driver_id = $this->MkCommon->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'driver_id');
-            	$ttuj_id = $this->MkCommon->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'id');
-            	$driver_pengganti_id = $this->MkCommon->filterEmptyField($ttuj, 'UangJalanKomisiPayment', 'driver_pengganti_id');
+        		$customer_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'customer_id');
+            	$driver_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'driver_id');
+            	$ttuj_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'id');
+            	$driver_pengganti_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'driver_pengganti_id');
 
-        		$ttuj = $this->Ttuj->Customer->getMerge($ttuj, $customer_id);
-            	$ttuj = $this->Ttuj->Truck->Driver->getMerge($ttuj, $driver_id);
-            	$ttuj = $this->Ttuj->Truck->Driver->getMerge($ttuj, $driver_pengganti_id, 'DriverPengganti');
+        		$ttuj = $this->GroupBranch->Branch->Ttuj->Customer->getMerge($ttuj, $customer_id);
+            	$ttuj = $this->GroupBranch->Branch->Driver->getMerge($ttuj, $driver_id);
+            	$ttuj = $this->GroupBranch->Branch->Driver->getMerge($ttuj, $driver_pengganti_id, 'DriverPengganti');
 
             	switch ($action_type) {
 		        	case 'biaya_ttuj':
-            				$ttuj['uang_kuli_muat_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kuli_muat', $payment_id);
-            				$ttuj['uang_kuli_bongkar_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kuli_bongkar', $payment_id);
-            				$ttuj['asdp_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'asdp', $payment_id);
-            				$ttuj['uang_keamanan_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_keamanan', $payment_id);
-            				$ttuj['uang_kawal_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kawal', $payment_id);
+            				$ttuj['uang_kuli_muat_dibayar'] = $this->GroupBranch->Branch->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kuli_muat', $payment_id);
+            				$ttuj['uang_kuli_bongkar_dibayar'] = $this->GroupBranch->Branch->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kuli_bongkar', $payment_id);
+            				$ttuj['asdp_dibayar'] = $this->GroupBranch->Branch->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'asdp', $payment_id);
+            				$ttuj['uang_keamanan_dibayar'] = $this->GroupBranch->Branch->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_keamanan', $payment_id);
+            				$ttuj['uang_kawal_dibayar'] = $this->GroupBranch->Branch->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_kawal', $payment_id);
 		        		break;
 		        	
 		        	default:
-		            	$ttuj['uang_jalan_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan', $payment_id);
-		            	$ttuj['commission_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'commission', $payment_id);
-		            	$ttuj['uang_jalan_2_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan_2', $payment_id);
-		            	$ttuj['uang_jalan_extra_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan_extra', $payment_id);
-		            	$ttuj['commission_extra_dibayar'] = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'commission_extra', $payment_id);
+		            	$ttuj['uang_jalan_dibayar'] = $this->GroupBranch->Branch->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan', $payment_id);
+		            	$ttuj['commission_dibayar'] = $this->GroupBranch->Branch->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'commission', $payment_id);
+		            	$ttuj['uang_jalan_2_dibayar'] = $this->GroupBranch->Branch->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan_2', $payment_id);
+		            	$ttuj['uang_jalan_extra_dibayar'] = $this->GroupBranch->Branch->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'uang_jalan_extra', $payment_id);
+		            	$ttuj['commission_extra_dibayar'] = $this->GroupBranch->Branch->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, 'commission_extra', $payment_id);
 		        		break;
 		        }
 
@@ -2290,7 +2260,7 @@ class AjaxController extends AppController {
         }
 
         $data_action = 'browse-check-docs';
-        $cities = $this->City->getData('list');
+        $cities = $this->GroupBranch->Branch->City->getData('list');
 		$this->set(compact(
 			'data_action', 'title', 'ttujs',
 			'action_type', 'jenisBiaya', 'document_type',
@@ -2395,6 +2365,9 @@ class AjaxController extends AppController {
 									}
 
 									if($this->BranchActionModule->save()){
+        								Cache::delete(__('GroupBranch.%s.%s', $branch_id, $group_id), 'default');
+        								Cache::delete(__('GroupBranch.admin.%s', $branch_id), 'default');
+
 										$id = $this->BranchActionModule->id;
 										$parent_modules[$key_parent]['child'][$key_parent_1]['BranchChild'][$key]['is_allow'] = $allow;
 									} else {
@@ -2409,7 +2382,10 @@ class AjaxController extends AppController {
 
 				if( !empty($default_msg) ) {
 	        		if( !empty($flagSave) ) {
-						$this->Log->logActivity( sprintf(__('Berhasil %s kpd group #%s utk semua module'), $default_msg, $group_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $id );
+						Cache::delete(__('GroupBranch.%s.%s', $branch_id, $group_id), 'default');
+						Cache::delete(__('Branch.List.%s', $group_id), 'default');
+
+						$this->Log->logActivity( sprintf(__('Berhasil %s kpd group #%s utk semua module'), $default_msg, $group_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $group_id );
 	        		} else {
 						$this->Log->logActivity( sprintf(__('Gagal %s kpd group #%s utk semua module'), $default_msg, $group_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $group_id );
 	        		}
@@ -2444,6 +2420,11 @@ class AjaxController extends AppController {
 	                    'BranchActionModule.branch_module_id' => $branch_module_id,
 	                )
 	            ));
+            	$groupBranch = $this->GroupBranch->getData('first', array(
+            		'conditions' => array(
+            			'GroupBranch.id' => $group_branch_id,
+            		),
+            	));
 				
 	            if(!empty($data_auth)){
 	            	$this->BranchActionModule->id = $data_auth['BranchActionModule']['id'];
@@ -2456,6 +2437,12 @@ class AjaxController extends AppController {
 	            	$this->BranchActionModule->set('is_allow', $is_allow);
 
 	            	if($this->BranchActionModule->save()){
+	            		$branch_id = Common::hashEmptyField($groupBranch, 'GroupBranch.branch_id');
+	            		$group_id = Common::hashEmptyField($groupBranch, 'GroupBranch.group_id');
+
+						Cache::delete(__('GroupBranch.%s.%s', $branch_id, $group_id), 'default');
+						Cache::delete(__('GroupBranch.admin.%s', $branch_id), 'default');
+
 	            		$id = $this->BranchActionModule->id;
 	            		$save = true;
 	            		$data_auth['BranchActionModule']['is_allow'] = $is_allow;
@@ -2472,6 +2459,12 @@ class AjaxController extends AppController {
 	            	));
 
 	            	if($this->BranchActionModule->save()){
+	            		$branch_id = Common::hashEmptyField($groupBranch, 'GroupBranch.branch_id');
+	            		$group_id = Common::hashEmptyField($groupBranch, 'GroupBranch.group_id');
+
+						Cache::delete(__('GroupBranch.%s.%s', $branch_id, $group_id), 'default');
+						Cache::delete(__('GroupBranch.admin.%s', $branch_id), 'default');
+
 	            		$id = $this->BranchActionModule->id;
 	            		$save = true;
 	            		$data_auth['BranchActionModule']['is_allow'] = 1;
@@ -2507,13 +2500,19 @@ class AjaxController extends AppController {
 			);
 			
 			if(!empty($group_branch)){
-				if($this->GroupBranch->delete($id)){
-					
-					$this->loadModel('BranchActionModule');
+				$group_id = Common::hashEmptyField($group_branch, 'GroupBranch.group_id');
+				$branch_id = Common::hashEmptyField($group_branch, 'GroupBranch.branch_id');
 
+				if($this->GroupBranch->delete($id)){
+
+					$this->loadModel('BranchActionModule');
+					
 					$this->BranchActionModule->deleteAll(array(
 						'group_branch_id' => $id
 					));
+
+					Cache::delete(__('GroupBranch.%s.%s', $branch_id, $group_id), 'default');
+					Cache::delete(__('GroupBranch.admin.%s', $branch_id), 'default');
 
 					$msg = array(
 						'type' => 'success',
@@ -2602,6 +2601,9 @@ class AjaxController extends AppController {
 							}
 
 							if($this->BranchActionModule->save()){
+								Cache::delete(__('GroupBranch.%s.%s', $branch_id, $group_id), 'default');
+								Cache::delete(__('GroupBranch.admin.%s', $branch_id), 'default');
+
 								$branch_modules[$key_parent]['BranchChild'][$key]['is_allow'] = $allow;
 							} else {
         						$flagSave = true;
@@ -2616,6 +2618,9 @@ class AjaxController extends AppController {
 
 				if( !empty($default_msg) ) {
 	        		if( !empty($flagSave) ) {
+						Cache::delete(__('GroupBranch.%s.%s', $branch_id, $group_id), 'default');
+						Cache::delete(__('Branch.List.%s', $group_id), 'default');
+
 						$this->Log->logActivity( sprintf(__('Berhasil %s kpd group #%s utk semua module #%s di cabang #%s'), $default_msg, $group_id, $parent_id, $branch_id), $this->user_data, $this->RequestHandler, $this->params, 0, false, $group_id );
 	        		} else {
 						$this->Log->logActivity( sprintf(__('Gagal %s kpd group #%s utk semua module #%s di cabang #%s'), $default_msg, $group_id, $parent_id, $branch_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $group_id );
@@ -2642,7 +2647,6 @@ class AjaxController extends AppController {
 
         switch ($action_type) {
         	case 'po':
-        		// $status = 'no-sq';
         		$status = 'active';
         		$render = '/Purchases/products';
         		break;
@@ -2676,32 +2680,28 @@ class AjaxController extends AppController {
                 $value = $this->Product->ProductCategory->getMerge($value, $product_category_id);
                 $value['Product']['rate'] = $this->Product->SupplierQuotationDetail->SupplierQuotation->_callRatePrice($id, false, '-');
 
-                // if( !empty($no_sq) ) {
-                	$sqDetail = $this->Product->SupplierQuotationDetail->getData('first', array(
-                		'conditions' => array(
-                			'SupplierQuotation.vendor_id' => $vendor_id,
-			                'SupplierQuotationDetail.product_id' => $id,
-            			),
-            			'contain' => array(
-            				'SupplierQuotation',
-        				),
-			            'order'=> array(
-			                'SupplierQuotation.status' => 'DESC',
-			                'SupplierQuotation.created' => 'DESC',
-			                'SupplierQuotation.id' => 'DESC',
-			            ),
-            		), array(
-			            'status' => 'available',
-			        ));
+            	$sqDetail = $this->Product->SupplierQuotationDetail->getData('first', array(
+            		'conditions' => array(
+            			'SupplierQuotation.vendor_id' => $vendor_id,
+		                'SupplierQuotationDetail.product_id' => $id,
+        			),
+        			'contain' => array(
+        				'SupplierQuotation',
+    				),
+		            'order'=> array(
+		                'SupplierQuotation.status' => 'DESC',
+		                'SupplierQuotation.created' => 'DESC',
+		                'SupplierQuotation.id' => 'DESC',
+		            ),
+        		), array(
+		            'status' => 'available',
+		        ));
 
-			        if( !empty($sqDetail) ) {
-			        	$value = array_merge($value, $sqDetail);
-			        }
-                // }
+		        if( !empty($sqDetail) ) {
+		        	$value = array_merge($value, $sqDetail);
+		        }
 
-                // if( $action_type == 'spk' ) {
-        			$value['Product']['product_stock_cnt'] = $this->Product->ProductStock->_callStock($id);
-                // }
+    			$value['Product']['product_stock_cnt'] = $this->Product->ProductStock->_callStock($id);
 
                 $values[$key] = $value;
             }

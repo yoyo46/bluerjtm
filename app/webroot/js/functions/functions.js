@@ -2084,7 +2084,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                                 obj: $('#myModal .modal-body .input_price'),
                             });
                             input_price_min($('#myModal .modal-body .input_price_min'));
-                            sisa_amount($('#myModal .modal-body .sisa-amount'));
+                            sisa_amount($('#myModal .modal-body .sisa-amount,#myModal .modal-body .no-claim,#myModal .modal-body .stood,#myModal .modal-body .lainnya,#myModal .modal-body .titipan,#myModal .modal-body .claim,#myModal .modal-body .laka'));
                             popup_checkbox();
                             $.daterangepicker({
                                 obj: $('#myModal .modal-body .date-range'),
@@ -2757,7 +2757,7 @@ var check_all_checkbox = function(){
                 input_price_min($('.child-'+id_child+'[rel="'+rel_id+'"] .input_price_min'));
                 delete_custom_field($('.child-'+id_child+'[rel="'+rel_id+'"] .delete-custom-field'));
                 ajaxModal($('.child-'+id_child+'[rel="'+rel_id+'"] .ajaxModal'));
-                sisa_amount($('.child-'+id_child+'[rel="'+rel_id+'"] .sisa-amount'));
+                sisa_amount($('.child-'+id_child+'[rel="'+rel_id+'"] .sisa-amount,.child-'+id_child+'[rel="'+rel_id+'"] .no-claim,.child-'+id_child+'[rel="'+rel_id+'"] .stood,.child-'+id_child+'[rel="'+rel_id+'"] .lainnya,.child-'+id_child+'[rel="'+rel_id+'"] .titipan,.child-'+id_child+'[rel="'+rel_id+'"] .claim,.child-'+id_child+'[rel="'+rel_id+'"] .laka'));
             }
         } else if( allow_multiple != 'true' ) {
             $('.child-'+rel_id).remove();
@@ -2798,7 +2798,7 @@ var check_all_checkbox = function(){
         input_price_min($('.child-'+id_child+'[rel="'+rel_id+'"] .input_price_min'));
         delete_custom_field($('.child-'+id_child+'[rel="'+rel_id+'"] .delete-custom-field'));
         ajaxModal($('.child-'+id_child+'[rel="'+rel_id+'"] .ajaxModal'));
-        sisa_amount($('.child-'+id_child+'[rel="'+rel_id+'"] .sisa-amount'));
+        sisa_amount($('.child-'+id_child+'[rel="'+rel_id+'"] .sisa-amount,.child-'+id_child+'[rel="'+rel_id+'"] .no-claim,.child-'+id_child+'[rel="'+rel_id+'"] .stood,.child-'+id_child+'[rel="'+rel_id+'"] .lainnya,.child-'+id_child+'[rel="'+rel_id+'"] .titipan,.child-'+id_child+'[rel="'+rel_id+'"] .claim,.child-'+id_child+'[rel="'+rel_id+'"] .laka'));
 
         $.ajax({
             url: '/ajax/saveCache/Coa/'+rel_id+'/',
@@ -2839,7 +2839,7 @@ function check_option(self){
                     obj: $('.child-'+id+' .input_number'),
                 });
                 input_price_min( $('.child-'+id+' .input_price_min') );
-                sisa_amount($('#checkbox-info-table .child-'+id+' .sisa-amount'));
+                sisa_amount($('#checkbox-info-table .child-'+id+' .sisa-amount,#checkbox-info-table .child-'+id+' .no-claim,#checkbox-info-table .child-'+id+' .stood,#checkbox-info-table .child-'+id+' .lainnya,#checkbox-info-table .child-'+id+' .titipan,#checkbox-info-table .child-'+id+' .claim,#checkbox-info-table .child-'+id+' .laka'));
                 delete_current_document($('#checkbox-info-table .child-'+id+' .document-table-action a'));
             }
         }
@@ -3087,24 +3087,55 @@ var convert_decimal = function ( num, type ) {
 var calcTotalBiaya = function () {
     var biayaObj = $('#checkbox-info-table .sisa-amount');
     var biayaLen = $('#checkbox-info-table .sisa-amount').length;
+    
+    var objNoClaim = $('#checkbox-info-table .no-claim');
+    var objStood = $('#checkbox-info-table .stood');
+    var objLainnya = $('#checkbox-info-table .lainnya');
+    var objTitipan = $('#checkbox-info-table .titipan');
+    var objClaim = $('#checkbox-info-table .claim');
+    var objLaka = $('#checkbox-info-table .laka');
+
     var coma = $.checkUndefined($('#total-biaya').attr('data-cent'), 0);
     var totalBiaya = 0;
+    var grandtotal = 0;
 
     for (i = 0; i < biayaLen; i++) {
-        totalBiaya += convert_number(biayaObj[i].value, 'float');
+        no_claim = convert_number($.checkUndefined(objNoClaim[i].value, 0));
+        stood = convert_number($.checkUndefined(objStood[i].value, 0));
+        lainnya = convert_number($.checkUndefined(objLainnya[i].value, 0));
+        titipan = convert_number($.checkUndefined(objTitipan[i].value, 0));
+        claim = convert_number($.checkUndefined(objClaim[i].value, 0));
+        laka = convert_number($.checkUndefined(objLaka[i].value, 0));
+        biaya = convert_number(biayaObj[i].value, 'float');
+
+        totalBiaya += biaya;
+        grandtotal += biaya + no_claim + stood + lainnya - titipan - claim - laka;
     };
 
     $('#total-biaya').html(formatNumber( totalBiaya, coma ));
+    $('#grandtotal-biaya').html(formatNumber( grandtotal, coma ));
     // $('#total-biaya').html(formatNumber( totalBiaya, 0 ));
+}
+
+var calcTotalTransfer = function ( parent ) {
+    biaya = convert_number($.checkUndefined(parent.find('.sisa-amount').val(), 0));
+    no_claim = convert_number($.checkUndefined(parent.find('.no-claim').val(), 0));
+    stood = convert_number($.checkUndefined(parent.find('.stood').val(), 0));
+    lainnya = convert_number($.checkUndefined(parent.find('.lainnya').val(), 0));
+    titipan = convert_number($.checkUndefined(parent.find('.titipan').val(), 0));
+    claim = convert_number($.checkUndefined(parent.find('.claim').val(), 0));
+    laka = convert_number($.checkUndefined(parent.find('.laka').val(), 0));
+
+    var totalBiaya = biaya + no_claim + stood + lainnya - titipan - claim - laka;
+    parent.find('.total-trans').html( formatNumber( totalBiaya ) );
 }
 
 var sisa_amount = function ( obj ) {
     if( typeof obj == 'undefined' ) {
-        obj = $('.sisa-amount');
+        obj = $('.sisa-amount,.no-claim,.stood,.lainnya,.titipan,.claim,.laka');
     }
 
-    obj.off('keyup');
-    obj.keyup(function(){
+    obj.off('keyup').keyup(function(){
         var self = $(this);
         var parent = self.parents('tr');
         var sisa = convert_number(self.val(), 'int');
@@ -3127,7 +3158,10 @@ var sisa_amount = function ( obj ) {
             alert(emptyAlert);
         }
 
+        calcTotalTransfer(parent);
         calcTotalBiaya();
+        
+        self.val(formatNumber( sisa, 0 ));
     });
 }
 

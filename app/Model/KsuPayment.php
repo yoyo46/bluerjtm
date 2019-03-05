@@ -72,7 +72,6 @@ class KsuPayment extends AppModel {
                 'KsuPayment.branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
-                'KsuPayment.created' => 'DESC',
                 'KsuPayment.id' => 'DESC',
             ),
             'fields' => array(),

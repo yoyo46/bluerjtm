@@ -11,7 +11,7 @@
 
 		$driver = $this->Common->_callGetDriver($Ksu);
 
-		$customCompletedDate = $this->Common->customDate($completed_date, 'd/m/Y');
+		$customCompletedDate = $this->Common->customDate($completed_date, 'd M Y');
 ?>
 <div class="row">
     <div class="col-sm-12">
@@ -47,7 +47,7 @@
 					</tr>
 					<tr>
 						<th width="30%"><?php echo __('Tgl KSU');?></th>
-						<td><?php echo date('d/m/Y', strtotime($Ksu['Ksu']['tgl_ksu']));?></td>
+						<td><?php echo date('d M Y', strtotime($Ksu['Ksu']['tgl_ksu']));?></td>
 					</tr>
 					<tr>
 						<th width="30%"><?php echo __('Total Klaim');?></th>

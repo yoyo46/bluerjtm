@@ -14,7 +14,7 @@
 
         $driver = $this->Common->_callGetDriver($value);
 
-        $customTtujDate = $this->Common->formatDate($ttuj_date, 'd/m/Y');
+        $customTtujDate = $this->Common->formatDate($ttuj_date, 'd M Y');
 
         $saldo = $total - $paid;
         $type = !empty($type)?$type:false;

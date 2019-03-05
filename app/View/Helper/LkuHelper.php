@@ -61,7 +61,7 @@ class LkuHelper extends AppHelper {
             ));
 
             if(!empty($canceled_date) && !empty($is_canceled)){
-                $result .= '<br>'.$this->Common->customDate($canceled_date, 'd/m/Y');
+                $result .= '<br>'.$this->Common->customDate($canceled_date, 'd M Y');
             }
 
             return $result;

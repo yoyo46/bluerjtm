@@ -22,7 +22,8 @@
                         'label'=> __('Tanggal Berakhir'),
                         'class'=>'form-control date-range',
                         'required' => false,
-                        'placeholder' => __('Tanggal')
+                        'placeholder' => __('Tanggal'),
+                        'autocomplete'=> 'off', 
                     ));
             ?>
         </div>

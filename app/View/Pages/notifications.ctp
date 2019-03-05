@@ -22,7 +22,7 @@
 
                         $addClass = '';
                         $customCreated = $this->Common->formatDate($created, 'd M, Y');
-                        $customCreatedNormal = $this->Common->formatDate($created, 'd/m/Y');
+                        $customCreatedNormal = $this->Common->formatDate($created, 'd M Y');
 
                         if( !empty($read) ) {
                             $addClass = 'read';

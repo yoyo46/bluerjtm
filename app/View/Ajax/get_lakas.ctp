@@ -49,7 +49,7 @@
 
                         $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                         $status_muatan = strtoupper($status_muatan);
-                        $document_date = $this->Common->formatDate($document_date, 'd/m/Y');
+                        $document_date = $this->Common->formatDate($document_date, 'd M Y');
 
                         $checkbox = isset($checkbox)?$checkbox:true;
                         $alias = sprintf('child-%s', $id);

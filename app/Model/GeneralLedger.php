@@ -88,7 +88,6 @@ class GeneralLedger extends AppModel {
             ),
             'order'=> array(
                 'GeneralLedger.order' => 'DESC',
-                'GeneralLedger.created' => 'DESC',
                 'GeneralLedger.id' => 'DESC',
             ),
             'fields' => array(),

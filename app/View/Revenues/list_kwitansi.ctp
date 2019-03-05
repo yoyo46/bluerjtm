@@ -298,7 +298,7 @@
 
                                 $company = $this->Common->filterEmptyField($invoice, 'Company', 'code');
                                 
-                                $dateTOP = !empty($invoice['Invoice']['term_of_payment'])?date('d/m/Y', strtotime(sprintf('+%s day', $invoice['Invoice']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']))):'-';
+                                $dateTOP = !empty($invoice['Invoice']['term_of_payment'])?date('d M Y', strtotime(sprintf('+%s day', $invoice['Invoice']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']))):'-';
                                 $datePayment = array();
                                 $totalPaid = 0;
                                 $invoiceStatus = $this->Common->getInvoiceStatus( $invoice );
@@ -307,7 +307,7 @@
 
                                 if( !empty($invoice['InvoicePaymentDate']) ) {
                                     foreach ($invoice['InvoicePaymentDate'] as $key => $dtPaid) {
-                                        $datePayment[] = $this->Common->customDate($dtPaid, 'd/m/Y');
+                                        $datePayment[] = $this->Common->customDate($dtPaid, 'd M Y');
                                     }
                                 }
 
@@ -328,7 +328,7 @@
                             echo $this->Html->tag('td', $idx, array(
                                 'style' => 'text-align: center;vertical-align: middle;',
                             ));
-                            echo $this->Html->tag('td', $this->Common->customDate($invoice['Invoice']['invoice_date'], 'd/m/Y'), array(
+                            echo $this->Html->tag('td', $this->Common->customDate($invoice['Invoice']['invoice_date'], 'd M Y'), array(
                                 'style' => 'text-align: center;vertical-align: middle;',
                             ));
                             echo $this->Html->tag('td', $this->Common->fullNameCustomer($invoice, 'CustomerNoType'), array(
@@ -505,7 +505,7 @@
                 foreach ($invoices as $key => $invoice) {
                     $totalUnit = !empty($invoice['qty_unit'])?$invoice['qty_unit']:0;
                     $totalPPH = $this->Common->filterEmptyField($invoice, 'Invoice', 'total_pph', 0);
-                    $dateTOP = !empty($invoice['Invoice']['term_of_payment'])?date('d/m/Y', strtotime(sprintf('+%s day', $invoice['Invoice']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']))):'-';
+                    $dateTOP = !empty($invoice['Invoice']['term_of_payment'])?date('d M Y', strtotime(sprintf('+%s day', $invoice['Invoice']['term_of_payment']), strtotime($invoice['Invoice']['invoice_date']))):'-';
                     $datePayment = array();
                     $totalPaid = 0;
                     $invoiceStatus = $this->Common->getInvoiceStatus( $invoice );
@@ -516,7 +516,7 @@
 
                     if( !empty($invoice['InvoicePaymentDate']) ) {
                         foreach ($invoice['InvoicePaymentDate'] as $key => $dtPaid) {
-                            $datePayment[] = $this->Common->customDate($dtPaid, 'd/m/Y');
+                            $datePayment[] = $this->Common->customDate($dtPaid, 'd M Y');
                         }
                     }
 
@@ -535,7 +535,7 @@
                     $content = $this->Html->tag('td', $no, array(
                         'style' => 'text-align: center;vertical-align: middle;',
                     ));
-                    $content .= $this->Html->tag('td', $this->Common->customDate($invoice['Invoice']['invoice_date'], 'd/m/Y'), array(
+                    $content .= $this->Html->tag('td', $this->Common->customDate($invoice['Invoice']['invoice_date'], 'd M Y'), array(
                         'style' => 'text-align: center;vertical-align: middle;',
                     ));
                     $content .= $this->Html->tag('td', !empty($invoice['CustomerNoType']['name'])?$invoice['CustomerNoType']['name']:false, array(

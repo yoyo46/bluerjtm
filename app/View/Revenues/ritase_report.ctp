@@ -301,12 +301,12 @@
                         if(!empty($trucks)){
                             foreach ($trucks as $key => $value) {
                                 $id = $value['Truck']['id'];
-                                $cityArr = Set::extract('/City/Ttuj/to_city_id', $value);
+                                // $cityArr = Set::extract('/City/Ttuj/to_city_id', $value);
                                 $total = !empty($value['Total'])?$value['Total']:0;
                                 $overTime = !empty($value['OverTime'])?$value['OverTime']:0;
                                 $branch = $this->Common->filterEmptyField($value, 'Branch', 'name');
                                 $qLt = 0;
-                                $target_rit = $this->Common->filterEmptyField($value, 'CustomerNoType', 'target_rit');
+                                $target_rit = $this->Common->filterEmptyField($value, 'CustomerNoType', 'target_rit', 0);
 
                                 if( !empty($overTime) ) {
                                     $qLt = round(($overTime/$total)*100, 2);
@@ -341,13 +341,13 @@
                             ));
 
                             if( !empty($cities) ) {
-                                foreach ($cities as $key => $city) {
+                                foreach ($cities as $to_city_id => $city) {
                                     $slug = $this->Common->toSlug($city);
-                                    $keyCity = array_search($key, $cityArr);
+                                    // $keyCity = array_search($key, $cityArr);
                                     $cnt = 0;
 
-                                    if( is_numeric($keyCity) && !empty($value['City'][$keyCity][0]['cnt']) ) {
-                                        $cnt = $value['City'][$keyCity][0]['cnt'];
+                                    if( !empty($value['City'][$to_city_id]) ) {
+                                        $cnt = $value['City'][$to_city_id];
                                     }
 
                                     echo $this->Html->tag('td', $cnt, array(
@@ -434,7 +434,7 @@
             if(!empty($trucks)){
                 foreach ($trucks as $key => $value) {
                     $branch = $this->Common->filterEmptyField($value, 'Branch', 'name');
-                    $cityArr = Set::extract('/City/Ttuj/to_city_id', $value);
+                    // $cityArr = Set::extract('/City/Ttuj/to_city_id', $value);
                     $total = !empty($value['Total'])?$value['Total']:0;
 
                     if( !empty($value['CustomerNoType']['target_rit']) ) {
@@ -468,11 +468,14 @@
 
                     if( !empty($cities) ) {
                         foreach ($cities as $key => $city) {
-                            $keyCity = array_search($key, $cityArr);
+                            // $keyCity = array_search($key, $cityArr);
                             $cnt = 0;
 
-                            if( is_numeric($keyCity) && !empty($value['City'][$keyCity][0]['cnt']) ) {
-                                $cnt = $value['City'][$keyCity][0]['cnt'];
+                            // if( is_numeric($keyCity) && !empty($value['City'][$keyCity][0]['cnt']) ) {
+                            //     $cnt = $value['City'][$keyCity][0]['cnt'];
+                            // }
+                            if( !empty($value['City'][$to_city_id]) ) {
+                                $cnt = $value['City'][$to_city_id];
                             }
 
                             $content .= $this->Html->tag('td', $cnt, array(

@@ -69,7 +69,8 @@ class BranchCity extends AppModel {
             $options = array(
                 'conditions' => array(
                     'BranchCity.branch_id' => $id
-                )
+                ),
+                'cache' => __('BranchCity.BranchID.%s.%s', $find, $id),
             );
 
             if( $find == 'list' ) {
@@ -123,6 +124,16 @@ class BranchCity extends AppModel {
         }
 
         return $result;
+    }
+
+    public function afterSave($created, $options = array()){
+        $data = $this->data;
+        $branch_id = Common::hashEmptyField($data, 'BranchCity.branch_id');
+
+        if( !empty($branch_id) ) {
+            Cache::delete(__('BranchCity.BranchID.all.%s', $branch_id), 'default');
+            Cache::delete(__('BranchCity.BranchID.list.%s', $branch_id), 'default');
+        }
     }
 }
 ?>

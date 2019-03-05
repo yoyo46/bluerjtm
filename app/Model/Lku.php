@@ -60,7 +60,6 @@ class Lku extends AppModel {
             ),
             'order'=> array(
                 'LkuDetail.id' => 'ASC',
-                'LkuDetail.created' => 'ASC',
             ),
         ),
     );
@@ -97,7 +96,6 @@ class Lku extends AppModel {
             'conditions'=> array(),
             'order'=> array(
                 'Lku.status' => 'DESC',
-                'Lku.created' => 'DESC',
                 'Lku.id' => 'DESC',
             ),
             'contain' => array(),

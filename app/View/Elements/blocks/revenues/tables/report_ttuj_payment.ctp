@@ -20,10 +20,10 @@
 
                 $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
 
-                $driver = $this->Common->_callGetDriver($value);
+                $driver = $this->Common->_callGetDataDriver($value);
 
-                $customDatePayment = $this->Common->formatDate($date_payment, 'd/m/Y');
-                $customTtujDate = $this->Common->formatDate($ttuj_date, 'd/m/Y');
+                $customDatePayment = $this->Common->formatDate($date_payment, 'd M Y');
+                $customTtujDate = $this->Common->formatDate($ttuj_date, 'd M Y');
 
                 $grandtotal += $total;
                 $totalPaid += $paid;
@@ -31,8 +31,6 @@
 ?>
 <tr>
     <?php 
-            echo $this->Html->tag('td', $customDatePayment);
-            echo $this->Html->tag('td', $nodoc);
             echo $this->Html->tag('td', $branch);
             echo $this->Html->tag('td', $no_ttuj);
             echo $this->Html->tag('td', $customTtujDate);
@@ -40,9 +38,16 @@
             echo $this->Html->tag('td', $customer);
             echo $this->Html->tag('td', $from_city_name);
             echo $this->Html->tag('td', $to_city_name);
-            echo $this->Html->tag('td', $driver);
+            echo $this->Html->tag('td', Common::hashEmptyField($driver, 'driver_name', '-'));
+            echo $this->Html->tag('td', $nodoc);
             echo $this->Html->tag('td', $note);
             echo $this->Html->tag('td', $customType);
+            echo $this->Html->tag('td', date('d M Y'));
+            echo $this->Html->tag('td', Common::hashEmptyField($driver, 'id', '-'));
+            echo $this->Html->tag('td', Common::hashEmptyField($driver, 'account_name', '-'));
+            echo $this->Html->tag('td', Common::hashEmptyField($driver, 'account_number', '-'));
+            echo $this->Html->tag('td', Common::hashEmptyField($driver, 'bank_name', '-'));
+            echo $this->Html->tag('td', $customDatePayment);
             echo $this->Html->tag('td', $this->Common->getFormatPrice($total));
             echo $this->Html->tag('td', $this->Common->getFormatPrice($paid));
     ?>

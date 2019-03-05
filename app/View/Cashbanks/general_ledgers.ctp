@@ -5,6 +5,7 @@
             ),
             'transaction_date' => array(
                 'name' => __('Tgl Transaksi'),
+                'class' => 'text-center',
             ),
             // 'debit' => array(
             //     'name' => __('Debit'),
@@ -57,7 +58,7 @@
                             $id = $this->Common->filterEmptyField($value, 'GeneralLedger', 'id');
                             $nodoc = $this->Common->filterEmptyField($value, 'GeneralLedger', 'nodoc');
                             $transactionDate = $this->Common->filterEmptyField($value, 'GeneralLedger', 'transaction_date', false, true, array(
-                                'date' => 'd/m/Y',
+                                'date' => 'd M Y',
                             ));
                             $periode = $this->Common->filterEmptyField($value, 'GeneralLedger', 'transaction_date', false, false, array(
                                 'date' => 'Y-m',

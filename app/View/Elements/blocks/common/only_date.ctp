@@ -22,15 +22,6 @@
 				echo $this->Html->tag('div', $this->Html->tag('p', $message_alert) );
 			}
 
-			// echo $this->Form->input('complete_date', array(
-			// 	'class' => 'form-control custom-date',
-			// 	'label' => __('Tgl Selesai'),
-			// 	'div' => array(
-			// 		'class' => 'form-group'
-			// 	),
-			// 	'type' => 'text',
-			// 	'value' =>  date('d/m/Y'),
-			// ));
 			echo $this->Common->_callInputForm('complete', array(
 				'type' => 'datetime',
 				'label' => __('Tgl Selesai *'),

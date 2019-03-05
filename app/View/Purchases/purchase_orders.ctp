@@ -97,7 +97,7 @@
                             $customStatus = $this->Common->_callTransactionStatus($value, 'PurchaseOrder');
                             $customReceipt = $this->Common->_callStatusReceipt($value, 'PurchaseOrder');
                             $customRetur = $this->Common->_callStatusRetur($value, 'PurchaseOrder');
-                            $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
+                            $customDate = $this->Common->formatDate($transactionDate, 'd M Y');
                             $grandtotal = $this->Common->getFormatPrice($grandtotal, 0, 2);
 
                             if( !empty($is_asset) ) {

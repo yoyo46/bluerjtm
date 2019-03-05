@@ -89,7 +89,7 @@ class Stnk extends AppModel {
                 'Stnk.no_pol <>' => '',
             ),
             'order'=> array(
-                'Stnk.created' => 'DESC'
+                'Stnk.id' => 'DESC'
             ),
             'contain' => array(),
             'fields' => array(),

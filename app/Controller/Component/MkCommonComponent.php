@@ -2377,7 +2377,7 @@ class MkCommonComponent extends Component {
                 $status_class = 'label label-danger';
 
                 if(!empty($canceled_date)){
-                    $canceled_date = $this->formatDate($canceled_date, 'd/m/Y', false);
+                    $canceled_date = $this->formatDate($canceled_date, 'd M Y', false);
                     $status_text .= '<br>'.$canceled_date;
                 }
                 break;

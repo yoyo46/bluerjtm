@@ -14,7 +14,6 @@ class ReportQueue extends AppModel {
 				'ReportQueue.status' => 1,
 			),
 			'order'=> array(
-				'ReportQueue.created' => 'DESC',
 				'ReportQueue.id' => 'DESC',
 			),
 			'contain' => array(),

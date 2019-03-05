@@ -22,7 +22,6 @@ class Notification extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'Notification.created' => 'DESC',
                 'Notification.id' => 'DESC',
             ),
             'contain' => array(),

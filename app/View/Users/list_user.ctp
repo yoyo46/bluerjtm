@@ -93,7 +93,7 @@
                 <td><?php echo $value_data['email'];?></td>
                 <td><?php echo $phone;?></td>
                 <td class="text-center"><?php echo $last_login;?></td>
-                <td><?php echo $this->Common->customDate($value_data['modified'], 'd/m/Y');?></td>
+                <td><?php echo $this->Common->customDate($value_data['modified'], 'd M Y');?></td>
                 <td>
                     <?php 
                             if(!empty($value_data['status'])){

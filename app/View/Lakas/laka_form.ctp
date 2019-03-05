@@ -229,17 +229,6 @@
 									));
 							?>
 				        </div>
-				        <!-- <div class="form-group" id="nopol-laka">
-				        	<?php 
-									// echo $this->Form->input('nopol',array(
-									// 	'label'=> __('Nopol Armada *'), 
-									// 	'class'=>'form-control',
-									// 	'required' => false,
-									// 	'type' => 'text',
-									// 	'readonly' => true
-									// ));
-							?>
-				        </div> -->
 				        <div class="form-group">
 				        	<?php 
 									echo $this->Form->input('status_muatan',array(

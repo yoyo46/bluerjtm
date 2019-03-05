@@ -113,7 +113,6 @@ class PurchaseOrder extends AppModel {
             'conditions'=> array(),
             'order'=> array(
                 'PurchaseOrder.status' => 'DESC',
-                'PurchaseOrder.created' => 'DESC',
                 'PurchaseOrder.id' => 'DESC',
             ),
             'fields' => array(),

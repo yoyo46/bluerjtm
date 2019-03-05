@@ -58,7 +58,7 @@
 			                        $driver = $this->Common->filterEmptyField($value, 'Laka', 'change_driver_name', $driver);
 
                         			$noref = str_pad($id, 6, '0', STR_PAD_LEFT);
-                        			$document_date = $this->Common->formatDate($document_date, 'd/m/Y');
+                        			$document_date = $this->Common->formatDate($document_date, 'd M Y');
                         			$status_muatan = strtoupper($status_muatan);
 					                $checkbox = isset($checkbox)?$checkbox:true;
 					                $alias = sprintf('child-%s', $id);

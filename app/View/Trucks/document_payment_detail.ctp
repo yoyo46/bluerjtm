@@ -13,7 +13,7 @@
 		$cogs = $this->Common->filterEmptyField($value, 'Cogs', 'cogs_name', '-');
 		
         $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
-        $datePayment = $this->Common->customDate($date_payment, 'd/m/Y');
+        $datePayment = $this->Common->customDate($date_payment, 'd M Y');
 
         $dataColumns = array(
             'noref' => array(
@@ -172,35 +172,35 @@
 					                        $type = __('STNK 1 Thn');
 					                		$document_date = $this->Common->filterEmptyField($val, $modelName, 'tgl_bayar');
 					                		$expired_date = $this->Common->filterEmptyField($val, $modelName, 'from_date', false, false, array(
-					                			'date' => 'd/m/Y',
+					                			'date' => 'd M Y',
 				                			));
 					                        break;
 					                    case 'stnk_5_thn':
 					                        $type = __('STNK 5 Thn');
 					                		$document_date = $this->Common->filterEmptyField($val, $modelName, 'tgl_bayar');
 					                		$expired_date = $this->Common->filterEmptyField($val, $modelName, 'from_date', false, false, array(
-					                			'date' => 'd/m/Y',
+					                			'date' => 'd M Y',
 				                			));
 					                        break;
 					                    case 'siup':
 					                        $type = ucwords($document_type);
 					                		$document_date = $this->Common->filterEmptyField($val, $modelName, 'tgl_siup');
 					                		$expired_date = $this->Common->filterEmptyField($val, $modelName, 'from_date', false, false, array(
-					                			'date' => 'd/m/Y',
+					                			'date' => 'd M Y',
 				                			));
 					                        break;
 					                    default:
 					                        $type = ucwords($document_type);
 					                		$document_date = $this->Common->filterEmptyField($val, $modelName, 'tgl_kir');
 					                		$expired_date = $this->Common->filterEmptyField($val, $modelName, 'from_date', false, false, array(
-					                			'date' => 'd/m/Y',
+					                			'date' => 'd M Y',
 				                			));
 					                        break;
 					                }
 
 					                $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
-					                $to_date = $this->Common->formatDate($to_date, 'd/m/Y');
-					                $document_date = $this->Common->formatDate($document_date, 'd/m/Y');
+					                $to_date = $this->Common->formatDate($to_date, 'd M Y');
+					                $document_date = $this->Common->formatDate($document_date, 'd M Y');
 					                $customPrice = $this->Common->getFormatPrice($price);
 					                $customDenda = $this->Common->getFormatPrice($denda);
 					                $customBiayaLain = $this->Common->getFormatPrice($biaya_lain);

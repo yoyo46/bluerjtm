@@ -11,8 +11,8 @@
             foreach ($values as $key => $value) {
                 $id = Common::hashEmptyField($value, 'PurchaseOrder.id');
                 $nodoc = Common::hashEmptyField($value, 'PurchaseOrder.nodoc');
-                $transaction_date = Common::hashEmptyField($value, 'PurchaseOrder.transaction_date', '-', false, array(
-                    'date' => 'd/m/Y',
+                $transaction_date = Common::hashEmptyField($value, 'PurchaseOrder.transaction_date', '-', array(
+                    'date' => 'd M Y',
                 ));
                 $ppn_type = Common::hashEmptyField($value, 'PurchaseOrder.ppn_type');
                 $etd = Common::hashEmptyField($value, 'PurchaseOrder.etd');

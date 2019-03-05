@@ -32,8 +32,8 @@
                     $noref = '';
                 }
                 
-                $customDate = $this->Common->formatDate($tgl_surat_jalan, 'd/m/Y');
-                $customDateTtuj = $this->Common->formatDate($ttuj_date, 'd/m/Y');
+                $customDate = $this->Common->formatDate($tgl_surat_jalan, 'd M Y');
+                $customDateTtuj = $this->Common->formatDate($ttuj_date, 'd M Y');
 
                 $totalUnit += $qtyTtuj;
                 $totalSj += $qty;

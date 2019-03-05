@@ -19,6 +19,7 @@
                     )), 
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
+                    'autocomplete' => 'off',
                 ));
         ?>
         <div class="row">

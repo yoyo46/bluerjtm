@@ -62,7 +62,6 @@ class KsuDetail extends AppModel {
                 'KsuDetail.status' => 1,
             ),
             'order'=> array(
-                'KsuDetail.created' => 'DESC',
                 'KsuDetail.id' => 'DESC',
             ),
             'contain' => array(),

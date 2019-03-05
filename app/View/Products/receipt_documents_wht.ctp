@@ -48,8 +48,8 @@
                                 $spk_date = $this->Common->filterEmptyField($value, 'Spk', 'transaction_date');
                                 $nopol = $this->Common->filterEmptyField($value, 'Spk', 'nopol', '-');
 
-                                $transaction_date = $this->Common->formatDate($transaction_date, 'd/m/Y');
-                                $spk_date = $this->Common->formatDate($spk_date, 'd/m/Y');
+                                $transaction_date = $this->Common->formatDate($transaction_date, 'd M Y');
+                                $spk_date = $this->Common->formatDate($spk_date, 'd M Y');
                 ?>
                 <tr data-value="<?php echo $nodoc; ?>" data-change="#document-number" data-form=".receipt-form" data-wrapper-write=".wrapper-table-documents" data-duplicate="false" data-id="<?php echo $id; ?>" >
                     <?php

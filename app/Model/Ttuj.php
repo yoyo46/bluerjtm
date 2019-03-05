@@ -106,12 +106,6 @@ class Ttuj extends AppModel {
                 'message' => 'Biaya Uang Jalan belum disetting'
             ),
         ),
-        // 'date_sj' => array(
-        //     'getSJ' => array(
-        //         'rule' => array('getSJ'),
-        //         'message' => 'Tgl SJ diterima harap dipilih'
-        //     ),
-        // ),
 	);
 
     var $belongsTo = array(
@@ -138,6 +132,10 @@ class Ttuj extends AppModel {
         'DriverPengganti' => array(
             'className' => 'Driver',
             'foreignKey' => 'driver_pengganti_id',
+        ),
+        'Branch' => array(
+            'className' => 'Branch',
+            'foreignKey' => 'branch_id',
         ),
     );
 
@@ -179,6 +177,10 @@ class Ttuj extends AppModel {
             'className' => 'Ksu',
             'foreignKey' => 'ttuj_id',
         ),
+        'Laka' => array(
+            'className' => 'Laka',
+            'foreignKey' => 'ttuj_id',
+        ),
     );
 
     function validateDateTtuj ( $data, $target_date, $input_date ) {
@@ -204,7 +206,6 @@ class Ttuj extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'Ttuj.created' => 'DESC',
                 'Ttuj.id' => 'DESC',
             ),
             'contain' => array(),
@@ -240,7 +241,7 @@ class Ttuj extends AppModel {
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
-            if(!empty($options['order'])){
+            if(isset($options['order'])){
                 $default_options['order'] = $options['order'];
             }
             if( isset($options['contain']) && empty($options['contain']) ) {
@@ -313,6 +314,7 @@ class Ttuj extends AppModel {
                 'contain' => array(
                     'SuratJalan',
                 ),
+                'order' => false,
             ));
 
             if(!empty($data_merge)){
@@ -464,16 +466,8 @@ class Ttuj extends AppModel {
         return $data_ttuj;
     }
 
-    // function setTtuj ( $ttuj_id, $data ) {
-    //     $data['Ttuj'] = $data;
-    //     $this->set($data);
-    //     $this->id = $ttuj_id;
-
-    //     return $this->save();
-    // }
-
     function getMerge($data, $id, $fieldName = 'Ttuj.id'){
-        if(empty($data['Ttuj'])){
+        if( empty($data['Ttuj']) && !empty($id) ){
             $data_merge = $this->find('first', array(
                 'conditions' => array(
                     $fieldName => $id
@@ -489,9 +483,6 @@ class Ttuj extends AppModel {
     }
 
     function getMergeContain ( $data, $ttuj_id ) {
-        $this->TtujTipeMotor = ClassRegistry::init('TtujTipeMotor');
-        $this->TtujPerlengkapan = ClassRegistry::init('TtujPerlengkapan');
-
         $data = $this->TtujTipeMotor->getMergeTipeMotor( $data, $ttuj_id, 'all');
         $data = $this->TtujPerlengkapan->getMerge($data, $ttuj_id);
         $data = $this->getMergeList($data, array(
@@ -644,23 +635,6 @@ class Ttuj extends AppModel {
         ), true, array(
             'branch' => false,
         ));
-        // $ttujList = array();
-
-        // if( !empty($ttujs) ) {
-        //     $this->Branch = ClassRegistry::init('Branch');
-
-        //     foreach ($ttujs as $key => $value) {
-        //         $ttuj_id = !empty($value['Ttuj']['id'])?$value['Ttuj']['id']:false;
-        //         $to_city_id = !empty($value['Ttuj']['to_city_id'])?$value['Ttuj']['to_city_id']:false;
-        //         $no_ttuj = !empty($value['Ttuj']['no_ttuj'])?$value['Ttuj']['no_ttuj']:false;
-
-        //         if( $this->validateTtujAfterLeave( $to_city_id, $this->Branch ) ) {
-        //             $ttujList[$ttuj_id] = $no_ttuj;
-        //         }
-        //     }
-        // }
-
-        // return $ttujList;
     }
 
     function _callDataTtujConditions ( $id, $action_type ) {
@@ -699,19 +673,11 @@ class Ttuj extends AppModel {
                 break;
         }
 
-        // $this->Branch = ClassRegistry::init('Branch');
         return $this->getData('first', array(
             'conditions' => $conditionsDataLocal,
         ), true, array(
             'branch' => false,
         ));
-        // $to_city_id = !empty($ttuj['Ttuj']['to_city_id'])?$ttuj['Ttuj']['to_city_id']:false;
-
-        // if( $this->validateTtujAfterLeave( $to_city_id, $this->Branch ) ) {
-        //     return $ttuj;
-        // } else {
-        //     return array();
-        // }
     }
 
     function _callConditionTtujPool ( $conditions ) {
@@ -727,26 +693,6 @@ class Ttuj extends AppModel {
 
         return $conditions;
     }
-
-    // function validateTtujAfterLeave ( $to_city_id, $objBranch ) {
-    //     $current_branch_id = Configure::read('__Site.config_branch_id');
-    //     $data_branch_city_id = Configure::read('__Site.Data.Branch.City.id');
-
-    //     if( in_array($to_city_id, $data_branch_city_id) ) {
-    //         $value = $objBranch->getBranch($to_city_id);
-    //         $branch_id = !empty($value['Branch']['id'])?$value['Branch']['id']:false;
-
-    //         $value = $objBranch->BranchCity->getMerge($value, $value, 'list');
-
-    //         if( !empty($value['BranchCity']) && in_array($current_branch_id, $value['BranchCity']) ) {
-    //             return true;
-    //         } else {
-    //             return false;
-    //         }
-    //     } else {
-    //         return true;
-    //     }
-    // }
 
     function generateNoId(){
         $default_id = 1;
@@ -808,6 +754,18 @@ class Ttuj extends AppModel {
         $uje = !empty($data['named']['uje'])?$data['named']['uje']:false;
         $com = !empty($data['named']['com'])?$data['named']['com']:false;
         $come = !empty($data['named']['come'])?$data['named']['come']:false;
+
+        $uang_jalan_1 = !empty($data['named']['uang_jalan_1'])?$data['named']['uang_jalan_1']:false;
+        $uang_jalan_2 = !empty($data['named']['uang_jalan_2'])?$data['named']['uang_jalan_2']:false;
+        $uang_jalan_extra = !empty($data['named']['uang_jalan_extra'])?$data['named']['uang_jalan_extra']:false;
+        $commission = !empty($data['named']['commission'])?$data['named']['commission']:false;
+        $commission_extra = !empty($data['named']['commission_extra'])?$data['named']['commission_extra']:false;
+        $uang_kuli_muat = !empty($data['named']['uang_kuli_muat'])?$data['named']['uang_kuli_muat']:false;
+        $uang_kuli_bongkar = !empty($data['named']['uang_kuli_bongkar'])?$data['named']['uang_kuli_bongkar']:false;
+        $asdp = !empty($data['named']['asdp'])?$data['named']['asdp']:false;
+        $uang_kawal = !empty($data['named']['uang_kawal'])?$data['named']['uang_kawal']:false;
+        $uang_keamanan = !empty($data['named']['uang_keamanan'])?$data['named']['uang_keamanan']:false;
+        $ttuj_type = !empty($data['named']['ttuj_type'])?$data['named']['ttuj_type']:false;
         
         $sort = $this->filterEmptyField($data, 'named', 'sort');
         $direction = $this->filterEmptyField($data, 'named', 'direction');
@@ -981,6 +939,21 @@ class Ttuj extends AppModel {
                             array(
                                 'Ttuj.paid_commission_extra' => 'full',
                             ),
+                            array(
+                                'Ttuj.paid_uang_kuli_muat' => 'full',
+                            ),
+                            array(
+                                'Ttuj.paid_uang_kuli_bongkar' => 'full',
+                            ),
+                            array(
+                                'Ttuj.paid_asdp' => 'full',
+                            ),
+                            array(
+                                'Ttuj.paid_uang_kawal' => 'full',
+                            ),
+                            array(
+                                'Ttuj.paid_uang_keamanan' => 'full',
+                            ),
                         );
                     break;
                 case 'unpaid':
@@ -999,6 +972,21 @@ class Ttuj extends AppModel {
                             ),
                             array(
                                 'Ttuj.paid_commission_extra' => 'none',
+                            ),
+                            array(
+                                'Ttuj.paid_uang_kuli_muat' => 'none',
+                            ),
+                            array(
+                                'Ttuj.paid_uang_kuli_bongkar' => 'none',
+                            ),
+                            array(
+                                'Ttuj.paid_asdp' => 'none',
+                            ),
+                            array(
+                                'Ttuj.paid_uang_kawal' => 'none',
+                            ),
+                            array(
+                                'Ttuj.paid_uang_keamanan' => 'none',
                             ),
                         );
                     break;
@@ -1162,6 +1150,79 @@ class Ttuj extends AppModel {
             }
         }
 
+        if(!empty($uang_jalan_1) || !empty($uang_jalan_2) || !empty($uang_jalan_extra) || !empty($commission) || !empty($commission_extra) || !empty($uang_kuli_muat) || !empty($uang_kuli_bongkar) || !empty($asdp) || !empty($uang_kawal) || !empty($uang_keamanan)){
+            if( !empty($default_options['conditions']['OR']) ) {
+                unset($default_options['conditions']['OR']);
+            }
+        }
+
+        if( $ttuj_type == 'payment_picker' ) {
+            $last_str = '_draft';
+        } else {
+            $last_str = '';
+        }
+
+        if(!empty($uang_jalan_1)){
+            $default_options['conditions']['OR'][] = array(
+                'Ttuj.uang_jalan_1 <>' => 0,
+                'Ttuj.paid_uang_jalan'.$last_str.' <>' => 'full',
+            );
+        }
+        if(!empty($uang_jalan_2)){
+            $default_options['conditions']['OR'][] = array(
+                'Ttuj.uang_jalan_2 <>' => 0,
+                'Ttuj.paid_uang_jalan_2'.$last_str.' <>' => 'full',
+            );
+        }
+        if(!empty($uang_jalan_extra)){
+            $default_options['conditions']['OR'][] = array(
+                'Ttuj.uang_jalan_extra <>' => 0,
+                'Ttuj.paid_uang_jalan_extra'.$last_str.' <>' => 'full',
+            );
+        }
+        if(!empty($commission)){
+            $default_options['conditions']['OR'][] = array(
+                'Ttuj.commission <>' => 0,
+                'Ttuj.paid_commission'.$last_str.' <>' => 'full',
+            );
+        }
+        if(!empty($commission_extra)){
+            $default_options['conditions']['OR'][] = array(
+                'Ttuj.commission_extra <>' => 0,
+                'Ttuj.paid_commission_extra'.$last_str.' <>' => 'full',
+            );
+        }
+        if(!empty($uang_kuli_muat)){
+            $default_options['conditions']['OR'][] = array(
+                'Ttuj.uang_kuli_muat <>' => 0,
+                'Ttuj.paid_uang_kuli_muat'.$last_str.' <>' => 'full',
+            );
+        }
+        if(!empty($uang_kuli_bongkar)){
+            $default_options['conditions']['OR'][] = array(
+                'Ttuj.uang_kuli_bongkar <>' => 0,
+                'Ttuj.paid_uang_kuli_bongkar'.$last_str.' <>' => 'full',
+            );
+        }
+        if(!empty($asdp)){
+            $default_options['conditions']['OR'][] = array(
+                'Ttuj.asdp <>' => 0,
+                'Ttuj.paid_asdp'.$last_str.' <>' => 'full',
+            );
+        }
+        if(!empty($uang_kawal)){
+            $default_options['conditions']['OR'][] = array(
+                'Ttuj.uang_kawal <>' => 0,
+                'Ttuj.paid_uang_kawal'.$last_str.' <>' => 'full',
+            );
+        }
+        if(!empty($uang_keamanan)){
+            $default_options['conditions']['OR'][] = array(
+                'Ttuj.uang_keamanan <>' => 0,
+                'Ttuj.paid_uang_keamanan'.$last_str.' <>' => 'full',
+            );
+        }
+
         if( $sort == 'Ttuj.driver_name' ) {
             $this->virtualFields['driver_name'] = 'IFNULL(DriverPengganti.name, Driver.name)';
 
@@ -1214,6 +1275,7 @@ class Ttuj extends AppModel {
                 'Ttuj.is_laka' => 0,
                 'Ttuj.completed' => 0,
             ),
+            'order' => false,
         ), $options);
         return $this->getData('list', $options, true, array(
             'plant' => true,
@@ -1240,7 +1302,6 @@ class Ttuj extends AppModel {
                     'Ttuj.truck_id' => $truck_id,
                 ),
                 'order'=> array(
-                    'Ttuj.created' => 'ASC',
                     'Ttuj.id' => 'ASC',
                 ),
             ));
@@ -1248,6 +1309,28 @@ class Ttuj extends AppModel {
         } else {
             return false;
         }
+    }
+
+    function _callTtujPaid ( $value ) {
+        $paid_uang_jalan = Common::hashEmptyField($value, 'Ttuj.paid_uang_jalan');
+        $paid_uang_jalan_2 = Common::hashEmptyField($value, 'Ttuj.paid_uang_jalan_2');
+        $paid_uang_jalan_extra = Common::hashEmptyField($value, 'Ttuj.paid_uang_jalan_extra');
+        $paid_commission = Common::hashEmptyField($value, 'Ttuj.paid_commission');
+        $paid_commission_extra = Common::hashEmptyField($value, 'Ttuj.paid_commission_extra');
+        $paid_uang_kuli_muat = Common::hashEmptyField($value, 'Ttuj.paid_uang_kuli_muat');
+        $paid_uang_kuli_bongkar = Common::hashEmptyField($value, 'Ttuj.paid_uang_kuli_bongkar');
+        $paid_asdp = Common::hashEmptyField($value, 'Ttuj.paid_asdp');
+        $paid_uang_kawal = Common::hashEmptyField($value, 'Ttuj.paid_uang_kawal');
+        $paid_uang_keamanan = Common::hashEmptyField($value, 'Ttuj.paid_uang_keamanan');
+        $paid = 0;
+
+        if( $paid_uang_jalan <> 'none' || $paid_uang_jalan_2 <> 'none' || $paid_uang_jalan_extra <> 'none' || $paid_commission <> 'none' || $paid_commission_extra <> 'none' || $paid_uang_kuli_muat <> 'none' || $paid_uang_kuli_bongkar <> 'none' || $paid_asdp <> 'none' || $paid_uang_kawal <> 'none' || $paid_uang_keamanan <> 'none' ) {
+            $paid = 1;
+        }
+        
+        $value['TtujPayment']['paid'] = $paid;
+
+        return $value;
     }
 }
 ?>

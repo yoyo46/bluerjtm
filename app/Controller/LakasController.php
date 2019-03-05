@@ -883,11 +883,14 @@ class LakasController extends AppController {
             $this->request->data = $value;
             $this->MkCommon->getLogs($this->params['controller'], array( 'payment_add', 'payment_edit', 'payment_delete' ), $id);
 
+            $coas = $this->GroupBranch->Branch->BranchCoa->getCoas();
+            $cogs = $this->MkCommon->_callCogsOptGroup('LakaPayment');
+
             $this->MkCommon->_layout_file('select');
             $this->set('view', true);
             $this->set(compact(
                 'value', 'sub_module_title', 'title_for_layout',
-                'module_title'
+                'module_title', 'coas'
             ));
 
             $this->render('payment_add');

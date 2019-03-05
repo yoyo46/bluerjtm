@@ -26,13 +26,6 @@ class TarifAngkutan extends AppModel {
                 'message' => 'kota tujuan harap dipilih'
             ),
         ),
-        // 'capacity' => array(
-        //     'numeric' => array(
-        //         'allowEmpty'=> true,
-        //         'rule' => array('numeric'),
-        //         'message' => 'Kapasitas harus berupa angka',
-        //     ),
-        // ),
         'jenis_unit' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -55,6 +48,12 @@ class TarifAngkutan extends AppModel {
                 'message' => 'Tarif Angkut sudah terdaftar'
             ),
         ),
+        'tarif_extra' => array(
+            'checkTarifExtra' => array(
+                'rule' => array('checkTarifExtra'),
+                'message' => 'Mohon lengkapi tarif extra'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(
@@ -66,15 +65,21 @@ class TarifAngkutan extends AppModel {
             'className' => 'GroupMotor',
             'foreignKey' => 'group_motor_id',
         ),
-        // 'FromCity' => array(
-        //     'className' => 'City',
-        //     'foreignKey' => 'from_city_id',
-        // ),
-        // 'ToCity' => array(
-        //     'className' => 'City',
-        //     'foreignKey' => 'to_city_id',
-        // ),
     );
+
+    function checkTarifExtra() {
+        $data = $this->data;
+        $tarif_extra = Common::hashEmptyField($data, 'TarifAngkutan.tarif_extra');
+        $min_capacity = Common::hashEmptyField($data, 'TarifAngkutan.min_capacity');
+
+        if( !empty($tarif_extra) && empty($min_capacity) ) {
+            return false;
+        } else if( !empty($min_capacity) && empty($tarif_extra) ) {
+            return false;
+        } else {
+            return true; 
+        }
+    }
 
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
@@ -86,9 +91,6 @@ class TarifAngkutan extends AppModel {
                 'TarifAngkutan.name_tarif' => 'ASC'
             ),
             'contain' => array(),
-            // 'contain' => array(
-            //     'GroupMotor',
-            // ),
         );
 
         if( !empty($branch) ) {
@@ -152,7 +154,7 @@ class TarifAngkutan extends AppModel {
         return $data;
     }
 
-    function findTarif( $from_city_id, $to_city_id, $customer_id, $capacity = false, $group_motor_id = false ){
+    function findTarif( $from_city_id, $to_city_id, $customer_id, $capacity = false, $group_motor_id = false, $total_muatan = false ){
         $conditions = array(
             'TarifAngkutan.from_city_id' => $from_city_id,
             'TarifAngkutan.to_city_id' => $to_city_id,
@@ -172,6 +174,10 @@ class TarifAngkutan extends AppModel {
             foreach ($results as $key => $result) {
                 $tarifCapacity = !empty($result['TarifAngkutan']['capacity'])?$result['TarifAngkutan']['capacity']:false;
                 $tarifGroupMotor = !empty($result['TarifAngkutan']['group_motor_id'])?$result['TarifAngkutan']['group_motor_id']:false;
+                $min_capacity = Common::hashEmptyField($result, 'TarifAngkutan.min_capacity', 0);
+                $tarif_extra = Common::hashEmptyField($result, 'TarifAngkutan.tarif_extra', 0);
+                $tarif = Common::hashEmptyField($result, 'TarifAngkutan.tarif', 0);
+
                 $flagTarifCapacity = false;
                 $flagTarifGroupMotor = false;
 
@@ -184,17 +190,25 @@ class TarifAngkutan extends AppModel {
                     $flagTarifGroupMotor = true;
                 }
 
+                if( $tarifGroupMotor == $group_motor_id || empty($tarifGroupMotor) ) {
+                    if( !empty($total_muatan) && !empty($min_capacity) ) {
+                        if( $total_muatan > $min_capacity ) {
+                            $tarif = $tarif + $tarif_extra;
+                        }
+                    }
+                }
+
                 if( $flagTarifCapacity && $flagTarifGroupMotor ) {
                     return array(
                         'jenis_unit' => $result['TarifAngkutan']['jenis_unit'],
-                        'tarif' => $result['TarifAngkutan']['tarif'],
+                        'tarif' => $tarif,
                         'tarif_angkutan_id' => $result['TarifAngkutan']['id'],
                         'tarif_angkutan_type' => $result['TarifAngkutan']['type'],
                     );
                 } else if( ($flagTarifGroupMotor && empty($tarifCapacity)) || ($flagTarifCapacity && empty($tarifGroupMotor)) ) {
                     $tmpResult = array(
                         'jenis_unit' => $result['TarifAngkutan']['jenis_unit'],
-                        'tarif' => $result['TarifAngkutan']['tarif'],
+                        'tarif' => $tarif,
                         'tarif_angkutan_id' => $result['TarifAngkutan']['id'],
                         'tarif_angkutan_type' => $result['TarifAngkutan']['type'],
                     );
@@ -224,16 +238,44 @@ class TarifAngkutan extends AppModel {
             ));
 
             if( !empty($result) ) {
+                $min_capacity = Common::hashEmptyField($result, 'TarifAngkutan.min_capacity', 0);
+                $tarif_extra = Common::hashEmptyField($result, 'TarifAngkutan.tarif_extra', 0);
+                $tarif = Common::hashEmptyField($result, 'TarifAngkutan.tarif', 0);
+                $tarifGroupMotor = Common::hashEmptyField($result, 'TarifAngkutan.group_motor_id');
+
+                if( empty($tarifGroupMotor) ) {
+                    if( !empty($total_muatan) && !empty($min_capacity) ) {
+                        if( $total_muatan > $min_capacity ) {
+                            $tarif = $tarif + $tarif_extra;
+                        }
+                    }
+                }
+
                 return array(
                     'jenis_unit' => $result['TarifAngkutan']['jenis_unit'],
-                    'tarif' => $result['TarifAngkutan']['tarif'],
+                    'tarif' => $tarif,
                     'tarif_angkutan_id' => $result['TarifAngkutan']['id'],
                     'tarif_angkutan_type' => $result['TarifAngkutan']['type'],
                 );
             } else if( !empty($results[0]) ) {
+                $result = $results[0];
+                
+                $min_capacity = Common::hashEmptyField($result, 'TarifAngkutan.min_capacity', 0);
+                $tarif_extra = Common::hashEmptyField($result, 'TarifAngkutan.tarif_extra', 0);
+                $tarif = Common::hashEmptyField($result, 'TarifAngkutan.tarif', 0);
+                $tarifGroupMotor = Common::hashEmptyField($result, 'TarifAngkutan.group_motor_id');
+
+                if( empty($tarifGroupMotor) ) {
+                    if( !empty($total_muatan) && !empty($min_capacity) ) {
+                        if( $total_muatan > $min_capacity ) {
+                            $tarif = $tarif + $tarif_extra;
+                        }
+                    }
+                }
+
                return array(
                     'jenis_unit' => !empty($results[0]['TarifAngkutan']['jenis_unit'])?$results[0]['TarifAngkutan']['jenis_unit']:'per_truck',
-                    'tarif' => !empty($results[0]['TarifAngkutan']['tarif'])?$results[0]['TarifAngkutan']['tarif']:0,
+                    'tarif' => $tarif,
                     'tarif_angkutan_id' => !empty($results[0]['TarifAngkutan']['id'])?$results[0]['TarifAngkutan']['id']:false,
                     'tarif_angkutan_type' => !empty($results[0]['TarifAngkutan']['type'])?$results[0]['TarifAngkutan']['type']:'angkut',
                 );
@@ -293,14 +335,14 @@ class TarifAngkutan extends AppModel {
         return $result;
     }
 
-    function getTarifAngkut ( $from_city_id, $main_city_id, $detail_city_id, $customer_id, $truck_capacity, $group_motor_id ) {
+    function getTarifAngkut ( $from_city_id, $main_city_id, $detail_city_id, $customer_id, $truck_capacity, $group_motor_id, $total_muatan = false ) {
         $tarif = false;
 
         if(!empty($from_city_id)){
             if( !empty($detail_city_id) ) {
-                $tarif = $this->findTarif($from_city_id, $detail_city_id, $customer_id, $truck_capacity, $group_motor_id);
+                $tarif = $this->findTarif($from_city_id, $detail_city_id, $customer_id, $truck_capacity, $group_motor_id, $total_muatan);
             } else {
-                $tarif = $this->findTarif($from_city_id, $main_city_id, $customer_id, $truck_capacity, $group_motor_id);
+                $tarif = $this->findTarif($from_city_id, $main_city_id, $customer_id, $truck_capacity, $group_motor_id, $total_muatan);
             }
         }
 

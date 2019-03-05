@@ -138,14 +138,14 @@
         if(!empty($from_date) || !empty($to_date)){
             $text = 'periode ';
             if(!empty($from_date)){
-                $text .= date('d/m/Y', strtotime($from_date));
+                $text .= date('d M Y', strtotime($from_date));
             }
 
             if(!empty($to_date)){
                 if(!empty($from_date)){
                     $text .= ' - ';
                 }
-                $text .= date('d/m/Y', strtotime($to_date));
+                $text .= date('d M Y', strtotime($to_date));
             }
         }
 
@@ -251,7 +251,7 @@
                             $content .= $this->Common->_getDataColumn($company, 'Truck', 'company', array(
                                 'class' => 'company',
                             ));
-                            $content .= $this->Common->_getDataColumn($truck['TruckCategory']['name'], 'TruckCategory', 'name', array(
+                            $content .= $this->Common->_getDataColumn(Common::hashEmptyField($truck, 'TruckCategory.name'), 'TruckCategory', 'name', array(
                                 'class' => 'category_name',
                             ));
                             $content .= $this->Common->_getDataColumn($no_id, 'Driver', 'no_id', array(
@@ -260,7 +260,7 @@
                             $content .= $this->Common->_getDataColumn($driver_name, 'Driver', 'driver_name', array(
                                 'class' => 'driver_name',
                             ));
-                            $content .= $this->Common->_getDataColumn($truck['CustomerNoType']['code'], 'CustomerNoType', 'code', array(
+                            $content .= $this->Common->_getDataColumn(Common::hashEmptyField($truck, 'CustomerNoType.code'), 'CustomerNoType', 'code', array(
                                 'class' => 'customer_code',
                             ));
                             $content .= $this->Common->_getDataColumn($truck['Truck']['capacity'], 'Truck', 'capacity', array(
@@ -381,7 +381,7 @@
                 $id = $this->Common->filterEmptyField($truck, 'Truck', 'id');
                 $branch = !empty($truck['Branch']['name'])?$truck['Branch']['name']:false;
                 $driver_name = !empty($truck['Driver']['driver_name'])?$truck['Driver']['driver_name']:false;
-                $customer_code = !empty($truck['CustomerNoType']['code'])?$truck['CustomerNoType']['code']:false;
+                $customer_code = Common::hashEmptyField($truck, 'CustomerNoType.code');
                 $truck_facility = !empty($truck['TruckFacility']['name'])?$truck['TruckFacility']['name']:false;
                 $brand_name = !empty($truck['TruckBrand']['name'])?$truck['TruckBrand']['name']:false;
                 $company = $this->Common->filterEmptyField($truck, 'Company', 'name');
@@ -394,7 +394,7 @@
                 ));
                 $content .= $this->Common->_getDataColumn($brand_name, 'TruckBrand', 'name');
                 $content .= $this->Common->_getDataColumn($company, 'Truck', 'company');
-                $content .= $this->Common->_getDataColumn($truck['TruckCategory']['name'], 'TruckCategory', 'name');
+                $content .= $this->Common->_getDataColumn(Common::hashEmptyField($truck, 'TruckCategory.name'), 'TruckCategory', 'name');
                 $content .= $this->Common->_getDataColumn($driver_name, 'Driver', 'driver_name');
                 $content .= $this->Common->_getDataColumn($customer_code, 'CustomerNoType', 'code');
                 $content .= $this->Common->_getDataColumn($truck['Truck']['capacity'], 'Truck', 'capacity', array(

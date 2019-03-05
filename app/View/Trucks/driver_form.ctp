@@ -347,6 +347,42 @@
 		        </div>
 		    </div>
 		</div>
+		<div class="box box-primary">
+		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Informasi Rekening'); ?></h3>
+		    </div>
+		    <div class="box-body">
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('account_name',array(
+								'label'=> __('Atas Nama'), 
+								'class'=>'form-control',
+								'required' => false,
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('account_number',array(
+								'label'=> __('No. Rekening'), 
+								'class'=>'form-control',
+								'required' => false,
+								'type' => 'text'
+							));
+					?>
+		        </div>
+		        <div class="form-group">
+		        	<?php 
+							echo $this->Form->input('bank_name',array(
+								'label'=> __('Nama Bank'), 
+								'class'=>'form-control',
+								'required' => false,
+								'type' => 'text'
+							));
+					?>
+		        </div>
+		    </div>
+		</div>
 	</div>
 	<div class="col-sm-6">
 		<div class="box box-primary">

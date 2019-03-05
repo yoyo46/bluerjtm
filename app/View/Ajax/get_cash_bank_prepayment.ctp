@@ -36,6 +36,7 @@
                         'label'=> __('Tanggal'),
                         'class'=>'form-control date-range',
                         'required' => false,
+                        'autocomplete'=> 'off', 
                     ));
             ?>
         </div>
@@ -111,7 +112,7 @@
                         $description = $this->Common->filterEmptyField($value, 'CashBank', 'description');
                         $grand_total = $this->Common->filterEmptyField($value, 'CashBank', 'grand_total');
 
-                        $customDate = $this->Common->customDate($tgl_cash_bank, 'd/m/Y');
+                        $customDate = $this->Common->customDate($tgl_cash_bank, 'd M Y');
                         $customGrandTotal = $this->Common->getFormatPrice($grand_total);
 
                         $content = $this->Html->tag('td', $nodoc);

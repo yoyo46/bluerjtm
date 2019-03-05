@@ -28,10 +28,10 @@
                 $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
                 $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
 
-                $customExpireDate = $this->Common->customDate($expired_date_sim, 'd/m/Y');
-                $customBirthDate = $this->Common->customDate($birth_date, 'd/m/Y');
-                $customJoinDate = $this->Common->customDate($join_date, 'd/m/Y');
-                $customResignDate = $this->Common->customDate($date_resign, 'd/m/Y');
+                $customExpireDate = $this->Common->customDate($expired_date_sim, 'd M Y');
+                $customBirthDate = $this->Common->customDate($birth_date, 'd M Y');
+                $customJoinDate = $this->Common->customDate($join_date, 'd M Y');
+                $customResignDate = $this->Common->customDate($date_resign, 'd M Y');
 
                 if( !empty($is_resign) ) {
                     $lblStatus = $this->Html->tag('span', __('Resign'), array(

@@ -25,6 +25,7 @@
                                 'label'=> __('Tanggal'),
                                 'class'=>'form-control date-range',
                                 'required' => false,
+                                'autocomplete'=> 'off', 
                             ));
                     ?>
                 </div>

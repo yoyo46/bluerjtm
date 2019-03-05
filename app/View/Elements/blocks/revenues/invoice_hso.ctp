@@ -48,7 +48,7 @@
 				));
 
 				if( !empty($no) ) {
-					echo $this->Html->tag('td', $this->Common->customDate($revenue['Revenue']['date_revenue'], 'd/m/Y'), array(
+					echo $this->Html->tag('td', $this->Common->customDate($revenue['Revenue']['date_revenue'], 'd M Y'), array(
 						'style' => 'text-align: center;'
 					));
 				} else {

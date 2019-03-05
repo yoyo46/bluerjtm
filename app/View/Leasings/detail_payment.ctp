@@ -15,7 +15,7 @@
 		$vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
 
         $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
-        $payment_date = $this->Common->formatDate($payment_date, 'd/m/Y');
+        $payment_date = $this->Common->formatDate($payment_date, 'd M Y');
 ?>
 <div class="box">
     <div class="box-header">

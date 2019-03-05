@@ -132,7 +132,6 @@ class ProductRetur extends AppModel {
             'conditions'=> array(),
             'order'=> array(
                 'ProductRetur.status' => 'DESC',
-                'ProductRetur.created' => 'DESC',
                 'ProductRetur.id' => 'DESC',
             ),
             'fields' => array(),

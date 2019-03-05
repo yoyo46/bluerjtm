@@ -24,7 +24,7 @@
                 
                 $dtInvoice = $this->Common->filterEmptyField($value, 'Invoice', 'invoice_date', date('Y-m-d'));
                 $tglInvoiced = $this->Common->filterEmptyField($value, 'Invoice', 'invoice_date', false, false, array(
-                    'date' => 'd/m/Y',
+                    'date' => 'd M Y',
                 ));
 
                 $unit = $this->Common->filterEmptyField($value, 'Qty', false, 0);
@@ -39,7 +39,7 @@
 
                 if( !empty($value['SuratJalan']['tgl_surat_jalan']) ) {
                     $tglSJ = $this->Common->filterEmptyField($value, 'SuratJalan', 'tgl_surat_jalan', false, false, array(
-                        'date' => 'd/m/Y',
+                        'date' => 'd M Y',
                     ));
                     $leadSj = floor($str/3600/24);
 
@@ -113,7 +113,7 @@
                             'target' => '_blank',
                             'full_base' => true,
                         )),
-                        $this->Common->customDate($ttuj_date, 'd/m/Y'),
+                        $this->Common->customDate($ttuj_date, 'd M Y'),
                         $city_name,
                         $nopol,
                         array(

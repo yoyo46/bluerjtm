@@ -114,7 +114,6 @@ class ProductExpenditure extends AppModel {
             'conditions'=> array(),
             'order'=> array(
                 'ProductExpenditure.status' => 'DESC',
-                'ProductExpenditure.created' => 'DESC',
                 'ProductExpenditure.id' => 'DESC',
             ),
             'fields' => array(),

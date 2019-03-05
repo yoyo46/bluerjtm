@@ -23,7 +23,7 @@
                 $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
 
                 $status = $this->Revenue->_callStatus($value, 'Ttuj', 'nodoc');
-                $customDate = $this->Common->formatDate($date, 'd/m/Y');
+                $customDate = $this->Common->formatDate($date, 'd M Y');
                 $totalPriceFormat = '';
 
                 if( !empty($is_charge) ) {

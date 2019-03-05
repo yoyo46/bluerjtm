@@ -19,6 +19,7 @@
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
                     'id' => 'form-search',
+                    'autocomplete'=> 'off', 
                 ));
         ?>
         <div class="row">
@@ -53,77 +54,77 @@
                 <div class="form-group">
                     <div class="row">
                         <?php 
-                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('uj1', array(
+                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('uang_jalan_1', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
-                                    'value' => 'uang_jalan',
+                                    'value' => 1,
                                     'div' => false,
                                 )).__('Uang Jalan ke 1')), array(
                                     'class' => 'checkbox',
                                 )), array(
                                     'class' => 'col-sm-6',
                                 ));
-                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('uj2', array(
+                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('uang_jalan_2', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
-                                    'value' => 'uang_jalan_2',
+                                    'value' => 1,
                                     'div' => false,
                                 )).__('Uang Jalan ke 2')), array(
                                     'class' => 'checkbox',
                                 )), array(
                                     'class' => 'col-sm-6',
                                 ));
-                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('uje', array(
+                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('uang_jalan_extra', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
-                                    'value' => 'uang_jalan_extra',
+                                    'value' => 1,
                                     'div' => false,
                                 )).__('Uang Jalan Extra')), array(
                                     'class' => 'checkbox',
                                 )), array(
                                     'class' => 'col-sm-6',
                                 ));
-                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('com', array(
+                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('commission', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
-                                    'value' => 'commission',
+                                    'value' => 1,
                                     'div' => false,
                                 )).__('Komisi')), array(
                                     'class' => 'checkbox',
                                 )), array(
                                     'class' => 'col-sm-6',
                                 ));
-                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('come', array(
+                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('commission_extra', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
-                                    'value' => 'commission_extra',
+                                    'value' => 1,
                                     'div' => false,
                                 )).__('Komisi Extra')), array(
                                     'class' => 'checkbox',
                                 )), array(
                                     'class' => 'col-sm-6',
                                 ));
-                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('kuli_muat', array(
+                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('uang_kuli_muat', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
-                                    'value' => 'uang_kuli_muat',
+                                    'value' => 1,
                                     'div' => false,
                                 )).__('Uang Kuli Muat')), array(
                                     'class' => 'checkbox',
                                 )), array(
                                     'class' => 'col-sm-6',
                                 ));
-                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('kuli_bongkar', array(
+                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('uang_kuli_bongkar', array(
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
-                                    'value' => 'uang_kuli_bongkar',
+                                    'value' => 1,
                                     'div' => false,
                                 )).__('Uang Kuli Bongkar')), array(
                                     'class' => 'checkbox',
@@ -134,7 +135,7 @@
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
-                                    'value' => 'asdp',
+                                    'value' => 1,
                                     'div' => false,
                                 )).__('Uang Penyebrangan')), array(
                                     'class' => 'checkbox',
@@ -145,7 +146,7 @@
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
-                                    'value' => 'uang_kawal',
+                                    'value' => 1,
                                     'div' => false,
                                 )).__('Uang Kawal')), array(
                                     'class' => 'checkbox',
@@ -156,7 +157,7 @@
                                     'type' => 'checkbox',
                                     'label'=> false,
                                     'required' => false,
-                                    'value' => 'uang_keamanan',
+                                    'value' => 1,
                                     'div' => false,
                                 )).__('Uang Keamanan')), array(
                                     'class' => 'checkbox',

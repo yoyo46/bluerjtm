@@ -143,7 +143,7 @@
 									$totalUnitTfoot += $totalUnit;
 									$totalPriceUnitTfoot += $total_price_unit;
 									
-									$date_revenue = $this->Common->formatDate($date_revenue, 'd/m/Y');
+									$date_revenue = $this->Common->formatDate($date_revenue, 'd M Y');
 									$totalUnit = $this->Common->getFormatPrice($totalUnit);
 					?>
 					<tr>

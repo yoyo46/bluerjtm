@@ -18,7 +18,7 @@
 
                 $no_contract = $this->Common->filterEmptyField($value, 'Leasing', 'no_contract');
 
-                $customDate = $this->Common->customDate($expired_date, 'd/m/Y');
+                $customDate = $this->Common->customDate($expired_date, 'd M Y');
                 $customTotal = $this->Common->getFormatPrice($total);
                 
                 $grandtotal += $total;

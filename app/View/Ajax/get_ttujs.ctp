@@ -20,7 +20,8 @@
                         'label'=> __('Tanggal'),
                         'class'=>'form-control date-range',
                         'required' => false,
-                        'placeholder' => __('Dari')
+                        'placeholder' => __('Dari'),
+                        'autocomplete'=> 'off', 
                     ));
             ?>
         </div>
@@ -152,7 +153,7 @@
         ?>
         <tr data-text="<?php echo $value['Ttuj']['no_ttuj'];?>" data-value="<?php echo $result;?>" data-change="#<?php echo $data_change;?>" <?php echo $attr; ?>>
             <td><?php echo $value['Ttuj']['no_ttuj'];?></td>
-            <td><?php echo date('d/m/Y', strtotime($value['Ttuj']['ttuj_date']));?></td>
+            <td><?php echo date('d M Y', strtotime($value['Ttuj']['ttuj_date']));?></td>
             <td><?php echo $value['Ttuj']['nopol'];?></td>
             <td><?php echo $driver;?></td>
             <td><?php echo $driver_pengganti;?></td>

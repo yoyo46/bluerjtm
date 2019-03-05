@@ -72,10 +72,34 @@ class Branch extends AppModel {
             'className' => 'GeneralLedger',
             'foreignKey' => 'branch_id',
         ),
-        // 'CogsSetting' => array(
-        //     'className' => 'CogsSetting',
-        //     'foreignKey' => 'branch_id',
-        // ),
+        'GroupBranch' => array(
+            'className' => 'GroupBranch',
+            'foreignKey' => 'branch_id',
+        ),
+        'Ttuj' => array(
+            'className' => 'Ttuj',
+            'foreignKey' => 'branch_id',
+        ),
+        'Revenue' => array(
+            'className' => 'Revenue',
+            'foreignKey' => 'branch_id',
+        ),
+        'Invoice' => array(
+            'className' => 'Invoice',
+            'foreignKey' => 'branch_id',
+        ),
+        'Driver' => array(
+            'className' => 'Driver',
+            'foreignKey' => 'branch_id',
+        ),
+        'TtujPayment' => array(
+            'className' => 'TtujPayment',
+            'foreignKey' => 'branch_id',
+        ),
+        'Customer' => array(
+            'className' => 'Customer',
+            'foreignKey' => 'branch_id',
+        ),
     );
 
     function __construct($id = false, $table = null, $ds = null) {
@@ -83,7 +107,9 @@ class Branch extends AppModel {
         $this->virtualFields['full_name'] = 'CONCAT(Branch.code, " - ", Branch.name)';
     }
 
-	function getData($find, $options = false){
+	function getData($find, $options = false, $elements = array()){
+        $include_city = isset($elements['include_city'])?$elements['include_city']:true;
+
         $default_options = array(
             'conditions'=> array(
                 'Branch.status' => 1,
@@ -92,10 +118,13 @@ class Branch extends AppModel {
                 'Branch.name' => 'ASC'
             ),
             'contain' => array(
-                'City',
             ),
             'fields' => array(),
         );
+
+        if( !empty($include_city) ) {
+            $default_options['contain'][] = 'City';
+        }
 
         if(!empty($options)){
             if(!empty($options['conditions'])){
@@ -126,11 +155,12 @@ class Branch extends AppModel {
     }
 
     function getMerge($data, $id, $fieldName = 'Branch.id'){
-        if(empty($data['Branch'])){
+        if( empty($data['Branch']) && !empty($id) ){
             $data_merge = $this->getData('first', array(
                 'conditions' => array(
                     $fieldName => $id
-                )
+                ),
+                'cache' => __('Branch.ID.%s', $id),
             ));
 
             if(!empty($data_merge)){
@@ -198,16 +228,6 @@ class Branch extends AppModel {
 
                     $id = $this->id;
                     $this->saveBranchCity($data, false, $id);
-                    
-                    // $data = $this->CogsSetting->_callBeforeSaveCogsSetting($data, false, $id);
-                    // $dataDetail = Common::hashEmptyField($data, 'CogsSetting');
-
-                    // if( !empty($dataDetail) ) {
-                    //     $this->CogsSetting->deleteAll(array(
-                    //         'CogsSetting.branch_id' => $id,
-                    //     ));
-                    //     $this->CogsSetting->saveAll($dataDetail);
-                    // }
 
                     if( !empty($head_office) ) {
                         $this->updateAll( array(
@@ -243,13 +263,6 @@ class Branch extends AppModel {
                 );
             }
         } else if( !empty($value) ) {
-            // $cogs = $this->CogsSetting->getData('all', array(
-            //     'conditions' => array(
-            //         'CogsSetting.branch_id' => $id,
-            //     ),
-            // ), array(
-            //     'branch' => false,
-            // ));
             $value = $this->BranchCity->getMerge($value, $id);
 
             if( !empty($value['BranchCity']) ) {
@@ -261,18 +274,6 @@ class Branch extends AppModel {
                     $value['BranchCity']['branch_city_id'][$key] = $branch_city_id;
                 }
             }
-
-            // if( !empty($cogs) ) {
-            //     foreach ($cogs as $key => $val) {
-            //         $id = Common::hashEmptyField($val, 'CogsSetting.id');
-            //         $label = Common::hashEmptyField($val, 'CogsSetting.label');
-            //         $cogs_id = Common::hashEmptyField($val, 'CogsSetting.cogs_id');
-
-            //         $value['CogsSetting'][$label]['id'] = $id;
-            //         $value['CogsSetting'][$label]['label'] = $label;
-            //         $value['CogsSetting'][$label]['cogs_id'] = $cogs_id;
-            //     }
-            // }
 
             $result['data'] = $value;
         }
@@ -314,6 +315,7 @@ class Branch extends AppModel {
                 'fields' => array(
                     'Branch.id', 'Branch.id',
                 ),
+                'cache' => 'Branch.Plant.List',
             ));
 
             if( !empty($branch_plants) ) {
@@ -332,6 +334,18 @@ class Branch extends AppModel {
                 'Branch.id', 'Branch.id'
             ),
         ));
+    }
+
+    public function afterSave($created, $options = array()){
+        $id = $this->id;
+        $id = Common::hashEmptyField($this->data, 'Branch.id', $id);
+
+        $this->GroupBranch->deleteCache();
+        Cache::delete('Branch.Plant.List', 'default');
+
+        if( !empty($id) ) {
+            Cache::delete('Branch.ID.'.$id, 'default');
+        }
     }
 }
 ?>

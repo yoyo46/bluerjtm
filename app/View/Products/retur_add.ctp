@@ -15,7 +15,7 @@
 
     	$document_type = Common::hashEmptyField($data, 'ProductRetur.document_type');
     	$last_transaction_date = Common::hashEmptyField($data, 'ProductRetur.last_transaction_date', null, array(
-    		'date' => 'd/m/Y',
+    		'date' => 'd M Y',
 		));
 
 		$this->Html->addCrumb($title, $urlRoot);

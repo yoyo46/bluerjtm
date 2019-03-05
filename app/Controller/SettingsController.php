@@ -2654,7 +2654,9 @@ class SettingsController extends AppController {
                 $options['conditions']['CustomerGroup.name LIKE '] = '%'.$name.'%';
             }
         }
-        $this->paginate = $this->CustomerGroup->getData('paginate', $options);
+        $this->paginate = $this->CustomerGroup->getData('paginate', $options, array(
+            'include_pattern' => false,
+        ));
         $customerGroups = $this->paginate('CustomerGroup');
 
         $this->set('active_menu', 'customer_groups');
@@ -2676,9 +2678,17 @@ class SettingsController extends AppController {
             'conditions' => array(
                 'CustomerGroup.id' => $id
             )
+        ), array(
+            'include_pattern' => false,
         ));
 
         if(!empty($customerGroup)){
+            $customerGroup = $this->CustomerGroup->getMergeList($customerGroup, array(
+                'contain' => array(
+                    'CustomerGroupPattern',
+                ),
+            ));
+
             $this->doCustomerGroup($id, $customerGroup);
         }else{
             $this->MkCommon->setCustomFlash(__('Grup Customer tidak ditemukan'), 'error');  
@@ -3270,6 +3280,15 @@ class SettingsController extends AppController {
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            $data = Common::dataConverter($data, array(
+                'price' => array(
+                    'TarifAngkutan' => array(
+                        'tarif_extra',
+                        'tarif',
+                    ),
+                )
+            ));
+
             if($id && $data_local){
                 $this->TarifAngkutan->id = $id;
                 $msg = 'merubah';
@@ -3281,7 +3300,6 @@ class SettingsController extends AppController {
             }
 
             $data['TarifAngkutan']['group_motor_id'] = !empty($data['TarifAngkutan']['group_motor_id'])?$data['TarifAngkutan']['group_motor_id']:0;
-            $data['TarifAngkutan']['tarif'] = !empty($data['TarifAngkutan']['tarif'])?str_replace(',', '', $data['TarifAngkutan']['tarif']):false;
             $data['TarifAngkutan']['capacity'] = isset($data['TarifAngkutan']['capacity'])?$data['TarifAngkutan']['capacity']:false;
             $data['TarifAngkutan']['branch_id'] = Configure::read('__Site.config_branch_id');
 

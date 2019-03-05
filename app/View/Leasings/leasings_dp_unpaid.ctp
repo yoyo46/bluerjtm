@@ -143,7 +143,7 @@
                             $leasing_date = $this->Common->filterEmptyField($value, 'Leasing', 'paid_date');
                             $dp = $this->Common->filterEmptyField($value, 'Leasing', 'down_payment');
 
-                            $customLeasingDate = $this->Common->formatDate($leasing_date, 'd/m/Y');
+                            $customLeasingDate = $this->Common->formatDate($leasing_date, 'd M Y');
                             $customDP = $this->Common->getFormatPrice($dp);
             ?>
             <tr class="child-search child-search-<?php echo $id;?>" rel="<?php echo $id;?>">

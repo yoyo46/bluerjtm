@@ -71,8 +71,8 @@
                 $customTotalSisaRate = $this->Common->getFormatPrice($grandtotal_sisa_rate);
                 $customTotalSisaAngsuran = $this->Common->getFormatPrice($grandtotal_sisa_angsuran);
 
-                $customStartDate = $this->Common->formatDate($start_date, 'd/m/Y');
-                $customEndDate = $this->Common->formatDate($end_date, 'd/m/Y');
+                $customStartDate = $this->Common->formatDate($start_date, 'd M Y');
+                $customEndDate = $this->Common->formatDate($end_date, 'd M Y');
 
                 $grandtotalLeasing += $total_leasing;
                 $grandtotalAnnualInterest += $annual_interest;

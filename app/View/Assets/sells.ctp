@@ -69,8 +69,8 @@
                             $bank = $this->Common->filterEmptyField($value, 'Coa', 'coa_name');
 
                             $customStatus = $this->Common->_callTransactionStatus($value, 'AssetSell');
-                            $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
-                            $customTransDate = $this->Common->formatDate($transDate, 'd/m/Y');
+                            $customDate = $this->Common->formatDate($transactionDate, 'd M Y');
+                            $customTransDate = $this->Common->formatDate($transDate, 'd M Y');
                             $grandtotal = $this->Common->getFormatPrice($grandtotal, 0, 2);
 
                             $customAction = $this->Html->link(__('Detail'), array(

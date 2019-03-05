@@ -42,7 +42,7 @@
                                 $nodoc = $this->Common->filterEmptyField($value, 'Spk', 'nodoc');
                                 $nolaka = $this->Common->filterEmptyField($value, 'Laka', 'nodoc', '-');
                                 $transaction_date = $this->Common->filterEmptyField($value, 'Spk', 'transaction_date', false, true, array(
-                                    'date' => 'd/m/Y',
+                                    'date' => 'd M Y',
                                 ));
                                 $document_type = $this->Common->filterEmptyField($value, 'Spk', 'document_type');
                                 $nopol = $this->Common->filterEmptyField($value, 'Spk', 'nopol', '-');

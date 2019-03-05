@@ -100,10 +100,10 @@
                             $installment = $this->Common->filterEmptyField($value, 'Leasing', 'installment');
                             $down_payment = $this->Common->filterEmptyField($value, 'Leasing', 'down_payment');
                             $paid_date = $this->Common->filterEmptyField($value, 'Leasing', 'paid_date', false, false, array(
-                                'date' => 'd/m/Y',
+                                'date' => 'd M Y',
                             ));
                             $date_first_installment = $this->Common->filterEmptyField($value, 'Leasing', 'date_first_installment', false, false, array(
-                                'date' => 'd/m/Y',
+                                'date' => 'd M Y',
                             ));
                             $status = $this->Common->filterEmptyField($value, 'Leasing', 'status');
                             $payment_status = $this->Common->filterEmptyField($value, 'Leasing', 'payment_status');

@@ -81,7 +81,7 @@
             <tr class="<?php echo $style; ?>">
                 <td><?php echo str_pad($value['Revenue']['id'], 5, '0', STR_PAD_LEFT);?></td>
                 <td><?php echo $value['Revenue']['no_doc'];?></td>
-                <td><?php echo $this->Common->customDate($value['Revenue']['date_revenue'], 'd/m/Y');?></td>
+                <td><?php echo $this->Common->customDate($value['Revenue']['date_revenue'], 'd M Y');?></td>
                 <td><?php echo Common::hashEmptyField($value, 'Ttuj.no_ttuj', '-');?></td>
                 <td>
                     <?php

@@ -66,7 +66,6 @@ class LkuPayment extends AppModel {
                 'LkuPayment.branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
-                'LkuPayment.created' => 'DESC',
                 'LkuPayment.id' => 'DESC',
             ),
             'fields' => array(),

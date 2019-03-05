@@ -59,7 +59,7 @@ class UsersController extends AppController {
 
                     $value = $this->User->Employe->getMerge($value, $employe_id);
                     $full_name = $this->MkCommon->filterEmptyField($value, 'Employe', 'full_name');
-                    $acticity = sprintf(__('%s telah melakukan login pada %s'), $full_name, date('d/m/Y H:i:s'));
+                    $acticity = sprintf(__('%s telah melakukan login pada %s'), $full_name, date('d M Y H:i:s'));
 
                     $this->Cookie->write($session_name_ip, 0, '1 hour');
                     $this->Cookie->write($session_try_login, 0);

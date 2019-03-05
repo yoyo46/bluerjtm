@@ -124,8 +124,8 @@
                         $qty_sisa = $qty - $qty_diterima;
 
                         $customer = $this->Common->filterEmptyField($value, 'Customer', 'code');
-                        $ttuj_date = $this->Common->formatDate($ttuj_date, 'd/m/Y');
-                        $tgljam_berangkat = $this->Common->formatDate($tgljam_berangkat, 'd/m/Y H:i:s');
+                        $ttuj_date = $this->Common->formatDate($ttuj_date, 'd M Y');
+                        $tgljam_berangkat = $this->Common->formatDate($tgljam_berangkat, 'd M Y H:i:s');
 
                         $checkbox = isset($checkbox)?$checkbox:true;
                         $alias = sprintf('child-%s', $id);

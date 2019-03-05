@@ -46,7 +46,6 @@ class SiupPayment extends AppModel {
                 'SiupPayment.branch_id' => Configure::read('__Site.config_branch_id'),
             ),
             'order'=> array(
-                'SiupPayment.created' => 'DESC',
                 'SiupPayment.id' => 'DESC',
             ),
             'contain' => array(

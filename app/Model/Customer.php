@@ -2,16 +2,6 @@
 class Customer extends AppModel {
 	var $name = 'Customer';
 	var $validate = array(
-        // 'branch_id' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'Cabang harap dipilih'
-        //     ),
-        //     'numeric' => array(
-        //         'rule' => array('numeric'),
-        //         'message' => 'Cabang harap dipilih'
-        //     ),
-        // ),
         'code' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -79,10 +69,6 @@ class Customer extends AppModel {
             'className' => 'Branch',
             'foreignKey' => 'branch_id',
         ),
-        // 'Bank' => array(
-        //     'className' => 'Bank',
-        //     'foreignKey' => 'bank_id',
-        // )
 	);
 
     var $hasMany = array(
@@ -92,6 +78,14 @@ class Customer extends AppModel {
         ),
         'UangKuli' => array(
             'className' => 'UangKuli',
+            'foreignKey' => 'customer_id',
+        ),
+        'Invoice' => array(
+            'className' => 'Invoice',
+            'foreignKey' => 'customer_id',
+        ),
+        'InvoicePayment' => array(
+            'className' => 'InvoicePayment',
             'foreignKey' => 'customer_id',
         ),
     );
@@ -108,6 +102,7 @@ class Customer extends AppModel {
         $status = isset($elements['status'])?$elements['status']:'active';
         $branch = isset($elements['branch'])?$elements['branch']:true;
         $plant = isset($elements['plant'])?$elements['plant']:true;
+        $customer_type = isset($elements['customer_type'])?$elements['customer_type']:true;
         
         $branch_is_plant = Configure::read('__Site.config_branch_plant');
         $default_options = array(
@@ -119,11 +114,17 @@ class Customer extends AppModel {
                 'Customer.name' => 'ASC',
             ),
             'contain' => array(
-                'CustomerType',
             ),
             'fields' => array(),
             'group' => array(),
         );
+
+        if( !empty($customer_type) ) {
+            $default_options['contain'][] = 'CustomerType';
+        } else {
+            unset($this->virtualFields['customer_name']);
+            unset($this->virtualFields['customer_name_code']);
+        }
 
         switch ($status) {
             case 'all':
@@ -138,13 +139,6 @@ class Customer extends AppModel {
                 $default_options['conditions']['Customer.status'] = 1;
                 break;
         }
-
-        // Custom Otorisasi
-        // if( !empty($plant) && !empty($branch_is_plant) ) {
-        //     $default_options['conditions']['Customer.branch_id'] = Configure::read('__Site.Branch.Plant.id');
-        // } else if( !empty($branch) ) {
-        //     $default_options['conditions']['Customer.branch_id'] = Configure::read('__Site.config_branch_id');
-        // }
 
         if( !empty($options) && $is_merge ){
             if(!empty($options['conditions'])){

@@ -152,7 +152,9 @@ class Journal extends AppModel {
         $type = isset($elements['type'])?$elements['type']:false;
 
         $default_options = array(
-            'conditions'=> array(),
+            'conditions'=> array(
+                'Journal.status' => 1,
+            ),
             'order'=> array(
                 'Journal.date' => 'DESC',
                 'Journal.document_id' => 'DESC',
@@ -189,6 +191,7 @@ class Journal extends AppModel {
                             'className' => 'Journal',
                             'foreignKey' => false,
                             'conditions' => array(
+                                'JournalVoid.status' => 1,
                                 'Journal.document_id = JournalVoid.document_id',
                                 'Journal.document_no = JournalVoid.document_no',
                                 'OR' => array(
@@ -206,7 +209,7 @@ class Journal extends AppModel {
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
-            if(!empty($options['order'])){
+            if(isset($options['order'])){
                 $default_options['order'] = $options['order'];
             }
             if( isset($options['contain']) && empty($options['contain']) ) {

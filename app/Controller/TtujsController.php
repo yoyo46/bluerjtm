@@ -39,38 +39,36 @@ class TtujsController extends AppController {
     }
 
     public function report_recap_sj( $data_action = false ) {
-        $this->loadModel('City');
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $dateFrom = date('Y-m-01');
         $dateTo = date('Y-m-t');
 
-        $this->Ttuj->unBindModel(array(
-            'hasMany' => array(
-                'Revenue',
-            )
-        ));
-        $this->Ttuj->bindModel(array(
-            'hasOne' => array(
-                'Revenue' => array(
-                    'className' => 'Revenue',
-                    'foreignKey' => 'ttuj_id',
-                    'conditions' => array(
-                        'Revenue.status' => 1,
-                    ),
-                )
-            )
-        ), false);
+        // $this->Ttuj->unBindModel(array(
+        //     'hasMany' => array(
+        //         'Revenue',
+        //     )
+        // ));
+        // $this->Ttuj->bindModel(array(
+        //     'hasOne' => array(
+        //         'Revenue' => array(
+        //             'className' => 'Revenue',
+        //             'foreignKey' => 'ttuj_id',
+        //             'conditions' => array(
+        //                 'Revenue.status' => 1,
+        //             ),
+        //         )
+        //     )
+        // ), false);
 
         $options = array(
             'conditions' => array(
-                'Revenue.id NOT' => NULL,
+                // 'Revenue.id NOT' => NULL,
                 'Ttuj.branch_id' => $allow_branch_id,
             ),
-            'contain' => array(
-                'Revenue',
-            ),
+            // 'contain' => array(
+            //     'Revenue',
+            // ),
             'order'=> array(
-                'Ttuj.created' => 'DESC',
                 'Ttuj.id' => 'DESC',
             ),
             'group' => array(
@@ -86,13 +84,13 @@ class TtujsController extends AppController {
         $options = $this->MkCommon->getConditionGroupBranch( $params, 'Ttuj', $options );
 
         if( !empty($data_action) ){
-            $values = $this->Ttuj->getData('all', $options, array(
+            $values = $this->Ttuj->getData('all', $options, true, array(
                 'status' => 'commit',
             ));
         } else {
             $this->paginate = $this->Ttuj->getData('paginate', array_merge($options, array(
                 'limit' => Configure::read('__Site.config_pagination'),
-            )), array(
+            )), true, array(
                 'status' => 'commit',
             ));
             $values = $this->paginate('Ttuj');

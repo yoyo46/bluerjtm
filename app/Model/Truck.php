@@ -403,7 +403,7 @@ class Truck extends AppModel {
             if(!empty($options['conditions'])){
                 $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
             }
-            if(!empty($options['order'])){
+            if(isset($options['order'])){
                 $default_options['order'] = $options['order'];
             }
             if( isset($options['contain']) && empty($options['contain']) ) {
@@ -566,10 +566,6 @@ class Truck extends AppModel {
             }
         }
 
-        // if( !empty($branch_id) ) {
-        //     $conditions['Truck.branch_id'] = $branch_id;
-        // }
-
         if( empty($only_bind) ) {
             $trucks = $this->getData('list', array(
                 'conditions' => array_merge($conditions, array(
@@ -578,9 +574,10 @@ class Truck extends AppModel {
                 'fields' => array(
                     'Truck.id', 'Truck.nopol'
                 ),
-                'order' => array(
-                    'Truck.nopol'
-                ),
+                // 'order' => array(
+                //     'Truck.nopol'
+                // ),
+                'order' => false,
             ), false);
 
             if( !empty($nopol) && !empty($trucks[$include_this_truck_id]) ) {

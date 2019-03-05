@@ -77,7 +77,7 @@
 								$colom .= $this->Html->tag('td', $this->Common->customDate($value['Invoice']['invoice_date']), array(
 									'class' => 'text-center'
 								));
-                                $colom .= $this->Html->tag('td', sprintf('%s s/d %s', $this->Common->customDate($value['Invoice']['period_from'], 'd/m/Y'), $this->Common->customDate($value['Invoice']['period_to'], 'd/m/Y')), array(
+                                $colom .= $this->Html->tag('td', sprintf('%s s/d %s', $this->Common->customDate($value['Invoice']['period_from'], 'd M Y'), $this->Common->customDate($value['Invoice']['period_to'], 'd M Y')), array(
 									'class' => 'text-center'
 								));
 								$colom .= $this->Html->tag('td', $this->Number->currency($value['price_pay'], Configure::read('__Site.config_currency_code'), array('places' => 0)), array(

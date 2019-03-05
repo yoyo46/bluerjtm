@@ -13,7 +13,7 @@
         $vendor = $this->Common->filterEmptyField($value, 'Vendor', 'name');
         $products = $this->Common->filterEmptyField($value, 'SupplierQuotationDetail');
 
-        $customDate = $this->Common->formatDate($tgl, 'd/m/Y');
+        $customDate = $this->Common->formatDate($tgl, 'd M Y');
         $customStatus = $this->Common->_callStatusApproval($status);
         $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
 

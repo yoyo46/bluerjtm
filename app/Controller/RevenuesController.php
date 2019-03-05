@@ -53,10 +53,10 @@ class RevenuesController extends AppController {
             'conditions' => array(),
             'order'=> array(
                 'Ttuj.status' => 'DESC',
-                'Ttuj.created' => 'DESC',
                 'Ttuj.id' => 'DESC',
             ),
         );
+
         $refine = $this->MkCommon->filterEmptyField( $this->params, 'named' );
         $params = $this->MkCommon->_callRefineParams($this->params);
         $options =  $this->Ttuj->_callRefineParams($params, $options);
@@ -132,7 +132,7 @@ class RevenuesController extends AppController {
 
             $ttuj = $this->Ttuj->getMergeContain( $ttuj, $id );
             $ttuj = $this->Ttuj->Revenue->getPaid( $ttuj, $id );
-            $ttuj = $this->Ttuj->TtujPaymentDetail->TtujPayment->_callTtujPaid($ttuj, $id);
+            $ttuj = $this->Ttuj->_callTtujPaid($ttuj);
             $data_action = false;
 
             if( !empty($demo) ) {
@@ -155,12 +155,13 @@ class RevenuesController extends AppController {
 
     public function _callMergeTtujTipeMotor($dataTipeMotor, $data) {
         $tempTipeMotorId = array();
+        $total_muatan = 0;
 
         if( !empty($dataTipeMotor) ) {
             foreach ($dataTipeMotor as $key => $tipe_motor_id) {
                 $city_id = !empty($data['TtujTipeMotor']['city_id'][$key])?$data['TtujTipeMotor']['city_id'][$key]:0;
                 $color_motor_id = !empty($data['TtujTipeMotor']['color_motor_id'][$key])?$data['TtujTipeMotor']['color_motor_id'][$key]:false;
-                $qty = !empty($data['TtujTipeMotor']['qty'][$key])?$data['TtujTipeMotor']['qty'][$key]:false;
+                $qty = !empty($data['TtujTipeMotor']['qty'][$key])?$data['TtujTipeMotor']['qty'][$key]:0;
 
                 if( isset($tempTipeMotorId[$city_id][$tipe_motor_id][$color_motor_id]) ) {
                     $idxData = $tempTipeMotorId[$city_id][$tipe_motor_id][$color_motor_id];
@@ -183,20 +184,25 @@ class RevenuesController extends AppController {
                     }
                     if( !empty($dataTipeMotor[$key]) ) {
                         unset($dataTipeMotor[$key]);
-                    }
+                    }                    
                 } else {
                     $tempTipeMotorId[$city_id][$tipe_motor_id][$color_motor_id] = $key;
                 }
+                
+                $total_muatan += $qty;
             }
+
+            $data['Ttuj']['ttuj_tipe_motor_count'] = $total_muatan;
         }
 
         return array(
             'Data' => $data,
             'DataTipeMotor' => $dataTipeMotor,
+            'total_muatan' => $total_muatan,
         );
     }
 
-    function saveTtujTipeMotor ( $data_action, $dataTtujTipeMotor = false, $data = false, $dataRevenue = false, $ttuj_id = false, $revenue_id = false, $tarifDefault = false ) {
+    function saveTtujTipeMotor ( $data_action, $dataTtujTipeMotor = false, $data = false, $dataRevenue = false, $ttuj_id = false, $revenue_id = false, $tarifDefault = false, $total_muatan = 0 ) {
         $totalTarif = 0;
         $result = array(
             'validates' => true,
@@ -244,9 +250,9 @@ class RevenuesController extends AppController {
                     }
 
                     if( in_array($data_action, array( 'retail', 'demo' )) ) {
-                        $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $dataValidate['TtujTipeMotor']['city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity'], $group_motor_id);
+                        $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $dataValidate['TtujTipeMotor']['city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity'], $group_motor_id, $total_muatan);
                     } else {
-                        $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity'], $group_motor_id);
+                        $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity'], $group_motor_id, $total_muatan);
                     }
 
                     $priceUnit = 0;
@@ -402,8 +408,6 @@ class RevenuesController extends AppController {
     }
 
     function doTTUJ($data_action = false, $id = false, $data_local = false){
-        $this->loadModel('City');
-
         $paramController = $this->params['controller'];
         $paramAction = $this->params['action'];
         $is_draft = isset($data_local['Ttuj']['is_draft'])?$data_local['Ttuj']['is_draft']:true;
@@ -522,8 +526,8 @@ class RevenuesController extends AppController {
             ));
 
             if( !empty($uangJalan) ) {
-                $uangJalan = $this->City->getMerge($uangJalan, $from_city_id, 'FromCity');
-                $uangJalan = $this->City->getMerge($uangJalan, $to_city_id, 'ToCity');
+                $uangJalan = $this->GroupBranch->Branch->City->getMerge($uangJalan, $from_city_id, 'FromCity');
+                $uangJalan = $this->GroupBranch->Branch->City->getMerge($uangJalan, $to_city_id, 'ToCity');
             }
 
             $is_rjtm = $this->MkCommon->filterEmptyField($truck, 'Company', 'is_rjtm');
@@ -629,7 +633,9 @@ class RevenuesController extends AppController {
                         $resultMergeTipeMotor = $this->_callMergeTtujTipeMotor($dataTtujTipeMotor, $data);
                         $data = !empty($resultMergeTipeMotor['Data'])?$resultMergeTipeMotor['Data']:$data;
                         $dataTtujTipeMotor = !empty($resultMergeTipeMotor['DataTipeMotor'])?$resultMergeTipeMotor['DataTipeMotor']:$dataTtujTipeMotor;
-                        $resultTtujTipeMotor = $this->saveTtujTipeMotor($data_action, $dataTtujTipeMotor, $data, $dataRevenue);
+                        $total_muatan = !empty($resultMergeTipeMotor['total_muatan'])?$resultMergeTipeMotor['total_muatan']:0;
+
+                        $resultTtujTipeMotor = $this->saveTtujTipeMotor($data_action, $dataTtujTipeMotor, $data, $dataRevenue, false, false, false, $total_muatan);
 
                         if( !empty($dataTtujPerlengkapan) ) {
                             $resultTtujPerlengkapan = $this->saveTtujPerlengkapan($dataTtujPerlengkapan, $data);
@@ -816,7 +822,7 @@ class RevenuesController extends AppController {
 
                                     if( $transaction_status != 'posting' ) {
                                         $revenue_id = $this->MkCommon->filterEmptyField($revenue, 'Revenue', 'id');
-                                        $tarifDefault = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity']);
+                                        $tarifDefault = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->findTarif($data['Ttuj']['from_city_id'], $data['Ttuj']['to_city_id'], $data['Ttuj']['customer_id'], $data['Ttuj']['truck_capacity'], $total_muatan);
 
                                         $dataRevenue['Revenue'] = array(
                                             'id' => $revenue_id,
@@ -832,7 +838,7 @@ class RevenuesController extends AppController {
                                     }
                                 }
 
-                                $this->saveTtujTipeMotor($data_action, $dataTtujTipeMotor, $data, $dataRevenue, $document_id, $revenue_id, $tarifDefault);
+                                $this->saveTtujTipeMotor($data_action, $dataTtujTipeMotor, $data, $dataRevenue, $document_id, $revenue_id, $tarifDefault, $total_muatan);
 
                                 if( !empty($dataTtujPerlengkapan) ) {
                                     $this->saveTtujPerlengkapan($dataTtujPerlengkapan, $data, $document_id);
@@ -1198,7 +1204,7 @@ class RevenuesController extends AppController {
         $customerConditions = array();
 
         if( in_array($data_action, array( 'retail', 'demo' )) ) {
-            $tmpCities = $this->City->getData('list');
+            $tmpCities = $this->GroupBranch->Branch->City->getData('list');
 
             if( $data_action == 'retail' ) {
                 $customerConditions['Customer.customer_type_id'] = 1;
@@ -2264,7 +2270,6 @@ class RevenuesController extends AppController {
 
     public function ritase_report( $data_type = 'depo' ) {
         $this->loadModel('TruckCustomer');
-        $this->loadModel('CustomerNoType');
 
         $dateFrom = date('Y-m-01');
         $dateTo = date('Y-m-t');
@@ -2274,6 +2279,7 @@ class RevenuesController extends AppController {
             'TruckCustomer.primary'=> 1,
             'TruckCustomer.branch_id' => $allow_branch_id,
         );
+        $contain = array();
         $data_action = false;
 
         if(!empty($this->params['named'])){
@@ -2302,6 +2308,7 @@ class RevenuesController extends AppController {
                 $customer = urldecode($refine['customer']);
                 $this->request->data['Ttuj']['customer'] = $customer;
                 $conditions['CustomerNoType.code LIKE '] = '%'.$customer.'%';
+                $contain[] = 'CustomerNoType';
             }
 
             if(!empty($refine['date'])){
@@ -2340,12 +2347,13 @@ class RevenuesController extends AppController {
             $conditionCustomers['CustomerNoType.customer_type_id'] = 2;
         }
 
-        $customer_id = $this->CustomerNoType->find('list', array(
+        $customer_id = $this->Ttuj->Revenue->CustomerNoType->find('list', array(
             'conditions' => $conditionCustomers,
             'fields' => array(
                 'CustomerNoType.id', 'CustomerNoType.id'
             ),
         ));
+
         $conditions['TruckCustomer.customer_id'] = $customer_id;
         $defaultConditionsTtuj = array(
             'OR' => array(
@@ -2363,13 +2371,13 @@ class RevenuesController extends AppController {
         );
         $options = array(
             'conditions' => $conditions,
-            'order' => array(
-                'CustomerNoType.order_sort' => 'ASC', 
-                'Truck.nopol' => 'ASC', 
-            ),
+            // 'order' => array(
+            //     'CustomerNoType.order_sort' => 'ASC', 
+            //     'Truck.nopol' => 'ASC', 
+            // ),
             'contain' => array(
                 'Truck',
-                'CustomerNoType',
+                // 'CustomerNoType',
             ),
         );
 
@@ -2378,20 +2386,37 @@ class RevenuesController extends AppController {
         } else {
             $options['limit'] = 20;
             $options = $this->TruckCustomer->getData('paginate', $options);
+
             $this->paginate = $options;
             $trucks = $this->paginate('TruckCustomer');
         }
 
         if( !empty($trucks) ) {
+            $this->Ttuj->virtualFields['cnt'] = 'COUNT(Ttuj.id)';
+
             foreach ($trucks as $key => $truck) {
-                $branch_id = $this->MkCommon->filterEmptyField($truck, 'TruckCustomer', 'branch_id');
+                $truck = $this->TruckCustomer->getMergeList($truck, array(
+                    'contain' => array(
+                        'Branch' => array(
+                            'elements' => array(
+                                'include_city' => false,
+                            ),
+                        ),
+                    ),
+                ));
+                $truck = $this->TruckCustomer->Truck->getMergeList($truck, array(
+                    'contain' => array(
+                        'Driver' => array(
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
+                    ),
+                ));
+
                 $conditionCustomers = array(
                     'TruckCustomer.truck_id'=> $truck['Truck']['id'],
                 );
-
-                $truck = $this->Ttuj->Truck->Driver->getMerge($truck, $truck['Truck']['driver_id']);
-                $truck = $this->GroupBranch->Branch->getMerge($truck, $branch_id);
-
                 $conditionsTtuj = $defaultConditionsTtuj;
                 $conditionsTtuj['Ttuj.truck_id'] = $truck['Truck']['id'];
 
@@ -2412,16 +2437,18 @@ class RevenuesController extends AppController {
                 $truck['OverTime'] = $overTime;
 
                 if( $data_type != 'retail' ) {
-                    $cities = $this->Ttuj->getData('all', array(
+
+                    $cities = $this->Ttuj->getData('list', array(
                         'conditions' => $conditionsTtuj,
                         'group' => array(
                             'Ttuj.to_city_id'
                         ),
                         'fields'=> array(
                             'Ttuj.to_city_id', 
-                            'COUNT(Ttuj.id) as cnt',
-                            'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') as dt',
+                            'Ttuj.cnt',
+                            // 'DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') as dt',
                         ),
+                        'order' => false,
                     ), true, array(
                         'branch' => false,
                     ));
@@ -2446,6 +2473,7 @@ class RevenuesController extends AppController {
         } else {
             $this->set('active_menu', 'ritase_report');
             // $defaultConditionsTtuj['Ttuj.is_retail'] = 0;
+
             $cities = $this->Ttuj->getData('list', array(
                 'conditions' => $defaultConditionsTtuj,
                 'group' => array(
@@ -2455,9 +2483,10 @@ class RevenuesController extends AppController {
                     'Ttuj.to_city_id', 
                     'Ttuj.to_city_name', 
                 ),
-                'order' => array(
-                    'Ttuj.to_city_name' => 'ASC',
-                ),
+                'order' => false,
+                // 'order' => array(
+                //     'Ttuj.to_city_name' => 'ASC',
+                // ),
             ), true, array(
                 'status' => 'all',
                 'branch' => false,
@@ -2490,8 +2519,6 @@ class RevenuesController extends AppController {
     }
 
     public function achievement_report( $data_action = false ) {
-        $this->loadModel('CustomerTargetUnitDetail');
-        $this->loadModel('Customer');
         $this->set('active_menu', 'achievement_report');
 
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
@@ -2500,7 +2527,7 @@ class RevenuesController extends AppController {
         $toMonth = date('m');
         $toYear = date('Y');
         $conditions = array(
-            'TtujTipeMotor.status'=> 1,
+            // 'TtujTipeMotor.status'=> 1,
             'Ttuj.status'=> 1,
             'Ttuj.is_draft'=> 0,
         );
@@ -2515,9 +2542,6 @@ class RevenuesController extends AppController {
                 'Customer.manual_group' => 'ASC',
                 'Customer.customer_type_id' => 'DESC',
                 'Customer.customer_group_id' => 'ASC',
-            ),
-            'contain' => array(
-                'CustomerGroup'
             ),
         );
 
@@ -2547,53 +2571,58 @@ class RevenuesController extends AppController {
         $conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') >='] = date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear));
         $conditions['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') <='] = date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear));
 
-        $customerTargetUnits = $this->CustomerTargetUnitDetail->find('all', array(
+        $customerTargetUnits = $this->Ttuj->Customer->CustomerTargetUnit->CustomerTargetUnitDetail->find('all', array(
             'conditions' => array(
                 'CustomerTargetUnit.status' => 1,
                 'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\') >=' => date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear)),
                 'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\') <=' => date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear)),
-            ),
-            'order' => array(
-                'CustomerTargetUnit.customer_id' => 'ASC', 
             ),
             'contain' => array(
                 'CustomerTargetUnit'
             ),
         ));
 
-        $ttujs = $this->Customer->getData('all', $options);
+        $ttujs = $this->Ttuj->Customer->getData('all', $options, true, array(
+            'customer_type' => false,
+        ));
+
         $cntPencapaian = array();
         $targetUnit = array();
 
         if( !empty($ttujs) ) {
+            $this->Ttuj->virtualFields['cnt'] = 'SUM(Ttuj.ttuj_tipe_motor_count)';
+            $this->Ttuj->virtualFields['dt'] = 'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\')';
+
             foreach ($ttujs as $key => $ttuj) {
-                $branch_id = $this->MkCommon->filterEmptyField($ttuj, 'Customer', 'branch_id');
+                $customer_id = $ttuj['Customer']['id'];
 
-                $ttuj = $this->GroupBranch->Branch->getMerge($ttuj, $branch_id);
-
-                $conditions['Ttuj.customer_id'] = $ttuj['Customer']['id'];
-                $ttujTipeMotor = $this->Ttuj->TtujTipeMotor->find('first', array(
-                    'conditions' => $conditions,
+                $ttuj = $this->Ttuj->Customer->getMergeList($ttuj, array(
                     'contain' => array(
-                        'Ttuj',
+                        'CustomerType',
+                        'CustomerGroup',
+                        'Branch' => array(
+                            'elements' => array(
+                                'include_city' => false,
+                            ),
+                        ),
                     ),
-                    'order' => array(
-                        'Ttuj.customer_name' => 'ASC', 
-                    ),
+                ));
+
+                $conditions['Ttuj.customer_id'] = $customer_id;
+                $ttujTipeMotor = $this->Ttuj->find('list', array(
+                    'conditions' => $conditions,
                     'group' => array(
-                        'Ttuj.customer_id'
+                        'Ttuj.dt',
                     ),
                     'fields'=> array(
-                        'Ttuj.id', 
-                        'Ttuj.customer_id', 
-                        'SUM(TtujTipeMotor.qty) as cnt',
-                        'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\') as dt',
+                        'Ttuj.dt',
+                        'Ttuj.cnt',
                     ),
-                ), false);
+                ));
 
                 if( !empty($ttujTipeMotor) ) {
-                    if( !empty($ttujTipeMotor) ) {
-                        $cntPencapaian[$ttujTipeMotor['Ttuj']['customer_id']][$ttujTipeMotor[0]['dt']] = $ttujTipeMotor[0]['cnt'];
+                    foreach ($ttujTipeMotor as $dt => $cnt) {
+                        $cntPencapaian[$customer_id][$dt] = $cnt;
                     }
                 }
 
@@ -2651,7 +2680,6 @@ class RevenuesController extends AppController {
     }
 
     public function achievement_rit_report( $data_action = false ) {
-        $this->loadModel('TtujTipeMotor');
         $this->set('active_menu', 'achievement_rit_report');
 
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
@@ -2663,6 +2691,7 @@ class RevenuesController extends AppController {
             'conditions' => array(
                 'Truck.branch_id' => $allow_branch_id,
             ),
+            'order' => false,
         );
 
 
@@ -2721,73 +2750,70 @@ class RevenuesController extends AppController {
         $targetUnit = array();
 
         if( !empty($values) ) {
+            $this->Ttuj->virtualFields['dt'] = 'CASE WHEN Ttuj.completed = 1 THEN DATE_FORMAT(Ttuj.completed_date, \'%Y-%m\') ELSE DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') END';
+            $this->Ttuj->virtualFields['cnt'] = 'COUNT(Ttuj.truck_id)';
+
+            $this->Ttuj->virtualFields['dt'] = 'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\')';
+            $this->Ttuj->virtualFields['cnt'] = 'SUM(Ttuj.ttuj_tipe_motor_count)';
+
             foreach ($values as $key => $value) {
                 $truck_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'id');
 
-                $value = $this->Ttuj->Truck->TruckCustomer->getMergeTruckCustomer($value, $truck_id, true);
-                $customer_id = $this->MkCommon->filterEmptyField($value, 'TruckCustomer', 'customer_id');
-                $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
+                $value = $this->Ttuj->Truck->getMergeList($value, array(
+                    'contain' => array(
+                        'TruckCustomer' => array(
+                            'uses' => 'TruckCustomer',
+                            'type' => 'first',
+                            'conditions' => array(
+                                'TruckCustomer.primary' => 1,
+                            ),
+                        ),
+                    ),
+                ));
+                $value = $this->Ttuj->Truck->TruckCustomer->getMergeList($value, array(
+                    'contain' => array(
+                        'Customer' => array(
+                            'uses' => 'CustomerNoType',
+                        ),
+                    ),
+                ));
 
                 $conditionsTtuj = $defaultConditionsTtuj;
                 $conditionsTtuj['Ttuj.truck_id'] = $truck_id;
 
-                $this->Ttuj->virtualFields['dt'] = 'CASE WHEN Ttuj.completed = 1 THEN DATE_FORMAT(Ttuj.completed_date, \'%Y-%m\') ELSE DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') END';
-                $this->Ttuj->virtualFields['cnt'] = 'COUNT(Ttuj.truck_id)';
-
-                $totals = $this->Ttuj->getData('all', array(
+                $totals = $this->Ttuj->getData('list', array(
                     'conditions' => $conditionsTtuj,
                     'group' => array(
                         'Ttuj.dt'
                     ),
-                    // 'fields'=> array(
-                    //     'Ttuj.id', 
-                    //     'Ttuj.truck_id', 
-                    //     'Ttuj.cnt',
-                    //     'Ttuj.dt',
-                    // ),
-                    'order' => array(
-                        'dt' => 'ASC',
+                    'fields' => array(
+                        'Ttuj.dt',
+                        'Ttuj.cnt',
                     ),
                 ), true, array(
                     'branch' => false,
                 ));
-            // debug($totals);die();
 
                 if( !empty($totals) ) {
-                    foreach ($totals as $idx => $total) {
-                        $dt = $this->MkCommon->filterEmptyField($total, 'Ttuj', 'dt');
-                        $cnt = $this->MkCommon->filterEmptyField($total, 'Ttuj', 'cnt');
-
+                    foreach ($totals as $dt => $cnt) {
                         $cntPencapaian[$truck_id][$dt] = $cnt;
                     }
                 }
 
                 $conditions['Ttuj.truck_id'] = $truck_id;
-
-                $this->Ttuj->TtujTipeMotor->virtualFields['dt'] = 'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\')';
-                $this->Ttuj->TtujTipeMotor->virtualFields['cnt'] = 'SUM(TtujTipeMotor.qty)';
-
-                $tipeMotors = $this->Ttuj->TtujTipeMotor->find('all', array(
+                $tipeMotors = $this->Ttuj->find('list', array(
                     'conditions' => $conditions,
-                    'contain' => array(
-                        'Ttuj',
-                    ),
                     'group' => array(
-                        'TtujTipeMotor.dt'
+                        'Ttuj.dt'
                     ),
                     'fields'=> array(
-                        'Ttuj.id', 
-                        'Ttuj.truck_id', 
-                        'TtujTipeMotor.cnt',
-                        'TtujTipeMotor.dt',
+                        'Ttuj.dt',
+                        'Ttuj.cnt',
                     ),
                 ), false);
                 
                 if( !empty($tipeMotors) ) {
-                    foreach ($tipeMotors as $idx => $total) {
-                        $dt = $this->MkCommon->filterEmptyField($total, 'TtujTipeMotor', 'dt');
-                        $cnt = $this->MkCommon->filterEmptyField($total, 'TtujTipeMotor', 'cnt');
-
+                    foreach ($tipeMotors as $dt => $cnt) {
                         $cntUnit[$truck_id][$dt] = $cnt;
                     }
                 }
@@ -2801,9 +2827,6 @@ class RevenuesController extends AppController {
                 'CustomerTargetUnit.status' => 1,
                 'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\') >=' => date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear)),
                 'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\') <=' => date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear)),
-            ),
-            'order' => array(
-                'CustomerTargetUnit.customer_id' => 'ASC', 
             ),
             'contain' => array(
                 'CustomerTargetUnit'
@@ -2864,11 +2887,9 @@ class RevenuesController extends AppController {
     }
 
     public function monitoring_truck( $data_action = false ) {
-        $this->loadModel('Customer');
-        $this->loadModel('TruckCustomer');
         $this->loadModel('CalendarEvent');
-        $this->loadModel('Laka');
         $this->loadModel('Setting');
+
         $this->set('active_menu', 'monitoring_truck');
         $this->set('sub_module_title', __('Monitoring Truk'));
 
@@ -2946,6 +2967,7 @@ class RevenuesController extends AppController {
         $leftDay = date('N', mktime(0, 0, 0, date("m", strtotime($currentMonth)) , 0, date("Y", strtotime($currentMonth))));
         $lastDay = date('t', strtotime($currentMonth));
         $customerId = array();
+
         $conditionsLaka = array(
             'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\') <=' => $currentMonth,
             'OR' => array(
@@ -2954,15 +2976,13 @@ class RevenuesController extends AppController {
             ),
         );
         $conditionsLaka = array_merge($conditionsLaka, $default_conditionsLaka);
-        $lakas = $this->Laka->getData('list', array(
+        $lakas = $this->Ttuj->Laka->getData('list', array(
             'conditions' => $conditionsLaka,
-            'order' => array(
-                'Laka.tgl_laka' => 'ASC', 
-            ),
             'fields' => array(
                 'Laka.id', 'Laka.ttuj_id'
             ),
         ));
+
         $lakas = array_values($lakas);
         $lakas = array_unique($lakas);
         $conditions = array(
@@ -2981,52 +3001,49 @@ class RevenuesController extends AppController {
             'CalendarEvent.status'=> 1,
             'DATE_FORMAT(CalendarEvent.from_date, \'%Y-%m\')' => $currentMonth,
         );
-        $conditionTrucks = $default_conditionsTruck;
         $conditionEvents = array_merge($conditionEvents, $default_conditionsEvent);
         $setting = $this->Setting->find('first');
+        
+        $conditionTrucks = $default_conditionsTruck;
+        $containTrucks = array();
 
         if( !empty($this->params['named']) ) {
             $refine = $this->params['named'];
 
             if( !empty($refine['monitoring_customer_id']) ) {
+                $this->Ttuj->Truck->bindModel(array(
+                    'hasOne' => array(
+                        'TruckCustomer' => array(
+                            'foreignKey' => 'truck_id',
+                            'conditions' => array(
+                                'TruckCustomer.primary'=> 1,
+                            ),
+                            'order' => array(
+                                'TruckCustomer.primary' => 'DESC'
+                            ),
+                        ),
+                    )
+                ), false);
+
                 $refine['monitoring_customer_id'] = urldecode($refine['monitoring_customer_id']);
                 $customerId = explode(',', $refine['monitoring_customer_id']);
-                $conditionTrucks['TruckCustomerWithOrder.customer_id'] = $customerId;
+                $conditionTrucks['TruckCustomer.customer_id'] = $customerId;
+                $containTrucks = array(
+                    'TruckCustomer',
+                );
             }
         }
 
-        $this->Ttuj->Truck->bindModel(array(
-            'hasOne' => array(
-                'TruckCustomerWithOrder' => array(
-                    'className' => 'TruckCustomerWithOrder',
-                    'foreignKey' => 'truck_id',
-                    'conditions' => array(
-                        'TruckCustomerWithOrder.primary'=> 1,
-                    ),
-                    'order' => array(
-                        'TruckCustomerWithOrder.primary' => 'DESC'
-                    ),
-                ),
-                'CustomerNoType'=>array(
-                    'foreignKey'=> false,
-                    'type'=>'INNER',
-                    'conditions'=>array(
-                        'CustomerNoType.id = TruckCustomerWithOrder.customer_id',
-                        'CustomerNoType.status'=> 1,
-                    ),
-                ),
-            )
-        ), false);
-
         $this->paginate = $this->Ttuj->Truck->getData('paginate', array(
             'conditions' => $conditionTrucks,
-            'contain' => array(
-                'TruckCustomerWithOrder',
-                'CustomerNoType',
-            ),
+            'contain' => $containTrucks,
+            // 'contain' => array(
+            //     'TruckCustomer',
+            //     'CustomerNoType',
+            // ),
             'order' => array(
-                'CustomerNoType.order_sort' => 'ASC',
-                'CustomerNoType.order' => 'ASC',
+                // 'CustomerNoType.order_sort' => 'ASC',
+                // 'CustomerNoType.order' => 'ASC',
                 'Truck.nopol' => 'ASC',
             ),
             'limit' => 20,
@@ -3034,20 +3051,42 @@ class RevenuesController extends AppController {
             'branch' => false,
         ));
         $trucks = $this->paginate('Truck');
+
         $truckList = Set::extract('/Truck/id', $trucks);
         $conditions['Ttuj.truck_id'] = $truckList;
         $dataLaka = array();
 
         if( !empty($trucks) ) {
             foreach ($trucks as $key => $value) {
+                $value = $this->Ttuj->Truck->getMergeList($value, array(
+                    'contain' => array(
+                        'Branch' => array(
+                            'elements' => array(
+                                'include_city' => false,
+                            ),
+                        ),
+                        'TruckCategory',
+                        'TruckCustomer' => array(
+                            'uses' => 'TruckCustomer',
+                            'type' => 'first',
+                            'conditions' => array(
+                                'TruckCustomer.primary' => 1,
+                            ),
+                        ),
+                    ),
+                ));
+                $value = $this->Ttuj->Truck->TruckCustomer->getMergeList($value, array(
+                    'contain' => array(
+                        'CustomerNoType',
+                    ),
+                ));
+
                 $truck_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'id');
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'branch_id');
                 $nopol = $this->MkCommon->filterEmptyField($value, 'Truck', 'nopol');
 
-                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
-                $value = $this->Laka->getMergeTruck($truck_id, $value, array(
+                $value = $this->Ttuj->Laka->getMergeTruck($truck_id, $value, array(
                     'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\') <=' => $currentMonth,
-                    // 'Laka.completed' => 0,
                 ));
                 $laka_id = $this->MkCommon->filterEmptyField($value, 'Laka', 'id');
 
@@ -3085,7 +3124,7 @@ class RevenuesController extends AppController {
 
 
                     $icon_laka = $this->MkCommon->filterEmptyField($setting, 'Setting', 'icon_laka');
-                    $lakaDate = $this->MkCommon->customDate($tgl_laka, 'd/m/Y');
+                    $lakaDate = $this->MkCommon->customDate($tgl_laka, 'd M Y');
                     $lakaDateOri = $this->MkCommon->customDate($tgl_laka, 'Y-m-d');
                     $lakaEndDate = $this->MkCommon->customDate($laka_completed_date, 'Y-m-d');
                     $lakaMonth = $this->MkCommon->customDate($tgl_laka, 'm');
@@ -3151,24 +3190,28 @@ class RevenuesController extends AppController {
         ), true, array(
             'branch' => false,
         ));
+
         $events = $this->CalendarEvent->getData('all', array(
             'conditions' => $conditionEvents,
             'order' => array(
                 'CalendarEvent.from_date' => 'ASC', 
             ),
         ));
+
         $dataTtuj = array();
         $dataEvent = array();
         $dataRit = array();
 
         if( !empty($ttujs) ) {
+            $this->Ttuj->virtualFields['cnt'] = 'Ttuj.ttuj_tipe_motor_count';
+
             foreach ($ttujs as $key => $value) {
                 $inArr = array();
                 $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
                 $nopol = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'nopol');
                 $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
 
-                $value = $this->Laka->getMergeTtuj($ttuj_id, $value, array(
+                $value = $this->Ttuj->Laka->getMergeTtuj($ttuj_id, $value, array(
                     'DATE_FORMAT(Laka.tgl_laka, \'%Y-%m\')' => $currentMonth,
                 ));
                 $value = $this->Ttuj->getMergeList($value, array(
@@ -3189,19 +3232,18 @@ class RevenuesController extends AppController {
                     ),
                 ));
 
-                $ttujTipeMotor = $this->Ttuj->TtujTipeMotor->find('first', array(
+                $ttujTipeMotor = $this->Ttuj->find('first', array(
                     'conditions' => array(
-                        'TtujTipeMotor.status' => 1,
-                        'TtujTipeMotor.ttuj_id' => $ttuj_id,
+                        'Ttuj.id' => $ttuj_id,
                     ),
                     'fields' => array(
-                        'SUM(TtujTipeMotor.qty) cnt'
+                        'Ttuj.cnt'
                     ),
                 ));
                 $totalMuatan = 0;
 
-                if( !empty($ttujTipeMotor[0]['cnt']) ) {
-                    $totalMuatan = $ttujTipeMotor[0]['cnt'];
+                if( !empty($ttujTipeMotor['Ttuj']['cnt']) ) {
+                    $totalMuatan = $ttujTipeMotor['Ttuj']['cnt'];
                 }
 
                 $dataTmp = array(
@@ -3313,24 +3355,24 @@ class RevenuesController extends AppController {
                 $dataTtujCalendar = array_merge($dataTmp, array(
                     'id' => $value['Ttuj']['id'],
                     'title' => __('Berangkat'),
-                    'from_date' => $this->MkCommon->customDate($tglBerangkat, 'd/m/Y - H:i'),
+                    'from_date' => $this->MkCommon->customDate($tglBerangkat, 'd M Y - H:i'),
                     'from_date_ori' => $this->MkCommon->customDate($tglBerangkat, 'Y-m-d'),
-                    'to_date' => !empty($tglPool)?$this->MkCommon->customDate($tglPool, 'd/m/Y - H:i'):'-',
+                    'to_date' => !empty($tglPool)?$this->MkCommon->customDate($tglPool, 'd M Y - H:i'):'-',
                     'to_date_ori' => !empty($tglPool)?$this->MkCommon->customDate($tglPool, 'Y-m-d'):false,
                     'url' => $urlTtuj,
                     'monitoring_date' => $this->MkCommon->customDate($tglBerangkat, 'Y-m-d'),
                 ));
 
                 if( !empty($tglTiba) ) {
-                    $dataTtujCalendar['tglTiba'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_tiba'], 'd/m/Y - H:i');
+                    $dataTtujCalendar['tglTiba'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_tiba'], 'd M Y - H:i');
                     $dataTtujCalendar['tglTibaOri'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_tiba'], 'Y-m-d');
                 }
                 if( !empty($tglBongkaran) ) {
-                    $dataTtujCalendar['tglBongkaran'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_bongkaran'], 'd/m/Y - H:i');
+                    $dataTtujCalendar['tglBongkaran'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_bongkaran'], 'd M Y - H:i');
                     $dataTtujCalendar['tglBongkaranOri'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_bongkaran'], 'Y-m-d');
                 }
                 if( !empty($tglBalik) ) {
-                    $dataTtujCalendar['tglBalik'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_balik'], 'd/m/Y - H:i');
+                    $dataTtujCalendar['tglBalik'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_balik'], 'd M Y - H:i');
                     $dataTtujCalendar['tglBalikOri'] = $this->MkCommon->customDate($value['Ttuj']['tgljam_balik'], 'Y-m-d');
                 }
 
@@ -3445,8 +3487,8 @@ class RevenuesController extends AppController {
 
                         $dataEvent['Truck-'.$truck_id][date('m', strtotime($date))][date('d', strtotime($date))][] = array(
                             'id' => $event['CalendarEvent']['id'],
-                            'from_date' => $this->MkCommon->customDate($event['CalendarEvent']['from_date'], 'd/m/Y - H:i'),
-                            'to_date' => $this->MkCommon->customDate($event['CalendarEvent']['to_date'], 'd/m/Y - H:i'),
+                            'from_date' => $this->MkCommon->customDate($event['CalendarEvent']['from_date'], 'd M Y - H:i'),
+                            'to_date' => $this->MkCommon->customDate($event['CalendarEvent']['to_date'], 'd M Y - H:i'),
                             'title' => $event['CalendarEvent']['name'],
                             'note' => $event['CalendarEvent']['note'],
                             'color' => !empty($event['CalendarColor']['hex'])?$event['CalendarColor']['hex']:false,
@@ -3463,9 +3505,8 @@ class RevenuesController extends AppController {
             }
         }
         $customers = array();
-        $customers = $this->TruckCustomer->getData('list', array(
+        $customers = $this->Ttuj->Truck->TruckCustomer->getData('list', array(
             'conditions' => array(
-                'Truck.status' => 1,
                 'TruckCustomer.primary' => 1,
                 'TruckCustomer.branch_id' => $allow_branch_id,
             ),
@@ -3473,7 +3514,6 @@ class RevenuesController extends AppController {
                 'CustomerNoType.id', 'CustomerNoType.code'
             ),
             'contain' => array(
-                'Truck',
                 'CustomerNoType',
             ),
         ), array(
@@ -3510,19 +3550,14 @@ class RevenuesController extends AppController {
 
     function index(){
         $this->loadModel('Revenue');
-        $this->loadModel('City');
 
         $this->set('active_menu', 'revenues');
         $this->set('sub_module_title', __('Revenue'));
 
         $params = $this->MkCommon->_callRefineParams($this->params);
         $options =  $this->Revenue->_callRefineParams($params, array(
-            'contain' => array(
-                'Ttuj',
-            ),
             'order' => array(
                 'Revenue.status' => 'DESC',
-                'Revenue.created' => 'DESC',
                 'Revenue.id' => 'DESC',
             ),
         ));
@@ -3534,16 +3569,19 @@ class RevenuesController extends AppController {
 
         if(!empty($revenues)){
             foreach ($revenues as $key => $value) {
-                $value = $this->Revenue->InvoiceDetail->getInvoicedRevenue($value, $value['Revenue']['id']);
+                // $value = $this->Revenue->InvoiceDetail->getInvoicedRevenue($value, $value['Revenue']['id']);
                 $customer_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'customer_id');
+                $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'ttuj_id');
+
+                $value = $this->Ttuj->getMerge($value, $ttuj_id);
 
                 if( empty($value['Revenue']['ttuj_id']) ) {
                     $from_city_id = !empty($value['Revenue']['from_city_id'])?$value['Revenue']['from_city_id']:false;
                     $to_city_id = !empty($value['Revenue']['to_city_id'])?$value['Revenue']['to_city_id']:false;
                     $truck_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'truck_id');
 
-                    $value = $this->City->getMerge($value, $from_city_id, 'FromCity');
-                    $value = $this->City->getMerge($value, $to_city_id, 'ToCity');
+                    $value = $this->GroupBranch->Branch->City->getMerge($value, $from_city_id, 'FromCity');
+                    $value = $this->GroupBranch->Branch->City->getMerge($value, $to_city_id, 'ToCity');
                     $value = $this->Ttuj->Truck->getMerge($value, $truck_id);
                 }
 
@@ -3562,7 +3600,7 @@ class RevenuesController extends AppController {
                 'Customer.id', 'Customer.customer_name_code'
             ),
         ));
-        $cities = $this->City->getListCities();
+        $cities = $this->GroupBranch->Branch->City->getListCities();
 
         $this->MkCommon->_layout_file('select');
         $this->set(compact(
@@ -3867,12 +3905,12 @@ class RevenuesController extends AppController {
                 ));
 
                 if(!empty($ttuj_id)){
-                    $total_unit = $this->Ttuj->TtujTipeMotor->getData('first', array(
+                    $total_unit = $this->Ttuj->getData('first', array(
                         'conditions' => array(
-                            'TtujTipeMotor.ttuj_id' => $ttuj_id
+                            'Ttuj.id' => $ttuj_id
                         ),
                         'fields' => array(
-                            'sum(TtujTipeMotor.qty) as total_qty'
+                            'SUM(Ttuj.ttuj_tipe_motor_count) AS total_qty'
                         )
                     ));
 
@@ -3937,13 +3975,12 @@ class RevenuesController extends AppController {
                         ));
 
                         $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
-                        $qty_ritase = $this->Ttuj->TtujTipeMotor->getData('first', array(
+                        $qty_ritase = $this->Ttuj->find('first', array(
                             'conditions' => array(
-                                'TtujTipeMotor.ttuj_id' => $ttuj_id,
-                                'TtujTipeMotor.status' => 1
+                                'Ttuj.id' => $ttuj_id,
                             ),
                             'fields' => array(
-                                'sum(TtujTipeMotor.qty) as qty_ritase'
+                                'Ttuj.ttuj_tipe_motor_count'
                             )
                         ));
 
@@ -3970,7 +4007,7 @@ class RevenuesController extends AppController {
                         $truk_ritase[$key] = $value;
                         $truk_ritase[$key] = $this->Ttuj->UangJalan->getMerge($truk_ritase[$key], $uang_jalan_id);
 
-                        $truk_ritase[$key]['qty_ritase'] = $qty_ritase[0]['qty_ritase'];
+                        $truk_ritase[$key]['qty_ritase'] = Common::hashEmptyField($qty_ritase, 'Ttuj.ttuj_tipe_motor_count', 0);
 
                         $qty_lku = $this->MkCommon->filterEmptyField($lkus, 'Lku', 'qty', 0);
                         $qty_ksu = $this->MkCommon->filterEmptyField($ksus, 'Ksu', 'qty', 0);
@@ -4077,8 +4114,7 @@ class RevenuesController extends AppController {
         }
         $this->set('invoices', $invoices); 
 
-        $this->loadModel('Customer');
-        $customers = $this->Customer->getData('list', array(
+        $customers = $this->Invoice->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
@@ -4496,7 +4532,6 @@ class RevenuesController extends AppController {
     }
 
     function invoice_reports( $data_action = false ){
-        $this->loadModel('Invoice');
         $this->loadModel('Customer');
 
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
@@ -4538,7 +4573,7 @@ class RevenuesController extends AppController {
                     $inv_conditions['Invoice.customer_id'] = $customer_id;
                 }
 
-                $customer_id_temp = $this->Invoice->getData('list', array(
+                $customer_id_temp = $this->Customer->Invoice->getData('list', array(
                     'conditions' => $inv_conditions,
                     'fields' => array(
                         'Invoice.customer_id'
@@ -4547,7 +4582,7 @@ class RevenuesController extends AppController {
                         'Invoice.customer_id'  
                     )
                 ));
-                
+
                 if(!empty($customer_id_temp)){
                     $customer_collect_id = array_merge($customer_collect_id, $customer_id_temp);
                 }
@@ -4566,7 +4601,7 @@ class RevenuesController extends AppController {
                     $inv_conditions['Invoice.customer_id'] = $customer_id;
                 }
 
-                $customer_id_temp = $this->Invoice->getData('list', array(
+                $customer_id_temp = $this->Customer->Invoice->getData('list', array(
                     'conditions' => $inv_conditions,
                     'fields' => array(
                         'Invoice.customer_id'
@@ -4593,7 +4628,7 @@ class RevenuesController extends AppController {
                     $inv_conditions['Invoice.customer_id'] = $customer_id;
                 }
 
-                $customer_id_temp = $this->Invoice->getData('list', array(
+                $customer_id_temp = $this->Customer->Invoice->getData('list', array(
                     'conditions' => $inv_conditions,
                     'fields' => array(
                         'Invoice.customer_id'
@@ -4625,7 +4660,7 @@ class RevenuesController extends AppController {
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
         ));
-        $invOptions =  $this->Invoice->_callRefineParams($params);
+        $invOptions =  $this->Customer->Invoice->_callRefineParams($params);
         $invoice_conditions = $this->MkCommon->filterEmptyField($invOptions, 'conditions');
 
         $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
@@ -4633,7 +4668,7 @@ class RevenuesController extends AppController {
 
         if(empty($data_action)){
             $options['limit'] = Configure::read('__Site.config_pagination');
-            $this->paginate = $this->Customer->getData('paginate', $options, array(
+            $this->paginate = $this->Customer->getData('paginate', $options, true, array(
                 'plant' => false,
                 'branch' => false,
             ));
@@ -4647,6 +4682,12 @@ class RevenuesController extends AppController {
         }
 
         foreach ($customers as $key => $value) {
+            $value = $this->Customer->getMergeList($value, array(
+                'contain' => array(
+                    'CustomerType',
+                ),
+            ));
+
             $default_conditions = array(
                 'Invoice.paid' => 0,
                 'Invoice.customer_id' => $value['Customer']['id'],
@@ -4655,7 +4696,7 @@ class RevenuesController extends AppController {
                 $default_conditions = array_merge($default_conditions, $invoice_conditions);
             }
 
-            $customers[$key]['piutang'] = $this->Invoice->getData('all', array(
+            $customers[$key]['piutang'] = $this->Customer->Invoice->getData('all', array(
                 'conditions' => $default_conditions,
                 'fields' => array(
                     'SUM(Invoice.total) as total_pituang'
@@ -4673,7 +4714,7 @@ class RevenuesController extends AppController {
             if(!empty($invoice_conditions)){
                 $default_conditions = array_merge($default_conditions, $invoice_conditions);
             }
-            $customers[$key]['current_rev1to15'] = $this->Invoice->getData('all', array(
+            $customers[$key]['current_rev1to15'] = $this->Customer->Invoice->getData('all', array(
                 'conditions' => $default_conditions,
                 'fields' => array(
                     'SUM(Invoice.total) as current_rev1to15'
@@ -4690,7 +4731,7 @@ class RevenuesController extends AppController {
             if(!empty($invoice_conditions)){
                 $default_conditions = array_merge($default_conditions, $invoice_conditions);
             }
-            $customers[$key]['current_rev16to30'] = $this->Invoice->getData('all', array(
+            $customers[$key]['current_rev16to30'] = $this->Customer->Invoice->getData('all', array(
                 'conditions' => $default_conditions,
                 'fields' => array(
                     'SUM(Invoice.total) as current_rev16to30'
@@ -4707,7 +4748,7 @@ class RevenuesController extends AppController {
             if(!empty($invoice_conditions)){
                 $default_conditions = array_merge($default_conditions, $invoice_conditions);
             }
-            $customers[$key]['current_rev30'] = $this->Invoice->getData('all', array(
+            $customers[$key]['current_rev30'] = $this->Customer->Invoice->getData('all', array(
                 'conditions' => $default_conditions,
                 'fields' => array(
                     'SUM(Invoice.total) as current_rev30'
@@ -4748,8 +4789,6 @@ class RevenuesController extends AppController {
     }
 
     public function ar_period_reports( $data_action = false ) {
-        $this->loadModel('Revenue');
-        $this->loadModel('Invoice');
         $fromYear = date('Y');
         $toMonth = 12;
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
@@ -4781,36 +4820,41 @@ class RevenuesController extends AppController {
             $month = date('Y-m', mktime(0, 0, 0, $i, 1, $fromYear));
 
             $conditions['DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\')'] = $month;
-            $revenues = $this->Revenue->getData('first', array(
+            $revenues = $this->Ttuj->Revenue->getData('first', array(
                 'conditions' => $conditions,
                 'fields' => array(
                     'SUM(Revenue.total) total'
                 ),
+                'order' => false,
             ), true, array(
                 'branch' => false,
             ));
+
             $totalAr['AR'][$month] = !empty($revenues[0]['total'])?$revenues[0]['total']:0;
 
             $conditionsInvoice = $defaultConditionsInvoice;
             $conditionsInvoice['DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\')'] = $month;
-            $invoice = $this->Invoice->getData('first', array(
+            $invoice = $this->Ttuj->Revenue->RevenueDetail->Invoice->getData('first', array(
                 'conditions' => $conditionsInvoice,
                 'fields' => array(
                     'SUM(Invoice.total) total'
                 ),
+                'order' => false,
             ), true, array(
                 'branch' => false,
             ));
+
             $totalAr['Invoice'][$month] = !empty($invoice[0]['total'])?$invoice[0]['total']:0;
 
             if( $month <= date('Y-12') ) {
                 $conditionsInvoice = $defaultConditionsInvoice;
                 $conditionsInvoice['DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <'] = $month;
-                $invoice = $this->Invoice->getData('first', array(
+                $invoice = $this->Ttuj->Revenue->RevenueDetail->Invoice->getData('first', array(
                     'conditions' => $conditionsInvoice,
                     'fields' => array(
                         'SUM(Invoice.total) total'
                     ),
+                    'order' => false,
                 ), true, array(
                     'branch' => false,
                 ));
@@ -5262,7 +5306,6 @@ class RevenuesController extends AppController {
 
     public function list_kwitansi( $data_action = false ) {
         $this->loadModel('Invoice');
-        $this->loadModel('Revenue');
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $start = 1;
         $limit = 30;
@@ -5272,12 +5315,11 @@ class RevenuesController extends AppController {
                 'Invoice.branch_id' => $allow_branch_id,
             ),
             'order' => array(
-                'Invoice.modified' => 'DESC',
                 'Invoice.id' => 'DESC',
             ),
-            'contain' => array(
-                'CustomerNoType'
-            ),
+            // 'contain' => array(
+            //     'CustomerNoType'
+            // ),
         );
         $invoiceUnpaidOption = array(
             'Invoice.is_canceled' => 0,
@@ -5356,7 +5398,13 @@ class RevenuesController extends AppController {
             foreach ($invoices as $key => $invoice) {
                 $company_id = $this->MkCommon->filterEmptyField($invoice, 'Invoice', 'company_id');
 
-                $invoice = $this->Revenue->RevenueDetail->getSumUnit($invoice, $invoice['Invoice']['id']);
+                $invoice = $this->Invoice->getMergeList($invoice, array(
+                    'contain' => array(
+                        'CustomerNoType',
+                    ),
+                ));
+
+                $invoice = $this->Ttuj->Revenue->RevenueDetail->getSumUnit($invoice, $invoice['Invoice']['id']);
                 $invoice = $this->Invoice->getMergePayment($invoice, $invoice['Invoice']['id'] );
                 $invoice = $this->Invoice->Company->getMerge($invoice, $company_id );
 
@@ -5623,10 +5671,6 @@ class RevenuesController extends AppController {
     }
 
     public function report_customers( $data_action = false ) {
-        $this->loadModel('Customer');
-        $this->loadModel('Invoice');
-        $this->loadModel('InvoicePayment');
-
         $fromMonth = '01';
         $fromYear = date('Y');
         $toMonth = date('m');
@@ -5660,7 +5704,7 @@ class RevenuesController extends AppController {
             $conditions = $this->MkCommon->getConditionGroupBranch( $refine, 'Customer', $conditions, 'conditions' );
         }
 
-        $customers = $this->Customer->getData('all', array(
+        $customers = $this->Ttuj->Customer->getData('all', array(
             'conditions' => $conditions,
         ), true, array(
             'plant' => false,
@@ -5674,12 +5718,25 @@ class RevenuesController extends AppController {
         $avgYear = $fromYear - 1;
 
         if( !empty($customers) ) {
+            $this->Ttuj->Revenue->InvoiceDetail->Invoice->virtualFields['dt'] = 'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\')';
+            $this->Ttuj->Revenue->InvoiceDetail->Invoice->virtualFields['dt_canceled'] = 'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\')';
+            $this->Ttuj->Revenue->InvoiceDetail->Invoice->virtualFields['total'] = 'SUM(Invoice.total)';
+
+            $this->Ttuj->Revenue->RevenueDetail->Invoice->InvoicePaymentDetail->virtualFields['dt'] = 'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\')';
+            $this->Ttuj->Revenue->RevenueDetail->Invoice->InvoicePaymentDetail->virtualFields['total'] = 'SUM(InvoicePaymentDetail.price_pay)';
+
             foreach ($customers as $key => $customer) {
+                $customer = $this->Ttuj->Customer->getMergeList($customer, array(
+                    'contain' => array(
+                        'CustomerType',
+                    ),
+                ));
+
                 $conditionsYear = array(
                     'DATE_FORMAT(Invoice.invoice_date, \'%Y\')' => $avgYear,
                     'Invoice.customer_id' => $customer['Customer']['id'],
                 );
-                $invoiceYear = $this->Invoice->getData('first', array(
+                $invoiceYear = $this->Ttuj->Revenue->InvoiceDetail->Invoice->getData('first', array(
                     'conditions' => $conditionsYear,
                     'group' => array(
                         'DATE_FORMAT(Invoice.invoice_date, \'%Y\')'
@@ -5688,20 +5745,21 @@ class RevenuesController extends AppController {
                         'Invoice.customer_id', 
                         'SUM(Invoice.total) as total',
                     ),
+                    'order' => false,
                 ), true, array(
                     'branch' => false,
                 ));
                 $customer['InvoiceYear'] = !empty($invoiceYear[0]['total'])?$invoiceYear[0]['total']/12:0;
 
-                $invoices = $this->Invoice->getData('all', array(
+                $invoices = $this->Ttuj->Revenue->InvoiceDetail->Invoice->getData('list', array(
                     'conditions' => array(
                         'Invoice.customer_id' => $customer['Customer']['id'],
                         'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') >=' => $fromDt,
                         'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <=' => $toDt,
                     ),
                     'fields' => array(
-                        'SUM(Invoice.total) total',
-                        'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') invoice_date'
+                        'Invoice.dt',
+                        'Invoice.total',
                     ),
                     'group' => array(
                         'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\')'
@@ -5711,7 +5769,7 @@ class RevenuesController extends AppController {
                     'branch' => false,
                 ));
 
-                $invoicePayments = $this->InvoicePayment->InvoicePaymentDetail->getData('all', array(
+                $invoicePayments = $this->Ttuj->Revenue->RevenueDetail->Invoice->InvoicePaymentDetail->getData('list', array(
                     'conditions' => array(
                         'Invoice.status' => 1,
                         'InvoicePayment.status' => 1,
@@ -5723,8 +5781,8 @@ class RevenuesController extends AppController {
                         'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $toDt,
                     ),
                     'fields' => array(
-                        'SUM(InvoicePaymentDetail.price_pay) total',
-                        'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') date_payment'
+                        'InvoicePaymentDetail.dt',
+                        'InvoicePaymentDetail.total',
                     ),
                     'group' => array(
                         'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\')'
@@ -5734,7 +5792,8 @@ class RevenuesController extends AppController {
                         'InvoicePayment',
                     ),
                 ), false);
-                $invoiceVoids = $this->Invoice->getData('all', array(
+
+                $invoiceVoids = $this->Ttuj->Revenue->InvoiceDetail->Invoice->getData('list', array(
                     'conditions' => array(
                         'Invoice.is_canceled' => 1,
                         'Invoice.customer_id' => $customer['Customer']['id'],
@@ -5742,8 +5801,8 @@ class RevenuesController extends AppController {
                         'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\') <=' => $toDt,
                     ),
                     'fields' => array(
-                        'SUM(Invoice.total) total',
-                        'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\') canceled_date'
+                        'Invoice.dt_canceled',
+                        'Invoice.total',
                     ),
                     'group' => array(
                         'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\')'
@@ -5754,34 +5813,25 @@ class RevenuesController extends AppController {
                 ));
 
                 if( !empty($invoices) ) {
-                    foreach ($invoices as $key_invoice => $invoices) {
-                        if( !empty($invoices[0]['invoice_date']) ) {
-                            $dt = $invoices[0]['invoice_date'];
-                            $customer['Invoice'][$dt] = $invoices[0]['total'];
-                        }
+                    foreach ($invoices as $dt => $total) {
+                        $customer['Invoice'][$dt] = $total;
                     }
                 }
 
                 if( !empty($invoicePayments) ) {
-                    foreach ($invoicePayments as $key_invoice => $invoicePayment) {
-                        if( !empty($invoicePayment[0]['date_payment']) ) {
-                            $dt = $invoicePayment[0]['date_payment'];
-                            $customer['InvoicePayment'][$dt] = $invoicePayment[0]['total'];
-                        }
+                    foreach ($invoicePayments as $dt => $total) {
+                        $customer['InvoicePayment'][$dt] = $total;
                     }
                 }
 
                 if( !empty($invoiceVoids) ) {
-                    foreach ($invoiceVoids as $key_invoice => $invoiceVoid) {
-                        if( !empty($invoiceVoid[0]['canceled_date']) ) {
-                            $dt = $invoiceVoid[0]['canceled_date'];
-                            $customer['InvoiceVoid'][$dt] = $invoiceVoid[0]['total'];
-                        }
+                    foreach ($invoiceVoids as $dt => $total) {
+                        $customer['InvoiceVoid'][$dt] = $total;
                     }
                 }
 
                 $monthDt = date('Y-m', mktime(0, 0, 0, $fromMonth-1, 1, $fromYear));
-                $invoicesBefore = $this->Invoice->getData('first', array(
+                $invoicesBefore = $this->Ttuj->Revenue->InvoiceDetail->Invoice->getData('first', array(
                     'conditions' => array(
                         'Invoice.customer_id' => $customer['Customer']['id'],
                         'DATE_FORMAT(Invoice.invoice_date, \'%Y-%m\') <=' => $monthDt,
@@ -5789,11 +5839,12 @@ class RevenuesController extends AppController {
                     'fields' => array(
                         'SUM(Invoice.total) total',
                     ),
+                    'order' => false,
                 ), true, array(
                     'branch' => false,
                 ));
 
-                $invoicePaymentsBefore = $this->InvoicePayment->getData('first', array(
+                $invoicePaymentsBefore = $this->Ttuj->Revenue->InvoiceDetail->Invoice->InvoicePaymentDetail->InvoicePayment->getData('first', array(
                     'conditions' => array(
                         'InvoicePayment.is_canceled' => 0,
                         'InvoicePayment.transaction_status' => 'posting',
@@ -5803,11 +5854,13 @@ class RevenuesController extends AppController {
                     'fields' => array(
                         'SUM(InvoicePayment.total_payment) total',
                     ),
+                    'order' => false,
                 ), true, array(
                     // 'status' => 'all',
                     'branch' => false,
                 ));
-                $invoiceVoidBefore = $this->Invoice->getData('first', array(
+
+                $invoiceVoidBefore = $this->Ttuj->Revenue->InvoiceDetail->Invoice->getData('first', array(
                     'conditions' => array(
                         'Invoice.is_canceled' => 1,
                         'Invoice.customer_id' => $customer['Customer']['id'],
@@ -5816,10 +5869,12 @@ class RevenuesController extends AppController {
                     'fields' => array(
                         'SUM(Invoice.total) total',
                     ),
+                    'order' => false,
                 ), true, array(
                     'status' => 'all',
                     'branch' => false,
                 ));
+
                 $totalInvoice = !empty($invoicesBefore[0]['total'])?$invoicesBefore[0]['total']:0;
                 $totalInvoicePayment = !empty($invoicePaymentsBefore[0]['total'])?$invoicePaymentsBefore[0]['total']:0;
                 $totalInvoicePaymentVoid = !empty($invoiceVoidBefore[0]['total'])?$invoiceVoidBefore[0]['total']:0;
@@ -5833,7 +5888,7 @@ class RevenuesController extends AppController {
             }
         }
 
-        $customerList = $this->Customer->getData('list', array(
+        $customerList = $this->Ttuj->Customer->getData('list', array(
             'fields' => array(
                 'Customer.id', 'Customer.customer_name_code'
             ),
@@ -6372,7 +6427,6 @@ class RevenuesController extends AppController {
 
     public function report_revenue_customers( $data_action = false ) {
         $this->loadModel('Customer');
-        $this->loadModel('Revenue');
 
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $fromMonth = '01';
@@ -6443,22 +6497,22 @@ class RevenuesController extends AppController {
         $avgYear = $fromYear - 1;
 
         if( !empty($customers) ) {
+            $this->Ttuj->Revenue->RevenueDetail->virtualFields['total'] = 'SUM(RevenueDetail.total_price_unit)';
+            $this->Ttuj->Revenue->RevenueDetail->virtualFields['dt'] = 'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\')';
+
             foreach ($customers as $key => $customer) {
                 $conditions['Revenue.customer_id'] = $customer['Customer']['id'];
-                $revenues = $this->Revenue->RevenueDetail->getData('all', array(
+                $revenues = $this->Ttuj->Revenue->RevenueDetail->getData('list', array(
                     'conditions' => $conditions,
                     'contain' => array(
-                        'Revenue' => array(
-                            'Ttuj',
-                        ),
+                        'Revenue',
                     ),
                     'group' => array(
                         'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\')'
                     ),
                     'fields'=> array(
-                        'Revenue.customer_id', 
-                        'SUM(RevenueDetail.total_price_unit) as total',
-                        'DATE_FORMAT(Revenue.date_revenue, \'%Y-%m\') as dt',
+                        'RevenueDetail.dt', 
+                        'RevenueDetail.total', 
                     ),
                 ), array(
                     'branch' => false,
@@ -6468,7 +6522,7 @@ class RevenuesController extends AppController {
                     'DATE_FORMAT(Revenue.date_revenue, \'%Y\')' => $avgYear,
                     'Revenue.customer_id' => $customer['Customer']['id'],
                 );
-                $revenueYear = $this->Revenue->getData('first', array(
+                $revenueYear = $this->Ttuj->Revenue->getData('first', array(
                     'conditions' => $conditionsYear,
                     'group' => array(
                         'DATE_FORMAT(Revenue.date_revenue, \'%Y\')'
@@ -6477,6 +6531,7 @@ class RevenuesController extends AppController {
                         'Revenue.customer_id', 
                         'SUM(Revenue.total) as total',
                     ),
+                    'order' => false,
                 ), true, array(
                     'branch' => false,
                     'status' => 'all',
@@ -6484,8 +6539,8 @@ class RevenuesController extends AppController {
                 $customer['RevenueYear'] = !empty($revenueYear[0]['total'])?$revenueYear[0]['total']/12:0;
 
                 if( !empty($revenues) ) {
-                    foreach ($revenues as $keyRevenue => $revenue) {
-                        $customer['Customer'][$revenue[0]['dt']]['total_revenue'] = !empty($revenue[0]['total'])?$revenue[0]['total']:0;
+                    foreach ($revenues as $dt => $total) {
+                        $customer['Customer'][$dt]['total_revenue'] = !empty($total)?$total:0;
                     }
                 }
                 $customers[$key] = $customer;
@@ -6539,33 +6594,32 @@ class RevenuesController extends AppController {
         $dateFrom = date('Y-m-01');
         $dateTo = date('Y-m-t');
 
-        $this->Ttuj->unBindModel(array(
-            'hasMany' => array(
-                'Revenue',
-            )
-        ));
-        $this->Ttuj->bindModel(array(
-            'hasOne' => array(
-                'Revenue' => array(
-                    'className' => 'Revenue',
-                    'foreignKey' => 'ttuj_id',
-                    'conditions' => array(
-                        'Revenue.status' => 1,
-                    ),
-                )
-            )
-        ), false);
+        // $this->Ttuj->unBindModel(array(
+        //     'hasMany' => array(
+        //         'Revenue',
+        //     )
+        // ));
+        // $this->Ttuj->bindModel(array(
+        //     'hasOne' => array(
+        //         'Revenue' => array(
+        //             'className' => 'Revenue',
+        //             'foreignKey' => 'ttuj_id',
+        //             'conditions' => array(
+        //                 'Revenue.status' => 1,
+        //             ),
+        //         )
+        //     )
+        // ), false);
 
         $options = array(
             'conditions' => array(
-                'Revenue.id NOT' => NULL,
+                // 'Revenue.id NOT' => NULL,
                 'Ttuj.branch_id' => $allow_branch_id,
             ),
-            'contain' => array(
-                'Revenue',
-            ),
+            // 'contain' => array(
+            //     'Revenue',
+            // ),
             'order'=> array(
-                'Ttuj.created' => 'DESC',
                 'Ttuj.id' => 'DESC',
             ),
             'group' => array(
@@ -6582,13 +6636,13 @@ class RevenuesController extends AppController {
         $options = $this->MkCommon->getConditionGroupBranch( $params, 'Ttuj', $options );
 
         if( !empty($data_action) ){
-            $values = $this->Ttuj->getData('all', $options, array(
+            $values = $this->Ttuj->getData('all', $options, true, array(
                 'status' => 'commit',
             ));
         } else {
             $this->paginate = $this->Ttuj->getData('paginate', array_merge($options, array(
                 'limit' => Configure::read('__Site.config_pagination'),
-            )), array(
+            )), true, array(
                 'status' => 'commit',
             ));
             $values = $this->paginate('Ttuj');
@@ -6597,8 +6651,14 @@ class RevenuesController extends AppController {
         if( !empty($values) ) {
             foreach ($values as $key => $value) {
                 $id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
+                $revenue = $this->Ttuj->Revenue->findByTtujId($id);
+
+                if( !empty($revenue) ) {
+                    $value = Hash::insert($value, 'Revenue', Common::hashEmptyField($revenue, 'Revenue'));
+                }
 
                 $value = $this->Ttuj->getSumUnit($value, $id, false, 'tgl_surat_jalan');
+
                 $value = $this->Ttuj->Revenue->getPaid($value, $id, 'unit');
                 $value = $this->Ttuj->Revenue->getPaid($value, $id, 'invoiced');
                 $value = $this->Ttuj->Revenue->RevenueDetail->getToCity($value, $id);
@@ -6618,251 +6678,6 @@ class RevenuesController extends AppController {
             'values', 'data_action'
         ));
     }
-    // public function report_monitoring_sj_revenue( $data_action = false ) {
-    //     $this->loadModel('Customer');
-    //     $this->loadModel('Revenue');
-
-    //     $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
-    //     $dateFrom = date('Y-m-01');
-    //     $dateTo = date('Y-m-t');
-
-    //     $this->Ttuj->bindModel(array(
-    //         'hasOne' => array(
-    //             'Revenue' => array(
-    //                 'className' => 'Revenue',
-    //                 'foreignKey' => 'ttuj_id',
-    //                 'conditions' => array(
-    //                     'Revenue.status' => 1,
-    //                 ),
-    //             )
-    //         )
-    //     ), false);
-
-    //     $options = array(
-    //         'conditions' => array(
-    //             'Revenue.id NOT' => NULL,
-    //             'Ttuj.status' => 1,
-    //             'Ttuj.is_draft' => 0,
-    //             'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >=' => $dateFrom,
-    //             'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <=' => $dateTo,
-    //             'Ttuj.branch_id' => $allow_branch_id,
-    //         ),
-    //         'contain' => array(
-    //             'Revenue',
-    //         ),
-    //         'order'=> array(
-    //             'Ttuj.created' => 'DESC',
-    //             'Ttuj.id' => 'DESC',
-    //         ),
-    //         'group' => array(
-    //             'Ttuj.id'
-    //         ),
-    //     );
-    //     $optionConditions = array(
-    //         'Customer.branch_id' => $allow_branch_id,
-    //     );
-    //     $this->request->data['Ttuj']['date'] = sprintf('%s - %s', date('d/m/Y',strtotime($dateFrom)), date('d/m/Y',strtotime($dateTo)));
-
-    //     if(!empty($this->params['named'])){
-    //         $refine = $this->params['named'];
-
-    //         if(!empty($refine['customer'])){
-    //             $customer = urldecode($refine['customer']);
-    //             $this->request->data['Ttuj']['customer'] = $customer;
-    //             $options['conditions']['Ttuj.customer_id '] = $customer;
-    //         }
-
-    //         if(!empty($refine['date'])){
-    //             $dateStr = urldecode($refine['date']);
-    //             $date = explode('-', $dateStr);
-
-    //             if( !empty($date) ) {
-    //                 $date[0] = urldecode($date[0]);
-    //                 $date[1] = urldecode($date[1]);
-    //                 $dateStr = sprintf('%s-%s', $date[0], $date[1]);
-    //                 $dateFrom = $this->MkCommon->getDate($date[0]);
-    //                 $dateTo = $this->MkCommon->getDate($date[1]);
-    //                 $options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $dateFrom;
-    //                 $options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <='] = $dateTo;
-    //             }
-    //             $this->request->data['Ttuj']['date'] = $dateStr;
-    //         }
-
-    //         if(!empty($refine['status'])){
-    //             $status = urldecode($refine['status']);
-    //             $this->request->data['Ttuj']['status'] = $status;
-    //             $options['contain'][] = 'SuratJalanDetail';
-    //             $options['contain'][] = 'SuratJalan';
-
-    //             $this->Ttuj->unBindModel(array(
-    //                 'hasMany' => array(
-    //                     'SuratJalanDetail'
-    //                 )
-    //             ));
-
-    //             $this->Ttuj->bindModel(array(
-    //                 'hasOne' => array(
-    //                     'SuratJalanDetail' => array(
-    //                         'className' => 'SuratJalanDetail',
-    //                         'conditions' => array(
-    //                             'SuratJalanDetail.status' => 1,
-    //                         ),
-    //                     ),
-    //                     'SuratJalan' => array(
-    //                         'className' => 'SuratJalan',
-    //                         'foreignKey' => false,
-    //                         'conditions' => array(
-    //                             'SuratJalan.id = SuratJalanDetail.surat_jalan_id',
-    //                             'SuratJalan.status' => 1,
-    //                             'SuratJalan.is_canceled' => 0,
-    //                         ),
-    //                     ),
-    //                 )
-    //             ), false);
-
-    //             switch ($status) {
-    //                 case 'pending':
-    //                     $options['conditions']['Ttuj.status_sj'] = 'none';
-    //                     // $options['conditions']['SuratJalan.id'] = NULL;
-    //                     break;
-
-    //                 // case 'hal_receipt':
-    //                 //     $options['conditions']['Ttuj.status_sj'] = 'half';
-    //                 //     break;
-
-    //                 case 'receipt':
-    //                     $options['conditions']['Ttuj.status_sj'] = 'full';
-    //                     break;
-
-    //                 case 'receipt_unpaid':
-    //                     $this->Ttuj->Revenue->bindModel(array(
-    //                         'hasOne' => array(
-    //                             'SuratJalanDetail' => array(
-    //                                 'className' => 'SuratJalanDetail',
-    //                                 'foreignKey' => false,
-    //                                 'conditions' => array(
-    //                                     'SuratJalanDetail.ttuj_id = Revenue.ttuj_id',
-    //                                     'SuratJalanDetail.status' => 1,
-    //                                 ),
-    //                             ),
-    //                             'SuratJalan' => array(
-    //                                 'className' => 'SuratJalan',
-    //                                 'foreignKey' => false,
-    //                                 'conditions' => array(
-    //                                     'SuratJalan.id = SuratJalanDetail.surat_jalan_id',
-    //                                     'SuratJalan.status' => 1,
-    //                                     'SuratJalan.is_canceled' => 0,
-    //                                 ),
-    //                             ),
-    //                         )
-    //                     ), false);
-
-    //                     $options['conditions']['OR'] = array(
-    //                         'Ttuj.status_sj' => 'full',
-    //                         'SuratJalan.id <>' => NULL,
-    //                     );
-    //                     $revenueConditions = !empty($options['conditions'])?$options['conditions']:false;
-    //                     $revenueConditions['Revenue.transaction_status <>'] = 'invoiced';
-    //                     $revenues = $this->Revenue->getData('list', array(
-    //                         'conditions' => $revenueConditions,
-    //                         'contain' => array(
-    //                             'Ttuj',
-    //                             'SuratJalan',
-    //                             'SuratJalanDetail',
-    //                         ),
-    //                         'fields' => array(
-    //                             'Revenue.id', 'Revenue.ttuj_id'
-    //                         ),
-    //                     ), true, array(
-    //                         'status' => 'all',
-    //                         'branch' => false,
-    //                     ));
-
-    //                     $options['conditions']['Ttuj.id'] = $revenues;
-    //                     break;
-
-    //                 case 'sj_receipt_paid':
-    //                     $options['conditions']['Ttuj.status_sj'] = array( 'none', 'half' );
-    //                     $revenueConditions = !empty($options['conditions'])?$options['conditions']:false;
-    //                     $revenueConditions['Revenue.transaction_status'] = 'invoiced';
-    //                     $revenues = $this->Revenue->getData('list', array(
-    //                         'conditions' => $revenueConditions,
-    //                         'contain' => array(
-    //                             'Ttuj'
-    //                         ),
-    //                         'fields' => array(
-    //                             'Revenue.id', 'Revenue.ttuj_id'
-    //                         ),
-    //                     ), true, array(
-    //                         'status' => 'all',
-    //                     ));
-
-    //                     $options['conditions']['Ttuj.id'] = $revenues;
-    //                     break;
-    //             }
-    //         }
-
-    //         $options['conditions'] = $this->MkCommon->_callSearchNopol($options['conditions'], $refine, 'Ttuj.truck_id');
-    //         $options['conditions'] = $this->MkCommon->_callRefineGenerating($options['conditions'], $refine, array(
-    //             array(
-    //                 'modelName' => 'Ttuj',
-    //                 'fieldName' => 'city',
-    //                 'conditionName' => 'Ttuj.to_city_name',
-    //                 'operator' => 'LIKE',
-    //             ),
-    //         ));
-
-    //         $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $options );
-    //     }
-
-    //     if( !empty($data_action) ){
-    //         $ttujs = $this->Ttuj->getData('all', $options);
-    //     } else {
-    //         $options['limit'] = Configure::read('__Site.config_pagination');
-    //         $this->paginate = $this->Ttuj->getData('paginate', $options);
-    //         $ttujs = $this->paginate('Ttuj');
-    //     }
-
-    //     if( !empty($ttujs) ) {
-    //         foreach ($ttujs as $key => $ttuj) {
-    //             $ttuj = $this->Ttuj->getSumUnit($ttuj, $ttuj['Ttuj']['id'], false, 'tgl_surat_jalan');
-    //             $ttuj = $this->Revenue->getPaid($ttuj, $ttuj['Ttuj']['id'], 'unit');
-    //             $ttuj = $this->Revenue->getPaid($ttuj, $ttuj['Ttuj']['id'], 'invoiced');
-    //             $ttuj = $this->Revenue->RevenueDetail->getToCity($ttuj, $ttuj['Ttuj']['id']);
-    //             $ttujs[$key] = $ttuj;
-    //         }
-    //     }
-
-    //     $customerList = $this->Customer->getData('list', array(
-    //         'fields' => array(
-    //             'Customer.id', 'Customer.customer_name_code'
-    //         ),
-    //         'conditions' => $optionConditions,
-    //     ), true, array(
-    //         'branch' => false,
-    //         'plant' => false,
-    //     ));
-
-    //     $this->set('sub_module_title', __('Laporan Monitoring Surat Jalan & Revenue'));
-    //     $this->set('active_menu', 'report_monitoring_sj_revenue');
-    //     $period_text = sprintf('Periode %s - %s', date('d M Y',strtotime($dateFrom)), date('d M Y',strtotime($dateTo)));
-    //     $this->set('period_text', $period_text);
-
-    //     $this->set(compact(
-    //         'ttujs', 'data_action', 'customerList'
-    //     ));
-
-    //     if($data_action == 'pdf'){
-    //         $this->layout = 'pdf';
-    //     }else if($data_action == 'excel'){
-    //         $this->layout = 'ajax';
-    //     } else {
-    //         $this->MkCommon->_layout_file(array(
-    //             'freeze',
-    //             'select',
-    //         ));
-    //     }
-    // }
 
     function invoice_hso_print($id, $action_print = false){
         $this->loadModel('Invoice');
@@ -6987,8 +6802,6 @@ class RevenuesController extends AppController {
 
     public function report_revenue_monthly( $data_action = false ) {
         $this->loadModel('Customer');
-        $this->loadModel('Invoice');
-        $this->loadModel('InvoicePayment');
 
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $fromMonthYear = date('Y-m');
@@ -7077,7 +6890,7 @@ class RevenuesController extends AppController {
                     'Invoice.paid' => 0,
                     'Invoice.complete_paid' => 0,
                 );
-                $customer['InvLastMonth'] = $this->Invoice->getData('first', array(
+                $customer['InvLastMonth'] = $this->Customer->Invoice->getData('first', array(
                     'conditions' => $conditionsInvLastMonth,
                     'fields'=> array(
                         'Invoice.customer_id', 
@@ -7086,6 +6899,7 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'Invoice.customer_id'
                     ),
+                    'order' => false,
                 ), true, array(
                     'status' => 'all',
                     'branch' => false,
@@ -7096,7 +6910,7 @@ class RevenuesController extends AppController {
                     'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\') <=' => $lastMonth,
                     'Invoice.is_canceled' => 1,
                 );
-                $customer['InvVoidLastMonth'] = $this->Invoice->getData('first', array(
+                $customer['InvVoidLastMonth'] = $this->Customer->Invoice->getData('first', array(
                     'conditions' => $conditionsInvVoidLastMonth,
                     'fields'=> array(
                         'Invoice.customer_id', 
@@ -7105,6 +6919,7 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'Invoice.customer_id'
                     ),
+                    'order' => false,
                 ), true, array(
                     'status' => 'all',
                     'branch' => false,
@@ -7116,7 +6931,7 @@ class RevenuesController extends AppController {
                     'DATE_FORMAT(InvoicePayment.date_payment, \'%Y-%m\') <=' => $lastMonth,
                     'InvoicePayment.is_canceled' => 0,
                 );
-                $customer['InvPaidLastMonth'] = $this->InvoicePayment->getData('first', array(
+                $customer['InvPaidLastMonth'] = $this->Customer->InvoicePayment->getData('first', array(
                     'conditions' => $conditionsInvPaidLastMonth,
                     'fields'=> array(
                         'InvoicePayment.customer_id', 
@@ -7125,12 +6940,13 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'InvoicePayment.customer_id'
                     ),
+                    'order' => false,
                 ), true, array(
                     'branch' => false,
                 ));
 
                 $conditionsInvoiceTotal = $conditionsInvoice;
-                $customer['InvoiceTotal'] = $this->Invoice->getData('first', array(
+                $customer['InvoiceTotal'] = $this->Customer->Invoice->getData('first', array(
                     'conditions' => $conditionsInvoiceTotal,
                     'fields'=> array(
                         'Invoice.customer_id', 
@@ -7139,6 +6955,7 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'Invoice.customer_id'
                     ),
+                    'order' => false,
                 ), true, array(
                     'status' => 'all',
                     'branch' => false,
@@ -7150,7 +6967,7 @@ class RevenuesController extends AppController {
                     'DATE_FORMAT(Invoice.canceled_date, \'%Y-%m\') <=' => $toMonthYear,
                     'Invoice.is_canceled' => 1,
                 );
-                $customer['InvoiceVoidTotal'] = $this->Invoice->getData('first', array(
+                $customer['InvoiceVoidTotal'] = $this->Customer->Invoice->getData('first', array(
                     'conditions' => $conditionsInvoiceVoid,
                     'fields'=> array(
                         'Invoice.customer_id', 
@@ -7159,12 +6976,13 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'Invoice.customer_id'
                     ),
+                    'order' => false,
                 ), true, array(
                     'status' => 'all',
                 ));
 
                 $conditionsInvoicePayment['InvoicePayment.customer_id'] = $customer['Customer']['id'];
-                $customer['InvoicePaymentTotal'] = $this->InvoicePayment->getData('first', array(
+                $customer['InvoicePaymentTotal'] = $this->Customer->InvoicePayment->getData('first', array(
                     'conditions' => $conditionsInvoicePayment,
                     'fields'=> array(
                         'InvoicePayment.customer_id', 
@@ -7173,6 +6991,7 @@ class RevenuesController extends AppController {
                     'group' => array(
                         'InvoicePayment.customer_id'
                     ),
+                    'order' => false,
                 ), true, array(
                     'branch' => false,
                 ));
@@ -7308,10 +7127,24 @@ class RevenuesController extends AppController {
                         $ttuj_id = !empty($ttujPaymentDetail['ttuj_id'])?$ttujPaymentDetail['ttuj_id']:false;
                         $dataTtujType = !empty($ttujPaymentDetail['type'])?$ttujPaymentDetail['type']:false;
                         $amount = !empty($ttujPaymentDetail['amount'])?$ttujPaymentDetail['amount']:0;
-                        $resultTtuj = $this->Ttuj->getTtujPayment($ttuj_id, $dataTtujType, 'UangJalanKomisiPayment');
+                        $resultTtuj = $this->Ttuj->getTtujPayment($ttuj_id, $dataTtujType, 'Ttuj');
+                        $no_claim = !empty($ttujPaymentDetail['no_claim'])?$ttujPaymentDetail['no_claim']:0;
+                        $stood = !empty($ttujPaymentDetail['stood'])?$ttujPaymentDetail['stood']:0;
+                        $lainnya = !empty($ttujPaymentDetail['lainnya'])?$ttujPaymentDetail['lainnya']:0;
+                        $titipan = !empty($ttujPaymentDetail['titipan'])?$ttujPaymentDetail['titipan']:0;
+                        $claim = !empty($ttujPaymentDetail['claim'])?$ttujPaymentDetail['claim']:0;
+                        $unit_claim = !empty($ttujPaymentDetail['unit_claim'])?$ttujPaymentDetail['unit_claim']:0;
+                        $laka = !empty($ttujPaymentDetail['laka'])?$ttujPaymentDetail['laka']:0;
 
                         $this->request->data['Ttuj'][] = $resultTtuj;
                         $this->request->data['TtujPayment']['amount_payment'][] = $amount;
+                        $this->request->data['TtujPayment']['no_claim'][] = $no_claim;
+                        $this->request->data['TtujPayment']['stood'][] = $stood;
+                        $this->request->data['TtujPayment']['lainnya'][] = $lainnya;
+                        $this->request->data['TtujPayment']['titipan'][] = $titipan;
+                        $this->request->data['TtujPayment']['claim'][] = $claim;
+                        $this->request->data['TtujPayment']['unit_claim'][] = $unit_claim;
+                        $this->request->data['TtujPayment']['laka'][] = $laka;
                         $this->request->data['TtujPayment']['ttuj_id'][] = $ttuj_id;
                         $this->request->data['TtujPayment']['data_type'][] = $dataTtujType;
                     }
@@ -7389,12 +7222,26 @@ class RevenuesController extends AppController {
                     $ttuj_id = !empty($ttujPaymentDetail['ttuj_id'])?$ttujPaymentDetail['ttuj_id']:false;
                     $dataTtujType = !empty($ttujPaymentDetail['type'])?$ttujPaymentDetail['type']:false;
                     $amount = !empty($ttujPaymentDetail['amount'])?$ttujPaymentDetail['amount']:0;
-                    $resultTtuj = $this->Ttuj->getTtujPayment($ttuj_id, $dataTtujType, 'UangJalanKomisiPayment');
+                    $resultTtuj = $this->Ttuj->getTtujPayment($ttuj_id, $dataTtujType, 'Ttuj');
+                    $no_claim = !empty($ttujPaymentDetail['no_claim'])?$ttujPaymentDetail['no_claim']:0;
+                    $stood = !empty($ttujPaymentDetail['stood'])?$ttujPaymentDetail['stood']:0;
+                    $lainnya = !empty($ttujPaymentDetail['lainnya'])?$ttujPaymentDetail['lainnya']:0;
+                    $titipan = !empty($ttujPaymentDetail['titipan'])?$ttujPaymentDetail['titipan']:0;
+                    $claim = !empty($ttujPaymentDetail['claim'])?$ttujPaymentDetail['claim']:0;
+                    $unit_claim = !empty($ttujPaymentDetail['unit_claim'])?$ttujPaymentDetail['unit_claim']:0;
+                    $laka = !empty($ttujPaymentDetail['laka'])?$ttujPaymentDetail['laka']:0;
 
                     $invoice['Ttuj'][] = $resultTtuj;
                     $invoice['TtujPayment']['amount_payment'][] = $amount;
                     $invoice['TtujPayment']['ttuj_id'][] = $ttuj_id;
                     $invoice['TtujPayment']['data_type'][] = $dataTtujType;
+                    $invoice['TtujPayment']['no_claim'][] = $no_claim;
+                    $invoice['TtujPayment']['stood'][] = $stood;
+                    $invoice['TtujPayment']['lainnya'][] = $lainnya;
+                    $invoice['TtujPayment']['titipan'][] = $titipan;
+                    $invoice['TtujPayment']['claim'][] = $claim;
+                    $invoice['TtujPayment']['unit_claim'][] = $unit_claim;
+                    $invoice['TtujPayment']['laka'][] = $laka;
                 }
             }
 
@@ -7413,12 +7260,14 @@ class RevenuesController extends AppController {
 
     function doTtujPaymentDetail ( $dataAmount, $data, $ttuj_payment_id = false ) {
         $flagTtujPaymentDetail = true;
-        $totalPayment = 0;
         $document_type = !empty($data['TtujPayment']['type'])?$data['TtujPayment']['type']:false;
         $receiver_name = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'receiver_name');
         $receiver_type = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'receiver_type');
         $date_payment = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'date_payment');
         $transaction_status = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'transaction_status');
+        $totalPayment = 0;
+        $totalMin = 0;
+        $totalPlus = 0;
 
         if( !empty($ttuj_payment_id) ) {
             $this->Ttuj->TtujPaymentDetail->updateAll( array(
@@ -7434,21 +7283,47 @@ class RevenuesController extends AppController {
                 $ttuj_id = !empty($this->request->data['TtujPayment']['ttuj_id'][$key])?$this->request->data['TtujPayment']['ttuj_id'][$key]:false;
                 $data_type = !empty($this->request->data['TtujPayment']['data_type'][$key])?$this->request->data['TtujPayment']['data_type'][$key]:false;
                 $amount = !empty($amount)?$this->MkCommon->convertPriceToString($amount, 0):0;
+                $no_claim = !empty($this->request->data['TtujPayment']['no_claim'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['no_claim'][$key], 0):0;
+                $stood = !empty($this->request->data['TtujPayment']['stood'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['stood'][$key], 0):0;
+                $lainnya = !empty($this->request->data['TtujPayment']['lainnya'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['lainnya'][$key], 0):0;
+                $titipan = !empty($this->request->data['TtujPayment']['titipan'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['titipan'][$key], 0):0;
+                $claim = !empty($this->request->data['TtujPayment']['claim'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['claim'][$key], 0):0;
+                $unit_claim = !empty($this->request->data['TtujPayment']['unit_claim'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['unit_claim'][$key], 0):0;
+                $laka = !empty($this->request->data['TtujPayment']['laka'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['laka'][$key], 0):0;
 
-                $dataTtuj = $this->Ttuj->getTtujPayment($ttuj_id, $data_type, 'UangJalanKomisiPayment');
+                $dataTtuj = $this->Ttuj->getTtujPayment($ttuj_id, $data_type, 'Ttuj');
                 $dataTtujPaymentDetail = array(
                     'TtujPaymentDetail' => array(
                         'ttuj_id' => $ttuj_id,
                         'type' => $data_type,
                         'amount' => $amount,
+                        'no_claim' => $no_claim,
+                        'stood' => $stood,
+                        'lainnya' => $lainnya,
+                        'titipan' => $titipan,
+                        'claim' => $claim,
+                        'unit_claim' => $unit_claim,
+                        'laka' => $laka,
                     ),
                 );
+                
                 $this->request->data['Ttuj'][$key] = $dataTtuj;
                 $this->request->data['TtujPayment']['amount_payment'][$key] = $amount;
-                $totalPayment += $amount;
+                $this->request->data['TtujPayment']['no_claim'][$key] = $no_claim;
+                $this->request->data['TtujPayment']['stood'][$key] = $stood;
+                $this->request->data['TtujPayment']['lainnya'][$key] = $lainnya;
+                $this->request->data['TtujPayment']['titipan'][$key] = $titipan;
+                $this->request->data['TtujPayment']['claim'][$key] = $claim;
+                $this->request->data['TtujPayment']['unit_claim'][$key] = $unit_claim;
+                $this->request->data['TtujPayment']['laka'][$key] = $laka;
+
+                $totalPlus += $amount + $no_claim + $stood + $lainnya;
+                $totalMin += $titipan + $claim + $laka;
+                $totalPayment += $amount + $no_claim + $stood + $lainnya - $titipan - $claim - $laka;
+
                 $total_dibayar = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, $data_type, false, array(
                     'conditions' => array(
-                        'TtujPayment.transaction_status' => 'posting',
+                        // 'TtujPayment.transaction_status' => 'posting',
                     ),
                 )) + $amount;
 
@@ -7456,20 +7331,22 @@ class RevenuesController extends AppController {
                     $dataTtujPaymentDetail['TtujPaymentDetail']['ttuj_payment_id'] = $ttuj_payment_id;
                     $total = !empty($dataTtuj['total'])?$dataTtuj['total']:0;
 
-                    if( $transaction_status == 'posting' ) {
-                        if( !empty($total_dibayar) ) {
-                            $flagPaidTtuj = 'half';
+                    if( !empty($total_dibayar) ) {
+                        $flagPaidTtuj = 'half';
 
-                            if( $total <= $total_dibayar ) {
-                                $flagPaidTtuj = 'full';
-                            }
-                        
+                        if( $total <= $total_dibayar ) {
+                            $flagPaidTtuj = 'full';
+                        }
+                    
+                        if( $transaction_status == 'posting' ) {
                             $this->Ttuj->TtujPaymentDetail->Ttuj->set('paid_'.$data_type, $flagPaidTtuj);
-                            $this->Ttuj->TtujPaymentDetail->Ttuj->id = $ttuj_id;
-                            
-                            if( !$this->Ttuj->TtujPaymentDetail->Ttuj->save() ) {
-                                $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran %s #%s'), $data_type, $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_id );
-                            }
+                        }
+
+                        $this->Ttuj->TtujPaymentDetail->Ttuj->set('paid_'.$data_type.'_draft', $flagPaidTtuj);
+                        $this->Ttuj->TtujPaymentDetail->Ttuj->id = $ttuj_id;
+                        
+                        if( !$this->Ttuj->TtujPaymentDetail->Ttuj->save() ) {
+                            $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran %s #%s'), $data_type, $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_id );
                         }
                     }
                 }
@@ -7527,7 +7404,7 @@ class RevenuesController extends AppController {
                     $this->User->Journal->deleteJournal($ttuj_payment_id, array(
                         $journal_type,
                     ));
-                    $this->User->Journal->setJournal($totalPayment, array(
+                    $this->User->Journal->setJournal($totalPlus, array(
                         'credit' => $coa_id,
                     ), array(
                         'cogs_id' => $cogs_id,
@@ -7538,13 +7415,36 @@ class RevenuesController extends AppController {
                         'type' => $journal_type,
                     ));
 
+                    if( !empty($totalMin) ) {
+                        $coaPotonganUJ = $this->User->Coa->CoaSettingDetail->getMerge(array(), 'PotonganUJ', 'CoaSettingDetail.label');
+                        $potongan_uj_id = !empty($coaPotonganUJ['CoaSettingDetail']['coa_id'])?$coaPotonganUJ['CoaSettingDetail']['coa_id']:false;
+
+                        $this->User->Journal->setJournal($totalMin, array(
+                            'credit' => $potongan_uj_id,
+                        ), array(
+                            'cogs_id' => $cogs_id,
+                            'date' => $date_payment,
+                            'document_id' => $ttuj_payment_id,
+                            'title' => $titleJournalInv,
+                            'document_no' => $document_no,
+                            'type' => $journal_type,
+                        ));
+                    }
+
                     if( !empty($dataAmount) ) {
                         foreach ($dataAmount as $key => $amount) {
                             $ttuj_id = !empty($this->request->data['TtujPayment']['ttuj_id'][$key])?$this->request->data['TtujPayment']['ttuj_id'][$key]:false;
-                            $amount = !empty($amount)?$this->MkCommon->convertPriceToString($amount, 0):0;
                             $dataTtuj = $this->Ttuj->getMerge(array(), $ttuj_id);
+
+                            $amount = !empty($amount)?$this->MkCommon->convertPriceToString($amount, 0):0;
+                            $no_claim = !empty($this->request->data['TtujPayment']['no_claim'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['no_claim'][$key]):0;
+                            $stood = !empty($this->request->data['TtujPayment']['stood'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['stood'][$key]):0;
+                            $lainnya = !empty($this->request->data['TtujPayment']['lainnya'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['lainnya'][$key]):0;
+                            $titipan = !empty($this->request->data['TtujPayment']['titipan'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['titipan'][$key]):0;
+                            $claim = !empty($this->request->data['TtujPayment']['claim'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['claim'][$key]):0;
+                            $laka = !empty($this->request->data['TtujPayment']['laka'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['laka'][$key]):0;
                             
-                            $this->User->Journal->setJournal($amount, array(
+                            $this->User->Journal->setJournal($amount + $no_claim + $stood + $lainnya, array(
                                 'debit' => $debit_id,
                             ), array(
                                 'truck_id' => Common::hashEmptyField($dataTtuj, 'Ttuj.truck_id'),
@@ -7555,6 +7455,19 @@ class RevenuesController extends AppController {
                                 'document_no' => $document_no,
                                 'type' => $journal_type,
                             ));
+
+                            if( !empty($totalMin) ) {
+                                $this->User->Journal->setJournal($titipan + $claim + $laka, array(
+                                    'debit' => $coa_id,
+                                ), array(
+                                    'cogs_id' => $cogs_id,
+                                    'date' => $date_payment,
+                                    'document_id' => $ttuj_payment_id,
+                                    'title' => $titleJournalInv,
+                                    'document_no' => $document_no,
+                                    'type' => $journal_type,
+                                ));
+                            }
                         }
                     }
                 }
@@ -7726,23 +7639,25 @@ class RevenuesController extends AppController {
                                 $data_type = !empty($ttujPaymentDetail['type'])?$ttujPaymentDetail['type']:false;
                                 $total_dibayar = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, $data_type, false, array(
                                     'conditions' => array(
-                                        'TtujPayment.transaction_status' => 'posting',
+                                        // 'TtujPayment.transaction_status' => 'posting',
                                     ),
                                 ));
                                 $flagPaidTtuj = 'none';
                                 $paidType[] = $data_type;
 
-                                if( $transaction_status == 'posting' ) {
-                                    if( !empty($total_dibayar) ) {
-                                        $flagPaidTtuj = 'half';
-                                    }
-                                        
-                                    $this->Ttuj->set('paid_'.$data_type, $flagPaidTtuj);
-                                    $this->Ttuj->id = $ttuj_id;
+                                if( !empty($total_dibayar) ) {
+                                    $flagPaidTtuj = 'half';
+                                }
                                     
-                                    if( !$this->Ttuj->save() ) {
-                                        $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran %s #%s'), $data_type, $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_id );
-                                    }
+                                if( $transaction_status == 'posting' ) {
+                                    $this->Ttuj->set('paid_'.$data_type, $flagPaidTtuj);
+                                }
+
+                                $this->Ttuj->set('paid_'.$data_type.'_draft', $flagPaidTtuj);
+                                $this->Ttuj->id = $ttuj_id;
+                                
+                                if( !$this->Ttuj->save() ) {
+                                    $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran %s #%s'), $data_type, $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_id );
                                 }
                             }
                         }
@@ -8200,7 +8115,6 @@ class RevenuesController extends AppController {
                                         $from_city_id = !empty($formCity['City']['id'])?$formCity['City']['id']:false;
                                         $to_city_id = !empty($toCity['City']['id'])?$toCity['City']['id']:false;
                                         $tgl_revenue = $this->MkCommon->getDate($tgl_revenue);
-                                        $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, false, $customer_id, $truck_capacity, false );
                                         $jenis_tarif = !empty($tarif['jenis_unit'])?$tarif['jenis_unit']:'per_unit';
                                         $ppn = !empty($ppn)?$this->MkCommon->convertPriceToString($ppn):0;
                                         $pph = !empty($pph)?$this->MkCommon->convertPriceToString($pph):0;
@@ -8227,6 +8141,8 @@ class RevenuesController extends AppController {
                                             'conditions' => $conditionsTtuj,
                                         ), true);
                                         $ttuj_id = Common::hashEmptyField($ttuj, 'Ttuj.id');
+                                        $total_muatan = $this->Ttuj->TtujTipeMotor->getTotalMuatan($ttuj_id);
+                                        $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, false, $customer_id, $truck_capacity, false, $total_muatan );
 
                                         if( !empty($tarif) ) {
                                             $i = 1;
@@ -8266,7 +8182,7 @@ class RevenuesController extends AppController {
                                                     $group_motor_id = !empty($groupMotor['GroupMotor']['id'])?$groupMotor['GroupMotor']['id']:false;
                                                     $total_price_unit = $harga_unit_detail * $jml_unit_detail;
 
-                                                    $tarif_detail = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, $to_city_id_detail, $customer_id, $truck_capacity, $group_motor_id );
+                                                    $tarif_detail = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, $to_city_id_detail, $customer_id, $truck_capacity, $group_motor_id, $total_muatan );
 
                                                     if( !empty($tarif_detail) ) {
                                                         $total_tarif_detail = !empty($tarif_detail['tarif'])?$tarif_detail['tarif']:0;
@@ -8615,7 +8531,7 @@ class RevenuesController extends AppController {
 
     public function report_ttuj_payment( $data_action = false ) {
         $this->loadModel('TtujPaymentDetail');
-        $this->loadModel('City');
+
         $module_title = __('Laporan Pembayaran Biaya Uang Jalan');
         $values = array();
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
@@ -8623,6 +8539,7 @@ class RevenuesController extends AppController {
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
 
         $this->set('sub_module_title', $module_title);
+
         $options =  $this->TtujPaymentDetail->TtujPayment->getData('paginate', array(
             'conditions' => array(
                 'TtujPayment.is_canceled' => 0,
@@ -8632,11 +8549,10 @@ class RevenuesController extends AppController {
             ),
             'contain' => array(
                 'TtujPayment',
-                'Ttuj',
+                // 'Ttuj',
             ),
             'order' => array(
-                'TtujPayment.nodoc' => 'ASC',
-                'TtujPayment.id' => 'ASC',
+                'TtujPayment.id' => 'DESC',
             ),
         ), true, array(
             'branch' => false,
@@ -8676,6 +8592,7 @@ class RevenuesController extends AppController {
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'TtujPayment', 'branch_id');
                 $type = $this->MkCommon->filterEmptyField($value, 'TtujPaymentDetail', 'type');
 
+                $value = $this->Ttuj->getMerge($value, $ttuj_id);
                 $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
                 $value = $this->TtujPaymentDetail->TtujPayment->_callTtujPaid($value, $ttuj_id, $type, array(
                     'conditions' => array(
@@ -8707,7 +8624,7 @@ class RevenuesController extends AppController {
             }
         }
 
-        $cities = $this->City->getListCities();
+        $cities = $this->GroupBranch->Branch->City->getListCities();
 
         $this->set('active_menu', 'report_ttuj_payment');
         $this->set(compact(
@@ -8727,90 +8644,6 @@ class RevenuesController extends AppController {
         }
     }
 
-    // public function report_ttuj_outstanding( $data_action = false ) {
-    //     $this->loadModel('TtujOutstanding');
-    //     $this->loadModel('City');
-
-    //     $module_title = __('Laporan Saldo Biaya Uang Jalan');
-    //     $values = array();
-    //     $dateFrom = date('Y-m-d', strtotime('-1 Month'));
-    //     $dateTo = date('Y-m-d');
-
-    //     $this->set('sub_module_title', $module_title);
-    //     $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
-
-    //     $params = $this->MkCommon->_callRefineParams($this->params, array(
-    //         'dateFrom' => $dateFrom,
-    //         'dateTo' => $dateTo,
-    //     ));
-    //     $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
-    //     $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
-    //     $options =  $this->TtujOutstanding->_callRefineParams($params, array(
-    //         'conditions' => array(
-    //             'TtujOutstanding.branch_id' => $allow_branch_id,
-    //         ),
-    //     ));
-
-    //     if(!empty($this->params['named'])){
-    //         $refine = $this->params['named'];
-
-    //         // Custom Otorisasi
-    //         $options = $this->MkCommon->getConditionGroupBranch( $refine, 'TtujOutstanding', $options );
-    //     }
-
-    //     if( !empty($dateFrom) && !empty($dateTo) ) {
-    //         $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
-    //     }
-
-    //     if( !empty($data_action) ){
-    //         $options['limit'] = Configure::read('__Site.config_pagination_unlimited');
-    //     } else {
-    //         $options['limit'] = Configure::read('__Site.config_pagination');
-    //     }
-
-    //     $this->paginate = $options;
-    //     $values = $this->paginate('TtujOutstanding');
-
-    //     if( !empty($values) ) {
-    //         foreach ($values as $key => $value) {
-    //             $id = $this->MkCommon->filterEmptyField($value, 'TtujOutstanding', 'id');
-    //             $branch_id = $this->MkCommon->filterEmptyField($value, 'TtujOutstanding', 'branch_id');
-    //             $customer_id = $this->MkCommon->filterEmptyField($value, 'TtujOutstanding', 'customer_id');
-    //             $data_type = $this->MkCommon->filterEmptyField($value, 'TtujOutstanding', 'data_type');
-    //             $driver_id = $this->MkCommon->filterEmptyField($value, 'TtujOutstanding', 'driver_id');
-    //             $driver_pengganti_id = $this->MkCommon->filterEmptyField($value, 'TtujOutstanding', 'driver_pengganti_id');
-
-    //             $value = $this->Ttuj->TtujPaymentDetail->TtujPayment->_callTtujPaid($value, $id, $data_type);
-
-    //             $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
-    //             $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
-    //             $value = $this->Ttuj->Driver->getMerge($value, $driver_id);
-    //             $value = $this->Ttuj->Driver->getMerge($value, $driver_pengganti_id, 'DriverPengganti');
-
-    //             $values[$key] = $value;
-    //         }
-    //     }
-
-    //     $cities = $this->City->getListCities();
-
-    //     $this->set('active_menu', 'report_ttuj_outstanding');
-    //     $this->set(compact(
-    //         'values', 'module_title', 'data_action',
-    //         'cities'
-    //     ));
-
-    //     if($data_action == 'pdf'){
-    //         $this->layout = 'pdf';
-    //     }else if($data_action == 'excel'){
-    //         $this->layout = 'ajax';
-    //     } else {
-    //         $this->MkCommon->_layout_file(array(
-    //             'select',
-    //             'freeze',
-    //         ));
-    //     }
-    // }
-
     public function report_ttuj_outstanding( $data_action = false ) {
         $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         $dateTo = date('Y-m-d');
@@ -8822,6 +8655,7 @@ class RevenuesController extends AppController {
 
         $dataReport = $this->RmReport->_callDataTtuj_outstanding($params, 30, 0, true);
         $values = Common::hashEmptyField($dataReport, 'data');
+        $cities = $this->GroupBranch->Branch->City->getListCities();
 
         $this->RmReport->_callBeforeView($params, __('Laporan Saldo Biaya Uang Jalan'));
         $this->MkCommon->_layout_file(array(
@@ -8829,6 +8663,7 @@ class RevenuesController extends AppController {
         ));
         $this->set(array(
             'values' => $values,
+            'cities' => $cities,
             'active_menu' => 'report_ttuj_outstanding',
             '_freeze' => true,
         ));
@@ -8882,229 +8717,6 @@ class RevenuesController extends AppController {
         ));
     }
 
-    // public function report_revenue_period( $data_action = false ) {
-    //     $this->loadModel('City');
-    //     $module_title = __('Laporan Detail Revenue per Priode');
-    //     $values = array();
-    //     $dateFrom = date('Y-m-d', strtotime('-1 Month'));
-    //     $dateTo = date('Y-m-d');
-
-    //     $this->set('sub_module_title', $module_title);
-        
-    //     $options =  $this->Ttuj->Revenue->getData('paginate', array(
-    //         'conditions' => array(
-    //             'RevenueDetail.status' => 1,
-    //         ),
-    //         'contain' => array(
-    //             'Revenue',
-    //         ),
-    //         'group' => array(
-    //             'RevenueDetail.revenue_id',
-    //         ),
-    //     ), true, array(
-    //         'branch' => false,
-    //     ));
-
-    //     $params = $this->MkCommon->_callRefineParams($this->params, array(
-    //         'dateFrom' => $dateFrom,
-    //         'dateTo' => $dateTo,
-    //     ));
-    //     $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
-    //     $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
-    //     $options =  $this->Ttuj->Revenue->RevenueDetail->_callRefineParams($params, $options);
-
-    //     if(!empty($this->params['named'])){
-    //         $refine = $this->params['named'];
-
-    //         // Custom Otorisasi
-    //         $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Revenue', $options );
-    //     }
-
-    //     if( !empty($dateFrom) && !empty($dateTo) ) {
-    //         $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
-    //     }
-
-    //     if( !empty($data_action) ){
-    //         $values = $this->Ttuj->Revenue->RevenueDetail->find('all', $options);
-    //     } else {
-    //         $this->loadModel('RevenueDetail');
-    //         $options['limit'] = Configure::read('__Site.config_pagination');
-    //         $this->paginate = $options;
-    //         $values = $this->paginate('RevenueDetail');
-    //     }
-
-    //     if( !empty($values) ) {
-    //         foreach ($values as $key => $value) {
-    //             $id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'id');
-    //             $branch_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'branch_id');
-    //             $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'ttuj_id');
-    //             $value = $this->Ttuj->getMerge($value, $ttuj_id);
-    //             $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
-                
-    //             $value['Ttuj']['total_qty'] = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
-
-    //             $invoice_id = $this->Ttuj->Revenue->RevenueDetail->getData('list', array(
-    //                 'conditions' => array(
-    //                     'RevenueDetail.revenue_id' => $id,
-    //                     'RevenueDetail.status' => 1,
-    //                 ),
-    //                 'fields' => array(
-    //                     'RevenueDetail.invoice_id', 'RevenueDetail.invoice_id',
-    //                 ),
-    //                 'group' => array(
-    //                     'RevenueDetail.revenue_id',
-    //                     'RevenueDetail.invoice_id',
-    //                 ),
-    //             ), array(
-    //                 'branch' => false,
-    //             ));
-
-    //             $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
-    //             $customer_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'customer_id', $customer_id);
-
-    //             $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
-    //             $truck_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'truck_id', $truck_id);
-    //             $value = $this->Ttuj->Truck->getMerge($value, $truck_id);
-
-    //             $from_city_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'from_city_id');
-    //             $to_city_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'to_city_id');
-    //             $from_city_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'from_city_id', $from_city_id);
-    //             $to_city_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'to_city_id', $to_city_id);
-
-    //             $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
-    //             $value = $this->Ttuj->Revenue->RevenueDetail->getSumUnit($value, $id, 'revenue', 'RevenueDetail.revenue_id');
-    //             $value = $this->Ttuj->Revenue->RevenueDetail->Invoice->getMerge($value, $invoice_id, 'all');
-                
-    //             $value = $this->City->getMerge($value, $from_city_id, 'FromCity');
-    //             $value = $this->City->getMerge($value, $to_city_id, 'ToCity');
-
-    //             $values[$key] = $value;
-    //         }
-    //     }
-
-    //     $cities = $this->City->getListCities();
-    //     $customers = $this->Ttuj->Customer->getData('list', array(
-    //         'fields' => array(
-    //             'Customer.id', 'Customer.customer_name_code'
-    //         ),
-    //     ));
-
-    //     $this->set('active_menu', 'report_revenue_period');
-    //     $this->set(compact(
-    //         'values', 'module_title', 'data_action',
-    //         'cities', 'customers'
-    //     ));
-
-    //     if($data_action == 'pdf'){
-    //         $this->layout = 'pdf';
-    //     }else if($data_action == 'excel'){
-    //         $this->layout = 'ajax';
-    //     } else {
-    //         $this->MkCommon->_layout_file('select');
-    //     }
-    // }
-
-    // public function report_revenue( $data_action = false ) {
-    //     $this->loadModel('City');
-    //     $module_title = __('Laporan Detail Revenue');
-    //     $values = array();
-    //     $dateFrom = date('Y-m-d', strtotime('-1 Month'));
-    //     $dateTo = date('Y-m-d');
-
-    //     $this->set('sub_module_title', $module_title);
-    //     $options =  $this->Ttuj->Revenue->getData('paginate', array(
-    //         'conditions' => array(
-    //             'RevenueDetail.status' => 1,
-    //         ),
-    //         'contain' => array(
-    //             'Revenue',
-    //         ),
-    //     ), true, array(
-    //         'branch' => false,
-    //     ));
-
-    //     $params = $this->MkCommon->_callRefineParams($this->params, array(
-    //         'dateFrom' => $dateFrom,
-    //         'dateTo' => $dateTo,
-    //     ));
-    //     $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
-    //     $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
-    //     $options =  $this->Ttuj->Revenue->RevenueDetail->_callRefineParams($params, $options);
-
-    //     if(!empty($this->params['named'])){
-    //         $refine = $this->params['named'];
-
-    //         // Custom Otorisasi
-    //         $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Revenue', $options );
-    //     }
-
-    //     if( !empty($dateFrom) && !empty($dateTo) ) {
-    //         $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
-    //     }
-
-    //     if( !empty($data_action) ){
-    //         $values = $this->Ttuj->Revenue->RevenueDetail->find('all', $options);
-    //     } else {
-    //         $this->loadModel('RevenueDetail');
-    //         $options['limit'] = Configure::read('__Site.config_pagination');
-    //         $this->paginate = $options;
-    //         $values = $this->paginate('RevenueDetail');
-    //     }
-
-    //     if( !empty($values) ) {
-    //         foreach ($values as $key => $value) {
-    //             $id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'id');
-    //             $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'ttuj_id');
-    //             $invoice_id = $this->MkCommon->filterEmptyField($value, 'RevenueDetail', 'invoice_id');
-    //             $branch_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'branch_id');
-                
-    //             $value = $this->Ttuj->getMerge($value, $ttuj_id);
-    //             $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
-
-    //             $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
-    //             $customer_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'customer_id', $customer_id);
-
-    //             $from_city_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'from_city_id');
-    //             $from_city_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'from_city_id', $from_city_id);
-                
-    //             $to_city_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'to_city_id');
-    //             $city_id = $this->MkCommon->filterEmptyField($value, 'RevenueDetail', 'city_id', $to_city_id);
-
-    //             $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
-    //             $value = $this->Ttuj->Revenue->RevenueDetail->Invoice->getMerge($value, $invoice_id);
-    //             $value = $this->Ttuj->Revenue->RevenueDetail->City->getMerge($value, $city_id, 'ToCity');
-    //             $value = $this->City->getMerge($value, $from_city_id, 'FromCity');
-
-    //             $truck_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_id');
-    //             $truck_id = $this->MkCommon->filterEmptyField($value, 'Revenue', 'truck_id', $truck_id);
-    //             $value = $this->Ttuj->Truck->getMerge($value, $truck_id);
-
-    //             $values[$key] = $value;
-    //         }
-    //     }
-
-    //     $cities = $this->City->getListCities();
-    //     $customers = $this->Ttuj->Customer->getData('list', array(
-    //         'fields' => array(
-    //             'Customer.id', 'Customer.customer_name_code'
-    //         ),
-    //     ));
-
-    //     $this->set('active_menu', 'report_revenue');
-    //     $this->set(compact(
-    //         'values', 'module_title', 'data_action',
-    //         'cities', 'customers'
-    //     ));
-
-    //     if($data_action == 'pdf'){
-    //         $this->layout = 'pdf';
-    //     }else if($data_action == 'excel'){
-    //         $this->layout = 'ajax';
-    //     } else {
-    //         $this->MkCommon->_layout_file('select');
-    //     }
-    // }
-
     public function report_expense_per_truck( $data_action = false ) {
         $this->loadModel('Truck');
 
@@ -9145,9 +8757,20 @@ class RevenuesController extends AppController {
                 $truck_category_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'truck_category_id');
                 $truck_brand_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'truck_brand_id');
 
-                $value = $this->Truck->TruckCategory->getMerge($value, $truck_category_id);
-                $value = $this->Truck->TruckBrand->getMerge($value, $truck_brand_id);
-                $value = $this->Truck->TruckCustomer->getFirst($value, $id);
+                $value = $this->Truck->getMergeList($value, array(
+                    'contain' => array(
+                        'TruckCategory',
+                        'TruckBrand',
+                        'TruckCustomer' => array(
+                            'type' => 'first',
+                            'order' => array(
+                                'TruckCustomer.primary' => 'DESC',
+                                'TruckCustomer.id' => 'ASC',
+                            ),
+                        ),
+                    ),
+                ));
+
                 $value = $this->Ttuj->Revenue->getTotal($value, $id, $params);
                 $value = $this->Ttuj->getBiayaUangJalan($value, $id, $params);
                 $value = $this->Truck->getBiayaLainLain($value, $id, $params);
@@ -9262,7 +8885,10 @@ class RevenuesController extends AppController {
                 $revenue_tarif_type = $this->MkCommon->filterEmptyField( $value, 'Revenue', 'revenue_tarif_type' );
 
                 $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                
                 $value = $this->Ttuj->getMerge($value, $ttuj_id);
+                $total_muatan = $this->Ttuj->TtujTipeMotor->getTotalMuatan($ttuj_id);
+
                 $rev_cnt = $this->Ttuj->Revenue->RevenueDetail->find('count', array(
                     'conditions' => array(
                         'RevenueDetail.status' => 1,
@@ -9281,7 +8907,7 @@ class RevenuesController extends AppController {
                 $truck_capacity = $this->MkCommon->filterEmptyField( $value, 'Ttuj', 'truck_capacity' );
                 
                 $value = $this->Ttuj->Revenue->RevenueDetail->GroupMotor->getMerge( $value, $group_motor_id );
-                $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->findTarif($from_city_id, $to_city_id, $customer_id, $truck_capacity, $group_motor_id);
+                $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->findTarif($from_city_id, $to_city_id, $customer_id, $truck_capacity, $group_motor_id, $total_muatan);
                 $group_motor = $this->MkCommon->filterEmptyField( $value, 'GroupMotor', 'name' );
 
                 if( !empty($tarif) ) {
@@ -9982,6 +9608,7 @@ class RevenuesController extends AppController {
                 
                 $value = $this->Ttuj->getMerge($value, $ttuj_id);
                 $value = $this->City->getMerge($value, $city_id);
+                $total_muatan = $this->Ttuj->TtujTipeMotor->getTotalMuatan($ttuj_id);
 
                 $from_city_id = $this->MkCommon->filterEmptyField( $value, 'Ttuj', 'from_city_id' );
                 $to_city_id = $this->MkCommon->filterEmptyField( $value, 'Ttuj', 'to_city_id' );
@@ -9997,7 +9624,7 @@ class RevenuesController extends AppController {
                     $truck_capacity = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'truck_capacity');
                 }
                 
-                $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, $city_id, $customer_id, $truck_capacity, $group_motor_id );
+                $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, $city_id, $customer_id, $truck_capacity, $group_motor_id, $total_muatan );
                 $tarif_angkutan_id = $this->MkCommon->filterEmptyField( $tarif, 'tarif_angkutan_id' );
 
                 $this->Ttuj->Revenue->RevenueDetail->validator()->remove('price_unit');

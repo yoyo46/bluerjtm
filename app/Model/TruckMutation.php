@@ -90,7 +90,6 @@ class TruckMutation extends AppModel {
             'conditions'=> array(),
             'order' => array(
                 'TruckMutation.status' => 'DESC',
-                'TruckMutation.created' => 'DESC',
                 'TruckMutation.id' => 'DESC',
             ),
             'contain' => array(),

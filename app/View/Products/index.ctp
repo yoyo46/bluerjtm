@@ -111,7 +111,7 @@
                                 $tr_bg = '';
                             }
 
-                            $customCreated = $this->Common->formatDate($created, 'd/m/Y');
+                            $customCreated = $this->Common->formatDate($created, 'd M Y');
                             
                             $customType = str_replace('_', ' ', $type);
                             $customType = ucwords($customType);

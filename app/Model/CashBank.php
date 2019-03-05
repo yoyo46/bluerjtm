@@ -101,7 +101,7 @@ class CashBank extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'CashBank.created' => 'DESC'
+                'CashBank.id' => 'DESC'
             ),
             'contain' => array(),
             'fields' => array(),

@@ -76,7 +76,7 @@
                             $type = $this->Common->filterEmptyField($types, $document_type);
 
                             $customStatus = $this->Common->_callTransactionStatus($value, 'ProductExpenditure');
-                            $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
+                            $customDate = $this->Common->formatDate($transactionDate, 'd M Y');
                             $noref = $this->Common->getNoRef($id);
 
                             $customAction = $this->Html->link(__('Detail'), array(

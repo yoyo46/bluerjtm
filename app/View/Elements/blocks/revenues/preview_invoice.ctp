@@ -40,7 +40,7 @@
 						}
 					}else{
 		                if( in_array($data_print, array( 'date', 'sa' )) && !empty($val_detail[0]['Revenue']['date_revenue']) ) {
-							echo $this->Common->customDate($val_detail[0]['Revenue']['date_revenue'], 'd/m/Y');
+							echo $this->Common->customDate($val_detail[0]['Revenue']['date_revenue'], 'd M Y');
 		                } else {
 	                		$no_doc = !empty($val_detail[0]['Revenue']['no_doc'])?$val_detail[0]['Revenue']['no_doc']:false;
 							echo !empty($val_detail[0]['City']['name'])?$val_detail[0]['City']['name']:$no_doc;
@@ -177,7 +177,7 @@
 
 					$price = 0;
 					$totalPriceFormat = '';
-					$date_revenue = $this->Common->formatDate($date_revenue, 'd/m/Y');
+					$date_revenue = $this->Common->formatDate($date_revenue, 'd M Y');
 
 					if( !empty($is_charge) ) {
 						$totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);

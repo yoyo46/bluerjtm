@@ -67,7 +67,7 @@
 
 									$totalUnit += $unit;
 
-					                $ttuj_date = $this->Common->formatDate($ttuj_date, 'd/m/Y');
+					                $ttuj_date = $this->Common->formatDate($ttuj_date, 'd M Y');
 
 					                $checkbox = isset($checkbox)?$checkbox:true;
 					                $alias = sprintf('child-%s', $id);

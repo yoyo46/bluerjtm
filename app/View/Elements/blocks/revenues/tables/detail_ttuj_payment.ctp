@@ -8,28 +8,41 @@
 	        	<thead>
 	        		<tr>
 	        			<?php 
-			                    echo $this->Html->tag('th', __('No TTUJ'));
-			                    echo $this->Html->tag('th', __('Tgl'), array(
-			                        'width' => '5%',
-			                    ));
-			                    echo $this->Html->tag('th', __('NoPol'));
-			                    echo $this->Html->tag('th', __('Kap'), array(
-			                        'class' => 'text-center',
-			                    ));
-			                    echo $this->Html->tag('th', __('Customer'));
-			                    echo $this->Html->tag('th', __('Dari'));
-			                    echo $this->Html->tag('th', __('Tujuan'));
-			                    echo $this->Html->tag('th', __('Supir'));
-			                    echo $this->Html->tag('th', __('Jenis'), array(
-			                        'width' => '5%',
-			                        'class' => 'text-center',
-			                    ));
-			                    echo $this->Html->tag('th', __('Keterangan'));
-			                    echo $this->Html->tag('th', __('Total'), array(
-			                        'class' => 'text-center',
-			                    ));
+			                    echo $this->Html->tag('th', __('TTUJ'));
 			                    echo $this->Html->tag('th', __('Biaya Dibayar'), array(
-			                        'width' => '10%',
+			                        'width' => '15%',
+			                        'class' => 'text-center',
+			                    ));
+			                    echo $this->Html->tag('th', __('No Claim'), array(
+			                        'width' => '15%',
+			                        'class' => 'text-center',
+			                    ));
+			                    echo $this->Html->tag('th', __('STOOD'), array(
+			                        'width' => '15%',
+			                        'class' => 'text-center',
+			                    ));
+			                    echo $this->Html->tag('th', __('Lain-lain'), array(
+			                        'width' => '15%',
+			                        'class' => 'text-center',
+			                    ));
+			                    echo $this->Html->tag('th', __('Titipan'), array(
+			                        'width' => '15%',
+			                        'class' => 'text-center',
+			                    ));
+			                    echo $this->Html->tag('th', __('Potongan Claim'), array(
+			                        'width' => '15%',
+			                        'class' => 'text-center',
+			                    ));
+			                    echo $this->Html->tag('th', __('Unit Claim'), array(
+			                        'width' => '8%',
+			                        'class' => 'text-center',
+			                    ));
+			                    echo $this->Html->tag('th', __('Potongan LAKA'), array(
+			                        'width' => '15%',
+			                        'class' => 'text-center',
+			                    ));
+			                    echo $this->Html->tag('th', __('Total Transfer'), array(
+			                        'width' => '15%',
 			                        'class' => 'text-center',
 			                    ));
             					

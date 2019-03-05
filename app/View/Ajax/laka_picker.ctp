@@ -60,7 +60,7 @@
                         $driver = $this->Common->_callGetDriver($value);
 
                         $status_muatan = strtoupper($status_muatan);
-                        $document_date = $this->Common->formatDate($document_date, 'd/m/Y');
+                        $document_date = $this->Common->formatDate($document_date, 'd M Y');
 
                         $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
                         $attr = array(

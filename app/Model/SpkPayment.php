@@ -71,7 +71,6 @@ class SpkPayment extends AppModel {
             'order'=> array(
                 'SpkPayment.order' => 'ASC',
                 'SpkPayment.status' => 'DESC',
-                'SpkPayment.created' => 'DESC',
                 'SpkPayment.id' => 'DESC',
             ),
             'fields' => array(),

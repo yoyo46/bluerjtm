@@ -70,7 +70,7 @@
                             $employe = $this->Common->filterEmptyField($value, 'Employe', 'full_name');
 
                             $customStatus = $this->Common->_callTransactionStatus($value, 'ProductReceipt');
-                            $customDate = $this->Common->formatDate($transactionDate, 'd/m/Y');
+                            $customDate = $this->Common->formatDate($transactionDate, 'd M Y');
                             $noref = $this->Common->getNoRef($id);
                             
                             $qty_use = Set::extract('/ProductReceiptDetail/ProductHistory/ProductStock/ProductStock/qty_use', $value);

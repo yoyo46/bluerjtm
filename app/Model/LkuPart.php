@@ -49,7 +49,6 @@ class LkuPart extends AppModel {
                 'LkuPart.status' => 1,
             ),
             'order'=> array(
-                'LkuPart.created' => 'DESC',
                 'LkuPart.id' => 'DESC',
             ),
             'contain' => array(

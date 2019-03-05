@@ -225,7 +225,7 @@
                             $completed = $this->Common->filterEmptyField($value, 'Ttuj', 'completed');
                             $completed_date = $this->Common->filterEmptyField($value, 'Ttuj', 'completed_date');
 
-                            $customComplatedDate = $this->Common->formatDate($completed_date, 'd/m/Y', false);
+                            $customComplatedDate = $this->Common->formatDate($completed_date, 'd M Y', false);
                             $allowEdit = $this->Revenue->_callTtujPaid($value);
             ?>
             <tr>
@@ -292,28 +292,13 @@
                             $sjLabel = '-';
 
                             if(!empty($value['SuratJalan']['tgl_surat_jalan'])){
-                                $sjLabel = $this->Common->customDate($value['SuratJalan']['tgl_surat_jalan'], 'd/m/Y');
+                                $sjLabel = $this->Common->customDate($value['SuratJalan']['tgl_surat_jalan'], 'd M Y');
                             }
 
                             echo $this->Html->tag('td', $sjLabel, array(
                                 'class' => 'text-center',
                             ));
                         }
-                ?>
-                <!-- <td class="text-center">
-                    <?php 
-                            // if( !empty($value['Ttuj']['completed']) ){
-                            //     echo $this->Html->tag('span', $this->Common->icon('check'), array(
-                            //         'class' => 'label label-success',
-                            //     ));
-                            // }else{
-                            //     echo $this->Html->tag('span', $this->Common->icon('times'), array(
-                            //         'class' => 'label label-danger',
-                            //     ));
-                            // }
-                    ?>
-                </td> -->
-                <?php
                         
                         if(!empty($completed)){
                             $labelStatus = $this->Html->tag('span', __('Completed'), array(

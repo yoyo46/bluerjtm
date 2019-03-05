@@ -196,7 +196,6 @@ class Laka extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'Laka.created' => 'DESC',
                 'Laka.id' => 'DESC',
             ),
             'contain' => array(),
