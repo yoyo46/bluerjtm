@@ -15,6 +15,7 @@ class CustomerNoType extends AppModel {
             'conditions'=> array(),
             'order'=> array(),
             'fields' => array(),
+            'contain' => array(),
             'group' => array(),
         );
 

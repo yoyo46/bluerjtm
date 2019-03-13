@@ -76,6 +76,10 @@ class Coa extends AppModel {
             'className' => 'Budget',
             'foreignKey' => 'coa_id',
         ),
+        'Bank' => array(
+            'className' => 'Bank',
+            'foreignKey' => 'coa_id',
+        ),
     );
 
     function __construct($id = false, $table = null, $ds = null) {

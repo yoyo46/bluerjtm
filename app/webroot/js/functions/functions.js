@@ -3146,7 +3146,7 @@ var sisa_amount = function ( obj ) {
         var totalAlert = $.checkUndefined(objTotal.attr('data-alert'), 'Sisa tidak boleh melebihi total biaya');
         var allow = true;
 
-        if( objTotal.length > 0 ) {
+        if( objTotal.length > 0 && self.hasClass('sisa-amount') ) {
             if( sisa > total ) {
                 alert(totalAlert);
                 self.val(formatNumber( total, 0 ));
@@ -3154,7 +3154,7 @@ var sisa_amount = function ( obj ) {
             }
         }
 
-        if( allow == true && sisa == 0 ) {
+        if( allow == true && sisa == 0 && self.hasClass('sisa-amount') ) {
             alert(emptyAlert);
         }
 

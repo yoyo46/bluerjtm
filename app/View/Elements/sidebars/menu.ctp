@@ -1201,7 +1201,7 @@
                         'report_ttuj_payment', 'report_ttuj_outstanding',
                         'document_payments', 'laka_payments',
                         'asset_sells', 'leasing_payments',
-                        'insurance_payments',
+                        'insurance_payments', 'report_commissions',
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
@@ -1214,7 +1214,8 @@
                         ),
                         'revenues' => array(
                             'invoice_payments', 'ttuj_payments',
-                            'report_ttuj_payment', 'report_ttuj_outstanding'
+                            'report_ttuj_payment', 'report_ttuj_outstanding',
+                            'report_commissions'
                         ),
                         'lkus' => array(
                             'payments', 'ksu_payments',
@@ -1380,6 +1381,15 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'report_ttuj_outstanding' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pembayaran Komisi', array(
+                                'controller' => 'revenues',
+                                'action' => 'report_commissions',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'report_commissions' )?'active':'',
                             ));
                     ?>
                 </ul>

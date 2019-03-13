@@ -1451,3 +1451,7 @@ tbody.wrapper-table-documents td {
 .daterangepicker td.active:hover {
   background-color: #357ebd !important;
 }
+
+th[mainalign=center] {
+  text-align: center;
+}

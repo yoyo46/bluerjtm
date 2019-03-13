@@ -54,9 +54,7 @@ class CashbanksController extends AppController {
         $options =  $this->CashBank->_callRefineParams($params, array(
             'conditions' => $conditionToApprove,
         ));
-        $this->paginate = $this->CashBank->getData('paginate', $options, array(
-            'branch' => false,
-        ));
+        $this->paginate = $this->CashBank->getData('paginate', $options);
         $values = $this->paginate('CashBank');
 
         if(!empty($values)){
@@ -224,6 +222,7 @@ class CashbanksController extends AppController {
                                 'CashBankDetail.cash_bank_id' => $document_id,
                                 'CashBankDetail.coa_id' => $coa_id,
                             ),
+                            'order' => false,
                         ));
                         $detail_id = !empty($cashBankDetail['CashBankDetail']['id'])?$cashBankDetail['CashBankDetail']['id']:false;
                         $totalDibayar = $this->CashBank->CashBankDetail->totalPrepaymentDibayarPerCoa($document_id, $coa_id, false, $detail_id);
@@ -264,6 +263,7 @@ class CashbanksController extends AppController {
                         'CashBank.id' => $document_id,
                         'CashBank.prepayment_status <>' => 'full_paid',
                     ),
+                    'order' => false,
                 ));
 
                 if( !empty($cashBankTagihan) ) {
@@ -369,6 +369,7 @@ class CashbanksController extends AppController {
 
                                 $this->User->Journal->setJournal($total, $coaArr, array(
                                     'truck_id' => $truck_id,
+                                    'nopol' => $nopol,
                                     'cogs_id' => $cogs_id,
                                     'document_id' => $cash_bank_id,
                                     'title' => $title,

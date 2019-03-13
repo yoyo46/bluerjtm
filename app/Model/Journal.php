@@ -81,6 +81,11 @@ class Journal extends AppModel {
                         'conditions' => array(
                             'Coa.id' => $coa_id,
                         ),
+                        'fields' => array(
+                            'Coa.id',
+                            'Coa.type',
+                            'Coa.balance',
+                        ),
                     ));
                     $coaType = !empty($coa['Coa']['type'])?$coa['Coa']['type']:false;
                     $saldo_awal = $balance = !empty($coa['Coa']['balance'])?$coa['Coa']['balance']:false;

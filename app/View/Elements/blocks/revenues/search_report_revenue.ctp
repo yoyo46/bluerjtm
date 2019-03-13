@@ -53,12 +53,12 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('customer',array(
-                                'label'=> __('Customer'),
+                            echo $this->Form->input('customer_group_id',array(
+                                'label'=> __('Group Customer'),
                                 'class'=>'form-control chosen-select',
                                 'required' => false,
-                                'empty' => __('Pilih Customer'),
-                                'options' => !empty($customers)?$customers:false,
+                                'empty' => __('Pilih Group Customer'),
+                                'options' => !empty($customerGroups)?$customerGroups:false,
                             ));
                     ?>
                 </div>
@@ -107,16 +107,12 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('status',array(
-                                'label'=> __('Status'),
-                                'class'=>'form-control',
+                            echo $this->Form->input('customer',array(
+                                'label'=> __('Customer'),
+                                'class'=>'form-control chosen-select',
                                 'required' => false,
-                                'options' => array(
-                                    'unposting' => __('Unposting'),
-                                    'posting' => __('Posting'),
-                                    'invoiced' => __('Invoiced'),
-                                ),
-                                'empty' => __('Pilih Status'),
+                                'empty' => __('Pilih Customer'),
+                                'options' => !empty($customers)?$customers:false,
                             ));
                     ?>
                 </div>
@@ -130,6 +126,21 @@
                                 'required' => false,
                                 'options' => $cities,
                                 'empty' => __('Pilih Kota Tujuan'),
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('status',array(
+                                'label'=> __('Status'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'options' => array(
+                                    'unposting' => __('Unposting'),
+                                    'posting' => __('Posting'),
+                                    'invoiced' => __('Invoiced'),
+                                ),
+                                'empty' => __('Pilih Status'),
                             ));
                     ?>
                 </div>

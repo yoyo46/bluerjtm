@@ -848,11 +848,13 @@ class RjRevenueComponent extends Component {
                 'Customer.id', 'Customer.customer_name_code'
             ),
         ));
+        $customerGroups  = $this->controller->GroupBranch->Branch->Ttuj->Customer->CustomerGroup->getData('list');
 
         $this->controller->set('sub_module_title', $title);
         $this->controller->set('active_menu', $title);
         $this->controller->set(compact(
-            'period_text', 'cities', 'customers'
+            'period_text', 'cities', 'customers',
+            'customerGroups'
         ));
     }
 
@@ -872,11 +874,47 @@ class RjRevenueComponent extends Component {
                 'Customer.id', 'Customer.customer_name_code'
             ),
         ));
+        $customerGroups  = $this->controller->GroupBranch->Branch->Ttuj->Customer->CustomerGroup->getData('list');
 
         $this->controller->set('sub_module_title', $title);
         $this->controller->set('active_menu', $title);
         $this->controller->set(compact(
-            'period_text', 'cities', 'customers'
+            'period_text', 'cities', 'customers',
+            'customerGroups'
+        ));
+    }
+
+    function _callBiayaLaka( $driver_id, $tmp_total_paid, $options = NULL ) {
+    	$value = Common::hashEmptyField($options, 'value');
+    	$data = Common::hashEmptyField($options, 'data');
+
+    	$ttuj_payment_id = Common::hashEmptyField($value, 'TtujPayment.id');
+    	$ttuj_payment_laka = Common::hashEmptyField($value, 'TtujPayment.laka');
+        $transaction_status = Common::hashEmptyField($data, 'TtujPayment.transaction_status');
+
+        $driver = $this->controller->Ttuj->Driver->getMerge(array(), $driver_id);
+
+        if( !empty($this->controller->details[$driver_id]) ) {
+        	$last_total_paid = $this->controller->details[$driver_id];
+        	
+	        unset($this->controller->details[$driver_id]);
+	    } else {
+        	$last_total_paid = 0;
+	    }
+
+        $total = Common::hashEmptyField($driver, 'Driver.total_laka', 0);
+        $total_paid = Common::hashEmptyField($driver, 'Driver.total_laka_paid_draft', 0) - $last_total_paid + $tmp_total_paid;
+
+        $options = array(
+			'Driver.total_laka_paid_draft' => $total_paid,
+    	);
+
+        if( $transaction_status == 'posting' ) {
+        	$options['Driver.total_laka_paid'] = $total_paid;
+        }
+
+    	$this->controller->Ttuj->Driver->updateAll($options, array(
+			'Driver.id' => $driver_id,
         ));
     }
 }

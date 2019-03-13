@@ -41,6 +41,10 @@
 			                        'width' => '15%',
 			                        'class' => 'text-center',
 			                    ));
+			                    echo $this->Html->tag('th', __('Ket. LAKA'), array(
+			                        'width' => '15%',
+			                        'class' => 'text-center',
+			                    ));
 			                    echo $this->Html->tag('th', __('Total Transfer'), array(
 			                        'width' => '15%',
 			                        'class' => 'text-center',

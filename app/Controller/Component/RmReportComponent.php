@@ -6859,6 +6859,7 @@ class RmReportComponent extends Component {
     	));
 		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
 		$params = $this->MkCommon->_callRefineParams($params);
+        $nopol = Common::hashEmptyField($params, 'named.nopol');
 
 		if( empty($view) ) {
 	        $revenueOptions = array(
@@ -6884,6 +6885,30 @@ class RmReportComponent extends Component {
         	'offset' => $offset,
         	'limit' => $limit,
         );
+
+        if( !empty($nopol) ) {
+	        $this->controller->RevenueDetail->bindModel(array(
+	            'hasOne' => array(
+	                'Ttuj' => array(
+	                    'className' => 'Ttuj',
+	                    'foreignKey' => false,
+	                    'conditions' => array(
+	                    	'Revenue.ttuj_id = Ttuj.id',
+	                    ),
+	                ),
+	                'Truck' => array(
+	                    'className' => 'Truck',
+	                    'foreignKey' => false,
+	                    'conditions' => array(
+	                    	'Revenue.truck_id = Truck.id',
+	                    ),
+	                ),
+	            )
+	        ), false);
+
+	        $options['contain'][] = 'Ttuj';
+	        $options['contain'][] = 'Truck';
+        }
 
 		$options = $this->controller->RevenueDetail->Revenue->_callRefineParams($params, $options);
         $options = $this->MkCommon->getConditionGroupBranch( $params, 'Revenue', $options );
@@ -7405,11 +7430,12 @@ class RmReportComponent extends Component {
                 $no_invoice = Common::hashEmptyField($value, 'Invoice.no_invoice');
 
                 if( !empty($is_charge) ) {
-                    $totalPriceFormat = !empty($total_price_unit)?$total_price_unit:'-';
+                    $totalPriceFormat = !empty($total_price_unit)?$total_price_unit:0;
                     $customPrice = !empty($price_unit)?$price_unit:0;
                 } else {
                     $total_price_unit = 0;
                     $customPrice = 0;
+                    $totalPriceFormat = 0;
                 }
 
                 $totalUnit += $unit;
@@ -8334,6 +8360,857 @@ class RmReportComponent extends Component {
 		);
 	}
 
+	function _callDataReport_commissions ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('TtujPaymentDetail');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named']= $named = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+
+		$options = array(
+            'conditions' => array(
+                'TtujPayment.is_canceled' => 0,
+                'TtujPaymentDetail.status' => 1,
+                'TtujPayment.transaction_status' => 'posting',
+                'TtujPaymentDetail.type' => array( 'commission', 'commission_extra' ),
+        	),
+            'contain' => array(
+                'TtujPayment',
+            ),
+            'order' => array(
+                'TtujPayment.id' => 'DESC',
+            ),
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+        $options = $this->controller->MkCommon->getConditionGroupBranch( $params, 'TtujPayment', $options );
+        $options =  $this->controller->TtujPaymentDetail->TtujPayment->getData('paginate', $options, true, array(
+            'branch' => false,
+        ));
+        $options =  $this->controller->TtujPaymentDetail->TtujPayment->_callRefineParams($params, $options);
+
+		$this->controller->paginate	= $options;
+		$data = $this->controller->paginate('TtujPaymentDetail');
+		$result = array();
+
+        App::import('Helper', 'Html');
+        $this->Html = new HtmlHelper(new View(null));
+
+        App::import('Helper', 'Common');
+        $this->Common = new CommonHelper(new View(null));
+
+		if( !empty($data) ) {
+            $idx = 0;
+        	
+            $this->controller->loadModel('Setting');
+        	$setting = $this->controller->Setting->find('first');
+
+			foreach ($data as $key => $value) {
+                $id = Common::hashEmptyField($value, 'TtujPayment.id');
+                $coa_id = Common::hashEmptyField($value, 'TtujPayment.coa_id');
+                $ttuj_id = Common::hashEmptyField($value, 'TtujPaymentDetail.ttuj_id');
+                $value = $this->controller->TtujPaymentDetail->Ttuj->getMerge($value, $ttuj_id);
+                $type = Common::hashEmptyField($value, 'TtujPaymentDetail.type');
+                $customer_id = Common::hashEmptyField($value, 'Ttuj.customer_id');
+                $branch_id = Common::hashEmptyField($value, 'TtujPayment.branch_id');
+                $date_payment = Common::hashEmptyField($value, 'TtujPayment.date_payment', NULL, array(
+                	'date' => 'd/m',
+                ));
+                
+                $amount = Common::hashEmptyField($value, 'TtujPaymentDetail.amount', 0);
+                $no_claim = Common::hashEmptyField($value, 'TtujPaymentDetail.no_claim', 0);
+                $stood = Common::hashEmptyField($value, 'TtujPaymentDetail.stood', 0);
+                $lainnya = Common::hashEmptyField($value, 'TtujPaymentDetail.lainnya', 0);
+                $titipan = Common::hashEmptyField($value, 'TtujPaymentDetail.titipan', 0);
+                $claim = Common::hashEmptyField($value, 'TtujPaymentDetail.claim', 0);
+                $laka = Common::hashEmptyField($value, 'TtujPaymentDetail.laka', 0);
+
+                $value = $this->controller->GroupBranch->Branch->getMerge($value, $branch_id);
+                $value = $this->controller->TtujPaymentDetail->TtujPayment->_callTtujPaid($value, $ttuj_id, $type, array(
+                    'conditions' => array(
+                        'TtujPayment.id' => $id,
+                    ),
+                ));
+                $value = $this->controller->TtujPaymentDetail->Ttuj->Customer->getMerge($value, $customer_id);
+                $value = $this->controller->TtujPaymentDetail->Ttuj->getMergeList($value, array(
+                    'contain' => array(
+                        'DriverPengganti' => array(
+                            'uses' => 'Driver',
+                            'primaryKey' => 'id',
+                            'foreignKey' => 'driver_pengganti_id',
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
+                        'Driver' => array(
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
+                    ),
+                ));
+                $driver = Common::_callGetDataDriver($value);
+                $bank = $this->controller->GroupBranch->Branch->Coa->Bank->getData('first', array(
+                	'conditions' => array(
+                		'Bank.coa_id' => $coa_id,
+                	),
+                ));
+                $totalPayment = $amount + $no_claim + $stood + $lainnya - $titipan - $claim - $laka;
+
+				$result[$idx] = array(
+					__('Sender Information') => array(
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'sender_information\',width:100',
+		                'align' => 'center',
+                		'excel' => array(
+                			'headercolspan' => 1,
+            			),
+		                'child' => array(
+		                	__('Account Number') => array(
+								'name' => __('Account Number'),
+								'text' => Common::hashEmptyField($bank, 'Bank.account_number', '-'),
+				                'data-options' => 'field:\'account_number\',width:100',
+		                		'style' => 'text-align: center;',
+		                		'align' => 'center',
+								'width' => 15,
+		                		'excel' => array(
+		                			'type' => 'string',
+		            			),
+	                		),
+	                	),
+					),
+					__('Beneficiary Information') => array(
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'sender_information\',width:100',
+		                'align' => 'center',
+                		'excel' => array(
+                			'headercolspan' => 3,
+            			),
+		                'child' => array(
+		                	__('Account Number') => array(
+								'name' => __('Account Number'),
+								'text' => Common::hashEmptyField($driver, 'account_number', '-'),
+				                'data-options' => 'field:\'account_number\',width:100',
+		                		'style' => 'text-align: center;',
+		                		'align' => 'center',
+								'width' => 15,
+		                		'excel' => array(
+		                			'type' => 'string',
+		            			),
+	                		),
+		                	__('Account Name') => array(
+								'name' => __('Account Name'),
+								'text' => Common::hashEmptyField($driver, 'account_name', '-'),
+				                'data-options' => 'field:\'account_name\',width:100',
+		                		'style' => 'text-align: center;',
+		                		'align' => 'center',
+								'width' => 15,
+	                		),
+		                	__('eMail Address') => array(
+								'name' => __('eMail Address'),
+								'text' => Common::hashEmptyField($setting, 'Setting.company_email', '-'),
+				                'data-options' => 'field:\'company_email\',width:80',
+		                		'style' => 'text-align: center;',
+		                		'align' => 'center',
+								'width' => 20,
+	                		),
+	                	),
+					),
+					__('Transaction Information') => array(
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'sender_information\',width:100',
+		                'align' => 'center',
+                		'excel' => array(
+                			'headercolspan' => 7,
+            			),
+		                'child' => array(
+		                	__('Amount') => array(
+								'name' => __('Amount'),
+								'text' => !empty($view)?Common::getFormatPrice($totalPayment):$totalPayment,
+				                'data-options' => 'field:\'account_number\',width:100',
+		                		'style' => 'text-align: right;',
+		                		'align' => 'right',
+		                		'mainalign' => 'center',
+								'width' => 20,
+		                		'excel' => array(
+		                			'align' => 'right',
+		                			'type' => 'number',
+		            			),
+	                		),
+		                	__('Currency') => array(
+								'name' => __('Currency'),
+								'text' => __('IDR'),
+				                'data-options' => 'field:\'account_name\',width:100',
+		                		'style' => 'text-align: right;',
+		                		'align' => 'right',
+		                		'mainalign' => 'center',
+								'width' => 10,
+		                		'excel' => array(
+		                			'align' => 'right',
+		            			),
+	                		),
+		                	__('Charge Type') => array(
+								'name' => __('Charge Type'),
+								'text' => __('OUR'),
+				                'data-options' => 'field:\'company_email\',width:80',
+		                		'style' => 'text-align: right;',
+		                		'align' => 'right',
+		                		'mainalign' => 'center',
+								'width' => 10,
+		                		'excel' => array(
+		                			'align' => 'right',
+		            			),
+	                		),
+		                	__('Voucher Code') => array(
+								'name' => __('Voucher Code'),
+								'text' => '',
+				                'data-options' => 'field:\'company_email\',width:80',
+		                		'style' => 'text-align: center;',
+								'width' => 15,
+		                		'align' => 'center',
+	                		),
+		                	__('BI Trx Code') => array(
+								'name' => __('BI Trx Code'),
+								'text' => __('199'),
+				                'data-options' => 'field:\'company_email\',width:80',
+		                		'align' => 'right',
+		                		'mainalign' => 'center',
+								'width' => 10,
+		                		'excel' => array(
+		                			'align' => 'right',
+		            			),
+	                		),
+		                	__('Remark') => array(
+								'name' => __('Remark'),
+								'text' => __('Komisi supir %s', $date_payment),
+				                'data-options' => 'field:\'company_email\',width:80',
+		                		'align' => 'right',
+		                		'mainalign' => 'center',
+								'width' => 20,
+		                		'excel' => array(
+		                			'align' => 'right',
+		            			),
+	                		),
+		                	__('Ref Number') => array(
+								'name' => __('Ref Number'),
+								'text' => $id,
+				                'data-options' => 'field:\'company_email\',width:80',
+		                		'style' => 'text-align: left;',
+		                		'align' => 'left',
+		                		'mainalign' => 'center',
+								'width' => 15,
+	                		),
+	                	),
+					),
+				);
+            	
+            	$idx++;
+			}
+
+			if( empty($view) ) {
+				$last = $this->controller->TtujPaymentDetail->find('first', array_merge($options, array(
+					'offset' => $offset+$limit,
+					'limit' => $limit,
+				)));
+
+				if( empty($last) ) {
+	            	$options = Common::_callUnset($options, array(
+						'group',
+						'limit',
+						'offset',
+					));
+
+	        		$this->controller->TtujPaymentDetail->virtualFields['total'] = 'SUM(TtujPaymentDetail.amount + TtujPaymentDetail.no_claim + TtujPaymentDetail.stood + TtujPaymentDetail.lainnya - TtujPaymentDetail.titipan - TtujPaymentDetail.claim - TtujPaymentDetail.laka)';
+	        		$this->controller->TtujPaymentDetail->virtualFields['cnt'] = 'COUNT(TtujPaymentDetail.id)';
+					$value = $this->controller->TtujPaymentDetail->find('first', $options);
+
+					unset($this->controller->TtujPaymentDetail->virtualFields['total']);
+					unset($this->controller->TtujPaymentDetail->virtualFields['cnt']);
+
+					$total = Common::hashEmptyField($value, 'TtujPaymentDetail.total', 0);
+	                $cnt = Common::hashEmptyField($value, 'TtujPaymentDetail.cnt', 0);
+
+					$result[$idx] = array(
+						__('Sender Information') => array(
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'sender_information\',width:100',
+			                'align' => 'center',
+	                		'excel' => array(
+	                			'headercolspan' => 1,
+	            			),
+			                'child' => array(
+			                	__('COUNT') => array(
+									'name' => __('Account Number'),
+									'text' => __('COUNT'),
+					                'data-options' => 'field:\'account_number\',width:100',
+			                		'style' => 'text-align: center;',
+			                		'align' => 'center',
+									'width' => 15,
+			                		'excel' => array(
+			                			'bold' => true,
+			            			),
+		                		),
+		                	),
+						),
+						__('Beneficiary Information') => array(
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'sender_information\',width:100',
+			                'align' => 'center',
+	                		'excel' => array(
+	                			'headercolspan' => 3,
+	            			),
+			                'child' => array(
+			                	__('Account Number') => array(
+									'name' => __('Account Number'),
+									'text' => $cnt,
+					                'data-options' => 'field:\'account_number\',width:100',
+			                		'style' => 'text-align: center;',
+			                		'align' => 'center',
+									'width' => 15,
+			                		'excel' => array(
+			                			'type' => 'number',
+			            			),
+		                		),
+			                	__('Account Name') => array(
+									'name' => __('Account Name'),
+									'text' => '',
+					                'data-options' => 'field:\'account_name\',width:100',
+			                		'style' => 'text-align: center;',
+			                		'align' => 'center',
+									'width' => 15,
+		                		),
+			                	__('eMail Address') => array(
+									'name' => __('eMail Address'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'style' => 'text-align: center;',
+			                		'align' => 'center',
+									'width' => 20,
+		                		),
+		                	),
+						),
+						__('Transaction Information') => array(
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'sender_information\',width:100',
+			                'align' => 'center',
+	                		'excel' => array(
+	                			'headercolspan' => 1,
+	            			),
+			                'child' => array(
+			                	__('Amount') => array(
+									'name' => __('Amount'),
+									'text' => '',
+					                'data-options' => 'field:\'account_number\',width:100',
+			                		'style' => 'text-align: right;',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 20,
+		                		),
+			                	__('Currency') => array(
+									'name' => __('Currency'),
+									'text' => '',
+					                'data-options' => 'field:\'account_name\',width:100',
+			                		'style' => 'text-align: right;',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 10,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+		                		),
+			                	__('Charge Type') => array(
+									'name' => __('Charge Type'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'style' => 'text-align: right;',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 10,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+		                		),
+			                	__('Voucher Code') => array(
+									'name' => __('Voucher Code'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'style' => 'text-align: center;',
+									'width' => 15,
+			                		'align' => 'center',
+		                		),
+			                	__('BI Trx Code') => array(
+									'name' => __('BI Trx Code'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 10,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+		                		),
+			                	__('Remark') => array(
+									'name' => __('Remark'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 20,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+		                		),
+			                	__('Ref Number') => array(
+									'name' => __('Ref Number'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'style' => 'text-align: left;',
+			                		'align' => 'left',
+			                		'mainalign' => 'center',
+									'width' => 15,
+		                		),
+		                	),
+						),
+					);
+
+					$idx++;
+					$result[$idx] = array(
+						__('Sender Information') => array(
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'sender_information\',width:100',
+			                'align' => 'center',
+	                		'excel' => array(
+	                			'headercolspan' => 1,
+	            			),
+			                'child' => array(
+			                	__('COUNT') => array(
+									'name' => __('Account Number'),
+									'text' => __('TOTAL'),
+					                'data-options' => 'field:\'account_number\',width:100',
+			                		'style' => 'text-align: center;',
+			                		'align' => 'center',
+									'width' => 15,
+			                		'excel' => array(
+			                			'bold' => true,
+			            			),
+		                		),
+		                	),
+						),
+						__('Beneficiary Information') => array(
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'sender_information\',width:100',
+			                'align' => 'center',
+	                		'excel' => array(
+	                			'headercolspan' => 3,
+	            			),
+			                'child' => array(
+			                	__('Account Number') => array(
+									'name' => __('Account Number'),
+									'text' => $total,
+					                'data-options' => 'field:\'account_number\',width:100',
+			                		'style' => 'text-align: center;',
+			                		'align' => 'center',
+									'width' => 15,
+			                		'excel' => array(
+			                			'type' => 'number',
+			            			),
+		                		),
+			                	__('Account Name') => array(
+									'name' => __('Account Name'),
+									'text' => '',
+					                'data-options' => 'field:\'account_name\',width:100',
+			                		'style' => 'text-align: center;',
+			                		'align' => 'center',
+									'width' => 15,
+		                		),
+			                	__('eMail Address') => array(
+									'name' => __('eMail Address'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'style' => 'text-align: center;',
+			                		'align' => 'center',
+									'width' => 20,
+		                		),
+		                	),
+						),
+						__('Transaction Information') => array(
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'sender_information\',width:100',
+			                'align' => 'center',
+	                		'excel' => array(
+	                			'headercolspan' => 1,
+	            			),
+			                'child' => array(
+			                	__('Amount') => array(
+									'name' => __('Amount'),
+									'text' => '',
+					                'data-options' => 'field:\'account_number\',width:100',
+			                		'style' => 'text-align: right;',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 20,
+		                		),
+			                	__('Currency') => array(
+									'name' => __('Currency'),
+									'text' => '',
+					                'data-options' => 'field:\'account_name\',width:100',
+			                		'style' => 'text-align: right;',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 10,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+		                		),
+			                	__('Charge Type') => array(
+									'name' => __('Charge Type'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'style' => 'text-align: right;',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 10,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+		                		),
+			                	__('Voucher Code') => array(
+									'name' => __('Voucher Code'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'style' => 'text-align: center;',
+									'width' => 15,
+			                		'align' => 'center',
+		                		),
+			                	__('BI Trx Code') => array(
+									'name' => __('BI Trx Code'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 10,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+		                		),
+			                	__('Remark') => array(
+									'name' => __('Remark'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 20,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+		                		),
+			                	__('Ref Number') => array(
+									'name' => __('Ref Number'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'style' => 'text-align: left;',
+			                		'align' => 'left',
+			                		'mainalign' => 'center',
+									'width' => 15,
+		                		),
+		                	),
+						),
+					);
+
+					$idx++;
+					$result[$idx] = array(
+						__('Sender Information') => array(
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'sender_information\',width:100',
+			                'align' => 'center',
+	                		'excel' => array(
+	                			'headercolspan' => 1,
+	            			),
+			                'child' => array(
+			                	__('COUNT') => array(
+									'name' => __('Account Number'),
+									'text' => __('DATE'),
+					                'data-options' => 'field:\'account_number\',width:100',
+			                		'style' => 'text-align: center;',
+			                		'align' => 'center',
+									'width' => 15,
+			                		'excel' => array(
+			                			'bold' => true,
+			            			),
+		                		),
+		                	),
+						),
+						__('Beneficiary Information') => array(
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'sender_information\',width:100',
+			                'align' => 'center',
+	                		'excel' => array(
+	                			'headercolspan' => 3,
+	            			),
+			                'child' => array(
+			                	__('Account Number') => array(
+									'name' => __('Account Number'),
+									'text' => date('m/d/Y'),
+					                'data-options' => 'field:\'account_number\',width:100',
+			                		'style' => 'text-align: center;',
+			                		'align' => 'center',
+									'width' => 15,
+		                		),
+			                	__('Account Name') => array(
+									'name' => __('Account Name'),
+									'text' => '',
+					                'data-options' => 'field:\'account_name\',width:100',
+			                		'style' => 'text-align: center;',
+			                		'align' => 'center',
+									'width' => 15,
+		                		),
+			                	__('eMail Address') => array(
+									'name' => __('eMail Address'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'style' => 'text-align: center;',
+			                		'align' => 'center',
+									'width' => 20,
+		                		),
+		                	),
+						),
+						__('Transaction Information') => array(
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'sender_information\',width:100',
+			                'align' => 'center',
+	                		'excel' => array(
+	                			'headercolspan' => 1,
+	            			),
+			                'child' => array(
+			                	__('Amount') => array(
+									'name' => __('Amount'),
+									'text' => '',
+					                'data-options' => 'field:\'account_number\',width:100',
+			                		'style' => 'text-align: right;',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 20,
+		                		),
+			                	__('Currency') => array(
+									'name' => __('Currency'),
+									'text' => '',
+					                'data-options' => 'field:\'account_name\',width:100',
+			                		'style' => 'text-align: right;',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 10,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+		                		),
+			                	__('Charge Type') => array(
+									'name' => __('Charge Type'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'style' => 'text-align: right;',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 10,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+		                		),
+			                	__('Voucher Code') => array(
+									'name' => __('Voucher Code'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'style' => 'text-align: center;',
+									'width' => 15,
+			                		'align' => 'center',
+		                		),
+			                	__('BI Trx Code') => array(
+									'name' => __('BI Trx Code'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 10,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+		                		),
+			                	__('Remark') => array(
+									'name' => __('Remark'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 20,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+		                		),
+			                	__('Ref Number') => array(
+									'name' => __('Ref Number'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'style' => 'text-align: left;',
+			                		'align' => 'left',
+			                		'mainalign' => 'center',
+									'width' => 15,
+		                		),
+		                	),
+						),
+					);
+
+					$idx++;
+					$result[$idx] = array(
+						__('Sender Information') => array(
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'sender_information\',width:100',
+			                'align' => 'center',
+	                		'excel' => array(
+	                			'headercolspan' => 1,
+	            			),
+			                'child' => array(
+			                	__('COUNT') => array(
+									'name' => __('Account Number'),
+									'text' => __('Time'),
+					                'data-options' => 'field:\'account_number\',width:100',
+			                		'style' => 'text-align: center;',
+			                		'align' => 'center',
+									'width' => 15,
+			                		'excel' => array(
+			                			'bold' => true,
+			            			),
+		                		),
+		                	),
+						),
+						__('Beneficiary Information') => array(
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'sender_information\',width:100',
+			                'align' => 'center',
+	                		'excel' => array(
+	                			'headercolspan' => 3,
+	            			),
+			                'child' => array(
+			                	__('Account Number') => array(
+									'name' => __('Account Number'),
+									'text' => date('H:i'),
+					                'data-options' => 'field:\'account_number\',width:100',
+			                		'style' => 'text-align: center;',
+			                		'align' => 'center',
+									'width' => 15,
+		                		),
+			                	__('Account Name') => array(
+									'name' => __('Account Name'),
+									'text' => '',
+					                'data-options' => 'field:\'account_name\',width:100',
+			                		'style' => 'text-align: center;',
+			                		'align' => 'center',
+									'width' => 15,
+		                		),
+			                	__('eMail Address') => array(
+									'name' => __('eMail Address'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'style' => 'text-align: center;',
+			                		'align' => 'center',
+									'width' => 20,
+		                		),
+		                	),
+						),
+						__('Transaction Information') => array(
+			                'style' => 'text-align: center;',
+			                'data-options' => 'field:\'sender_information\',width:100',
+			                'align' => 'center',
+	                		'excel' => array(
+	                			'headercolspan' => 1,
+	            			),
+			                'child' => array(
+			                	__('Amount') => array(
+									'name' => __('Amount'),
+									'text' => '',
+					                'data-options' => 'field:\'account_number\',width:100',
+			                		'style' => 'text-align: right;',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 20,
+		                		),
+			                	__('Currency') => array(
+									'name' => __('Currency'),
+									'text' => '',
+					                'data-options' => 'field:\'account_name\',width:100',
+			                		'style' => 'text-align: right;',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 10,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+		                		),
+			                	__('Charge Type') => array(
+									'name' => __('Charge Type'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'style' => 'text-align: right;',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 10,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+		                		),
+			                	__('Voucher Code') => array(
+									'name' => __('Voucher Code'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'style' => 'text-align: center;',
+									'width' => 15,
+			                		'align' => 'center',
+		                		),
+			                	__('BI Trx Code') => array(
+									'name' => __('BI Trx Code'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 10,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+		                		),
+			                	__('Remark') => array(
+									'name' => __('Remark'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'align' => 'right',
+			                		'mainalign' => 'center',
+									'width' => 20,
+			                		'excel' => array(
+			                			'align' => 'right',
+			            			),
+		                		),
+			                	__('Ref Number') => array(
+									'name' => __('Ref Number'),
+									'text' => '',
+					                'data-options' => 'field:\'company_email\',width:80',
+			                		'style' => 'text-align: left;',
+			                		'align' => 'left',
+			                		'mainalign' => 'center',
+									'width' => 15,
+		                		),
+		                	),
+						),
+					);
+				}
+			}
+		}
+
+		$result['printed_by'] = false;
+		return array(
+			'data' => $result,
+			'model' => 'TtujPaymentDetail',
+		);
+	}
+
 	function _callProcess( $modelName, $id, $value, $data ) {
 		$dataSave = false;
 		$file = false;
@@ -8461,6 +9338,14 @@ class RmReportComponent extends Component {
 			$column = $data['multiple_column'];
 		} else if( !empty($data[0]) ) {
 			$column = $data[0];
+		}
+
+		if( isset($data['printed_by']) ) {
+			$printed_by = $data['printed_by'];
+
+			unset($data['printed_by']);
+		} else {
+			$printed_by = true;
 		}
 
 		if( !empty($column) ) {
@@ -8650,8 +9535,8 @@ class RmReportComponent extends Component {
 					'name' => 'Calibri',
 					'bold' => $bold,
 					'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-					'fill_color' => 'd70601',
-					'text_color' => 'FFFFFF',
+					'fill_color' => 'd9d9d9',
+					'text_color' => '000000',
 				), $cell_end);
 
 				foreach ($data as $label => $values) {
@@ -8701,7 +9586,7 @@ class RmReportComponent extends Component {
 			}
 		}
 
-    	if( $document_status == 'completed' ) {
+    	if( $document_status == 'completed' && !empty($printed_by) ) {
 	        $full_name = Configure::read('__Site.config_user_data.Employe.full_name');
 			$this->PhpExcel->addTableRow(array(
 		    	array(

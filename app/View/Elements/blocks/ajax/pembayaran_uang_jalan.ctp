@@ -29,6 +29,8 @@
         $claim = !empty($ttujPayment['claim'][$idx])?$ttujPayment['claim'][$idx]:0;
         $unit_claim = !empty($ttujPayment['unit_claim'][$idx])?$ttujPayment['unit_claim'][$idx]:0;
         $laka = !empty($ttujPayment['laka'][$idx])?$ttujPayment['laka'][$idx]:0;
+        $potongan_laka = !empty($ttujPayment['potongan_laka'][$idx])?$ttujPayment['potongan_laka'][$idx]:0;
+        $laka_note = !empty($ttujPayment['laka_note'][$idx])?$ttujPayment['laka_note'][$idx]:NULL;
 
         $total = $amountPayment + $no_claim + $stood + $lainnya - $titipan - $claim - $laka;
 
@@ -101,6 +103,9 @@
                     ));
                     echo $this->Form->hidden('TtujPayment.data_type.',array(
                         'value'=> $data_type,
+                    ));
+                    echo $this->Form->hidden('TtujPayment.potongan_laka.', array(
+                        'value' => $potongan_laka,
                     ));
                 }
 		?>
@@ -206,6 +211,20 @@
                         'class'=>'form-control input_price_min laka text-right',
                         'required' => false,
                         'value' => $laka,
+                    ));
+                }
+        ?>
+    </td>
+    <td class="text-right">
+        <?php
+                if( !empty($document_info) ) {
+                    echo $laka_note;
+                } else {
+                    echo $this->Form->input('TtujPayment.laka_note.',array(
+                        'label'=> false,
+                        'class'=>'form-control',
+                        'required' => false,
+                        'value' => $laka_note,
                     ));
                 }
         ?>

@@ -203,6 +203,37 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->label('driver_type', __('Supir'));
+                    ?>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <?php 
+                                    echo $this->Form->input('driver_type',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                        'empty' => false,
+                                        'options' => array(
+                                            '1' => __('Nama'),
+                                            '2' => __('ID Supir'),
+                                        ),
+                                    ));
+                            ?>
+                        </div>
+                        <div class="col-sm-8">
+                            <?php 
+                                    echo $this->Form->input('driver_value',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                    ));
+                            ?>
+                        </div>
+                    </div>
+                </div>
                 <!-- <div class="form-group">
                     <?php 
                             // echo $this->Form->input('insurance',array(
@@ -224,6 +255,7 @@
             </div>
         </div>
         <?php 
+                echo $this->Form->hidden('no_filter_date');
                 echo $this->Form->end();
         ?>
     </div>

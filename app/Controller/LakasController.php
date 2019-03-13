@@ -108,11 +108,24 @@ class LakasController extends AppController {
         $this->loadModel('City');
         $this->loadModel('Insurance');
 
-        $driver_pengganti_id = $this->MkCommon->filterEmptyField($data_local, 'Laka', 'change_driver_id');
+        $last_total = $this->MkCommon->filterEmptyField($data_local, 'Laka', 'total');
+        $driver_id = $this->MkCommon->filterEmptyField($data_local, 'Laka', 'driver_id');
+        $driver_pengganti_id = $this->MkCommon->filterEmptyField($data_local, 'Laka', 'change_driver_id', $driver_id);
 
         if(!empty($this->request->data)){
             $data = $this->request->data;
             $ttuj_data = array();
+            $data = $this->MkCommon->dataConverter($data, array(
+                'price' => array(
+                    'Laka' => array(
+                        'total',
+                        'total_laka',
+                    ),
+                )
+            ));
+            $tmp_driver_id = NULL;
+            $total = $this->MkCommon->filterEmptyField($data, 'Laka', 'total');
+            
             $data['Laka']['branch_id'] = Configure::read('__Site.config_branch_id');
 
             if($id && $data_local){
@@ -135,6 +148,7 @@ class LakasController extends AppController {
 
                 if(!empty($truck)){
                     $data['Laka']['nopol'] = $truck['Truck']['nopol'];
+                    $data['Laka']['driver_id'] = $tmp_driver_id = Common::hashEmptyField($truck, 'Truck.driver_id');
                 }
             }
             
@@ -173,7 +187,11 @@ class LakasController extends AppController {
                     ),
                 ));
 
+                $data['Laka']['driver_id'] = $this->MkCommon->filterEmptyField($ttuj_data, 'Ttuj', 'driver_id');
                 $data['Laka']['change_driver_id'] = $this->MkCommon->filterEmptyField($ttuj_data, 'Ttuj', 'driver_pengganti_id');
+
+                $tmp_driver_id = Common::hashEmptyField($ttuj_data, 'Ttuj.driver_id');
+                $tmp_driver_id = Common::hashEmptyField($ttuj_data, 'Ttuj.driver_pengganti_id', $tmp_driver_id);
 
                 if(!empty($ttuj_data['Driver']['driver_name'])){
                     $data['Laka']['driver_name'] = $ttuj_data['Driver']['driver_name'];
@@ -182,6 +200,15 @@ class LakasController extends AppController {
                 if(!empty($ttuj_data['DriverPengganti']['driver_name'])){
                     $data['Laka']['change_driver_name'] = $ttuj_data['DriverPengganti']['driver_name'];
                 }
+            }
+
+            $change_driver_id = Common::hashEmptyField($data, 'Laka.change_driver_id');
+
+            if( !empty($change_driver_id) ) {
+                $driver = $this->Laka->Driver->getMerge(array(), $change_driver_id);
+                $data['Laka']['change_driver_name'] = Common::hashEmptyField($driver, 'Driver.driver_name');
+            } else {
+                $change_driver_id = $tmp_driver_id;
             }
 
             $this->Laka->set($data);
@@ -250,11 +277,34 @@ class LakasController extends AppController {
                             $this->Ttuj->save();
                         }
 
-                        // if(!empty($data['Laka']['completed']) && !empty($data['Laka']['ttuj_id'])){
-                        //     $this->Ttuj->id = $data['Laka']['ttuj_id'];
-                        //     $this->Ttuj->set('is_laka', 0);
-                        //     $this->Ttuj->save();
-                        // }
+                        if( !empty($tmp_driver_id) && $driver_pengganti_id == $tmp_driver_id ) {
+                            $driver = $this->Laka->Driver->getMerge(array(), $tmp_driver_id);
+                            $total_laka = Common::hashEmptyField($driver, 'Driver.total_laka', 0) - $last_total + $total;
+
+                            $this->Laka->Driver->updateAll(array(
+                                'Driver.total_laka' => $total_laka,
+                            ), array(
+                                'Driver.id' => $tmp_driver_id,
+                            ));
+                        } else if( !empty($tmp_driver_id) ) {
+                            $driver = $this->Laka->Driver->getMerge(array(), $tmp_driver_id);
+                            $total_laka = Common::hashEmptyField($driver, 'Driver.total_laka', 0) + $total;
+
+                            $this->Laka->Driver->updateAll(array(
+                                'Driver.total_laka' => $total_laka,
+                            ), array(
+                                'Driver.id' => $tmp_driver_id,
+                            ));
+                            
+                            $driverLast = $this->Laka->Driver->getMerge(array(), $driver_pengganti_id);
+                            $total_laka = Common::hashEmptyField($driverLast, 'Driver.total_laka', 0) - $last_total;
+                            
+                            $this->Laka->Driver->updateAll(array(
+                                'Driver.total_laka' => $total_laka,
+                            ), array(
+                                'Driver.id' => $driver_pengganti_id,
+                            ));
+                        }
 
                         $this->params['old_data'] = $data_local;
                         $this->params['data'] = $data;
@@ -379,7 +429,7 @@ class LakasController extends AppController {
             'conditions' => array(
                 'OR' => array(
                     'Driver.id' => $driver_pengganti_id,
-                    'Truck.id <>' => NULL,
+                    'Truck.id' => NULL,
                 ),
             ),
             'fields' => array(
@@ -427,6 +477,10 @@ class LakasController extends AppController {
 
         if($locale){
             $value = true;
+            $tmp_driver_id = Common::hashEmptyField($locale, 'Laka.driver_id');
+            $tmp_driver_id = Common::hashEmptyField($locale, 'Laka.change_driver_id', $tmp_driver_id);
+            $last_total = Common::hashEmptyField($locale, 'Laka.total', 0);
+
             if($locale['Laka']['status']){
                 $value = false;
             }
@@ -442,6 +496,17 @@ class LakasController extends AppController {
                     $this->Ttuj->id = $locale['Laka']['ttuj_id'];
                     $this->Ttuj->set('is_laka', 0);
                     $this->Ttuj->save();
+                }
+                        
+                if( !empty($tmp_driver_id) ) {
+                    $driver = $this->Laka->Driver->getMerge(array(), $tmp_driver_id);
+                    $total_laka = Common::hashEmptyField($driver, 'Driver.total_laka', 0) - $last_total;
+
+                    $this->Laka->Driver->updateAll(array(
+                        'Driver.total_laka' => $total_laka,
+                    ), array(
+                        'Driver.id' => $tmp_driver_id,
+                    ));
                 }
 
                 $this->MkCommon->setCustomFlash(sprintf(__('Sukses menghapus data LAKA #%s'), $noref), 'success');
@@ -461,13 +526,22 @@ class LakasController extends AppController {
         $this->loadModel('Laka');
 
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
-        $dateFrom = date('Y-m-d', strtotime('-1 month'));
-        $dateTo = date('Y-m-d');
+        $params = $this->params->params;
+        $no_filter_date = Common::hashEmptyField($params, 'named.no_filter_date');
 
-        $params = $this->MkCommon->_callRefineParams($this->params, array(
-            'dateFrom' => $dateFrom,
-            'dateTo' => $dateTo,
-        ));
+        if( empty($no_filter_date) ) {
+            $dateFrom = date('Y-m-d', strtotime('-1 month'));
+            $dateTo = date('Y-m-d');
+
+            $filters = array(
+                'dateFrom' => $dateFrom,
+                'dateTo' => $dateTo,
+            );
+        } else {
+            $filters = array();
+        }
+
+        $params = $this->MkCommon->_callRefineParams($this->params, $filters);
 
         $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
         $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');

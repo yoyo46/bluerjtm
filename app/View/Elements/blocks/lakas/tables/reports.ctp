@@ -15,6 +15,9 @@
                 $description_laka = $this->Common->filterEmptyField($value, 'Laka', 'description_laka');
                 $insurance = $this->Common->filterEmptyField($value, 'Laka', 'insurances');
                 $completed = $this->Common->filterEmptyField($value, 'Laka', 'completed');
+                $total = Common::hashEmptyField($value, 'Laka.total', 0, array(
+                    'type' => 'currency',
+                ));
 
                 $capacity = $this->Common->filterEmptyField($value, 'Truck', 'capacity');
                 $category = $this->Common->filterEmptyField($value, 'TruckCategory', 'name');
@@ -96,7 +99,7 @@
             echo $this->Html->tag('td', $completed, array(
                 'style' => 'text-align:center;',
             ));
-            echo $this->Html->tag('td', 0, array(
+            echo $this->Html->tag('td', $total, array(
                 'style' => 'text-align:right;',
             ));
     ?>

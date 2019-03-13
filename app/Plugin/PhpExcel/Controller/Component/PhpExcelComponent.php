@@ -76,7 +76,7 @@ class PhpExcelComponent extends Component {
      */
     public function setReportHeader($report_title = 'Report Title', $periods = false, $title_cell = 'A1', $periods_cell = 'A2', $title_cell_merge = false, $periods_cell_merge = false) {
         $sheet = $this->_xls->getActiveSheet();
-        $sheet->setCellValue('A1', $report_title)->getStyle()->getFont()->setSize(20)->setBold(true);
+        $sheet->setCellValue('A1', $report_title)->getStyle()->getFont()->setSize(12)->setBold(true);
 
         if( !empty($title_cell_merge) ) {
             $sheet->mergeCells($title_cell_merge);    

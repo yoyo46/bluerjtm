@@ -102,6 +102,17 @@
                 'field_model' => 'Driver.join_date',
                 'display' => false,
             ),
+            'total_laka' => array(
+                'name' => __('Biaya LAKA'),
+                'field_model' => 'Driver.total_laka',
+            ),
+            'total_laka_paid' => array(
+                'name' => __('LAKA Dibayar'),
+                'field_model' => 'Driver.total_laka_paid',
+            ),
+            'saldo_laka' => array(
+                'name' => __('LAKA Belum Dibayar'),
+            ),
             'status' => array(
                 'name' => __('Status'),
                 'field_model' => 'Driver.status',

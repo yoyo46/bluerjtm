@@ -7,8 +7,8 @@ class Laka extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'No Dokumen name harap diisi'
             ),
-            'unique' => array(
-                'rule' => 'isUnique',
+            'isUniqueNodoc' => array(
+                'rule' => 'isUniqueNodoc',
                 'message' => 'No dokumen sudah terdaftar, mohon masukkan no dokumen lain.'
             ),
         ),
@@ -99,7 +99,13 @@ class Laka extends AppModel {
                 'rule' => array('completeDateValidate'),
                 'message' => 'Tgl selesai LAKA harap diisi'
             ),
-        )
+        ),
+        // 'total' => array(
+        //     'notempty' => array(
+        //         'rule' => array('notempty'),
+        //         'message' => 'Biaya Laka harap diisi'
+        //     ),
+        // )
 	);
 
     var $belongsTo = array(
@@ -138,6 +144,12 @@ class Laka extends AppModel {
             'foreignKey' => 'laka_id',
         ),
     );
+
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['tmp_driver_id'] = sprintf('IFNULL(%s.change_driver_id, %s.driver_id)', $this->alias, $this->alias);
+        $this->virtualFields['tmp_driver_name'] = sprintf('IFNULL(%s.change_driver_name, %s.driver_name)', $this->alias, $this->alias);
+    }
 
     function validateTtuj($data){
         $result = false;
@@ -210,6 +222,11 @@ class Laka extends AppModel {
 
             case 'non-active':
                 $default_options['conditions']['Laka.status'] = 0;
+                break;
+
+            case 'unpaid':
+                $default_options['conditions']['Laka.status'] = 1;
+                $default_options['conditions']['Laka.paid_status <>'] = 'full';
                 break;
             
             default:
@@ -329,6 +346,8 @@ class Laka extends AppModel {
         $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
         $status = !empty($data['named']['status'])?$data['named']['status']:false;
         $insurance = !empty($data['named']['insurance'])?$data['named']['insurance']:false;
+        $driver_type = !empty($data['named']['driver_type'])?$data['named']['driver_type']:1;
+        $driver_value = !empty($data['named']['driver_value'])?$data['named']['driver_value']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -382,8 +401,36 @@ class Laka extends AppModel {
                 $default_options['conditions']['Laka.completed'] = $status;
             }
         }
+        if(!empty($driver_value)){
+            if( $driver_type == 2 ) {
+                $default_options['conditions']['Laka.tmp_driver_id'] = $driver_value;
+            } else {
+                $default_options['conditions']['Laka.tmp_driver_name LIKE'] = '%'.$driver_value.'%';
+            }
+        }
         
         return $default_options;
+    }
+
+    function isUniqueNodoc () {
+        $id = $this->id;
+        $id = Common::hashEmptyField($this->data, 'Laka.id', $id);
+
+        $nodoc = !empty($this->data['Laka']['nodoc'])?$this->data['Laka']['nodoc']:false;
+        $value = $this->getData('count', array(
+            'conditions' => array(
+                'Laka.nodoc' => $nodoc,
+                'Laka.id NOT' => $id,
+            ),
+        ), array(
+            'branch' => false,
+        ));
+        
+        if( !empty($value) ) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
 ?>

@@ -2464,9 +2464,15 @@ class CommonHelper extends AppHelper {
         }
 
         if( !empty($urlDefault) && empty($data_action) ) {
-            return $this->Html->link($label, $urlDefault, array(
+            $link = $this->Html->link($label, $urlDefault, array(
                 'target' => 'blank',
             ));
+
+            if( !empty($link) ) {
+                return $link;
+            } else {
+                return $label;
+            }
         } else {
             return sprintf('#%s', $label);
         }
@@ -2949,5 +2955,13 @@ class CommonHelper extends AppHelper {
         ), __('Anda yakin ingin menghapus Cost Center ini ?'));
 
         return $dataTree;
+    }
+
+    function _callNoRefCMS ( $id, $name ) {
+        $dt = date('Ymd');
+        $str = substr($name, 0, 1);
+        $str = ucwords($str);
+
+        return __('%s-%s%s', $dt, $id, $str);
     }
 }

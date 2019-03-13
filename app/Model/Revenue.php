@@ -791,6 +791,7 @@ class Revenue extends AppModel {
         $status = !empty($data['named']['status'])?$data['named']['status']:false;
         $fromcity = !empty($data['named']['fromcity'])?$data['named']['fromcity']:false;
         $tocity = !empty($data['named']['tocity'])?$data['named']['tocity']:false;
+        $customer_group_id = !empty($data['named']['customer_group_id'])?$data['named']['customer_group_id']:false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -860,6 +861,18 @@ class Revenue extends AppModel {
                 $default_options['conditions']['Revenue.transaction_status'] = $status;
                 $default_options['conditions']['Revenue.status'] = 1;
             }
+        }
+        if(!empty($customer_group_id)){
+            $customer_id = $this->CustomerNoType->getData('list', array(
+                'conditions' => array(
+                    'CustomerNoType.customer_group_id' => $customer_group_id,
+                ),
+                'fields' => array(
+                    'CustomerNoType.id',
+                ),
+            ));
+
+            $default_options['conditions']['Revenue.customer_id'] = $customer_id;
         }
 
         if(!empty($fromcity) || !empty($tocity)){

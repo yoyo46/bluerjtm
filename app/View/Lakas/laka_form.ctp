@@ -245,6 +245,26 @@
 				        </div>
 				        <div class="form-group">
 				        	<?php 
+									echo $this->Form->input('total_laka',array(
+										'type' => 'text',
+										'label'=> __('Biaya LAKA'), 
+										'class'=>'form-control input_price',
+										'required' => false,
+									));
+							?>
+				        </div>
+				        <div class="form-group">
+				        	<?php 
+									echo $this->Form->input('total',array(
+										'type' => 'text',
+										'label'=> __('Ditanggung Supir'), 
+										'class'=>'form-control input_price',
+										'required' => false,
+									));
+							?>
+				        </div>
+				        <div class="form-group">
+				        	<?php 
 									echo $this->Form->input('driver_condition',array(
 										'label'=> __('Kondisi Supir dan kenek *'), 
 										'class'=>'form-control',

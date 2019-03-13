@@ -465,12 +465,21 @@ class Truck extends AppModel {
 
         $result = $this->getData('first', array(
             'conditions' => $conditions,
-            'contain' => array(
-                'Driver'
-            ),
         ), true, array(
             'branch' => false,
         ));
+
+        if( !empty($result) ) {
+            $result = $this->getMergeList($result, array(
+                'contain' => array(
+                    'Driver' => array(
+                        'elements' => array(
+                            'branch' => false,
+                        ),
+                    ),
+                ),
+            ));
+        }
 
         return $result;
     }

@@ -64,6 +64,12 @@
                 'align' => 'right',
                 'data-options' => 'field:\'total\',width:100',
             ),
+            'ok' => array(
+                'name' => __('OK'),
+                'style' => 'text-align: center;vertical-align: middle;',
+                'align' => 'center',
+                'data-options' => 'field:\'ok\',width:80',
+            ),
             'date_now' => array(
                 'name' => __('TGL. Masuk TTUJ Biru'),
                 'style' => 'text-align: center;vertical-align: middle;',
@@ -90,12 +96,12 @@
                 'data-options' => 'field:\'bank_name\',width:100',
             ),
             'date' => array(
-                'name' => __('Tgl Transaksi'),
+                'name' => __('Tgl Transfer'),
                 'style' => 'text-align: center;vertical-align: middle;',
                 'data-options' => 'field:\'date\',width:100',
             ),
             'paid' => array(
-                'name' => __('Total Pembayaran'),
+                'name' => __('Total Dibayar'),
                 'style' => 'text-align: right;vertical-align: middle;',
                 'align' => 'right',
                 'data-options' => 'field:\'paid\',width:100',

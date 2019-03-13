@@ -14,10 +14,12 @@
                     'url'=> $this->Html->url( array(
                         'controller' => 'revenues',
                         'action' => 'search',
-                        'report_ttuj_payment'
+                        'report_commissions'
                     )), 
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
+                    'id' => 'form-search',
+                    'autocomplete'=> 'off', 
                 ));
         ?>
         <div class="row">
@@ -294,7 +296,7 @@
                                 'type' => 'submit',
                             ));
                             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'report_ttuj_payment', 
+                                'action' => 'report_commissions', 
                             ), array(
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',
@@ -306,6 +308,9 @@
         <?php 
                 echo $this->Form->hidden('paid_type');
                 echo $this->Form->hidden('no_filter_date');
+                echo $this->Form->hidden('title',array(
+                    'value'=> $sub_module_title,
+                ));
                 echo $this->Form->end();
         ?>
     </div>

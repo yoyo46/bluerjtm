@@ -438,6 +438,7 @@ class RevenueDetail extends AppModel {
         $fromcity = !empty($data['named']['fromcity'])?$data['named']['fromcity']:false;
         $tocity = !empty($data['named']['tocity'])?$data['named']['tocity']:false;
         $tocityDetail = !empty($data['named']['tocityDetail'])?$data['named']['tocityDetail']:false;
+        $customer_group_id = !empty($data['named']['customer_group_id'])?$data['named']['customer_group_id']:false;
 
         if(!empty($fromcity) || !empty($tocity) || $nopol){
             $this->bindModel(array(
@@ -541,6 +542,18 @@ class RevenueDetail extends AppModel {
         }
         if(!empty($tocityDetail)){
             $default_options['conditions']['RevenueDetail.city_id'] = $tocityDetail;
+        }
+        if(!empty($customer_group_id)){
+            $customer_id = $this->Revenue->CustomerNoType->getData('list', array(
+                'conditions' => array(
+                    'CustomerNoType.customer_group_id' => $customer_group_id,
+                ),
+                'fields' => array(
+                    'CustomerNoType.id',
+                ),
+            ));
+
+            $default_options['conditions']['Revenue.customer_id'] = $customer_id;
         }
         
         return $default_options;

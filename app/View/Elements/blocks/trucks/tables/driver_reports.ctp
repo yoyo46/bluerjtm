@@ -33,6 +33,9 @@
                 $customJoinDate = $this->Common->customDate($join_date, 'd M Y');
                 $customResignDate = $this->Common->customDate($date_resign, 'd M Y');
 
+                $total_laka = Common::hashEmptyField($value, 'Driver.total_laka', 0);
+                $total_laka_paid = Common::hashEmptyField($value, 'Driver.total_laka_paid', 0);
+
                 if( !empty($is_resign) ) {
                     $lblStatus = $this->Html->tag('span', __('Resign'), array(
                         'class' => 'label label-warning',
@@ -122,6 +125,32 @@
                 $content .= $this->Common->_getDataColumn($customJoinDate, 'Driver', 'join_date', array(
                     'class' => 'join_date',
                     'style' => 'display: none',
+                ));
+                $content .= $this->Common->_getDataColumn($this->Html->link(Common::getFormatPrice($total_laka), array(
+                    'controller' => 'lakas',
+                    'action' => 'reports',
+                    'driver_type' => 2,
+                    'driver_value' => $id,
+                    'no_filter_date' => true,
+                ), array(
+                    'target' => '_blank',
+                )), 'Driver', 'total_laka', array(
+                    'class' => 'total_laka text-right',
+                ));
+                $content .= $this->Common->_getDataColumn($this->Html->link(Common::getFormatPrice($total_laka_paid), array(
+                    'controller' => 'revenues',
+                    'action' => 'report_ttuj_payment',
+                    'driver_type' => 2,
+                    'driver_value' => $id,
+                    'no_filter_date' => true,
+                    'paid_type' => 'laka',
+                ), array(
+                    'target' => '_blank',
+                )), 'Driver', 'total_laka_paid', array(
+                    'class' => 'total_laka_paid text-right',
+                ));
+                $content .= $this->Common->_getDataColumn(Common::getFormatPrice($total_laka - $total_laka_paid), 'Driver', 'saldo_laka', array(
+                    'class' => 'saldo_laka',
                 ));
                 $content .= $this->Common->_getDataColumn($lblStatus, 'Driver', 'status', array(
                     'class' => 'status',

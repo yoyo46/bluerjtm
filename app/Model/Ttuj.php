@@ -183,6 +183,11 @@ class Ttuj extends AppModel {
         ),
     );
 
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->virtualFields['tmp_driver_id'] = sprintf('IFNULL(%s.driver_pengganti_id, %s.driver_id)', $this->alias, $this->alias);
+    }
+
     function validateDateTtuj ( $data, $target_date, $input_date ) {
         $allow = !empty($this->data['Ttuj']['allow_date_ttuj'])?$this->data['Ttuj']['allow_date_ttuj']:false;
 
@@ -739,7 +744,6 @@ class Ttuj extends AppModel {
         $type = !empty($data['named']['type'])?$data['named']['type']:1;
         $company = !empty($data['named']['company'])?$data['named']['company']:false;
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
-        $to_city = !empty($data['named']['to_city'])?$data['named']['to_city']:false;
         $customer = !empty($data['named']['customer'])?$data['named']['customer']:false;
         $customerid = !empty($data['named']['customerid'])?$data['named']['customerid']:false;
         $driver = !empty($data['named']['driver'])?$data['named']['driver']:false;
@@ -766,6 +770,10 @@ class Ttuj extends AppModel {
         $uang_kawal = !empty($data['named']['uang_kawal'])?$data['named']['uang_kawal']:false;
         $uang_keamanan = !empty($data['named']['uang_keamanan'])?$data['named']['uang_keamanan']:false;
         $ttuj_type = !empty($data['named']['ttuj_type'])?$data['named']['ttuj_type']:false;
+
+        $from_city = !empty($data['named']['from_city'])?$data['named']['from_city']:false;
+        $to_city = !empty($data['named']['to_city'])?$data['named']['to_city']:false;
+        $use_branch = !empty($data['named']['use_branch'])?$data['named']['use_branch']:false;
         
         $sort = $this->filterEmptyField($data, 'named', 'sort');
         $direction = $this->filterEmptyField($data, 'named', 'direction');
@@ -874,7 +882,17 @@ class Ttuj extends AppModel {
             $default_options['conditions']['Ttuj.no_ttuj LIKE'] = '%'.$nodoc.'%';
         }
         if(!empty($to_city)){
-            $default_options['conditions']['Ttuj.to_city_name LIKE'] = '%'.$to_city.'%';
+            if( is_numeric($to_city) ) {
+                $default_options['conditions']['Ttuj.to_city_id'] = $to_city;
+            } else {
+                $default_options['conditions']['Ttuj.to_city_name LIKE'] = '%'.$to_city.'%';
+            }
+        }
+        if(!empty($from_city)){
+            $default_options['conditions']['Ttuj.from_city_id'] = $from_city;
+        }
+        if(!empty($fromcity)){
+            $default_options['conditions']['Ttuj.from_city_id'] = $fromcity;
         }
         if(!empty($driver)){
             $default_options['conditions']['Ttuj.driver_name LIKE'] = '%'.$driver.'%';
@@ -910,9 +928,6 @@ class Ttuj extends AppModel {
         }
         if(!empty($come)){
             $default_options['conditions'][0]['OR'][]['Ttuj.commission_extra <>'] = 0;
-        }
-        if(!empty($fromcity)){
-            $default_options['conditions']['Ttuj.from_city_id'] = $fromcity;
         }
         if(!empty($tocity)){
             $default_options['conditions']['Ttuj.to_city_id'] = $tocity;
@@ -1162,65 +1177,81 @@ class Ttuj extends AppModel {
             $last_str = '';
         }
 
+        $current_branch_id = Configure::read('__Site.config_branch_id');
+        $branch_city_id = Configure::read('__Site.Branch.City.id');
+        $head_office = Configure::read('__Site.config_branch_head_office');
+        $condition_branch = array();
+        $condition_uj2 = array();
+        
+        if( !empty($use_branch) ) {
+            if( empty($head_office) ) {
+                $condition_branch['Ttuj.branch_id'] = $current_branch_id;
+                $condition_uj2[]['OR'] = array(
+                    'Ttuj.to_city_id' => $branch_city_id,
+                    'Ttuj.branch_id' => $current_branch_id,
+                );
+            }
+        }
+
         if(!empty($uang_jalan_1)){
             $default_options['conditions']['OR'][] = array(
                 'Ttuj.uang_jalan_1 <>' => 0,
                 'Ttuj.paid_uang_jalan'.$last_str.' <>' => 'full',
-            );
+            ) + $condition_branch;
         }
         if(!empty($uang_jalan_2)){
             $default_options['conditions']['OR'][] = array(
                 'Ttuj.uang_jalan_2 <>' => 0,
                 'Ttuj.paid_uang_jalan_2'.$last_str.' <>' => 'full',
-            );
+            ) + $condition_uj2;
         }
         if(!empty($uang_jalan_extra)){
             $default_options['conditions']['OR'][] = array(
                 'Ttuj.uang_jalan_extra <>' => 0,
                 'Ttuj.paid_uang_jalan_extra'.$last_str.' <>' => 'full',
-            );
+            ) + $condition_branch;
         }
         if(!empty($commission)){
             $default_options['conditions']['OR'][] = array(
                 'Ttuj.commission <>' => 0,
                 'Ttuj.paid_commission'.$last_str.' <>' => 'full',
-            );
+            ) + $condition_branch;
         }
         if(!empty($commission_extra)){
             $default_options['conditions']['OR'][] = array(
                 'Ttuj.commission_extra <>' => 0,
                 'Ttuj.paid_commission_extra'.$last_str.' <>' => 'full',
-            );
+            ) + $condition_branch;
         }
         if(!empty($uang_kuli_muat)){
             $default_options['conditions']['OR'][] = array(
                 'Ttuj.uang_kuli_muat <>' => 0,
                 'Ttuj.paid_uang_kuli_muat'.$last_str.' <>' => 'full',
-            );
+            ) + $condition_branch;
         }
         if(!empty($uang_kuli_bongkar)){
             $default_options['conditions']['OR'][] = array(
                 'Ttuj.uang_kuli_bongkar <>' => 0,
                 'Ttuj.paid_uang_kuli_bongkar'.$last_str.' <>' => 'full',
-            );
+            ) + $condition_branch;
         }
         if(!empty($asdp)){
             $default_options['conditions']['OR'][] = array(
                 'Ttuj.asdp <>' => 0,
                 'Ttuj.paid_asdp'.$last_str.' <>' => 'full',
-            );
+            ) + $condition_branch;
         }
         if(!empty($uang_kawal)){
             $default_options['conditions']['OR'][] = array(
                 'Ttuj.uang_kawal <>' => 0,
                 'Ttuj.paid_uang_kawal'.$last_str.' <>' => 'full',
-            );
+            ) + $condition_branch;
         }
         if(!empty($uang_keamanan)){
             $default_options['conditions']['OR'][] = array(
                 'Ttuj.uang_keamanan <>' => 0,
                 'Ttuj.paid_uang_keamanan'.$last_str.' <>' => 'full',
-            );
+            ) + $condition_branch;
         }
 
         if( $sort == 'Ttuj.driver_name' ) {

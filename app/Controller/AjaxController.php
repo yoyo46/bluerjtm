@@ -1768,7 +1768,7 @@ class AjaxController extends AppController {
 		$this->loadModel('BranchCoa');
 
         $coaIdCache = $this->Session->read('Coa.CoaId');
-        $coa = $this->BranchCoa->Coa->getData('first', array(
+        $coa = $this->GroupBranch->Branch->Coa->getData('first', array(
         	'conditions' => array(
         		'Coa.id' => $coaIdCache,
     		),
@@ -2132,15 +2132,16 @@ class AjaxController extends AppController {
 	        	'Ttuj.is_rjtm' => 1,
         	),
         	'order' => array(
-				'Ttuj.ttuj_date' => 'DESC',
 				'Ttuj.id' => 'DESC',
         	),
             'limit' => Configure::read('__Site.config_pagination'),
     	);
+    	$condition_branch = array();
+    	$condition_uj2 = array();
 
         if( empty($head_office) ) {
-            $options['conditions']['Ttuj.branch_id'] = Configure::read('__Site.config_branch_id');
-	    	$options['conditions'][]['OR'] = array(
+            $condition_branch['Ttuj.branch_id'] = Configure::read('__Site.config_branch_id');
+	    	$condition_uj2[]['OR'] = array(
         		'Ttuj.to_city_id' => $branch_city_id,
         		'Ttuj.branch_id' => $current_branch_id,
 			);
@@ -2160,23 +2161,23 @@ class AjaxController extends AppController {
 	        		array(
 			        	'Ttuj.uang_kuli_muat <>' => 0,
 			        	'Ttuj.paid_uang_kuli_muat_draft <>' => 'full',
-	        		),
+	        		) + $condition_branch,
 	        		array(
 			        	'Ttuj.uang_kuli_bongkar <>' => 0,
 			        	'Ttuj.paid_uang_kuli_bongkar_draft <>' => 'full',
-	        		),
+	        		) + $condition_branch,
 	        		array(
 			        	'Ttuj.asdp <>' => 0,
 			        	'Ttuj.paid_asdp_draft <>' => 'full',
-	        		),
+	        		) + $condition_branch,
 	        		array(
 			        	'Ttuj.uang_kawal <>' => 0,
 			        	'Ttuj.paid_uang_kawal_draft <>' => 'full',
-	        		),
+	        		) + $condition_branch,
 	        		array(
 			        	'Ttuj.uang_keamanan <>' => 0,
 			        	'Ttuj.paid_uang_keamanan_draft <>' => 'full',
-	        		),
+	        		) + $condition_branch,
 				);
         		break;
         	
@@ -2193,28 +2194,29 @@ class AjaxController extends AppController {
 	        		array(
 	        			'Ttuj.uang_jalan_1 <>' => 0,
 		        		'Ttuj.paid_uang_jalan_draft <>' => 'full',
-	        		),
+	        		) + $condition_branch,
 	        		array(
 			        	'Ttuj.uang_jalan_2 <>' => 0,
 			        	'Ttuj.paid_uang_jalan_2_draft <>' => 'full',
-	        		),
+	        		) + $condition_uj2,
 	        		array(
 			        	'Ttuj.uang_jalan_extra <>' => 0,
 			        	'Ttuj.paid_uang_jalan_extra_draft <>' => 'full',
-	        		),
+	        		) + $condition_branch,
 	        		array(
 			        	'Ttuj.commission <>' => 0,
 			        	'Ttuj.paid_commission_draft <>' => 'full',
-	        		),
+	        		) + $condition_branch,
 	        		array(
 			        	'Ttuj.commission_extra <>' => 0,
 			        	'Ttuj.paid_commission_extra_draft <>' => 'full',
-	        		),
+	        		) + $condition_branch,
 				);
         		break;
         }
 
         $params = $this->MkCommon->_callRefineParams($this->params);
+        $params['named']['use_branch'] = true;
         $options =  $this->Ttuj->_callRefineParams($params, $options);
 
         if(!empty($this->params)){
@@ -2227,15 +2229,28 @@ class AjaxController extends AppController {
         $ttujs = $this->paginate('Ttuj');
 
         if( !empty($ttujs) ) {
+        	$this->Ttuj->Driver->virtualFields['total_laka'] = 'Driver.total_laka - Driver.total_laka_paid_draft';
+        	$laka_percents = $this->MkCommon->_callSettingGeneral('Laka', 'laka_percent', false);
+        	$laka_percent = Common::hashEmptyField($laka_percents, 'Laka.laka_percent', 0);
+
         	foreach ($ttujs as $key => $ttuj) {
         		$customer_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'customer_id');
-            	$driver_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'driver_id');
             	$ttuj_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'id');
+            	$driver_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'driver_id');
             	$driver_pengganti_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'driver_pengganti_id');
+            	$uang_jalan_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'uang_jalan_id');
+            	$tmp_driver_id = Common::hashEmptyField($ttuj, 'Ttuj.driver_pengganti_id', $driver_id);
 
         		$ttuj = $this->GroupBranch->Branch->Ttuj->Customer->getMerge($ttuj, $customer_id);
             	$ttuj = $this->GroupBranch->Branch->Driver->getMerge($ttuj, $driver_id);
             	$ttuj = $this->GroupBranch->Branch->Driver->getMerge($ttuj, $driver_pengganti_id, 'DriverPengganti');
+                $ttuj = $this->Ttuj->UangJalan->getMerge($ttuj, $uang_jalan_id);
+
+                if( !empty($driver_pengganti_id) ) {
+	                $ttuj['Laka']['total'] = Common::hashEmptyField($ttuj, 'DriverPengganti.total_laka', 0);
+	            } else if( !empty($driver_id) ) {
+	                $ttuj['Laka']['total'] = Common::hashEmptyField($ttuj, 'Driver.total_laka', 0);
+	            }
 
             	switch ($action_type) {
 		        	case 'biaya_ttuj':
@@ -2264,7 +2279,7 @@ class AjaxController extends AppController {
 		$this->set(compact(
 			'data_action', 'title', 'ttujs',
 			'action_type', 'jenisBiaya', 'document_type',
-			'cities', 'payment_id'
+			'cities', 'payment_id', 'laka_percent'
 		));
 	}
 

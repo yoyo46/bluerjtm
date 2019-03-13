@@ -162,6 +162,10 @@ class TtujPayment extends AppModel {
         $tocity = !empty($data['named']['tocity'])?$data['named']['tocity']:false;
         $status = !empty($data['named']['status'])?$data['named']['status']:false;
 
+        $driver_type = !empty($data['named']['driver_type'])?$data['named']['driver_type']:1;
+        $driver_value = !empty($data['named']['driver_value'])?$data['named']['driver_value']:false;
+        $paid_type = !empty($data['named']['paid_type'])?$data['named']['paid_type']:false;
+
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
                 $default_options['conditions']['DATE_FORMAT(TtujPayment.date_payment, \'%Y-%m-%d\') >='] = $dateFrom;
@@ -317,6 +321,23 @@ class TtujPayment extends AppModel {
                     break;
                 case 'void':
                     $default_options['conditions']['TtujPayment.is_canceled'] = 1;
+                    break;
+            }
+        }
+        if(!empty($driver_value)){
+            if( $driver_type == 2 ) {
+                $default_options['conditions']['IFNULL(Ttuj.driver_pengganti_id, Ttuj.driver_id)'] = $driver_value;
+            } else {
+                $default_options['conditions']['Ttuj.driver_name LIKE'] = '%'.$driver_value.'%';
+            }
+
+            $default_options['contain'][] = 'Ttuj';
+        }
+        if( !empty($paid_type) ) {
+            switch ($paid_type) {
+                case 'laka':
+                    $default_options['conditions']['TtujPaymentDetail.laka <>'] = 0;
+                    $default_options['conditions']['TtujPaymentDetail.laka NOT'] = NULL;
                     break;
             }
         }

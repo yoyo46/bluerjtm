@@ -879,4 +879,11 @@ class Common {
 
         return $result;
     }
+
+    public static function _callGetDataDriver ( $value ) {
+        $driver = Common::hashEmptyField($value, 'Driver');
+        $driver = Common::hashEmptyField($value, 'DriverPengganti', $driver);
+
+        return $driver;
+    }
 }
