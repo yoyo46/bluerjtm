@@ -259,6 +259,7 @@ class UangJalan extends AppModel {
             // ),
             'fields'=> array(),
             'group'=> array(),
+            'offset'=> array(),
         );
 
         switch ($status) {
@@ -299,6 +300,9 @@ class UangJalan extends AppModel {
             }
             if(!empty($options['group'])){
                 $default_options['group'] = $options['group'];
+            }
+            if(!empty($options['offset'])){
+                $default_options['offset'] = $options['offset'];
             }
         }
 

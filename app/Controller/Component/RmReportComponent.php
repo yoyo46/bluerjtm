@@ -6509,8 +6509,11 @@ class RmReportComponent extends Component {
         	'limit' => $limit,
         );
 		$options = $this->controller->UangJalan->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'UangJalan', $options );
 
-		$this->controller->paginate	= $this->controller->UangJalan->getData('paginate', $options);
+		$this->controller->paginate	= $this->controller->UangJalan->getData('paginate', $options, true, array(
+			'branch' => false,
+		));
 		$data = $this->controller->paginate('UangJalan');
 		$result = array();
 
