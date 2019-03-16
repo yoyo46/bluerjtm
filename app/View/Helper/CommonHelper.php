@@ -1054,7 +1054,7 @@ class CommonHelper extends AppHelper {
 
                         if( !empty($allowShow) ) {
                             // Colspan
-                            if( !empty($child) ) {
+                            if( !empty($child) && !isset($dataColumn['colspan']) ) {
                                 $colspan = count($child);
                             }
 

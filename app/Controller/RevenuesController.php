@@ -9970,4 +9970,100 @@ class RevenuesController extends AppController {
             '_freeze' => true,
         ));
     }
+
+    function invoice_wingbox_print($id, $action_print = false){
+        $this->loadModel('Invoice');
+
+        $this->set('active_menu', 'invoices');
+
+        $head_office = Configure::read('__Site.config_branch_head_office');
+        $elementRevenue = array(
+            'status' => 'all',
+        );
+
+        if( !empty($head_office) ) {
+            $elementRevenue['branch'] = false;
+        }
+        
+        $invoice = $this->Invoice->getData('first', array(
+            'conditions' => array(
+                'Invoice.id' => $id,
+            ),
+        ), true, $elementRevenue);
+
+        if(!empty($invoice)){
+            $invoice = $this->Invoice->getMergeList($invoice, array(
+                'contain' => array(
+                    'Company',
+                    'InvoiceDetail' => array(
+                        'conditions' => array(
+                            'InvoiceDetail.status' => 1,
+                        ),
+                        'contain' => array(
+                            'RevenueDetail' => array(
+                                'contain' => array(
+                                    'City',
+                                ),
+                                'elements' => array(
+                                    'branch' => false,
+                                    'include_revenue' => false,
+                                ),
+                            ),
+                            'Revenue' => array(
+                                'contain' => array(
+                                    'Truck' => array(
+                                        'elements' => array(
+                                            'branch' => false,
+                                            'status' => 'all',
+                                        ),
+                                        'contain' => array(
+                                            'TruckCategory',
+                                        ),
+                                    ),
+                                    'Ttuj' => array(
+                                        'elements' => array(
+                                            'branch' => false,
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ));
+
+            $no_invoice = Common::hashEmptyField($invoice, 'Invoice.no_invoice');
+            $company_id = Common::hashEmptyField($invoice, 'Invoice.company_id');
+            $billing_id = Common::hashEmptyField($invoice, 'Invoice.billing_id');
+            $bank_id = Common::hashEmptyField($invoice, 'Invoice.bank_id');
+            $action = Common::hashEmptyField($invoice, 'Invoice.type_invoice');
+
+            $invoice = $this->Invoice->Customer->getMerge($invoice, $invoice['Invoice']['customer_id']);
+            $invoice = $this->Invoice->Company->getMerge($invoice, $company_id);
+
+            $invoice = $this->User->getMerge($invoice, $billing_id);
+            $invoice = $this->Invoice->Bank->getMerge($invoice, $bank_id);
+
+            $employe_position_id = Common::hashEmptyField($invoice, 'Employe.employe_position_id');
+            $invoice = $this->User->Employe->EmployePosition->getMerge($invoice, $employe_position_id);
+
+            $this->set(compact(
+                'invoice', 'revenue_detail', 'action',
+                'setting', 'data_print'
+            ));
+
+            if($action_print == 'excel'){
+                $this->layout = 'ajax';
+            }
+            
+            $module_title = sprintf(__('Kwitansi No.%s'), $no_invoice);
+            
+            $this->set('sub_module_title', trim($module_title));
+            $this->set('module_title', trim($module_title));
+            $this->set('action_print', $action_print);
+        } else {
+            $this->MkCommon->setCustomFlash(__('Kwitansi tidak ditemukan'), 'error');
+            $this->redirect($this->referer());
+        }
+    }
 }

@@ -127,7 +127,12 @@ class CommonBehavior extends ModelBehavior {
 			}
 
 			$optionsModel['conditions'][sprintf('%s.%s', $uses, $primaryKey)] = $id;
-			$value = $model->getData($type, $optionsModel, $elements);
+
+			if( in_array($uses, array( 'Ttuj', 'Truck' )) ) {
+				$value = $model->getData($type, $optionsModel, true, $elements);
+			} else {
+				$value = $model->getData($type, $optionsModel, $elements);
+			}
 
 			if(!empty($value)){
 				switch ($type) {
@@ -394,6 +399,56 @@ class CommonBehavior extends ModelBehavior {
 		return $default_options;
 	}
 
+	function full_merge_options(model $model, $default_options, $options = array(), $find = null){
+		if( !empty($options) ){
+			if(!empty($options['conditions'])){
+				$default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
+			}
+			if(!empty($options['joins'])){
+				$default_options['joins'] = $options['joins'];
+			}
+			if(isset($options['order'])){
+				$default_options['order'] = $options['order'];
+			}
+			if( isset($options['contain']) && empty($options['contain']) ) {
+				$default_options['contain'] = false;
+			} else if(!empty($options['contain'])){
+				$default_options['contain'] = array_merge($default_options['contain'], $options['contain']);
+			}
+			if(isset($options['limit'])){
+				$default_options['limit'] = $options['limit'];
+			}
+			if(!empty($options['fields'])){
+				$default_options['fields'] = $options['fields'];
+			}
+			if(!empty($options['group'])){
+				$default_options['group'] = $options['group'];
+			}
+			if(!empty($options['offset'])){
+				$default_options['offset'] = $options['offset'];
+			}
+		}
+
+		if(in_array($find, array('all', 'first', 'count', 'threaded', 'list', 'paginate', 'conditions'))){
+			if( $find == 'conditions' && !empty($default_options['conditions']) ) {
+				$result = $default_options['conditions'];
+			} else if( $find == 'paginate' ) {
+				if( empty($default_options['limit']) ) {
+					$default_options['limit'] = Configure::read('__Site.limit_data');
+				}
+
+				$result = $default_options;
+			} else {
+				$result = $model->find($find, $default_options);
+			}
+
+			return $result;
+		}
+		else{
+			return $default_options;
+		}
+	}
+
 	function callFieldOr($field, $value){
 		if( !empty($field['OR']) ) {
 			$fieldOr = $field['OR'];
@@ -561,5 +616,17 @@ class CommonBehavior extends ModelBehavior {
 			}
 		}
 		return $default_options;
+	}
+
+	function getData(model $model, $find = 'all', $options = array()){
+		$default_options = array(
+			'conditions'=> array(),
+			'order'=> array(),
+			'contain' => array(),
+			'fields' => array(),
+			'group' => array(),
+		);
+
+		return $this->full_merge_options($model, $default_options, $options, $find);
 	}
 }

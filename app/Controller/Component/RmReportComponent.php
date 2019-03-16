@@ -9214,6 +9214,403 @@ class RmReportComponent extends Component {
 		);
 	}
 
+	function _callDataInvoice_wingbox_print ( $params, $limit = 30, $offset = 0, $view = false ) {
+        $this->controller->loadModel('Invoice');
+
+		$document_type = false;
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named']= $named = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+
+		$id = Common::hashEmptyField($params, 'named.id');
+        $head_office = Configure::read('__Site.config_branch_head_office');
+        $elementRevenue = array(
+            'status' => 'all',
+        );
+
+        if( !empty($head_office) ) {
+            $elementRevenue['branch'] = false;
+        }
+        
+        $data = $this->controller->Invoice->getData('first', array(
+            'conditions' => array(
+                'Invoice.id' => $id,
+            ),
+        ), true, $elementRevenue);
+		$result = array();
+
+		if( !empty($data) ) {
+            $data = $this->controller->Invoice->getMergeList($data, array(
+                'contain' => array(
+                    'Company',
+                    'InvoiceDetail' => array(
+                        'conditions' => array(
+                            'InvoiceDetail.status' => 1,
+                        ),
+                        'contain' => array(
+                            'RevenueDetail' => array(
+                                'contain' => array(
+                                    'City',
+                                ),
+                            ),
+                            'Revenue' => array(
+                                'contain' => array(
+                                    'Truck' => array(
+                                        'elements' => array(
+                                            'branch' => false,
+                                            'status' => 'all',
+                                        ),
+                                        'contain' => array(
+                                            'TruckCategory',
+                                        ),
+                                    ),
+                                    'Ttuj' => array(
+                                        'elements' => array(
+                                            'branch' => false,
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ));
+
+            $no_invoice = Common::hashEmptyField($data, 'Invoice.no_invoice');
+            $company_id = Common::hashEmptyField($data, 'Invoice.company_id');
+            $billing_id = Common::hashEmptyField($data, 'Invoice.billing_id');
+            $bank_id = Common::hashEmptyField($data, 'Invoice.bank_id');
+            $action = Common::hashEmptyField($data, 'Invoice.type_invoice');
+
+            $data = $this->controller->Invoice->Customer->getMerge($data, $data['Invoice']['customer_id']);
+            $data = $this->controller->Invoice->Company->getMerge($data, $company_id);
+
+            $data = $this->controller->User->getMerge($data, $billing_id);
+            $data = $this->controller->Invoice->Bank->getMerge($data, $bank_id);
+
+            $employe_position_id = Common::hashEmptyField($data, 'Employe.employe_position_id');
+            $data = $this->controller->User->Employe->EmployePosition->getMerge($data, $employe_position_id);
+
+	        $company = Common::hashEmptyField($data, 'Company.name');
+			$customer = Common::hashEmptyField($data, 'Customer.name');
+	        $customer_address = Common::hashEmptyField($data, 'Customer.address');
+	        $no_invoice = Common::hashEmptyField($data, 'Invoice.no_invoice');
+			$invoice_year = Common::hashEmptyField($data, 'Invoice.invoice_date', NULL, array(
+	            'date' => 'Y',
+	        ));
+
+			foreach ($data as $key => $value) {
+				$ttuj_date = Common::hashEmptyField($value, 'Revenue.Ttuj.ttuj_date', NULL, array(
+					'date' => 'd-M',
+				));
+				$tgljam_tiba = Common::hashEmptyField($value, 'Revenue.Ttuj.tgljam_tiba', NULL, array(
+					'date' => 'd-M',
+				));
+                $is_charge = Common::hashEmptyField($value, 'RevenueDetail.is_charge');
+                $total_price_unit = Common::hashEmptyField($value, 'RevenueDetail.total_price_unit');
+
+				$city = Common::hashEmptyField($value, 'RevenueDetail.City.code');
+				$truck_category = Common::hashEmptyField($value, 'Revenue.Truck.TruckCategory.name');
+				
+				$nopol = Common::hashEmptyField($value, 'Revenue.Ttuj.nopol', '-');
+				$nopol = Common::hashEmptyField($value, 'Revenue.nopol', $nopol);
+
+				$sj = Common::hashEmptyField($value, 'RevenueDetail.no_sj');
+				$no_do = Common::hashEmptyField($value, 'RevenueDetail.no_do');
+				$price_unit = Common::hashEmptyField($value, 'RevenueDetail.price_unit', 0);
+				$totalUnit = Common::hashEmptyField($value, 'RevenueDetail.qty_unit', 0);
+				$totalPriceFormat = '';
+
+				if( !empty($is_charge) ) {
+					$totalPriceFormat = Common::getFormatPrice($total_price_unit);
+					$customPrice = Common::getFormatPrice($price_unit);
+				} else {
+					$total_price_unit = 0;
+					$customPrice = '';
+				}
+
+				$totalUnit = Common::getFormatPrice($totalUnit);
+
+	            $result[$key] = array(
+					__('Tgl') => array(
+						'text' => Common::hashEmptyField($value, 'Revenue.date_revenue', null, array(
+		                	'date' => 'd M Y',
+		            	)),
+                		'field_model' => 'Revenue.date_revenue',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'date_revenue\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Cabang') => array(
+						'text' => Common::hashEmptyField($value, 'Branch.code'),
+                		'field_model' => 'Branch.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'branch\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Customer') => array(
+						'text' => Common::hashEmptyField($value, 'Customer.code'),
+                		'field_model' => 'CustomerNoType.code',
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'customer\',width:120',
+		                'align' => 'left',
+                		// 'fix_column' => true,
+					),
+					__('No TTUJ') => array(
+						'text' => Common::hashEmptyField($value, 'Ttuj.no_ttuj'),
+                		'field_model' => 'Ttuj.no_ttuj',
+		                'data-options' => 'field:\'no_ttuj\',width:100',
+		                'align' => 'left',
+					),
+					__('No. SJ') => array(
+						'text' => Common::hashEmptyField($value, 'RevenueDetail.no_sj'),
+                		'field_model' => 'RevenueDetail.no_sj',
+		                'data-options' => 'field:\'no_sj\',width:100',
+		                'align' => 'left',
+					),
+					__('Nopol') => array(
+						'text' => $nopol,
+                		'field_model' => 'Revenue.nopol',
+		                'data-options' => 'field:\'nopol\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+					__('Dari') => array(
+						'text' => Common::hashEmptyField($value, 'FromCity.name'),
+		                'data-options' => 'field:\'from_city\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'center',
+					),
+					__('Tujuan') => array(
+						'text' => Common::hashEmptyField($value, 'ToCity.name'),
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'to_city\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'center',
+					),
+					__('Jumlah Unit') => array(
+						'text' => !empty($unit)?$unit:'-',
+		                'data-options' => 'field:\'qty_unit\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'center',
+                			'type' => 'number',
+            			),
+					),
+					__('Harga Unit') => array(
+						'text' => !empty($view)?Common::getFormatPrice($customPrice):$customPrice,
+		                'data-options' => 'field:\'price\',width:120',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+					__('Total') => array(
+						'text' => !empty($view)?Common::getFormatPrice($totalPriceFormat):$totalPriceFormat,
+		                'data-options' => 'field:\'total\',width:120',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+					__('No Invoice') => array(
+						'text' => $no_invoice,
+		                'data-options' => 'field:\'no_invoice\',width:120',
+		                'align' => 'left',
+					),
+					__('Status') => array(
+						'text' => Common::_callStatusRevenue($value),
+                		'field_model' => 'Revenue.transaction_status',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+		                'data-options' => 'field:\'transaction_status\',width:100',
+                		'excel' => array(
+                			'align' => 'center',
+            			),
+					),
+				);
+			}
+
+			if( !empty($view) ) {
+				$result[$idx] = array(
+					__('Cabang') => array(
+                		'field_model' => 'Branch.code',
+					),
+					__('No TTUJ') => array(
+                		'field_model' => 'ViewTtujOutstanding.no_ttuj',
+					),
+					__('Tgl TTUJ') => array(
+                		'field_model' => 'ViewTtujOutstanding.ttuj_date',
+					),
+					__('Nopol') => array(
+                		'field_model' => 'ViewTtujOutstanding.nopol',
+					),
+					__('Customer') => array(
+                		'field_model' => 'Customer.code',
+					),
+					__('Asal') => array(
+		                'align' => 'left',
+					),
+					__('Tujuan') => array(
+		                'align' => 'left',
+					),
+					__('Supir') => array(
+		                'align' => 'left',
+					),
+					__('Keterangan') => array(
+		                'align' => 'left',
+					),
+					__('Jenis') => array(
+						'text' => __('Total'),
+					),
+					__('Total') => array(
+						'text' => Common::getFormatPrice($total_total, 0, 0),
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Total Pembayaran') => array(
+						'text' => Common::getFormatPrice($total_paid, 0, 0),
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+					__('Saldo') => array(
+						'text' => Common::getFormatPrice($total_saldo, 0, 0),
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+            			),
+					),
+				);
+			} else {
+				$last = $this->controller->ViewTtujOutstanding->find('first', array_merge($options, array(
+					'offset' => $offset+$limit,
+					'limit' => $limit,
+				)));
+
+				if( empty($last) ) {
+	            	$options = Common::_callUnset($options, array(
+						'group',
+						'limit',
+						'offset',
+					));
+
+	        		$this->controller->ViewTtujOutstanding->virtualFields['total_total'] = 'SUM(IFNULL(ViewTtujOutstanding.total, 0))';
+	        		$this->controller->ViewTtujOutstanding->virtualFields['total_paid'] = 'SUM(IFNULL(ViewTtujPayment.amount, 0))';
+
+			        $this->controller->ViewTtujOutstanding->bindModel(array(
+			            'hasOne' => array(
+			                'ViewTtujPayment' => array(
+			                    'className' => 'ViewTtujPayment',
+			                    'foreignKey' => 'ttuj_id',
+			                    'conditions' => array(
+			                    	'ViewTtujPayment.type = ViewTtujOutstanding.data_type COLLATE utf8_unicode_ci'
+			                    ),
+			                ),
+			            )
+			        ), false);
+
+			        $options['contain'][] = 'ViewTtujPayment';
+					$value = $this->controller->ViewTtujOutstanding->find('first', $options);
+					unset($this->controller->ViewTtujOutstanding->virtualFields);
+
+					$total_total = Common::hashEmptyField($value, 'ViewTtujOutstanding.total_total', 0);
+	                $total_paid = Common::hashEmptyField($value, 'ViewTtujOutstanding.total_paid', 0);
+	                $total_saldo = $total_total - $total_paid;
+
+					$result[$idx] = array(
+					__('Cabang') => array(
+                		'field_model' => 'Branch.code',
+					),
+					__('No TTUJ') => array(
+                		'field_model' => 'ViewTtujOutstanding.no_ttuj',
+					),
+					__('Tgl TTUJ') => array(
+                		'field_model' => 'ViewTtujOutstanding.ttuj_date',
+					),
+					__('Nopol') => array(
+                		'field_model' => 'ViewTtujOutstanding.nopol',
+					),
+					__('Customer') => array(
+                		'field_model' => 'Customer.code',
+					),
+					__('Asal') => array(
+		                'align' => 'left',
+					),
+					__('Tujuan') => array(
+		                'align' => 'left',
+					),
+					__('Supir') => array(
+		                'align' => 'left',
+					),
+					__('Keterangan') => array(
+		                'align' => 'left',
+					),
+					__('Jenis') => array(
+						'text' => __('Total'),
+					),
+					__('Total') => array(
+						'text' => $total_total,
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+					__('Total Pembayaran') => array(
+						'text' => $total_paid,
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+					__('Saldo') => array(
+						'text' => $total_saldo,
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+					);
+				}
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'model' => 'ViewTtujOutstanding',
+		);
+	}
+
 	function _callProcess( $modelName, $id, $value, $data ) {
 		$dataSave = false;
 		$file = false;

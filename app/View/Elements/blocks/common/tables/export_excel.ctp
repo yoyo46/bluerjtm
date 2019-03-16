@@ -9,6 +9,7 @@
         $contentHeader = !empty($contentHeader)?$contentHeader:false;
         $topHeader = !empty($topHeader)?$topHeader:false;
         $noHeader = !empty($noHeader)?$noHeader:false;
+        $print_by = isset($print_by)?$print_by:true;
 
         $contentTr = isset($contentTr)?$contentTr:true;
         header('Content-type: application/ms-excel');
@@ -47,8 +48,10 @@
     <?php 
             }
 
-            echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
-                'style' => 'font-size: 14px;font-style: italic;margin-top: 10px;'
-            ));
+            if( !empty($print_by) ) {
+                echo $this->Html->tag('div', sprintf(__('Printed on : %s, by : %s'), date('d F Y'), $this->Html->tag('span', $full_name)), array(
+                    'style' => 'font-size: 14px;font-style: italic;margin-top: 10px;'
+                ));
+            }
     ?>
 </div>

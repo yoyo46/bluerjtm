@@ -75,6 +75,10 @@ class Invoice extends AppModel {
             'className' => 'Company',
             'foreignKey' => 'company_id',
         ),
+        'Bank' => array(
+            'className' => 'Bank',
+            'foreignKey' => 'bank_id',
+        ),
 	);
 
     var $hasMany = array(

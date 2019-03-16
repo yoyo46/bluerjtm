@@ -89,22 +89,25 @@ class RevenueDetail extends AppModel {
 	function getData( $find, $options = false, $elements = array(), $is_merge = true ){
         $active = isset($elements['active'])?$elements['active']:true;
         $branch = isset($elements['branch'])?$elements['branch']:true;
+        $include_revenue = isset($elements['include_revenue'])?$elements['include_revenue']:true;
 
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(),
             'group'=> array(),
             'contain' => array(
-                'Revenue',
             ),
             'fields' => array(),
         );
+
         if( !empty($branch) ) {
             $default_options['conditions']['Revenue.branch_id'] = Configure::read('__Site.config_branch_id');
         }
-
         if( !empty($active) ) {
             $options['conditions']['RevenueDetail.status'] = 1;
+        }
+        if( !empty($include_revenue) ) {
+            $default_options['contain'][] = 'Revenue';
         }
 
         if( !empty($options) && !empty($is_merge) ){
