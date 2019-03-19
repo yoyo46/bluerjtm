@@ -41,10 +41,18 @@
 	    				$nopol = Common::hashEmptyField($value, 'Revenue.nopol', $nopol);
 
 	    				$sj = Common::hashEmptyField($value, 'RevenueDetail.no_sj');
-	    				$no_do = Common::hashEmptyField($value, 'RevenueDetail.no_do');
+	    				$no_do = Common::hashEmptyField($value, 'RevenueDetail.no_do', '-');
 	    				$price_unit = Common::hashEmptyField($value, 'RevenueDetail.price_unit', 0);
 	    				$totalUnit = Common::hashEmptyField($value, 'RevenueDetail.qty_unit', 0);
 						$totalPriceFormat = '';
+
+        				if( !empty($sj) ) {
+	        				$no_sj = substr($sj, 0, 28);
+	        				$dealer = substr($sj, 29, strlen($sj));
+	        			} else {
+							$no_sj = '-';
+	        				$dealer = '-';
+	        			}
 
 	    				if( !empty($is_charge) ) {
 							$totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
@@ -68,8 +76,8 @@
 					echo $this->Html->tag('td', $no_do, array(
 						'style' => 'padding: 10px;border: 1px solid #ddd;',
 					));
-					echo $this->Html->tag('td', '-', array(
-						'style' => 'text-align: center;padding: 10px;border: 1px solid #ddd;',
+					echo $this->Html->tag('td', $dealer, array(
+						'style' => 'text-align: left;padding: 10px;border: 1px solid #ddd;',
 					));
 					echo $this->Html->tag('td', $city, array(
 						'style' => 'padding: 10px;border: 1px solid #ddd;',
@@ -83,7 +91,7 @@
 					echo $this->Html->tag('td', $tgljam_tiba, array(
 						'style' => 'padding: 10px;border: 1px solid #ddd;',
 					));
-					echo $this->Html->tag('td', $sj, array(
+					echo $this->Html->tag('td', $no_sj, array(
 						'style' => 'padding: 10px;border: 1px solid #ddd;',
 					));
 					echo $this->Html->tag('td', $truck_category, array(
