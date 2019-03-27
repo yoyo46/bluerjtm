@@ -35,10 +35,10 @@
                     'class' => 'check-option',
                     'value' => $id,
                 ));
-                $checkboxContent .= $this->Form->input('TtujPayment.ttuj_id.', array(
-                    'type' => 'hidden',
-                    'value' => $id,
-                ));
+                // $checkboxContent .= $this->Form->input('TtujPayment.ttuj_id.', array(
+                //     'type' => 'hidden',
+                //     'value' => $id,
+                // ));
 
                 echo $this->Html->tag('td', $checkboxContent, array(
                     'class' => 'checkbox-action',

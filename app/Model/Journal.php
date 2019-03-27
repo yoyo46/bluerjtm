@@ -61,6 +61,8 @@ class Journal extends AppModel {
     function setJournal ( $total, $coas, $valueSet = array() ) {
         if( !empty($coas) && is_array($coas) ) {
             $date = Common::hashEmptyField($valueSet, 'date');
+            $type = $tmp_type = Common::hashEmptyField($valueSet, 'type');
+            $document_id = Common::hashEmptyField($valueSet, 'document_id');
 
             foreach ($coas as $type => $coa_name) {
                 $coaSetting = $this->User->CoaSetting->getData('first', array(
@@ -101,6 +103,19 @@ class Journal extends AppModel {
 
                     $this->saveAll($data);
                 }
+            }
+
+            if( strpos($tmp_type, 'void') !== false && !empty($document_id) ){
+                $tmp_type = str_replace(array( '_void', 'void_' ), array( '', '' ), $tmp_type);
+                $this->updateAll(
+                    array(
+                        'Journal.is_void' => 1,
+                    ),
+                    array(
+                        'Journal.document_id' => $document_id,
+                        'Journal.type' => $tmp_type,
+                    )
+                );
             }
         } else {
             return false;
@@ -181,32 +196,34 @@ class Journal extends AppModel {
             case 'without-void':
                 $default_options['conditions']['Journal.status'] = 1;
                 $default_options['conditions']['Journal.type NOT like'] = '%void%';
+                $default_options['conditions']['Journal.is_void'] = 0;
                 break;
         }
 
         switch ($type) {
             case 'active':
                 $default_options['conditions']['Journal.type NOT LIKE'] = '%void%';
-                $default_options['conditions']['JournalVoid.id'] = NULL;
-                $default_options['contain'][] = 'JournalVoid';
+                $default_options['conditions']['Journal.is_void'] = 0;
+                // $default_options['conditions']['JournalVoid.id'] = NULL;
+                // $default_options['contain'][] = 'JournalVoid';
 
-                $this->bindModel(array(
-                    'belongsTo' => array(
-                        'JournalVoid' => array(
-                            'className' => 'Journal',
-                            'foreignKey' => false,
-                            'conditions' => array(
-                                'JournalVoid.status' => 1,
-                                'Journal.document_id = JournalVoid.document_id',
-                                'Journal.document_no = JournalVoid.document_no',
-                                'OR' => array(
-                                    'JournalVoid.type = CONCAT(Journal.type, \'_void\')',
-                                    'JournalVoid.type = CONCAT(\'void_\', Journal.type)',
-                                ),
-                            ),
-                        ),
-                    )
-                ), false);
+                // $this->bindModel(array(
+                //     'belongsTo' => array(
+                //         'JournalVoid' => array(
+                //             'className' => 'Journal',
+                //             'foreignKey' => false,
+                //             'conditions' => array(
+                //                 'JournalVoid.status' => 1,
+                //                 'Journal.document_id = JournalVoid.document_id',
+                //                 'Journal.document_no = JournalVoid.document_no',
+                //                 'OR' => array(
+                //                     'JournalVoid.type = CONCAT(Journal.type, \'_void\')',
+                //                     'JournalVoid.type = CONCAT(\'void_\', Journal.type)',
+                //                 ),
+                //             ),
+                //         ),
+                //     )
+                // ), false);
                 break;
         }
 
@@ -255,11 +272,11 @@ class Journal extends AppModel {
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
-                $default_options['conditions']['DATE_FORMAT(Journal.date, \'%Y-%m-%d\') >='] = $dateFrom;
+                $default_options['conditions']['Journal.date >='] = $dateFrom;
             }
 
             if( !empty($dateTo) ) {
-                $default_options['conditions']['DATE_FORMAT(Journal.date, \'%Y-%m-%d\') <='] = $dateTo;
+                $default_options['conditions']['Journal.date <='] = $dateTo;
             }
         }
         if( !empty($coa) ) {
@@ -307,25 +324,26 @@ class Journal extends AppModel {
         }
         if( $status == 'active' ) {
             $default_options['conditions']['Journal.type NOT LIKE'] = '%void%';
-            $default_options['conditions']['JournalVoid.id'] = NULL;
-            $default_options['contain'][] = 'JournalVoid';
+            $default_options['conditions']['Journal.is_void'] = 0;
+            // $default_options['conditions']['JournalVoid.id'] = NULL;
+            // $default_options['contain'][] = 'JournalVoid';
 
-            $this->bindModel(array(
-                'belongsTo' => array(
-                    'JournalVoid' => array(
-                        'className' => 'Journal',
-                        'foreignKey' => false,
-                        'conditions' => array(
-                            'Journal.document_id = JournalVoid.document_id',
-                            'Journal.document_no = JournalVoid.document_no',
-                            'OR' => array(
-                                'JournalVoid.type = CONCAT(Journal.type, \'_void\')',
-                                'JournalVoid.type = CONCAT(\'void_\', Journal.type)',
-                            ),
-                        ),
-                    ),
-                )
-            ), false);
+            // $this->bindModel(array(
+            //     'belongsTo' => array(
+            //         'JournalVoid' => array(
+            //             'className' => 'Journal',
+            //             'foreignKey' => false,
+            //             'conditions' => array(
+            //                 'Journal.document_id = JournalVoid.document_id',
+            //                 'Journal.document_no = JournalVoid.document_no',
+            //                 'OR' => array(
+            //                     'JournalVoid.type = CONCAT(Journal.type, \'_void\')',
+            //                     'JournalVoid.type = CONCAT(\'void_\', Journal.type)',
+            //                 ),
+            //             ),
+            //         ),
+            //     )
+            // ), false);
         }
         
         return $default_options;

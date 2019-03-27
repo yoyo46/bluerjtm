@@ -1519,7 +1519,7 @@ class CashbanksController extends AppController {
                 $options =  $this->User->Journal->_callRefineParams($params, array(
                     'conditions' => $conditions,
                     'group' => array(
-                        // 'Journal.coa_id',
+                        'Journal.coa_id',
                         'Journal.document_id',
                         'Journal.type',
                     ),
@@ -1530,12 +1530,12 @@ class CashbanksController extends AppController {
                 ));
                 $values = $this->User->Journal->getData('all', $options);
 
-                // $this->User->Journal->virtualFields['begining_balance_credit'] = 'SUM(Journal.credit)';
-                // $this->User->Journal->virtualFields['begining_balance_debit'] = 'SUM(Journal.debit)';
+                $this->User->Journal->virtualFields['begining_balance_credit'] = 'SUM(Journal.credit)';
+                $this->User->Journal->virtualFields['begining_balance_debit'] = 'SUM(Journal.debit)';
 
                 $type = $this->MkCommon->filterEmptyField($params, 'named', 'status');
 
-                $optionSummaryBalance = $this->User->Journal->getData('paginate', array(
+                $summaryBalance = $this->User->Journal->getData('first', array(
                     'conditions' => array_merge(array(
                         'Journal.coa_id' => $coa_id,
                         'Journal.date <' => $dateFrom,
@@ -1548,17 +1548,8 @@ class CashbanksController extends AppController {
                     'type' => $type,
                 ));
 
-                if( $type == 'active' ) {
-                    unset($optionSummaryBalance['contain']);
-                    // $optionSummaryBalance['contain'][] = 'JournalVoid';
-                } else {
-                    unset($optionSummaryBalance['contain']);
-                }
-
-                $summaryBalance = $this->User->Journal->find('first', $optionSummaryBalance);
-
-                $balance_credit = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'credit', 0);
-                $balance_debit = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'debit', 0);
+                $balance_credit = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'begining_balance_credit', 0);
+                $balance_debit = $this->MkCommon->filterEmptyField($summaryBalance, 'Journal', 'begining_balance_debit', 0);
                 $beginingBalance = $balance + ( $balance_debit - $balance_credit );
             } else {
                 $this->MkCommon->redirectReferer(__('Mohon pilih COA terlebih dahulu'), 'error', array(

@@ -2110,6 +2110,10 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                         popup_checkbox();
                     }
 
+                    if( $('#myModal .modal-body .box-user-staff').length > 0 ) {
+                        check_all_checkbox();
+                    }
+
                     return false;
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -3100,13 +3104,23 @@ var calcTotalBiaya = function () {
     var grandtotal = 0;
 
     for (i = 0; i < biayaLen; i++) {
-        no_claim = convert_number($.checkUndefined(objNoClaim[i].value, 0));
-        stood = convert_number($.checkUndefined(objStood[i].value, 0));
-        lainnya = convert_number($.checkUndefined(objLainnya[i].value, 0));
-        titipan = convert_number($.checkUndefined(objTitipan[i].value, 0));
-        claim = convert_number($.checkUndefined(objClaim[i].value, 0));
-        laka = convert_number($.checkUndefined(objLaka[i].value, 0));
         biaya = convert_number(biayaObj[i].value, 'float');
+        
+        if( objNoClaim.length > 0 ) {
+            no_claim = convert_number(objNoClaim[i].value);
+            stood = convert_number(objStood[i].value);
+            lainnya = convert_number(objLainnya[i].value);
+            titipan = convert_number(objTitipan[i].value);
+            claim = convert_number(objClaim[i].value);
+            laka = convert_number(objLaka[i].value);
+        } else {
+            no_claim = 0;
+            stood = 0;
+            lainnya = 0;
+            titipan = 0;
+            claim = 0;
+            laka = 0;
+        }
 
         totalBiaya += biaya;
         grandtotal += biaya + no_claim + stood + lainnya - titipan - claim - laka;
@@ -3118,13 +3132,13 @@ var calcTotalBiaya = function () {
 }
 
 var calcTotalTransfer = function ( parent ) {
-    biaya = convert_number($.checkUndefined(parent.find('.sisa-amount').val(), 0));
-    no_claim = convert_number($.checkUndefined(parent.find('.no-claim').val(), 0));
-    stood = convert_number($.checkUndefined(parent.find('.stood').val(), 0));
-    lainnya = convert_number($.checkUndefined(parent.find('.lainnya').val(), 0));
-    titipan = convert_number($.checkUndefined(parent.find('.titipan').val(), 0));
-    claim = convert_number($.checkUndefined(parent.find('.claim').val(), 0));
-    laka = convert_number($.checkUndefined(parent.find('.laka').val(), 0));
+    biaya = convert_number(parent.find('.sisa-amount').val());
+    no_claim = convert_number(parent.find('.no-claim').val());
+    stood = convert_number(parent.find('.stood').val());
+    lainnya = convert_number(parent.find('.lainnya').val());
+    titipan = convert_number(parent.find('.titipan').val());
+    claim = convert_number(parent.find('.claim').val());
+    laka = convert_number(parent.find('.laka').val());
 
     var totalBiaya = biaya + no_claim + stood + lainnya - titipan - claim - laka;
     parent.find('.total-trans').html( formatNumber( totalBiaya ) );

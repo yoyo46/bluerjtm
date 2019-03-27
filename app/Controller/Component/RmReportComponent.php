@@ -7019,9 +7019,9 @@ class RmReportComponent extends Component {
             			),
 					),
 					__('Customer') => array(
-						'text' => Common::hashEmptyField($value, 'Customer.code'),
+						'text' => Common::hashEmptyField($value, 'Customer.customer_name_code'),
                 		'field_model' => 'CustomerNoType.code',
-		                'style' => 'text-align: center;',
+		                'style' => 'text-align: left;',
 		                'data-options' => 'field:\'customer\',width:150',
 		                'align' => 'left',
                 		// 'fix_column' => true,
@@ -7470,9 +7470,9 @@ class RmReportComponent extends Component {
             			),
 					),
 					__('Customer') => array(
-						'text' => Common::hashEmptyField($value, 'Customer.code'),
+						'text' => Common::hashEmptyField($value, 'Customer.customer_name_code'),
                 		'field_model' => 'CustomerNoType.code',
-		                'style' => 'text-align: center;',
+		                'style' => 'text-align: left;',
 		                'data-options' => 'field:\'customer\',width:120',
 		                'align' => 'left',
                 		// 'fix_column' => true,
@@ -9608,6 +9608,333 @@ class RmReportComponent extends Component {
 		return array(
 			'data' => $result,
 			'model' => 'ViewTtujOutstanding',
+		);
+	}
+
+	function _callDataDebt_reports ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('DebtDetail');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+
+		$options = array(
+			'contain' => array(
+				'Debt',
+				'ViewStaff',
+			),
+            'order'=> array(
+                'Debt.id' => 'ASC',
+            ),
+            'group'=> array(
+                'DebtDetail.employe_id',
+            ),
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+		$options = $this->controller->DebtDetail->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'ViewStaff', $options );
+
+        $this->controller->DebtDetail->virtualFields['total'] = 'SUM(DebtDetail.total)';
+		$options = $this->controller->DebtDetail->Debt->getData('paginate', $options, array(
+			'transaction_status' => 'posting',
+		));
+		$this->controller->paginate = $options;
+		$data = $this->controller->paginate('DebtDetail');
+		$result = array();
+
+		$paging = $this->controller->params->paging;
+        $nextPage = Common::hashEmptyField($paging, 'DebtDetail.nextPage');
+
+		// Grandtotal
+		// $summaryOptions = Common::_callUnset($options, array(
+		// 	'offset',
+		// 	'limit',
+		// 	'group',
+		// ));
+
+		// $this->controller->DebtDetail->virtualFields['grandtotal'] = 'SUM(DebtDetail.total)';
+		// $summaryOptions['fields'] = array(
+		// 	'DebtDetail.id', 'DebtDetail.grandtotal',
+		// );
+		// $grandtotal_debt = $this->controller->DebtDetail->getData('first', $summaryOptions);
+  //       $grandtotal_dibayar = $this->controller->DebtDetail->DebtPaymentDetail->getTotalPayment();
+
+        App::import('Helper', 'Html');
+        $this->Html = new HtmlHelper(new View(null));
+		$grandtotal = 0;
+        $grandtotal_dibayar = 0;
+
+		if( !empty($data) ) {
+			foreach ($data as $key => $value) {
+                $id = Common::hashEmptyField($value, 'ViewStaff.id');
+                $name = Common::hashEmptyField($value, 'ViewStaff.full_name');
+                $phone = Common::hashEmptyField($value, 'ViewStaff.phone', '-');
+                $type = Common::hashEmptyField($value, 'ViewStaff.type');
+                $total = Common::hashEmptyField($value, 'DebtDetail.total');
+                $total_dibayar = $this->controller->DebtDetail->DebtPaymentDetail->getTotalPayment(NULL, NULL, $id);
+                $saldo = $total - $total_dibayar;
+
+				$result[$key] = array(
+					__('Nama Karyawan') => array(
+						'text' => !empty($view)?$this->Html->link($name, array(
+							'controller' => 'debt',
+							'action' => 'debt_card',
+							'id' => $id,
+							'type' => $type,
+							'admin' => false,
+							'full_base' => true,
+						), array(
+							'target' => '_blank',
+						)):$name,
+                		'field_model' => 'Employe.full_name',
+		                'data-options' => 'field:\'name\',width:120',
+		                'align' => 'left',
+					),
+					__('Kategori') => array(
+						'text' => $type,
+		                'data-options' => 'field:\'position\',width:100',
+					),
+					__('No. Telp') => array(
+						'text' => $phone,
+		                'data-options' => 'field:\'phone\',width:100',
+					),
+					__('Hutang') => array(
+						'text' => !empty($view)?Common::getFormatPrice($total):$total,
+		                'data-options' => 'field:\'total\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+					__('Dibayar') => array(
+						'text' => !empty($view)?Common::getFormatPrice($total_dibayar):$total_dibayar,
+		                'data-options' => 'field:\'total_paid\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+					__('Saldo Hutang') => array(
+						'text' => !empty($view)?Common::getFormatPrice($saldo):$saldo,
+		                'data-options' => 'field:\'saldo\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+				);
+
+				$grandtotal += $total;
+		        $grandtotal_dibayar += $total_dibayar;
+			}
+
+			if( empty($nextPage) ) {
+				// $grandtotal = Common::hashEmptyField($grandtotal_debt, 'DebtDetail.grandtotal', 0);
+				$total_saldo = $grandtotal - $grandtotal_dibayar;
+
+				$result[$key+1] = array(
+					// __('Cabang') => array(
+		   //              'data-options' => 'field:\'branch\',width:100',
+					// ),
+					__('Nama Karyawan') => array(
+		                'data-options' => 'field:\'name\',width:120',
+					),
+					__('Kategori') => array(
+		                'data-options' => 'field:\'position\',width:100',
+					),
+					__('No. Telp') => array(
+						'text' => __('Total'),
+		                'style' => 'font-weight: bold;text-align: right;',
+		                'data-options' => 'field:\'phone\',width:100',
+                		'excel' => array(
+                			'bold' => true,
+                			'align' => 'right',
+            			),
+					),
+					__('Hutang') => array(
+						'text' => !empty($view)?Common::getFormatPrice($grandtotal):$grandtotal
+						,
+		                'style' => 'font-weight: bold;text-align: right;',
+                		'excel' => array(
+                			'bold' => true,
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+					__('Dibayar') => array(
+						'text' => !empty($view)?Common::getFormatPrice($grandtotal_dibayar):$grandtotal_dibayar,
+		                'style' => 'font-weight: bold;text-align: right;',
+                		'excel' => array(
+                			'bold' => true,
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+					__('Saldo Hutang') => array(
+						'text' => !empty($view)?Common::getFormatPrice($total_saldo):$total_saldo,
+		                'style' => 'font-weight: bold;text-align: right;',
+                		'excel' => array(
+                			'bold' => true,
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+				);
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'model' => 'DebtDetail',
+		);
+	}
+
+	function _callDataDebt_card ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('ViewDebtCard');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+		$id = Common::hashEmptyField($params, 'named.id');
+
+		$options = array(
+			'conditions' => array(
+				'ViewDebtCard.employe_id' => $id,
+			),
+            'order'=> array(
+                'ViewDebtCard.transaction_date' => 'ASC',
+                'ViewDebtCard.debt_id' => 'ASC',
+            ),
+            'contain' => array(
+            	'ViewStaff',
+            ),
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+		$options = $this->controller->ViewDebtCard->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'ViewStaff', $options );
+
+		$options = $this->controller->ViewDebtCard->getData('paginate', $options);
+		$this->controller->paginate = $options;
+		$data = $this->controller->paginate('ViewDebtCard');
+		$result = array();
+
+		$paging = $this->controller->params->paging;
+        $nextPage = Common::hashEmptyField($paging, 'ViewDebtCard.nextPage');
+
+        App::import('Helper', 'Html');
+        $this->Html = new HtmlHelper(new View(null));
+        $saldo = 0;
+        $total_credit = 0;
+        $total_debit = 0;
+        $idx = 0;
+
+		if( !empty($data) ) {
+			foreach ($data as $key => $value) {
+                $id = Common::hashEmptyField($value, 'ViewStaff.id');
+                $debt_detail_id = Common::hashEmptyField($value, 'ViewDebtCard.id');
+                $credit = Common::hashEmptyField($value, 'ViewDebtCard.credit');
+                $debit = Common::hashEmptyField($value, 'ViewDebtCard.debit');
+                $transaction_date = Common::hashEmptyField($value, 'ViewDebtCard.transaction_date', NULL, array(
+                	'date' => 'd M Y',
+                ));
+        		$saldo += ($credit - $debit);
+		        $total_credit += $credit;
+		        $total_debit += $debit;
+
+				$result[$key] = array(
+					__('Tgl. Hutang') => array(
+						'text' => $transaction_date,
+                		'field_model' => 'Debt.transaction_date',
+		                'data-options' => 'field:\'date\',width:120',
+		                'align' => 'left',
+					),
+					__('Kredit') => array(
+						'text' => !empty($view)?Common::getFormatPrice($credit):$credit,
+		                'data-options' => 'field:\'credit\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+					__('Debit') => array(
+						'text' => !empty($view)?Common::getFormatPrice($debit):$debit,
+		                'data-options' => 'field:\'debit\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+					__('Saldo Hutang') => array(
+						'text' => !empty($view)?Common::getFormatPrice($saldo):$saldo,
+		                'data-options' => 'field:\'saldo\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+				);
+        		
+        		$idx++;
+			}
+
+			if( empty($nextPage) ) {
+				$result[$idx+1] = array(
+					__('Tgl. Hutang') => array(
+						'text' => __('Total'),
+		                'style' => 'font-weight: bold;text-align: right;',
+		                'data-options' => 'field:\'date\',width:120',
+                		'excel' => array(
+                			'align' => 'right',
+                			'bold' => true,
+            			),
+					),
+					__('Kredit') => array(
+						'text' => !empty($view)?Common::getFormatPrice($total_credit):$total_credit
+						,
+		                'style' => 'font-weight: bold;text-align: right;',
+                		'excel' => array(
+                			'bold' => true,
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+					__('Debit') => array(
+						'text' => !empty($view)?Common::getFormatPrice($total_debit):$total_debit,
+		                'style' => 'font-weight: bold;text-align: right;',
+                		'excel' => array(
+                			'bold' => true,
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+					__('Saldo Hutang') => array(
+		                'style' => 'font-weight: bold;text-align: right;',
+					),
+				);
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'model' => 'DebtDetail',
 		);
 	}
 

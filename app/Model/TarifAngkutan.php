@@ -88,14 +88,15 @@ class TarifAngkutan extends AppModel {
         $default_options = array(
             'conditions'=> array(),
             'order'=> array(
-                'TarifAngkutan.name_tarif' => 'ASC'
+                'TarifAngkutan.name_tarif' => 'ASC',
+                'TarifAngkutan.id' => 'ASC',
             ),
             'contain' => array(),
         );
 
-        if( !empty($branch) ) {
-            $default_options['TarifAngkutan.branch_id'] = Configure::read('__Site.config_branch_id');
-        }
+        // if( !empty($branch) ) {
+        //     $default_options['conditions']['TarifAngkutan.branch_id'] = Configure::read('__Site.config_branch_id');
+        // }
 
         switch ($status) {
             case 'all':

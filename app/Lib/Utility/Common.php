@@ -315,19 +315,19 @@ class Common {
     }
 
     public static function insertField($values, $options = array()){
-    	$source = Common::filterEmptyField($options, 'source');
-    	$target = Common::filterEmptyField($options, 'target');
+    	$source = Common::hashEmptyField($options, 'source');
+    	$target = Common::hashEmptyField($options, 'target');
 
     	if(!empty($values)){
     		if(!empty($values[0])){
     			foreach ($values as $key => $value) {
-    				$data_source = Common::filterEmptyField($value, $source, 'name');
+    				$data_source = Common::hashEmptyField($value, $source.'.name');
     				$value[$target]['name'] = $data_source;
 
     				$values[$key] = $value;
     			}
     		}else{
-    			$data_source = Common::filterEmptyField($values, $source, 'name');
+    			$data_source = Common::hashEmptyField($values, $source.'.name');
 				$values[$target]['name'] = $data_source;
     		}
     	}
@@ -363,8 +363,8 @@ class Common {
 	}
 
 	public static function _callConvertDateRange ( $params, $date, $options = array() ) {
-		$startField = Common::filterEmptyField($options, 'date_from', false, 'date_from');
-		$endField = Common::filterEmptyField($options, 'date_to', false, 'date_to');
+		$startField = Common::hashEmptyField($options, 'date_from', 'DateFrom');
+		$endField = Common::hashEmptyField($options, 'date_to', 'DateTo');
 
 		$date = urldecode($date);
 		$dateArr = explode(' - ', $date);
@@ -382,7 +382,8 @@ class Common {
 	
 	public static function _search($controller, $action, $_admin = true, $addParam = false){
 		$data = $controller->request->data;
-		$named = Common::filterEmptyField($controller->params, 'named');
+		$params = $controller->params->params;
+		$named = Common::hashEmptyField($params, 'named');
 		$params = array(
 			'action' => $action,
 			$addParam,
@@ -397,17 +398,18 @@ class Common {
 	}
 
 	public static function processSorting ( $controller, $params, $data, $with_param_id = true, $param_id_only = false, $redirect = true ) {
-		$filter = Common::filterEmptyField($data, 'Search', 'filter');
-		$sort = Common::filterEmptyField($data, 'Search', 'sort');
-		$excel = Common::filterEmptyField($data, 'Search', 'excel');
-		$min_price = Common::filterEmptyField($data, 'Search', 'min_price', 0);
-		$max_price = Common::filterEmptyField($data, 'Search', 'max_price', 0);
-		$user = Common::filterEmptyField($data, 'Search', 'user');
+		$filter = Common::hashEmptyField($data, 'Search.filter');
+		$sort = Common::hashEmptyField($data, 'Search.sort');
+		$excel = Common::hashEmptyField($data, 'Search.excel');
+		$min_price = Common::hashEmptyField($data, 'Search.min_price', 0);
+		$max_price = Common::hashEmptyField($data, 'Search.max_price', 0);
+		$user = Common::hashEmptyField($data, 'Search.user');
 
-		$named = Common::filterEmptyField($controller->params, 'named');
+		$param_params = $controller->params->params;
+		$named = Common::hashEmptyField($param_params, 'named');
 
 		if( !empty($with_param_id) ) {
-			$param_id = Common::filterEmptyField($named, 'param_id');
+			$param_id = Common::hashEmptyField($named, 'param_id');
 
 			if( is_array($param_id) ) {
 				$params = array_merge($params, $param_id);
@@ -429,7 +431,7 @@ class Common {
 			'modified',
 			'last_login',
 		);
-		$data = Common::_callUnset(array(
+		$data = Common::_callUnset($data, array(
 			'Search' => array(
 				'sort',
 				'direction',
@@ -439,23 +441,23 @@ class Common {
 				'max_price',
 				'colview',
 			),
-		), $data);
+		));
 
 		if( !empty($dateFilter) ) {
 			foreach ($dateFilter as $key => $fieldFilter) {
-				$date = Common::filterEmptyField($data, 'Search', $fieldFilter);
-				$fieldFrom = __('%s_from', $fieldFilter);
-				$fieldTo = __('%s_to', $fieldFilter);
+				$date = Common::hashEmptyField($data, 'Search.'.$fieldFilter);
+				$fieldFrom = __('%sFrom', ucwords($fieldFilter));
+				$fieldTo = __('%sTo', ucwords($fieldFilter));
 
-				$data = Common::_callUnset(array(
+				$data = Common::_callUnset($data, array(
 					'Search' => array(
 						$fieldFilter,
 					),
-				), $data);
+				));
 
 				if( empty($date) ) {
-					$date_from = Common::filterEmptyField($data, 'Search', $fieldFrom);
-					$date_to = Common::filterEmptyField($data, 'Search', $fieldTo);
+					$date_from = Common::hashEmptyField($data, 'Search.'.$fieldFrom);
+					$date_to = Common::hashEmptyField($data, 'Search.'.$fieldTo);
 
 					if( !empty($date_from) && !empty($date_to) ) {
 						$date = sprintf('%s - %s', $date_from, $date_to);
@@ -463,7 +465,7 @@ class Common {
 				}
 
 				if( !empty($date) ) {
-					$params = $this->_callConvertDateRange($params, $date, array(
+					$params = Common::_callConvertDateRange($params, $date, array(
 						'date_from' => $fieldFrom,
 						'date_to' => $fieldTo,
 					));
@@ -471,7 +473,7 @@ class Common {
 			}
 		}
 
-		$dataSearch = Common::filterEmptyField($data, 'Search');
+		$dataSearch = Common::hashEmptyField($data, 'Search');
 		if( isset($dataSearch['keyword']) ) {
 			$dataSearch['keyword'] = urlencode(trim($dataSearch['keyword']));
 		}

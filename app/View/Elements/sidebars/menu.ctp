@@ -275,15 +275,6 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'trucks' )?'active':'',
                             ));
 
-                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Import Truk', array(
-                            //     'controller' => 'trucks',
-                            //     'action' => 'add_import',
-                            // ), array(
-                            //     'escape' => false
-                            // )), array(
-                            //     'class' => ( !empty($active_menu) && $active_menu == 'truck_import' )?'active':'',
-                            // ));
-
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Mutasi Truk', array(
                                 'controller' => 'trucks',
                                 'action' => 'mutations',
@@ -879,7 +870,7 @@
             ?>
             <li class="treeview <?php echo $activeMenu; ?>">
                 <a href="#">
-                    <i class="fa fa-dollar"></i>
+                    <i class="fa fa-list"></i>
                     <span>LKU/KSU</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
@@ -971,79 +962,66 @@
                     ?>
                 </ul>
             </li>
-            <?php 
+            <?php
                     }
 
-                    /*
                     $dataMenu = array(
-                        'settings' => array(
-                            'coas', 'banks',
-                        ),
-                        'cashbanks' => array(
-                            'coa_setting', 'closing',
+                        'debt' => array(
+                            'index', 'reports',
+                            'debt_payments'
                         ),
                     );
 
                     if( $this->Common->allowMenu( $dataMenu ) ) {
-                        $activeSetting = false;
-                        $settingMenu = array(
-                            'coas', 'banks', 'coa_setting',
-                            'closing'
+                        $activeMenu = false;
+                        $dataMenu = array(
+                            'debt', 'debt_reports',
+                            'debt_payments'
                         );
 
-                        if( !empty($active_menu) && in_array($active_menu, $settingMenu) ) {
-                            $activeSetting = 'active';
+                        if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
+                            $activeMenu = 'active';
                         }
             ?>
-            <li class="treeview <?php echo $activeSetting; ?>">
+            <li class="treeview <?php echo $activeMenu; ?>">
                 <a href="#">
-                    <i class="fa fa-folder-open"></i>
-                    <span>COA</span>
+                    <i class="fa fa-dollar"></i>
+                    <span>Hutang Karyawan</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
-                    <?php
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Bank', array(
-                                'controller' => 'settings',
-                                'action' => 'banks',
+                    <?php 
+                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Hutang Karyawan', array(
+                                'controller' => 'debt',
+                                'action' => 'index',
                             ), array(
                                 'escape' => false
                             )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'banks' )?'active':'',
+                                'class' => ( !empty($active_menu) && $active_menu == 'debt' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> COA', array(
-                                'controller' => 'settings',
-                                'action' => 'coas',
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pembayaran Hutang', array(
+                                'controller' => 'debt',
+                                'action' => 'payments'
                             ), array(
                                 'escape' => false
                             )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'coas' )?'active':'',
+                                'class' => ( !empty($active_menu) && $active_menu == 'debt_payments' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Pengaturan COA', array(
-                                'controller' => 'cashbanks',
-                                'action' => 'coa_setting'
+                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Kartu Hutang', array(
+                                'controller' => 'debt',
+                                'action' => 'reports',
                             ), array(
                                 'escape' => false
                             )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'coa_setting' )?'active':'',
-                            ));
-                            
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Closing', array(
-                                'controller' => 'cashbanks',
-                                'action' => 'closing'
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'closing' )?'active':'',
+                                'class' => ( !empty($active_menu) && $active_menu == 'debt_reports' )?'active':'',
                             ));
                     ?>
                 </ul>
             </li>
             <?php 
                     }
-                    */
             ?>
             <?php
                     $activeSetting = false;
@@ -1815,15 +1793,6 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'cities' )?'active':'',
                             ));
-
-                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Import Kota', array(
-                            //     'controller' => 'settings',
-                            //     'action' => 'city_import',
-                            // ), array(
-                            //     'escape' => false
-                            // )), array(
-                            //     'class' => ( !empty($active_menu) && $active_menu == 'cities' )?'active':'',
-                            // ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Company', array(
                                 'controller' => 'settings',

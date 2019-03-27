@@ -7,10 +7,6 @@ class CashBank extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'No Dokumen name harap diisi'
             ),
-            // 'isUnique' => array(
-            //     'rule' => array('isUnique'),
-            //     'message' => 'No Dokumen telah terdaftar',
-            // ),
         ),
         'receiving_cash_type' => array(
             'notempty' => array(

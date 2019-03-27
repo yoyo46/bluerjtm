@@ -172,5 +172,19 @@ class Employe extends AppModel {
             ),
         ));
     }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $name = !empty($data['named']['name'])?$data['named']['name']:false;
+        $employe_position_id = !empty($data['named']['employe_position_id'])?$data['named']['employe_position_id']:false;
+
+        if(!empty($name)){
+            $default_options['conditions']['Employe.full_name LIKE'] = '%'.$name.'%';
+        }
+        if(!empty($employe_position_id)){
+            $default_options['conditions']['Employe.employe_position_id'] = $employe_position_id;
+        }
+        
+        return $default_options;
+    }
 }
 ?>

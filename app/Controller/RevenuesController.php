@@ -7296,6 +7296,38 @@ class RevenuesController extends AppController {
                 ),
             ));
 
+            $curr_ttuj_id = Common::hashEmptyField($data, 'TtujPayment.ttuj_id');
+            $last_ttuj_ids = $this->Ttuj->TtujPaymentDetail->find('all', array(
+                'conditions' => array(
+                    'TtujPaymentDetail.ttuj_payment_id' => $ttuj_payment_id,
+                    'TtujPaymentDetail.ttuj_id NOT' => $curr_ttuj_id,
+                    'TtujPaymentDetail.status' => 1,
+                ),
+                'fields' => array(
+                    'TtujPaymentDetail.id',
+                    'TtujPaymentDetail.ttuj_id',
+                    'TtujPaymentDetail.type',
+                ),
+            ));
+
+            if( !empty($last_ttuj_ids) ) {
+                $dataSaveTtuj = array();
+
+                foreach ($last_ttuj_ids as $key => $last_ttuj) {
+                    $last_ttuj_id = Common::hashEmptyField($last_ttuj, 'TtujPaymentDetail.ttuj_id');
+                    $last_ttuj_type = Common::hashEmptyField($last_ttuj, 'TtujPaymentDetail.type');
+
+                    $dataSaveTtuj[] =array(
+                        'id' => $last_ttuj_id,
+                        'paid_'.$last_ttuj_type.'_draft' => 'none',
+                    );
+                }
+
+                if( !empty($dataSaveTtuj) ) {
+                    $this->Ttuj->saveMany($dataSaveTtuj);
+                }
+            }
+
             $this->Ttuj->TtujPaymentDetail->updateAll( array(
                 'TtujPaymentDetail.status' => 0,
             ), array(

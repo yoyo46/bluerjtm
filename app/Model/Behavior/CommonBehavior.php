@@ -434,7 +434,7 @@ class CommonBehavior extends ModelBehavior {
 				$result = $default_options['conditions'];
 			} else if( $find == 'paginate' ) {
 				if( empty($default_options['limit']) ) {
-					$default_options['limit'] = Configure::read('__Site.limit_data');
+					$default_options['limit'] = Configure::read('__Site.config_pagination');
 				}
 
 				$result = $default_options;
