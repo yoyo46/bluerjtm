@@ -5924,37 +5924,37 @@ class RevenuesController extends AppController {
         // $dateFrom = date('Y-m-d', strtotime('-1 Month'));
         // $dateTo = date('Y-m-d');
 
-        $this->SuratJalan->unBindModel(array(
-            'hasMany' => array(
-                'SuratJalanDetail'
-            )
-        ));
+        // $this->SuratJalan->unBindModel(array(
+        //     'hasMany' => array(
+        //         'SuratJalanDetail'
+        //     )
+        // ));
 
-        $this->SuratJalan->bindModel(array(
-            'hasOne' => array(
-                'SuratJalanDetail' => array(
-                    'className' => 'SuratJalanDetail',
-                    'foreignKey' => 'surat_jalan_id',
-                ),
-                'Ttuj' => array(
-                    'className' => 'Ttuj',
-                    'foreignKey' => false,
-                    'conditions' => array(
-                        'Ttuj.id = SuratJalanDetail.ttuj_id',
-                    ),
-                ),
-            )
-        ), false);
+        // $this->SuratJalan->bindModel(array(
+        //     'hasOne' => array(
+        //         'SuratJalanDetail' => array(
+        //             'className' => 'SuratJalanDetail',
+        //             'foreignKey' => 'surat_jalan_id',
+        //         ),
+        //         'Ttuj' => array(
+        //             'className' => 'Ttuj',
+        //             'foreignKey' => false,
+        //             'conditions' => array(
+        //                 'Ttuj.id = SuratJalanDetail.ttuj_id',
+        //             ),
+        //         ),
+        //     )
+        // ), false);
 
         $params = $this->MkCommon->_callRefineParams($this->params, array(
             // 'dateFrom' => $dateFrom,
             // 'dateTo' => $dateTo,
         ));
         $options =  $this->SuratJalan->_callRefineParams($params, array(
-            'contain' => array(
-                'SuratJalanDetail',
-                'Ttuj',
-            ),
+            // 'contain' => array(
+            //     'SuratJalanDetail',
+            //     'Ttuj',
+            // ),
             'group' => array(
                 'SuratJalan.id',
             ),
@@ -7335,7 +7335,6 @@ class RevenuesController extends AppController {
             ));
         }
 
-
         if( !empty($dataAmount) ) {
             foreach ($dataAmount as $key => $amount) {
                 $ttuj_id = !empty($this->request->data['TtujPayment']['ttuj_id'][$key])?$this->request->data['TtujPayment']['ttuj_id'][$key]:false;
@@ -7354,9 +7353,12 @@ class RevenuesController extends AppController {
                 $dataTtuj = $this->Ttuj->getTtujPayment($ttuj_id, $data_type, 'Ttuj');
                 $driver_id = Common::hashEmptyField($dataTtuj, 'Ttuj.driver_id');
                 $driver_id = Common::hashEmptyField($dataTtuj, 'Ttuj.driver_pengganti_id', $driver_id);
+                $driver = $this->Ttuj->Driver->getMerge(array(), $driver_id);
+
                 $dataTtujPaymentDetail = array(
                     'TtujPaymentDetail' => array(
                         'ttuj_id' => $ttuj_id,
+                        'driver_id' => $driver_id,
                         'type' => $data_type,
                         'amount' => $amount,
                         'no_claim' => $no_claim,
@@ -7367,6 +7369,9 @@ class RevenuesController extends AppController {
                         'unit_claim' => $unit_claim,
                         'laka' => $laka,
                         'laka_note' => $laka_note,
+                        'account_name' => Common::hashEmptyField($driver, 'Driver.account_name'),
+                        'account_number' => Common::hashEmptyField($driver, 'Driver.account_number'),
+                        'bank_name' => Common::hashEmptyField($driver, 'Driver.bank_name'),
                     ),
                 );
                 
@@ -8615,127 +8620,151 @@ class RevenuesController extends AppController {
     }
 
     public function report_ttuj_payment( $data_action = false ) {
-        $this->loadModel('TtujPaymentDetail');
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
 
-        $module_title = __('Laporan Pembayaran Biaya Uang Jalan');
-        $values = array();
-        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
-        $params = $this->params->params;
-        $no_filter_date = Common::hashEmptyField($params, 'named.no_filter_date');
-
-        $this->set('sub_module_title', $module_title);
-
-        if( empty($no_filter_date) ) {
-            $dateFrom = date('Y-m-d', strtotime('-1 Month'));
-            $dateTo = date('Y-m-d');
-
-            $filters = array(
-                'dateFrom' => $dateFrom,
-                'dateTo' => $dateTo,
-            );
-        } else {
-            $filters = array();
-        }
-
-        $options =  $this->TtujPaymentDetail->TtujPayment->getData('paginate', array(
-            'conditions' => array(
-                'TtujPayment.is_canceled' => 0,
-                'TtujPaymentDetail.status' => 1,
-                'TtujPayment.branch_id' => $allow_branch_id,
-                'TtujPayment.transaction_status' => 'posting',
-            ),
-            'contain' => array(
-                'TtujPayment',
-                // 'Ttuj',
-            ),
-            'order' => array(
-                'TtujPayment.id' => 'DESC',
-            ),
-        ), true, array(
-            'branch' => false,
+        $params = $this->MkCommon->_callRefineParams($this->params->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
         ));
 
-        $params = $this->MkCommon->_callRefineParams($this->params, $filters);
-        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
-        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
-        $options =  $this->TtujPaymentDetail->TtujPayment->_callRefineParams($params, $options);
-
-        if(!empty($this->params['named'])){
-            $refine = $this->params['named'];
-
-            // Custom Otorisasi
-            $options = $this->MkCommon->getConditionGroupBranch( $refine, 'TtujPayment', $options );
-        }
-
-        if( !empty($dateFrom) && !empty($dateTo) ) {
-            $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
-        }
-
-        if( !empty($data_action) ){
-            $values = $this->TtujPaymentDetail->find('all', $options);
-        } else {
-            $options['limit'] = Configure::read('__Site.config_pagination');
-            $this->paginate = $options;
-            $values = $this->paginate('TtujPaymentDetail');
-        }
-
-        if( !empty($values) ) {
-            foreach ($values as $key => $value) {
-                $id = $this->MkCommon->filterEmptyField($value, 'TtujPayment', 'id');
-                $ttuj_id = $this->MkCommon->filterEmptyField($value, 'TtujPaymentDetail', 'ttuj_id');
-                $branch_id = $this->MkCommon->filterEmptyField($value, 'TtujPayment', 'branch_id');
-                $type = $this->MkCommon->filterEmptyField($value, 'TtujPaymentDetail', 'type');
-
-                $value = $this->Ttuj->getMerge($value, $ttuj_id);
-                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
-                $value = $this->TtujPaymentDetail->TtujPayment->_callTtujPaid($value, $ttuj_id, $type, array(
-                    'conditions' => array(
-                        'TtujPayment.id' => $id,
-                    ),
-                ));
-                
-                $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
-                $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
-                $value = $this->Ttuj->getMergeList($value, array(
-                    'contain' => array(
-                        'DriverPengganti' => array(
-                            'uses' => 'Driver',
-                            'primaryKey' => 'id',
-                            'foreignKey' => 'driver_pengganti_id',
-                            'elements' => array(
-                                'branch' => false,
-                            ),
-                        ),
-                        'Driver' => array(
-                            'elements' => array(
-                                'branch' => false,
-                            ),
-                        ),
-                    ),
-                ));
-
-                $values[$key] = $value;
-            }
-        }
-
+        $dataReport = $this->RmReport->_callDataReport_ttuj_payment($params, 30, 0, true);
+        $values = Common::hashEmptyField($dataReport, 'data');
         $cities = $this->GroupBranch->Branch->City->getListCities();
 
-        $this->set('active_menu', 'report_ttuj_payment');
-        $this->set(compact(
-            'values', 'module_title', 'data_action',
-            'cities'
+        $this->RmReport->_callBeforeView($params, __('Laporan Pembayaran Biaya Uang Jalan'));
+        $this->MkCommon->_layout_file(array(
+            'select',
+            'freeze',
+        ));
+        $this->set(array(
+            'values' => $values,
+            'cities' => $cities,
+            'active_menu' => 'report_ttuj_payment',
+            '_freeze' => true,
         ));
 
-        if($data_action == 'pdf'){
-            $this->layout = 'pdf';
-        }else if($data_action == 'excel'){
-            $this->layout = 'ajax';
-        } else {
-            $this->MkCommon->_layout_file(array(
-                'select',
-                'freeze',
-            ));
-        }
+        // $this->loadModel('TtujPaymentDetail');
+
+        // $module_title = __('Laporan Pembayaran Biaya Uang Jalan');
+        // $values = array();
+        // $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+        // $params = $this->params->params;
+        // $no_filter_date = Common::hashEmptyField($params, 'named.no_filter_date');
+
+        // $this->set('sub_module_title', $module_title);
+
+        // if( empty($no_filter_date) ) {
+        //     $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        //     $dateTo = date('Y-m-d');
+
+        //     $filters = array(
+        //         'dateFrom' => $dateFrom,
+        //         'dateTo' => $dateTo,
+        //     );
+        // } else {
+        //     $filters = array();
+        // }
+
+        // $options =  $this->TtujPaymentDetail->TtujPayment->getData('paginate', array(
+        //     'conditions' => array(
+        //         'TtujPayment.is_canceled' => 0,
+        //         'TtujPaymentDetail.status' => 1,
+        //         'TtujPayment.branch_id' => $allow_branch_id,
+        //         'TtujPayment.transaction_status' => 'posting',
+        //     ),
+        //     'contain' => array(
+        //         'TtujPayment',
+        //         // 'Ttuj',
+        //     ),
+        //     'order' => array(
+        //         'TtujPayment.id' => 'DESC',
+        //     ),
+        // ), true, array(
+        //     'branch' => false,
+        // ));
+
+        // $params = $this->MkCommon->_callRefineParams($this->params, $filters);
+        // $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+        // $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+        // $options =  $this->TtujPaymentDetail->TtujPayment->_callRefineParams($params, $options);
+
+        // if(!empty($this->params['named'])){
+        //     $refine = $this->params['named'];
+
+        //     // Custom Otorisasi
+        //     $options = $this->MkCommon->getConditionGroupBranch( $refine, 'TtujPayment', $options );
+        // }
+
+        // if( !empty($dateFrom) && !empty($dateTo) ) {
+        //     $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        // }
+
+        // if( !empty($data_action) ){
+        //     $values = $this->TtujPaymentDetail->find('all', $options);
+        // } else {
+        //     $options['limit'] = Configure::read('__Site.config_pagination');
+        //     $this->paginate = $options;
+        //     $values = $this->paginate('TtujPaymentDetail');
+        // }
+
+        // if( !empty($values) ) {
+        //     foreach ($values as $key => $value) {
+        //         $id = $this->MkCommon->filterEmptyField($value, 'TtujPayment', 'id');
+        //         $ttuj_id = $this->MkCommon->filterEmptyField($value, 'TtujPaymentDetail', 'ttuj_id');
+        //         $branch_id = $this->MkCommon->filterEmptyField($value, 'TtujPayment', 'branch_id');
+        //         $type = $this->MkCommon->filterEmptyField($value, 'TtujPaymentDetail', 'type');
+
+        //         $value = $this->Ttuj->getMerge($value, $ttuj_id);
+        //         $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+        //         $value = $this->TtujPaymentDetail->TtujPayment->_callTtujPaid($value, $ttuj_id, $type, array(
+        //             'conditions' => array(
+        //                 'TtujPayment.id' => $id,
+        //             ),
+        //         ));
+                
+        //         $customer_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'customer_id');
+        //         $value = $this->Ttuj->Customer->getMerge($value, $customer_id);
+        //         $value = $this->Ttuj->getMergeList($value, array(
+        //             'contain' => array(
+        //                 'DriverPengganti' => array(
+        //                     'uses' => 'Driver',
+        //                     'primaryKey' => 'id',
+        //                     'foreignKey' => 'driver_pengganti_id',
+        //                     'elements' => array(
+        //                         'branch' => false,
+        //                     ),
+        //                 ),
+        //                 'Driver' => array(
+        //                     'elements' => array(
+        //                         'branch' => false,
+        //                     ),
+        //                 ),
+        //             ),
+        //         ));
+
+        //         $values[$key] = $value;
+        //     }
+        // }
+
+        // $cities = $this->GroupBranch->Branch->City->getListCities();
+
+        // $this->set('active_menu', 'report_ttuj_payment');
+        // $this->set(compact(
+        //     'values', 'module_title', 'data_action',
+        //     'cities'
+        // ));
+
+        // if($data_action == 'pdf'){
+        //     $this->layout = 'pdf';
+        // }else if($data_action == 'excel'){
+        //     $this->layout = 'ajax';
+        // } else {
+        //     $this->MkCommon->_layout_file(array(
+        //         'select',
+        //         'freeze',
+        //     ));
+        // }
     }
 
     public function report_ttuj_outstanding( $data_action = false ) {
@@ -10098,4 +10127,29 @@ class RevenuesController extends AppController {
             $this->redirect($this->referer());
         }
     }
+
+    // public function report_driver_commissions( $data_action = false ) {
+    //     $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+    //     $dateTo = date('Y-m-d');
+
+    //     $params = $this->MkCommon->_callRefineParams($this->params->params, array(
+    //         'dateFrom' => $dateFrom,
+    //         'dateTo' => $dateTo,
+    //     ));
+
+    //     $dataReport = $this->RmReport->_callDataReport_driver_commissions($params, 30, 0, true);
+    //     $values = Common::hashEmptyField($dataReport, 'data');
+    //     $cities = $this->GroupBranch->Branch->City->getListCities();
+
+    //     $this->RmReport->_callBeforeView($params, __('Laporan Komisi Supir'));
+    //     $this->MkCommon->_layout_file(array(
+    //         'select',
+    //     ));
+    //     $this->set(array(
+    //         'values' => $values,
+    //         'cities' => $cities,
+    //         'active_menu' => 'report_driver_commissions',
+    //         '_freeze' => true,
+    //     ));
+    // }
 }

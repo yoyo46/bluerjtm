@@ -2,11 +2,9 @@
         $dataColumns = array(
             'noref' => array(
                 'name' => __('No. Referensi'),
-                'class' => 'text-center',
             ),
             'nodoc' => array(
                 'name' => __('No. Dokumen'),
-                'class' => 'text-center',
             ),
             'date' => array(
                 'name' => __('Tgl Terima'),

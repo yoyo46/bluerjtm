@@ -1180,6 +1180,7 @@
                         'document_payments', 'laka_payments',
                         'asset_sells', 'leasing_payments',
                         'insurance_payments', 'report_commissions',
+                        'report_driver_commissions',
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
@@ -1193,7 +1194,7 @@
                         'revenues' => array(
                             'invoice_payments', 'ttuj_payments',
                             'report_ttuj_payment', 'report_ttuj_outstanding',
-                            'report_commissions'
+                            'report_commissions', 'report_driver_commissions',
                         ),
                         'lkus' => array(
                             'payments', 'ksu_payments',
@@ -1369,6 +1370,15 @@
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'report_commissions' )?'active':'',
                             ));
+
+                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Komisi Supir', array(
+                            //     'controller' => 'revenues',
+                            //     'action' => 'report_driver_commissions',
+                            // ), array(
+                            //     'escape' => false
+                            // )), array(
+                            //     'class' => ( !empty($active_menu) && $active_menu == 'report_driver_commissions' )?'active':'',
+                            // ));
                     ?>
                 </ul>
             </li>

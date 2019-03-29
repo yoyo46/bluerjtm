@@ -14,21 +14,22 @@
             foreach ($values as $key => $value) {
                 $id = Common::hashEmptyField($value, 'TtujPayment.id');
                 $detail_id = Common::hashEmptyField($value, 'TtujPaymentDetail.id');
-                $date_payment = Common::hashEmptyField($value, 'TtujPayment.date_payment');
-                $nodoc = Common::hashEmptyField($value, 'TtujPayment.nodoc');
-                $type = Common::hashEmptyField($value, 'TtujPaymentDetail.type');
-                $paid = Common::hashEmptyField($value, 'TtujPaymentDetail.amount');
+                $date_payment = $this->Common->filterEmptyField($value, 'TtujPayment', 'date_payment');
+                $nodoc = $this->Common->filterEmptyField($value, 'TtujPayment', 'nodoc');
+                $type = $this->Common->filterEmptyField($value, 'TtujPaymentDetail', 'type');
+                // $paid = $this->Common->filterEmptyField($value, 'TtujPayment', 'paid');
+                $paid = $this->Common->filterEmptyField($value, 'TtujPaymentDetail', 'amount');
 
-                $no_ttuj = Common::hashEmptyField($value, 'Ttuj.no_ttuj');
-                $ttuj_date = Common::hashEmptyField($value, 'Ttuj.ttuj_date');
-                $nopol = Common::hashEmptyField($value, 'Ttuj.nopol');
-                $customer = Common::hashEmptyField($value, 'Customer.code');
-                $from_city_name = Common::hashEmptyField($value, 'Ttuj.from_city_name');
-                $to_city_name = Common::hashEmptyField($value, 'Ttuj.to_city_name');
-                $note = Common::hashEmptyField($value, 'Ttuj.note');
+                $no_ttuj = $this->Common->filterEmptyField($value, 'Ttuj', 'no_ttuj');
+                $ttuj_date = $this->Common->filterEmptyField($value, 'Ttuj', 'ttuj_date');
+                $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
+                $customer = $this->Common->filterEmptyField($value, 'Customer', 'code');
+                $from_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
+                $to_city_name = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
+                $note = $this->Common->filterEmptyField($value, 'Ttuj', 'note');
                 $total = $this->Common->getBiayaTtuj($value, $type, false, false, 'Ttuj');
 
-                $branch = Common::hashEmptyField($value, 'Branch.code');
+                $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
 
                 $driver = $this->Common->_callGetDataDriver($value);
                 $driver_name = Common::hashEmptyField($driver, 'driver_name', '-');

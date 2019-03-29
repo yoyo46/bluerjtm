@@ -382,5 +382,37 @@ class TtujPayment extends AppModel {
 
         return $data;
     }
+
+    function _callListPayment ( $data, $ttuj_id, $type = false, $options = array() ) {
+        $default_options = array(
+            'fields' => array(
+                'TtujPayment.id',
+                'TtujPayment.nodoc',
+            ),
+            'conditions' => array(
+                'TtujPayment.is_canceled' => 0,
+                'TtujPaymentDetail.status' => 1,
+                'TtujPaymentDetail.ttuj_id' => $ttuj_id,
+                'TtujPayment.transaction_status' => 'posting',
+            ),
+            'contain' => array(
+                'TtujPayment',
+            ),
+            'order' => false,
+        );
+
+        if( !empty($type) ) {
+            $default_options['conditions']['TtujPaymentDetail.type'] = $type;
+        }
+
+        if(!empty($options['conditions'])){
+            $default_options['conditions'] = array_merge($default_options['conditions'], $options['conditions']);
+        }
+
+        $options =  $this->getData('paginate', $default_options, true, array(
+            'branch' => false,
+        ));
+        return  $this->TtujPaymentDetail->find('list', $options);
+    }
 }
 ?>

@@ -8259,107 +8259,107 @@ class RmReportComponent extends Component {
 					),
 				);
 			} else {
-				$last = $this->controller->ViewTtujOutstanding->find('first', array_merge($options, array(
-					'offset' => $offset+$limit,
-					'limit' => $limit,
-				)));
+				// $last = $this->controller->ViewTtujOutstanding->find('first', array_merge($options, array(
+				// 	'offset' => $offset+$limit,
+				// 	'limit' => $limit,
+				// )));
 
-				if( empty($last) ) {
-	            	$options = Common::_callUnset($options, array(
-						'group',
-						'limit',
-						'offset',
-					));
+				// if( empty($last) ) {
+	   //          	$options = Common::_callUnset($options, array(
+				// 		'group',
+				// 		'limit',
+				// 		'offset',
+				// 	));
 
-	        		$this->controller->ViewTtujOutstanding->virtualFields['total_total'] = 'SUM(IFNULL(ViewTtujOutstanding.total, 0))';
-	        		$this->controller->ViewTtujOutstanding->virtualFields['total_paid'] = 'SUM(IFNULL(ViewTtujPayment.amount, 0))';
+	   //      		$this->controller->ViewTtujOutstanding->virtualFields['total_total'] = 'SUM(IFNULL(ViewTtujOutstanding.total, 0))';
+	   //      		$this->controller->ViewTtujOutstanding->virtualFields['total_paid'] = 'SUM(IFNULL(ViewTtujPayment.amount, 0))';
 
-			        $this->controller->ViewTtujOutstanding->bindModel(array(
-			            'hasOne' => array(
-			                'ViewTtujPayment' => array(
-			                    'className' => 'ViewTtujPayment',
-			                    'foreignKey' => 'ttuj_id',
-			                    'conditions' => array(
-			                    	'ViewTtujPayment.type = ViewTtujOutstanding.data_type COLLATE utf8_unicode_ci'
-			                    ),
-			                ),
-			            )
-			        ), false);
+			 //        $this->controller->ViewTtujOutstanding->bindModel(array(
+			 //            'hasOne' => array(
+			 //                'ViewTtujPayment' => array(
+			 //                    'className' => 'ViewTtujPayment',
+			 //                    'foreignKey' => 'ttuj_id',
+			 //                    'conditions' => array(
+			 //                    	'ViewTtujPayment.type = ViewTtujOutstanding.data_type COLLATE utf8_unicode_ci'
+			 //                    ),
+			 //                ),
+			 //            )
+			 //        ), false);
 
-			        $options['contain'][] = 'ViewTtujPayment';
-					$value = $this->controller->ViewTtujOutstanding->find('first', $options);
-					unset($this->controller->ViewTtujOutstanding->virtualFields);
+			 //        $options['contain'][] = 'ViewTtujPayment';
+				// 	$value = $this->controller->ViewTtujOutstanding->find('first', $options);
+				// 	unset($this->controller->ViewTtujOutstanding->virtualFields);
 
-					$total_total = Common::hashEmptyField($value, 'ViewTtujOutstanding.total_total', 0);
-	                $total_paid = Common::hashEmptyField($value, 'ViewTtujOutstanding.total_paid', 0);
-	                $total_saldo = $total_total - $total_paid;
+				// 	$total_total = Common::hashEmptyField($value, 'ViewTtujOutstanding.total_total', 0);
+	   //              $total_paid = Common::hashEmptyField($value, 'ViewTtujOutstanding.total_paid', 0);
+	   //              $total_saldo = $total_total - $total_paid;
 
-					$result[$idx] = array(
-					__('Cabang') => array(
-                		'field_model' => 'Branch.code',
-					),
-					__('No TTUJ') => array(
-                		'field_model' => 'ViewTtujOutstanding.no_ttuj',
-					),
-					__('Tgl TTUJ') => array(
-                		'field_model' => 'ViewTtujOutstanding.ttuj_date',
-					),
-					__('Nopol') => array(
-                		'field_model' => 'ViewTtujOutstanding.nopol',
-					),
-					__('Customer') => array(
-                		'field_model' => 'Customer.code',
-					),
-					__('Asal') => array(
-		                'align' => 'left',
-					),
-					__('Tujuan') => array(
-		                'align' => 'left',
-					),
-					__('Supir') => array(
-		                'align' => 'left',
-					),
-					__('Keterangan') => array(
-		                'align' => 'left',
-					),
-					__('Jenis') => array(
-						'text' => __('Total'),
-					),
-					__('Total') => array(
-						'text' => $total_total,
-		                'align' => 'right',
-		                'mainalign' => 'center',
-                		'excel' => array(
-                			'align' => 'right',
-                			'type' => 'number',
-            			),
-					),
-					__('Total Pembayaran') => array(
-						'text' => $total_paid,
-		                'align' => 'right',
-		                'mainalign' => 'center',
-                		'excel' => array(
-                			'align' => 'right',
-                			'type' => 'number',
-            			),
-					),
-					__('Saldo') => array(
-						'text' => $total_saldo,
-		                'align' => 'right',
-		                'mainalign' => 'center',
-                		'excel' => array(
-                			'align' => 'right',
-                			'type' => 'number',
-            			),
-					),
-					);
-				}
+				// 	$result[$idx] = array(
+				// 	__('Cabang') => array(
+    //             		'field_model' => 'Branch.code',
+				// 	),
+				// 	__('No TTUJ') => array(
+    //             		'field_model' => 'ViewTtujOutstanding.no_ttuj',
+				// 	),
+				// 	__('Tgl TTUJ') => array(
+    //             		'field_model' => 'ViewTtujOutstanding.ttuj_date',
+				// 	),
+				// 	__('Nopol') => array(
+    //             		'field_model' => 'ViewTtujOutstanding.nopol',
+				// 	),
+				// 	__('Customer') => array(
+    //             		'field_model' => 'Customer.code',
+				// 	),
+				// 	__('Asal') => array(
+		  //               'align' => 'left',
+				// 	),
+				// 	__('Tujuan') => array(
+		  //               'align' => 'left',
+				// 	),
+				// 	__('Supir') => array(
+		  //               'align' => 'left',
+				// 	),
+				// 	__('Keterangan') => array(
+		  //               'align' => 'left',
+				// 	),
+				// 	__('Jenis') => array(
+				// 		'text' => __('Total'),
+				// 	),
+				// 	__('Total') => array(
+				// 		'text' => $total_total,
+		  //               'align' => 'right',
+		  //               'mainalign' => 'center',
+    //             		'excel' => array(
+    //             			'align' => 'right',
+    //             			'type' => 'number',
+    //         			),
+				// 	),
+				// 	__('Total Pembayaran') => array(
+				// 		'text' => $total_paid,
+		  //               'align' => 'right',
+		  //               'mainalign' => 'center',
+    //             		'excel' => array(
+    //             			'align' => 'right',
+    //             			'type' => 'number',
+    //         			),
+				// 	),
+				// 	__('Saldo') => array(
+				// 		'text' => $total_saldo,
+		  //               'align' => 'right',
+		  //               'mainalign' => 'center',
+    //             		'excel' => array(
+    //             			'align' => 'right',
+    //             			'type' => 'number',
+    //         			),
+				// 	),
+				// 	);
+				// }
 			}
 		}
 
 		return array(
 			'data' => $result,
-			'model' => 'ViewTtujOutstanding',
+			'model' => 'Ttuj',
 		);
 	}
 
@@ -9608,6 +9608,758 @@ class RmReportComponent extends Component {
 		return array(
 			'data' => $result,
 			'model' => 'ViewTtujOutstanding',
+		);
+	}
+
+	function _callDataReport_ttuj_payment ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('TtujPaymentDetail');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named']= $named = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+		$status = Common::hashEmptyField($named, 'status');
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+
+        $options =  $this->controller->TtujPaymentDetail->TtujPayment->getData('paginate', array(
+            'conditions' => array(
+                'TtujPayment.is_canceled' => 0,
+                'TtujPaymentDetail.status' => 1,
+                'TtujPayment.branch_id' => $allow_branch_id,
+                'TtujPayment.transaction_status' => 'posting',
+            ),
+            'contain' => array(
+                'TtujPayment',
+            ),
+            'order' => array(
+                'TtujPayment.id' => 'DESC',
+            ),
+        	'offset' => $offset,
+        	'limit' => $limit,
+        ), true, array(
+            'branch' => false,
+        ));
+
+		$options = $this->controller->TtujPaymentDetail->TtujPayment->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'TtujPayment', $options );
+
+		$this->controller->paginate	= $options;
+		$data = $this->controller->paginate('TtujPaymentDetail');
+		$result = array();
+
+        App::import('Helper', 'Html');
+        $this->Html = new HtmlHelper(new View(null));
+
+        App::import('Helper', 'Common');
+        $this->Common = new CommonHelper(new View(null));
+
+		if( !empty($data) ) {
+            $grandtotal = 0;
+            $totalPaid = 0;
+            $totalNoClaim = 0;
+            $totalStood = 0;
+            $totalLainnya = 0;
+            $totalTitipan = 0;
+            $totalClaim = 0;
+            $totalUnitClaim = 0;
+            $totalLaka = 0;
+            $grandTotalTrans = 0;
+
+			foreach ($data as $key => $value) {
+                $id = Common::hashEmptyField($value, 'TtujPayment.id');
+                $ttuj_id = Common::hashEmptyField($value, 'TtujPaymentDetail.ttuj_id');
+                $branch_id = Common::hashEmptyField($value, 'TtujPayment.branch_id');
+                $type = Common::hashEmptyField($value, 'TtujPaymentDetail.type');
+
+                $value = $this->controller->TtujPaymentDetail->Ttuj->getMerge($value, $ttuj_id);
+                $value = $this->controller->GroupBranch->Branch->getMerge($value, $branch_id);
+                $value = $this->controller->TtujPaymentDetail->TtujPayment->_callTtujPaid($value, $ttuj_id, $type, array(
+                    'conditions' => array(
+                        'TtujPayment.id' => $id,
+                    ),
+                ));
+                
+                $customer_id = Common::hashEmptyField($value, 'Ttuj.customer_id');
+                $value = $this->controller->TtujPaymentDetail->Ttuj->Customer->getMerge($value, $customer_id);
+                $value = $this->controller->TtujPaymentDetail->Ttuj->getMergeList($value, array(
+                    'contain' => array(
+                        'DriverPengganti' => array(
+                            'uses' => 'Driver',
+                            'primaryKey' => 'id',
+                            'foreignKey' => 'driver_pengganti_id',
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
+                        'Driver' => array(
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
+                    ),
+                ));
+
+                $detail_id = Common::hashEmptyField($value, 'TtujPaymentDetail.id');
+                $date_payment = Common::hashEmptyField($value, 'TtujPayment.date_payment');
+                $nodoc = Common::hashEmptyField($value, 'TtujPayment.nodoc');
+                $paid = Common::hashEmptyField($value, 'TtujPaymentDetail.amount');
+
+                $no_ttuj = Common::hashEmptyField($value, 'Ttuj.no_ttuj');
+                $ttuj_date = Common::hashEmptyField($value, 'Ttuj.ttuj_date');
+                $nopol = Common::hashEmptyField($value, 'Ttuj.nopol');
+                $customer = Common::hashEmptyField($value, 'Customer.code');
+                $from_city_name = Common::hashEmptyField($value, 'Ttuj.from_city_name');
+                $to_city_name = Common::hashEmptyField($value, 'Ttuj.to_city_name');
+                $note = Common::hashEmptyField($value, 'Ttuj.note', '-');
+                $total = $this->Common->getBiayaTtuj($value, $type, false, false, 'Ttuj');
+
+                $branch = Common::hashEmptyField($value, 'Branch.code');
+
+                $driver = $this->Common->_callGetDataDriver($value);
+                $driver_name = Common::hashEmptyField($driver, 'driver_name', '-');
+
+                $customDatePayment = $this->Common->formatDate($date_payment, 'd M Y');
+                $customTtujDate = $this->Common->formatDate($ttuj_date, 'd M Y');
+
+                $no_claim = Common::hashEmptyField($value, 'TtujPaymentDetail.no_claim', 0);
+                $stood = Common::hashEmptyField($value, 'TtujPaymentDetail.stood', 0);
+                $lainnya = Common::hashEmptyField($value, 'TtujPaymentDetail.lainnya', 0);
+                $titipan = Common::hashEmptyField($value, 'TtujPaymentDetail.titipan', 0);
+                $claim = Common::hashEmptyField($value, 'TtujPaymentDetail.claim', 0);
+                $unit_claim = Common::hashEmptyField($value, 'TtujPaymentDetail.unit_claim', 0);
+                $laka = Common::hashEmptyField($value, 'TtujPaymentDetail.laka', 0);
+                $laka_note = Common::hashEmptyField($value, 'TtujPaymentDetail.laka_note', '-');
+
+                $grandtotal += $total;
+                $totalPaid += $paid;
+                $totalNoClaim += $no_claim;
+                $totalStood += $stood;
+                $totalLainnya += $lainnya;
+                $totalTitipan += $titipan;
+                $totalClaim += $claim;
+                $totalUnitClaim += $unit_claim;
+                $totalLaka += $laka;
+
+                $total_trans = $paid + $no_claim + $stood + $lainnya - $titipan - $claim - $laka;
+                $grandTotalTrans += $total_trans;
+
+                $customType = $this->Common->_callLabelBiayaTtuj($type);
+
+				$result[$key] = array(
+					__('Cabang') => array(
+						'text' => $branch,
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'branch\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'center',
+		    			),
+					),
+					__('No TTUJ') => array(
+						'text' => $no_ttuj,
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'nottuj\',width:120',
+		                'align' => 'left',
+					),
+					__('Tgl TTUJ') => array(
+						'text' => $customTtujDate,
+		                'data-options' => 'field:\'ttuj_date\',width:100',
+		                'align' => 'left',
+                		'fix_column' => true
+					),
+					__('Nopol') => array(
+						'text' => $nopol,
+		                'data-options' => 'field:\'nopol\',width:100',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'center',
+		    			),
+					),
+					__('Customer') => array(
+						'text' => $customer,
+		                'data-options' => 'field:\'customer\',width:120',
+		                'align' => 'left',
+					),
+					__('Asal') => array(
+						'text' => $from_city_name,
+		                'data-options' => 'field:\'from_city_name\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'left',
+					),
+					__('Tujuan') => array(
+						'text' => $to_city_name,
+		                'data-options' => 'field:\'to_city_name\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'left',
+					),
+					__('Supir') => array(
+						'text' => $driver_name,
+		                'data-options' => 'field:\'driver\',width:120',
+		                'align' => 'left',
+		                'mainalign' => 'left',
+					),
+					__('No. Ref') => array(
+						'text' => $nodoc,
+		                'data-options' => 'field:\'noref\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'left',
+					),
+					__('Keterangan') => array(
+						'text' => $note,
+		                'data-options' => 'field:\'note\',width:120',
+		                'align' => 'left',
+		                'mainalign' => 'left',
+					),
+					__('Jenis') => array(
+						'text' => $customType,
+		                'data-options' => 'field:\'type\',width:120',
+		                'align' => 'left',
+		                'mainalign' => 'left',
+					),
+					__('Total') => array(
+						'text' => !empty($view)?Common::getFormatPrice($total):$total,
+		                'data-options' => 'field:\'total\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'right',
+		        			'type' => 'number',
+		    			),
+					),
+					__('OK') => array(
+						'text' => __('OK'),
+		                'data-options' => 'field:\'ok\',width:120',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+					),
+					__('TGL. Masuk TTUJ Biru') => array(
+						'text' => date('d M Y'),
+		                'data-options' => 'field:\'tgl_masuk\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'left',
+					),
+					__('ID Supir') => array(
+						'text' => Common::hashEmptyField($driver, 'id', '-'),
+		                'data-options' => 'field:\'driver_id\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+					),
+					__('Atas Nama') => array(
+						'text' => Common::hashEmptyField($value, 'TtujPaymentDetail.account_name', '-'),
+		                'data-options' => 'field:\'account_name\',width:120',
+		                'align' => 'left',
+		                'mainalign' => 'left',
+					),
+					__('No. Rekening') => array(
+						'text' => Common::hashEmptyField($value, 'TtujPaymentDetail.account_number', '-'),
+		                'data-options' => 'field:\'account_number\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'left',
+					),
+					__('Nama Bank') => array(
+						'text' => Common::hashEmptyField($value, 'TtujPaymentDetail.bank_name', '-'),
+		                'data-options' => 'field:\'bank_name\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'left',
+					),
+					__('Tgl Transfer') => array(
+						'text' => $customDatePayment,
+		                'data-options' => 'field:\'date_payment\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'left',
+					),
+					__('Total Dibayar') => array(
+						'text' => !empty($view)?Common::getFormatPrice($paid):$paid,
+		                'data-options' => 'field:\'paid\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'right',
+		        			'type' => 'number',
+		    			),
+					),
+					__('No Claim') => array(
+						'text' => !empty($view)?Common::getFormatPrice($no_claim):$no_claim,
+		                'data-options' => 'field:\'no_claim\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'right',
+		        			'type' => 'number',
+		    			),
+					),
+					__('Stood') => array(
+						'text' => !empty($view)?Common::getFormatPrice($stood):$stood,
+		                'data-options' => 'field:\'stood\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'right',
+		        			'type' => 'number',
+		    			),
+					),
+					__('Lain-lain') => array(
+						'text' => !empty($view)?Common::getFormatPrice($lainnya):$lainnya,
+		                'data-options' => 'field:\'lainnya\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'right',
+		        			'type' => 'number',
+		    			),
+					),
+					__('Titipan') => array(
+						'text' => !empty($view)?Common::getFormatPrice($titipan):$titipan,
+		                'data-options' => 'field:\'titipan\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'right',
+		        			'type' => 'number',
+		    			),
+					),
+					__('Potongan Claim') => array(
+						'text' => !empty($view)?Common::getFormatPrice($claim):$claim,
+		                'data-options' => 'field:\'claim\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'right',
+		        			'type' => 'number',
+		    			),
+					),
+					__('Jml Claim') => array(
+						'text' => !empty($view)?Common::getFormatPrice($unit_claim):$unit_claim,
+		                'data-options' => 'field:\'unit_claim\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'right',
+		        			'type' => 'number',
+		    			),
+					),
+					__('Potongan LAKA') => array(
+						'text' => !empty($view)?Common::getFormatPrice($laka):$laka,
+		                'data-options' => 'field:\'laka\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'right',
+		        			'type' => 'number',
+		    			),
+					),
+					__('Ket LAKA') => array(
+						'text' => $laka_note,
+		                'data-options' => 'field:\'laka_note\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'left',
+					),
+					__('Total Transfer') => array(
+						'text' => !empty($view)?Common::getFormatPrice($total_trans):$total_trans,
+		                'data-options' => 'field:\'total_trans\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'right',
+		        			'type' => 'number',
+		    			),
+					),
+					__('No.Ref CMS') => array(
+						'text' => $this->Common->_callNoRefCMS($detail_id, $driver_name),
+		                'data-options' => 'field:\'noref_cms\',width:100',
+		                'align' => 'left',
+		                'mainalign' => 'left',
+					),
+				);
+			}
+
+			if( !empty($view) ) {
+				$result[$key+1] = array(
+					__('Cabang') => array(
+		                'style' => 'text-align: center;',
+					),
+					__('No TTUJ') => array(
+		                'style' => 'text-align: left;',
+					),
+					__('Tgl TTUJ') => array(
+		                'data-options' => 'field:\'ttuj_date\',width:100',
+					),
+					__('Nopol') => array(
+		                'data-options' => 'field:\'nopol\',width:100',
+					),
+					__('Customer') => array(
+		                'data-options' => 'field:\'customer\',width:120',
+					),
+					__('Asal') => array(
+		                'data-options' => 'field:\'from_city_name\',width:100',
+					),
+					__('Tujuan') => array(
+		                'style' => 'text-align: left;',
+					),
+					__('Supir') => array(
+		                'data-options' => 'field:\'driver\',width:120',
+					),
+					__('No. Ref') => array(
+		                'data-options' => 'field:\'noref\',width:100',
+					),
+					__('Keterangan') => array(
+		                'data-options' => 'field:\'note\',width:120',
+					),
+					__('Jenis') => array(
+						'text' => $this->Html->tag('strong', __('Total')),
+		                'style' => 'text-align: right;',
+					),
+					__('Total') => array(
+						'text' => $this->Html->tag('strong', Common::getFormatPrice($grandtotal)),
+		                'style' => 'text-align: right;',
+					),
+					__('OK') => array(
+		                'data-options' => 'field:\'ok\',width:120',
+					),
+					__('TGL. Masuk TTUJ Biru') => array(
+		                'data-options' => 'field:\'tgl_masuk\',width:100',
+					),
+					__('ID Supir') => array(
+		                'data-options' => 'field:\'driver_id\',width:80',
+					),
+					__('Atas Nama') => array(
+		                'data-options' => 'field:\'account_name\',width:120',
+					),
+					__('No. Rekening') => array(
+		                'data-options' => 'field:\'account_name\',width:100',
+					),
+					__('Nama Bank') => array(
+		                'data-options' => 'field:\'bank_name\',width:100',
+					),
+					__('Tgl Transfer') => array(
+		                'data-options' => 'field:\'bank_name\',width:100',
+					),
+					__('Total Dibayar') => array(
+						'text' => $this->Html->tag('strong', Common::getFormatPrice($totalPaid)),
+		                'style' => 'text-align: right;',
+					),
+					__('No Claim') => array(
+						'text' => $this->Html->tag('strong', $this->Common->getFormatPrice($totalNoClaim)),
+		                'style' => 'text-align: right;',
+					),
+					__('Stood') => array(
+						'text' => $this->Html->tag('strong', $this->Common->getFormatPrice($totalStood)),
+		                'style' => 'text-align: right;',
+					),
+					__('Lain-lain') => array(
+						'text' => $this->Html->tag('strong', $this->Common->getFormatPrice($totalLainnya)),
+		                'style' => 'text-align: right;',
+					),
+					__('Titipan') => array(
+						'text' => $this->Html->tag('strong', $this->Common->getFormatPrice($totalTitipan)),
+		                'style' => 'text-align: right;',
+					),
+					__('Potongan Claim') => array(
+						'text' => $this->Html->tag('strong', $this->Common->getFormatPrice($totalClaim)),
+		                'style' => 'text-align: right;',
+					),
+					__('Jml Claim') => array(
+						'text' => $this->Html->tag('strong', $totalUnitClaim),
+		                'style' => 'text-align: center;',
+					),
+					__('Potongan LAKA') => array(
+						'text' => $this->Html->tag('strong', $this->Common->getFormatPrice($totalLaka)),
+		                'style' => 'text-align: right;',
+					),
+					__('Ket LAKA') => array(
+		                'data-options' => 'field:\'laka_note\',width:100',
+					),
+					__('Total Transfer') => array(
+						'text' => $this->Html->tag('strong', $this->Common->getFormatPrice($grandTotalTrans)),
+		                'style' => 'text-align: right;',
+					),
+					__('No.Ref CMS') => array(
+		                'data-options' => 'field:\'noref_cms\',width:100',
+					),
+				);
+			} else {
+				$last = $this->controller->TtujPaymentDetail->find('first', array_merge($options, array(
+					'offset' => $offset+$limit,
+					'limit' => $limit,
+				)));
+
+				if( empty($last) ) {
+	            	$options = Common::_callUnset($options, array(
+						'group',
+						'limit',
+						'offset',
+					));
+
+	            	// Total Pembayaran
+	        		$this->controller->TtujPaymentDetail->virtualFields['total_paid'] = 'SUM(IFNULL(TtujPaymentDetail.amount, 0))';
+	        		$this->controller->TtujPaymentDetail->virtualFields['total_no_claim'] = 'SUM(IFNULL(TtujPaymentDetail.no_claim, 0))';
+	        		$this->controller->TtujPaymentDetail->virtualFields['total_stood'] = 'SUM(IFNULL(TtujPaymentDetail.stood, 0))';
+	        		$this->controller->TtujPaymentDetail->virtualFields['total_lainnya'] = 'SUM(IFNULL(TtujPaymentDetail.lainnya, 0))';
+	        		$this->controller->TtujPaymentDetail->virtualFields['total_titipan'] = 'SUM(IFNULL(TtujPaymentDetail.titipan, 0))';
+	        		$this->controller->TtujPaymentDetail->virtualFields['total_claim'] = 'SUM(IFNULL(TtujPaymentDetail.claim, 0))';
+	        		$this->controller->TtujPaymentDetail->virtualFields['total_unit_claim'] = 'SUM(IFNULL(TtujPaymentDetail.unit_claim, 0))';
+	        		$this->controller->TtujPaymentDetail->virtualFields['total_laka'] = 'SUM(IFNULL(TtujPaymentDetail.laka, 0))';
+
+	        		$options['fields'] = array(
+	        			'TtujPaymentDetail.id',
+	        			'TtujPaymentDetail.total_paid',
+	        			'TtujPaymentDetail.total_no_claim',
+	        			'TtujPaymentDetail.total_stood',
+	        			'TtujPaymentDetail.total_lainnya',
+	        			'TtujPaymentDetail.total_titipan',
+	        			'TtujPaymentDetail.total_claim',
+	        			'TtujPaymentDetail.total_unit_claim',
+	        			'TtujPaymentDetail.total_laka',
+	        		);
+					$value = $this->controller->TtujPaymentDetail->find('first', $options);
+					unset($this->controller->TtujPaymentDetail->virtualFields['total_paid']);
+	        		unset($this->controller->TtujPaymentDetail->virtualFields['total_no_claim']);
+	        		unset($this->controller->TtujPaymentDetail->virtualFields['total_stood']);
+	        		unset($this->controller->TtujPaymentDetail->virtualFields['total_lainnya']);
+	        		unset($this->controller->TtujPaymentDetail->virtualFields['total_titipan']);
+	        		unset($this->controller->TtujPaymentDetail->virtualFields['total_claim']);
+	        		unset($this->controller->TtujPaymentDetail->virtualFields['total_unit_claim']);
+	        		unset($this->controller->TtujPaymentDetail->virtualFields['total_laka']);
+
+					$paid = Common::hashEmptyField($value, 'TtujPaymentDetail.total_paid', 0);
+	                $no_claim = Common::hashEmptyField($value, 'TtujPaymentDetail.total_no_claim', 0);
+	                $stood = Common::hashEmptyField($value, 'TtujPaymentDetail.total_stood', 0);
+	                $lainnya = Common::hashEmptyField($value, 'TtujPaymentDetail.total_lainnya', 0);
+	                $titipan = Common::hashEmptyField($value, 'TtujPaymentDetail.total_titipan', 0);
+	                $claim = Common::hashEmptyField($value, 'TtujPaymentDetail.total_claim', 0);
+	                $laka = Common::hashEmptyField($value, 'TtujPaymentDetail.total_laka', 0);
+	                $unit_claim = Common::hashEmptyField($value, 'TtujPaymentDetail.total_unit_claim', 0);
+                	$total_trans = $paid + $no_claim + $stood + $lainnya - $titipan - $claim - $laka;
+
+                	// Total TTUJ
+					// $options['contain'][] = 'Ttuj';
+	    //     		$this->controller->TtujPaymentDetail->virtualFields['commission'] = 'SUM(IFNULL(Ttuj.commission, 0))';
+	    //     		$this->controller->TtujPaymentDetail->virtualFields['commission_extra'] = 'SUM(IFNULL(Ttuj.commission_extra, 0))';
+	    //     		$this->controller->TtujPaymentDetail->virtualFields['uang_jalan_1'] = 'SUM(IFNULL(Ttuj.uang_jalan_1, 0))';
+	    //     		$this->controller->TtujPaymentDetail->virtualFields['uang_jalan_2'] = 'SUM(IFNULL(Ttuj.uang_jalan_2, 0))';
+	    //     		$this->controller->TtujPaymentDetail->virtualFields['uang_kuli_muat'] = 'SUM(IFNULL(Ttuj.uang_kuli_muat, 0))';
+	    //     		$this->controller->TtujPaymentDetail->virtualFields['uang_kuli_bongkar'] = 'SUM(IFNULL(Ttuj.uang_kuli_bongkar, 0))';
+	    //     		$this->controller->TtujPaymentDetail->virtualFields['asdp'] = 'SUM(IFNULL(Ttuj.asdp, 0))';
+	    //     		$this->controller->TtujPaymentDetail->virtualFields['uang_kawal'] = 'SUM(IFNULL(Ttuj.uang_kawal, 0))';
+	    //     		$this->controller->TtujPaymentDetail->virtualFields['uang_keamanan'] = 'SUM(IFNULL(Ttuj.uang_keamanan, 0))';
+	    //     		$this->controller->TtujPaymentDetail->virtualFields['uang_jalan_extra'] = 'SUM(IFNULL(Ttuj.uang_jalan_extra, 0))';
+
+	    //     		$options['fields'] = array(
+	    //     			'TtujPaymentDetail.id',
+	    //     			'TtujPaymentDetail.uang_jalan_1',
+	    //     			'TtujPaymentDetail.uang_jalan_2',
+	    //     			'TtujPaymentDetail.uang_jalan_extra',
+	    //     			'TtujPaymentDetail.commission',
+	    //     			'TtujPaymentDetail.commission_extra',
+	    //     			'TtujPaymentDetail.uang_kuli_muat',
+	    //     			'TtujPaymentDetail.uang_kuli_bongkar',
+	    //     			'TtujPaymentDetail.asdp',
+	    //     			'TtujPaymentDetail.uang_kawal',
+	    //     			'TtujPaymentDetail.uang_keamanan',
+	    //     		);
+					// $value = $this->controller->TtujPaymentDetail->find('first', $options);
+					// unset($this->controller->TtujPaymentDetail->virtualFields['commission']);
+	    //     		unset($this->controller->TtujPaymentDetail->virtualFields['commission_extra']);
+	    //     		unset($this->controller->TtujPaymentDetail->virtualFields['uang_jalan_1']);
+	    //     		unset($this->controller->TtujPaymentDetail->virtualFields['uang_jalan_2']);
+	    //     		unset($this->controller->TtujPaymentDetail->virtualFields['uang_kuli_muat']);
+	    //     		unset($this->controller->TtujPaymentDetail->virtualFields['uang_kuli_bongkar']);
+	    //     		unset($this->controller->TtujPaymentDetail->virtualFields['asdp']);
+	    //     		unset($this->controller->TtujPaymentDetail->virtualFields['uang_kawal']);
+	    //     		unset($this->controller->TtujPaymentDetail->virtualFields['uang_keamanan']);
+	    //     		unset($this->controller->TtujPaymentDetail->virtualFields['uang_jalan_extra']);
+
+     //            	$uj1 = Common::hashEmptyField($params, 'named.uj1');
+     //            	$uj2 = Common::hashEmptyField($params, 'named.uj2');
+     //            	$uje = Common::hashEmptyField($params, 'named.uje');
+     //            	$com = Common::hashEmptyField($params, 'named.com');
+     //            	$come = Common::hashEmptyField($params, 'named.come');
+     //            	$kuli_muat = Common::hashEmptyField($params, 'named.kuli_muat');
+     //            	$kuli_bongkar = Common::hashEmptyField($params, 'named.kuli_bongkar');
+     //            	$asdp = Common::hashEmptyField($params, 'named.asdp');
+     //            	$uang_kawal = Common::hashEmptyField($params, 'named.uang_kawal');
+     //            	$uang_keamanan = Common::hashEmptyField($params, 'named.uang_keamanan');
+     //            	$grandtotal = 0;
+
+     //            	if( empty($uj1) && empty($uj2) && empty($uje) && empty($com) && empty($come) && empty($kuli_muat) && empty($kuli_bongkar) && empty($asdp) && empty($uang_kawal) && empty($uang_keamanan) ) {
+     //            		$grandtotal = Common::hashEmptyField($value, 'TtujPaymentDetail.uang_jalan_1', 0) + Common::hashEmptyField($value, 'TtujPaymentDetail.uang_jalan_2', 0) + Common::hashEmptyField($value, 'TtujPaymentDetail.uang_jalan_extra', 0) + Common::hashEmptyField($value, 'TtujPaymentDetail.commission', 0) + Common::hashEmptyField($value, 'TtujPaymentDetail.commission_extra', 0) + Common::hashEmptyField($value, 'TtujPaymentDetail.uang_kuli_muat', 0) + Common::hashEmptyField($value, 'TtujPaymentDetail.uang_kuli_bongkar', 0) + Common::hashEmptyField($value, 'TtujPaymentDetail.asdp', 0) + Common::hashEmptyField($value, 'TtujPaymentDetail.uang_kawal', 0) + Common::hashEmptyField($value, 'TtujPaymentDetail.uang_keamanan', 0);
+     //            		debug($grandtotal);die();
+     //            	} else {
+	    //             	if( !empty($uj1) ) {
+	    //             		$grandtotal += Common::hashEmptyField($value, 'TtujPaymentDetail.uang_jalan_1', 0);
+	    //             	}
+	    //             	if( !empty($uj2) ) {
+	    //             		$grandtotal += Common::hashEmptyField($value, 'TtujPaymentDetail.uang_jalan_2', 0);
+	    //             	}
+	    //             	if( !empty($uje) ) {
+	    //             		$grandtotal += Common::hashEmptyField($value, 'TtujPaymentDetail.uang_jalan_extra', 0);
+	    //             	}
+	    //             	if( !empty($com) ) {
+	    //             		$grandtotal += Common::hashEmptyField($value, 'TtujPaymentDetail.commission', 0);
+	    //             	}
+	    //             	if( !empty($come) ) {
+	    //             		$grandtotal += Common::hashEmptyField($value, 'TtujPaymentDetail.commission_extra', 0);
+	    //             	}
+	    //             	if( !empty($kuli_muat) ) {
+	    //             		$grandtotal += Common::hashEmptyField($value, 'TtujPaymentDetail.uang_kuli_muat', 0);
+	    //             	}
+	    //             	if( !empty($kuli_bongkar) ) {
+	    //             		$grandtotal += Common::hashEmptyField($value, 'TtujPaymentDetail.uang_kuli_bongkar', 0);
+	    //             	}
+	    //             	if( !empty($asdp) ) {
+	    //             		$grandtotal += Common::hashEmptyField($value, 'TtujPaymentDetail.asdp', 0);
+	    //             	}
+	    //             	if( !empty($uang_kawal) ) {
+	    //             		$grandtotal += Common::hashEmptyField($value, 'TtujPaymentDetail.uang_kawal', 0);
+	    //             	}
+	    //             	if( !empty($uang_keamanan) ) {
+	    //             		$grandtotal += Common::hashEmptyField($value, 'TtujPaymentDetail.uang_keamanan', 0);
+	    //             	}
+	    //             }
+
+					$result[$key+1] = array(
+						__('Cabang') => array(
+			                'style' => 'text-align: center;',
+						),
+						__('No TTUJ') => array(
+			                'style' => 'text-align: left;',
+						),
+						__('Tgl TTUJ') => array(
+			                'data-options' => 'field:\'ttuj_date\',width:100',
+						),
+						__('Nopol') => array(
+			                'data-options' => 'field:\'nopol\',width:100',
+						),
+						__('Customer') => array(
+			                'data-options' => 'field:\'customer\',width:120',
+						),
+						__('Asal') => array(
+			                'data-options' => 'field:\'from_city_name\',width:100',
+						),
+						__('Tujuan') => array(
+			                'style' => 'text-align: left;',
+						),
+						__('Supir') => array(
+			                'data-options' => 'field:\'driver\',width:120',
+						),
+						__('No. Ref') => array(
+			                'data-options' => 'field:\'noref\',width:100',
+						),
+						__('Keterangan') => array(
+			                'data-options' => 'field:\'note\',width:120',
+						),
+						__('Jenis') => array(
+							'text' => __('Total'),
+			                'style' => 'text-align: right;',
+						),
+						__('Total') => array(
+							// 'text' => $grandtotal,
+	                		'excel' => array(
+	                			'align' => 'right',
+	                			// 'type' => 'number',
+	            			),
+						),
+						__('OK') => array(
+			                'data-options' => 'field:\'ok\',width:120',
+						),
+						__('TGL. Masuk TTUJ Biru') => array(
+			                'data-options' => 'field:\'tgl_masuk\',width:100',
+						),
+						__('ID Supir') => array(
+			                'data-options' => 'field:\'driver_id\',width:80',
+						),
+						__('Atas Nama') => array(
+			                'data-options' => 'field:\'account_name\',width:120',
+						),
+						__('No. Rekening') => array(
+			                'data-options' => 'field:\'account_name\',width:100',
+						),
+						__('Nama Bank') => array(
+			                'data-options' => 'field:\'bank_name\',width:100',
+						),
+						__('Tgl Transfer') => array(
+			                'data-options' => 'field:\'bank_name\',width:100',
+						),
+						__('Total Dibayar') => array(
+							'text' => $paid,
+	                		'excel' => array(
+	                			'align' => 'right',
+	                			'type' => 'number',
+	            			),
+						),
+						__('No Claim') => array(
+							'text' => $no_claim,
+	                		'excel' => array(
+	                			'align' => 'right',
+	                			'type' => 'number',
+	            			),
+						),
+						__('Stood') => array(
+							'text' => $stood,
+	                		'excel' => array(
+	                			'align' => 'right',
+	                			'type' => 'number',
+	            			),
+						),
+						__('Lain-lain') => array(
+							'text' => $lainnya,
+	                		'excel' => array(
+	                			'align' => 'right',
+	                			'type' => 'number',
+	            			),
+						),
+						__('Titipan') => array(
+							'text' => $titipan,
+	                		'excel' => array(
+	                			'align' => 'right',
+	                			'type' => 'number',
+	            			),
+						),
+						__('Potongan Claim') => array(
+							'text' => $claim,
+	                		'excel' => array(
+	                			'align' => 'right',
+	                			'type' => 'number',
+	            			),
+						),
+						__('Jml Claim') => array(
+							'text' => $unit_claim,
+	                		'excel' => array(
+	                			'align' => 'right',
+	                			'type' => 'number',
+	            			),
+						),
+						__('Potongan LAKA') => array(
+							'text' => $laka,
+	                		'excel' => array(
+	                			'align' => 'right',
+	                			'type' => 'number',
+	            			),
+						),
+						__('Ket LAKA') => array(
+			                'data-options' => 'field:\'laka_note\',width:100',
+						),
+						__('Total Transfer') => array(
+							'text' => $total_trans,
+	                		'excel' => array(
+	                			'align' => 'right',
+	                			'type' => 'number',
+	            			),
+						),
+						__('No.Ref CMS') => array(
+			                'data-options' => 'field:\'noref_cms\',width:100',
+						),
+					);
+				}
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'model' => 'TtujPaymentDetail',
 		);
 	}
 

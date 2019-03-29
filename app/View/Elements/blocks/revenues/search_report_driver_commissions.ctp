@@ -18,8 +18,6 @@
                     )), 
                     'role' => 'form',
                     'inputDefaults' => array('div' => false),
-                    'id' => 'form-search',
-                    'autocomplete'=> 'off', 
                 ));
         ?>
         <div class="row">
@@ -308,9 +306,6 @@
         <?php 
                 echo $this->Form->hidden('paid_type');
                 echo $this->Form->hidden('no_filter_date');
-                echo $this->Form->hidden('title',array(
-                    'value'=> $sub_module_title,
-                ));
                 echo $this->Form->end();
         ?>
     </div>
