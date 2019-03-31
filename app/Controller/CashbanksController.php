@@ -3199,4 +3199,26 @@ class CashbanksController extends AppController {
             }
         }
     }
+
+    public function report_saldo_prepayment() {
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $params = $this->MkCommon->_callRefineParams($this->params->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+
+        $dataReport = $this->RmReport->_callDataReport_saldo_prepayment($params, 30, 0, true);
+        $values = Common::hashEmptyField($dataReport, 'data');
+
+        $this->RmReport->_callBeforeView($params, __('Laporan Saldo Prepayment'));
+        $this->MkCommon->_layout_file(array(
+            'select',
+        ));
+        $this->set(array(
+            'values' => $values,
+            'active_menu' => 'report_saldo_prepayment',
+        ));
+    }
 }

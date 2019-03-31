@@ -10690,6 +10690,295 @@ class RmReportComponent extends Component {
 		);
 	}
 
+	function _callDataReport_saldo_prepayment ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('CashBank');
+
+		$document_type = false;
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named']= $named = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+
+		$options = array(
+            'conditions' => array(
+                'CashBank.branch_id' => $allow_branch_id,
+                'CashBank.is_rejected' => 0,
+                'CashBank.receiving_cash_type' => 'prepayment_out',
+            ),
+            'order' => array(
+                'CashBank.id' => 'DESC',
+        	),
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+		$options = $this->controller->CashBank->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'CashBank', $options );
+
+		$this->controller->paginate	= $options;
+		$data = $this->controller->paginate('CashBank');
+		$result = array();
+
+        App::import('Helper', 'Html');
+        $this->Html = new HtmlHelper(new View(null));
+
+        App::import('Helper', 'Common');
+        $this->Common = new CommonHelper(new View(null));
+
+		if( !empty($data) ) {
+			$total_total = 0;
+			$total_paid = 0;
+			$total_saldo = 0;
+
+			foreach ($data as $key => $value) {
+				$value = $this->controller->CashBank->getMergeList($value, array(
+					'contain' => array(
+						'Coa',
+					),
+				));
+
+		        // Diterima/Dibayar Kepada
+		        $receiver_id = Common::hashEmptyField($value, 'CashBank.receiver_id');
+		        $receiver_type = Common::hashEmptyField($value, 'CashBank.receiver_type');
+		        $receiver_name = $this->controller->CashBank->_callReceiverName($receiver_id, $receiver_type);;
+
+		        $id = Common::hashEmptyField($value, 'CashBank.id');
+		        $nodoc = Common::hashEmptyField($value, 'CashBank.nodoc');
+		        $dt = Common::hashEmptyField($value, 'CashBank.tgl_cash_bank');
+		        $coa_name = Common::hashEmptyField($value, 'Coa.name');
+		        $description = Common::hashEmptyField($value, 'CashBank.description');
+		        $debit_total = Common::hashEmptyField($value, 'CashBank.debit_total', 0);
+		        $credit_total = Common::hashEmptyField($value, 'CashBank.credit_total', 0);
+		        
+		        $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
+		        $dt = Common::formatDate($dt, 'd M Y', '-');
+		        $total = $debit_total + $credit_total;
+		        
+		        $paid = $this->controller->CashBank->getPrepaymentIN($id);
+				$saldo = $total - $paid;
+
+				$total_total += $total;
+				$total_paid += $paid;
+				$total_saldo += $saldo;
+
+				$result[$key] = array(
+					__('No. Ref') => array(
+						'text' => $noref,
+                		'field_model' => 'Cashbank.id',
+		                'width' => '8%',
+		                'style' => 'text-align:left;',
+					),
+					__('No. Doc') => array(
+						'text' => $nodoc,
+                		'field_model' => 'Cashbank.nodoc',
+		                'style' => 'text-align:left;',
+					),
+					__('Tanggal') => array(
+						'text' => $dt,
+                		'field_model' => 'Cashbank.tgl_cash_bank',
+		                'width' => '8%',
+		                'style' => 'text-align:left;',
+					),
+					__('Acc') => array(
+						'text' => $coa_name,
+                		'field_model' => 'Coa.name',
+		                'width' => '12%',
+		                'style' => 'text-align:left;',
+					),
+					__('Karyawan') => array(
+						'text' => $receiver_name,
+		                'width' => '12%',
+		                'style' => 'text-align:left;',
+					),
+					__('Keterangan') => array(
+						'text' => $description,
+                		'field_model' => 'Cashbank.description',
+		                'width' => '15%',
+		                'style' => 'text-align:left;',
+					),
+					__('Total Prepayment') => array(
+						'text' => !empty($view)?Common::getFormatPrice($total):$total,
+		                'data-options' => 'field:\'total\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'right',
+		        			'type' => 'number',
+		    			),
+					),
+					__('Total Pembayaran') => array(
+						'text' => !empty($view)?Common::getFormatPrice($paid):$paid,
+		                'data-options' => 'field:\'paid\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'right',
+		        			'type' => 'number',
+		    			),
+					),
+					__('Saldo') => array(
+						'text' => !empty($view)?Common::getFormatPrice($saldo):$saldo,
+		                'data-options' => 'field:\'saldo\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'right',
+		        			'type' => 'number',
+		    			),
+					),
+				);
+			}
+
+			if( !empty($view) ) {
+				$result[$key+1] = array(
+					__('No. Ref') => array(
+		                'data-options' => 'field:\'no_ref\',width:100',
+					),
+					__('No. Doc') => array(
+		                'data-options' => 'field:\'nodoc\',width:120',
+					),
+					__('Tanggal') => array(
+		                'data-options' => 'field:\'tgl_cash_bank\',width:100',
+					),
+					__('Acc') => array(
+		                'data-options' => 'field:\'coa_name\',width:100',
+					),
+					__('Karyawan') => array(
+		                'data-options' => 'field:\'receiver_name\',width:120',
+					),
+					__('Keterangan') => array(
+						'text' => $this->Html->tag('strong', __('Total')),
+		                'align' => 'right',
+		                'mainalign' => 'right',
+					),
+					__('Total Prepayment') => array(
+						'text' => Common::getFormatPrice($total_total),
+		                'align' => 'right',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'right',
+		        			'type' => 'number',
+		    			),
+					),
+					__('Total Pembayaran') => array(
+						'text' => Common::getFormatPrice($total_paid),
+		                'align' => 'right',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'right',
+		        			'type' => 'number',
+		    			),
+					),
+					__('Saldo') => array(
+						'text' => Common::getFormatPrice($total_saldo),
+		                'align' => 'right',
+		                'mainalign' => 'center',
+		        		'excel' => array(
+		        			'align' => 'right',
+		        			'type' => 'number',
+		    			),
+					),
+				);
+			} else {
+				$last = $this->controller->CashBank->find('first', array_merge($options, array(
+					'offset' => $offset+$limit,
+					'limit' => $limit,
+				)));
+
+				if( empty($last) ) {
+	            	$options = Common::_callUnset($options, array(
+						'group',
+						'limit',
+						'offset',
+					));
+
+	        		$this->controller->CashBank->virtualFields['total_total'] = 'SUM(IFNULL(CashBank.debit_total, 0) + IFNULL(CashBank.credit_total, 0))';
+	        		$this->controller->CashBank->virtualFields['total_paid'] = 'SUM(IFNULL(CashbankPayment.debit_total, 0) + IFNULL(CashbankPayment.credit_total, 0))';
+
+			        $this->controller->CashBank->bindModel(array(
+			            'hasOne' => array(
+			                'CashbankPayment' => array(
+			                    'className' => 'CashBank',
+			                    'foreignKey' => false,
+			                    'conditions' => array(
+			                    	'CashbankPayment.document_id = CashBank.id',
+			                    	'CashbankPayment.is_rejected' => 0,
+			                    	'CashbankPayment.status' => 1,
+			                    	'CashbankPayment.receiving_cash_type' => 'prepayment_in',
+			                    ),
+			                ),
+			            )
+			        ), false);
+
+			        $options['contain'][] = 'CashbankPayment';
+					$value = $this->controller->CashBank->find('first', $options);
+					unset($this->controller->CashBank->virtualFields['total_total']);
+					unset($this->controller->CashBank->virtualFields['total_paid']);
+
+					$total_total = Common::hashEmptyField($value, 'CashBank.total_total', 0);
+	                $total_paid = Common::hashEmptyField($value, 'CashBank.total_paid', 0);
+	                $total_saldo = $total_total - $total_paid;
+					
+					$result[$key+1] = array(
+						__('No. Ref') => array(
+			                'data-options' => 'field:\'no_ref\',width:100',
+						),
+						__('No. Doc') => array(
+			                'data-options' => 'field:\'nodoc\',width:120',
+						),
+						__('Tanggal') => array(
+			                'data-options' => 'field:\'tgl_cash_bank\',width:100',
+						),
+						__('Acc') => array(
+			                'data-options' => 'field:\'coa_name\',width:100',
+						),
+						__('Karyawan') => array(
+			                'data-options' => 'field:\'receiver_name\',width:120',
+						),
+						__('Keterangan') => array(
+							'text' => __('Total'),
+			                'align' => 'right',
+			                'mainalign' => 'right',
+						),
+						__('Total Prepayment') => array(
+							'text' => $total_total,
+			                'align' => 'right',
+			                'mainalign' => 'center',
+			        		'excel' => array(
+			        			'align' => 'right',
+			        			'type' => 'number',
+			    			),
+						),
+						__('Total Pembayaran') => array(
+							'text' => $total_paid,
+			                'align' => 'right',
+			                'mainalign' => 'center',
+			        		'excel' => array(
+			        			'align' => 'right',
+			        			'type' => 'number',
+			    			),
+						),
+						__('Saldo') => array(
+							'text' => $total_saldo,
+			                'align' => 'right',
+			                'mainalign' => 'center',
+			        		'excel' => array(
+			        			'align' => 'right',
+			        			'type' => 'number',
+			    			),
+						),
+					);
+				}
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'model' => 'CashBank',
+		);
+	}
+
 	function _callProcess( $modelName, $id, $value, $data ) {
 		$dataSave = false;
 		$file = false;

@@ -87,7 +87,7 @@ class CashBank extends AppModel {
 
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
-        $this->virtualFields['grand_total'] = 'debit_total+credit_total';
+        $this->virtualFields['grand_total'] = __('%s.debit_total+%s.credit_total', $this->alias, $this->alias);
     }
 
     function getData( $find, $options = false, $elements = array() ){
@@ -319,6 +319,7 @@ class CashBank extends AppModel {
         
         $documenttype = !empty($data['named']['documenttype'])?urldecode($data['named']['documenttype']):false;
         $documenttype = !empty($data['CashBank']['documenttype'])?urldecode($data['CashBank']['documenttype']):$documenttype;
+        $status_prepayment = !empty($data['named']['status_prepayment'])?urldecode($data['named']['status_prepayment']):false;
 
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -408,6 +409,19 @@ class CashBank extends AppModel {
             switch ($documenttype) {
                 case 'outstanding':
                     $default_options['conditions']['CashBank.prepayment_status <>'] = 'full_paid';
+                    break;
+            }
+        }
+        if(!empty($status_prepayment)){
+            switch ($status_prepayment) {
+                case 'unpaid':
+                    $default_options['conditions']['CashBank.prepayment_status'] = 'none';
+                    break;
+                case 'paid':
+                    $default_options['conditions']['CashBank.prepayment_status'] = 'full_paid';
+                    break;
+                case 'halfpaid':
+                    $default_options['conditions']['CashBank.prepayment_status'] = 'half_paid';
                     break;
             }
         }
@@ -531,6 +545,81 @@ class CashBank extends AppModel {
         }
         
         return $options;
+    }
+
+    function getPrepaymentIN ( $prepayment_id ) {
+        $conditions = array(
+            'CashBank.document_id' => $prepayment_id,
+            'CashBank.is_rejected' => 0,
+            'CashBank.receiving_cash_type' => 'prepayment_in',
+        );
+
+        $this->virtualFields['total_paid'] = 'SUM(CashBank.debit_total+CashBank.credit_total)';
+        $value = $this->getData('first', array(
+            'conditions' => $conditions,
+            'fields' => array(
+                'CashBank.id',
+                'CashBank.total_paid',
+            ),
+        ), array(
+            'branch' => false,
+        ));
+
+        return Common::hashEmptyField($value, 'CashBank.total_paid', 0);
+    }
+
+    function _callReceiverName ( $receiver_id, $model ) {
+        $fieldName = 'name';
+        $labelName = 'Customer';
+
+        switch ($model) {
+            case 'Supplier':
+                $labelName = 'Supplier';
+                $model = 'Vendor';
+                $value = $this->Vendor->getData('first', array(
+                    'conditions' => array(
+                        'Vendor.id' => $receiver_id,
+                    )
+                ), true, array(
+                    'branch' => false,
+                ));
+                break;
+            case 'Employe':
+                $labelName = 'Karyawan';
+                $fieldName = 'full_name';
+                $value = $this->Employe->getData('first', array(
+                    'conditions' => array(
+                        'Employe.id' => $receiver_id,
+                    )
+                ));
+
+                break;
+            case 'Driver':
+                $labelName = 'Supir';
+                $fieldName = 'driver_name';
+                $value = $this->Driver->getData('first', array(
+                    'conditions' => array(
+                        'Driver.id' => $receiver_id,
+                    )
+                ), array(
+                    'branch' => false,
+                ));
+
+                break;
+            default:
+                $fieldName = 'customer_code';
+                $value = $this->Customer->getData('first', array(
+                    'conditions' => array(
+                        'Customer.id' => $receiver_id,
+                    )
+                ), true, array(
+                    'branch' => false,
+                ));
+
+                break;
+        }
+
+        return sprintf('%s (%s)', Common::hashEmptyField($value, $model.'.'.$fieldName), $labelName);
     }
 }
 ?>

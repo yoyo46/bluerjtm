@@ -1180,12 +1180,12 @@
                         'document_payments', 'laka_payments',
                         'asset_sells', 'leasing_payments',
                         'insurance_payments', 'report_commissions',
-                        'report_driver_commissions',
+                        'report_driver_commissions', 'report_saldo_prepayment',
                     );
                     $dataMenu = array(
                         'cashbanks' => array(
                             'index', 'prepayment_report',
-                            'ledger_report',
+                            'ledger_report', 'report_saldo_prepayment',
                         ),
                         'trucks' => array(
                             'kir_payments', 'stnk_payments', 'siup_payments',
@@ -1333,6 +1333,15 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'prepayment_report' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Saldo Prepayment', array(
+                                'controller' => 'cashbanks',
+                                'action' => 'report_saldo_prepayment'
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'report_saldo_prepayment' )?'active':'',
                             ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Ledger', array(
