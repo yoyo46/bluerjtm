@@ -55,6 +55,12 @@ class TtujPayment extends AppModel {
         )
     );
 
+    var $hasOne = array(
+        'Titipan' => array(
+            'foreignKey' => 'ttuj_payment_id',
+        ),
+    );
+
     function getData( $find, $options = false, $is_merge = true, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:'active';
         $branch = isset($elements['branch'])?$elements['branch']:true;

@@ -1020,6 +1020,53 @@
                     ?>
                 </ul>
             </li>
+            <?php
+                    }
+
+                    $dataMenu = array(
+                        'debt' => array(
+                            'index', 'reports',
+                        ),
+                    );
+
+                    if( $this->Common->allowMenu( $dataMenu ) ) {
+                        $activeMenu = false;
+                        $dataMenu = array(
+                            'titipan', 'titipan_reports',
+                        );
+
+                        if( !empty($active_menu) && in_array($active_menu, $dataMenu) ) {
+                            $activeMenu = 'active';
+                        }
+            ?>
+            <li class="treeview <?php echo $activeMenu; ?>">
+                <a href="#">
+                    <i class="fa fa-dollar"></i>
+                    <span>Titipan</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <?php 
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Titipan', array(
+                                'controller' => 'titipan',
+                                'action' => 'index',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'titipan' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Titipan', array(
+                                'controller' => 'titipan',
+                                'action' => 'reports',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'titipan_reports' )?'active':'',
+                            ));
+                    ?>
+                </ul>
+            </li>
             <?php 
                     }
             ?>

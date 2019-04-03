@@ -38,7 +38,7 @@
                             echo $this->Html->tag('li', '', array(
                                 'class' => 'divider',
                             ));
-                            echo $this->Html->tag('li', $this->Html->link(__('Import Excel'), array(
+                            echo $this->Html->tag('li', $this->Html->link(__('Import Excel Tanpa TTUJ'), array(
                                 'controller' => 'revenues',
                                 'action' => 'import',
                             ), array(

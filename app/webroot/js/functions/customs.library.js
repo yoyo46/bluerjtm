@@ -679,6 +679,8 @@
         $('.browse-form table tr').click(function(){
             var vthis = $(this);
             var data_value = vthis.attr('data-value');
+
+            alert(data_value);
             var data_text = vthis.attr('data-text');
             var data_change = vthis.attr('data-change');
             var data_ajax = vthis.attr('href');

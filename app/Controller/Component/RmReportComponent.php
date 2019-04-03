@@ -10400,20 +10400,6 @@ class RmReportComponent extends Component {
 		$paging = $this->controller->params->paging;
         $nextPage = Common::hashEmptyField($paging, 'DebtDetail.nextPage');
 
-		// Grandtotal
-		// $summaryOptions = Common::_callUnset($options, array(
-		// 	'offset',
-		// 	'limit',
-		// 	'group',
-		// ));
-
-		// $this->controller->DebtDetail->virtualFields['grandtotal'] = 'SUM(DebtDetail.total)';
-		// $summaryOptions['fields'] = array(
-		// 	'DebtDetail.id', 'DebtDetail.grandtotal',
-		// );
-		// $grandtotal_debt = $this->controller->DebtDetail->getData('first', $summaryOptions);
-  //       $grandtotal_dibayar = $this->controller->DebtDetail->DebtPaymentDetail->getTotalPayment();
-
         App::import('Helper', 'Html');
         $this->Html = new HtmlHelper(new View(null));
 		$grandtotal = 0;
@@ -10976,6 +10962,161 @@ class RmReportComponent extends Component {
 		return array(
 			'data' => $result,
 			'model' => 'CashBank',
+		);
+	}
+
+	function _callDataTitipan_reports ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('TitipanDetail');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+
+		$options = array(
+			'contain' => array(
+				'Titipan',
+				'Driver',
+			),
+            'order'=> array(
+                'Driver.name' => 'ASC',
+            ),
+            'group'=> array(
+                'TitipanDetail.driver_id',
+            ),
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+		$options = $this->controller->TitipanDetail->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'Driver', $options );
+
+        $this->controller->TitipanDetail->virtualFields['total'] = 'SUM(TitipanDetail.total)';
+		$options = $this->controller->TitipanDetail->Titipan->getData('paginate', $options, array(
+			'transaction_status' => 'posting',
+		));
+		$this->controller->paginate = $options;
+		$data = $this->controller->paginate('TitipanDetail');
+		$result = array();
+
+        App::import('Helper', 'Html');
+        $this->Html = new HtmlHelper(new View(null));
+		$grandtotal = 0;
+
+		if( !empty($data) ) {
+			foreach ($data as $key => $value) {
+                $id = Common::hashEmptyField($value, 'Driver.id');
+                $name = Common::hashEmptyField($value, 'Driver.driver_name');
+                $phone = Common::hashEmptyField($value, 'Driver.phone', '-');
+                $phone = Common::hashEmptyField($value, 'Driver.no_hp', $phone);
+                $total = Common::hashEmptyField($value, 'TitipanDetail.total');
+
+				$result[$key] = array(
+					__('Nama Supir') => array(
+						'text' => !empty($view)?$this->Html->link($name, array(
+							'controller' => 'titipan',
+							'action' => 'kartu_titipan',
+							'id' => $id,
+							'admin' => false,
+							'full_base' => true,
+						), array(
+							'target' => '_blank',
+						)):$name,
+                		'field_model' => 'Driver.driver_name',
+		                'data-options' => 'field:\'name\',width:120',
+		                'align' => 'left',
+					),
+					__('No. Telp') => array(
+						'text' => $phone,
+		                'data-options' => 'field:\'phone\',width:100',
+					),
+					__('Titipan') => array(
+						'text' => !empty($view)?Common::getFormatPrice($total):$total,
+		                'data-options' => 'field:\'total\',width:100',
+		                'align' => 'right',
+		                'mainalign' => 'center',
+                		'excel' => array(
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+				);
+
+				$grandtotal += $total;
+			}
+
+			if( !empty($view) ) {
+				$result[$key+1] = array(
+					__('Nama Supir') => array(
+		                'data-options' => 'field:\'name\',width:120',
+					),
+					__('No. Telp') => array(
+						'text' => __('Total'),
+		                'style' => 'font-weight: bold;text-align: right;',
+		                'data-options' => 'field:\'phone\',width:100',
+                		'excel' => array(
+                			'bold' => true,
+                			'align' => 'right',
+            			),
+					),
+					__('Titipan') => array(
+						'text' => !empty($view)?Common::getFormatPrice($grandtotal):$grandtotal
+						,
+		                'style' => 'font-weight: bold;text-align: right;',
+                		'excel' => array(
+                			'bold' => true,
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+					),
+				);
+			} else {
+				$last = $this->controller->TitipanDetail->find('first', array_merge($options, array(
+					'offset' => $offset+$limit,
+					'limit' => $limit,
+				)));
+
+				if( empty($last) ) {
+	            	$options = Common::_callUnset($options, array(
+						'group',
+						'limit',
+						'offset',
+					));
+
+	        		$this->controller->TitipanDetail->virtualFields['total_total'] = 'SUM(TitipanDetail.total)';
+
+					$value = $this->controller->TitipanDetail->find('first', $options);
+					unset($this->controller->TitipanDetail->virtualFields['total_total']);
+
+					$total_total = Common::hashEmptyField($value, 'TitipanDetail.total_total', 0);
+					
+					$result[$key+1] = array(
+						__('Nama Supir') => array(
+			                'data-options' => 'field:\'name\',width:120',
+						),
+						__('No. Telp') => array(
+							'text' => __('Total'),
+	                		'excel' => array(
+	                			'bold' => true,
+	                			'align' => 'right',
+	            			),
+						),
+						__('Titipan') => array(
+							'text' => $total_total,
+	                		'excel' => array(
+	                			'bold' => true,
+	                			'align' => 'right',
+	                			'type' => 'number',
+	            			),
+						),
+					);
+				}
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'model' => 'TitipanDetail',
 		);
 	}
 

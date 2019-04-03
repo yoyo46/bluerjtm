@@ -43,6 +43,12 @@ class TtujPaymentDetail extends AppModel {
         ),
 	);
 
+    var $hasOne = array(
+        'TitipanDetail' => array(
+            'foreignKey' => 'ttuj_payment_detail_id',
+        ),
+    );
+
     function getTotalPayment( $ttuj_id, $data_type, $payment_id = false, $options = array() ){
         $default_options = array(
             'conditions'=> array(

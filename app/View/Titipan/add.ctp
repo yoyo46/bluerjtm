@@ -1,12 +1,12 @@
 <?php
 		$this->Html->addCrumb($module_title, array(
-			'controller' => 'debt',
+			'controller' => 'titipan',
 			'action' => 'index'
 		));
 		$this->Html->addCrumb($sub_module_title);
 		$value = !empty($value)?$value:false;
 
-		echo $this->Form->create('Debt', array(
+		echo $this->Form->create('Titipan', array(
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
@@ -20,7 +20,7 @@
 		<div class="form-group">
 			<?php
 					echo $this->Form->input('nodoc',array(
-						'label'=> __('No. Dokumen *'), 
+						'label'=> __('No. Dokumen'), 
 						'class'=>'form-control on-focus',
 						'required' => false,
 						'placeholder' => __('No. Dokumen'),
@@ -37,14 +37,13 @@
 				)), array(
 					'class' => 'form-group'
 				));
-				echo $this->element('blocks/common/forms/cost_center');
 				echo $this->Html->tag('div', $this->Form->input('transaction_date',array(
 					'label'=> __('Tanggal *'), 
 					'class'=>'form-control custom-date',
 					'required' => false,
 					'placeholder' => __('Tanggal'),
 					'type' => 'text',
-					'value' => (!empty($this->request->data['Debt']['transaction_date'])) ? $this->request->data['Debt']['transaction_date'] : date('d/m/Y')
+					'value' => (!empty($this->request->data['Titipan']['transaction_date'])) ? $this->request->data['Titipan']['transaction_date'] : date('d/m/Y')
 				)), array(
 					'class' => 'form-group'
 				));
@@ -64,33 +63,34 @@
         			$attrBrowse = array(
                         'class' => 'ajaxModal visible-xs browse-docs',
                         'escape' => false,
-                        'title' => __('List Karyawan'),
-                        'data-action' => 'browse-cash-banks',
+                        'title' => __('List Supir'),
+                    	'data-action' => 'browse-check-docs',
                         'data-change' => 'cashbanks-info-table',
                         'url' => $this->Html->url( array(
-                            'action' => 'users',
+                            'action' => 'drivers',
                             'bypass' => true,
                         ))
                     );
 					$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
-                    echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Pilih Karyawan'), 'javascript:', $attrBrowse);
+                    echo $this->Html->link('<i class="fa fa-plus-square"></i> '.__('Pilih Supir'), 'javascript:', $attrBrowse);
             ?>
         </div>
     </div>
 </div>
 
-<div class="cashbank-info-detail <?php echo (!empty($this->request->data['DebtDetail'])) ? '' : 'hide';?>">
+<div class="cashbank-info-detail">
 	<div class="box">
 	    <div class="box-header">
-	        <h3 class="box-title"><?php echo __('Detail Info Karyawan'); ?></h3>
+	        <h3 class="box-title"><?php echo __('Detail Info Supir'); ?></h3>
 	    </div>
 	    <div class="box-body table-responsive">
-	        <table class="table table-hover cashbanks-info-table">
+	        <table class="table table-hover">
 	        	<thead>
 	        		<tr>
                     	<?php 
-	                    		echo $this->Html->tag('th', __('Karyawan'));
-	                    		echo $this->Html->tag('th', __('Kategori'));
+	                    		echo $this->Html->tag('th', __('Supir'), array(
+	                    			'width' => '30%'
+	                    		));
 	                    		echo $this->Html->tag('th', __('Ket.'));
 	                    		echo $this->Html->tag('th', __('Total'), array(
 	                    			'width' => '30%'
@@ -100,7 +100,7 @@
 	        		</tr>
 	        	</thead>
                 <?php
-		    		echo $this->element('blocks/debt/info_detail');
+		    		echo $this->element('blocks/titipan/info_detail');
 		    	?>
 	    	</table>
 	    </div>
@@ -110,12 +110,12 @@
 <div class="box-footer text-center action">
 	<?php
     		echo $this->Html->link(__('Kembali'), array(
-				'controller' => 'debt', 
+				'controller' => 'titipan', 
 				'action' => 'index', 
 			), array(
 				'class'=> 'btn btn-default',
 			));
-			$this->Common->_getButtonPostingUnposting( $value, 'CashBank', array( 'Commit', 'Draft' ) );
+			$this->Common->_getButtonPostingUnposting( $value, 'Titipan', array( 'Commit', 'Draft' ) );
 	?>
 </div>
 <?php

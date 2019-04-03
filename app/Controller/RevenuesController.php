@@ -7271,6 +7271,9 @@ class RevenuesController extends AppController {
         $receiver_type = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'receiver_type');
         $date_payment = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'date_payment');
         $transaction_status = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'transaction_status');
+        $document_no = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'nodoc');
+        $coa_id = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'coa_id');
+        
         $totalPayment = 0;
         $totalMin = 0;
         $totalPlus = 0;
@@ -7336,6 +7339,20 @@ class RevenuesController extends AppController {
         }
 
         if( !empty($dataAmount) ) {
+            $total_titipan = 0;
+
+            if( !empty($ttuj_payment_id) && $transaction_status == 'posting' ) {
+                $dataTitipan = array(
+                    'Titipan' => array(
+                        'coa_id' => $coa_id,
+                        'ttuj_payment_id' => $ttuj_payment_id,
+                        'transaction_date' => $date_payment,
+                        'transaction_status' => 'posting',
+                        'note' => __('Titipan pembayaran uang jalan/komisi #%s', $document_no),
+                    ),
+                );
+            }
+
             foreach ($dataAmount as $key => $amount) {
                 $ttuj_id = !empty($this->request->data['TtujPayment']['ttuj_id'][$key])?$this->request->data['TtujPayment']['ttuj_id'][$key]:false;
                 $data_type = !empty($this->request->data['TtujPayment']['data_type'][$key])?$this->request->data['TtujPayment']['data_type'][$key]:false;
@@ -7351,6 +7368,7 @@ class RevenuesController extends AppController {
                 $laka_note = !empty($this->request->data['TtujPayment']['laka_note'][$key])?$this->request->data['TtujPayment']['laka_note'][$key]:NULL;
 
                 $dataTtuj = $this->Ttuj->getTtujPayment($ttuj_id, $data_type, 'Ttuj');
+                $no_ttuj = Common::hashEmptyField($dataTtuj, 'Ttuj.no_ttuj');
                 $driver_id = Common::hashEmptyField($dataTtuj, 'Ttuj.driver_id');
                 $driver_id = Common::hashEmptyField($dataTtuj, 'Ttuj.driver_pengganti_id', $driver_id);
                 $driver = $this->Ttuj->Driver->getMerge(array(), $driver_id);
@@ -7395,6 +7413,7 @@ class RevenuesController extends AppController {
                         // 'TtujPayment.transaction_status' => 'posting',
                     ),
                 )) + $amount;
+                $total_titipan += $titipan;
 
                 if( !empty($ttuj_payment_id) ) {
                     $dataTtujPaymentDetail['TtujPaymentDetail']['ttuj_payment_id'] = $ttuj_payment_id;
@@ -7435,12 +7454,27 @@ class RevenuesController extends AppController {
                                 'data' => $data,
                             ));
                         }
+
+                        if( $transaction_status == 'posting' ) {
+                            $dataTitipan['TitipanDetail'][] = array(
+                                'ttuj_payment_detail_id' => $ttuj_payment_detail_id,
+                                'driver_id' => $driver_id,
+                                'total' => $titipan,
+                                'note' => __('Titipan UangJalan/Komisi TTUJ #%s', $no_ttuj),
+                            );
+                        }
                     }
                 } else {
                     if( !$this->Ttuj->TtujPaymentDetail->validates() ) {
                         $flagTtujPaymentDetail = false;
                     }
                 }
+            }
+
+            if( !empty($dataTitipan) ) {
+                $dataTitipan['Titipan']['grandtotal'] = $total_titipan;
+
+                $this->Ttuj->TtujPaymentDetail->TtujPayment->Titipan->saveAll($dataTitipan);
             }
         } else {
             $flagTtujPaymentDetail = false;
@@ -7456,7 +7490,6 @@ class RevenuesController extends AppController {
             } else {
                 $document_no = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'nodoc');
                 $cogs_id = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'cogs_id');
-                $coa_id = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'coa_id');
                 $paidType = $this->MkCommon->filterEmptyField($this->request->data, 'TtujPayment', 'data_type');
                 $paidType = $this->RjRevenue->_callReceiverType($paidType);
 
@@ -7703,6 +7736,14 @@ class RevenuesController extends AppController {
                     $data['TtujPayment']['canceled_date'] = !empty($data['TtujPayment']['canceled_date'])?$this->MkCommon->getDate($data['TtujPayment']['canceled_date']):false;
                     $data['TtujPayment']['is_canceled'] = 1;
 
+                    $titipans = $this->Ttuj->TtujPaymentDetail->TtujPayment->Titipan->getData('first', array(
+                        'conditions' => array(
+                            'Titipan.ttuj_payment_id' => $id,
+                        ),
+                    ), array(
+                        'status' => 'posting',
+                    ));
+
                     $this->Ttuj->TtujPaymentDetail->TtujPayment->id = $id;
                     $this->Ttuj->TtujPaymentDetail->TtujPayment->set($data);
 
@@ -7807,6 +7848,15 @@ class RevenuesController extends AppController {
                                     }
                                 }
                             }
+
+                            if( !empty($titipans['Titipan']['id']) ) {
+                                $this->Ttuj->TtujPaymentDetail->TtujPayment->Titipan->saveAll(array(
+                                    'Titipan' => array(
+                                        'id' => $titipans['Titipan']['id'],
+                                        'transaction_status' => 'void',
+                                    ),
+                                ));
+                            }
                         }
 
                         $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
@@ -7854,7 +7904,7 @@ class RevenuesController extends AppController {
 
             $this->set('module_title', 'Revenue');
             $this->set('active_menu', 'revenues');
-            $this->set('sub_module_title', __('Import Revenue'));
+            $this->set('sub_module_title', __('Import Excel Tanpa TTUJ'));
 
             if(!empty($this->request->data)) { 
                 $targetdir = $this->MkCommon->_import_excel( $this->request->data );
@@ -7880,10 +7930,8 @@ class RevenuesController extends AppController {
                             $dataimport->read($uploaded_file['tmp_name']);
                             
                             if(!empty($dataimport)) {
-                                $this->loadModel('CustomerNoType');
-                                $this->loadModel('City');
-                                $this->loadModel('GroupMotor');
                                 $this->loadModel('Revenue');
+
                                 $data = $dataimport;
                                 $row_submitted = 0;
                                 $successfull_row = 0;
@@ -7909,6 +7957,17 @@ class RevenuesController extends AppController {
                                     }
 
                                     if(array_filter($datavar)) {
+                                        $no_kwitansi = !empty($no_kwitansi)?$no_kwitansi:false;
+                                        $no_polisi = !empty($no_polisi)?$no_polisi:false;
+                                        $supir = !empty($supir)?$supir:false;
+                                        $no_sj = !empty($no_sj)?$no_sj:false;
+                                        $tgl_sj = !empty($tgl_sj)?$tgl_sj:false;
+                                        $customer = !empty($customer)?$customer:false;
+                                        $dari = !empty($dari)?$dari:false;
+                                        $tujuan = !empty($tujuan)?$tujuan:false;
+                                        $tipe_motor = !empty($tujuan)?$tujuan:false;
+
+                                        debug($no_kwitansi);die();
                                         $branch = $this->GroupBranch->Branch->getData('first', array(
                                             'conditions' => array(
                                                 'Branch.code' => $kode_cabang,

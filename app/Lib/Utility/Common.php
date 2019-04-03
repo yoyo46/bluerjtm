@@ -498,9 +498,9 @@ class Common {
 
 				if( !empty($value) ) {
 					if( !is_array($value) ) {
-						$params[$fieldName] = urlencode($value);
+						$params[$fieldName] = rawurlencode(urlencode($value));
 					} else {
-						$params[$fieldName] = $value;
+						$params[$fieldName] = rawurlencode($value);
 					}
 				}
 			}
