@@ -80,7 +80,7 @@
 			<?php 
 					echo $this->Form->input('Revenue.from_city_id',array(
 						'label'=> false, 
-						'class'=>'form-control chosen-select',
+						'class'=>'form-control chosen-select from-city-revenue-change',
 						'required' => false,
 						'empty' => __('Dari Kota --'),
 						'options' => !empty($toCities)?$toCities:false,
