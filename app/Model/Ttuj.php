@@ -1193,7 +1193,7 @@ class Ttuj extends AppModel {
             }
         }
 
-        if( $document_type == 'report' ) {
+        if( $document_type == 'reports' ) {
             if(!empty($uang_jalan_1)){
                 $default_options['conditions']['OR'][] = array(
                     'Ttuj.uang_jalan_1 <>' => 0,
