@@ -730,7 +730,7 @@ class Ttuj extends AppModel {
         return $format_id;
     }
 
-    public function _callRefineParams( $data = '', $default_options = false ) {
+    public function _callRefineParams( $data = '', $default_options = false, $document_type = NULL ) {
         $dateFrom = !empty($data['named']['DateFrom'])?$data['named']['DateFrom']:false;
         $dateTo = !empty($data['named']['DateTo'])?$data['named']['DateTo']:false;
         $dateFromTtuj = !empty($data['named']['DateFromTtuj'])?$data['named']['DateFromTtuj']:false;
@@ -1193,65 +1193,118 @@ class Ttuj extends AppModel {
             }
         }
 
-        if(!empty($uang_jalan_1)){
-            $default_options['conditions']['OR'][] = array(
-                'Ttuj.uang_jalan_1 <>' => 0,
-                'Ttuj.paid_uang_jalan'.$last_str.' <>' => 'full',
-            ) + $condition_branch;
-        }
-        if(!empty($uang_jalan_2)){
-            $default_options['conditions']['OR'][] = array(
-                'Ttuj.uang_jalan_2 <>' => 0,
-                'Ttuj.paid_uang_jalan_2'.$last_str.' <>' => 'full',
-            ) + $condition_uj2;
-        }
-        if(!empty($uang_jalan_extra)){
-            $default_options['conditions']['OR'][] = array(
-                'Ttuj.uang_jalan_extra <>' => 0,
-                'Ttuj.paid_uang_jalan_extra'.$last_str.' <>' => 'full',
-            ) + $condition_branch;
-        }
-        if(!empty($commission)){
-            $default_options['conditions']['OR'][] = array(
-                'Ttuj.commission <>' => 0,
-                'Ttuj.paid_commission'.$last_str.' <>' => 'full',
-            ) + $condition_branch;
-        }
-        if(!empty($commission_extra)){
-            $default_options['conditions']['OR'][] = array(
-                'Ttuj.commission_extra <>' => 0,
-                'Ttuj.paid_commission_extra'.$last_str.' <>' => 'full',
-            ) + $condition_branch;
-        }
-        if(!empty($uang_kuli_muat)){
-            $default_options['conditions']['OR'][] = array(
-                'Ttuj.uang_kuli_muat <>' => 0,
-                'Ttuj.paid_uang_kuli_muat'.$last_str.' <>' => 'full',
-            ) + $condition_branch;
-        }
-        if(!empty($uang_kuli_bongkar)){
-            $default_options['conditions']['OR'][] = array(
-                'Ttuj.uang_kuli_bongkar <>' => 0,
-                'Ttuj.paid_uang_kuli_bongkar'.$last_str.' <>' => 'full',
-            ) + $condition_branch;
-        }
-        if(!empty($asdp)){
-            $default_options['conditions']['OR'][] = array(
-                'Ttuj.asdp <>' => 0,
-                'Ttuj.paid_asdp'.$last_str.' <>' => 'full',
-            ) + $condition_branch;
-        }
-        if(!empty($uang_kawal)){
-            $default_options['conditions']['OR'][] = array(
-                'Ttuj.uang_kawal <>' => 0,
-                'Ttuj.paid_uang_kawal'.$last_str.' <>' => 'full',
-            ) + $condition_branch;
-        }
-        if(!empty($uang_keamanan)){
-            $default_options['conditions']['OR'][] = array(
-                'Ttuj.uang_keamanan <>' => 0,
-                'Ttuj.paid_uang_keamanan'.$last_str.' <>' => 'full',
-            ) + $condition_branch;
+        if( $document_type == 'report' ) {
+            if(!empty($uang_jalan_1)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.uang_jalan_1 <>' => 0,
+                ) + $condition_branch;
+            }
+            if(!empty($uang_jalan_2)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.uang_jalan_2 <>' => 0,
+                ) + $condition_uj2;
+            }
+            if(!empty($uang_jalan_extra)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.uang_jalan_extra <>' => 0,
+                ) + $condition_branch;
+            }
+            if(!empty($commission)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.commission <>' => 0,
+                ) + $condition_branch;
+            }
+            if(!empty($commission_extra)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.commission_extra <>' => 0,
+                ) + $condition_branch;
+            }
+            if(!empty($uang_kuli_muat)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.uang_kuli_muat <>' => 0,
+                ) + $condition_branch;
+            }
+            if(!empty($uang_kuli_bongkar)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.uang_kuli_bongkar <>' => 0,
+                ) + $condition_branch;
+            }
+            if(!empty($asdp)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.asdp <>' => 0,
+                ) + $condition_branch;
+            }
+            if(!empty($uang_kawal)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.uang_kawal <>' => 0,
+                ) + $condition_branch;
+            }
+            if(!empty($uang_keamanan)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.uang_keamanan <>' => 0,
+                ) + $condition_branch;
+            }
+        } else {
+            if(!empty($uang_jalan_1)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.uang_jalan_1 <>' => 0,
+                    'Ttuj.paid_uang_jalan'.$last_str.' <>' => 'full',
+                ) + $condition_branch;
+            }
+            if(!empty($uang_jalan_2)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.uang_jalan_2 <>' => 0,
+                    'Ttuj.paid_uang_jalan_2'.$last_str.' <>' => 'full',
+                ) + $condition_uj2;
+            }
+            if(!empty($uang_jalan_extra)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.uang_jalan_extra <>' => 0,
+                    'Ttuj.paid_uang_jalan_extra'.$last_str.' <>' => 'full',
+                ) + $condition_branch;
+            }
+            if(!empty($commission)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.commission <>' => 0,
+                    'Ttuj.paid_commission'.$last_str.' <>' => 'full',
+                ) + $condition_branch;
+            }
+            if(!empty($commission_extra)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.commission_extra <>' => 0,
+                    'Ttuj.paid_commission_extra'.$last_str.' <>' => 'full',
+                ) + $condition_branch;
+            }
+            if(!empty($uang_kuli_muat)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.uang_kuli_muat <>' => 0,
+                    'Ttuj.paid_uang_kuli_muat'.$last_str.' <>' => 'full',
+                ) + $condition_branch;
+            }
+            if(!empty($uang_kuli_bongkar)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.uang_kuli_bongkar <>' => 0,
+                    'Ttuj.paid_uang_kuli_bongkar'.$last_str.' <>' => 'full',
+                ) + $condition_branch;
+            }
+            if(!empty($asdp)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.asdp <>' => 0,
+                    'Ttuj.paid_asdp'.$last_str.' <>' => 'full',
+                ) + $condition_branch;
+            }
+            if(!empty($uang_kawal)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.uang_kawal <>' => 0,
+                    'Ttuj.paid_uang_kawal'.$last_str.' <>' => 'full',
+                ) + $condition_branch;
+            }
+            if(!empty($uang_keamanan)){
+                $default_options['conditions']['OR'][] = array(
+                    'Ttuj.uang_keamanan <>' => 0,
+                    'Ttuj.paid_uang_keamanan'.$last_str.' <>' => 'full',
+                ) + $condition_branch;
+            }
         }
 
         if( $sort == 'Ttuj.driver_name' ) {

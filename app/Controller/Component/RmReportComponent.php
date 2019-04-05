@@ -7957,43 +7957,43 @@ class RmReportComponent extends Component {
 	        	'OR' => array(
 	        		array(
 	        			'Ttuj.uang_jalan_1 <>' => 0,
-		        		'Ttuj.paid_uang_jalan <>' => 'full',
+		        		// 'Ttuj.paid_uang_jalan <>' => 'full',
 	        		),
 	        		array(
 			        	'Ttuj.uang_jalan_2 <>' => 0,
-			        	'Ttuj.paid_uang_jalan_2 <>' => 'full',
+			        	// 'Ttuj.paid_uang_jalan_2 <>' => 'full',
 	        		),
 	        		array(
 			        	'Ttuj.uang_jalan_extra <>' => 0,
-			        	'Ttuj.paid_uang_jalan_extra <>' => 'full',
+			        	// 'Ttuj.paid_uang_jalan_extra <>' => 'full',
 	        		),
 	        		array(
 			        	'Ttuj.commission <>' => 0,
-			        	'Ttuj.paid_commission <>' => 'full',
+			        	// 'Ttuj.paid_commission <>' => 'full',
 	        		),
 	        		array(
 			        	'Ttuj.commission_extra <>' => 0,
-			        	'Ttuj.paid_commission_extra <>' => 'full',
+			        	// 'Ttuj.paid_commission_extra <>' => 'full',
 	        		),
 	        		array(
 			        	'Ttuj.uang_kuli_muat <>' => 0,
-			        	'Ttuj.paid_uang_kuli_muat <>' => 'full',
+			        	// 'Ttuj.paid_uang_kuli_muat <>' => 'full',
 	        		),
 	        		array(
 			        	'Ttuj.uang_kuli_bongkar <>' => 0,
-			        	'Ttuj.paid_uang_kuli_bongkar <>' => 'full',
+			        	// 'Ttuj.paid_uang_kuli_bongkar <>' => 'full',
 	        		),
 	        		array(
 			        	'Ttuj.asdp <>' => 0,
-			        	'Ttuj.paid_asdp <>' => 'full',
+			        	// 'Ttuj.paid_asdp <>' => 'full',
 	        		),
 	        		array(
 			        	'Ttuj.uang_kawal <>' => 0,
-			        	'Ttuj.paid_uang_kawal <>' => 'full',
+			        	// 'Ttuj.paid_uang_kawal <>' => 'full',
 	        		),
 	        		array(
 			        	'Ttuj.uang_keamanan <>' => 0,
-			        	'Ttuj.paid_uang_keamanan <>' => 'full',
+			        	// 'Ttuj.paid_uang_keamanan <>' => 'full',
 	        		),
 	        	),
         	),
@@ -8004,7 +8004,7 @@ class RmReportComponent extends Component {
         	'offset' => $offset,
         	'limit' => $limit,
         );
-		$options = $this->controller->Ttuj->_callRefineParams($params, $options);
+		$options = $this->controller->Ttuj->_callRefineParams($params, $options, 'reports');
         $options = $this->MkCommon->getConditionGroupBranch( $params, 'Ttuj', $options );
 
 		$this->controller->paginate	= $options;
