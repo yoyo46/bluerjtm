@@ -44,6 +44,12 @@ class Revenue extends AppModel {
                 'message' => 'Kota tujuan harap dipilih'
             ),
         ),
+        'driver_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Supir harap dipilih'
+            ),
+        ),
 	);
 
     var $belongsTo = array(
@@ -62,6 +68,9 @@ class Revenue extends AppModel {
         'Branch' => array(
             'className' => 'Branch',
             'foreignKey' => 'branch_id',
+        ),
+        'Driver' => array(
+            'foreignKey' => 'driver_id',
         ),
     );
 
@@ -940,6 +949,17 @@ class Revenue extends AppModel {
         }
 
         return $data;
+    }
+
+    public function afterSave($created, $options = array()){
+        $auto_journal = Common::hashEmptyField($this->data, 'Revenue.auto_journal');
+
+        if( !empty($auto_journal) ) {
+            $id = $this->id;
+            $id = Common::hashEmptyField($this->data, 'Revenue.id', $id);
+            
+            $this->_callSetJournal($id, $this->data);
+        }
     }
 }
 ?>

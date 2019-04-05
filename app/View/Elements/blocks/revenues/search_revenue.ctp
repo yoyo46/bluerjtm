@@ -21,6 +21,9 @@
                         echo $this->Common->buildInputForm('nodoc', __('No. Doc'));
                         echo $this->Common->buildInputForm('date', __('Tanggal'), array(
                             'class' => 'date-range form-control',
+                            'attributes' => array(
+                                'autocomplete' => 'off',
+                            ),
                         ));
                         echo $this->Common->buildInputForm('status', __('Status Revenue'), array(
                             'empty' => __('Pilih Status Revenue'),

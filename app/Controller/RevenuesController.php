@@ -7937,6 +7937,8 @@ class RevenuesController extends AppController {
                                 $successfull_row = 0;
                                 $failed_row = 0;
                                 $error_message = '';
+                                $dataSave = array();
+                                $dataTotal = array();
 
                                 for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
                                     $datavar = array();
@@ -7957,179 +7959,127 @@ class RevenuesController extends AppController {
                                     }
 
                                     if(array_filter($datavar)) {
-                                        $no_kwitansi = !empty($no_kwitansi)?$no_kwitansi:false;
                                         $no_polisi = !empty($no_polisi)?$no_polisi:false;
                                         $supir = !empty($supir)?$supir:false;
                                         $no_sj = !empty($no_sj)?$no_sj:false;
                                         $tgl_sj = !empty($tgl_sj)?$tgl_sj:false;
                                         $customer = !empty($customer)?$customer:false;
-                                        $dari = !empty($dari)?$dari:false;
-                                        $tujuan = !empty($tujuan)?$tujuan:false;
-                                        $tipe_motor = !empty($tujuan)?$tujuan:false;
+                                        $dealer = !empty($dealer)?$dealer:false;
+                                        $kota = !empty($kota)?$kota:false;
+                                        $gudang = !empty($gudang)?$gudang:false;
+                                        $grup_motor = !empty($grup_motor)?$grup_motor:false;
+                                        $tarif = !empty($tarif)?$tarif:false;
+                                        $qty = !empty($qty)?$qty:false;
+                                        $amount = !empty($amount)?$amount:false;
+                                        $cabang = !empty($cabang)?$cabang:false;
 
-                                        debug($no_kwitansi);die();
                                         $branch = $this->GroupBranch->Branch->getData('first', array(
                                             'conditions' => array(
-                                                'Branch.code' => $kode_cabang,
+                                                'Branch.code' => $cabang,
                                             ),
                                         ));
-                                        $customer = $this->CustomerNoType->find('first', array(
+                                        $customer = $this->Revenue->CustomerNoType->find('first', array(
                                             'conditions' => array(
-                                                'CustomerNoType.code' => $kode_customer,
+                                                'CustomerNoType.code' => $customer,
                                                 'CustomerNoType.status' => 1,
                                             ),
                                         ));
                                         $truck = $this->Ttuj->Truck->find('first', array(
                                             'conditions' => array(
-                                                'Truck.nopol' => $nopol,
+                                                'Truck.nopol' => $no_polisi,
                                                 'Truck.status' => 1,
                                             ),
                                         ), false);
-                                        $formCity = $this->City->getData('first', array(
+                                        $fromCity = $this->GroupBranch->Branch->City->getData('first', array(
                                             'conditions' => array(
-                                                'City.name' => $dari,
+                                                'City.name' => $kota,
                                                 'City.status' => 1,
                                             ),
                                         ));
-                                        $toCity = $this->City->getData('first', array(
+                                        $toCity = $this->GroupBranch->Branch->City->getData('first', array(
                                             'conditions' => array(
-                                                'City.name' => $tujuan,
+                                                'City.name' => $gudang,
                                                 'City.status' => 1,
                                             ),
+                                        ));
+                                        $groupMotor = $this->Revenue->RevenueDetail->GroupMotor->getData('first', array(
+                                            'conditions' => array(
+                                                'GroupMotor.name' => $grup_motor,
+                                            ),
+                                        ));
+                                        $driver = $this->Revenue->Driver->getData('first', array(
+                                            'conditions' => array(
+                                                'Driver.name' => $supir,
+                                            ),
+                                        ), array(
+                                            'branch' => false,
                                         ));
 
                                         $branch_id = !empty($branch['Branch']['id'])?$branch['Branch']['id']:false;
                                         $customer_id = !empty($customer['CustomerNoType']['id'])?$customer['CustomerNoType']['id']:false;
                                         $truck_id = !empty($truck['Truck']['id'])?$truck['Truck']['id']:false;
                                         $truck_capacity = !empty($truck['Truck']['capacity'])?$truck['Truck']['capacity']:false;
-                                        $from_city_id = !empty($formCity['City']['id'])?$formCity['City']['id']:false;
+                                        $from_city_id = !empty($fromCity['City']['id'])?$fromCity['City']['id']:false;
                                         $to_city_id = !empty($toCity['City']['id'])?$toCity['City']['id']:false;
-                                        $tanggal_revenue = $this->MkCommon->getDate($tanggal_revenue);
-                                        $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, false, $customer_id, $truck_capacity, false );
-                                        $jenis_tarif = !empty($tarif['jenis_unit'])?$tarif['jenis_unit']:'per_unit';
-                                        $ppn = !empty($ppn)?$this->MkCommon->convertPriceToString($ppn):0;
-                                        $pph = !empty($pph)?$this->MkCommon->convertPriceToString($pph):0;
+                                        $group_motor_id = !empty($groupMotor['GroupMotor']['id'])?$groupMotor['GroupMotor']['id']:false;
+                                        $driver_id = !empty($driver['Driver']['id'])?$driver['Driver']['id']:false;
+                                        $tanggal_revenue = !empty($tgl_sj)?$this->MkCommon->getDate($tgl_sj):false;
                                         $dataRevenue = array();
+                                        $revenueHeader = array(
+                                            'branch_id' => $branch_id,
+                                            'transaction_status' => 'posting',
+                                            'date_revenue' => $tanggal_revenue,
+                                            'customer_id' => $customer_id,
+                                            'truck_id' => $truck_id,
+                                            'truck_capacity' => $truck_capacity,
+                                            'from_city_id' => $from_city_id,
+                                            'to_city_id' => $to_city_id,
+                                            'driver_id' => $driver_id,
+                                            'nopol' => $no_polisi,
+                                            'is_manual' => true,
+                                            'auto_journal' => true,
+                                        );
+                                        $revenueDetail = array(
+                                            'group_motor_id' => $group_motor_id,
+                                            'no_sj' => $no_sj,
+                                            'no_do' => $dealer,
+                                            'city_id' => $to_city_id,
+                                            'qty_unit' => $qty,
+                                            'price_unit' => $tarif,
+                                            'total_price_unit' => $amount,
+                                            'payment_type' => 'per_unit',
+                                            'is_charge' => true,
+                                        );
 
-                                        if( !empty($tarif) ) {
-                                            $i = 1;
-                                            $idx = 0;
-                                            $flag = true;
+                                        $dataRevenue = array(
+                                            'Revenue' => $revenueHeader,
+                                            'RevenueDetail' => array(
+                                                $revenueDetail,
+                                            ),
+                                        );
 
-                                            while ($flag) {
-                                                $varGroup = sprintf('tujuan_%s', $i);
+                                        $slug = __('%s-%s-%s-%s-%s', $tanggal_revenue, $customer_id, $truck_id, $driver_id, $branch_id);
 
-                                                if( !empty($$varGroup) ) {
-                                                    $tujuan_detail = $$varGroup;
-                                                    $no_do_string = sprintf('no_do_%s', $i);
-                                                    $no_do_detail = $$no_do_string;
-                                                    $no_sj_string = sprintf('no_sj_%s', $i);
-                                                    $no_sj_detail = $$no_sj_string;
-                                                    $group_motor_string = sprintf('group_motor_%s', $i);
-                                                    $group_motor_detail = $$group_motor_string;
-                                                    $jml_unit_string = sprintf('jml_unit_%s', $i);
-                                                    $jml_unit_detail = !empty($$jml_unit_string)?$this->MkCommon->convertPriceToString($$jml_unit_string):0;
-                                                    $is_charge_string = sprintf('is_charge_%s', $i);
-                                                    $is_charge_detail = !empty($$is_charge_string)?$$is_charge_string:0;
-                                                    $harga_unit_string = sprintf('harga_unit_%s', $i);
-                                                    $harga_unit_detail = !empty($$harga_unit_string)?$this->MkCommon->convertPriceToString($$harga_unit_string):0;
-                                                    $toCityDetail = $this->City->getData('first', array(
-                                                        'conditions' => array(
-                                                            'City.name' => $tujuan_detail,
-                                                            'City.status' => 1,
-                                                        ),
-                                                    ));
-                                                    $groupMotor = $this->GroupMotor->getData('first', array(
-                                                        'conditions' => array(
-                                                            'GroupMotor.name' => $group_motor_detail,
-                                                        ),
-                                                    ));
-
-                                                    $to_city_id_detail = !empty($toCityDetail['City']['id'])?$toCityDetail['City']['id']:false;
-                                                    $group_motor_id = !empty($groupMotor['GroupMotor']['id'])?$groupMotor['GroupMotor']['id']:false;
-                                                    $total_price_unit = $harga_unit_detail * $jml_unit_detail;
-
-                                                    $tarif_detail = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, $to_city_id_detail, $customer_id, $truck_capacity, $group_motor_id );
-
-                                                    if( !empty($tarif_detail) ) {
-                                                        $total_tarif_detail = !empty($tarif_detail['tarif'])?$tarif_detail['tarif']:0;
-                                                        $tarif_angkutan_id = !empty($tarif_detail['tarif_angkutan_id'])?$tarif_detail['tarif_angkutan_id']:false;
-                                                        $tarif_angkutan_type = !empty($tarif_detail['tarif_angkutan_type'])?$tarif_detail['tarif_angkutan_type']:false;
-                                                        $jenis_tarif_detail = !empty($tarif_detail['jenis_unit'])?$tarif_detail['jenis_unit']:false;
-                                                        $total_price_unit = $this->MkCommon->getChargeTotal( $total_price_unit, $total_tarif_detail, $jenis_tarif_detail, $is_charge_detail );
-
-                                                        $dataRevenue['RevenueDetail']['city_id'][$idx] = $to_city_id_detail;
-                                                        $dataRevenue['RevenueDetail']['tarif_angkutan_id'][$idx] = $tarif_angkutan_id;
-                                                        $dataRevenue['RevenueDetail']['tarif_angkutan_type'][$idx] = $tarif_angkutan_type;
-                                                        $dataRevenue['RevenueDetail']['no_do'][$idx] = $no_do_detail;
-                                                        $dataRevenue['RevenueDetail']['no_sj'][$idx] = $no_sj_detail;
-                                                        $dataRevenue['RevenueDetail']['group_motor_id'][$idx] = $group_motor_id;
-                                                        $dataRevenue['RevenueDetail']['qty_unit'][$idx] = $jml_unit_detail;
-                                                        $dataRevenue['RevenueDetail']['payment_type'][$idx] = $jenis_tarif_detail;
-                                                        $dataRevenue['RevenueDetail']['is_charge'][$idx] = $is_charge_detail;
-                                                        $dataRevenue['RevenueDetail']['price_unit'][$idx] = $harga_unit_detail;
-                                                        $dataRevenue['RevenueDetail']['total_price_unit'][$idx] = $total_price_unit;
-                                                    } else {
-                                                        $tarifNotFound = true;
-                                                    }
-
-                                                    $idx++;
-                                                } else {
-                                                    $flag = false;
-                                                }
-                                                $i++;
-                                            }
-
-                                            $dataRevenue['Revenue'] = array(
-                                                'branch_id' => $branch_id,
-                                                'no_doc' => $no_dokumen,
-                                                'transaction_status' => 'unposting',
-                                                'date_revenue' => $tanggal_revenue,
-                                                'customer_id' => $customer_id,
-                                                'truck_id' => $truck_id,
-                                                'truck_capacity' => $truck_capacity,
-                                                'from_city_id' => $from_city_id,
-                                                'to_city_id' => $to_city_id,
-                                                'ppn' => $ppn,
-                                                'pph' => $pph,
-                                                'revenue_tarif_type' => $jenis_tarif,
-                                                'branch_id' => Configure::read('__Site.config_branch_id'),
-                                            );
-
-                                            if( !empty($dataRevenue['RevenueDetail']) && empty($tarifNotFound) ) {
-                                                $resultSave = $this->Revenue->saveRevenue(false, false, $dataRevenue, $this);
-                                                $statusSave = !empty($resultSave['status'])?$resultSave['status']:false;
-                                                $msgSave = !empty($resultSave['msg'])?$resultSave['msg']:false;
-                                                $this->MkCommon->setCustomFlash($msgSave, $statusSave);
-
-                                                if( $statusSave == 'success' ) {
-                                                    $successfull_row++;
-                                                } else {
-                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : %s'), $row_submitted+1, $msgSave) . '<br>';
-                                                    $failed_row++;
-                                                }
-                                            } else {
-                                                if( !empty($tarifNotFound) ) {
-                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Tarif tidak ditemukan, silahkan buat tarif angkutan terlebih dahulu'), $row_submitted+1) . '<br>';
-                                                } else {
-                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Gagal menyimpan Revenue, mohon lengkapi field-field muatan'), $row_submitted+1) . '<br>';
-                                                }
-                                                $failed_row++;
-                                            }
+                                        if( !empty($dataTotal[$slug]) ) {
+                                            $dataTotal[$slug] += $amount;
                                         } else {
-                                            if( empty($from_city_id) || empty($to_city_id) || empty($customer_id) || empty($truck_capacity) ) {
-                                                if( empty($from_city_id) ) {
-                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Kota asal tidak benar'), $row_submitted+1) . '<br>';
-                                                } else if( empty($to_city_id) ) {
-                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Kota tujuan tidak benar'), $row_submitted+1) . '<br>';
-                                                } else if( empty($customer_id) ) {
-                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Kode Customer tidak benar'), $row_submitted+1) . '<br>';
-                                                } else if( empty($truck_capacity) ) {
-                                                    $error_message .= sprintf(__('Gagal pada baris ke %s : Nopol Truk tidak benar'), $row_submitted+1) . '<br>';
-                                                }
-                                            } else {
-                                                $error_message .= sprintf(__('Gagal pada baris ke %s : Tarif tidak ditemukan, silahkan buat tarif angkutan terlebih dahulu'), $row_submitted+1) . '<br>';
-                                            }
+                                            $dataTotal[$slug] = $amount;
+                                        }
+
+                                        $dataSave[$slug]['Revenue'] = $revenueHeader;
+                                        $dataSave[$slug]['Revenue']['total'] = $dataTotal[$slug];
+                                        $dataSave[$slug]['Revenue']['total_without_tax'] = $dataTotal[$slug];
+                                        $dataSave[$slug]['RevenueDetail'][] = $revenueDetail;
+
+                                        $resultSave = $this->Revenue->saveAll($dataRevenue, array(
+                                            'validate' => 'only',
+                                        ));
+
+                                        if( !empty($resultSave) ) {
+                                            $successfull_row++;
+                                        } else {
+                                            $msgSave = $this->MkCommon->_callMsgValidationErrors($this->Revenue->validationErrors, 'string');
+                                            $error_message .= sprintf(__('Gagal pada baris ke %s : %s'), $row_submitted+1, $msgSave) . '<br>';
                                             $failed_row++;
                                         }
 
@@ -8140,13 +8090,18 @@ class RevenuesController extends AppController {
                         }
                     }
 
-                    if(!empty($successfull_row)) {
-                        $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, $row_submitted);
-                        $this->MkCommon->setCustomFlash(__($message_import1), 'success');
-                    }
-                    
                     if(!empty($error_message)) {
                         $this->MkCommon->setCustomFlash(__($error_message), 'error');
+                    } else if( !empty($successfull_row) ) {
+                        if( !empty($dataSave) ) {
+                            $dataSave = array_values($dataSave);
+                            $this->Revenue->saveAll($dataSave, array(
+                                'deep' => true,
+                            ));
+                        }
+
+                        $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, $row_submitted);
+                        $this->MkCommon->setCustomFlash(__($message_import1), 'success');
                     }
                     $this->redirect(array('action'=>'import'));
                 } else {
@@ -8244,7 +8199,7 @@ class RevenuesController extends AppController {
                                                 'Truck.status' => 1,
                                             ),
                                         ), false);
-                                        $formCity = $this->City->getData('first', array(
+                                        $fromCity = $this->City->getData('first', array(
                                             'conditions' => array(
                                                 'City.name' => $dari,
                                                 'City.status' => 1,
@@ -8261,7 +8216,7 @@ class RevenuesController extends AppController {
                                         $customer_id = !empty($customer['CustomerNoType']['id'])?$customer['CustomerNoType']['id']:false;
                                         $truck_id = !empty($truck['Truck']['id'])?$truck['Truck']['id']:false;
                                         $truck_capacity = !empty($truck['Truck']['capacity'])?$truck['Truck']['capacity']:false;
-                                        $from_city_id = !empty($formCity['City']['id'])?$formCity['City']['id']:false;
+                                        $from_city_id = !empty($fromCity['City']['id'])?$fromCity['City']['id']:false;
                                         $to_city_id = !empty($toCity['City']['id'])?$toCity['City']['id']:false;
                                         $tgl_revenue = $this->MkCommon->getDate($tgl_revenue);
                                         $jenis_tarif = !empty($tarif['jenis_unit'])?$tarif['jenis_unit']:'per_unit';
@@ -9467,7 +9422,7 @@ class RevenuesController extends AppController {
     //                                             'Truck.status' => 1,
     //                                         ),
     //                                     ), false);
-    //                                     $formCity = $this->City->getData('first', array(
+    //                                     $fromCity = $this->City->getData('first', array(
     //                                         'conditions' => array(
     //                                             'City.name' => $dari,
     //                                             'City.status' => 1,
@@ -9484,7 +9439,7 @@ class RevenuesController extends AppController {
     //                                     $customer_id = !empty($customer['CustomerNoType']['id'])?$customer['CustomerNoType']['id']:false;
     //                                     $truck_id = !empty($truck['Truck']['id'])?$truck['Truck']['id']:false;
     //                                     $truck_capacity = !empty($truck['Truck']['capacity'])?$truck['Truck']['capacity']:false;
-    //                                     $from_city_id = !empty($formCity['City']['id'])?$formCity['City']['id']:false;
+    //                                     $from_city_id = !empty($fromCity['City']['id'])?$fromCity['City']['id']:false;
     //                                     $to_city_id = !empty($toCity['City']['id'])?$toCity['City']['id']:false;
     //                                     $tanggal_revenue = $this->MkCommon->getDate($tanggal_revenue);
     //                                     $tarif = $this->Ttuj->Revenue->RevenueDetail->TarifAngkutan->getTarifAngkut( $from_city_id, $to_city_id, false, $customer_id, $truck_capacity, false );
