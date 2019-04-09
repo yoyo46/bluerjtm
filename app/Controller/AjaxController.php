@@ -894,6 +894,8 @@ class AjaxController extends AppController {
 
 	function getInfoRevenueDetail( $ttuj_id = false, $customer_id = false, $detail_city_id = false, $group_motor_id = false, $is_charge = false, $main_city_id = false, $qty = 0, $from_city_id = false, $truck_id = false, $action_type = false ){
 		$this->loadModel('Ttuj');
+		$params = $this->params->params;
+		$total_muatan = Common::hashEmptyField($params, 'named.total_muatan');
 
 		$data_ttuj = $this->Ttuj->getData('first', array(
 			'conditions' => array(
@@ -905,7 +907,7 @@ class AjaxController extends AppController {
 			'plant' => true,
 		));
 
-		$total_muatan = $this->Ttuj->TtujTipeMotor->getTotalMuatan($ttuj_id);
+		$total_muatan = !empty($total_muatan)?$total_muatan:$this->Ttuj->TtujTipeMotor->getTotalMuatan($ttuj_id);
 		$from_city_id = !empty($from_city_id)?$from_city_id:$this->MkCommon->filterEmptyField($data_ttuj, 'Ttuj', 'from_city_id');
 
 		if( !empty($truck_id) ) {

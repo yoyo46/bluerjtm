@@ -2,6 +2,13 @@
 App::uses('AppController', 'Controller');
 class PagesController extends AppController {
 	public $uses = array();
+
+    function beforeFilter(){
+        parent::beforeFilter();
+        $this->Auth->allow(array(
+            'redirect',
+        ));
+    }
 	
 	public function dashboard() {
 		$this->set('active_menu', 'dashboard');
@@ -316,6 +323,21 @@ class PagesController extends AppController {
             return json_encode($result);
         } else {
             return null;
+        }
+    }
+
+    function call_redirect () {
+        $params = $this->params->params;
+        $slug = Common::hashEmptyField($params, 'slug');
+
+        switch ($slug) {
+            case 'webmail':
+                $this->redirect('https://iix20.sharehostserver.com:2096/');
+                break;
+            
+            default:
+                $this->redirect('/');
+                break;
         }
     }
 }

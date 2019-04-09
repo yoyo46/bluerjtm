@@ -1,4 +1,5 @@
 <?php 
+        $data_action = 'checkbox-option';
         echo $this->Form->create('Search', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'titipan',
@@ -29,6 +30,7 @@
                         'class'=> 'btn btn-success btn-sm ajaxModal',
                         'data-parent' => true,
                         'title' => $title,
+                        'data-action' => $data_action,
                     ));
                     echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
                         'controller' => 'titipan',
@@ -38,6 +40,7 @@
                         'escape' => false, 
                         'class'=> 'btn btn-default btn-sm ajaxModal',
                         'title' => $title,
+                        'data-action' => $data_action,
                     ));
             ?>
         </div>

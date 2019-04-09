@@ -1,4 +1,5 @@
 <?php 
+        $data_action = 'checkbox-option';
         echo $this->Form->create('Search', array(
             'url'=> $this->Html->url( array(
                 'controller' => 'debt',
@@ -47,6 +48,7 @@
                 'class'=> 'btn btn-success btn-sm ajaxModal',
                 'data-parent' => true,
                 'title' => $title,
+                'data-action' => $data_action,
             ));
             echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
                 'controller' => 'debt',
@@ -56,17 +58,23 @@
                 'escape' => false, 
                 'class'=> 'btn btn-default btn-sm ajaxModal',
                 'title' => $title,
+                'data-action' => $data_action,
             ));
     ?>
 </div>
 <?php 
     echo $this->Form->end();
 ?>
-<div class="box-body table-responsive box-user-staff" id="box-info-coa">
+<div class="box-body table-responsive browse-form">
     <table class="table table-hover">
         <thead>
             <tr>
                 <?php 
+                        echo $this->Html->tag('th', $this->Form->checkbox('checkbox_all', array(
+                            'class' => 'checkAll',
+                        )), array(
+                            'width' => '5%',
+                        ));
                         echo $this->Html->tag('th', __('Nama'));
                         echo $this->Html->tag('th', __('Kategory'));
                 ?>
@@ -81,7 +89,15 @@
                             $type = !empty($value['ViewStaff']['type'])?$value['ViewStaff']['type']:false;
                             $rel = $type.$id;
             ?>
-            <tr class="child-search click-child child-search-<?php echo $rel; ?>" rel="<?php echo $rel; ?>">
+            <tr data-value="child-<?php echo $rel; ?>" class="child child-<?php echo $rel; ?>">
+                <?php
+                        echo $this->Html->tag('td', $this->Form->checkbox('ttuj_checked.', array(
+                            'class' => 'check-option',
+                            'value' => $id,
+                        )), array(
+                            'class' => 'checkbox-action',
+                        ));
+                ?>
                 <td>
                     <?php
                             echo $full_name;
@@ -94,7 +110,7 @@
                     ?>
                 </td>
                 <td><?php echo $type;?></td>
-                <td class="action-search hide">
+                <td class="hide on-show">
                     <?php
                             echo $this->Form->input('DebtDetail.note.', array(
                                 'type' => 'text',
@@ -105,7 +121,7 @@
                             ));
                     ?>
                 </td>
-                <td class="action-search hide">
+                <td class="hide on-show">
                     <?php
                             echo $this->Form->input('DebtDetail.total.', array(
                                 'type' => 'text',
@@ -116,12 +132,13 @@
                             ));
                     ?>
                 </td>
-                <td class="action-search hide">
+                <td class="document-table-action hide on-show">
                     <?php
                             echo $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
                                 'class' => 'delete-custom-field btn btn-danger btn-xs',
                                 'escape' => false,
-                                'action_type' => 'cashbank_first'
+                                'action_type' => 'cashbank_first',
+                                'data-id' => sprintf('child-child-%s', $rel),
                             ));
                     ?>
                 </td>

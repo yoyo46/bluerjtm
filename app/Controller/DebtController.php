@@ -111,6 +111,7 @@ class DebtController extends AppController {
             $document_no = Common::hashEmptyField($data, 'Debt.nodoc');
             $coa_id = Common::hashEmptyField($data, 'Debt.coa_id');
             $note = Common::hashEmptyField($data, 'Debt.note');
+            $nodoc = Common::hashEmptyField($data, 'Debt.nodoc');
 
             $transaction_date = Common::hashEmptyField($data, 'Debt.transaction_date');
             $transaction_status = Common::hashEmptyField($data, 'Debt.transaction_status');
@@ -122,6 +123,10 @@ class DebtController extends AppController {
                 'action' => 'add',
                 'admin' => false,
             );
+
+            if( empty($nodoc) ) {
+                $data['Debt']['nodoc'] = $this->Debt->generateNoDoc();
+            }
 
             if($id && $value){
                 $this->Debt->id = $id;

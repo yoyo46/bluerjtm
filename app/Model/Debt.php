@@ -120,5 +120,38 @@ class Debt extends AppModel {
         
         return $default_options;
     }
+
+    function generateNoDoc(){
+        $default_id = 1;
+        $branch_code = Configure::read('__Site.Branch.code');
+
+        $data = $this->data;
+        $format_id = sprintf('%s/%s/%s/', $branch_code, date('Y'), date('m'));
+        $last_data = $this->getData('first', array(
+            'conditions' => array(
+                'Debt.nodoc LIKE' => ''.$format_id.'%',
+            ),
+            'order' => array(
+                'Debt.nodoc' => 'DESC'
+            ),
+            'fields' => array(
+                'Debt.nodoc'
+            )
+        ), array(
+            'branch' => false,
+        ));
+        $nodoc = Common::hashEmptyField($last_data, 'Debt.nodoc');
+
+        if(!empty($nodoc)){
+            $str_arr = explode($format_id, $nodoc);
+            $last_arr = count($str_arr)-1;
+            $default_id = intval($str_arr[$last_arr]+1);
+        }
+
+        $id = str_pad($default_id, 3,'0',STR_PAD_LEFT);
+        $format_id .= $id;
+        
+        return $format_id;
+    }
 }
 ?>

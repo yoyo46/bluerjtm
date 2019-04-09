@@ -43,7 +43,7 @@ class ViewStaff extends AppModel {
     public function _callRefineParams( $data = '', $default_options = false ) {
         $default_options = $this->defaultOptionParams($data, $default_options, array(
             'name' => array(
-                'field' => 'ViewStaff.name',
+                'field' => 'ViewStaff.full_name',
                 'type' => 'like',
             ),
             'type' => array(

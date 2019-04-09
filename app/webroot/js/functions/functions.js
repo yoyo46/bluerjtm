@@ -1199,6 +1199,7 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge,
     var from_city_id = $.checkUndefined($('#fromCityId').val(), 0);
     var to_city_id = $('#toCityId').val();
     var data_type = $.checkUndefined($('.revenue-data-type').val(), 0);
+    var total_muatan = $.checkUndefined($('#qty-revenue').html(), 0);
 
     if( typeof customer_id == 'undefined' || isNaN(customer_id) || customer_id == '' ){
         customer_id = 0;
@@ -1213,7 +1214,7 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge,
         group_motor_id = 0;
     }
     
-    var url = '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+ from_city_id +'/0/';
+    var url = '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+ from_city_id +'/0/?total_muatan='+total_muatan+'/';
     
     if( data_type == 'manual' ) {
         customer_id = $('#customer-revenue-manual').val();
@@ -1221,7 +1222,7 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge,
         from_city_id = $.checkUndefined($('#from-city-revenue-id').val(), 0);
         to_city_id = $.checkUndefined($('#to-city-revenue-id').val(), 0);
 
-        url = '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+from_city_id+'/'+truck_id+'/manual';
+        url = '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+from_city_id+'/'+truck_id+'/manual/?total_muatan='+total_muatan+'/';
     }
 
     $.ajax({
@@ -2106,7 +2107,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                         });
                     }
                     
-                    if( type_action != 'browse-invoice' && type_action != 'browse-cash-banks' && type_action != 'browse-check-docs' && type_action == 'getTtujCustomerInfo' && type_action == 'getTtujCustomerInfoKsu' ) {
+                    if( ( type_action != 'browse-invoice' && type_action != 'browse-cash-banks' && type_action != 'browse-check-docs' && type_action == 'getTtujCustomerInfo' && type_action == 'getTtujCustomerInfoKsu' ) || type_action == 'checkbox-option' ) {
                         popup_checkbox();
                     }
 

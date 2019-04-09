@@ -20,7 +20,7 @@
 		<div class="form-group">
 			<?php
 					echo $this->Form->input('nodoc',array(
-						'label'=> __('No. Dokumen *'), 
+						'label'=> __('No. Dokumen'), 
 						'class'=>'form-control on-focus',
 						'required' => false,
 						'placeholder' => __('No. Dokumen'),
@@ -65,7 +65,7 @@
                         'class' => 'ajaxModal visible-xs browse-docs',
                         'escape' => false,
                         'title' => __('List Karyawan'),
-                        'data-action' => 'browse-cash-banks',
+                    	'data-action' => 'browse-check-docs',
                         'data-change' => 'cashbanks-info-table',
                         'url' => $this->Html->url( array(
                             'action' => 'users',
@@ -79,13 +79,13 @@
     </div>
 </div>
 
-<div class="cashbank-info-detail <?php echo (!empty($this->request->data['DebtDetail'])) ? '' : 'hide';?>">
+<div class="cashbank-info-detail">
 	<div class="box">
 	    <div class="box-header">
 	        <h3 class="box-title"><?php echo __('Detail Info Karyawan'); ?></h3>
 	    </div>
 	    <div class="box-body table-responsive">
-	        <table class="table table-hover cashbanks-info-table">
+	        <table class="table table-hover">
 	        	<thead>
 	        		<tr>
                     	<?php 

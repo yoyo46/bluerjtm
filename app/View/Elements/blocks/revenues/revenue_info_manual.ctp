@@ -56,6 +56,7 @@
 				));
 				echo $this->Form->hidden('Revenue.truck_id', array(
 					'value' => $truck_id,
+					'class' => 'truck-revenue-id',
 				));
     		}
     ?>

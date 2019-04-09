@@ -3,11 +3,8 @@
             $grandTotal = 0;
 
             if(!empty($detail_data['DebtDetail'])){
-                $tmp = array();
-
                 foreach ($detail_data['DebtDetail'] as $key => $value) {
                     $id = $value['employe_id'];
-                    $rel_id = $id;
 
                     $name = Common::hashEmptyField($value, 'karyawan_name');
                     $total = Common::hashEmptyField($value, 'total');
@@ -16,16 +13,9 @@
 
                     $total = $this->Common->convertPriceToString($total, 0, 2);
                     $grandTotal += $total;
-                    
-                    if( isset($tmp[$id]) ) {
-                        $tmp[$id]++;
-
-                        $rel_id .= sprintf('-%s', $tmp[$id]);
-                    } else {
-                        $tmp[$id] = 0;
-                    }
+                    $rel = $type.$id;
     ?>
-    <tr class="child child-<?php echo $id;?>" rel="<?php echo $rel_id;?>">
+    <tr class="child child-child-<?php echo $rel;?>">
         <td>
         	<?php
             		echo $name;
@@ -66,8 +56,15 @@
                     'class' => 'action-search'
                 ));
     	?>
-        <td class="action-search">
-        	<a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="cashbank_first"><i class="fa fa-times"></i> Hapus</a>
+        <td class="document-table-action">
+            <?php
+                    echo $this->Html->link('<i class="fa fa-times"></i> Hapus', 'javascript:', array(
+                        'class' => 'delete-custom-field btn btn-danger btn-xs',
+                        'escape' => false,
+                        'action_type' => 'cashbank_first',
+                        'data-id' => sprintf('child-child-%s', $rel),
+                    ));
+            ?>
         </td>
     </tr>
     <?php
