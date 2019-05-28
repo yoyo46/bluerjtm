@@ -2958,10 +2958,9 @@ class CommonHelper extends AppHelper {
     }
 
     function _callNoRefCMS ( $id, $name ) {
-        $dt = date('Ymd');
         $str = substr($name, 0, 1);
         $str = ucwords($str);
 
-        return __('%s-%s%s', $dt, $id, $str);
+        return __('%s%s', $id, $str);
     }
 }

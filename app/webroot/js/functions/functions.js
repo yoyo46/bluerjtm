@@ -2085,7 +2085,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
                                 obj: $('#myModal .modal-body .input_price'),
                             });
                             input_price_min($('#myModal .modal-body .input_price_min'));
-                            sisa_amount($('#myModal .modal-body .sisa-amount,#myModal .modal-body .no-claim,#myModal .modal-body .stood,#myModal .modal-body .lainnya,#myModal .modal-body .titipan,#myModal .modal-body .claim,#myModal .modal-body .laka'));
+                            sisa_amount($('#myModal .modal-body .sisa-amount,#myModal .modal-body .no-claim,#myModal .modal-body .stood,#myModal .modal-body .lainnya,#myModal .modal-body .titipan,#myModal .modal-body .claim,#myModal .modal-body .laka,#myModal .modal-body .debt'));
                             popup_checkbox();
                             $.daterangepicker({
                                 obj: $('#myModal .modal-body .date-range'),
@@ -2762,7 +2762,7 @@ var check_all_checkbox = function(){
                 input_price_min($('.child-'+id_child+'[rel="'+rel_id+'"] .input_price_min'));
                 delete_custom_field($('.child-'+id_child+'[rel="'+rel_id+'"] .delete-custom-field'));
                 ajaxModal($('.child-'+id_child+'[rel="'+rel_id+'"] .ajaxModal'));
-                sisa_amount($('.child-'+id_child+'[rel="'+rel_id+'"] .sisa-amount,.child-'+id_child+'[rel="'+rel_id+'"] .no-claim,.child-'+id_child+'[rel="'+rel_id+'"] .stood,.child-'+id_child+'[rel="'+rel_id+'"] .lainnya,.child-'+id_child+'[rel="'+rel_id+'"] .titipan,.child-'+id_child+'[rel="'+rel_id+'"] .claim,.child-'+id_child+'[rel="'+rel_id+'"] .laka'));
+                sisa_amount($('.child-'+id_child+'[rel="'+rel_id+'"] .sisa-amount,.child-'+id_child+'[rel="'+rel_id+'"] .no-claim,.child-'+id_child+'[rel="'+rel_id+'"] .stood,.child-'+id_child+'[rel="'+rel_id+'"] .lainnya,.child-'+id_child+'[rel="'+rel_id+'"] .titipan,.child-'+id_child+'[rel="'+rel_id+'"] .claim,.child-'+id_child+'[rel="'+rel_id+'"] .laka,.child-'+id_child+'[rel="'+rel_id+'"] .debt'));
             }
         } else if( allow_multiple != 'true' ) {
             $('.child-'+rel_id).remove();
@@ -2803,7 +2803,7 @@ var check_all_checkbox = function(){
         input_price_min($('.child-'+id_child+'[rel="'+rel_id+'"] .input_price_min'));
         delete_custom_field($('.child-'+id_child+'[rel="'+rel_id+'"] .delete-custom-field'));
         ajaxModal($('.child-'+id_child+'[rel="'+rel_id+'"] .ajaxModal'));
-        sisa_amount($('.child-'+id_child+'[rel="'+rel_id+'"] .sisa-amount,.child-'+id_child+'[rel="'+rel_id+'"] .no-claim,.child-'+id_child+'[rel="'+rel_id+'"] .stood,.child-'+id_child+'[rel="'+rel_id+'"] .lainnya,.child-'+id_child+'[rel="'+rel_id+'"] .titipan,.child-'+id_child+'[rel="'+rel_id+'"] .claim,.child-'+id_child+'[rel="'+rel_id+'"] .laka'));
+        sisa_amount($('.child-'+id_child+'[rel="'+rel_id+'"] .sisa-amount,.child-'+id_child+'[rel="'+rel_id+'"] .no-claim,.child-'+id_child+'[rel="'+rel_id+'"] .stood,.child-'+id_child+'[rel="'+rel_id+'"] .lainnya,.child-'+id_child+'[rel="'+rel_id+'"] .titipan,.child-'+id_child+'[rel="'+rel_id+'"] .claim,.child-'+id_child+'[rel="'+rel_id+'"] .laka,.child-'+id_child+'[rel="'+rel_id+'"] .debt'));
 
         $.ajax({
             url: '/ajax/saveCache/Coa/'+rel_id+'/',
@@ -2844,7 +2844,7 @@ function check_option(self){
                     obj: $('.child-'+id+' .input_number'),
                 });
                 input_price_min( $('.child-'+id+' .input_price_min') );
-                sisa_amount($('#checkbox-info-table .child-'+id+' .sisa-amount,#checkbox-info-table .child-'+id+' .no-claim,#checkbox-info-table .child-'+id+' .stood,#checkbox-info-table .child-'+id+' .lainnya,#checkbox-info-table .child-'+id+' .titipan,#checkbox-info-table .child-'+id+' .claim,#checkbox-info-table .child-'+id+' .laka'));
+                sisa_amount($('#checkbox-info-table .child-'+id+' .sisa-amount,#checkbox-info-table .child-'+id+' .no-claim,#checkbox-info-table .child-'+id+' .stood,#checkbox-info-table .child-'+id+' .lainnya,#checkbox-info-table .child-'+id+' .titipan,#checkbox-info-table .child-'+id+' .claim,#checkbox-info-table .child-'+id+' .laka,#checkbox-info-table .child-'+id+' .debt'));
                 delete_current_document($('#checkbox-info-table .child-'+id+' .document-table-action a'));
             }
         }
@@ -3098,7 +3098,8 @@ var calcTotalBiaya = function () {
     var objLainnya = $('#checkbox-info-table .lainnya');
     var objTitipan = $('#checkbox-info-table .titipan');
     var objClaim = $('#checkbox-info-table .claim');
-    var objLaka = $('#checkbox-info-table .laka');
+    // var objLaka = $('#checkbox-info-table .laka');
+    var objDebt = $('#checkbox-info-table .debt');
 
     var coma = $.checkUndefined($('#total-biaya').attr('data-cent'), 0);
     var totalBiaya = 0;
@@ -3113,18 +3114,21 @@ var calcTotalBiaya = function () {
             lainnya = convert_number(objLainnya[i].value);
             titipan = convert_number(objTitipan[i].value);
             claim = convert_number(objClaim[i].value);
-            laka = convert_number(objLaka[i].value);
+            // laka = convert_number(objLaka[i].value);
+            debt = convert_number(objDebt[i].value);
         } else {
             no_claim = 0;
             stood = 0;
             lainnya = 0;
             titipan = 0;
             claim = 0;
-            laka = 0;
+            // laka = 0;
+            debt = 0;
         }
 
         totalBiaya += biaya;
-        grandtotal += biaya + no_claim + stood + lainnya - titipan - claim - laka;
+        // grandtotal += biaya + no_claim + stood + lainnya - titipan - claim - laka - debt;
+        grandtotal += biaya + no_claim + stood + lainnya - titipan - claim - debt;
     };
 
     $('#total-biaya').html(formatNumber( totalBiaya, coma ));
@@ -3139,15 +3143,17 @@ var calcTotalTransfer = function ( parent ) {
     lainnya = convert_number(parent.find('.lainnya').val());
     titipan = convert_number(parent.find('.titipan').val());
     claim = convert_number(parent.find('.claim').val());
-    laka = convert_number(parent.find('.laka').val());
+    // laka = convert_number(parent.find('.laka').val());
+    debt = convert_number(parent.find('.debt').val());
 
-    var totalBiaya = biaya + no_claim + stood + lainnya - titipan - claim - laka;
+    // var totalBiaya = biaya + no_claim + stood + lainnya - titipan - claim - laka - debt;
+    var totalBiaya = biaya + no_claim + stood + lainnya - titipan - claim - debt;
     parent.find('.total-trans').html( formatNumber( totalBiaya ) );
 }
 
 var sisa_amount = function ( obj ) {
     if( typeof obj == 'undefined' ) {
-        obj = $('.sisa-amount,.no-claim,.stood,.lainnya,.titipan,.claim,.laka');
+        obj = $('.sisa-amount,.no-claim,.stood,.lainnya,.titipan,.claim,.laka,.debt');
     }
 
     obj.off('keyup').keyup(function(){

@@ -160,9 +160,9 @@ class DebtController extends AppController {
                 $validate = false;
             }
 
-            $this->Debt->set($data);
-
-            if($this->Debt->validates($data) && $validate){
+            if($this->Debt->saveAll($data, array(
+                'validate' => 'only',
+            )) && $validate){
                 if($this->Debt->save($data)){
                     $id = $this->Debt->id;
 
@@ -540,9 +540,14 @@ class DebtController extends AppController {
                 )
             ));
             $this->MkCommon->_callAllowClosing($data, 'DebtPayment', 'date_payment');
+            $nodoc = Common::hashEmptyField($data, 'DebtPayment.nodoc');
 
             $data['DebtPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
             $data = Common::_callCheckCostCenter($data, 'DebtPayment');
+
+            if( empty($nodoc) ) {
+                $data['DebtPayment']['nodoc'] = $this->Debt->generateNoDoc();
+            }
 
             $dataAmount = Common::hashEmptyField($data, 'DebtPaymentDetail.amount');
             $flagPaymentDetail = $this->doDebtPaymentDetail($dataAmount, $data, $id);
@@ -1013,6 +1018,10 @@ class DebtController extends AppController {
         $options =  $this->Debt->DebtDetail->_callRefineParams($params, array(
             'contain' => array(
                 'Debt',
+            ),
+            'order' => array(
+                'Debt.transaction_date' => 'ASC',
+                'Debt.id' => 'ASC',
             ),
             'limit' => Configure::read('__Site.config_pagination'),
         ));

@@ -29,10 +29,13 @@
         $claim = !empty($ttujPayment['claim'][$idx])?$ttujPayment['claim'][$idx]:0;
         $unit_claim = !empty($ttujPayment['unit_claim'][$idx])?$ttujPayment['unit_claim'][$idx]:0;
         $laka = !empty($ttujPayment['laka'][$idx])?$ttujPayment['laka'][$idx]:0;
+        $debt = !empty($ttujPayment['debt'][$idx])?$ttujPayment['debt'][$idx]:0;
         $potongan_laka = !empty($ttujPayment['potongan_laka'][$idx])?$ttujPayment['potongan_laka'][$idx]:0;
+        $potongan_debt = !empty($ttujPayment['potongan_debt'][$idx])?$ttujPayment['potongan_debt'][$idx]:0;
         $laka_note = !empty($ttujPayment['laka_note'][$idx])?$ttujPayment['laka_note'][$idx]:NULL;
+        $debt_note = !empty($ttujPayment['debt_note'][$idx])?$ttujPayment['debt_note'][$idx]:NULL;
 
-        $total = $amountPayment + $no_claim + $stood + $lainnya - $titipan - $claim - $laka;
+        $total = $amountPayment + $no_claim + $stood + $lainnya - $titipan - $claim - $laka - $debt;
 
         if( !empty($amountPayment) ) {
             if( !empty($checkbox) ) {
@@ -106,6 +109,9 @@
                     ));
                     echo $this->Form->hidden('TtujPayment.potongan_laka.', array(
                         'value' => $potongan_laka,
+                    ));
+                    echo $this->Form->hidden('TtujPayment.potongan_debt.', array(
+                        'value' => $potongan_debt,
                     ));
                 }
 		?>
@@ -185,46 +191,77 @@
                 }
         ?>
     </td>
-    <td class="text-right">
+    <!-- <td class="text-right">
+        <?php
+                // if( !empty($document_info) ) {
+                //     $unit_claim = $this->Common->getFormatPrice($unit_claim);
+                //     echo $unit_claim;
+                // } else {
+                //     echo $this->Form->input('TtujPayment.unit_claim.',array(
+                //         'label'=> false,
+                //         'class'=>'form-control input_price_min unit_claim text-right',
+                //         'required' => false,
+                //         'value' => $unit_claim,
+                //     ));
+                // }
+        ?>
+    </td> -->
+   <!--  <td class="text-right">
+        <?php
+                // if( !empty($document_info) ) {
+                //     $laka = $this->Common->getFormatPrice($laka);
+                //     echo $laka;
+                // } else {
+                //     echo $this->Form->input('TtujPayment.laka.',array(
+                //         'label'=> false,
+                //         'class'=>'form-control input_price_min laka text-right',
+                //         'required' => false,
+                //         'value' => $laka,
+                //     ));
+                // }
+        ?>
+    </td> -->
+     <td class="text-right">
         <?php
                 if( !empty($document_info) ) {
-                    $unit_claim = $this->Common->getFormatPrice($unit_claim);
-                    echo $unit_claim;
+                    $debt = $this->Common->getFormatPrice($debt);
+                    echo $debt;
                 } else {
-                    echo $this->Form->input('TtujPayment.unit_claim.',array(
-                        'label'=> false,
-                        'class'=>'form-control input_price_min unit_claim text-right',
-                        'required' => false,
-                        'value' => $unit_claim,
+                    echo $this->Common->_callInputForm('TtujPayment.debt.',array(
+                        'class'=>'form-control input_price_min debt text-right',
+                        'value' => $debt,
+                        'fieldError' => array(
+                            'TtujPaymentDetail.debt.'.$idx,
+                            'TtujPaymentDetail.debt_paid.'.$idx,
+                        ),
                     ));
                 }
         ?>
     </td>
-    <td class="text-right">
+    <!-- <td class="text-right">
         <?php
-                if( !empty($document_info) ) {
-                    $laka = $this->Common->getFormatPrice($laka);
-                    echo $laka;
-                } else {
-                    echo $this->Form->input('TtujPayment.laka.',array(
-                        'label'=> false,
-                        'class'=>'form-control input_price_min laka text-right',
-                        'required' => false,
-                        'value' => $laka,
-                    ));
-                }
+                // if( !empty($document_info) ) {
+                //     echo $laka_note;
+                // } else {
+                //     echo $this->Form->input('TtujPayment.laka_note.',array(
+                //         'label'=> false,
+                //         'class'=>'form-control',
+                //         'required' => false,
+                //         'value' => $laka_note,
+                //     ));
+                // }
         ?>
-    </td>
+    </td> -->
     <td class="text-right">
         <?php
                 if( !empty($document_info) ) {
-                    echo $laka_note;
+                    echo $debt_note;
                 } else {
-                    echo $this->Form->input('TtujPayment.laka_note.',array(
+                    echo $this->Form->input('TtujPayment.debt_note.',array(
                         'label'=> false,
                         'class'=>'form-control',
                         'required' => false,
-                        'value' => $laka_note,
+                        'value' => $debt_note,
                     ));
                 }
         ?>

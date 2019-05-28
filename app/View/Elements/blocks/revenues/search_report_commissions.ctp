@@ -52,120 +52,40 @@
                     ?>
                 </div>
                 <div class="form-group">
+                    <?php 
+                            echo $this->Form->label('driver_type', __('Supir'));
+                    ?>
                     <div class="row">
-                        <?php 
-                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('uj1', array(
-                                    'type' => 'checkbox',
-                                    'label'=> false,
-                                    'required' => false,
-                                    'value' => 'uang_jalan',
-                                    'div' => false,
-                                )).__('Uang Jalan ke 1')), array(
-                                    'class' => 'checkbox',
-                                )), array(
-                                    'class' => 'col-sm-6',
-                                ));
-                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('uj2', array(
-                                    'type' => 'checkbox',
-                                    'label'=> false,
-                                    'required' => false,
-                                    'value' => 'uang_jalan_2',
-                                    'div' => false,
-                                )).__('Uang Jalan ke 2')), array(
-                                    'class' => 'checkbox',
-                                )), array(
-                                    'class' => 'col-sm-6',
-                                ));
-                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('uje', array(
-                                    'type' => 'checkbox',
-                                    'label'=> false,
-                                    'required' => false,
-                                    'value' => 'uang_jalan_extra',
-                                    'div' => false,
-                                )).__('Uang Jalan Extra')), array(
-                                    'class' => 'checkbox',
-                                )), array(
-                                    'class' => 'col-sm-6',
-                                ));
-                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('com', array(
-                                    'type' => 'checkbox',
-                                    'label'=> false,
-                                    'required' => false,
-                                    'value' => 'commission',
-                                    'div' => false,
-                                )).__('Komisi')), array(
-                                    'class' => 'checkbox',
-                                )), array(
-                                    'class' => 'col-sm-6',
-                                ));
-                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('come', array(
-                                    'type' => 'checkbox',
-                                    'label'=> false,
-                                    'required' => false,
-                                    'value' => 'commission_extra',
-                                    'div' => false,
-                                )).__('Komisi Extra')), array(
-                                    'class' => 'checkbox',
-                                )), array(
-                                    'class' => 'col-sm-6',
-                                ));
-                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('kuli_muat', array(
-                                    'type' => 'checkbox',
-                                    'label'=> false,
-                                    'required' => false,
-                                    'value' => 'uang_kuli_muat',
-                                    'div' => false,
-                                )).__('Uang Kuli Muat')), array(
-                                    'class' => 'checkbox',
-                                )), array(
-                                    'class' => 'col-sm-6',
-                                ));
-                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('kuli_bongkar', array(
-                                    'type' => 'checkbox',
-                                    'label'=> false,
-                                    'required' => false,
-                                    'value' => 'uang_kuli_bongkar',
-                                    'div' => false,
-                                )).__('Uang Kuli Bongkar')), array(
-                                    'class' => 'checkbox',
-                                )), array(
-                                    'class' => 'col-sm-6',
-                                ));
-                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('asdp', array(
-                                    'type' => 'checkbox',
-                                    'label'=> false,
-                                    'required' => false,
-                                    'value' => 'asdp',
-                                    'div' => false,
-                                )).__('Uang Penyebrangan')), array(
-                                    'class' => 'checkbox',
-                                )), array(
-                                    'class' => 'col-sm-6',
-                                ));
-                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('uang_kawal', array(
-                                    'type' => 'checkbox',
-                                    'label'=> false,
-                                    'required' => false,
-                                    'value' => 'uang_kawal',
-                                    'div' => false,
-                                )).__('Uang Kawal')), array(
-                                    'class' => 'checkbox',
-                                )), array(
-                                    'class' => 'col-sm-6',
-                                ));
-                                echo $this->Html->tag('div', $this->Html->tag('div', $this->Html->tag('label', $this->Form->input('uang_keamanan', array(
-                                    'type' => 'checkbox',
-                                    'label'=> false,
-                                    'required' => false,
-                                    'value' => 'uang_keamanan',
-                                    'div' => false,
-                                )).__('Uang Keamanan')), array(
-                                    'class' => 'checkbox',
-                                )), array(
-                                    'class' => 'col-sm-6',
-                                ));
-                        ?>
+                        <div class="col-sm-4">
+                            <?php 
+                                    echo $this->Form->input('driver_type',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                        'empty' => false,
+                                        'options' => array(
+                                            '1' => __('Nama'),
+                                            '2' => __('ID Supir'),
+                                        ),
+                                    ));
+                            ?>
+                        </div>
+                        <div class="col-sm-8">
+                            <?php 
+                                    echo $this->Form->input('driver_value',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                    ));
+                            ?>
+                        </div>
                     </div>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            // Custom Otorisasi
+                            echo $this->Common->getCheckboxBranch();
+                    ?>
                 </div>
             </div>
             <div class="col-sm-4">
@@ -207,50 +127,21 @@
                             ));
                     ?>
                 </div>
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->label('driver_type', __('Supir'));
+                <div class="form-group action">
+                    <?php
+                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
+                                'div' => false, 
+                                'class'=> 'btn btn-success btn-sm',
+                                'type' => 'submit',
+                            ));
+                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'action' => 'report_commissions', 
+                            ), array(
+                                'escape' => false, 
+                                'class'=> 'btn btn-default btn-sm',
+                            ));
                     ?>
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <?php 
-                                    echo $this->Form->input('driver_type',array(
-                                        'label'=> false,
-                                        'class'=>'form-control',
-                                        'required' => false,
-                                        'empty' => false,
-                                        'options' => array(
-                                            '1' => __('Nama'),
-                                            '2' => __('ID Supir'),
-                                        ),
-                                    ));
-                            ?>
-                        </div>
-                        <div class="col-sm-8">
-                            <?php 
-                                    echo $this->Form->input('driver_value',array(
-                                        'label'=> false,
-                                        'class'=>'form-control',
-                                        'required' => false,
-                                    ));
-                            ?>
-                        </div>
-                    </div>
                 </div>
-                <!-- <div class="form-group">
-                    <?php 
-                            // echo $this->Form->input('status',array(
-                            //     'label'=> __('Status'),
-                            //     'class'=>'form-control',
-                            //     'required' => false,
-                            //     'options' => array(
-                            //         'paid' => __('Sudah dibayar'),
-                            //         'unpaid' => __('Belum dibayar'),
-                            //     ),
-                            //     'empty' => __('Semua Status'),
-                            // ));
-                    ?>
-                </div> -->
             </div>
             <div class="col-sm-4">
                 <div class="form-group">
@@ -279,27 +170,6 @@
                                 'label'=> __('Nopol'),
                                 'class'=>'form-control',
                                 'required' => false,
-                            ));
-                    ?>
-                </div>
-                <div class="form-group">
-                    <?php 
-                            // Custom Otorisasi
-                            echo $this->Common->getCheckboxBranch();
-                    ?>
-                </div>
-                <div class="form-group action">
-                    <?php
-                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
-                                'div' => false, 
-                                'class'=> 'btn btn-success btn-sm',
-                                'type' => 'submit',
-                            ));
-                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'report_commissions', 
-                            ), array(
-                                'escape' => false, 
-                                'class'=> 'btn btn-default btn-sm',
                             ));
                     ?>
                 </div>

@@ -917,5 +917,98 @@ class RjRevenueComponent extends Component {
 			'Driver.id' => $driver_id,
         ));
     }
+
+    function _callBiayaDebt( $driver_id, $options = NULL ) {
+    	$data = Common::hashEmptyField($options, 'data');
+    	$debt_paid = Common::hashEmptyField($options, 'debt');
+    	$ttuj_payment_id = Common::hashEmptyField($options, 'ttuj_payment_id');
+    	$ttuj_payment_detail_id = Common::hashEmptyField($options, 'ttuj_payment_detail_id');
+    	$debtPaymet = Common::hashEmptyField($options, 'debtPaymet');
+    	
+    	$dataDebtPaymet = Common::hashEmptyField($debtPaymet, 'data');
+    	$dataDebtPaymetByDriver = Common::hashEmptyField($debtPaymet, 'dataDriver');
+
+        $coa_id = Common::hashEmptyField($data, 'TtujPayment.coa_id');
+        $currentDataDebtPaymetByDriver = Common::hashEmptyField($dataDebtPaymetByDriver, $driver_id);
+        $except_id = Set::extract('/DebtPaymentDetail/debt_detail_id', $currentDataDebtPaymetByDriver);
+
+        $existing_debt = $this->controller->Ttuj->TtujPaymentDetail->DebtPaymentDetail->Debt->get_debt(array(
+        	'conditions' => array(
+        		'DebtDetail.id NOT' => $except_id,
+        		'DebtDetail.employe_id' => $driver_id,
+        		'DebtDetail.type' => 'Supir',
+        	),
+        	'contain' => array(
+        		'Debt',
+        	),
+        	'order' => array(
+        		'Debt.transaction_date' => 'ASC',
+        		'Debt.id' => 'ASC',
+        	),
+        ));
+
+        if( !empty($existing_debt) ) {
+	        $total_debt = Common::hashEmptyField($existing_debt, 'DebtDetail.total_debt');
+	        $date_payment = Common::hashEmptyField($existing_debt, 'DebtDetail.date_payment');
+	        $debt_id = Common::hashEmptyField($existing_debt, 'DebtDetail.debt_id');
+	        $debt_detail_id = Common::hashEmptyField($existing_debt, 'DebtDetail.id');
+
+	        if( $total_debt >= $debt_paid ) {
+	        	$dataDebt = array(
+	        		'DebtPaymentDetail' => array(
+		    			'debt_id' => $debt_id,
+		    			'debt_detail_id' => $debt_detail_id,
+		    			'employe_id' => $driver_id,
+		    			'ttuj_payment_id' => $ttuj_payment_id,
+		    			'ttuj_payment_detail_id' => $ttuj_payment_detail_id,
+		    			'type' => 'Supir',
+		    			'amount' => $debt_paid,
+		    		),
+	        	);
+
+	        	$flagPaid = 'half';
+
+		        if( $total_debt <= $debt_paid ) {
+		            $flagPaid = 'full';
+		        }
+
+		        $dataDebt['DebtPaymentDetail']['DebtDetail'] = array(
+	    			'id' => $debt_detail_id,
+	    			'paid_status' => $flagPaid,
+		        );
+
+		        $dataDebtPaymet[] = $dataDebt;
+		        $dataDebtPaymetByDriver[$driver_id][] = $dataDebt;
+
+		        $debtPaymet = array(
+		        	'data' => $dataDebtPaymet,
+		        	'dataDriver' => $dataDebtPaymetByDriver,
+		        );
+	        } else if( $total_debt < $debt_paid ) {
+	        	$debt_paid_remain = $debt_paid - $total_debt;
+	        	$debt_paid = $total_debt;
+
+		        $debtPaymet = $this->_callBiayaDebt($driver_id, array(
+	                'debt' => $debt_paid,
+	                'data' => $data,
+	                'debtPaymet' => $debtPaymet,
+                    'ttuj_payment_detail_id' => $ttuj_payment_detail_id,
+                    'ttuj_payment_id' => $ttuj_payment_id,
+	            ));
+
+	        	if( !empty($debt_paid_remain) ) {
+			        $debtPaymet = $this->_callBiayaDebt($driver_id, array(
+		                'debt' => $debt_paid_remain,
+		                'data' => $data,
+	                    'debtPaymet' => $debtPaymet,
+	                    'ttuj_payment_detail_id' => $ttuj_payment_detail_id,
+	                    'ttuj_payment_id' => $ttuj_payment_id,
+		            ));
+	        	}
+	        }
+	    }
+
+        return $debtPaymet;
+    }
 }
 ?>

@@ -30,6 +30,12 @@ class TtujPaymentDetail extends AppModel {
                 'message' => 'Tipe pembayaran harap diisi'
             ),
         ),
+        'debt_paid' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Hutang yang dibayar tidak sesuai dengan hutang supir'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(
@@ -45,6 +51,12 @@ class TtujPaymentDetail extends AppModel {
 
     var $hasOne = array(
         'TitipanDetail' => array(
+            'foreignKey' => 'ttuj_payment_detail_id',
+        ),
+    );
+
+    var $hasMany = array(
+        'DebtPaymentDetail' => array(
             'foreignKey' => 'ttuj_payment_detail_id',
         ),
     );

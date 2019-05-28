@@ -100,7 +100,7 @@
 				<tr>
 					<?php 
 							echo $this->Html->tag('td', __('Total'), array(
-								'colspan' => 4,
+								'colspan' => 5,
 								'class' => 'bold text-right',
 							));
 							echo $this->Html->tag('td', $this->Number->format($grandTotal, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(

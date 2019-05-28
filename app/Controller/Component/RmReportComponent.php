@@ -9717,6 +9717,7 @@ class RmReportComponent extends Component {
                 $branch = Common::hashEmptyField($value, 'Branch.code');
 
                 $driver = $this->Common->_callGetDataDriver($value);
+                $driver_id = Common::hashEmptyField($driver, 'id');
                 $driver_name = Common::hashEmptyField($driver, 'driver_name', '-');
 
                 $customDatePayment = $this->Common->formatDate($date_payment, 'd M Y');
@@ -9968,7 +9969,7 @@ class RmReportComponent extends Component {
 		    			),
 					),
 					__('No.Ref CMS') => array(
-						'text' => $this->Common->_callNoRefCMS($detail_id, $driver_name),
+						'text' => $this->Common->_callNoRefCMS(__('%s-%s', $driver_id, $id), $driver_name),
 		                'data-options' => 'field:\'noref_cms\',width:100',
 		                'align' => 'left',
 		                'mainalign' => 'left',

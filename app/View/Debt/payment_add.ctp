@@ -34,16 +34,16 @@
 					));
     			}
     	?>
-        <div class="form-group">
+        <!-- <div class="form-group">
         	<?php 
-					echo $this->Form->input('nodoc',array(
-						'label'=> __('No. Dokumen'), 
-						'class'=>'form-control',
-						'required' => false,
-						'placeholder' => __('No. Dokumen'),
-					));
+					// echo $this->Form->input('nodoc',array(
+					// 	'label'=> __('No. Dokumen'), 
+					// 	'class'=>'form-control',
+					// 	'required' => false,
+					// 	'placeholder' => __('No. Dokumen'),
+					// ));
 			?>
-        </div>
+        </div> -->
         <?php 
 				echo $this->Html->tag('div', $this->Form->input('coa_id',array(
 					'label'=> __('Account Kas/Bank *'), 

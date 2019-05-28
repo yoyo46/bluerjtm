@@ -33,15 +33,15 @@
 			                        'width' => '15%',
 			                        'class' => 'text-center',
 			                    ));
-			                    echo $this->Html->tag('th', __('Unit Claim'), array(
-			                        'width' => '8%',
-			                        'class' => 'text-center',
-			                    ));
-			                    echo $this->Html->tag('th', __('Potongan LAKA'), array(
+			                    // echo $this->Html->tag('th', __('Unit Claim'), array(
+			                    //     'width' => '8%',
+			                    //     'class' => 'text-center',
+			                    // ));
+			                    echo $this->Html->tag('th', __('Pembayaran Hutang'), array(
 			                        'width' => '15%',
 			                        'class' => 'text-center',
 			                    ));
-			                    echo $this->Html->tag('th', __('Ket. LAKA'), array(
+			                    echo $this->Html->tag('th', __('Ket. Hutang'), array(
 			                        'width' => '15%',
 			                        'class' => 'text-center',
 			                    ));

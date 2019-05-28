@@ -40,6 +40,9 @@ class Debt extends AppModel {
         'DebtPaymentDetail' => array(
             'foreignKey' => 'debt_id',
         ),
+        'ViewDebtCard' => array(
+            'foreignKey' => 'debt_id',
+        ),
     );
 
     function getData( $find, $options = false, $elements = array() ){
@@ -152,6 +155,42 @@ class Debt extends AppModel {
         $format_id .= $id;
         
         return $format_id;
+    }
+
+    function get_total_debt( $employe_id, $type ){
+        $this->ViewDebtCard->virtualFields['total_credit'] = 'SUM(ViewDebtCard.credit)';
+        $this->ViewDebtCard->virtualFields['total_debit'] = 'SUM(ViewDebtCard.debit)';
+
+        $value =  $this->ViewDebtCard->getData('first', array(
+            'conditions' => array(
+                'ViewDebtCard.employe_id' => $employe_id,
+                'ViewDebtCard.type' => $type,
+            ),
+        ));
+        $total_credit = Common::hashEmptyField($value, 'ViewDebtCard.total_credit');
+        $total_debit = Common::hashEmptyField($value, 'ViewDebtCard.total_debit');
+
+        return $total_credit - $total_debit;
+    }
+
+    function get_debt( $options = array() ){
+        $options =  $this->getData('paginate', $options, array(
+            'transaction_status' => 'posting',
+        ));
+        $value =  $this->DebtDetail->getData('first', $options, array(
+            'status' => 'unpaid',
+        ));
+
+        if( !empty($value) ) {
+            $document_id = Common::hashEmptyField($value, 'DebtDetail.id');
+            $total = Common::hashEmptyField($value, 'DebtDetail.total');
+
+            $last_paid = $this->DebtPaymentDetail->getTotalPayment($document_id);
+
+            $value['DebtDetail']['total_debt'] = $total - $last_paid;
+        }
+
+        return $value;
     }
 }
 ?>

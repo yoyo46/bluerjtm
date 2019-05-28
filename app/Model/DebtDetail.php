@@ -7,6 +7,12 @@ class DebtDetail extends AppModel {
                 'message' => 'Karyawan harap dipilih'
             ),
         ),
+        'total' => array(
+            'validateTotal' => array(
+                'rule' => array('validateTotal'),
+                'message' => 'Jml hutang harap diisi'
+            ),
+        ),
 	);
 
 	var $belongsTo = array(
@@ -26,6 +32,16 @@ class DebtDetail extends AppModel {
             'foreignKey' => 'debt_detail_id',
         ),
     );
+
+    function validateTotal () {
+        $total = intval(Common::hashEmptyField($this->data, 'DebtDetail.total', 0));
+
+        if( !empty($total) ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     function getData( $find, $options = false, $elements = array() ){
         $status = isset($elements['status'])?$elements['status']:false;

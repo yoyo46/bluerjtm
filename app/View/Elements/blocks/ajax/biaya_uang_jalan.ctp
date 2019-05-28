@@ -9,6 +9,7 @@
         $note = $this->Common->filterEmptyField($ttuj, 'Ttuj', 'note');
         $potongan_tabungan = Common::hashEmptyField($ttuj, 'UangJalan.potongan_tabungan', 0);
         $laka_total = Common::hashEmptyField($ttuj, 'Laka.total');
+        $debt_total = Common::hashEmptyField($ttuj, 'Debt.total');
 
         $data_type = !empty($data_type)?$data_type:false;
         $data_type = $this->Common->filterEmptyField($ttuj, 'Ttuj', 'data_type', $data_type);
@@ -26,6 +27,7 @@
         $total_biaya = $this->Common->getBiayaTtuj( $ttuj, $data_type, false, false );
         $titipan = 0;
         $potongan_laka = 0;
+        $potongan_debt = 0;
 
         if( !empty($amountPayment) ) {
             if( !empty($checkbox) ) {
@@ -57,6 +59,13 @@
 
                     if( $potongan_laka > $laka_total ) {
                         $potongan_laka = $laka_total;
+                    }
+                }
+                if( !empty($debt_percent) && !empty($debt_total) ) {
+                    $potongan_debt = $total_biaya * ($debt_percent/100);
+
+                    if( $potongan_debt > $debt_total ) {
+                        $potongan_debt = $debt_total;
                     }
                 }
             }
@@ -192,28 +201,39 @@
                 ));
         ?>
     </td>
+    <!-- <td class="text-right hide on-show">
+        <?php
+                // echo $this->Form->input('TtujPayment.unit_claim.',array(
+                //     'label'=> false,
+                //     'class'=>'form-control input_price_min unit_claim text-right',
+                //     'required' => false,
+                // ));
+        ?>
+    </td> -->
     <td class="text-right hide on-show">
         <?php
-                echo $this->Form->input('TtujPayment.unit_claim.',array(
+                // echo $this->Form->input('TtujPayment.laka.',array(
+                //     'label'=> false,
+                //     'class'=>'form-control input_price_min laka text-right',
+                //     'required' => false,
+                //     'value' => $potongan_laka,
+                // ));
+                echo $this->Form->input('TtujPayment.debt.',array(
                     'label'=> false,
-                    'class'=>'form-control input_price_min unit_claim text-right',
+                    'class'=>'form-control input_price_min debt text-right',
                     'required' => false,
+                    'value' => $potongan_debt,
                 ));
         ?>
     </td>
     <td class="text-right hide on-show">
         <?php
-                echo $this->Form->input('TtujPayment.laka.',array(
-                    'label'=> false,
-                    'class'=>'form-control input_price_min laka text-right',
-                    'required' => false,
-                    'value' => $potongan_laka,
-                ));
-        ?>
-    </td>
-    <td class="text-right hide on-show">
-        <?php
-                echo $this->Form->input('TtujPayment.laka_note.',array(
+                // echo $this->Form->input('TtujPayment.laka_note.',array(
+                //     'label'=> false,
+                //     'class'=>'form-control',
+                //     'required' => false,
+                // ));
+                echo $this->Form->input('TtujPayment.debt_note.',array(
                     'label'=> false,
                     'class'=>'form-control',
                     'required' => false,
@@ -222,7 +242,7 @@
     </td>
     <td class="text-right total-trans hide on-show">
         <?php
-                echo Common::getFormatPrice($total_biaya-$titipan-$potongan_laka);
+                echo Common::getFormatPrice($total_biaya-$titipan-$potongan_laka-$potongan_debt);
         ?>
     </td>
     <?php 

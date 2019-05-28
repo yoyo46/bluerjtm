@@ -6,7 +6,7 @@ class RevenuesController extends AppController {
     );
 
     public $components = array(
-        'RjRevenue', 'RmReport'
+        'RjRevenue', 'RmReport',
     );
 
     public $helper = array(
@@ -7135,8 +7135,8 @@ class RevenuesController extends AppController {
                         $titipan = !empty($ttujPaymentDetail['titipan'])?$ttujPaymentDetail['titipan']:0;
                         $claim = !empty($ttujPaymentDetail['claim'])?$ttujPaymentDetail['claim']:0;
                         $unit_claim = !empty($ttujPaymentDetail['unit_claim'])?$ttujPaymentDetail['unit_claim']:0;
-                        $laka = !empty($ttujPaymentDetail['laka'])?$ttujPaymentDetail['laka']:0;
-                        $laka_note = !empty($ttujPaymentDetail['laka_note'])?$ttujPaymentDetail['laka_note']:NULL;
+                        $debt = !empty($ttujPaymentDetail['debt'])?$ttujPaymentDetail['debt']:0;
+                        $debt_note = !empty($ttujPaymentDetail['debt_note'])?$ttujPaymentDetail['debt_note']:NULL;
 
                         $this->request->data['Ttuj'][] = $resultTtuj;
                         $this->request->data['TtujPayment']['amount_payment'][] = $amount;
@@ -7146,11 +7146,10 @@ class RevenuesController extends AppController {
                         $this->request->data['TtujPayment']['titipan'][] = $titipan;
                         $this->request->data['TtujPayment']['claim'][] = $claim;
                         $this->request->data['TtujPayment']['unit_claim'][] = $unit_claim;
-                        $this->request->data['TtujPayment']['laka'][] = $laka;
-                        $this->request->data['TtujPayment']['potongan_laka'][] = $laka;
+                        $this->request->data['TtujPayment']['debt'][] = $debt;
                         $this->request->data['TtujPayment']['ttuj_id'][] = $ttuj_id;
                         $this->request->data['TtujPayment']['data_type'][] = $dataTtujType;
-                        $this->request->data['TtujPayment']['laka_note'][] = $laka_note;
+                        $this->request->data['TtujPayment']['debt_note'][] = $debt_note;
                     }
                 }
             }
@@ -7233,8 +7232,8 @@ class RevenuesController extends AppController {
                     $titipan = !empty($ttujPaymentDetail['titipan'])?$ttujPaymentDetail['titipan']:0;
                     $claim = !empty($ttujPaymentDetail['claim'])?$ttujPaymentDetail['claim']:0;
                     $unit_claim = !empty($ttujPaymentDetail['unit_claim'])?$ttujPaymentDetail['unit_claim']:0;
-                    $laka = !empty($ttujPaymentDetail['laka'])?$ttujPaymentDetail['laka']:0;
-                    $laka_note = !empty($ttujPaymentDetail['laka_note'])?$ttujPaymentDetail['laka_note']:0;
+                    $debt = !empty($ttujPaymentDetail['debt'])?$ttujPaymentDetail['debt']:0;
+                    $debt_note = !empty($ttujPaymentDetail['debt_note'])?$ttujPaymentDetail['debt_note']:0;
 
                     $invoice['Ttuj'][] = $resultTtuj;
                     $invoice['TtujPayment']['amount_payment'][] = $amount;
@@ -7246,8 +7245,8 @@ class RevenuesController extends AppController {
                     $invoice['TtujPayment']['titipan'][] = $titipan;
                     $invoice['TtujPayment']['claim'][] = $claim;
                     $invoice['TtujPayment']['unit_claim'][] = $unit_claim;
-                    $invoice['TtujPayment']['laka'][] = $laka;
-                    $invoice['TtujPayment']['laka_note'][] = $laka_note;
+                    $invoice['TtujPayment']['debt'][] = $debt;
+                    $invoice['TtujPayment']['debt_note'][] = $debt_note;
                 }
             }
 
@@ -7273,32 +7272,13 @@ class RevenuesController extends AppController {
         $transaction_status = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'transaction_status');
         $document_no = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'nodoc');
         $coa_id = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'coa_id');
+        $cogs_id = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'cogs_id');
         
         $totalPayment = 0;
         $totalMin = 0;
         $totalPlus = 0;
-        $this->details = false;
 
         if( !empty($ttuj_payment_id) ) {
-            $this->Ttuj->TtujPaymentDetail->virtualFields['tmp_driver_id'] = 'IFNULL(Ttuj.driver_pengganti_id, Ttuj.driver_id)';
-            $this->Ttuj->TtujPaymentDetail->virtualFields['total_laka'] = 'SUM(TtujPaymentDetail.laka)';
-            $this->details = $this->Ttuj->TtujPaymentDetail->find('list', array(
-                'conditions' => array(
-                    'TtujPaymentDetail.ttuj_payment_id' => $ttuj_payment_id,
-                    'TtujPaymentDetail.status' => 1,
-                ),
-                'contain' => array(
-                    'Ttuj',
-                ),
-                'fields' => array(
-                    'TtujPaymentDetail.tmp_driver_id',
-                    'TtujPaymentDetail.total_laka',
-                ),
-                'group' => array(
-                    'TtujPaymentDetail.tmp_driver_id',
-                ),
-            ));
-
             $curr_ttuj_id = Common::hashEmptyField($data, 'TtujPayment.ttuj_id');
             $last_ttuj_ids = $this->Ttuj->TtujPaymentDetail->find('all', array(
                 'conditions' => array(
@@ -7340,6 +7320,8 @@ class RevenuesController extends AppController {
 
         if( !empty($dataAmount) ) {
             $total_titipan = 0;
+            $grandtotal_debt = 0;
+            $dataDebtPaymetDetail = array();
 
             if( !empty($ttuj_payment_id) && $transaction_status == 'posting' ) {
                 $dataTitipan = array(
@@ -7364,14 +7346,16 @@ class RevenuesController extends AppController {
                 $titipan = !empty($this->request->data['TtujPayment']['titipan'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['titipan'][$key], 0):0;
                 $claim = !empty($this->request->data['TtujPayment']['claim'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['claim'][$key], 0):0;
                 $unit_claim = !empty($this->request->data['TtujPayment']['unit_claim'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['unit_claim'][$key], 0):0;
-                $laka = !empty($this->request->data['TtujPayment']['laka'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['laka'][$key], 0):0;
-                $laka_note = !empty($this->request->data['TtujPayment']['laka_note'][$key])?$this->request->data['TtujPayment']['laka_note'][$key]:NULL;
+                $debt = !empty($this->request->data['TtujPayment']['debt'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['debt'][$key], 0):0;
+                $debt_note = !empty($this->request->data['TtujPayment']['debt_note'][$key])?$this->request->data['TtujPayment']['debt_note'][$key]:NULL;
 
                 $dataTtuj = $this->Ttuj->getTtujPayment($ttuj_id, $data_type, 'Ttuj');
                 $no_ttuj = Common::hashEmptyField($dataTtuj, 'Ttuj.no_ttuj');
                 $driver_id = Common::hashEmptyField($dataTtuj, 'Ttuj.driver_id');
                 $driver_id = Common::hashEmptyField($dataTtuj, 'Ttuj.driver_pengganti_id', $driver_id);
+
                 $driver = $this->Ttuj->Driver->getMerge(array(), $driver_id);
+                $total_debt = $this->Ttuj->TtujPaymentDetail->DebtPaymentDetail->Debt->get_total_debt($driver_id, 'Supir');
 
                 $dataTtujPaymentDetail = array(
                     'TtujPaymentDetail' => array(
@@ -7385,8 +7369,8 @@ class RevenuesController extends AppController {
                         'titipan' => $titipan,
                         'claim' => $claim,
                         'unit_claim' => $unit_claim,
-                        'laka' => $laka,
-                        'laka_note' => $laka_note,
+                        'debt' => $debt,
+                        'debt_note' => $debt_note,
                         'account_name' => Common::hashEmptyField($driver, 'Driver.account_name'),
                         'account_number' => Common::hashEmptyField($driver, 'Driver.account_number'),
                         'bank_name' => Common::hashEmptyField($driver, 'Driver.bank_name'),
@@ -7401,12 +7385,12 @@ class RevenuesController extends AppController {
                 $this->request->data['TtujPayment']['titipan'][$key] = $titipan;
                 $this->request->data['TtujPayment']['claim'][$key] = $claim;
                 $this->request->data['TtujPayment']['unit_claim'][$key] = $unit_claim;
-                $this->request->data['TtujPayment']['laka'][$key] = $laka;
-                $this->request->data['TtujPayment']['laka_note'][$key] = $laka_note;
+                $this->request->data['TtujPayment']['debt'][$key] = $debt;
+                $this->request->data['TtujPayment']['debt_note'][$key] = $debt_note;
 
                 $totalPlus += $amount + $no_claim + $stood + $lainnya;
-                $totalMin += $titipan + $claim + $laka;
-                $totalPayment += $amount + $no_claim + $stood + $lainnya - $titipan - $claim - $laka;
+                $totalMin += $titipan + $claim;
+                $totalPayment += $amount + $no_claim + $stood + $lainnya - $titipan - $claim - $debt;
 
                 $total_dibayar = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, $data_type, false, array(
                     'conditions' => array(
@@ -7414,6 +7398,11 @@ class RevenuesController extends AppController {
                     ),
                 )) + $amount;
                 $total_titipan += $titipan;
+                $grandtotal_debt += $debt;
+
+                if( !empty($debt) && $total_debt < $debt ) {
+                    $dataTtujPaymentDetail['TtujPaymentDetail']['debt_paid'] = false;
+                }
 
                 if( !empty($ttuj_payment_id) ) {
                     $dataTtujPaymentDetail['TtujPaymentDetail']['ttuj_payment_id'] = $ttuj_payment_id;
@@ -7448,13 +7437,6 @@ class RevenuesController extends AppController {
                     } else {
                         $ttuj_payment_detail_id = $this->Ttuj->TtujPaymentDetail->id;
 
-                        if( $data_type == 'commission' ) {
-                            $this->RjRevenue->_callBiayaLaka($driver_id, $laka, array(
-                                'value' => $value,
-                                'data' => $data,
-                            ));
-                        }
-
                         if( $transaction_status == 'posting' ) {
                             $dataTitipan['TitipanDetail'][] = array(
                                 'ttuj_payment_detail_id' => $ttuj_payment_detail_id,
@@ -7462,6 +7444,16 @@ class RevenuesController extends AppController {
                                 'total' => $titipan,
                                 'note' => __('Titipan UangJalan/Komisi TTUJ #%s', $no_ttuj),
                             );
+
+                            if( !empty($debt) ) {
+                                $dataDebtPaymetDetail = $this->RjRevenue->_callBiayaDebt($driver_id, array(
+                                    'debt' => $debt,
+                                    'data' => $data,
+                                    'debtPaymet' => $dataDebtPaymetDetail,
+                                    'ttuj_payment_detail_id' => $ttuj_payment_detail_id,
+                                    'ttuj_payment_id' => $ttuj_payment_id,
+                                ));
+                            }
                         }
                     }
                 } else {
@@ -7475,6 +7467,54 @@ class RevenuesController extends AppController {
                 $dataTitipan['Titipan']['grandtotal'] = $total_titipan;
 
                 $this->Ttuj->TtujPaymentDetail->TtujPayment->Titipan->saveAll($dataTitipan);
+            }
+
+            if( !empty($dataDebtPaymetDetail) && !empty($ttuj_payment_id) ) {
+                $dataDebtPaymetDetail = Common::hashEmptyField($dataDebtPaymetDetail, 'data');
+                $debtNoDoc = $this->Ttuj->TtujPaymentDetail->DebtPaymentDetail->DebtPayment->generateNoDoc();
+
+                $dataDebtPaymet = array(
+                    'DebtPayment' => array(
+                        'branch_id' => Configure::read('__Site.config_branch_id'),
+                        'coa_id' => $coa_id,
+                        'ttuj_payment_id' => $ttuj_payment_id,
+                        'nodoc' => $debtNoDoc,
+                        'date_payment' => $date_payment,
+                        'total_payment' => $grandtotal_debt,
+                        'description' => __('Pembayaran Hutang dari potongan komisi No. %s', $document_no),
+                    ),
+                    'DebtPaymentDetail' => $dataDebtPaymetDetail,
+                );
+
+                $flagDebt = $this->Ttuj->TtujPaymentDetail->DebtPaymentDetail->DebtPayment->saveAll($dataDebtPaymet, array(
+                    'deep' => true,
+                ));
+
+                if( !empty($flagDebt) ) {
+                    $debt_payment_id = $this->Ttuj->TtujPaymentDetail->DebtPaymentDetail->DebtPayment->id;
+                    $coaDebt = $this->User->Coa->CoaSettingDetail->getMerge(array(), 'Debt', 'CoaSettingDetail.label');
+                    $debt_coa_id = !empty($coaDebt['CoaSettingDetail']['coa_id'])?$coaDebt['CoaSettingDetail']['coa_id']:false;
+
+                    if( !empty($debt_coa_id) ) {
+                        $titleJournal = sprintf(__('Pembayaran Hutang Karyawan'));
+                        $titleJournal = Common::hashEmptyField($data, 'DebtPayment.description', $titleJournal);
+
+                        $this->User->Journal->deleteJournal($debt_payment_id, array(
+                            'debt_payment',
+                        ));
+                        $this->User->Journal->setJournal($grandtotal_debt, array(
+                            'debit' => $coa_id,
+                            'credit' => $debt_coa_id,
+                        ), array(
+                            'cogs_id' => $cogs_id,
+                            'date' => $date_payment,
+                            'document_id' => $debt_payment_id,
+                            'title' => $titleJournal,
+                            'document_no' => $debtNoDoc,
+                            'type' => 'debt_payment',
+                        ));
+                    }
+                }
             }
         } else {
             $flagTtujPaymentDetail = false;
@@ -7553,7 +7593,7 @@ class RevenuesController extends AppController {
                             $lainnya = !empty($this->request->data['TtujPayment']['lainnya'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['lainnya'][$key]):0;
                             $titipan = !empty($this->request->data['TtujPayment']['titipan'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['titipan'][$key]):0;
                             $claim = !empty($this->request->data['TtujPayment']['claim'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['claim'][$key]):0;
-                            $laka = !empty($this->request->data['TtujPayment']['laka'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['laka'][$key]):0;
+                            $debt = !empty($this->request->data['TtujPayment']['debt'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['debt'][$key]):0;
                             
                             $this->User->Journal->setJournal($amount + $no_claim + $stood + $lainnya, array(
                                 'debit' => $debit_id,
@@ -7568,7 +7608,7 @@ class RevenuesController extends AppController {
                             ));
 
                             if( !empty($totalMin) ) {
-                                $this->User->Journal->setJournal($titipan + $claim + $laka, array(
+                                $this->User->Journal->setJournal($titipan + $claim, array(
                                     'debit' => $coa_id,
                                 ), array(
                                     'cogs_id' => $cogs_id,
@@ -7732,8 +7772,11 @@ class RevenuesController extends AppController {
                 }
 
                 if(!empty($data['TtujPayment']['canceled_date'])){
+                    $canceled_note = !empty($data['TtujPayment']['canceled_note'])?$data['TtujPayment']['canceled_date']:false;
+                    $canceled_date = !empty($data['TtujPayment']['canceled_date'])?$this->MkCommon->getDate($data['TtujPayment']['canceled_date']):false;
+
                     $ttuj_id = !empty($invoice['TtujPayment']['ttuj_id'])?$invoice['TtujPayment']['ttuj_id']:false;
-                    $data['TtujPayment']['canceled_date'] = !empty($data['TtujPayment']['canceled_date'])?$this->MkCommon->getDate($data['TtujPayment']['canceled_date']):false;
+                    $data['TtujPayment']['canceled_date'] = $canceled_date;
                     $data['TtujPayment']['is_canceled'] = 1;
 
                     $titipans = $this->Ttuj->TtujPaymentDetail->TtujPayment->Titipan->getData('first', array(
@@ -7746,17 +7789,19 @@ class RevenuesController extends AppController {
 
                     $this->Ttuj->TtujPaymentDetail->TtujPayment->id = $id;
                     $this->Ttuj->TtujPaymentDetail->TtujPayment->set($data);
-
+                    
                     if($this->Ttuj->TtujPaymentDetail->TtujPayment->save()){
                         $document_no = !empty($invoice['TtujPayment']['nodoc'])?$invoice['TtujPayment']['nodoc']:false;
                         $coa_id = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'coa_id');
                         $paidType = array();
+                        $debt_flag = false;
+                        $grandtotal_debt = 0;
 
                         if( !empty($invoice['TtujPaymentDetail']) ) {
                             foreach ($invoice['TtujPaymentDetail'] as $key => $ttujPaymentDetail) {
                                 $ttuj_id = !empty($ttujPaymentDetail['ttuj_id'])?$ttujPaymentDetail['ttuj_id']:false;
                                 $data_type = !empty($ttujPaymentDetail['type'])?$ttujPaymentDetail['type']:false;
-                                $laka = !empty($ttujPaymentDetail['laka'])?$ttujPaymentDetail['laka']:0;
+                                $debt = !empty($ttujPaymentDetail['debt'])?$ttujPaymentDetail['debt']:0;
                                 $total_dibayar = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, $data_type, false, array(
                                     'conditions' => array(
                                         // 'TtujPayment.transaction_status' => 'posting',
@@ -7764,6 +7809,7 @@ class RevenuesController extends AppController {
                                 ));
                                 $flagPaidTtuj = 'none';
                                 $paidType[] = $data_type;
+                                $grandtotal_debt += $debt;
 
                                 if( !empty($total_dibayar) ) {
                                     $flagPaidTtuj = 'half';
@@ -7779,18 +7825,14 @@ class RevenuesController extends AppController {
                                 if( !$this->Ttuj->save() ) {
                                     $this->Log->logActivity( sprintf(__('Gagal mengubah status pembayaran %s #%s'), $data_type, $ttuj_id), $this->user_data, $this->RequestHandler, $this->params, 1, false, $ttuj_id );
                                 }
-
-                                if( $data_type == 'commission' && !empty($laka) ) {
-                                    $dataTtuj = $this->Ttuj->getMerge(array(), $ttuj_id);
-                                    $driver_id = Common::hashEmptyField($dataTtuj, 'Ttuj.driver_id');
-                                    $driver_id = Common::hashEmptyField($dataTtuj, 'Ttuj.driver_pengganti_id', $driver_id);
-
-                                    $this->RjRevenue->_callBiayaLaka($driver_id, ($laka * -1), array(
-                                        'value' => $invoice,
-                                        'data' => $invoice,
-                                    ));
+                                if( !empty($debt) ) {
+                                    $debt_flag = true;
                                 }
                             }
+                        }
+
+                        if( !empty($debt_flag) ) {
+                            $this->Ttuj->TtujPaymentDetail->DebtPaymentDetail->DebtPayment->payment_delete($id, $canceled_note, $canceled_date);
                         }
 
                         if( $transaction_status == 'posting' ) {
@@ -7801,7 +7843,7 @@ class RevenuesController extends AppController {
                                     case 'biaya_ttuj':
                                         $titleJournalInv = sprintf(__('pembayaran biaya %s kepada %s %s'), $paidType, $receiver_type, $receiver_name);
                                         $titleJournalInv = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'description', $titleJournalInv));
-                                        $totalPayment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'total_payment');
+                                        $totalPayment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'total_payment', 0);
 
                                         $credit_id = 'biaya_ttuj_payment_coa_id';
                                         $journal_type = 'biaya_ttuj_payment_void';
@@ -7810,31 +7852,33 @@ class RevenuesController extends AppController {
                                     default:
                                         $titleJournalInv = sprintf(__('pembayaran biaya %s'), $paidType);
                                         $titleJournalInv = sprintf(__('<i>Pembatalan</i> %s'), $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'description', $titleJournalInv));
-                                        $totalPayment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'total_payment');
+                                        $totalPayment = $this->MkCommon->filterEmptyField($invoice, 'TtujPayment', 'total_payment', 0);
 
                                         $credit_id = 'uang_Jalan_commission_payment_coa_id';
                                         $journal_type = 'uang_Jalan_commission_payment_void';
                                         break;
                                 }
 
-                                $this->User->Journal->setJournal($totalPayment, array(
-                                    'debit' => $coa_id,
-                                ), array(
-                                    'cogs_id' => $cogs_id,
-                                    'date' => $date_payment,
-                                    'document_id' => $id,
-                                    'title' => $titleJournalInv,
-                                    'document_no' => $document_no,
-                                    'type' => $journal_type,
-                                ));
+                                $grandtotalPlus = 0;
+                                $grandtotalMin = 0;
 
                                 if( !empty($invoice['TtujPaymentDetail']) ) {
                                     foreach ($invoice['TtujPaymentDetail'] as $key => $ttujPaymentDetail) {
                                         $ttuj_id = !empty($ttujPaymentDetail['ttuj_id'])?$ttujPaymentDetail['ttuj_id']:false;
                                         $amount = !empty($ttujPaymentDetail['amount'])?$ttujPaymentDetail['amount']:false;
+                                        $no_claim = !empty($ttujPaymentDetail['no_claim'])?$ttujPaymentDetail['no_claim']:false;
+                                        $stood = !empty($ttujPaymentDetail['stood'])?$ttujPaymentDetail['stood']:false;
+                                        $lainnya = !empty($ttujPaymentDetail['lainnya'])?$ttujPaymentDetail['lainnya']:false;
+                                        $titipan = !empty($ttujPaymentDetail['titipan'])?$ttujPaymentDetail['titipan']:false;
+                                        $claim = !empty($ttujPaymentDetail['claim'])?$ttujPaymentDetail['claim']:false;
+
                                         $dataTtuj = $this->Ttuj->getMerge(array(), $ttuj_id);
+                                        $totalPlus = $amount + $no_claim + $stood + $lainnya;
+                                        $totalMin = $titipan + $claim;
+                                        $grandtotalPlus += $totalPlus;
+                                        $grandtotalMin += $totalMin;
                                         
-                                        $this->User->Journal->setJournal($amount, array(
+                                        $this->User->Journal->setJournal($totalPlus, array(
                                             'credit' => $credit_id,
                                         ), array(
                                             'truck_id' => Common::hashEmptyField($dataTtuj, 'Ttuj.truck_id'),
@@ -7845,7 +7889,47 @@ class RevenuesController extends AppController {
                                             'document_no' => $document_no,
                                             'type' => $journal_type,
                                         ));
+
+                                        if( !empty($totalMin) ) {
+                                            $this->User->Journal->setJournal($totalMin, array(
+                                                'credit' => $coa_id,
+                                            ), array(
+                                                'cogs_id' => $cogs_id,
+                                                'date' => $date_payment,
+                                                'document_id' => $ttuj_payment_id,
+                                                'title' => $titleJournalInv,
+                                                'document_no' => $document_no,
+                                                'type' => $journal_type,
+                                            ));
+                                        }
                                     }
+                                }
+
+                                $this->User->Journal->setJournal($grandtotalPlus, array(
+                                    'debit' => $coa_id,
+                                ), array(
+                                    'cogs_id' => $cogs_id,
+                                    'date' => $date_payment,
+                                    'document_id' => $id,
+                                    'title' => $titleJournalInv,
+                                    'document_no' => $document_no,
+                                    'type' => $journal_type,
+                                ));
+
+                                if( !empty($grandtotalMin) ) {
+                                    $coaPotonganUJ = $this->User->Coa->CoaSettingDetail->getMerge(array(), 'PotonganUJ', 'CoaSettingDetail.label');
+                                    $potongan_uj_id = !empty($coaPotonganUJ['CoaSettingDetail']['coa_id'])?$coaPotonganUJ['CoaSettingDetail']['coa_id']:false;
+
+                                    $this->User->Journal->setJournal($grandtotalMin, array(
+                                        'debit' => $potongan_uj_id,
+                                    ), array(
+                                        'cogs_id' => $cogs_id,
+                                        'date' => $date_payment,
+                                        'document_id' => $id,
+                                        'title' => $titleJournalInv,
+                                        'document_no' => $document_no,
+                                        'type' => $journal_type,
+                                    ));
                                 }
                             }
 
@@ -10035,7 +10119,7 @@ class RevenuesController extends AppController {
         $dataReport = $this->RmReport->_callDataReport_commissions($params, 30, 0, true);
         $values = Common::hashEmptyField($dataReport, 'data');
 
-        $this->RmReport->_callBeforeView($params, __('Laporan Pembayaran Komisi'));
+        $this->RmReport->_callBeforeView($params, __('Laporan Pembayaran CMS BRI'));
         $this->MkCommon->_layout_file(array(
             'select',
         ));
