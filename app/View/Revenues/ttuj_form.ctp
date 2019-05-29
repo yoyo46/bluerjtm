@@ -294,6 +294,16 @@
 				        <?php 
 				        		}
 				        ?>
+						<div class="form-group">
+							<?php 
+									echo $this->Form->input('tgl_bon_biru',array(
+										'type' => 'text',
+										'label'=> __('Tgl. Masuk Bon Biru'), 
+										'class'=>'form-control custom-date',
+										'required' => false,
+									));
+							?>
+						</div>
 				    </div>
 				</div>
 			</div>

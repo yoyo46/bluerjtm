@@ -450,6 +450,7 @@ class RevenuesController extends AppController {
                 'date' => array(
                     'Ttuj' => array(
                         'ttuj_date',
+                        'tgl_bon_biru',
                     ),
                 )
             ));
@@ -1121,6 +1122,7 @@ class RevenuesController extends AppController {
             }
 
             $this->request->data['Ttuj']['ttuj_date'] = !empty($data['Ttuj']['ttuj_date'])?date('d/m/Y', strtotime($data['Ttuj']['ttuj_date'])):false;
+            $this->request->data['Ttuj']['tgl_bon_biru'] = !empty($data['Ttuj']['tgl_bon_biru'])?date('d/m/Y', strtotime($data['Ttuj']['tgl_bon_biru'])):false;
 
             if( !empty($data['TtujPerlengkapan']['qty']) ) {
                 $tempPerlengkapan = array();
@@ -1186,6 +1188,11 @@ class RevenuesController extends AppController {
                     $this->request->data['Ttuj']['ttuj_date'] = date('d/m/Y', strtotime($this->request->data['Ttuj']['ttuj_date']));
                 } else {
                     $this->request->data['Ttuj']['ttuj_date'] = '';
+                }
+                if( !empty($this->request->data['Ttuj']['tgl_bon_biru']) && $this->request->data['Ttuj']['tgl_bon_biru'] != '0000-00-00' ) {
+                    $this->request->data['Ttuj']['tgl_bon_biru'] = date('d/m/Y', strtotime($this->request->data['Ttuj']['tgl_bon_biru']));
+                } else {
+                    $this->request->data['Ttuj']['tgl_bon_biru'] = '';
                 }
             }
 

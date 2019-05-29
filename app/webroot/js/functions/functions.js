@@ -2846,6 +2846,7 @@ function check_option(self){
                 input_price_min( $('.child-'+id+' .input_price_min') );
                 sisa_amount($('#checkbox-info-table .child-'+id+' .sisa-amount,#checkbox-info-table .child-'+id+' .no-claim,#checkbox-info-table .child-'+id+' .stood,#checkbox-info-table .child-'+id+' .lainnya,#checkbox-info-table .child-'+id+' .titipan,#checkbox-info-table .child-'+id+' .claim,#checkbox-info-table .child-'+id+' .laka,#checkbox-info-table .child-'+id+' .debt'));
                 delete_current_document($('#checkbox-info-table .child-'+id+' .document-table-action a'));
+                $.pophover_click('#checkbox-info-table .child-'+id+' .popover-hover-top-click');
             }
         }
     }else{
@@ -4022,25 +4023,34 @@ $(function() {
         placement: 'top',
         container: 'body',
     });
-    $('.popover-hover-top-click').popover({
-        html: true,
-        placement: 'top',
-        container: 'body',
-    });
 
-    $('.popover-hover-top-click').on('show.bs.popover', function () {
-        $('.popover-hover-top-click.in').trigger('click');
-    })
-
-    $('.popover-hover-top-click').on('shown.bs.popover', function () {
-        $(this).addClass('in');
-        ajaxModal($('.popover-content .ajaxModal'));
-        $('.popover-close').click(function () {
-            $('.popover-hover-top-click.in').trigger('click');
+    $.pophover_click = function(objHover){
+        $(objHover).popover({
+            html: true,
+            placement: 'top',
+            container: 'body',
         });
-    })
 
-    $('.popover-hover-top-click,.popover-hover-bottom-click').on('hidden.bs.popover', function () {
+        $(objHover).on('show.bs.popover', function () {
+            $('.popover-hover-top-click.in').trigger('click');
+        })
+
+        $(objHover).on('shown.bs.popover', function () {
+            $(this).addClass('in');
+            ajaxModal($('.popover-content .ajaxModal'));
+            $('.popover-close').click(function () {
+                $('.popover-hover-top-click.in').trigger('click');
+            });
+        })
+
+        $(objHover).on('hidden.bs.popover', function () {
+            $(this).removeClass('in');
+        })
+    }
+
+    $.pophover_click('.popover-hover-top-click');
+
+    $('.popover-hover-bottom-click').on('hidden.bs.popover', function () {
         $(this).removeClass('in');
     })
 
