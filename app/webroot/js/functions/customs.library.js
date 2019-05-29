@@ -1908,6 +1908,7 @@
         var func_type = $.checkUndefined(obj_content.attr('data-function-type'), false);
         var data_empty = $.checkUndefined(obj_content.attr('data-empty'), null);
         var data_modal_close = $.checkUndefined(obj_content.attr('data-modal-close'), null);
+        var data_reload = $.checkUndefined(obj_content.attr('data-reload'), null);
         var formData = false; 
 
         if( url == false ) {
@@ -2075,6 +2076,10 @@
                             obj: $('.ajax-infinity'),
                         });
                     }
+                }
+
+                if( data_reload == 'true' ) {
+                    window.location.reload();
                 }
 
                 return false;

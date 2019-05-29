@@ -10233,6 +10233,52 @@ class RevenuesController extends AppController {
         }
     }
 
+    function transferred_commissions () {
+        $this->loadModel('TtujPaymentDetail');
+
+        $params = $this->params->params;
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+            'strict' => true,
+        ));
+        $params['named']= $named = array_merge($params_named, $this->MkCommon->processFilter($params));
+        $params = $this->MkCommon->_callRefineParams($params);
+
+        $options = array(
+            'conditions' => array(
+                'TtujPaymentDetail.is_transferred' => 0,
+                'TtujPayment.is_canceled' => 0,
+                'TtujPaymentDetail.status' => 1,
+                'TtujPayment.transaction_status' => 'posting',
+                'TtujPaymentDetail.type' => array( 'commission', 'commission_extra' ),
+            ),
+            'contain' => array(
+                'TtujPayment',
+            ),
+        );
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'TtujPayment', $options );
+        $options =  $this->TtujPaymentDetail->TtujPayment->getData('paginate', $options, true, array(
+            'branch' => false,
+        ));
+        $options =  $this->TtujPaymentDetail->TtujPayment->_callRefineParams($params, $options);
+        $list = $this->TtujPaymentDetail->find('list', $options);
+
+        if( !empty($list) ) {
+            $this->TtujPaymentDetail->updateAll(array(
+                'TtujPaymentDetail.is_transferred' => 1,
+            ), array(
+                'TtujPaymentDetail.id' => $list,
+            ));
+
+            $this->MkCommon->setCustomFlash(__('Berhasil melakukan pembayaran komisi'), 'success');
+        } else {
+            $this->MkCommon->setCustomFlash(__('Tidak ada komisi untuk dibayar'), 'error');
+        }
+
+        $this->layout = false;
+        $this->autoRender = false;
+    }
+
     // public function report_driver_commissions( $data_action = false ) {
     //     $dateFrom = date('Y-m-d', strtotime('-1 Month'));
     //     $dateTo = date('Y-m-d');

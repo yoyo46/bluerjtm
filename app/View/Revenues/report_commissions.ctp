@@ -21,6 +21,21 @@
                     'action' => 'generate_excel',
                     'report_commissions',
                 ),
+                'added_url' => array(
+                    'text' => '<i class="fa fa-money"></i> Transferred',
+                    'url' => array(
+                        'controller' => 'revenues',
+                        'action' => 'search',
+                        'transferred_commissions',
+                    ),
+                    'options' => array(
+                        'escape' => false,
+                        'class' => 'btn btn-primary pull-right ajax-link',
+                        'data-form' => '#form-search',
+                        'data-reload' => 'true',
+                        'data-alert' => __('Dengan klik tombol ini maka pembayaran komisi telah dibayarkan dan tidak akan tampil di halaman ini lagi. Anda yakin ingin melaukan tranfer untuk komisi ini?'),
+                    ),
+                ),
             ));
     ?>
     <div class="table-responsive">

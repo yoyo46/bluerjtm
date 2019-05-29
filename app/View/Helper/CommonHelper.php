@@ -1276,6 +1276,7 @@ class CommonHelper extends AppHelper {
         // $_pdf = isset($options['_pdf'])?$options['_pdf']:true;
         $_attr = isset($options['_attr'])?$options['_attr']:array();
         $_excel_url = isset($options['url_excel'])?$options['url_excel']:false;
+        $_added_url = isset($options['added_url'])?$options['added_url']:false;
         $result = false;
         $resultContent = '';
         $default_attr = array(
@@ -1342,6 +1343,14 @@ class CommonHelper extends AppHelper {
         //     $_pdf_attr['class'] = $default_attr['class'].' btn btn-primary pull-right';
         //     $result .= $this->Html->link('<i class="fa fa-download"></i> Download PDF', $urlPdf, $_pdf_attr);
         // }
+        if( !empty($_added_url) ) {
+            $_added_text = Common::hashEmptyField($_added_url, 'text');
+            $_added_options = Common::hashEmptyField($_added_url, 'options');
+            $_added_alert = Common::hashEmptyField($_added_url, 'alert');
+            $_added_url = Common::hashEmptyField($_added_url, 'url');
+
+            $result .= $this->Html->link($_added_text, $_added_url, $_added_options, $_added_alert);
+        }
 
         if( !empty($showHideColumn) ) {
             $resultContent .= $this->_getShowHideColumn('Truck', $showHideColumn, array(

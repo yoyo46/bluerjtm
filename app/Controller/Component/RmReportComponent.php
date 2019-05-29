@@ -8374,6 +8374,7 @@ class RmReportComponent extends Component {
 
 		$options = array(
             'conditions' => array(
+            	'TtujPaymentDetail.is_transferred' => 0,
                 'TtujPayment.is_canceled' => 0,
                 'TtujPaymentDetail.status' => 1,
                 'TtujPayment.transaction_status' => 'posting',
