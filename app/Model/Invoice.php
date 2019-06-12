@@ -90,6 +90,9 @@ class Invoice extends AppModel {
             'className' => 'InvoicePaymentDetail',
             'foreignKey' => 'invoice_id',
         ),
+        'RevenueDetail' => array(
+            'foreignKey' => 'invoice_id',
+        ),
     );
 
 	function getData( $find, $options = false, $is_merge = true, $elements = array() ){
@@ -352,6 +355,405 @@ class Invoice extends AppModel {
             return false;
         } else {
             return true;
+        }
+    }
+
+    function _callInvNumber ( $customer, $type = 'invoice_number' ) {
+        $result = array();
+
+        if( !empty($customer['CustomerGroup']['CustomerGroupPattern']) ) {
+            $result['last_number'] = $customer['CustomerGroup']['CustomerGroupPattern']['last_number'];
+            $result['min_digit'] = $customer['CustomerGroup']['CustomerGroupPattern']['min_digit'];
+            $result['pattern'] = $customer['CustomerGroup']['CustomerGroupPattern']['pattern'];
+            $result['invoice_number'] = sprintf('%s%s', str_pad($customer['CustomerGroup']['CustomerGroupPattern']['last_number'], $customer['CustomerGroup']['CustomerGroupPattern']['min_digit'], '0', STR_PAD_LEFT), $customer['CustomerGroup']['CustomerGroupPattern']['pattern']);
+        } else if( !empty($customer['CustomerGroupPattern']) ) {
+            $result['last_number'] = $customer['CustomerGroupPattern']['last_number'];
+            $result['min_digit'] = $customer['CustomerGroupPattern']['min_digit'];
+            $result['pattern'] = $customer['CustomerGroupPattern']['pattern'];
+            $result['invoice_number'] = sprintf('%s%s', str_pad($customer['CustomerGroupPattern']['last_number'], $customer['CustomerGroupPattern']['min_digit'], '0', STR_PAD_LEFT), $customer['CustomerGroupPattern']['pattern']);
+        } else {
+            $result['invoice_number'] = '';
+        }
+
+        switch ($type) {
+            case 'all':
+                return $result;
+                break;
+            
+            default:
+                return $result['invoice_number'];
+                break;
+        }
+    }
+
+    function _callInvNumberAndPeriode ( $data, $customer, $tarif_type = 'angkut' ) {
+        $head_office = Configure::read('__Site.config_branch_head_office');
+        $customer_id = Common::hashEmptyField($data, 'Invoice.customer_id');
+        $no_invoice = Common::hashEmptyField($data, 'Invoice.no_invoice');
+
+        if( !empty($customer) ) {
+            $import_code = Common::hashEmptyField($data, 'Invoice.import_code');
+
+            $conditions = array(
+                'Revenue.import_code' => $import_code,
+                'Revenue.customer_id' => $customer_id,
+                'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
+                'Revenue.status' => 1,
+            );
+            $conditionsDetail = array_merge($conditions, array(
+                'RevenueDetail.invoice_id' => NULL,
+                'RevenueDetail.tarif_angkutan_type' => $tarif_type,
+                'RevenueDetail.is_charge' => 1,
+            ));
+
+            if( !empty($head_office) ) {
+                $elementRevenue = array(
+                    'branch' => false,
+                );
+            } else {
+                $elementRevenue = false;
+            }
+
+            $this->InvoiceDetail->RevenueDetail->virtualFields['total_qty_unit'] = 'SUM(RevenueDetail.qty_unit)';
+            $this->InvoiceDetail->RevenueDetail->virtualFields['total'] = 'SUM(RevenueDetail.total_price_unit)';
+            $this->InvoiceDetail->RevenueDetail->virtualFields['period_to'] = 'MAX(Revenue.date_revenue)';
+            $this->InvoiceDetail->RevenueDetail->virtualFields['period_from'] = 'MIN(Revenue.date_revenue)';
+            
+            $revenueDetail = $this->InvoiceDetail->RevenueDetail->getData('first', array(
+                'conditions' => $conditionsDetail,
+                'order' => array(
+                    'Revenue.date_revenue' => 'ASC'
+                ),
+                'group' => array(
+                    'Revenue.customer_id'
+                ),
+            ), $elementRevenue);
+
+            if( !empty($revenueDetail) ) {
+                $revenueId = $this->InvoiceDetail->RevenueDetail->getData('list', array(
+                    'conditions' => $conditionsDetail,
+                    'fields' => array(
+                        'RevenueDetail.revenue_id',
+                        'RevenueDetail.revenue_id',
+                    ),
+                ), $elementRevenue);
+
+                $conditions['Revenue.id'] = $revenueId;
+                $conditionRevenue = $conditions;
+
+                $this->InvoiceDetail->Revenue->virtualFields['total_pph'] = 'SUM(Revenue.total_without_tax * (Revenue.pph / 100))';
+                $revenue = $this->InvoiceDetail->Revenue->getData('first', array(
+                    'conditions' => $conditionRevenue,
+                ), true, $elementRevenue);
+
+                $total_pph = Common::hashEmptyField($revenue, 'Revenue.total_pph');
+                $total = Common::hashEmptyField($revenueDetail, 'RevenueDetail.total');
+                $period_from = Common::hashEmptyField($revenueDetail, 'RevenueDetail.period_from');
+                $period_to = Common::hashEmptyField($revenueDetail, 'RevenueDetail.period_to');
+                $is_diff_periode = Common::hashEmptyField($customer, 'CustomerNoType.is_diff_periode');
+                $total_qty_unit = Common::hashEmptyField($revenueDetail, 'RevenueDetail.total_qty_unit');
+
+                $monthFrom = Common::formatDate($period_from, 'Y-m');
+                $monthTo = Common::formatDate($period_to, 'Y-m');
+
+                $period_from_tmp = Common::formatDate($period_from, 'Y-m-d');
+                $period_to_tmp = Common::formatDate($period_to, 'Y-m-d');
+                
+                $data['Invoice']['period_from'] = $period_from_tmp;
+                $data['Invoice']['period_to'] = $period_to_tmp;
+                $data['Invoice']['total'] = $total;
+                $data['Invoice']['total_revenue'] = $total;
+                $data['Invoice']['total_pph'] = $total_pph;
+
+                switch ($tarif_type) {
+                    case 'kuli':
+                        $ket = __('BIAYA KULI MUAT SEPEDA MOTOR');
+                        break;
+
+                    case 'asuransi':
+                        $ket = __('BIAYA ASURANSI SEPEDA MOTOR');
+                        break;
+
+                    case 'subsidi':
+                        $ket = __('BIAYA SUBSIDI SEPEDA MOTOR');
+                        break;
+                    
+                    default:
+                        $ket = __('JASA ANGKUT SEPEDA MOTOR');
+                        break;
+                }
+
+                $ket = strtolower($ket);
+                $data['Invoice']['note'] = __('%s%sSebanyak %s unit%sPeriode : %s', ucwords($ket), PHP_EOL, $total_qty_unit, PHP_EOL, Common::getCombineDate($period_from, $period_to, 'long', 's/d'));
+
+                unset($this->InvoiceDetail->RevenueDetail->virtualFields['total_qty_unit']);
+                unset($this->InvoiceDetail->RevenueDetail->virtualFields['total']);
+                unset($this->InvoiceDetail->RevenueDetail->virtualFields['period_to']);
+                unset($this->InvoiceDetail->RevenueDetail->virtualFields['period_from']);
+                unset($this->InvoiceDetail->Revenue->virtualFields['total_pph']);
+            }
+
+            if( empty($no_invoice) ) {
+                $customer_group_id = Common::hashEmptyField($customer, 'CustomerNoType.customer_group_id');
+                $customer = $this->Customer->CustomerGroup->getMerge($customer, $customer_group_id);
+
+                if( !empty($customer['CustomerGroupPattern']) ) {
+                    $data['Invoice']['no_invoice'] = $this->_callInvNumber( $customer );
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    function getProsesInvoice ( $data = NULL ) {
+        if( !empty($data) ) {
+            $revenueId = array();
+
+            foreach ($data as $key => &$inv) {
+                $customer_id = Common::hashEmptyField($inv, 'Invoice.customer_id');
+                $import_code = Common::hashEmptyField($inv, 'Invoice.import_code');
+                $action = Common::hashEmptyField($inv, 'Invoice.jenis_kwitansi');
+                $tarif_type = Common::hashEmptyField($inv, 'Invoice.tarif_type');
+                $invoice_date = Common::hashEmptyField($inv, 'Invoice.invoice_date');
+
+                $head_office = Configure::read('__Site.config_branch_head_office');
+                $elementRevenue = false;
+
+                if( !empty($head_office) ) {
+                    $elementRevenue = array(
+                        'branch' => false,
+                    );
+                }
+                
+                $customer = $this->CustomerNoType->find('first', array(
+                    'conditions' => array(
+                        'CustomerNoType.id' => $customer_id,
+                        'CustomerNoType.status' => 1,
+                    ),
+                ));
+                $customer_group_id = Common::hashEmptyField($customer, 'CustomerNoType.customer_group_id');
+                $customer = $this->Customer->CustomerGroup->CustomerGroupPattern->getMerge($customer, $customer_group_id);
+
+                $inv = $this->_callInvNumberAndPeriode($inv, $customer);
+
+                $customer_name_code = Common::hashEmptyField($customer, 'CustomerNoType.customer_name_code');
+
+                if( !empty($inv) ) {
+                    if( in_array($action, array( 'tarif', 'tarif_name' )) ){
+                        $options = array(
+                            'conditions' => array(
+                                'Revenue.customer_id' => $customer_id,
+                                'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
+                                'RevenueDetail.tarif_angkutan_type' => $tarif_type,
+                                'RevenueDetail.invoice_id' => NULL,
+                                'Revenue.status' => 1,
+                                'RevenueDetail.status' => 1,
+                                'Revenue.import_code' => $import_code,
+                            ),
+                            'order' => array(
+                                'Revenue.date_revenue' => 'ASC',
+                                'Revenue.id' => 'ASC',
+                                'RevenueDetail.id' => 'ASC',
+                            )
+                        );
+
+                        if( $action == 'tarif_name' ) {
+                            $options['contain'][] = 'TarifAngkutan';
+                            $options['order'] = array_merge(array(
+                                'TarifAngkutan.name_tarif' => 'ASC',
+                            ), $options['order']);
+                        } else {
+                            $options['order'] = array_merge(array(
+                                'RevenueDetail.price_unit' => 'ASC',
+                            ), $options['order']);
+                        }
+
+                        $revenue_detail = $this->RevenueDetail->getData('all', $options, $elementRevenue);
+
+                        $result = array();
+                        $flag = true;
+                        $errorMsg = array();
+
+                        if(!empty($revenue_detail)){
+                            foreach ($revenue_detail as $key => $value) {
+                                if( $action == 'tarif_name' ) {
+                                    $grouping = Common::hashEmptyField($value, 'TarifAngkutan.name_tarif');
+                                } else {
+                                    $grouping = Common::hashEmptyField($value, 'RevenueDetail.price_unit');
+                                }
+
+                                $result[$grouping][] = $value;
+                            }
+                        }
+
+                        if(!empty($result)){
+                            $invoice_number = $this->Customer->CustomerGroup->CustomerGroupPattern->getNoInvoice($customer);
+
+                            foreach ($result as $key => $value) {
+                                $this->create();
+
+                                $inv['Invoice']['no_invoice'] = $invoice_number;
+                                $this->set($inv);
+
+                                if($this->save()){
+                                    $invoice_id = $this->id;
+
+                                    $titleJournalInv = sprintf(__('Invoice customer: %s, No: %s'), $customer_name_code, $invoice_number);
+                                    $journalData = array(
+                                        'date' => $invoice_date,
+                                        'document_id' => $invoice_id,
+                                        'title' => $titleJournalInv,
+                                        'document_no' => $invoice_number,
+                                        'type' => 'invoice',
+                                    );
+
+                                    $invoice_number = $this->Customer->CustomerGroup->CustomerGroupPattern->addPattern($customer, $inv);
+                                    $this->Customer->CustomerGroup->CustomerGroupPattern->addPattern($customer, $inv);
+
+                                    $total_price = 0;
+
+                                    foreach ($value as $key => $value_detail) {
+                                        if( !empty($value_detail['RevenueDetail']['id']) ) {
+                                            $revenue_id = !empty($value_detail['Revenue']['id'])?$value_detail['Revenue']['id']:false;
+                                            $revenue_detail_id = !empty($value_detail['RevenueDetail']['id'])?$value_detail['RevenueDetail']['id']:false;
+                                            $total_price_unit = !empty($value_detail['RevenueDetail']['total_price_unit'])?$value_detail['RevenueDetail']['total_price_unit']:0;
+                                            
+                                            $this->InvoiceDetail->create();
+                                            $this->InvoiceDetail->set(array(
+                                                'invoice_id' => $invoice_id,
+                                                'revenue_id' => $revenue_id,
+                                                'revenue_detail_id' => $revenue_detail_id,
+                                            ));
+                                            $this->InvoiceDetail->save();
+
+                                            $this->RevenueDetail->id = $revenue_detail_id;
+                                            $this->RevenueDetail->set('invoice_id', $invoice_id);
+                                            $this->RevenueDetail->save();
+                                            $revenueId[] = $revenue_id;
+                                            $total_price += $total_price_unit;
+                                        }
+                                    }
+
+                                    $this->updateAll(array(
+                                        'Invoice.total' => $total_price,
+                                    ), array(
+                                        'Invoice.id' => $invoice_id,
+                                    ));
+
+                                    if( !empty($journalData) ) {
+                                        $this->Bank->Coa->Journal->setJournal($total_price, array(
+                                            'credit' => 'invoice_coa_credit_id',
+                                            'debit' => 'invoice_coa_debit_id',
+                                        ), $journalData);
+                                        $this->Bank->Coa->Journal->setJournal($total_price, array(
+                                            'credit' => 'invoice_coa_2_credit_id',
+                                            'debit' => 'invoice_coa_2_debit_id',
+                                        ), $journalData);
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        $no_invoice = Common::hashEmptyField($inv, 'Invoice.no_invoice');
+
+                        $this->create();
+                        $flag = $this->save($inv);
+
+                        if( !empty($flag) ) {
+                            $invoice_id = $this->id;
+                            $total = Common::hashEmptyField($inv, 'Invoice.total');
+
+                            if( !empty($total) ) {
+                                $titleJournalInv = sprintf(__('Invoice customer: %s, No: %s'), $customer_name_code, $no_invoice);
+
+                                $this->Bank->Coa->Journal->setJournal($total, array(
+                                    'credit' => 'invoice_coa_credit_id',
+                                    'debit' => 'invoice_coa_debit_id',
+                                ), array(
+                                    'date' => $invoice_date,
+                                    'document_id' => $invoice_id,
+                                    'title' => $titleJournalInv,
+                                    'document_no' => $no_invoice,
+                                    'type' => 'invoice',
+                                ));
+                                $this->Bank->Coa->Journal->setJournal($total, array(
+                                    'credit' => 'invoice_coa_2_credit_id',
+                                    'debit' => 'invoice_coa_2_debit_id',
+                                ), array(
+                                    'date' => $invoice_date,
+                                    'document_id' => $invoice_id,
+                                    'title' => $titleJournalInv,
+                                    'document_no' => $no_invoice,
+                                    'type' => 'invoice',
+                                ));
+                            }
+
+                            $revenueDetails = $this->InvoiceDetail->RevenueDetail->getData('list', array(
+                                'conditions' => array(
+                                    'Revenue.status' => 1,
+                                    'RevenueDetail.status' => 1,
+                                    'Revenue.customer_id' => $customer_id,
+                                    'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
+                                    'RevenueDetail.tarif_angkutan_type' => $tarif_type,
+                                    'RevenueDetail.invoice_id' => NULL,
+                                    'Revenue.import_code' => $import_code,
+                                ),
+                                'contain' => array(
+                                    'Revenue'
+                                ),
+                                'fields' => array(
+                                    'RevenueDetail.id', 'Revenue.id'
+                                ),
+                                'order' => false,
+                            ), $elementRevenue);
+
+                            if(!empty($revenueDetails)){
+                                foreach ($revenueDetails as $revenue_detail_id => $revenue_id) {
+                                    $this->InvoiceDetail->create();
+                                    $this->InvoiceDetail->set(array(
+                                        'invoice_id' => $invoice_id,
+                                        'revenue_id' => $revenue_id,
+                                        'revenue_detail_id' => $revenue_detail_id,
+                                    ));
+                                    $this->InvoiceDetail->save();
+
+                                    $this->RevenueDetail->id = $revenue_detail_id;
+                                    $this->RevenueDetail->set('invoice_id', $invoice_id);
+                                    $this->RevenueDetail->save();
+
+                                    $this->RevenueDetail->Revenue->id = $revenue_id;
+                                    $this->RevenueDetail->Revenue->set('transaction_status', 'invoiced');
+                                    $this->RevenueDetail->Revenue->save();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            $revenueId = array_unique($revenueId);
+
+            if( !empty($revenueId) ) {
+                foreach ($revenueId as $key => $revenue_id) {
+                    $revenueDetails = $this->RevenueDetail->getData('first', array(
+                        'conditions' => array(
+                            'RevenueDetail.revenue_id' => $revenue_id,
+                            'RevenueDetail.invoice_id' => NULL,
+                        ),
+                    ), $elementRevenue);
+
+                    $this->RevenueDetail->Revenue->id = $revenue_id;
+
+                    if(empty($revenueDetails)){
+                        $this->RevenueDetail->Revenue->set('transaction_status', 'invoiced');
+                    } else {
+                        $this->RevenueDetail->Revenue->set('transaction_status', 'half_invoiced');
+                    }
+
+                    $this->RevenueDetail->Revenue->save();
+                }
+            }
         }
     }
 }

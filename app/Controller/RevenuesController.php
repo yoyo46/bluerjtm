@@ -8029,7 +8029,9 @@ class RevenuesController extends AppController {
                                 $failed_row = 0;
                                 $error_message = '';
                                 $dataSave = array();
+                                $dataInv = array();
                                 $dataTotal = array();
+                                $uniqcode = String::uuid();
 
                                 for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
                                     $datavar = array();
@@ -8063,6 +8065,32 @@ class RevenuesController extends AppController {
                                         $qty = !empty($qty)?$qty:false;
                                         $amount = !empty($amount)?$amount:false;
                                         $cabang = !empty($cabang)?$cabang:false;
+                                        $no_kwitansi = !empty($no_kwitansi)?$no_kwitansi:false;
+                                        $jenis_kwitansi = !empty($jenis_kwitansi)?strtolower($jenis_kwitansi):false;
+                                        $bank = !empty($bank)?$bank:false;
+                                        $company = !empty($company)?$company:false;
+                                        $tgl_kwitansi = !empty($tgl_kwitansi)?$tgl_kwitansi:false;
+
+                                        switch ($jenis_kwitansi) {
+                                            case 'per tarif':
+                                            case 'per_tarif':
+                                            case 'per-tarif':
+                                            case 'tarif':
+                                                $jenis_kwitansi = 'tarif';
+                                                break;
+                                            case 'per nama tarif':
+                                            case 'per_nama_tarif':
+                                            case 'per-nama-tarif':
+                                            case 'per_tarif_name':
+                                            case 'per-tarif-name':
+                                            case 'tarif_name':
+                                            case 'tarif-name':
+                                                $jenis_kwitansi = 'tarif_name';
+                                                break;                                            
+                                            default:
+                                                $jenis_kwitansi = 'region';
+                                                break;
+                                        }
 
                                         $branch = $this->GroupBranch->Branch->getData('first', array(
                                             'conditions' => array(
@@ -8105,6 +8133,19 @@ class RevenuesController extends AppController {
                                         ), array(
                                             'branch' => false,
                                         ));
+                                        $bank = $this->Revenue->InvoiceDetail->Invoice->Bank->getData('first', array(
+                                            'conditions' => array(
+                                                'Bank.name' => $bank,
+                                            ),
+                                        ));
+                                        $company = $this->Revenue->InvoiceDetail->Invoice->Company->find('first', array(
+                                            'conditions' => array(
+                                                'OR' => array(
+                                                    'Company.code' => $company,
+                                                    'Company.name' => $company,
+                                                ),
+                                            ),
+                                        ));
 
                                         $branch_id = !empty($branch['Branch']['id'])?$branch['Branch']['id']:false;
                                         $customer_id = !empty($customer['CustomerNoType']['id'])?$customer['CustomerNoType']['id']:false;
@@ -8114,7 +8155,14 @@ class RevenuesController extends AppController {
                                         $to_city_id = !empty($toCity['City']['id'])?$toCity['City']['id']:false;
                                         $group_motor_id = !empty($groupMotor['GroupMotor']['id'])?$groupMotor['GroupMotor']['id']:false;
                                         $driver_id = !empty($driver['Driver']['id'])?$driver['Driver']['id']:false;
+                                        $bank_id = !empty($bank['Bank']['id'])?$bank['Bank']['id']:false;
+                                        $company_id = !empty($company['Company']['id'])?$company['Company']['id']:false;
+
                                         $tanggal_revenue = !empty($tgl_sj)?$this->MkCommon->getDate($tgl_sj):false;
+                                        $tgl_kwitansi = !empty($tgl_kwitansi)?$this->MkCommon->getDate($tgl_kwitansi):false;
+
+                                        $no_doc = $this->Revenue->generateNoDoc();
+
                                         $dataRevenue = array();
                                         $revenueHeader = array(
                                             'branch_id' => $branch_id,
@@ -8158,6 +8206,7 @@ class RevenuesController extends AppController {
                                         }
 
                                         $dataSave[$slug]['Revenue'] = $revenueHeader;
+
                                         $dataSave[$slug]['Revenue']['total'] = $dataTotal[$slug];
                                         $dataSave[$slug]['Revenue']['total_without_tax'] = $dataTotal[$slug];
                                         $dataSave[$slug]['RevenueDetail'][] = $revenueDetail;
@@ -8167,7 +8216,44 @@ class RevenuesController extends AppController {
                                         ));
 
                                         if( !empty($resultSave) ) {
-                                            $successfull_row++;
+                                            $slug_inv = Common::toSlug(__('%s-%s-%s', $customer_id, $no_kwitansi, $jenis_kwitansi));
+                                            $term_of_payment = Common::hashEmptyField($customer, 'CustomerNoType.term_of_payment');
+
+                                            if( empty($dataInv[$slug_inv]) ) {
+                                                $uniqcode = String::uuid();
+                                            }
+
+                                            $dataSave[$slug]['Revenue']['import_code'] = $uniqcode;
+
+                                            $dataInv[$slug_inv]['Invoice'] = array(
+                                                'no_invoice' => $no_kwitansi,
+                                                'branch_id' => $branch_id,
+                                                'customer_id' => $customer_id,
+                                                'bank_id' => $bank_id,
+                                                'billing_id' => Common::hashEmptyField($customer, 'CustomerNoType.billing_id'),
+                                                'company_id' => $company_id,
+                                                'tarif_type' => 'angkut',
+                                                'invoice_date' => $tgl_kwitansi,
+                                                'due_invoice' => $term_of_payment,
+                                                'term_of_payment' => $term_of_payment,
+                                                'import_code' => $uniqcode,
+                                                'jenis_kwitansi' => $jenis_kwitansi,
+                                                'total' => $jenis_kwitansi,
+                                                'type_invoice' => $jenis_kwitansi,
+                                                
+                                            );
+
+                                            $resultSave = $this->Revenue->InvoiceDetail->Invoice->saveAll($dataInv[$slug_inv], array(
+                                                'validate' => 'only',
+                                            ));
+
+                                            if( !empty($resultSave) ) {
+                                                $successfull_row++;
+                                            } else {
+                                                $msgSave = $this->MkCommon->_callMsgValidationErrors($this->Revenue->InvoiceDetail->Invoice->validationErrors, 'string');
+                                                $error_message .= sprintf(__('Gagal pada baris ke %s : %s'), $row_submitted+1, $msgSave) . '<br>';
+                                                $failed_row++;
+                                            }
                                         } else {
                                             $msgSave = $this->MkCommon->_callMsgValidationErrors($this->Revenue->validationErrors, 'string');
                                             $error_message .= sprintf(__('Gagal pada baris ke %s : %s'), $row_submitted+1, $msgSave) . '<br>';
@@ -8181,14 +8267,21 @@ class RevenuesController extends AppController {
                         }
                     }
 
+                    // debug($dataInv);die();
+
                     if(!empty($error_message)) {
                         $this->MkCommon->setCustomFlash(__($error_message), 'error');
                     } else if( !empty($successfull_row) ) {
                         if( !empty($dataSave) ) {
                             $dataSave = array_values($dataSave);
-                            $this->Revenue->saveAll($dataSave, array(
+                            $flag = $this->Revenue->saveAll($dataSave, array(
                                 'deep' => true,
                             ));
+
+                            if( !empty($flag) ) {
+                                $dataInv = array_values($dataInv);
+                                $this->Revenue->InvoiceDetail->Invoice->getProsesInvoice($dataInv);
+                            }
                         }
 
                         $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, $row_submitted);

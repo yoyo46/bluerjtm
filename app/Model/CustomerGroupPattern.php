@@ -115,5 +115,33 @@ class CustomerGroupPattern extends AppModel {
 
         return $data;
     }
+
+    function getNoInvoice ( $customer, $type = 'invoice_number' ) {
+        $result = array();
+
+        if( !empty($customer['CustomerGroup']['CustomerGroupPattern']) ) {
+            $result['last_number'] = $customer['CustomerGroup']['CustomerGroupPattern']['last_number'];
+            $result['min_digit'] = $customer['CustomerGroup']['CustomerGroupPattern']['min_digit'];
+            $result['pattern'] = $customer['CustomerGroup']['CustomerGroupPattern']['pattern'];
+            $result['invoice_number'] = sprintf('%s%s', str_pad($customer['CustomerGroup']['CustomerGroupPattern']['last_number'], $customer['CustomerGroup']['CustomerGroupPattern']['min_digit'], '0', STR_PAD_LEFT), $customer['CustomerGroup']['CustomerGroupPattern']['pattern']);
+        } else if( !empty($customer['CustomerGroupPattern']) ) {
+            $result['last_number'] = $customer['CustomerGroupPattern']['last_number'];
+            $result['min_digit'] = $customer['CustomerGroupPattern']['min_digit'];
+            $result['pattern'] = $customer['CustomerGroupPattern']['pattern'];
+            $result['invoice_number'] = sprintf('%s%s', str_pad($customer['CustomerGroupPattern']['last_number'], $customer['CustomerGroupPattern']['min_digit'], '0', STR_PAD_LEFT), $customer['CustomerGroupPattern']['pattern']);
+        } else {
+            $result['invoice_number'] = '';
+        }
+
+        switch ($type) {
+            case 'all':
+                return $result;
+                break;
+            
+            default:
+                return $result['invoice_number'];
+                break;
+        }
+    }
 }
 ?>

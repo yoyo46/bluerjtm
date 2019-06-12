@@ -961,5 +961,35 @@ class Revenue extends AppModel {
             $this->_callSetJournal($id, $this->data);
         }
     }
+
+    function generateNoDoc(){
+        $default_id = 1;
+        $branch_code = Configure::read('__Site.Branch.code');
+        $format_id = sprintf('REV-%s-%s-', $branch_code, date('y'));
+
+        $last_data = $this->getData('first', array(
+            'conditions' => array(
+                'Revenue.no_doc LIKE' => ''.$format_id.'%',
+            ),
+            'order' => array(
+                'Revenue.no_doc' => 'DESC'
+            ),
+            'fields' => array(
+                'Revenue.no_doc'
+            )
+        ));
+        $no_doc = $this->filterEmptyField($last_data, 'DebtPayment', 'no_doc');
+
+        if(!empty($no_doc)){
+            $str_arr = explode($format_id, $no_doc);
+            $last_arr = count($str_arr)-1;
+            $default_id = intval($str_arr[$last_arr]+1);
+        }
+
+        $id = str_pad($default_id, 5,'0',STR_PAD_LEFT);
+        $format_id .= $id;
+        
+        return $format_id;
+    }
 }
 ?>
