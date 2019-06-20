@@ -8372,19 +8372,26 @@ class RmReportComponent extends Component {
 		$params['named']= $named = array_merge($params_named, $this->MkCommon->processFilter($params));
 		$params = $this->MkCommon->_callRefineParams($params);
 
+        $this->controller->TtujPaymentDetail->virtualFields['grandtotal'] = 'SUM( (TtujPaymentDetail.amount + TtujPaymentDetail.no_claim + TtujPaymentDetail.stood + TtujPaymentDetail.lainnya) - (TtujPaymentDetail.titipan + TtujPaymentDetail.claim + TtujPaymentDetail.debt) )';
 		$options = array(
             'conditions' => array(
             	'TtujPaymentDetail.is_transferred' => 0,
                 'TtujPayment.is_canceled' => 0,
                 'TtujPaymentDetail.status' => 1,
                 'TtujPayment.transaction_status' => 'posting',
-                'TtujPaymentDetail.type' => array( 'commission', 'commission_extra' ),
+                'TtujPaymentDetail.type' => array(
+                	'uang_jalan', 'uang_jalan_2', 'uang_jalan_extra',
+                	'commission', 'commission_extra'
+                ),
         	),
             'contain' => array(
                 'TtujPayment',
             ),
             'order' => array(
                 'TtujPayment.id' => 'DESC',
+            ),
+            'group' => array(
+            	'TtujPaymentDetail.driver_id',
             ),
         	'offset' => $offset,
         	'limit' => $limit,
@@ -8422,14 +8429,16 @@ class RmReportComponent extends Component {
                 $date_payment = Common::hashEmptyField($value, 'TtujPayment.date_payment', NULL, array(
                 	'date' => 'd/m',
                 ));
+                $driver_id = Common::hashEmptyField($value, 'TtujPaymentDetail.driver_id');
                 
-                $amount = Common::hashEmptyField($value, 'TtujPaymentDetail.amount', 0);
-                $no_claim = Common::hashEmptyField($value, 'TtujPaymentDetail.no_claim', 0);
-                $stood = Common::hashEmptyField($value, 'TtujPaymentDetail.stood', 0);
-                $lainnya = Common::hashEmptyField($value, 'TtujPaymentDetail.lainnya', 0);
-                $titipan = Common::hashEmptyField($value, 'TtujPaymentDetail.titipan', 0);
-                $claim = Common::hashEmptyField($value, 'TtujPaymentDetail.claim', 0);
-                $laka = Common::hashEmptyField($value, 'TtujPaymentDetail.laka', 0);
+                $grandtotal = Common::hashEmptyField($value, 'TtujPaymentDetail.grandtotal', 0);
+                // $amount = Common::hashEmptyField($value, 'TtujPaymentDetail.amount', 0);
+                // $no_claim = Common::hashEmptyField($value, 'TtujPaymentDetail.no_claim', 0);
+                // $stood = Common::hashEmptyField($value, 'TtujPaymentDetail.stood', 0);
+                // $lainnya = Common::hashEmptyField($value, 'TtujPaymentDetail.lainnya', 0);
+                // $titipan = Common::hashEmptyField($value, 'TtujPaymentDetail.titipan', 0);
+                // $claim = Common::hashEmptyField($value, 'TtujPaymentDetail.claim', 0);
+                // $laka = Common::hashEmptyField($value, 'TtujPaymentDetail.laka', 0);
 
                 $value = $this->controller->GroupBranch->Branch->getMerge($value, $branch_id);
                 $value = $this->controller->TtujPaymentDetail->TtujPayment->_callTtujPaid($value, $ttuj_id, $type, array(
@@ -8438,16 +8447,8 @@ class RmReportComponent extends Component {
                     ),
                 ));
                 $value = $this->controller->TtujPaymentDetail->Ttuj->Customer->getMerge($value, $customer_id);
-                $value = $this->controller->TtujPaymentDetail->Ttuj->getMergeList($value, array(
+                $value = $this->controller->TtujPaymentDetail->getMergeList($value, array(
                     'contain' => array(
-                        'DriverPengganti' => array(
-                            'uses' => 'Driver',
-                            'primaryKey' => 'id',
-                            'foreignKey' => 'driver_pengganti_id',
-                            'elements' => array(
-                                'branch' => false,
-                            ),
-                        ),
                         'Driver' => array(
                             'elements' => array(
                                 'branch' => false,
@@ -8461,7 +8462,8 @@ class RmReportComponent extends Component {
                 		'Bank.coa_id' => $coa_id,
                 	),
                 ));
-                $totalPayment = $amount + $no_claim + $stood + $lainnya - $titipan - $claim - $laka;
+                // $totalPayment = $amount + $no_claim + $stood + $lainnya - $titipan - $claim - $laka;
+                $totalPayment = $grandtotal;
 
 				$result[$idx] = array(
 					__('Sender Information') => array(
@@ -8599,7 +8601,7 @@ class RmReportComponent extends Component {
 	                		),
 		                	__('Ref Number') => array(
 								'name' => __('Ref Number'),
-								'text' => $id,
+								'text' => $id.$driver_id,
 				                'data-options' => 'field:\'company_email\',width:80',
 		                		'style' => 'text-align: left;',
 		                		'align' => 'left',
@@ -8626,8 +8628,9 @@ class RmReportComponent extends Component {
 						'offset',
 					));
 
-	        		$this->controller->TtujPaymentDetail->virtualFields['total'] = 'SUM(TtujPaymentDetail.amount + TtujPaymentDetail.no_claim + TtujPaymentDetail.stood + TtujPaymentDetail.lainnya - TtujPaymentDetail.titipan - TtujPaymentDetail.claim - TtujPaymentDetail.laka)';
-	        		$this->controller->TtujPaymentDetail->virtualFields['cnt'] = 'COUNT(TtujPaymentDetail.id)';
+	        		// $this->controller->TtujPaymentDetail->virtualFields['total'] = 'SUM(TtujPaymentDetail.amount + TtujPaymentDetail.no_claim + TtujPaymentDetail.stood + TtujPaymentDetail.lainnya - TtujPaymentDetail.titipan - TtujPaymentDetail.claim - TtujPaymentDetail.laka)';
+	        		$this->controller->TtujPaymentDetail->virtualFields['total'] = 'SUM(TtujPaymentDetail.amount + TtujPaymentDetail.no_claim + TtujPaymentDetail.stood + TtujPaymentDetail.lainnya) - (TtujPaymentDetail.titipan + TtujPaymentDetail.claim + TtujPaymentDetail.debt)';
+	        		$this->controller->TtujPaymentDetail->virtualFields['cnt'] = 'COUNT(DISTINCT TtujPaymentDetail.driver_id)';
 					$value = $this->controller->TtujPaymentDetail->find('first', $options);
 
 					unset($this->controller->TtujPaymentDetail->virtualFields['total']);

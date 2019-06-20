@@ -146,6 +146,7 @@ class TtujPayment extends AppModel {
         $dateToTtuj = !empty($data['named']['DateToTtuj'])?$data['named']['DateToTtuj']:false;
 
         $nodoc = !empty($data['named']['nodoc'])?$data['named']['nodoc']:false;
+        $nodocs = !empty($data['named']['nodocs'])?$data['named']['nodocs']:false;
         $nottuj = !empty($data['named']['nottuj'])?$data['named']['nottuj']:false;
         $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
         $name = !empty($data['named']['name'])?$data['named']['name']:false;
@@ -195,6 +196,9 @@ class TtujPayment extends AppModel {
         if(!empty($nodoc)){
             $default_options['conditions']['TtujPayment.nodoc LIKE'] = '%'.$nodoc.'%';
         }
+        if(!empty($nodocs)){
+            $default_options['conditions']['TtujPayment.nodoc'] = $nodocs;
+        }
         if(!empty($nottuj)){
             $default_options['conditions']['Ttuj.no_ttuj LIKE'] = '%'.$nottuj.'%';
             $default_options['contain'][] = 'Ttuj';
@@ -220,6 +224,10 @@ class TtujPayment extends AppModel {
         if(!empty($nopol)){
             $default_options['conditions']['Ttuj.nopol LIKE'] = '%'.$nopol.'%';
             $default_options['contain'][] = 'Ttuj';
+        }
+
+        if( !empty($uj1) || !empty($uj2) || !empty($uje) || !empty($com) || !empty($come) ){
+            unset($default_options['conditions']['TtujPaymentDetail.type']);
         }
 
         if(!empty($uj1)){

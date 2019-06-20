@@ -47,6 +47,10 @@ class TtujPaymentDetail extends AppModel {
             'className' => 'Ttuj',
             'foreignKey' => 'ttuj_id',
         ),
+        'Driver' => array(
+            'className' => 'Driver',
+            'foreignKey' => 'driver_id',
+        ),
 	);
 
     var $hasOne = array(

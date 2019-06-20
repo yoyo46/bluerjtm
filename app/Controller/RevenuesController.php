@@ -10343,7 +10343,10 @@ class RevenuesController extends AppController {
                 'TtujPayment.is_canceled' => 0,
                 'TtujPaymentDetail.status' => 1,
                 'TtujPayment.transaction_status' => 'posting',
-                'TtujPaymentDetail.type' => array( 'commission', 'commission_extra' ),
+                'TtujPaymentDetail.type' => array(
+                    'uang_jalan', 'uang_jalan_2', 'uang_jalan_extra',
+                    'commission', 'commission_extra'
+                ),
             ),
             'contain' => array(
                 'TtujPayment',

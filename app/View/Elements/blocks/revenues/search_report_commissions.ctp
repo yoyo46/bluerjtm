@@ -1,5 +1,7 @@
 <?php
+        $data = $this->request->data;
         $cities = !empty($cities)?$cities:false;
+        $nodocs = Common::hashEmptyField($data, 'Search.nodocs_options');
 ?>
 <div class="box">
     <div class="box-header">
@@ -44,10 +46,14 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('nodoc',array(
+                            echo $this->Form->input('nodocs',array(
+                                'type' => 'select',
                                 'label'=> __('No Dokumen'),
-                                'class'=>'form-control',
+                                'class'=>'form-control chosen-select',
                                 'required' => false,
+                                'multiple' => true,
+                                'data-tag' => 'true',
+                                'options' => $nodocs,
                             ));
                     ?>
                 </div>
@@ -127,20 +133,12 @@
                             ));
                     ?>
                 </div>
-                <div class="form-group action">
-                    <?php
-                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
-                                'div' => false, 
-                                'class'=> 'btn btn-success btn-sm',
-                                'type' => 'submit',
-                            ));
-                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                                'action' => 'report_commissions', 
-                            ), array(
-                                'escape' => false, 
-                                'class'=> 'btn btn-default btn-sm',
-                            ));
-                    ?>
+                <div class="form-group">
+                    <div class="row">
+                        <?php 
+                                echo $this->element('blocks/revenues/forms/checklis_uang_jalans');
+                        ?>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-4">
@@ -170,6 +168,21 @@
                                 'label'=> __('Nopol'),
                                 'class'=>'form-control',
                                 'required' => false,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group action">
+                    <?php
+                            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
+                                'div' => false, 
+                                'class'=> 'btn btn-success btn-sm',
+                                'type' => 'submit',
+                            ));
+                            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                                'action' => 'report_commissions', 
+                            ), array(
+                                'escape' => false, 
+                                'class'=> 'btn btn-default btn-sm',
                             ));
                     ?>
                 </div>
