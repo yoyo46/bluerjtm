@@ -516,6 +516,7 @@ class Invoice extends AppModel {
                 $action = Common::hashEmptyField($inv, 'Invoice.jenis_kwitansi');
                 $tarif_type = Common::hashEmptyField($inv, 'Invoice.tarif_type');
                 $invoice_date = Common::hashEmptyField($inv, 'Invoice.invoice_date');
+                $invoice_number = Common::hashEmptyField($inv, 'Invoice.no_invoice');
 
                 $head_office = Configure::read('__Site.config_branch_head_office');
                 $elementRevenue = false;
@@ -588,7 +589,12 @@ class Invoice extends AppModel {
                         }
 
                         if(!empty($result)){
-                            $invoice_number = $this->Customer->CustomerGroup->CustomerGroupPattern->getNoInvoice($customer);
+                            $counter_inv = false;
+
+                            if( empty($invoice_number) ) {
+                                $invoice_number = $this->Customer->CustomerGroup->CustomerGroupPattern->getNoInvoice($customer);
+                                $counter_inv = true;
+                            }
 
                             foreach ($result as $key => $value) {
                                 $this->create();
@@ -608,7 +614,10 @@ class Invoice extends AppModel {
                                         'type' => 'invoice',
                                     );
 
-                                    $invoice_number = $this->Customer->CustomerGroup->CustomerGroupPattern->addPattern($customer, $inv);
+                                    if( !empty($counter_inv) ) {
+                                        $invoice_number = $this->Customer->CustomerGroup->CustomerGroupPattern->addPattern($customer, $inv);
+                                    }
+
                                     $this->Customer->CustomerGroup->CustomerGroupPattern->addPattern($customer, $inv);
 
                                     $total_price = 0;

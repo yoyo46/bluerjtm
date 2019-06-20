@@ -8053,21 +8053,19 @@ class RevenuesController extends AppController {
 
                                     if(array_filter($datavar)) {
                                         $no_polisi = !empty($no_polisi)?$no_polisi:false;
-                                        $supir = !empty($supir)?$supir:false;
                                         $no_sj = !empty($no_sj)?$no_sj:false;
                                         $tgl_sj = !empty($tgl_sj)?$tgl_sj:false;
                                         $customer = !empty($customer)?$customer:false;
-                                        $dealer = !empty($dealer)?$dealer:false;
-                                        $kota = !empty($kota)?$kota:false;
-                                        $gudang = !empty($gudang)?$gudang:false;
+                                        $no_do = !empty($no_do)?$no_do:false;
+                                        $tujuan = !empty($tujuan)?$tujuan:false;
+                                        $dari = !empty($dari)?$dari:false;
                                         $grup_motor = !empty($grup_motor)?$grup_motor:false;
-                                        $tarif = !empty($tarif)?$tarif:false;
-                                        $qty = !empty($qty)?$qty:false;
-                                        $amount = !empty($amount)?$amount:false;
+                                        $tarif = !empty($tarif)?$tarif:0;
+                                        $qty = !empty($qty)?$qty:0;
+                                        $amount = $tarif * $qty;
                                         $cabang = !empty($cabang)?$cabang:false;
                                         $no_kwitansi = !empty($no_kwitansi)?$no_kwitansi:false;
                                         $jenis_kwitansi = !empty($jenis_kwitansi)?strtolower($jenis_kwitansi):false;
-                                        $bank = !empty($bank)?$bank:false;
                                         $company = !empty($company)?$company:false;
                                         $tgl_kwitansi = !empty($tgl_kwitansi)?$tgl_kwitansi:false;
 
@@ -8097,12 +8095,15 @@ class RevenuesController extends AppController {
                                                 'Branch.code' => $cabang,
                                             ),
                                         ));
+
                                         $customer = $this->Revenue->CustomerNoType->find('first', array(
                                             'conditions' => array(
                                                 'CustomerNoType.code' => $customer,
                                                 'CustomerNoType.status' => 1,
                                             ),
                                         ));
+                                        $bank_id = Common::hashEmptyField($customer, 'Customer.bank_id', 0);
+
                                         $truck = $this->Ttuj->Truck->find('first', array(
                                             'conditions' => array(
                                                 'Truck.nopol' => $no_polisi,
@@ -8111,31 +8112,19 @@ class RevenuesController extends AppController {
                                         ), false);
                                         $fromCity = $this->GroupBranch->Branch->City->getData('first', array(
                                             'conditions' => array(
-                                                'City.name' => $kota,
+                                                'City.name' => $tujuan,
                                                 'City.status' => 1,
                                             ),
                                         ));
                                         $toCity = $this->GroupBranch->Branch->City->getData('first', array(
                                             'conditions' => array(
-                                                'City.name' => $gudang,
+                                                'City.name' => $dari,
                                                 'City.status' => 1,
                                             ),
                                         ));
                                         $groupMotor = $this->Revenue->RevenueDetail->GroupMotor->getData('first', array(
                                             'conditions' => array(
                                                 'GroupMotor.name' => $grup_motor,
-                                            ),
-                                        ));
-                                        $driver = $this->Revenue->Driver->getData('first', array(
-                                            'conditions' => array(
-                                                'Driver.name' => $supir,
-                                            ),
-                                        ), array(
-                                            'branch' => false,
-                                        ));
-                                        $bank = $this->Revenue->InvoiceDetail->Invoice->Bank->getData('first', array(
-                                            'conditions' => array(
-                                                'Bank.name' => $bank,
                                             ),
                                         ));
                                         $company = $this->Revenue->InvoiceDetail->Invoice->Company->find('first', array(
@@ -8154,8 +8143,6 @@ class RevenuesController extends AppController {
                                         $from_city_id = !empty($fromCity['City']['id'])?$fromCity['City']['id']:false;
                                         $to_city_id = !empty($toCity['City']['id'])?$toCity['City']['id']:false;
                                         $group_motor_id = !empty($groupMotor['GroupMotor']['id'])?$groupMotor['GroupMotor']['id']:false;
-                                        $driver_id = !empty($driver['Driver']['id'])?$driver['Driver']['id']:false;
-                                        $bank_id = !empty($bank['Bank']['id'])?$bank['Bank']['id']:false;
                                         $company_id = !empty($company['Company']['id'])?$company['Company']['id']:false;
 
                                         $tanggal_revenue = !empty($tgl_sj)?$this->MkCommon->getDate($tgl_sj):false;
@@ -8173,7 +8160,6 @@ class RevenuesController extends AppController {
                                             'truck_capacity' => $truck_capacity,
                                             'from_city_id' => $from_city_id,
                                             'to_city_id' => $to_city_id,
-                                            'driver_id' => $driver_id,
                                             'nopol' => $no_polisi,
                                             'is_manual' => true,
                                             'auto_journal' => true,
@@ -8181,7 +8167,7 @@ class RevenuesController extends AppController {
                                         $revenueDetail = array(
                                             'group_motor_id' => $group_motor_id,
                                             'no_sj' => $no_sj,
-                                            'no_do' => $dealer,
+                                            'no_do' => $no_do,
                                             'city_id' => $to_city_id,
                                             'qty_unit' => $qty,
                                             'price_unit' => $tarif,
@@ -8197,7 +8183,7 @@ class RevenuesController extends AppController {
                                             ),
                                         );
 
-                                        $slug = __('%s-%s-%s-%s-%s', $tanggal_revenue, $customer_id, $truck_id, $driver_id, $branch_id);
+                                        $slug = __('%s-%s-%s-%s', $tanggal_revenue, $customer_id, $truck_id, $branch_id);
 
                                         if( !empty($dataTotal[$slug]) ) {
                                             $dataTotal[$slug] += $amount;
