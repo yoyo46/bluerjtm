@@ -74,7 +74,7 @@
                                 'date' => 'Y-m',
                             ));
                             $grand_total = Common::hashEmptyField($value, 'Debt.total');
-                            $note = Common::hashEmptyField($value, 'Debt.note');
+                            $note = Common::hashEmptyField($value, 'Debt.note', '-');
                             $coa_code = Common::hashEmptyField($value, 'Coa.coa_name');
 
                             $transaction_status = Common::hashEmptyField($value, 'Debt.transaction_status');

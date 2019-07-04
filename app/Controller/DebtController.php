@@ -129,10 +129,9 @@ class DebtController extends AppController {
             }
 
             if($id && $value){
-                $this->Debt->id = $id;
+                $data['Debt']['id'] = $id;
                 $msg = 'mengubah';
             }else{
-                $this->Debt->create();
                 $msg = 'menambah';
             }
 
@@ -235,9 +234,10 @@ class DebtController extends AppController {
                 }
             }else{
                 $text = sprintf(__('Gagal %s Hutang Karyawan'), $msg);
-                if($validate){
-                    $text .= __(', COA harap di pilih');
-                }
+
+                // if($validate){
+                //     $text .= __(', COA harap di pilih');
+                // }
                 $this->MkCommon->setCustomFlash($text, 'error');
             }
 

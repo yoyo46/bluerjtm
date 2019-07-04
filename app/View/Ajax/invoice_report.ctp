@@ -1,4 +1,4 @@
-<div class="row" id="modal-report">
+<div id="modal-report" class="row print-invoice">
     <?php 
             $tarif_type = $this->Common->filterEmptyField($value, 'Invoice', 'tarif_type');
             $status = $this->Common->filterEmptyField($value, 'Invoice', 'status');

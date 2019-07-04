@@ -1455,3 +1455,7 @@ tbody.wrapper-table-documents td {
 th[mainalign=center] {
   text-align: center;
 }
+
+#modal-report.print-invoice .small-box {
+  min-height: 90px;
+}

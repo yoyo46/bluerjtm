@@ -2448,10 +2448,16 @@ var leasing_action = function(){
 }
 
 function _callTotalInvoice () {
-    var invoice_price = $('.document-pick-info-detail .total-payment,.document-pick-price');
-    var length = invoice_price.length;
     var total_price = 0;
     var grand_total = 0;
+    
+    if( $('.document-pick-info-detail .document-pick-price').length > 0 ) {
+        var invoice_price = $('.right-side .document-pick-price');
+    } else {
+        var invoice_price = $('.document-pick-info-detail .total-payment');
+    }
+
+    var length = invoice_price.length;
     
     if( $('.document-calc .tax-percent').length > 0 ) {
         calcTaxtotal();
@@ -2462,6 +2468,7 @@ function _callTotalInvoice () {
         var type = self.attr('type');
         var parent = self.parents('tr.child');
         var ppn = $.convertNumber( parent.find('.tax-nominal[rel="ppn"]').val() );
+        var pph = $.convertNumber( parent.find('.tax-nominal[rel="pph"]').val() );
         var total_document = parent.find('.total-document');
 
         if( type == 'text' ) {
@@ -2472,7 +2479,7 @@ function _callTotalInvoice () {
 
         var price = $.convertNumber( price );
 
-        total = price + ppn;
+        total = price + ppn - pph;
 
         if( total_document.length > 0 ) {
             total_document.html($.formatDecimal(total));

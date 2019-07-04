@@ -1,6 +1,7 @@
 <tbody id="checkbox-info-table">
     <?php
             $grandTotal = 0;
+            $idx = 0;
 
             if(!empty($detail_data['DebtDetail'])){
                 foreach ($detail_data['DebtDetail'] as $key => $value) {
@@ -45,13 +46,16 @@
                 )), array(
                     'class' => 'action-search'
                 ));
-                echo $this->Html->tag('td', $this->Form->input('DebtDetail.total.', array(
+                echo $this->Html->tag('td', $this->Common->_callInputForm('DebtDetail.total.', array(
                     'type' => 'text',
                     'class' => 'form-control input_price_coma input_number sisa-amount text-right',
                     'label' => false,
                     'div' => false,
                     'required' => false,
                     'value' => $total,
+                    'fieldError' => array(
+                        'DebtDetail.'.$idx.'.total',
+                    ),
                 )), array(
                     'class' => 'action-search'
                 ));
@@ -68,6 +72,7 @@
         </td>
     </tr>
     <?php
+                    $idx++;
                 }
             }
     ?>

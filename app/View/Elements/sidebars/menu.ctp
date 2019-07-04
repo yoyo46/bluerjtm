@@ -1024,7 +1024,7 @@
                     }
 
                     $dataMenu = array(
-                        'debt' => array(
+                        'titipan' => array(
                             'index', 'reports',
                         ),
                     );
@@ -1418,14 +1418,14 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'report_ttuj_outstanding' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pembayaran CMS BRI', array(
-                                'controller' => 'revenues',
-                                'action' => 'report_commissions',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'report_commissions' )?'active':'',
-                            ));
+                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Pembayaran CMS BRI', array(
+                            //     'controller' => 'revenues',
+                            //     'action' => 'report_commissions',
+                            // ), array(
+                            //     'escape' => false
+                            // )), array(
+                            //     'class' => ( !empty($active_menu) && $active_menu == 'report_commissions' )?'active':'',
+                            // ));
 
                             // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Komisi Supir', array(
                             //     'controller' => 'revenues',

@@ -574,6 +574,7 @@ class CashBank extends AppModel {
 
         switch ($model) {
             case 'Supplier':
+            case 'Vendor':
                 $labelName = 'Supplier';
                 $model = 'Vendor';
                 $value = $this->Vendor->getData('first', array(
