@@ -1940,7 +1940,7 @@ class MkCommonComponent extends Component {
     }
 
     function _callDemoVersion () {
-        if( in_array(FULL_BASE_URL, array( 'http://ww.erprjtm.com', 'http://erp.rjtm.co.id', 'http://e.rjtm.co.id' )) ) {
+        if( in_array(FULL_BASE_URL, array( 'http://ww.erprjtm.com', 'http://ww.rjtm.com', 'http://erp.rjtm.co.id', 'http://e.rjtm.co.id', 'http://rjtm-jkt.com' )) ) {
             return true;
         } else {
             return false;
