@@ -111,6 +111,15 @@ class Driver extends AppModel {
         ),
     );
 
+    var $hasMany = array(
+        'DebtDetail' => array(
+            'foreignKey' => 'employe_id',
+            'conditions' => array(
+                'DebtDetail.type' => 'Supir',
+            ),
+        ),
+    );
+
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         $this->virtualFields['driver_name'] = sprintf('CASE WHEN %s.alias = \'\' THEN %s.name ELSE CONCAT(%s.name, \' ( \', %s.alias, \' )\') END', $this->alias, $this->alias, $this->alias, $this->alias);

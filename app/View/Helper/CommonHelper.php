@@ -2470,6 +2470,27 @@ class CommonHelper extends AppHelper {
                 $id,
                 'admin' => false,
             );
+        } else if( in_array($type, array( 'debt', 'debt_void' )) ) {
+            $urlDefault = array(
+                'controller' => 'debt',
+                'action' => 'detail',
+                $id,
+                'admin' => false,
+            );
+        } else if( in_array($type, array( 'debt_payment', 'debt_payment_void' )) ) {
+            $urlDefault = array(
+                'controller' => 'debt',
+                'action' => 'payment_detail',
+                $id,
+                'admin' => false,
+            );
+        } else if( in_array($type, array( 'titipan', 'titipan_void' )) ) {
+            $urlDefault = array(
+                'controller' => 'titipan',
+                'action' => 'detail',
+                $id,
+                'admin' => false,
+            );
         }
 
         if( !empty($urlDefault) && empty($data_action) ) {

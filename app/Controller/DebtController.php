@@ -139,7 +139,7 @@ class DebtController extends AppController {
                 $arr_list = array();
 
                 foreach ($data['DebtDetail']['employe_id'] as $key => $employe_id) {
-                    $note = (!empty($data['DebtDetail']['note'][$key])) ? $data['DebtDetail']['note'][$key] : false;
+                    $detail_note = (!empty($data['DebtDetail']['note'][$key])) ? $data['DebtDetail']['note'][$key] : false;
                     $type = (!empty($data['DebtDetail']['type'][$key])) ? $data['DebtDetail']['type'][$key] : false;
                     $total_detail = (!empty($data['DebtDetail']['total'][$key])) ? str_replace(array( ',' ), array( '' ), $data['DebtDetail']['total'][$key]) : 0;
 
@@ -148,7 +148,7 @@ class DebtController extends AppController {
                     $arr_list[] = array(
                         'employe_id' => $employe_id,
                         'type' => $type,
-                        'note' => $note,
+                        'note' => $detail_note,
                         'total' => $total_detail,
                     );
                 }

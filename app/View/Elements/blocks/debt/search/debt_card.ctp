@@ -38,6 +38,15 @@
                         ?>
                     </div>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('note',array(
+                                'label'=> __('Ket.'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
             </div>
             <div class="col-sm-6">
                 <div class="form-group">

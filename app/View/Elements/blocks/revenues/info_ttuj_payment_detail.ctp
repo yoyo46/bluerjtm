@@ -13,11 +13,11 @@
 					$lainnya = !empty($data['TtujPayment']['lainnya'][$key])?$data['TtujPayment']['lainnya'][$key]:0;
 					$titipan = !empty($data['TtujPayment']['titipan'][$key])?$data['TtujPayment']['titipan'][$key]:0;
 					$claim = !empty($data['TtujPayment']['claim'][$key])?$data['TtujPayment']['claim'][$key]:0;
-					$laka = !empty($data['TtujPayment']['laka'][$key])?$data['TtujPayment']['laka'][$key]:0;
+					// $laka = !empty($data['TtujPayment']['laka'][$key])?$data['TtujPayment']['laka'][$key]:0;
 					$debt = !empty($data['TtujPayment']['debt'][$key])?$data['TtujPayment']['debt'][$key]:0;
 					
 					$biaya_total += $amount_payment;
-					$grandTotal += $amount_payment + $no_claim + $stood + $lainnya - $titipan - $claim - $laka - $debt;
+					$grandTotal += $amount_payment + $no_claim + $stood + $lainnya - $titipan - $claim - $debt;
 
 					echo $this->element('blocks/ajax/pembayaran_uang_jalan', array(
 	                    'ttuj' => $value,

@@ -1,7 +1,7 @@
 <?php
 class ViewStaff extends AppModel {
     function getData($find, $options = false, $elements = array()){
-        $branch = isset($elements['branch'])?$elements['branch']:true;
+        $branch = isset($elements['branch'])?$elements['branch']:false;
 
         $default_options = array(
             'conditions'=> array(

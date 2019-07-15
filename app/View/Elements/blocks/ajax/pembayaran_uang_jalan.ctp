@@ -30,14 +30,14 @@
         $titipan = !empty($ttujPayment['titipan'][$idx])?$ttujPayment['titipan'][$idx]:0;
         $claim = !empty($ttujPayment['claim'][$idx])?$ttujPayment['claim'][$idx]:0;
         $unit_claim = !empty($ttujPayment['unit_claim'][$idx])?$ttujPayment['unit_claim'][$idx]:0;
-        $laka = !empty($ttujPayment['laka'][$idx])?$ttujPayment['laka'][$idx]:0;
+        // $laka = !empty($ttujPayment['laka'][$idx])?$ttujPayment['laka'][$idx]:0;
         $debt = !empty($ttujPayment['debt'][$idx])?$ttujPayment['debt'][$idx]:0;
-        $potongan_laka = !empty($ttujPayment['potongan_laka'][$idx])?$ttujPayment['potongan_laka'][$idx]:0;
+        // $potongan_laka = !empty($ttujPayment['potongan_laka'][$idx])?$ttujPayment['potongan_laka'][$idx]:0;
         $potongan_debt = !empty($ttujPayment['potongan_debt'][$idx])?$ttujPayment['potongan_debt'][$idx]:0;
-        $laka_note = !empty($ttujPayment['laka_note'][$idx])?$ttujPayment['laka_note'][$idx]:NULL;
+        // $laka_note = !empty($ttujPayment['laka_note'][$idx])?$ttujPayment['laka_note'][$idx]:NULL;
         $debt_note = !empty($ttujPayment['debt_note'][$idx])?$ttujPayment['debt_note'][$idx]:NULL;
 
-        $total = $amountPayment + $no_claim + $stood + $lainnya - $titipan - $claim - $laka - $debt;
+        $total = $amountPayment + $no_claim + $stood + $lainnya - $titipan - $claim - $debt;
 
         if( !empty($amountPayment) ) {
             if( !empty($checkbox) ) {
@@ -127,9 +127,9 @@
                     echo $this->Form->hidden('TtujPayment.data_type.',array(
                         'value'=> $data_type,
                     ));
-                    echo $this->Form->hidden('TtujPayment.potongan_laka.', array(
-                        'value' => $potongan_laka,
-                    ));
+                    // echo $this->Form->hidden('TtujPayment.potongan_laka.', array(
+                    //     'value' => $potongan_laka,
+                    // ));
                     echo $this->Form->hidden('TtujPayment.potongan_debt.', array(
                         'value' => $potongan_debt,
                     ));
@@ -250,10 +250,10 @@
                     echo $this->Common->_callInputForm('TtujPayment.debt.',array(
                         'class'=>'form-control input_price_min debt text-right',
                         'value' => $debt,
-                        'fieldError' => array(
-                            'TtujPaymentDetail.debt.'.$idx,
-                            'TtujPaymentDetail.debt_paid.'.$idx,
-                        ),
+                        // 'fieldError' => array(
+                        //     'TtujPaymentDetail.debt.'.$idx,
+                        //     'TtujPaymentDetail.debt_paid.'.$idx,
+                        // ),
                     ));
                 }
         ?>

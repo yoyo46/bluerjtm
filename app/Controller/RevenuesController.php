@@ -7328,6 +7328,7 @@ class RevenuesController extends AppController {
         if( !empty($dataAmount) ) {
             $total_titipan = 0;
             $grandtotal_debt = 0;
+            $driver_debt = array();
             $dataDebtPaymetDetail = array();
 
             if( !empty($ttuj_payment_id) && $transaction_status == 'posting' ) {
@@ -7406,8 +7407,19 @@ class RevenuesController extends AppController {
                 )) + $amount;
                 $total_titipan += $titipan;
                 $grandtotal_debt += $debt;
+                $driver_debt[$driver_id]['total_debt'] = $total_debt;
+
+                if( !empty($driver_debt[$driver_id]['total_paid']) ) {
+                    $driver_debt[$driver_id]['total_paid'] += $debt;
+                } else {
+                    $driver_debt[$driver_id]['total_paid'] = $debt;
+                }
 
                 if( !empty($debt) && $total_debt < $debt ) {
+                    $dataTtujPaymentDetail['TtujPaymentDetail']['debt_paid'] = false;
+                }
+
+                if( !empty($driver_debt[$driver_id]['total_paid']) && !empty($driver_debt[$driver_id]['total_debt']) && $driver_debt[$driver_id]['total_debt'] < $driver_debt[$driver_id]['total_paid'] ) {
                     $dataTtujPaymentDetail['TtujPaymentDetail']['debt_paid'] = false;
                 }
 

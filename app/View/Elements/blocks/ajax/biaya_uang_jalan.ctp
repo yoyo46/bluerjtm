@@ -11,7 +11,7 @@
         $tgl_bon_biru = Common::formatDate($tgl_bon_biru, 'd/m/Y', '-');
 
         $potongan_tabungan = Common::hashEmptyField($ttuj, 'UangJalan.potongan_tabungan', 0);
-        $laka_total = Common::hashEmptyField($ttuj, 'Laka.total');
+        // $laka_total = Common::hashEmptyField($ttuj, 'Laka.total');
         $debt_total = Common::hashEmptyField($ttuj, 'Debt.total');
 
         $data_type = !empty($data_type)?$data_type:false;
@@ -29,7 +29,7 @@
         $amountPayment = !empty($ttujPayment['amount_payment'][$idx])?$ttujPayment['amount_payment'][$idx]:$sisaAmount;
         $total_biaya = $this->Common->getBiayaTtuj( $ttuj, $data_type, false, false );
         $titipan = 0;
-        $potongan_laka = 0;
+        // $potongan_laka = 0;
         $potongan_debt = 0;
 
         if( !empty($amountPayment) ) {
@@ -57,13 +57,13 @@
                     $titipan = $total_biaya * ($potongan_tabungan/100);
                 }
                 
-                if( !empty($laka_percent) && !empty($laka_total) ) {
-                    $potongan_laka = $total_biaya * ($laka_percent/100);
+                // if( !empty($laka_percent) && !empty($laka_total) ) {
+                //     $potongan_laka = $total_biaya * ($laka_percent/100);
 
-                    if( $potongan_laka > $laka_total ) {
-                        $potongan_laka = $laka_total;
-                    }
-                }
+                //     if( $potongan_laka > $laka_total ) {
+                //         $potongan_laka = $laka_total;
+                //     }
+                // }
                 if( !empty($debt_percent) && !empty($debt_total) ) {
                     $potongan_debt = $total_biaya * ($debt_percent/100);
 
@@ -263,7 +263,7 @@
     </td>
     <td class="text-right total-trans hide on-show">
         <?php
-                echo Common::getFormatPrice($total_biaya-$titipan-$potongan_laka-$potongan_debt);
+                echo Common::getFormatPrice($total_biaya-$titipan-$potongan_debt);
         ?>
     </td>
     <?php 

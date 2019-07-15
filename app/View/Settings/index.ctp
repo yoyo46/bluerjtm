@@ -390,6 +390,28 @@
 		        <h3 class="box-title"><?php echo __('Pengaturan Transaksi'); ?></h3>
 		    </div>
 		    <div class="box-body">
+		    	<div class="row">
+		    		<div class="col-sm-6">
+		    			<div class="form-group">
+				    		<?php 
+				    				echo $this->Form->label('SettingGeneral.debt_percent', __('Potongan Hutang Karyawan'));
+				    		?>
+		                    <div class="input-group">
+						    	<?php 
+										echo $this->Form->input('SettingGeneral.debt_percent',array(
+											'type' => 'text',
+											'label'=> false, 
+											'class'=>'form-control input_number',
+											'required' => false,
+										));
+						    			echo $this->Html->tag('span', __('%'), array(
+						    				'class' => 'input-group-addon'
+					    				));
+								?>
+							</div>
+						</div>
+		    		</div>
+		    	</div>
 		    	<?php
 						echo $this->Form->input('SettingGeneral.year_closing',array(
 							'label'=> __('Closing Tahunan Setiap Tgl'), 

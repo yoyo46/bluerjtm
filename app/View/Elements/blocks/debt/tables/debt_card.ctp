@@ -25,6 +25,7 @@
                 $date = Common::hashEmptyField($value, 'ViewDebtCard.transaction_date');
                 $debit = Common::hashEmptyField($value, 'ViewDebtCard.debit');
                 $credit = Common::hashEmptyField($value, 'ViewDebtCard.credit');
+                $note = Common::hashEmptyField($value, 'ViewDebtCard.note', '-');
 
                 $customDate = $this->Common->formatDate($date, 'd M Y');
                 $customDebit = $this->Common->getFormatPrice($debit, false, 2);
@@ -45,6 +46,7 @@
             echo $this->Html->tag('td', $no);
             echo $this->Html->tag('td', $customDate);
             echo $this->Html->tag('td', $document_no);
+            echo $this->Html->tag('td', $note);
             echo $this->Html->tag('td', $customDebit, array(
                 'style' => 'text-align:right;'
             ));
@@ -68,7 +70,7 @@
     <?php
             echo $this->Html->tag('td', __('Total:'), array(
                 'style' => 'text-align:right;font-weight:bold;',
-                'colspan' => 3,
+                'colspan' => 4,
             ));
             echo $this->Html->tag('td', $customTotalDebit, array(
                 'style' => 'text-align:right;'
@@ -84,7 +86,7 @@
             $customFormatBalance = $this->Common->getFormatPrice($customBalance, false, 2);
             
             echo $this->Html->tag('td', $this->Html->tag('strong', __('Sisa Hutang:')), array(
-                'colspan' => 3,
+                'colspan' => 4,
             ));
             echo $this->Html->tag('td', $customFormatBalance, array(
                 'style' => 'text-align:right;'
@@ -98,7 +100,7 @@
         } else {
             echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                 'class' => 'alert alert-warning text-center',
-                'colspan' => '8'
+                'colspan' => '9'
             )));
         }
 ?>

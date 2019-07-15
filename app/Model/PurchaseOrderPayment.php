@@ -34,8 +34,8 @@ class PurchaseOrderPayment extends AppModel {
                 'rule' => array('notempty'),
                 'message' => 'No dokumen harap diisi'
             ),
-            'unique' => array(
-                'rule' => 'isUnique',
+            'isUniqueNodoc' => array(
+                'rule' => 'isUniqueNodoc',
                 'message' => 'No dokumen sudah terdaftar, mohon masukkan no dokumen lain.'
             ),
         ),
@@ -224,6 +224,8 @@ class PurchaseOrderPayment extends AppModel {
                     $this->saveAll($data, array(
                         'deep' => true,
                     ));
+                    $id = $this->id;
+                    
                     $this->_callSetJournalPayment($id, $data);
 
                     $result = array(
@@ -328,8 +330,10 @@ class PurchaseOrderPayment extends AppModel {
 
                     if( empty($paid) ) {
                         $status = 'approved';
+                        $payment_status = 'none';
                     } else {
                         $status = 'half_paid';
+                        $payment_status = 'half_paid';
                     }
 
                     $data['PurchaseOrderPaymentDetail'][$key] = array(
@@ -339,6 +343,8 @@ class PurchaseOrderPayment extends AppModel {
                         'PurchaseOrder' => array(
                             'id' => $document_id,
                             'transaction_status' => $status,
+                            'payment_status' => $payment_status,
+                            'draft_payment_status' => $payment_status,
                         ),
                     );
                 }
@@ -380,6 +386,25 @@ class PurchaseOrderPayment extends AppModel {
         }
 
         return $result;
+    }
+
+    function isUniqueNodoc () {
+        $id = $this->id;
+        $id = Common::hashEmptyField($this->data, 'PurchaseOrderPayment.id', $id);
+
+        $nodoc = !empty($this->data['PurchaseOrderPayment']['nodoc'])?$this->data['PurchaseOrderPayment']['nodoc']:false;
+        $value = $this->getData('count', array(
+            'conditions' => array(
+                'PurchaseOrderPayment.nodoc' => $nodoc,
+                'PurchaseOrderPayment.id NOT' => $id,
+            ),
+        ));
+        
+        if( !empty($value) ) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
 ?>

@@ -34,7 +34,7 @@
 		                $is_charge = Common::hashEmptyField($value, 'RevenueDetail.is_charge');
 		                $total_price_unit = Common::hashEmptyField($value, 'RevenueDetail.total_price_unit');
 
-	    				$city = Common::hashEmptyField($value, 'RevenueDetail.City.code');
+	    				$city = Common::hashEmptyField($value, 'RevenueDetail.City.name');
 	    				$truck_category = Common::hashEmptyField($value, 'Revenue.Truck.TruckCategory.name');
 	    				
 	    				$nopol = Common::hashEmptyField($value, 'Revenue.Ttuj.nopol', '-');
@@ -73,10 +73,11 @@
 					echo $this->Html->tag('td', $no, array(
 						'style' => 'text-align: center;padding: 10px;border: 1px solid #ddd;',
 					));
-					echo $this->Html->tag('td', $no_do, array(
+					// echo $this->Html->tag('td', $no_do, array(
+					echo $this->Html->tag('td', '', array(
 						'style' => 'padding: 10px;border: 1px solid #ddd;',
 					));
-					echo $this->Html->tag('td', $dealer, array(
+					echo $this->Html->tag('td', $no_do, array(
 						'style' => 'text-align: left;padding: 10px;border: 1px solid #ddd;',
 					));
 					echo $this->Html->tag('td', $city, array(
@@ -100,7 +101,8 @@
 					echo $this->Html->tag('td', $nopol, array(
 						'style' => 'padding: 10px;border: 1px solid #ddd;',
 					));
-					echo $this->Html->tag('td', $totalUnit, array(
+					// echo $this->Html->tag('td', $totalUnit, array(
+					echo $this->Html->tag('td', '', array(
 						'style' => 'text-align: center;padding: 10px;border: 1px solid #ddd;',
 					));
 					echo $this->Html->tag('td', $customPrice, array(
@@ -115,8 +117,8 @@
 					echo $this->Html->tag('td', '', array(
 						'style' => 'padding: 10px;border: 1px solid #ddd;',
 					));
-					echo $this->Html->tag('td', '', array(
-						'style' => 'padding: 10px;border: 1px solid #ddd;',
+					echo $this->Html->tag('td', $totalUnit, array(
+						'style' => 'padding: 10px;border: 1px solid #ddd;text-align:center;',
 					));
 					echo $this->Html->tag('td', $customTotalExtra, array(
 						'style' => 'padding: 10px;text-align:right;border: 1px solid #ddd;',

@@ -12,6 +12,10 @@
                 'name' => __('No. Dokumen'),
                 'style' => 'text-align: left;',
             ),
+            'note' => array(
+                'name' => __('Ket.'),
+                'style' => 'text-align: left;',
+            ),
             'debit' => array(
                 'name' => __('Debit'),
                 'style' => 'text-align: right;',

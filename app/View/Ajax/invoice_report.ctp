@@ -255,7 +255,7 @@
     <div class="col-lg-3 col-xs-6">
         <div class="small-box">
             <?php 
-                    echo $this->Html->tag('div', $this->Html->tag('p', __('Print Wingbox')), array(
+                    echo $this->Html->tag('div', $this->Html->tag('p', __('Print SMII')), array(
                         'class' => 'inner',
                     ));
                     echo $this->Html->tag('div', $this->Common->icon('file'), array(

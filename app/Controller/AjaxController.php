@@ -2231,9 +2231,11 @@ class AjaxController extends AppController {
         $ttujs = $this->paginate('Ttuj');
 
         if( !empty($ttujs) ) {
-        	$this->Ttuj->Driver->virtualFields['total_laka'] = 'Driver.total_laka - Driver.total_laka_paid_draft';
-        	$laka_percents = $this->MkCommon->_callSettingGeneral('Laka', 'laka_percent', false);
-        	$laka_percent = Common::hashEmptyField($laka_percents, 'Laka.laka_percent', 0);
+        	// $this->Ttuj->Driver->virtualFields['total_laka'] = 'Driver.total_laka - Driver.total_laka_paid_draft';
+        	// $laka_percents = $this->MkCommon->_callSettingGeneral('Laka', 'laka_percent', false);
+        	// $laka_percent = Common::hashEmptyField($laka_percents, 'Laka.laka_percent', 0);
+        	$debt_percents = $this->MkCommon->_callSettingGeneral('Ttuj', 'debt_percent', false);
+        	$debt_percent = Common::hashEmptyField($debt_percents, 'Ttuj.debt_percent', 0);
 
         	foreach ($ttujs as $key => $ttuj) {
         		$customer_id = $this->MkCommon->filterEmptyField($ttuj, 'Ttuj', 'customer_id');
@@ -2247,12 +2249,13 @@ class AjaxController extends AppController {
             	$ttuj = $this->GroupBranch->Branch->Driver->getMerge($ttuj, $driver_id);
             	$ttuj = $this->GroupBranch->Branch->Driver->getMerge($ttuj, $driver_pengganti_id, 'DriverPengganti');
                 $ttuj = $this->Ttuj->UangJalan->getMerge($ttuj, $uang_jalan_id);
+                $ttuj['Debt']['total'] = $this->Ttuj->Driver->DebtDetail->Debt->get_total_debt($tmp_driver_id, 'Supir');
 
-                if( !empty($driver_pengganti_id) ) {
-	                $ttuj['Laka']['total'] = Common::hashEmptyField($ttuj, 'DriverPengganti.total_laka', 0);
-	            } else if( !empty($driver_id) ) {
-	                $ttuj['Laka']['total'] = Common::hashEmptyField($ttuj, 'Driver.total_laka', 0);
-	            }
+             //    if( !empty($driver_pengganti_id) ) {
+	            //     $ttuj['Laka']['total'] = Common::hashEmptyField($ttuj, 'DriverPengganti.total_laka', 0);
+	            // } else if( !empty($driver_id) ) {
+	            //     $ttuj['Laka']['total'] = Common::hashEmptyField($ttuj, 'Driver.total_laka', 0);
+	            // }
 
             	switch ($action_type) {
 		        	case 'biaya_ttuj':
@@ -2281,7 +2284,7 @@ class AjaxController extends AppController {
 		$this->set(compact(
 			'data_action', 'title', 'ttujs',
 			'action_type', 'jenisBiaya', 'document_type',
-			'cities', 'payment_id', 'laka_percent'
+			'cities', 'payment_id', 'debt_percent'
 		));
 	}
 

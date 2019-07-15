@@ -43,6 +43,10 @@ class ViewDebtCard extends AppModel {
                     'ViewStaff',
                 ),
             ),
+            'note' => array(
+                'field' => 'ViewDebtCard.note',
+                'type' => 'like',
+            ),
         ));
 
         return $default_options;
