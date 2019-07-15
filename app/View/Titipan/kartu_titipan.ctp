@@ -8,8 +8,15 @@
             'date' => array(
                 'name' => __('Date'),
             ),
+            'noref' => array(
+                'name' => __('No. Ref'),
+            ),
             'nodoc' => array(
                 'name' => __('No. Dokumen'),
+                'style' => 'text-align: left;',
+            ),
+            'note' => array(
+                'name' => __('Ket.'),
                 'style' => 'text-align: left;',
             ),
             'total' => array(

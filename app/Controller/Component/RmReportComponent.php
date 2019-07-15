@@ -10998,7 +10998,7 @@ class RmReportComponent extends Component {
 
         $this->controller->TitipanDetail->virtualFields['total'] = 'SUM(TitipanDetail.total)';
 		$options = $this->controller->TitipanDetail->Titipan->getData('paginate', $options, array(
-			'transaction_status' => 'posting',
+			'status' => 'posting',
 		));
 		$this->controller->paginate = $options;
 		$data = $this->controller->paginate('TitipanDetail');

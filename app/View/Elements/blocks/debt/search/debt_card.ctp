@@ -40,8 +40,17 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('note',array(
-                                'label'=> __('Ket.'),
+                            echo $this->Form->input('noref',array(
+                                'label'=> __('No. Ref'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('nodoc',array(
+                                'label'=> __('No. Dokumen'),
                                 'class'=>'form-control',
                                 'required' => false,
                             ));
@@ -49,6 +58,15 @@
                 </div>
             </div>
             <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('note',array(
+                                'label'=> __('Ket.'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('sort',array(

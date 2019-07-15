@@ -10,7 +10,7 @@
 <tr class="beginning">
     <?php
             echo $this->Html->tag('td', $this->Html->tag('i', __('Beginning Balance')), array(
-                'colspan' => 5,
+                'colspan' => 7,
             ));
             echo $this->Html->tag('td', $customSaldoAwal, array(
                 'style' => 'text-align:right;'
@@ -20,12 +20,27 @@
 <?PHP
         if( !empty($values) ) {
             foreach ($values as $key => $value) {
+                $transaction_id = Common::hashEmptyField($value, 'ViewDebtCard.transaction_id');
                 $document_no = Common::hashEmptyField($value, 'ViewDebtCard.nodoc');
                 $document_id = Common::hashEmptyField($value, 'ViewDebtCard.document_id');
                 $date = Common::hashEmptyField($value, 'ViewDebtCard.transaction_date');
                 $debit = Common::hashEmptyField($value, 'ViewDebtCard.debit');
                 $credit = Common::hashEmptyField($value, 'ViewDebtCard.credit');
                 $note = Common::hashEmptyField($value, 'ViewDebtCard.note', '-');
+
+                if( !empty($credit) ) {
+                    $type = 'credit';
+                    $url = array(
+                        'action' => 'detail',
+                        $transaction_id,
+                    );
+                } else {
+                    $type = 'debit';
+                    $url = array(
+                        'action' => 'payment_detail',
+                        $transaction_id,
+                    );
+                }
 
                 $customDate = $this->Common->formatDate($date, 'd M Y');
                 $customDebit = $this->Common->getFormatPrice($debit, false, 2);
@@ -40,11 +55,15 @@
                 $customBalance += $credit;
 
                 $customFormatBalance = $this->Common->getFormatPrice($customBalance, false, 2);
+                $transaction_id = str_pad($transaction_id, 6, '0', STR_PAD_LEFT);
 ?>
 <tr>
     <?php
             echo $this->Html->tag('td', $no);
             echo $this->Html->tag('td', $customDate);
+            echo $this->Html->tag('td', $this->Html->link($transaction_id, $url, array(
+                'target' => '_blank',
+            )));
             echo $this->Html->tag('td', $document_no);
             echo $this->Html->tag('td', $note);
             echo $this->Html->tag('td', $customDebit, array(
@@ -70,7 +89,7 @@
     <?php
             echo $this->Html->tag('td', __('Total:'), array(
                 'style' => 'text-align:right;font-weight:bold;',
-                'colspan' => 4,
+                'colspan' => 5,
             ));
             echo $this->Html->tag('td', $customTotalDebit, array(
                 'style' => 'text-align:right;'
@@ -86,10 +105,10 @@
             $customFormatBalance = $this->Common->getFormatPrice($customBalance, false, 2);
             
             echo $this->Html->tag('td', $this->Html->tag('strong', __('Sisa Hutang:')), array(
-                'colspan' => 4,
+                'colspan' => 2,
             ));
             echo $this->Html->tag('td', $customFormatBalance, array(
-                'style' => 'text-align:right;'
+                'style' => 'text-align:left;'
             ));
             echo $this->Html->tag('td', '', array(
                 'colspan' => 4,
@@ -100,7 +119,7 @@
         } else {
             echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                 'class' => 'alert alert-warning text-center',
-                'colspan' => '9'
+                'colspan' => '10'
             )));
         }
 ?>

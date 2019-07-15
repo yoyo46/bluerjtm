@@ -47,6 +47,14 @@ class ViewDebtCard extends AppModel {
                 'field' => 'ViewDebtCard.note',
                 'type' => 'like',
             ),
+            'noref' => array(
+                'field' => 'LPAD(ViewDebtCard.transaction_id, 6, 0)',
+                'type' => 'like',
+            ),
+            'nodoc' => array(
+                'field' => 'ViewDebtCard.nodoc',
+                'type' => 'like',
+            ),
         ));
 
         return $default_options;
