@@ -10417,6 +10417,7 @@ class RmReportComponent extends Component {
                 $name = Common::hashEmptyField($value, 'ViewStaff.full_name');
                 $phone = Common::hashEmptyField($value, 'ViewStaff.phone', '-');
                 $type = Common::hashEmptyField($value, 'ViewStaff.type');
+                $nopol = Common::hashEmptyField($value, 'ViewStaff.nopol', '-');
                 $total = Common::hashEmptyField($value, 'DebtDetail.total');
                 $total_dibayar = $this->controller->DebtDetail->DebtPaymentDetail->getTotalPayment(NULL, NULL, $id);
                 $saldo = $total - $total_dibayar;
@@ -10467,6 +10468,12 @@ class RmReportComponent extends Component {
 						'text' => $type,
 		                'data-options' => 'field:\'position\',width:100',
 					),
+					__('No. Pol') => array(
+						'text' => $nopol,
+                		'field_model' => 'ViewStaff.nopol',
+		                'data-options' => 'field:\'nopol\',width:80',
+		                'align' => 'left',
+					),
 					__('No. Telp') => array(
 						'text' => $phone,
 		                'data-options' => 'field:\'phone\',width:100',
@@ -10515,11 +10522,17 @@ class RmReportComponent extends Component {
 					// __('Cabang') => array(
 		   //              'data-options' => 'field:\'branch\',width:100',
 					// ),
+					__('ID Karyawan') => array(
+		                'data-options' => 'field:\'no_id\',width:80',
+					),
 					__('Nama Karyawan') => array(
 		                'data-options' => 'field:\'name\',width:120',
 					),
 					__('Kategori') => array(
 		                'data-options' => 'field:\'position\',width:100',
+					),
+					__('No. Pol') => array(
+		                'data-options' => 'field:\'nopol\',width:80',
 					),
 					__('No. Telp') => array(
 						'text' => __('Total'),
@@ -11038,12 +11051,36 @@ class RmReportComponent extends Component {
 		if( !empty($data) ) {
 			foreach ($data as $key => $value) {
                 $id = Common::hashEmptyField($value, 'Driver.id');
+                $no_id = Common::hashEmptyField($value, 'Driver.no_id');
                 $name = Common::hashEmptyField($value, 'Driver.driver_name');
                 $phone = Common::hashEmptyField($value, 'Driver.phone', '-');
                 $phone = Common::hashEmptyField($value, 'Driver.no_hp', $phone);
                 $total = Common::hashEmptyField($value, 'TitipanDetail.total');
 
+                $value = $this->controller->TitipanDetail->Driver->getMergeList($value, array(
+					'contain' => array(
+						'Truck' => array(
+							'elements' => array(
+								'branch' => false,
+							),
+						),
+					),
+				));
+                $nopol = Common::hashEmptyField($value, 'Truck.nopol', '-');
+
 				$result[$key] = array(
+					__('ID Karyawan') => array(
+						'text' => !empty($view)?$this->Html->link(__('#%s', $no_id), array(
+							'controller' => 'trucks',
+							'action' => 'driver_edit',
+							$id,
+						), array(
+							'target' => '_blank',
+						)):__('#%s', $no_id),
+                		'field_model' => 'Driver.no_id',
+		                'data-options' => 'field:\'no_id\',width:80',
+		                'align' => 'left',
+					),
 					__('Nama Supir') => array(
 						'text' => !empty($view)?$this->Html->link($name, array(
 							'controller' => 'titipan',
@@ -11056,6 +11093,11 @@ class RmReportComponent extends Component {
 						)):$name,
                 		'field_model' => 'Driver.driver_name',
 		                'data-options' => 'field:\'name\',width:120',
+		                'align' => 'left',
+					),
+					__('No. Pol') => array(
+						'text' => $nopol,
+		                'data-options' => 'field:\'nopol\',width:80',
 		                'align' => 'left',
 					),
 					__('No. Telp') => array(
@@ -11079,8 +11121,14 @@ class RmReportComponent extends Component {
 
 			if( !empty($view) ) {
 				$result[$key+1] = array(
+					__('ID Karyawan') => array(
+		                'data-options' => 'field:\'no_id\',width:80',
+					),
 					__('Nama Supir') => array(
 		                'data-options' => 'field:\'name\',width:120',
+					),
+					__('No. Pol') => array(
+		                'data-options' => 'field:\'nopol\',width:80',
 					),
 					__('No. Telp') => array(
 						'text' => __('Total'),
