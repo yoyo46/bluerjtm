@@ -63,7 +63,7 @@
                 'class' => 'text-center',
             ));
             echo $this->Html->tag('td', $total, array(
-                'class' => 'text-right total-payment',
+                'class' => 'text-right',
             ));
             echo $this->Html->tag('td', $invoice_has_paid, array(
                 'class' => 'text-right',
@@ -75,7 +75,7 @@
                 echo $this->Common->_callInputForm('InvoicePaymentDetail.price_pay.'.$invoice_id, array(
                     'div' => false,
                     'required' => false,
-                    'class' => 'form-control input_price document-pick-price text-right',
+                    'class' => 'form-control input_price document-pick-price total-payment text-right',
                     'value' => $price_pay,
                     'fieldError' => __('InvoicePaymentDetail.%s.price_pay', $invoice_id),
                 ));

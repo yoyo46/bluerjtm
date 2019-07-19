@@ -10413,6 +10413,7 @@ class RmReportComponent extends Component {
 		if( !empty($data) ) {
 			foreach ($data as $key => $value) {
                 $id = Common::hashEmptyField($value, 'ViewStaff.id');
+                $no_id = Common::hashEmptyField($value, 'ViewStaff.no_id');
                 $name = Common::hashEmptyField($value, 'ViewStaff.full_name');
                 $phone = Common::hashEmptyField($value, 'ViewStaff.phone', '-');
                 $type = Common::hashEmptyField($value, 'ViewStaff.type');
@@ -10420,7 +10421,33 @@ class RmReportComponent extends Component {
                 $total_dibayar = $this->controller->DebtDetail->DebtPaymentDetail->getTotalPayment(NULL, NULL, $id);
                 $saldo = $total - $total_dibayar;
 
+                switch ($type) {
+                	case 'Karyawan':
+                		$staffUrl = array(
+							'controller' => 'users',
+							'action' => 'employe_edit',
+							$id,
+						);
+                		break;
+                	
+                	default:
+                		$staffUrl = array(
+							'controller' => 'trucks',
+							'action' => 'driver_edit',
+							$id,
+						);
+                		break;
+                }
+
 				$result[$key] = array(
+					__('ID Karyawan') => array(
+						'text' => !empty($view)?$this->Html->link(__('#%s', $no_id), $staffUrl, array(
+							'target' => '_blank',
+						)):__('#%s', $no_id),
+                		'field_model' => 'ViewStaff.no_id',
+		                'data-options' => 'field:\'no_id\',width:80',
+		                'align' => 'left',
+					),
 					__('Nama Karyawan') => array(
 						'text' => !empty($view)?$this->Html->link($name, array(
 							'controller' => 'debt',
@@ -10432,7 +10459,7 @@ class RmReportComponent extends Component {
 						), array(
 							'target' => '_blank',
 						)):$name,
-                		'field_model' => 'Employe.full_name',
+                		'field_model' => 'ViewStaff.full_name',
 		                'data-options' => 'field:\'name\',width:120',
 		                'align' => 'left',
 					),

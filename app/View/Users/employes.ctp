@@ -3,6 +3,11 @@
         echo $this->element('blocks/users/search_employe');
 
         $dataColumns = array(
+            'no_id' => array(
+                'name' => __('No. ID'),
+                'field_model' => 'Employe.no_id',
+                'display' => true,
+            ),
             'full_name' => array(
                 'name' => __('Nama'),
                 'field_model' => 'Employe.full_name',
@@ -84,6 +89,7 @@
                     if(!empty($employes)){
                         foreach ($employes as $key => $value) {
                             $id = $this->Common->filterEmptyField($value, 'Employe', 'id');
+                            $no_id = $this->Common->filterEmptyField($value, 'Employe', 'no_id');
                             $full_name = $this->Common->filterEmptyField($value, 'Employe', 'full_name');
                             $address = $this->Common->filterEmptyField($value, 'Employe', 'address');
                             $phone = $this->Common->filterEmptyField($value, 'Employe', 'phone');
@@ -98,6 +104,7 @@
                             );
             ?>
             <tr>
+                <td><?php echo $no_id;?></td>
                 <td><?php echo $full_name;?></td>
                 <td><?php echo $position_name;?></td>
                 <td><?php echo $branch_name;?></td>
@@ -150,7 +157,7 @@
                     } else {
                          echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '8'
+                            'colspan' => '9'
                         )));
                     }
             ?>

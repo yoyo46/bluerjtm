@@ -2,6 +2,16 @@
 class Employe extends AppModel {
 	var $name = 'Employe';
 	var $validate = array(
+        'no_id' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'No. ID harap diisi'
+            ),
+            'checkUniq' => array(
+                'rule' => array('checkUniq'),
+                'message' => 'No. ID telah terdaftar',
+            ),
+        ),
         'first_name' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -72,6 +82,51 @@ class Employe extends AppModel {
             'foreignKey' => 'branch_id',
         ),
     );
+
+    function checkUniq () {
+        $id = !empty($this->data['Employe']['id'])?$this->data['Employe']['id']:false;
+        $no_id = !empty($this->data['Employe']['no_id'])?$this->data['Employe']['no_id']:false;
+        $value = $this->getData('count', array(
+            'conditions' => array(
+                'Employe.no_id' => $no_id,
+                'Employe.id NOT' => $id,
+            ),
+        ), array(
+            'branch' => false,
+        ));
+        
+        if( !empty($value) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function generateNoId(){
+        $default_id = 1;
+        $format_id = sprintf('STAFF-%s-%s-', date('Y'), date('m'));
+
+        $last_data = $this->getData('first', array(
+            'order' => array(
+                'Employe.no_id' => 'DESC'
+            ),
+            'fields' => array(
+                'Employe.no_id'
+            )
+        ), array(
+            'branch' => false,
+        ));
+
+        if(!empty($last_data['Employe']['no_id'])){
+            $str_arr = explode('-', $last_data['Employe']['no_id']);
+            $last_arr = count($str_arr)-1;
+            $default_id = intval($str_arr[$last_arr]+1);
+        }
+        $id = str_pad($default_id, 4,'0',STR_PAD_LEFT);
+        $format_id .= $id;
+        
+        return $format_id;
+    }
 
     function getData($find, $options = false, $elements = array()){
         $status = isset($elements['status'])?$elements['status']:'active';
@@ -176,12 +231,16 @@ class Employe extends AppModel {
     public function _callRefineParams( $data = '', $default_options = false ) {
         $name = !empty($data['named']['name'])?$data['named']['name']:false;
         $employe_position_id = !empty($data['named']['employe_position_id'])?$data['named']['employe_position_id']:false;
+        $no_id = !empty($data['named']['no_id'])?$data['named']['no_id']:false;
 
         if(!empty($name)){
             $default_options['conditions']['Employe.full_name LIKE'] = '%'.$name.'%';
         }
         if(!empty($employe_position_id)){
             $default_options['conditions']['Employe.employe_position_id'] = $employe_position_id;
+        }
+        if(!empty($no_id)){
+            $default_options['conditions']['Employe.no_id LIKE'] = '%'.$no_id.'%';
         }
         
         return $default_options;

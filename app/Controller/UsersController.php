@@ -737,6 +737,11 @@ class UsersController extends AppController {
                 $this->request->data['Employe']['branch_id'] = $value;
                 $options['conditions']['Employe.branch_id'] = $value;
             }
+            if(!empty($refine['no_id'])){
+                $value = urldecode($refine['no_id']);
+                $this->request->data['Employe']['no_id'] = $value;
+                $options['conditions']['Employe.no_id LIKE '] = '%'.$value.'%';
+            }
         }
 
         $this->paginate = $this->Employe->getData('paginate', $options, true, array(
@@ -790,9 +795,12 @@ class UsersController extends AppController {
             $data = $this->request->data;
             if($id && $data_local){
                 $this->Employe->id = $id;
+                $data['Employe']['id'] = $id;
+                $data['Employe']['no_id'] = $this->MkCommon->filterEmptyField($data_local, 'Employe', 'no_id');
                 $msg = 'merubah';
             }else{
                 $this->loadModel('Employe');
+                $data['Employe']['no_id'] = $this->Employe->generateNoId();
                 $this->Employe->create();
                 $msg = 'menambah';
             }
@@ -833,7 +841,7 @@ class UsersController extends AppController {
 
         $this->set('active_menu', 'employes');
         $this->set(compact(
-            'employe_positions', 'branches'
+            'employe_positions', 'branches', 'id'
         ));
         $this->render('employe_form');
     }

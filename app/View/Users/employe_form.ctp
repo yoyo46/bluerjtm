@@ -16,6 +16,24 @@
 		));
 	?>
     <div class="box-body">
+        <?php 
+        		if( !empty($id) ) {
+        ?>
+        <div class="form-group">
+        	<?php 
+					echo $this->Form->input('no_id',array(
+						'type' => 'text',
+						'label'=> __('No. ID *'), 
+						'class'=>'form-control',
+						'required' => false,
+						'disabled' => true,
+						'placeholder' => __('No. ID'),
+					));
+			?>
+        </div>
+        <?php 
+        		}
+        ?>
         <div class="form-group">
         	<?php 
 					echo $this->Form->input('first_name',array(

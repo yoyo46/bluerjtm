@@ -136,7 +136,7 @@
                             printf('%s s/d %s', $this->Common->customDate($invoice['period_from'], 'd M Y'), $this->Common->customDate($invoice['period_to'], 'd M Y'));
                     ?>
                 </td>
-                <td class="text-right total-payment">
+                <td class="text-right">
                     <?php
                             echo $this->Common->getFormatPrice($total);
                     ?>
@@ -157,7 +157,7 @@
                             'label' => false,
                             'div' => false,
                             'required' => false,
-                            'class' => 'form-control input_price document-pick-price text-right',
+                            'class' => 'form-control input_price document-pick-price total-payment text-right',
                             'value' => $sisaPembayaran,
                         ));
 
