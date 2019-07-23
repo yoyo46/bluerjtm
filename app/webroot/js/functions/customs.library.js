@@ -108,6 +108,7 @@
     $.callChoosen = function(options){
         var settings = $.extend({
             obj: $('.chosen-select'),
+            objAjax: $('.chosen-ajax'),
             init: false,
         }, options );
 
@@ -131,6 +132,14 @@
                     $(item).select2(settings.init);
                 });
             }
+        }
+        if( settings.objAjax.length > 0 ) {
+            settings.objAjax.select2({
+                ajax: {
+                    url: 'https://api.github.com/search/repositories',
+                    dataType: 'json'
+                }
+            });
         }
     }
 

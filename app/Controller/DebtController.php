@@ -884,6 +884,10 @@ class DebtController extends AppController {
         $value = $this->DebtPayment->getData('first', array(
             'conditions' => array(
                 'DebtPayment.id' => $id,
+                'OR' => array(
+                    array( 'DebtPayment.ttuj_payment_id' => 0 ),
+                    array( 'DebtPayment.ttuj_payment_id' => NULL ),
+                ),
             ),
         ));
 

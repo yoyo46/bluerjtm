@@ -57,6 +57,7 @@
                             $status = Common::hashEmptyField($value, 'DebtPayment.status');
                             $is_canceled = Common::hashEmptyField($value, 'DebtPayment.is_canceled');
                             $canceled_date = Common::hashEmptyField($value, 'DebtPayment.canceled_date');
+                            $ttuj_payment_id = Common::hashEmptyField($value, 'DebtPayment.ttuj_payment_id');
 
                             $periode = Common::hashEmptyField($value, 'DebtPayment.date_payment', false, array(
                                 'date' => 'Y-m',
@@ -108,7 +109,7 @@
                             'class' => 'btn btn-info btn-xs'
                         ));
                         
-                        if(empty($is_canceled)){
+                        if(empty($is_canceled) && empty($ttuj_payment_id)){
                             // $actionDoc = $this->Html->link(__('Edit'), array(
                             //     'controller' => 'debt',
                             //     'action' => 'payment_edit',

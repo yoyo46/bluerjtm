@@ -43,6 +43,13 @@ class RevenuesController extends AppController {
         $this->redirect('/');
     }
 
+    public function bypass_search ( $action, $addParam = false ) {
+        $params = Common::_search($this, $action, $addParam);
+
+        $params['bypass'] = true;
+        $this->redirect($params);
+    }
+
     public function ttuj() {
         $this->set('module_title', __('TTUJ'));
         $this->set('active_menu', 'ttuj');
@@ -10397,4 +10404,28 @@ class RevenuesController extends AppController {
     //         '_freeze' => true,
     //     ));
     // }
+
+    function bypass_ttuj_payments ($vendor_id = null ) {
+        $this->loadModel('TtujPayment');
+
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $options =  $this->TtujPayment->_callRefineParams($params, array(
+            'conditions' => array(
+                'TtujPayment.is_canceled' => 0,
+                'TtujPayment.transaction_status' => 'posting',
+                'TtujPayment.type' => 'uang_jalan_commission',
+            ),
+            'limit' => 10,
+        ));
+
+        $this->paginate = $this->TtujPayment->getData('paginate', $options, true, array(
+            'branch' => false,
+        ));
+        $values = $this->paginate('TtujPayment');
+
+        $this->set('module_title', __('List Dokumen'));
+        $this->set(compact(
+            'values', 'action_type'
+        ));
+    }
 }

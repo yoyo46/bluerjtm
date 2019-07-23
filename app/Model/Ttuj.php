@@ -181,6 +181,12 @@ class Ttuj extends AppModel {
             'className' => 'Laka',
             'foreignKey' => 'ttuj_id',
         ),
+        'BonBiruDetail' => array(
+            'foreignKey' => 'ttuj_id',
+            'conditions' => array(
+                'BonBiruDetail.status' => 1,
+            ),
+        ),
     );
 
     function __construct($id = false, $table = null, $ds = null) {

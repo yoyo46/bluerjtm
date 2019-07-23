@@ -45,17 +45,42 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <?php 
-                            echo $this->Form->input('nodocs',array(
-                                'type' => 'select',
-                                'label'=> __('No Dokumen'),
-                                'class'=>'form-control chosen-select',
-                                'required' => false,
-                                'multiple' => true,
-                                'data-tag' => 'true',
-                                'options' => $nodocs,
-                            ));
+                    <?php
+                            echo $this->Form->label('nodocs', __('No Dokumen'));
                     ?>
+                    <div class="row temp-document-picker">
+                        <div class="col-sm-10">
+                            <?php
+                                    echo $this->Common->buildInputForm('nodocs', false, array(
+                                        'type' => 'select',
+                                        'class' => 'chosen-select form-control full',
+                                        'frameClass' => false,
+                                        'attributes' => array(
+                                            'options' => $nodocs,
+                                            'multiple' => true,
+                                            'data-tag' => 'true',
+                                        ),
+                                    ));
+                            ?>
+                        </div>
+                        <div class="col-sm-2 hidden-xs">
+                            <?php 
+                                    $attrBrowse = array(
+                                        'class' => 'ajaxCustomModal btn bg-maroon',
+                                        'escape' => false,
+                                        'allow' => true,
+                                        'title' => __('List Dokumen'),
+                                    );
+                                    $urlBrowse = array(
+                                        'controller'=> 'revenues', 
+                                        'action' => 'ttuj_payments',
+                                        'type' => 'select-multiple',
+                                        'bypass' => true,
+                                    );
+                                    echo $this->Html->link($this->Common->icon('plus-square'), $urlBrowse, $attrBrowse);
+                            ?>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <?php 

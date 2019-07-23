@@ -562,7 +562,7 @@
                         'revenues' => array(
                             'ttuj', 'truk_tiba', 'bongkaran',
                             'balik', 'pool', 'surat_jalan',
-                            'report_surat_jalan',
+                            'report_surat_jalan', 'bon_biru',
                         ),
                         'ttujs' => array(
                             'report_recap_sj',
@@ -576,7 +576,7 @@
                             'balik', 'pool', 'uang_jalan',
                             'uang_kuli_muat', 'uang_kuli_bongkar',
                             'surat_jalan', 'report_surat_jalan',
-                            'report_recap_sj',
+                            'report_recap_sj', 'bon_biru',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $ttujMenu) ) {
@@ -672,6 +672,15 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'surat_jalan' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Bon Biru', array(
+                                'controller' => 'ttujs',
+                                'action' => 'bon_biru',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'bon_biru' )?'active':'',
                             ));
 
                             echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Surat Jalan', array(

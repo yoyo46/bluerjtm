@@ -5072,6 +5072,49 @@ class TrucksController extends AppController {
                     $this->TruckMutation->set($this->request->data);
 
                     if($this->TruckMutation->save()){
+                        $truck_id = Common::hashEmptyField($truckMutation, 'TruckMutation.truck_id');
+                        $change_driver_id = Common::hashEmptyField($truckMutation, 'TruckMutation.change_driver_id');
+                        $change_branch_id = Common::hashEmptyField($truckMutation, 'TruckMutation.change_branch_id');
+                        $change_truck_facility_id = Common::hashEmptyField($truckMutation, 'TruckMutation.change_truck_facility_id');
+                        $change_truck_category_id = Common::hashEmptyField($truckMutation, 'TruckMutation.change_truck_category_id');
+                        $change_nopol = Common::hashEmptyField($truckMutation, 'TruckMutation.change_nopol');
+                        $change_capacity = Common::hashEmptyField($truckMutation, 'TruckMutation.change_capacity');
+                        
+                        $old_driver_id = Common::hashEmptyField($truckMutation, 'TruckMutation.old_driver_id');
+                        $old_branch_id = Common::hashEmptyField($truckMutation, 'TruckMutation.old_branch_id');
+                        $old_truck_facility_id = Common::hashEmptyField($truckMutation, 'TruckMutation.old_truck_facility_id');
+                        $old_truck_category_id = Common::hashEmptyField($truckMutation, 'TruckMutation.old_truck_category_id');
+                        $nopol = Common::hashEmptyField($truckMutation, 'TruckMutation.nopol');
+                        $capacity = Common::hashEmptyField($truckMutation, 'TruckMutation.capacity');
+
+                        $dataSave = array();
+
+                        if( !empty($change_driver_id) && !empty($old_driver_id) ) {
+                            $dataSave['driver_id'] = $old_driver_id;
+                        }
+                        if( !empty($change_branch_id) && !empty($old_branch_id) ) {
+                            $dataSave['branch_id'] = $old_branch_id;
+                        }
+                        if( !empty($change_truck_facility_id) && !empty($old_truck_facility_id) ) {
+                            $dataSave['truck_facility_id'] = $old_truck_facility_id;
+                        }
+                        if( !empty($change_truck_category_id) && !empty($old_truck_category_id) ) {
+                            $dataSave['truck_category_id'] = $old_truck_category_id;
+                        }
+                        if( !empty($change_nopol) && !empty($nopol) ) {
+                            $dataSave['nopol'] = $nopol;
+                        }
+                        if( !empty($change_capacity) && !empty($capacity) ) {
+                            $dataSave['capacity'] = $capacity;
+                        }
+
+                        if( !empty($dataSave) ) {
+                            $dataSave['id'] = $truck_id;
+
+                            $this->Truck->saveAll($dataSave);
+                        }
+
+
                         $msg = array(
                             'msg' => __('Berhasil melakukan void'),
                             'type' => 'success'

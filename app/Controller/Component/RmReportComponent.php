@@ -8414,11 +8414,26 @@ class RmReportComponent extends Component {
 
 		if( !empty($data) ) {
             $idx = 0;
+            $acii = 97;
+            $page = Common::hashEmptyField($params, 'named.page', 1);
+
+            if( !empty($view) ) {
+            	$offset = ($page-1) * $limit;
+            }
+
+        	$no = $offset;
         	
             $this->controller->loadModel('Setting');
         	$setting = $this->controller->Setting->find('first');
 
 			foreach ($data as $key => $value) {
+            	$no++;
+            	// $acii++;
+
+            	// if( $acii > 122 ) {
+            	// 	$acii = 97;
+            	// }
+
                 $id = Common::hashEmptyField($value, 'TtujPayment.id');
                 $coa_id = Common::hashEmptyField($value, 'TtujPayment.coa_id');
                 $ttuj_id = Common::hashEmptyField($value, 'TtujPaymentDetail.ttuj_id');
@@ -8430,7 +8445,9 @@ class RmReportComponent extends Component {
                 	'date' => 'd/m',
                 ));
                 $driver_id = Common::hashEmptyField($value, 'TtujPaymentDetail.driver_id');
-                
+                $last_char = substr($driver_id, -1);
+                $last_char = chr($last_char+$acii);
+
                 $grandtotal = Common::hashEmptyField($value, 'TtujPaymentDetail.grandtotal', 0);
                 // $amount = Common::hashEmptyField($value, 'TtujPaymentDetail.amount', 0);
                 // $no_claim = Common::hashEmptyField($value, 'TtujPaymentDetail.no_claim', 0);
@@ -8466,6 +8483,19 @@ class RmReportComponent extends Component {
                 $totalPayment = $grandtotal;
 
 				$result[$idx] = array(
+					__('No.') => array(
+						'text' => $no,
+		                'style' => 'text-align: center;',
+		                'data-options' => 'field:\'no\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+						'width' => '5%',
+            			'rowspan' => 2,
+                		'excel' => array(
+                			'align' => 'center',
+                			'headerrowspan' => 2,
+            			),
+					),
 					__('Sender Information') => array(
 		                'style' => 'text-align: center;',
 		                'data-options' => 'field:\'sender_information\',width:100',
@@ -8601,7 +8631,7 @@ class RmReportComponent extends Component {
 	                		),
 		                	__('Ref Number') => array(
 								'name' => __('Ref Number'),
-								'text' => $id.$driver_id,
+								'text' => $id.$driver_id.$last_char,
 				                'data-options' => 'field:\'company_email\',width:80',
 		                		'style' => 'text-align: left;',
 		                		'align' => 'left',
@@ -8640,6 +8670,9 @@ class RmReportComponent extends Component {
 	                $cnt = Common::hashEmptyField($value, 'TtujPaymentDetail.cnt', 0);
 
 					$result[$idx] = array(
+						__('No.') => array(
+			                'data-options' => 'field:\'no\',width:80',
+						),
 						__('Sender Information') => array(
 			                'style' => 'text-align: center;',
 			                'data-options' => 'field:\'sender_information\',width:100',
@@ -8784,6 +8817,9 @@ class RmReportComponent extends Component {
 
 					$idx++;
 					$result[$idx] = array(
+						__('No.') => array(
+			                'data-options' => 'field:\'no\',width:80',
+						),
 						__('Sender Information') => array(
 			                'style' => 'text-align: center;',
 			                'data-options' => 'field:\'sender_information\',width:100',
@@ -8928,6 +8964,9 @@ class RmReportComponent extends Component {
 
 					$idx++;
 					$result[$idx] = array(
+						__('No.') => array(
+			                'data-options' => 'field:\'no\',width:80',
+						),
 						__('Sender Information') => array(
 			                'style' => 'text-align: center;',
 			                'data-options' => 'field:\'sender_information\',width:100',
@@ -9069,6 +9108,9 @@ class RmReportComponent extends Component {
 
 					$idx++;
 					$result[$idx] = array(
+						__('No.') => array(
+			                'data-options' => 'field:\'no\',width:80',
+						),
 						__('Sender Information') => array(
 			                'style' => 'text-align: center;',
 			                'data-options' => 'field:\'sender_information\',width:100',
@@ -11171,8 +11213,14 @@ class RmReportComponent extends Component {
 					$total_total = Common::hashEmptyField($value, 'TitipanDetail.total_total', 0);
 					
 					$result[$key+1] = array(
+						__('ID Karyawan') => array(
+			                'data-options' => 'field:\'no_id\',width:80',
+						),
 						__('Nama Supir') => array(
 			                'data-options' => 'field:\'name\',width:120',
+						),
+						__('No. Pol') => array(
+			                'data-options' => 'field:\'nopol\',width:80',
 						),
 						__('No. Telp') => array(
 							'text' => __('Total'),
