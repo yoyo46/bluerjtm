@@ -1947,7 +1947,7 @@ class MkCommonComponent extends Component {
         }
     }
 
-    function _callSettingGeneral ( $modelName = false, $labelName = false, $request = true ) {
+    function _callSettingGeneral ( $modelName = false, $labelName = false, $request = true, $data_request = true ) {
         $data = array();
 
         if( !empty($modelName) ) {
@@ -1969,7 +1969,11 @@ class MkCommonComponent extends Component {
                     $value = $this->filterEmptyField($value, 'SettingGeneral', 'value');
 
                     if( !isset($this->controller->request->data[$modelName][$lbl]) ) {
-                        $data[$modelName][$lbl] = $this->controller->request->data[$modelName][$lbl] = $value;
+                        $data[$modelName][$lbl] = $value;
+
+                        if( !empty($data_request) ) {
+                            $this->controller->request->data[$modelName][$lbl] = $value;
+                        }
                     }
                 }
             }

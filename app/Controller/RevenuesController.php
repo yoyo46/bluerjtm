@@ -7758,9 +7758,12 @@ class RevenuesController extends AppController {
                 break;
         }
 
+        $debt_percents = $this->MkCommon->_callSettingGeneral('Ttuj', 'debt_percent', false, false);
+        $debt_percent = Common::hashEmptyField($debt_percents, 'Ttuj.debt_percent', 0);
+
         $this->MkCommon->_layout_file('select');
         $this->set(compact(
-            'action_type', 'coas', 'invoice'
+            'action_type', 'coas', 'invoice', 'debt_percent'
         ));
         $this->render('ttuj_payment_form');
     }

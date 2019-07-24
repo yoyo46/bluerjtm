@@ -31,6 +31,7 @@
         $titipan = 0;
         // $potongan_laka = 0;
         $potongan_debt = 0;
+        $debt_percent = !empty($debt_percent)?$debt_percent:0;
 
         if( !empty($amountPayment) ) {
             if( !empty($checkbox) ) {
@@ -52,7 +53,7 @@
                 printf('<tr class="child child-%s">', $alias);
             }
 
-            if( $data_type == 'commission' ) {
+            // if( $data_type == 'commission' ) {
                 if( !empty($potongan_tabungan) ) {
                     $titipan = $total_biaya * ($potongan_tabungan/100);
                 }
@@ -71,7 +72,7 @@
                         $potongan_debt = $debt_total;
                     }
                 }
-            }
+            // }
 ?>
     
     <td class="hide on-show">
@@ -244,6 +245,10 @@
                     'class'=>'form-control input_price_min debt text-right',
                     'required' => false,
                     'value' => $potongan_debt,
+                ));
+                echo $this->Form->hidden('TtujPayment.debt_percent.', array(
+                    'value' => $debt_percent,
+                    'class'=>'debt_percent',
                 ));
         ?>
     </td>

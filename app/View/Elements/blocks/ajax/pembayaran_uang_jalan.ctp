@@ -38,6 +38,7 @@
         $debt_note = !empty($ttujPayment['debt_note'][$idx])?$ttujPayment['debt_note'][$idx]:NULL;
 
         $total = $amountPayment + $no_claim + $stood + $lainnya - $titipan - $claim - $debt;
+        $debt_percent = !empty($debt_percent)?$debt_percent:0;
 
         if( !empty($amountPayment) ) {
             if( !empty($checkbox) ) {
@@ -254,6 +255,10 @@
                         //     'TtujPaymentDetail.debt.'.$idx,
                         //     'TtujPaymentDetail.debt_paid.'.$idx,
                         // ),
+                    ));
+                    echo $this->Form->hidden('TtujPayment.debt_percent.', array(
+                        'class'=>'debt_percent',
+                        'value' => $debt_percent,
                     ));
                 }
         ?>

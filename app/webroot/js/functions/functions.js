@@ -3154,8 +3154,20 @@ var calcTotalTransfer = function ( parent ) {
     // laka = convert_number(parent.find('.laka').val());
     debt = convert_number(parent.find('.debt').val());
 
+    if( parent.find('.debt_percent').length > 0 ) {
+        debt_percent = convert_number(parent.find('.debt_percent').val());
+
+        if( debt_percent != 0 ) {
+            var totalPlus = biaya + no_claim + stood;
+            debt = totalPlus * (debt_percent/100);
+
+            parent.find('.debt').val( formatNumber( debt ) );
+        }
+    }
+
     // var totalBiaya = biaya + no_claim + stood + lainnya - titipan - claim - laka - debt;
     var totalBiaya = biaya + no_claim + stood + lainnya - titipan - claim - debt;
+    
     parent.find('.total-trans').html( formatNumber( totalBiaya ) );
 }
 
