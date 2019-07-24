@@ -5596,24 +5596,63 @@ class RevenuesController extends AppController {
 
                         if( !empty($revenueId) ) {
                             foreach ($revenueId as $key => $revenue_id) {
-                                $revenueDetails = $this->Revenue->RevenueDetail->getData('first', array(
+                                $localRev = $this->Revenue->getData('first', array(
                                     'conditions' => array(
-                                        'RevenueDetail.revenue_id' => $revenue_id,
-                                        'RevenueDetail.invoice_id' => $id,
+                                        'Revenue.id' => $revenue_id,
                                     ),
                                 ), array(
                                     'branch' => false,
                                 ));
+                                $is_manual = Common::hashEmptyField($localRev, 'Revenue.is_manual');
 
-                                $this->Revenue->id = $revenue_id;
+                                if( !empty($is_manual) ) {
+                                    $total = $this->MkCommon->filterEmptyField($localRev, 'Revenue', 'total', 0);
+                                    $truck_id = $this->MkCommon->filterEmptyField($localRev, 'Revenue', 'truck_id');
+                                    $cogs_id = $this->MkCommon->filterEmptyField($localRev, 'Revenue', 'cogs_id');
+                                    $date_revenue = $this->MkCommon->filterEmptyField($localRev, 'Revenue', 'date_revenue');
+                                    $no_doc = $this->MkCommon->filterEmptyField($localRev, 'Revenue', 'no_doc');
+                                    $customer_id = $this->MkCommon->filterEmptyField($localRev, 'Revenue', 'customer_id');
+                                    $localRev = $this->Ttuj->Customer->getMerge($localRev, $customer_id);
+                                    $customer_name = $this->MkCommon->filterEmptyField($localRev, 'Customer', 'customer_name_code');
 
-                                if(!empty($revenueDetails)){
-                                    $this->Revenue->set('transaction_status', 'half_invoiced');
+                                    $this->Ttuj->Revenue->set('status', 0);
+                                    $this->Ttuj->Revenue->id = $revenue_id;
+
+                                    if($this->Ttuj->Revenue->save()){
+                                        $titleJournal = sprintf(__('Pembatalan Revenue customer %s'), $customer_name);
+                                        $this->User->Journal->setJournal($total, array(
+                                            'credit' => 'revenue_coa_debit_id',
+                                            'debit' => 'revenue_coa_credit_id',
+                                        ), array(
+                                            'truck_id' => $truck_id,
+                                            'cogs_id' => $cogs_id,
+                                            'date' => $date_revenue,
+                                            'document_id' => $revenue_id,
+                                            'title' => $titleJournal,
+                                            'document_no' => $no_doc,
+                                            'type' => 'revenue_void',
+                                        ));
+                                    }
                                 } else {
-                                    $this->Revenue->set('transaction_status', 'posting');
-                                }
+                                    $revenueDetails = $this->Revenue->RevenueDetail->getData('first', array(
+                                        'conditions' => array(
+                                            'RevenueDetail.revenue_id' => $revenue_id,
+                                            'RevenueDetail.invoice_id' => $id,
+                                        ),
+                                    ), array(
+                                        'branch' => false,
+                                    ));
 
-                                $this->Revenue->save();
+                                    $this->Revenue->id = $revenue_id;
+
+                                    if(!empty($revenueDetails)){
+                                        $this->Revenue->set('transaction_status', 'half_invoiced');
+                                    } else {
+                                        $this->Revenue->set('transaction_status', 'posting');
+                                    }
+
+                                    $this->Revenue->save();
+                                }
                             }
                         }
 
