@@ -494,27 +494,6 @@
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
-							echo $this->Form->label('CoaSettingDetail.PotonganUJ.coa_id', __('Potongan Uang Jalan / Komisi'));
-					?>
-				</div>
-				<div class="col-sm-4 col-sm-offset-4">
-		        	<?php 
-							echo $this->Form->input('CoaSettingDetail.PotonganUJ.coa_id',array(
-								'label'=> false, 
-								'class'=>'form-control chosen-select',
-								'required' => false,
-								'empty' => __('Pilih COA'),
-								'options' => $coas,
-							));
-							echo $this->Form->hidden('CoaSettingDetail.Asuransi.id');
-					?>
-				</div>
-			</div>
-        </div>
-        <div class="form-group">
-			<div class="row">
-				<div class="col-sm-4">
-			    	<?php 
 							echo $this->Form->label('biaya_ttuj_payment_coa_id', __('Pembayaran Biaya TTUJ'));
 					?>
 				</div>
@@ -527,6 +506,111 @@
 								'empty' => __('Pilih COA'),
 								'options' => $coas,
 							));
+					?>
+				</div>
+			</div>
+        </div>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
+							echo $this->Form->label('CoaSettingDetail.NoClaim.coa_id', __('No Claim'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('CoaSettingDetail.NoClaim.coa_id',array(
+								'label'=> false, 
+								'class'=>'form-control chosen-select',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+							echo $this->Form->hidden('CoaSettingDetail.NoClaim.id');
+					?>
+				</div>
+			</div>
+        </div>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
+							echo $this->Form->label('CoaSettingDetail.Stood.coa_id', __('Stood'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('CoaSettingDetail.Stood.coa_id',array(
+								'label'=> false, 
+								'class'=>'form-control chosen-select',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+							echo $this->Form->hidden('CoaSettingDetail.Stood.id');
+					?>
+				</div>
+			</div>
+        </div>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
+							echo $this->Form->label('CoaSettingDetail.Other.coa_id', __('Lain-lain'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('CoaSettingDetail.Other.coa_id',array(
+								'label'=> false, 
+								'class'=>'form-control chosen-select',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+							echo $this->Form->hidden('CoaSettingDetail.Other.id');
+					?>
+				</div>
+			</div>
+        </div>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
+							echo $this->Form->label('CoaSettingDetail.Titipan.coa_id', __('Titipan'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('CoaSettingDetail.Titipan.coa_id',array(
+								'label'=> false, 
+								'class'=>'form-control chosen-select',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+							echo $this->Form->hidden('CoaSettingDetail.Titipan.id');
+					?>
+				</div>
+			</div>
+        </div>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-sm-4">
+			    	<?php 
+							echo $this->Form->label('CoaSettingDetail.PotonganClaim.coa_id', __('Potongan Claim'));
+					?>
+				</div>
+				<div class="col-sm-4">
+		        	<?php 
+							echo $this->Form->input('CoaSettingDetail.PotonganClaim.coa_id',array(
+								'label'=> false, 
+								'class'=>'form-control chosen-select',
+								'required' => false,
+								'empty' => __('Pilih COA'),
+								'options' => $coas,
+							));
+							echo $this->Form->hidden('CoaSettingDetail.PotonganClaim.id');
 					?>
 				</div>
 			</div>

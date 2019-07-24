@@ -395,5 +395,16 @@ class Journal extends AppModel {
 
         return $data;
     }
+
+    function _callCoaSetTotal ( $total, $coaName, $field, $options ) {
+        if( !empty($total) ) {
+            $coa = $this->User->Coa->CoaSettingDetail->getMerge(array(), $coaName, 'CoaSettingDetail.label');
+            $coa_id = !empty($coa['CoaSettingDetail']['coa_id'])?$coa['CoaSettingDetail']['coa_id']:false;
+
+            $this->setJournal($total, array(
+                $field => $coa_id,
+            ), $options);
+        }
+    }
 }
 ?>

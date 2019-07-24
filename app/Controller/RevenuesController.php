@@ -7289,8 +7289,12 @@ class RevenuesController extends AppController {
         $cogs_id = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'cogs_id');
         
         $totalPayment = 0;
-        $totalMin = 0;
+        $totalTitipan = 0;
+        $totalClaim = 0;
         $totalPlus = 0;
+        $totalStood = 0;
+        $totalNoClaim = 0;
+        $totalLainnya = 0;
 
         if( !empty($ttuj_payment_id) ) {
             $curr_ttuj_id = Common::hashEmptyField($data, 'TtujPayment.ttuj_id');
@@ -7404,7 +7408,12 @@ class RevenuesController extends AppController {
                 $this->request->data['TtujPayment']['debt_note'][$key] = $debt_note;
 
                 $totalPlus += $amount + $no_claim + $stood + $lainnya;
-                $totalMin += $titipan + $claim;
+                $totalNoClaim += $no_claim;
+                $totalStood += $stood;
+                $totalLainnya += $lainnya;
+
+                $totalTitipan += $titipan;
+                $totalTitipan += $claim;
                 $totalPayment += $amount + $no_claim + $stood + $lainnya - $titipan - $claim - $debt;
 
                 $total_dibayar = $this->Ttuj->TtujPaymentDetail->getTotalPayment($ttuj_id, $data_type, false, array(
@@ -7578,34 +7587,38 @@ class RevenuesController extends AppController {
                             break;
                     }
 
-                    $this->User->Journal->deleteJournal($ttuj_payment_id, array(
-                        $journal_type,
-                    ));
-                    $this->User->Journal->setJournal($totalPlus, array(
-                        'credit' => $coa_id,
-                    ), array(
+                    $coaOptions = array(
                         'cogs_id' => $cogs_id,
                         'date' => $date_payment,
                         'document_id' => $ttuj_payment_id,
                         'title' => $titleJournalInv,
                         'document_no' => $document_no,
                         'type' => $journal_type,
+                    );
+
+                    $this->User->Journal->deleteJournal($ttuj_payment_id, array(
+                        $journal_type,
                     ));
+                    $this->User->Journal->setJournal($totalPlus, array(
+                        'credit' => $coa_id,
+                    ), $coaOptions);
+                    
 
-                    if( !empty($totalMin) ) {
-                        $coaPotonganUJ = $this->User->Coa->CoaSettingDetail->getMerge(array(), 'PotonganUJ', 'CoaSettingDetail.label');
-                        $potongan_uj_id = !empty($coaPotonganUJ['CoaSettingDetail']['coa_id'])?$coaPotonganUJ['CoaSettingDetail']['coa_id']:false;
+                    if( !empty($totalNoClaim) ) {
+                        $this->User->Journal->_callCoaSetTotal($totalNoClaim, 'NoClaim', 'debit', $coaOptions);
+                    }
+                    if( !empty($totalStood) ) {
+                        $this->User->Journal->_callCoaSetTotal($totalStood, 'Stood', 'debit', $coaOptions);
+                    }
+                    if( !empty($totalLainnya) ) {
+                        $this->User->Journal->_callCoaSetTotal($totalLainnya, 'Other', 'debit', $coaOptions);
+                    }
 
-                        $this->User->Journal->setJournal($totalMin, array(
-                            'credit' => $potongan_uj_id,
-                        ), array(
-                            'cogs_id' => $cogs_id,
-                            'date' => $date_payment,
-                            'document_id' => $ttuj_payment_id,
-                            'title' => $titleJournalInv,
-                            'document_no' => $document_no,
-                            'type' => $journal_type,
-                        ));
+                    if( !empty($titipan) ) {
+                        $this->User->Journal->_callCoaSetTotal($titipan, 'Titipan', 'debit', $coaOptions);
+                    }
+                    if( !empty($claim) ) {
+                        $this->User->Journal->_callCoaSetTotal($claim, 'PotonganClaim', 'debit', $coaOptions);
                     }
 
                     if( !empty($dataAmount) ) {
@@ -7621,29 +7634,21 @@ class RevenuesController extends AppController {
                             $claim = !empty($this->request->data['TtujPayment']['claim'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['claim'][$key]):0;
                             $debt = !empty($this->request->data['TtujPayment']['debt'][$key])?$this->MkCommon->convertPriceToString($this->request->data['TtujPayment']['debt'][$key]):0;
                             
-                            $this->User->Journal->setJournal($amount + $no_claim + $stood + $lainnya, array(
+                            $tmpCoaOptions = $coaOptions;
+                            $tmpCoaOptions['truck_id'] = Common::hashEmptyField($dataTtuj, 'Ttuj.truck_id');
+                            $this->User->Journal->setJournal($amount, array(
                                 'debit' => $debit_id,
-                            ), array(
-                                'truck_id' => Common::hashEmptyField($dataTtuj, 'Ttuj.truck_id'),
-                                'cogs_id' => $cogs_id,
-                                'date' => $date_payment,
-                                'document_id' => $ttuj_payment_id,
-                                'title' => $titleJournalInv,
-                                'document_no' => $document_no,
-                                'type' => $journal_type,
-                            ));
+                            ), $tmpCoaOptions);
 
-                            if( !empty($totalMin) ) {
-                                $this->User->Journal->setJournal($titipan + $claim, array(
-                                    'debit' => $coa_id,
-                                ), array(
-                                    'cogs_id' => $cogs_id,
-                                    'date' => $date_payment,
-                                    'document_id' => $ttuj_payment_id,
-                                    'title' => $titleJournalInv,
-                                    'document_no' => $document_no,
-                                    'type' => $journal_type,
-                                ));
+                            if( !empty($titipan) ) {
+                                $this->User->Journal->setJournal($titipan, array(
+                                    'credit' => $coa_id,
+                                ), $coaOptions);
+                            }
+                            if( !empty($claim) ) {
+                                $this->User->Journal->setJournal($claim, array(
+                                    'credit' => $coa_id,
+                                ), $coaOptions);
                             }
                         }
                     }
@@ -7886,7 +7891,16 @@ class RevenuesController extends AppController {
                                 }
 
                                 $grandtotalPlus = 0;
-                                $grandtotalMin = 0;
+                                $grandtotalTitipan = 0;
+                                $grandtotalClaim = 0;
+                                $coaOptions = array(
+                                    'cogs_id' => $cogs_id,
+                                    'date' => $date_payment,
+                                    'document_id' => $id,
+                                    'title' => $titleJournalInv,
+                                    'document_no' => $document_no,
+                                    'type' => $journal_type,
+                                );
 
                                 if( !empty($invoice['TtujPaymentDetail']) ) {
                                     foreach ($invoice['TtujPaymentDetail'] as $key => $ttujPaymentDetail) {
@@ -7900,62 +7914,45 @@ class RevenuesController extends AppController {
 
                                         $dataTtuj = $this->Ttuj->getMerge(array(), $ttuj_id);
                                         $totalPlus = $amount + $no_claim + $stood + $lainnya;
-                                        $totalMin = $titipan + $claim;
+                                        // $totalMin = $titipan + $claim;
                                         $grandtotalPlus += $totalPlus;
-                                        $grandtotalMin += $totalMin;
-                                        
-                                        $this->User->Journal->setJournal($totalPlus, array(
-                                            'credit' => $credit_id,
-                                        ), array(
-                                            'truck_id' => Common::hashEmptyField($dataTtuj, 'Ttuj.truck_id'),
-                                            'cogs_id' => $cogs_id,
-                                            'date' => $date_payment,
-                                            'document_id' => $id,
-                                            'title' => $titleJournalInv,
-                                            'document_no' => $document_no,
-                                            'type' => $journal_type,
-                                        ));
+                                        $grandtotalTitipan += $titipan;
+                                        $grandtotalClaim += $claim;
 
-                                        if( !empty($totalMin) ) {
-                                            $this->User->Journal->setJournal($totalMin, array(
-                                                'credit' => $coa_id,
-                                            ), array(
-                                                'cogs_id' => $cogs_id,
-                                                'date' => $date_payment,
-                                                'document_id' => $ttuj_payment_id,
-                                                'title' => $titleJournalInv,
-                                                'document_no' => $document_no,
-                                                'type' => $journal_type,
-                                            ));
+                                        if( !empty($no_claim) ) {
+                                            $this->User->Journal->_callCoaSetTotal($no_claim, 'NoClaim', 'credit', $coaOptions);
                                         }
+                                        if( !empty($stood) ) {
+                                            $this->User->Journal->_callCoaSetTotal($stood, 'Stood', 'credit', $coaOptions);
+                                        }
+                                        if( !empty($lainnya) ) {
+                                            $this->User->Journal->_callCoaSetTotal($lainnya, 'Other', 'credit', $coaOptions);
+                                        }
+
+                                        if( !empty($titipan) ) {
+                                            $this->User->Journal->_callCoaSetTotal($titipan, 'Titipan', 'credit', $coaOptions);
+                                        }
+                                        if( !empty($claim) ) {
+                                            $this->User->Journal->_callCoaSetTotal($claim, 'PotonganClaim', 'credit', $coaOptions);
+                                        }
+                                        
+                                        $tmpCoaOptions = $coaOptions;
+                                        $tmpCoaOptions['truck_id'] = Common::hashEmptyField($dataTtuj, 'Ttuj.truck_id');
+                                        $this->User->Journal->setJournal($amount, array(
+                                            'credit' => $credit_id,
+                                        ), $tmpCoaOptions);
                                     }
                                 }
 
                                 $this->User->Journal->setJournal($grandtotalPlus, array(
                                     'debit' => $coa_id,
-                                ), array(
-                                    'cogs_id' => $cogs_id,
-                                    'date' => $date_payment,
-                                    'document_id' => $id,
-                                    'title' => $titleJournalInv,
-                                    'document_no' => $document_no,
-                                    'type' => $journal_type,
-                                ));
+                                ), $coaOptions);
 
-                                if( !empty($grandtotalMin) ) {
-                                    $coaPotonganUJ = $this->User->Coa->CoaSettingDetail->getMerge(array(), 'PotonganUJ', 'CoaSettingDetail.label');
-                                    $potongan_uj_id = !empty($coaPotonganUJ['CoaSettingDetail']['coa_id'])?$coaPotonganUJ['CoaSettingDetail']['coa_id']:false;
-
-                                    $this->User->Journal->setJournal($grandtotalMin, array(
-                                        'debit' => $potongan_uj_id,
-                                    ), array(
-                                        'cogs_id' => $cogs_id,
-                                        'date' => $date_payment,
-                                        'document_id' => $id,
-                                        'title' => $titleJournalInv,
-                                        'document_no' => $document_no,
-                                        'type' => $journal_type,
-                                    ));
+                                if( !empty($grandtotalTitipan) ) {
+                                    $this->User->Journal->_callCoaSetTotal($grandtotalTitipan, 'Titipan', 'debit', $coaOptions);
+                                }
+                                if( !empty($grandtotalClaim) ) {
+                                    $this->User->Journal->_callCoaSetTotal($grandtotalClaim, 'PotonganClaim', 'debit', $coaOptions);
                                 }
                             }
 

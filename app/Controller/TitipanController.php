@@ -175,7 +175,7 @@ class TitipanController extends AppController {
                     $id = $this->Titipan->id;
                     $nodoc = Common::hashEmptyField($data, 'Titipan.nodoc');
 
-                    $coaTitipan = $this->User->Coa->CoaSettingDetail->getMerge(array(), 'PotonganUJ', 'CoaSettingDetail.label');
+                    $coaTitipan = $this->User->Coa->CoaSettingDetail->getMerge(array(), 'Titipan', 'CoaSettingDetail.label');
                     $titipan_coa_id = !empty($coaTitipan['CoaSettingDetail']['coa_id'])?$coaTitipan['CoaSettingDetail']['coa_id']:false;
 
                     if(!empty($data['TitipanDetail'])){
@@ -185,32 +185,28 @@ class TitipanController extends AppController {
                             $title = __('%s Tgl %s', $this->module_title, Common::formatDate($transaction_date, 'd M Y'));
                         }
 
+                        $coaOptions = array(
+                            'document_id' => $id,
+                            'title' => $title,
+                            'document_no' => $nodoc,
+                            'type' => 'titipan',
+                            'date' => $transaction_date,
+                        );
+
                         foreach ($data['TitipanDetail'] as $key => $value) {
                             $total = $value['total'];
 
                             if( $transaction_status == 'posting' && !empty($titipan_coa_id) ) {
                                 $this->User->Journal->setJournal($total, array(
-                                    'credit' => $titipan_coa_id
-                                ), array(
-                                    'document_id' => $id,
-                                    'title' => $title,
-                                    'document_no' => $nodoc,
-                                    'type' => 'titipan',
-                                    'date' => $transaction_date,
-                                ));
+                                    'debit' => $titipan_coa_id
+                                ), $coaOptions);
                             }
                         }
 
                         if( $transaction_status == 'posting' && !empty($titipan_coa_id) ) {
                             $this->User->Journal->setJournal($grandtotal, array(
-                                'debit' => $coa_id,
-                            ), array(
-                                'document_id' => $id,
-                                'title' => $title,
-                                'document_no' => $nodoc,
-                                'type' => 'titipan',
-                                'date' => $transaction_date,
-                            ));
+                                'credit' => $coa_id,
+                            ), $coaOptions);
                         }
                     }
 
@@ -351,7 +347,7 @@ class TitipanController extends AppController {
             $this->Titipan->set('transaction_status', 'void');
 
             if($this->Titipan->save()){
-                $coaTitipan = $this->User->Coa->CoaSettingDetail->getMerge(array(), 'PotonganUJ', 'CoaSettingDetail.label');
+                $coaTitipan = $this->User->Coa->CoaSettingDetail->getMerge(array(), 'Titipan', 'CoaSettingDetail.label');
                 $titipan_coa_id = !empty($coaTitipan['CoaSettingDetail']['coa_id'])?$coaTitipan['CoaSettingDetail']['coa_id']:false;
 
                 if( !empty($value['TitipanDetail']) && !empty($titipan_coa_id) ) {

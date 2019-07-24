@@ -2484,7 +2484,7 @@ class CommonHelper extends AppHelper {
                 $id,
                 'admin' => false,
             );
-        } else if( in_array($type, array( 'titipan', 'titipan_void' )) ) {
+        } else if( in_array($type, array( 'titipan', 'titipan_void', 'void_titipan' )) ) {
             $urlDefault = array(
                 'controller' => 'titipan',
                 'action' => 'detail',
