@@ -570,8 +570,10 @@ class LakasController extends AppController {
 
         if( !empty($lakas) ) {
             $this->loadModel('LakaInsurance');
+            $this->Laka->LakaPaymentDetail->virtualFields['total_paid'] = 'LakaPaymentDetail.amount';
 
             foreach ($lakas as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'Laka', 'id');
                 $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Laka', 'ttuj_id');
                 $truck_id = $this->MkCommon->filterEmptyField($value, 'Laka', 'truck_id');
                 $branch_id = $this->MkCommon->filterEmptyField($value, 'Laka', 'branch_id');
@@ -585,10 +587,21 @@ class LakasController extends AppController {
                 $value = $this->Laka->Ttuj->Truck->getMerge($value, $truck_id);
                 $category_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'truck_category_id');
 
-
                 $value = $this->Laka->Ttuj->Truck->TruckCategory->getMerge($value, $category_id);
                 $value = $this->Laka->Ttuj->getMerge($value, $ttuj_id);
                 $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+
+                $laka_paid = $this->Laka->LakaPaymentDetail->getData('first', array(
+                    'conditions' => array(
+                        'LakaPaymentDetail.laka_id' => $id,
+                        'LakaPaymentDetail.status' => 1,
+                        'LakaPayment.status' => 1,
+                    ),
+                    'contain' => array(
+                        'LakaPayment',
+                    ),
+                ));
+                $value['LakaPaid'] = Common::hashEmptyField($laka_paid, 'LakaPaymentDetail');
 
                 $lakas[$key] = $value;
             }

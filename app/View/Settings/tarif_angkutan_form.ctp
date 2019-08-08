@@ -38,6 +38,8 @@
 								'angkut' => __('Tarif Angkut'),
 								'kuli' => __('Tarif Kuli Muat'),
 								'asuransi' => __('Asuransi'),
+								'multi_drop' => __('Multi Drop'),
+								'overnight_charges' => __('Overnight Charges'),
 							),
 						));
 				?>

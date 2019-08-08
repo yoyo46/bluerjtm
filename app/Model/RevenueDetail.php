@@ -67,6 +67,12 @@ class RevenueDetail extends AppModel {
         ),
     );
 
+    var $hasMany = array(
+        'RevenueDetail' => array(
+            'foreignKey' => 'parent_id',
+        ),
+    );
+
     function checkTarif( $data ) {
         $action_type = $this->filterEmptyField($this->Revenue->data, 'Revenue', 'action_type');
         $tarif_angkutan_id = $this->filterEmptyField($this->data, 'RevenueDetail', 'tarif_angkutan_id');

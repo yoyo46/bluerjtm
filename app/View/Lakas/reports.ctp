@@ -32,11 +32,11 @@
                 'field_model' => false,
                 'display' => true,
             ),
-            'category' => array(
-                'name' => __('Jenis Truk'),
-                'field_model' => false,
-                'display' => true,
-            ),
+            // 'category' => array(
+            //     'name' => __('Jenis Truk'),
+            //     'field_model' => false,
+            //     'display' => true,
+            // ),
             'driver_name' => array(
                 'name' => __('Supir'),
                 'field_model' => 'Laka.driver_name',
@@ -62,8 +62,18 @@
                 'field_model' => 'Laka.completed',
                 'display' => true,
             ),
-            'biaya' => array(
-                'name' => __('Total Biaya'),
+            'total_laka' => array(
+                'name' => __('Biaya LAKA'),
+                'field_model' => false,
+                'display' => true,
+            ),
+            'total' => array(
+                'name' => __('Ditanggung Supir'),
+                'field_model' => false,
+                'display' => true,
+            ),
+            'paid' => array(
+                'name' => __('Laka Dibayar'),
                 'field_model' => false,
                 'display' => true,
             ),

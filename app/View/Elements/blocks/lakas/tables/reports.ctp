@@ -15,7 +15,13 @@
                 $description_laka = $this->Common->filterEmptyField($value, 'Laka', 'description_laka');
                 $insurance = $this->Common->filterEmptyField($value, 'Laka', 'insurances');
                 $completed = $this->Common->filterEmptyField($value, 'Laka', 'completed');
+                $total_laka = Common::hashEmptyField($value, 'Laka.total_laka', 0, array(
+                    'type' => 'currency',
+                ));
                 $total = Common::hashEmptyField($value, 'Laka.total', 0, array(
+                    'type' => 'currency',
+                ));
+                $total_paid = Common::hashEmptyField($value, 'LakaPaid.total_paid', 0, array(
                     'type' => 'currency',
                 ));
 
@@ -87,9 +93,9 @@
             echo $this->Html->tag('td', $capacity, array(
                 'style' => 'text-align:center;',
             ));
-            echo $this->Html->tag('td', $category, array(
-                'style' => 'text-align:center;',
-            ));
+            // echo $this->Html->tag('td', $category, array(
+            //     'style' => 'text-align:center;',
+            // ));
             echo $this->Html->tag('td', $driver_name);
             echo $this->Html->tag('td', $lokasi_laka);
             echo $this->Html->tag('td', $description_laka);
@@ -99,7 +105,13 @@
             echo $this->Html->tag('td', $completed, array(
                 'style' => 'text-align:center;',
             ));
+            echo $this->Html->tag('td', $total_laka, array(
+                'style' => 'text-align:right;',
+            ));
             echo $this->Html->tag('td', $total, array(
+                'style' => 'text-align:right;',
+            ));
+            echo $this->Html->tag('td', $total_paid, array(
                 'style' => 'text-align:right;',
             ));
     ?>

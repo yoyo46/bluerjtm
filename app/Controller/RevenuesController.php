@@ -2766,10 +2766,10 @@ class RevenuesController extends AppController {
 
         if( !empty($values) ) {
             $this->Ttuj->virtualFields['dt'] = 'CASE WHEN Ttuj.completed = 1 THEN DATE_FORMAT(Ttuj.completed_date, \'%Y-%m\') ELSE DATE_FORMAT(Ttuj.tgljam_pool, \'%Y-%m\') END';
-            $this->Ttuj->virtualFields['cnt'] = 'COUNT(Ttuj.truck_id)';
+            $this->Ttuj->virtualFields['rit_cnt'] = 'COUNT(Ttuj.truck_id)';
 
             $this->Ttuj->virtualFields['dt'] = 'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m\')';
-            $this->Ttuj->virtualFields['cnt'] = 'SUM(Ttuj.ttuj_tipe_motor_count)';
+            $this->Ttuj->virtualFields['unit_cnt'] = 'SUM(Ttuj.ttuj_tipe_motor_count)';
 
             foreach ($values as $key => $value) {
                 $truck_id = $this->MkCommon->filterEmptyField($value, 'Truck', 'id');
@@ -2803,7 +2803,7 @@ class RevenuesController extends AppController {
                     ),
                     'fields' => array(
                         'Ttuj.dt',
-                        'Ttuj.cnt',
+                        'Ttuj.rit_cnt',
                     ),
                 ), true, array(
                     'branch' => false,
@@ -2823,7 +2823,7 @@ class RevenuesController extends AppController {
                     ),
                     'fields'=> array(
                         'Ttuj.dt',
-                        'Ttuj.cnt',
+                        'Ttuj.unit_cnt',
                     ),
                 ), false);
                 

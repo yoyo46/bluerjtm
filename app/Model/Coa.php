@@ -336,7 +336,12 @@ class Coa extends AppModel {
                 if( !empty($children) ) {
                     $tmp = $this->_callGenerateParent($children, $data);
                     $result_tmp = Common::hashEmptyField($tmp, 'data');
-                    $flag = Common::hashEmptyField($tmp, 'flag');
+
+                    if( !empty($result_tmp) ) {
+                        $flag = true;
+                    } else {
+                        $flag = Common::hashEmptyField($tmp, 'flag');
+                    }
                 }
 
                 if( !empty($data[$id]) && empty($flag) ) {
