@@ -2491,6 +2491,20 @@ class CommonHelper extends AppHelper {
                 $id,
                 'admin' => false,
             );
+        } else if( in_array($type, array( 'laka', 'laka_void', 'void_laka' )) ) {
+            $urlDefault = array(
+                'controller' => 'lakas',
+                'action' => 'detail',
+                $id,
+                'admin' => false,
+            );
+        } else if( in_array($type, array( 'laka_payment', 'laka_payment_void', 'void_laka_payment' )) ) {
+            $urlDefault = array(
+                'controller' => 'lakas',
+                'action' => 'detail',
+                $id,
+                'admin' => false,
+            );
         }
 
         if( !empty($urlDefault) && empty($data_action) ) {
@@ -2506,6 +2520,77 @@ class CommonHelper extends AppHelper {
         } else {
             return sprintf('#%s', $label);
         }
+    }
+
+    function _callTypeJournal ( $type = false ) {
+        $is_void = strpos($type, 'void');
+        $label = '';
+
+        if( in_array($type, array( 'asdp', 'asdp_void' )) ) {
+            $label = __('ASDP');
+        } else if( in_array($type, array( 'commission', 'commission_void' )) ) {
+            $label = __('Komisi UJ');
+        } else if( in_array($type, array( 'uang_jalan', 'uang_jalan_void' )) ) {
+            $label = __('Biaya UJ');
+        } else if( in_array($type, array( 'uang_kuli_muat', 'uang_kuli_muat_void' )) ) {
+            $label = __('Kuli Muat');
+        } else if( in_array($type, array( 'uang_kuli_bongkar', 'uang_kuli_bongkar_void' )) ) {
+            $label = __('Kuli Bongkar');
+        } else if( in_array($type, array( 'uang_kawal', 'uang_kawal_void' )) ) {
+            $label = __('Biaya Kawal');
+        } else if( in_array($type, array( 'uang_keamanan', 'uang_keamanan_void' )) ) {
+            $label = __('Biaya Keamanan');
+        } else if( in_array($type, array( 'in', 'void_in' )) ) {
+            $label = __('Cash IN');
+        } else if( in_array($type, array( 'out', 'void_out' )) ) {
+            $label = __('Cash OUT');
+        } else if( in_array($type, array( 'ppn_out', 'void_ppn_out' )) ) {
+            $label = __('PPN OUT');
+        } else if( in_array($type, array( 'prepayment_out', 'void_prepayment_out' )) ) {
+            $label = __('Prepayment OUT');
+        } else if( in_array($type, array( 'prepayment_in', 'void_prepayment_in' )) ) {
+            $label = __('Prepayment IN');
+        } else if( in_array($type, array( 'leasing_payment', 'leasing_payment_void' )) ) {
+            $label = __('Pembayaran Leasing');
+        } else if( in_array($type, array( 'lku_payment', 'lku_payment_void' )) ) {
+            $label = __('Pembayaran LKU');
+        } else if( in_array($type, array( 'ksu_payment', 'ksu_payment_void' )) ) {
+            $label = __('Pembayaran KSU');
+        } else if( in_array($type, array( 'invoice', 'invoice_void' )) ) {
+            $label = __('Invoice');
+        } else if( in_array($type, array( 'invoice_payment', 'invoice_payment_void' )) ) {
+            $label = __('Pembayaran Invoice');
+        } else if( in_array($type, array( 'kir', 'kir_void' )) ) {
+            $label = __('KIR');
+        } else if( in_array($type, array( 'siup', 'siup_void' )) ) {
+            $label = __('SIUP');
+        } else if( in_array($type, array( 'stnk', 'stnk_void' )) ) {
+            $label = __('STNK');
+        } else if( in_array($type, array( 'revenue', 'revenue_void' )) ) {
+            $label = __('Revenue');
+        } else if( in_array($type, array( 'biaya_ttuj_payment', 'biaya_ttuj_payment_void' )) ) {
+            $label = __('Pembayaran Biaya TTUJ');
+        } else if( in_array($type, array( 'uang_Jalan_commission_payment', 'uang_Jalan_commission_payment_void' )) ) {
+            $label = __('Pembayaran UJ/Komisi');
+        } else if( in_array($type, array( 'general_ledger' )) ) {
+            $label = __('Jurnal Umum');
+        } else if( in_array($type, array( 'debt', 'debt_void' )) ) {
+            $label = __('Hutang Karyawan');
+        } else if( in_array($type, array( 'debt_payment', 'debt_payment_void' )) ) {
+            $label = __('Pembayaran Hutang Karyawan');
+        } else if( in_array($type, array( 'titipan', 'titipan_void', 'void_titipan' )) ) {
+            $label = __('Titipan');
+        } else if( in_array($type, array( 'laka', 'laka_void', 'void_laka' )) ) {
+            $label = __('LAKA');
+        } else if( in_array($type, array( 'laka_payment', 'laka_payment_void', 'void_laka_payment' )) ) {
+            $label = __('Pembayaran LAKA');
+        }
+
+        if( is_numeric($is_void) ) {
+            $label = __('Pembatalan %s', $label);
+        }
+
+        return $label;
     }
 
     function array_filter_recursive($input) { 
