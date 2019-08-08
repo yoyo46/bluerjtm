@@ -17,6 +17,11 @@
                 'data-options' => 'field:\'nodoc\',width:150',
                 'fix_column' => true,
             ),
+            'type' => array(
+                'name' => __('Tipe Kas'),
+                'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'type\',width:150',
+            ),
             'title' => array(
                 'name' => __('Title'),
                 'style' => 'text-align: center;vertical-align: middle;',

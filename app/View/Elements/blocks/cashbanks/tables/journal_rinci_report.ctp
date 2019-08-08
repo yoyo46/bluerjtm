@@ -10,6 +10,8 @@
                 $debit = $this->Common->filterEmptyField($value, 'Journal', 'debit');
                 $credit = $this->Common->filterEmptyField($value, 'Journal', 'credit');
                 $nopol = $this->Common->filterEmptyField($value, 'Journal', 'nopol');
+                $type = $this->Common->filterEmptyField($value, 'Journal', 'type');
+                $type = $this->Common->_callTypeJournal($type);
 
                 $coa = $this->Common->filterEmptyField($value, 'Coa', 'coa_name');
 
@@ -26,6 +28,7 @@
             echo $this->Html->tag('td', $customNoref);
             echo $this->Html->tag('td', $customDate);
             echo $this->Html->tag('td', $document_no);
+            echo $this->Html->tag('td', $type);
             echo $this->Html->tag('td', $title, array(
                 'style' => 'text-align:left;'
             ));
