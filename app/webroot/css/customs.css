@@ -243,12 +243,14 @@ ul.list-calendar {
 }
 
 .monitoring .ico-calendar {
-	height: 30px;
+	/*height: 30px;*/
 	margin: 0 auto;
 }
 
 .monitoring td {
-	height: 47px;
+  height: 47px;
+  vertical-align: middle !important;
+  padding: 8px 5px !important;
 }
 /*
 **	END Truck

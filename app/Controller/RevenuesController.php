@@ -8204,6 +8204,9 @@ class RevenuesController extends AppController {
                                         $tanggal_revenue = !empty($tgl_sj)?$this->MkCommon->getDate($tgl_sj):false;
                                         $tgl_kwitansi = !empty($tgl_kwitansi)?$this->MkCommon->getDate($tgl_kwitansi):false;
 
+                                        $tanggal_revenue = ($tanggal_revenue=='1970-01-01')?Common::formatDate($tgl_sj, 'Y-m-d'):$tanggal_revenue;
+                                        $tgl_kwitansi = ($tgl_kwitansi=='1970-01-01')?Common::formatDate($tgl_kwitansi, 'Y-m-d'):$tgl_kwitansi;
+
                                         $no_doc = $this->Revenue->generateNoDoc();
 
                                         $dataRevenue = array();

@@ -6568,6 +6568,7 @@ class RmReportComponent extends Component {
                 $branch_id = Common::hashEmptyField($value, 'UangJalan.branch_id');
                 $from_city_id = Common::hashEmptyField($value, 'UangJalan.from_city_id');
                 $to_city_id = Common::hashEmptyField($value, 'UangJalan.to_city_id');
+                $titipan = Common::hashEmptyField($value, 'UangJalan.potongan_tabungan');
 
                 $value = $this->controller->City->getMerge($value, $from_city_id, 'FromCity');
                 $value = $this->controller->City->getMerge($value, $to_city_id, 'ToCity');
@@ -6861,6 +6862,19 @@ class RmReportComponent extends Component {
 						),
 		            ));
 		        }
+
+		        $result[$key] = array_merge($result[$key], array(
+					__('Tipe Titipan') => array(
+						'text' => !empty($titipan)?Common::hashEmptyField($value, 'UangJalan.potongan_tabungan_type'):'',
+					),
+					__('Titipan') => array(
+						'text' => !empty($view)?Common::hashEmptyFieldgetFormatPrice($titipan, 0, ''):$titipan,
+	            		'excel' => array(
+	            			'align' => 'right',
+	            			'type' => 'number',
+	        			),
+					),
+		        ));
 		    }
 		}
 
