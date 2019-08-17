@@ -5556,35 +5556,38 @@ class RmReportComponent extends Component {
 				                'child' => array(
 				                	__('Budget') => array(
 										'name' => __('Budget'),
-										'text' => Common::getFormatPrice($budget, 2, '-'),
+										'text' => !empty($view)?Common::getFormatPrice($budget, 2, '-'):round($budget, 2),
 						                'style' => 'text-align: right;',
 						                'data-options' => 'field:\'month_budget_'.$month.'\',width:120',
 						                'align' => 'right',
 										'width' => $width,
 				                		'excel' => array(
 				                			'align' => 'right',
+				                			'type' => 'number',
 				            			),
 				            		),
 				                	__('Saldo') => array(
 										'name' => __('Saldo'),
-										'text' => Common::getFormatPrice($balance, 2, '-'),
+										'text' => !empty($view)?Common::getFormatPrice($balance, 2, '-'):round($balance, 2),
 						                'style' => 'text-align: right;',
 						                'data-options' => 'field:\'month_saldo_'.$month.'\',width:120',
 						                'align' => 'right',
 										'width' => $width,
 				                		'excel' => array(
 				                			'align' => 'right',
+				                			'type' => 'number',
 				            			),
 				            		),
 				                	__('Selisih') => array(
 										'name' => __('Selisih'),
-										'text' => Common::getFormatPrice($selisih, 2, '-'),
+										'text' => !empty($view)?Common::getFormatPrice($selisih, 2, '-'):round($selisih, 2),
 						                'style' => 'text-align: right;',
 						                'data-options' => 'field:\'month_selisih_'.$month.'\',width:120',
 						                'align' => 'right',
 										'width' => $width,
 				                		'excel' => array(
 				                			'align' => 'right',
+				                			'type' => 'number',
 				            			),
 				            		),
 				                	__('%') => array(
@@ -5654,35 +5657,38 @@ class RmReportComponent extends Component {
 			                'child' => array(
 			                	__('Budget') => array(
 									'name' => __('Budget'),
-									'text' => Common::getFormatPrice($total_budget, 2, '-'),
+									'text' => !empty($view)?Common::getFormatPrice($total_budget, 2, '-'):round($total_budget, 2),
 					                'style' => 'text-align: right;',
 					                'data-options' => 'field:\'month_budget_total\',width:120',
 					                'align' => 'right',
 									'width' => $width,
 			                		'excel' => array(
 			                			'align' => 'right',
+			                			'type' => 'number',
 			            			),
 			            		),
 			                	__('Saldo') => array(
 									'name' => __('Saldo'),
-									'text' => Common::getFormatPrice($total_balance, 2, '-'),
+									'text' => !empty($view)?Common::getFormatPrice($total_balance, 2, '-'):round($total_balance, 2),
 					                'style' => 'text-align: right;',
 					                'data-options' => 'field:\'month_saldo_total\',width:120',
 					                'align' => 'right',
 									'width' => $width,
 			                		'excel' => array(
 			                			'align' => 'right',
+			                			'type' => 'number',
 			            			),
 			            		),
 			                	__('Selisih') => array(
 									'name' => __('Selisih'),
-									'text' => Common::getFormatPrice($total_selisih, 2, '-'),
+									'text' => !empty($view)?Common::getFormatPrice($total_selisih, 2, '-'):round($total_selisih, 2),
 					                'style' => 'text-align: right;',
 					                'data-options' => 'field:\'month_selisih_total\',width:120',
 					                'align' => 'right',
 									'width' => $width,
 			                		'excel' => array(
 			                			'align' => 'right',
+			                			'type' => 'number',
 			            			),
 			            		),
 			                	__('%') => array(
@@ -5724,6 +5730,7 @@ class RmReportComponent extends Component {
 			        	'summaryBalances' => $summaryBalances,
 			        	'summaryBudgets' => $summaryBudgets,
 			        	'result' => $result,
+			        	'view' => $view,
 			    	));
 				}
 			}
@@ -5883,35 +5890,38 @@ class RmReportComponent extends Component {
                 'child' => array(
                 	__('Budget') => array(
 						'name' => __('Budget'),
-						'text' => Common::getFormatPrice($budget, 2, '-'),
+						'text' => !empty($view)?Common::getFormatPrice($budget, 2, '-'):round($budget, 2),
 		                'style' => 'text-align: right;',
 		                'data-options' => 'field:\'month_budget_'.$month.'\',width:120',
 		                'align' => 'right',
 						'width' => $width,
                 		'excel' => array(
                 			'align' => 'right',
+                			'type' => 'number',
             			),
             		),
                 	__('Saldo') => array(
 						'name' => __('Saldo'),
-						'text' => Common::getFormatPrice($balance, 2, '-'),
+						'text' => !empty($view)?Common::getFormatPrice($balance, 2, '-'):round($balance, 2),
 		                'style' => 'text-align: right;',
 		                'data-options' => 'field:\'month_saldo_'.$month.'\',width:120',
 		                'align' => 'right',
 						'width' => $width,
                 		'excel' => array(
                 			'align' => 'right',
+                			'type' => 'number',
             			),
             		),
                 	__('Selisih') => array(
 						'name' => __('Selisih'),
-						'text' => Common::getFormatPrice($selisih, 2, '-'),
+						'text' => !empty($view)?Common::getFormatPrice($selisih, 2, '-'):round($selisih, 2),
 		                'style' => 'text-align: right;',
 		                'data-options' => 'field:\'month_selisih_'.$month.'\',width:120',
 		                'align' => 'right',
 						'width' => $width,
                 		'excel' => array(
                 			'align' => 'right',
+                			'type' => 'number',
             			),
             		),
                 	__('%') => array(
@@ -5971,35 +5981,38 @@ class RmReportComponent extends Component {
             'child' => array(
             	__('Budget') => array(
 					'name' => __('Budget'),
-					'text' => Common::getFormatPrice($total_budget, 2, '-'),
+					'text' => !empty($view)?Common::getFormatPrice($total_budget, 2, '-'):round($total_budget, 2),
 	                'style' => 'text-align: right;',
 	                'data-options' => 'field:\'month_budget_total\',width:120',
 	                'align' => 'right',
 					'width' => $width,
             		'excel' => array(
             			'align' => 'right',
+            			'type' => 'number',
         			),
         		),
             	__('Saldo') => array(
 					'name' => __('Saldo'),
-					'text' => Common::getFormatPrice($total_balance, 2, '-'),
+					'text' => !empty($view)?Common::getFormatPrice($total_balance, 2, '-'):round($total_balance, 2),
 	                'style' => 'text-align: right;',
 	                'data-options' => 'field:\'month_saldo_total\',width:120',
 	                'align' => 'right',
 					'width' => $width,
             		'excel' => array(
             			'align' => 'right',
+            			'type' => 'number',
         			),
         		),
             	__('Selisih') => array(
 					'name' => __('Selisih'),
-					'text' => Common::getFormatPrice($total_selisih, 2, '-'),
+					'text' => !empty($view)?Common::getFormatPrice($total_selisih, 2, '-'):round($total_selisih, 2),
 	                'style' => 'text-align: right;',
 	                'data-options' => 'field:\'month_selisih_total\',width:120',
 	                'align' => 'right',
 					'width' => $width,
             		'excel' => array(
             			'align' => 'right',
+            			'type' => 'number',
         			),
         		),
             	__('%') => array(
