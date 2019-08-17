@@ -2643,13 +2643,16 @@ class RmReportComponent extends Component {
     	));
 		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
 		$params = $this->MkCommon->_callRefineParams($params);
+        $branch_id = $this->MkCommon->getConditionGroupBranch( $params, 'Truck', false, 'value' );
 
 		$options = array(
+			'conditions' => array(
+				'Truck.branch_id' => $branch_id,
+			),
         	'offset' => $offset,
         	'limit' => $limit,
         );
 		$options = $this->controller->Truck->_callRefineParams($params, $options);
-        $branch_id = $this->MkCommon->getConditionGroupBranch( $params, 'Truck', false, 'value' );
     	$year = Common::hashEmptyField($params, 'named.year', date('Y'));
 
 		$this->controller->paginate	= $this->controller->Truck->getData('paginate', $options, true, array(

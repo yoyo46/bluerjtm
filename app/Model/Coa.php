@@ -134,6 +134,9 @@ class Coa extends AppModel {
         if(!empty($options['fields'])){
             $default_options['fields'] = $options['fields'];
         }
+        if(!empty($options['offset'])){
+            $default_options['offset'] = $options['offset'];
+        }
 
         if( $find == 'paginate' ) {
             $result = $default_options;
