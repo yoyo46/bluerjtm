@@ -639,7 +639,7 @@
 	<div class="col-sm-6">
 		<div class="box box-primary">
 		    <div class="box-header">
-		        <h3 class="box-title"><?php echo __('Potongan Tabungan Supir'); ?></h3>
+		        <h3 class="box-title"><?php echo __('Titipan'); ?></h3>
 		    </div>
 		    <div class="box-body">
 		    	<div class="row">
@@ -650,15 +650,22 @@
 				    		?>
 		                    <div class="input-group">
 						    	<?php 
+						    			echo $this->Html->tag('span', $this->Form->input('potongan_tabungan_type',array(
+											'label'=> false, 
+											'required' => false,
+											'options' => array(
+												'percent' => '%',
+												'nominal' => 'Rp.',
+											),
+										)), array(
+						    				'class' => 'input-group-addon'
+					    				));
 										echo $this->Form->input('potongan_tabungan',array(
 											'type' => 'text',
 											'label'=> false, 
 											'class'=>'form-control input_number',
 											'required' => false,
 										));
-						    			echo $this->Html->tag('span', __('%'), array(
-						    				'class' => 'input-group-addon'
-					    				));
 								?>
 							</div>
 						</div>

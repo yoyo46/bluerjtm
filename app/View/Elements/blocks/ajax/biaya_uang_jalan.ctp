@@ -11,6 +11,7 @@
         $tgl_bon_biru = Common::formatDate($tgl_bon_biru, 'd/m/Y', '-');
 
         $potongan_tabungan = Common::hashEmptyField($ttuj, 'UangJalan.potongan_tabungan', 0);
+        $potongan_tabungan_type = Common::hashEmptyField($ttuj, 'UangJalan.potongan_tabungan_type', 'percent');
         // $laka_total = Common::hashEmptyField($ttuj, 'Laka.total');
         $debt_total = Common::hashEmptyField($ttuj, 'Debt.total');
 
@@ -55,7 +56,11 @@
 
             // if( $data_type == 'commission' ) {
                 if( !empty($potongan_tabungan) ) {
-                    $titipan = $total_biaya * ($potongan_tabungan/100);
+                    if( $potongan_tabungan_type == 'nominal' ) {
+                        $titipan = $potongan_tabungan;
+                    } else {
+                        $titipan = $total_biaya * ($potongan_tabungan/100);
+                    }
                 }
                 
                 // if( !empty($laka_percent) && !empty($laka_total) ) {

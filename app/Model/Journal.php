@@ -39,6 +39,9 @@ class Journal extends AppModel {
             'className' => 'Cogs',
             'foreignKey' => 'cogs_id',
         ),
+        'Branch' => array(
+            'foreignKey' => 'branch_id',
+        ),
     );
 
     var $hasMany = array(

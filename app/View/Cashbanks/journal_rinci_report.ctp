@@ -1,6 +1,11 @@
 <?php
         $element = 'blocks/cashbanks/tables/journal_rinci_report';
         $dataColumns = array(
+            'branch' => array(
+                'name' => __('Cabang'),
+                'style' => 'text-align: center;vertical-align: middle;',
+                'data-options' => 'field:\'branch\',width:80',
+            ),
             'noref' => array(
                 'name' => __('No. Ref'),
                 'style' => 'text-align: center;vertical-align: middle;',

@@ -16,7 +16,10 @@
         <div class="row">
             <div class="col-sm-6">
                 <?php 
-                        echo $this->Common->buildInputForm('name', __('Nama'));
+                        echo $this->Common->buildInputForm('staff_id', __('ID Karyawan'), array(
+                            'type' => 'text',
+                        ));
+                        echo $this->Common->buildInputForm('name', __('Nama Karyawan'));
                         echo $this->Common->buildInputForm('phone', __('No. Telp'));
                         echo $this->element('blocks/common/searchs/box_action', array(
                             '_url' => array(

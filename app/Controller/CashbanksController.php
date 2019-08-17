@@ -1466,6 +1466,11 @@ class CashbanksController extends AppController {
                         'Journal.id' => 'ASC',
                     ),
                 ));
+                $journal = $this->Journal->getMergeList($journal, array(
+                    'contain' => array(
+                        'Branch',
+                    ),
+                ));
 
                 $values = array_merge($values, $journal);
             }

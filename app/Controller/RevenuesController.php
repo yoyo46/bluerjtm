@@ -529,8 +529,6 @@ class RevenuesController extends AppController {
                 'order' => array(
                     'UangJalan.order_by_branch',
                 ),
-            ), true, array(
-                'branch' => false,
             ));
 
             if( !empty($uangJalan) ) {
@@ -2840,8 +2838,8 @@ class RevenuesController extends AppController {
         $customerTargetUnits = $this->Ttuj->Customer->CustomerTargetUnit->CustomerTargetUnitDetail->find('all', array(
             'conditions' => array(
                 'CustomerTargetUnit.status' => 1,
-                'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\') >=' => date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear)),
-                'DATE_FORMAT(CONCAT(CustomerTargetUnit.year, \'-\', CustomerTargetUnitDetail.month, \'-\', 1), \'%Y-%m\') <=' => date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear)),
+                'CONCAT(CustomerTargetUnit.year, \'-\', LPAD(CustomerTargetUnitDetail.month, 2, \'0\')) >=' => date('Y-m', mktime(0, 0, 0, $fromMonth, 1, $fromYear)),
+                'CONCAT(CustomerTargetUnit.year, \'-\', LPAD(CustomerTargetUnitDetail.month, 2, \'0\')) <=' => date('Y-m', mktime(0, 0, 0, $toMonth, 1, $toYear)),
             ),
             'contain' => array(
                 'CustomerTargetUnit'
@@ -2851,11 +2849,11 @@ class RevenuesController extends AppController {
         if( !empty($customerTargetUnits) ) {
             foreach ($customerTargetUnits as $key => $target) {
                 $yearUnit = $this->MkCommon->filterEmptyField($target, 'CustomerTargetUnit', 'year');
-                $monthUnit = $this->MkCommon->filterEmptyField($target, 'CustomerTargetUnit', 'month');
+                $monthUnit = str_pad($this->MkCommon->filterEmptyField($target, 'CustomerTargetUnitDetail', 'month'), 2, '0', STR_PAD_LEFT);
                 $customer_id = $this->MkCommon->filterEmptyField($target, 'CustomerTargetUnit', 'customer_id');
                 $unit = $this->MkCommon->filterEmptyField($target, 'CustomerTargetUnitDetail', 'unit');
 
-                $dt = sprintf('%s-%s', $yearUnit, date('m', mktime(0, 0, 0, $monthUnit, 10)));
+                $dt = sprintf('%s-%s', $yearUnit, $monthUnit);
                 $targetUnit[$customer_id][$dt] = $unit;
             }
         }
@@ -8170,13 +8168,13 @@ class RevenuesController extends AppController {
                                         ), false);
                                         $fromCity = $this->GroupBranch->Branch->City->getData('first', array(
                                             'conditions' => array(
-                                                'City.name' => $tujuan,
+                                                'City.name' => $dari,
                                                 'City.status' => 1,
                                             ),
                                         ));
                                         $toCity = $this->GroupBranch->Branch->City->getData('first', array(
                                             'conditions' => array(
-                                                'City.name' => $dari,
+                                                'City.name' => $tujuan,
                                                 'City.status' => 1,
                                             ),
                                         ));

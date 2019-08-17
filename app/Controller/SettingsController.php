@@ -4277,6 +4277,8 @@ class SettingsController extends AppController {
 
                                 if(array_filter($datavar)) {
                                     $id = !empty($id)?$id:false;
+                                    $tipe_titipan = !empty($tipe_titipan)?$tipe_titipan:'percent';
+                                    $titipan = !empty($titipan)?$titipan:false;
                                     $branch = $this->GroupBranch->Branch->getData('first', array(
                                         'conditions' => array(
                                             'Branch.code' => $kode_cabang,
@@ -4384,6 +4386,8 @@ class SettingsController extends AppController {
                                             'uang_jalan_extra_per_unit' => !empty($uang_jalan_extra_per_unit)?$uang_jalan_extra_per_unit:0,
                                             'min_capacity' => !empty($min_kapasitas_ujalan_extra)?$min_kapasitas_ujalan_extra:0,
                                             'branch_id' => $branch_id,
+                                            'potongan_tabungan_type' => $tipe_titipan,
+                                            'potongan_tabungan' => $titipan,
                                         ),
                                     );
                                     

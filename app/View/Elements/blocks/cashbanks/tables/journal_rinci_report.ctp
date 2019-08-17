@@ -14,6 +14,7 @@
                 $type = $this->Common->_callTypeJournal($type);
 
                 $coa = $this->Common->filterEmptyField($value, 'Coa', 'coa_name');
+                $branch_code = $this->Common->filterEmptyField($value, 'Branch', 'code');
 
                 $new = sprintf('%s-%s', $document_id, $type);
                 $customDate = $this->Common->formatDate($date, 'd M Y');
@@ -25,6 +26,7 @@
 ?>
 <tr>
     <?php
+            echo $this->Html->tag('td', $branch_code);
             echo $this->Html->tag('td', $customNoref);
             echo $this->Html->tag('td', $customDate);
             echo $this->Html->tag('td', $document_no);
@@ -52,7 +54,7 @@
         } else {
             echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                 'class' => 'alert alert-warning text-center',
-                'colspan' => 6,
+                'colspan' => 12,
             )));
         }
 ?>

@@ -93,6 +93,13 @@ class DebtDetail extends AppModel {
                     'ViewStaff',
                 ),
             ),
+            'staff_id' => array(
+                'field' => 'CONCAT(\'#\', ViewStaff.no_id)',
+                'type' => 'like',
+                'contain' => array(
+                    'ViewStaff',
+                ),
+            ),
         ));
         
         return $default_options;

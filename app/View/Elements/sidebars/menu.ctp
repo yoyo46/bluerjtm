@@ -438,14 +438,14 @@
                                 'class' => ( !empty($active_menu) && $active_menu == 'leadtime_report' )?'active':'',
                             ));
 
-                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Expense Revenue per Truk', array(
-                                'controller' => 'revenues',
-                                'action' => 'report_expense_per_truck',
-                            ), array(
-                                'escape' => false
-                            )), array(
-                                'class' => ( !empty($active_menu) && $active_menu == 'report_expense_per_truck' )?'active':'',
-                            ));
+                            // echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Expense Revenue per Truk', array(
+                            //     'controller' => 'revenues',
+                            //     'action' => 'report_expense_per_truck',
+                            // ), array(
+                            //     'escape' => false
+                            // )), array(
+                            //     'class' => ( !empty($active_menu) && $active_menu == 'report_expense_per_truck' )?'active':'',
+                            // ));
 
                             echo $this->Html->tag('li', $this->Html->link(__('%s Laporan Laba Rugi Truk', $this->Common->icon('angle-double-right')), array(
                                 'controller' => 'trucks',
