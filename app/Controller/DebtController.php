@@ -40,13 +40,24 @@ class DebtController extends AppController {
 
         $options =  $this->Debt->_callRefineParams($params, array(
             'limit' => Configure::read('__Site.config_pagination'),
+            'group' => array(
+                'Debt.id',
+            ),
         ));
 
         $this->paginate = $this->Debt->getData('paginate', $options);
         $values = $this->paginate('Debt');
+
         $values = $this->Debt->getMergeList($values, array(
             'contain' => array(
                 'Coa',
+                'DebtDetail' => array(
+                    'type' => 'all',
+                    'contain' => array(
+                        'ViewStaff',
+                    ),
+                    'forceMerge' => true,
+                ),
             ),
         ));
 

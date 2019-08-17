@@ -19,6 +19,10 @@
             'coa_id' => array(
                 'name' => __('Account Kas/Bank'),
             ),
+            'staff' => array(
+                'name' => __('Karyawan'),
+                'style' => 'width: 20%;'
+            ),
             'note' => array(
                 'name' => __('Keterangan'),
                 'style' => 'width: 15%;'
@@ -84,6 +88,9 @@
                             $customDate = $this->Common->formatDate($tgl, 'd M Y');
                             $statusDebt = $this->Common->_callTransactionStatus($value, 'Debt', 'transaction_status');
                             $customGrandTotal = $this->Common->getFormatPrice($grand_total, 0, 2);
+                            
+                            $staff_names = Set::extract('/DebtDetail/ViewStaff/full_name', $value);
+                            $staff_name = !empty($staff_names)?implode(', ', $staff_names):'-';
 
                             $content = $this->Html->tag('td', $noref);
                             $content .= $this->Html->tag('td', $nodoc);
@@ -91,6 +98,7 @@
                                 'class' => 'text-center',
                             ));
                             $content .= $this->Html->tag('td', $coa_code);
+                            $content .= $this->Html->tag('td', $staff_name);
                             $content .= $this->Html->tag('td', $note);
                             $content .= $this->Html->tag('td', $customGrandTotal, array(
                                 'class' => 'text-right',

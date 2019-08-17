@@ -7,7 +7,7 @@ class ViewStaff extends AppModel {
             'conditions'=> array(
             ),
             'order'=> array(
-                'ViewStaff.name' => 'ASC',
+                'ViewStaff.full_name' => 'ASC',
                 'ViewStaff.id' => 'ASC',
             ),
             'contain' => array(

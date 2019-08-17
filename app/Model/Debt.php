@@ -92,6 +92,7 @@ class Debt extends AppModel {
         $total = !empty($data['named']['total'])?$data['named']['total']:false;
         $transaction_status = !empty($data['named']['transaction_status'])?urldecode($data['named']['transaction_status']):false;
         $coa = !empty($data['named']['coa'])?urldecode($data['named']['coa']):false;
+        $staff_name = !empty($data['named']['staff_name'])?urldecode($data['named']['staff_name']):false;
         
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
@@ -119,6 +120,36 @@ class Debt extends AppModel {
         }
         if( !empty($coa) ) {
             $default_options['conditions']['Debt.coa_id'] = $coa;
+        }
+
+        if( !empty($staff_name) ) {
+            $staffs = $this->DebtDetail->ViewStaff->getData('list', array(
+                'conditions' => array(
+                    'ViewStaff.full_name LIKE' => '%'.$staff_name.'%',
+                ),
+                'fields' => array(
+                    'ViewStaff.id',
+                    'ViewStaff.id',
+                ),
+            ));
+
+            $default_options['conditions']['DebtDetail.employe_id'] = $staffs;
+            $default_options['contain'][] = 'DebtDetail';
+
+            $this->unBindModel(array(
+                'hasMany' => array(
+                    'DebtDetail'
+                )
+            ));
+
+            $this->bindModel(array(
+                'hasOne' => array(
+                    'DebtDetail' => array(
+                        'className' => 'DebtDetail',
+                        'foreignKey' => 'debt_id',
+                    ),
+                )
+            ), false);
         }
         
         return $default_options;
