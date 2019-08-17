@@ -1170,6 +1170,9 @@ class TrucksController extends AppController {
     }
 
     function doKir($id = false, $kir = false){
+        $kir_extensions = $this->MkCommon->_callSettingGeneral('SettingGeneral', 'kir_extension', false);
+        $kir_extension = Common::hashEmptyField($kir_extensions, 'SettingGeneral.kir_extension', 0);
+
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
 
@@ -1255,7 +1258,8 @@ class TrucksController extends AppController {
                     $this->request->data['Kir']['price_estimate'] = $this->MkCommon->convertPriceToString($truck['Truck']['kir']);
 
                     if( !empty($this->request->data['Kir']['from_date']) ) {
-                        $toDate = date('d/m/Y', strtotime('+1 year', strtotime($truck['Truck']['tgl_kir'])) );
+                        $nowDate = date('Y-m-d');
+                        $toDate = date('d/m/Y', strtotime('+'.$kir_extension.' MONTH', strtotime($nowDate)) );
                         $this->request->data['Kir']['to_date'] = $toDate;
                     }
                 }
@@ -6267,5 +6271,25 @@ class TrucksController extends AppController {
             'active_menu' => 'profit_loss_truck',
             '_freeze' => true,
         ));
+    }
+
+    function bypass_change_kir_extension(){
+        $kir_extensions = $this->MkCommon->_callSettingGeneral('SettingGeneral', 'kir_extension', false);
+        $kir_extension = Common::hashEmptyField($kir_extensions, 'SettingGeneral.kir_extension', 0);
+
+        $data = $this->request->data;
+        $data = $this->MkCommon->dataConverter($data, array(
+            'date' => array(
+                'Kir' => array(
+                    'tgl_kir',
+                ),
+            ),
+        ));
+
+        $nowDate = Common::hashEmptyField($data, 'Kir.tgl_kir', date('Y-m-d'));
+        $toDate = date('d/m/Y', strtotime('+'.$kir_extension.' MONTH', strtotime($nowDate)) );
+        $this->request->data['Kir']['to_date'] = $toDate;
+
+        $this->render('/Elements/blocks/trucks/forms/change_kir_extension');
     }
 }

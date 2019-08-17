@@ -11,6 +11,7 @@
 			'url'=> $this->Html->url( null, true ), 
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
+			'class' => 'form-kir',
 		));
 ?>
 <div class="row">
@@ -78,17 +79,6 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-							echo $this->Form->input('to_date', array(
-								'label'=> __('Diperpanjang Hingga'), 
-								'class'=>'form-control',
-								'type' => 'text',
-								'required' => false,
-								'readonly' => true,
-							));
-					?>
-		        </div>
-		        <div class="form-group">
-		        	<?php 
 							echo $this->Form->label('price_estimate', __('Biaya KIR')); 
 					?>
 					<div class="input-group">
@@ -120,13 +110,23 @@
 		        	<?php 
 							echo $this->Form->input('tgl_kir', array(
 								'label'=> __('Tgl Perpanjang *'), 
-								'class'=>'form-control custom-date',
+								'class'=>'form-control custom-date ajax-change',
 								'type' => 'text',
 								'required' => false,
-								'value' => (!empty($this->request->data['Kir']['tgl_kir'])) ? $this->request->data['Kir']['tgl_kir'] : date('d/m/Y')
+								'value' => (!empty($this->request->data['Kir']['tgl_kir'])) ? $this->request->data['Kir']['tgl_kir'] : date('d/m/Y'),
+								'href' => $this->Html->url(array(
+									'controller' => 'trucks',
+									'action' => 'change_kir_extension',
+									'bypass' => true,
+								)),
+								'data-wrapper-write-page' => '.wrapper-kir-extension',
+								'data-form' => '.form-kir',
 							));
 					?>
 		        </div>
+		        <?php
+		        		echo $this->element('blocks/trucks/forms/change_kir_extension');
+		        ?>
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->label('price', __('Biaya Yg Dibayar *')); 
