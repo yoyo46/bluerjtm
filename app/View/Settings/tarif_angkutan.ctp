@@ -81,6 +81,12 @@
                                 case 'asuransi':
                                     echo __('Asuransi');
                                     break;
+                                case 'multi_drop':
+                                    echo __('+ Multi Drop');
+                                    break;
+                                case 'overnight_charges':
+                                    echo __('Overnight Charges');
+                                    break;
                                 default:
                                     echo __('Tarif Angkut');
                                     break;

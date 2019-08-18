@@ -21,6 +21,8 @@
 					$no = 1;
 					$totalBiaya = 0;
 					$totalBiayaExtra = 0;
+					$totalMultiDrop = 0;
+					$totalOverNight = 0;
 
 					foreach ($values as $key => $value) {
 	    				$ttuj_date = Common::hashEmptyField($value, 'Revenue.Ttuj.ttuj_date', NULL, array(
@@ -44,6 +46,8 @@
 	    				$no_do = Common::hashEmptyField($value, 'RevenueDetail.no_do', '-');
 	    				$price_unit = Common::hashEmptyField($value, 'RevenueDetail.price_unit', 0);
 	    				$totalUnit = Common::hashEmptyField($value, 'RevenueDetail.qty_unit', 0);
+	    				$multi_drop = Common::hashEmptyField($value, 'multi_drop', 0);
+	    				$overnight_charges = Common::hashEmptyField($value, 'overnight_charges', 0);
 						$totalPriceFormat = '';
 
         				if( !empty($sj) ) {
@@ -64,9 +68,13 @@
 
 						$totalUnit = $this->Common->getFormatPrice($totalUnit);
 						$customTotalExtra = $this->Common->getFormatPrice($totalExtra);
+						$custom_multi_drop = $this->Common->getFormatPrice($multi_drop);
+						$custom_overnight_charges = $this->Common->getFormatPrice($overnight_charges);
 
 						$totalBiaya += $total_price_unit;
 						$totalBiayaExtra += $totalExtra;
+						$totalMultiDrop += $multi_drop;
+						$totalOverNight += $overnight_charges;
 		?>
 		<tr style="border: 1px solid #ddd;">
 			<?php 
@@ -111,10 +119,10 @@
 					echo $this->Html->tag('td', $totalPriceFormat, array(
 						'style' => 'padding: 10px;text-align:right;border: 1px solid #ddd;',
 					));
-					echo $this->Html->tag('td', '', array(
+					echo $this->Html->tag('td', $custom_multi_drop, array(
 						'style' => 'padding: 10px;border: 1px solid #ddd;',
 					));
-					echo $this->Html->tag('td', '', array(
+					echo $this->Html->tag('td', $custom_overnight_charges, array(
 						'style' => 'padding: 10px;border: 1px solid #ddd;',
 					));
 					echo $this->Html->tag('td', $totalUnit, array(
@@ -138,7 +146,7 @@
 						$no++;
 					}
 
-					$grandtotal = $totalBiaya + $totalBiayaExtra;
+					$grandtotal = $totalBiaya + $totalBiayaExtra + $totalMultiDrop + $totalOverNight;
 
 					// Biaya Utama
 					$colom = $this->Html->tag('td', '', array(
@@ -176,7 +184,7 @@
 						'colspan' => 8,
 						'style' => 'padding: 10px;',
 					));
-					$colom .= $this->Html->tag('td', '-', array(
+					$colom .= $this->Html->tag('td', Common::getFormatPrice($totalMultiDrop), array(
 						'style' => 'padding: 10px;text-align:right;border: 1px solid #ddd;',
 					));
 					echo $this->Html->tag('tr', $colom, array(
@@ -214,7 +222,7 @@
 						'colspan' => 8,
 						'style' => 'padding: 10px;',
 					));
-					$colom .= $this->Html->tag('td', '-', array(
+					$colom .= $this->Html->tag('td', Common::getFormatPrice($totalOverNight), array(
 						'style' => 'padding: 10px;text-align:right;border: 1px solid #ddd;',
 					));
 					echo $this->Html->tag('tr', $colom, array(
@@ -235,7 +243,7 @@
 						'colspan' => 8,
 						'style' => 'padding: 0;',
 					));
-					$colom .= $this->Html->tag('td', $this->Html->tag('div', Common::getFormatPrice($totalBiaya), array(
+					$colom .= $this->Html->tag('td', $this->Html->tag('div', Common::getFormatPrice($totalBiaya+$totalMultiDrop+$totalOverNight), array(
 						'style' => 'border: 1px solid #000;padding: 10px;',
 					)), array(
 						'style' => 'padding: 0;text-align:right;',

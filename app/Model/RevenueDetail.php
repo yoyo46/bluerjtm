@@ -247,9 +247,7 @@ class RevenueDetail extends AppModel {
             );
         }
 
-        if( !empty($invoice_type) ) {
-            $options['conditions']['RevenueDetail.tarif_angkutan_type'] = $invoice_type;
-        }
+        $options['conditions'] = Common::_callRevDetailConditions($invoice_type, $options['conditions']);
 
         if( in_array($action, array( 'tarif', 'tarif_name' )) && in_array($data_action, array( 'invoice', 'preview' )) ){
                 $options['order'] = array(
@@ -280,18 +278,33 @@ class RevenueDetail extends AppModel {
 
         if( !empty($revenue_detail) ) {
             $this->City = ClassRegistry::init('City');
+            $parent_city_id = 0;
 
             foreach ($revenue_detail as $key => $value) {
                 if(!empty($value['RevenueDetail'])){
                     $date_revenue = !empty($value['Revenue']['date_revenue'])?$value['Revenue']['date_revenue']:false;
                     // $from_city_id = !empty($value['Revenue']['Ttuj']['from_city_id'])?$value['Revenue']['Ttuj']['from_city_id']:false;
                     $truck_id = !empty($value['Revenue']['truck_id'])?$value['Revenue']['truck_id']:false;
+                    $city_id = !empty($value['RevenueDetail']['city_id'])?$value['RevenueDetail']['city_id']:0;
+                    $tarif_angkutan_type = !empty($value['RevenueDetail']['tarif_angkutan_type'])?$value['RevenueDetail']['tarif_angkutan_type']:false;
+                    
+                    $value = $this->City->getMerge($value, $city_id);
+
+                    switch ($tarif_angkutan_type) {
+                        case 'multi_drop':
+                        case 'overnight_charges':
+                            $city_id = $parent_city_id;
+                            break;
+                        
+                        default:
+                            $parent_city_id = $city_id;
+                            break;
+                    }
 
                     // $fromCity = $this->City->getMerge($value, $from_city_id);
                     // $value['FromCity'] = !empty($fromCity['City'])?$fromCity['City']:false;
                     
                     $value = $this->Revenue->Ttuj->TtujTipeMotor->TipeMotor->getMerge($value, $value['RevenueDetail']['group_motor_id']);
-                    $value = $this->City->getMerge($value, $value['RevenueDetail']['city_id']);
                     $value = $this->TarifAngkutan->getMerge($value, $value['RevenueDetail']['tarif_angkutan_id']);
                     $value = $this->Revenue->Truck->getMerge($value, $truck_id);
 
@@ -321,7 +334,7 @@ class RevenueDetail extends AppModel {
                         } else if( $data_action == 'hso-smg' ) {
                             $result[$date_revenue][] = $value;
                         } else {
-                            $result[$value['RevenueDetail']['city_id']][] = $value;
+                            $result[$city_id][] = $value;
                         }
                     }
                 }

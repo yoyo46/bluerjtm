@@ -38,15 +38,36 @@ class TtujsController extends AppController {
         $this->redirect('/');
     }
 
-    public function report_recap_bon_biru( $data_action = false ) {
+    public function report_recap_sj( $data_action = false ) {
         $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
         $dateFrom = date('Y-m-01');
         $dateTo = date('Y-m-t');
 
+        // $this->Ttuj->unBindModel(array(
+        //     'hasMany' => array(
+        //         'Revenue',
+        //     )
+        // ));
+        // $this->Ttuj->bindModel(array(
+        //     'hasOne' => array(
+        //         'Revenue' => array(
+        //             'className' => 'Revenue',
+        //             'foreignKey' => 'ttuj_id',
+        //             'conditions' => array(
+        //                 'Revenue.status' => 1,
+        //             ),
+        //         )
+        //     )
+        // ), false);
+
         $options = array(
             'conditions' => array(
+                // 'Revenue.id NOT' => NULL,
                 'Ttuj.branch_id' => $allow_branch_id,
             ),
+            // 'contain' => array(
+            //     'Revenue',
+            // ),
             'order'=> array(
                 'Ttuj.id' => 'DESC',
             ),
@@ -79,6 +100,8 @@ class TtujsController extends AppController {
             foreach ($values as $key => $value) {
                 $id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
 
+                $value = $this->Ttuj->getSumUnit($value, $id, false, 'tgl_surat_jalan');
+                $value = $this->Ttuj->Revenue->getPaid($value, $id, 'unit');
                 $value = $this->Ttuj->Revenue->getPaid($value, $id, 'invoiced');
                 $value = $this->Ttuj->Revenue->RevenueDetail->getToCity($value, $id);
 
@@ -104,7 +127,7 @@ class TtujsController extends AppController {
             }
         }
 
-        $this->RjTtuj->_callBeforeViewReportRecapBonBiru($params);
+        $this->RjTtuj->_callBeforeViewReportRecapSj($params);
         $this->MkCommon->_callBeforeViewReport($data_action, array(
             'layout_file' => array(
                 'select',
@@ -112,7 +135,7 @@ class TtujsController extends AppController {
             ),
         ));
         
-        $module_title = __('Laporan Rekap Penerimaan Bon Biru');
+        $module_title = __('Laporan Rekap Penerimaan Surat Jalan');
 
         if( !empty($dateFrom) && !empty($dateTo) ) {
             $period_text = sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
@@ -159,7 +182,7 @@ class TtujsController extends AppController {
         $this->MkCommon->_layout_file('select');
 
         $this->set(compact(
-            'values', 'customers'
+            'values'
         ));
     }
     
@@ -200,13 +223,25 @@ class TtujsController extends AppController {
         $this->bon_biru_edit($id, true);
     }
 
-    function doBonBiruDetail ( $dataDetail, $data, $bon_biru_id = false ) {
+    function doBonBiruDetail ( $dataDetail, $data, $bon_biru_id = false, $value = false ) {
         $status = true;
         $tgl_bon_biru = $this->MkCommon->filterEmptyField($data, 'BonBiru', 'tgl_bon_biru');
         $data = $this->request->data;
         $msgError = array();
 
         if( !empty($bon_biru_id) ) {
+            if( !empty($value) ) {
+                $ttujsID = Set::extract('/BonBiruDetail/BonBiruDetail/ttuj_id', $value);
+
+                if( !empty($ttujsID) ) {
+                    $this->Ttuj->updateAll( array(
+                        'Ttuj.status_bon_biru' => "'none'",
+                    ), array(
+                        'Ttuj.id' => $ttujsID,
+                    ));
+                }
+            }
+
             $this->Ttuj->BonBiruDetail->updateAll( array(
                 'BonBiruDetail.status' => 0,
             ), array(
@@ -292,7 +327,7 @@ class TtujsController extends AppController {
             $bonBiruDetails = $this->MkCommon->filterEmptyField($value, 'BonBiruDetail');
 
             $dataDetail = $this->MkCommon->filterEmptyField($data, 'BonBiruDetail', 'ttuj_id');
-            $resutlDetail = $this->doBonBiruDetail($dataDetail, $data);
+            $resutlDetail = $this->doBonBiruDetail($dataDetail, $data, false, $value);
             $flagDetail = $this->MkCommon->filterEmptyField($resutlDetail, 'status');
             $errorDetail = $this->MkCommon->filterEmptyField($resutlDetail, 'msgError');
 
@@ -307,7 +342,7 @@ class TtujsController extends AppController {
             if( $this->Ttuj->BonBiruDetail->BonBiru->validates() && !empty($flagDetail) ){
                 if($this->Ttuj->BonBiruDetail->BonBiru->save()){
                     $document_id = $this->Ttuj->BonBiruDetail->BonBiru->id;
-                    $this->doBonBiruDetail($dataDetail, $data, $document_id);
+                    $this->doBonBiruDetail($dataDetail, $data, $document_id, $value);
 
                     $this->params['old_data'] = $value;
                     $this->params['data'] = $data;
@@ -521,6 +556,217 @@ class TtujsController extends AppController {
         $this->set(compact(
             'data_action', 'title', 'values',
             'customers', 'cities'
+        ));
+    }
+
+    public function report_bon_biru( $data_action = false ) {
+        $module_title = __('Laporan Bon Biru');
+        $values = array();
+
+        $this->set('sub_module_title', $module_title);
+
+        $this->Ttuj->unBindModel(array(
+            'hasMany' => array(
+                'BonBiruDetail'
+            )
+        ));
+
+        $this->Ttuj->bindModel(array(
+            'hasOne' => array(
+                'BonBiruDetail' => array(
+                    'className' => 'BonBiruDetail',
+                    'conditions' => array(
+                        'BonBiruDetail.status' => 1,
+                    ),
+                ),
+                'BonBiru' => array(
+                    'className' => 'BonBiru',
+                    'foreignKey' => false,
+                    'conditions' => array(
+                        'BonBiru.id = BonBiruDetail.bon_biru_id',
+                        'BonBiru.status' => 1,
+                        'BonBiru.is_canceled' => 0,
+                    ),
+                ),
+            )
+        ), false);
+
+        $options =  $this->Ttuj->getData('paginate', array(
+            'contain' => array(
+                'BonBiru',
+                'BonBiruDetail',
+            ),
+        ), true, array(
+            'status' => 'commit',
+            'branch' => false,
+            'plant' => false,
+        ));
+
+        $params = $this->MkCommon->_callRefineParams($this->params);
+        $dateFrom = $this->MkCommon->filterEmptyField($params, 'named', 'DateFrom');
+        $dateTo = $this->MkCommon->filterEmptyField($params, 'named', 'DateTo');
+        $options =  $this->Ttuj->BonBiruDetail->BonBiru->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'Ttuj', $options );
+
+        if( !empty($options['contain']) ) {
+            foreach (array_keys($options['contain'], 'Ttuj', true) as $key) {
+                unset($options['contain'][$key]);
+            }
+        }
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $module_title .= sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        }
+
+        if( !empty($data_action) ){
+            $values = $this->Ttuj->find('all', $options);
+        } else {
+            $options['limit'] = Configure::read('__Site.config_pagination');
+            $this->paginate = $options;
+            $values = $this->paginate('Ttuj');
+        }
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $ttuj_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
+                $branch_id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'branch_id');
+                
+                $value = $this->GroupBranch->Branch->getMerge($value, $branch_id);
+                $value = $this->Ttuj->getMergeList($value, array(
+                    'contain' => array(
+                        'DriverPengganti' => array(
+                            'uses' => 'Driver',
+                            'primaryKey' => 'id',
+                            'foreignKey' => 'driver_pengganti_id',
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
+                        'Driver' => array(
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
+                    ),
+                ));
+
+                $muatan = $this->Ttuj->TtujTipeMotor->getTotalMuatan( $ttuj_id );
+                $value['Ttuj']['qty'] = $muatan;
+
+                $values[$key] = $value;
+            }
+        }
+
+        $customers = $this->Ttuj->Customer->getData('list', array(
+            'fields' => array(
+                'Customer.id', 'Customer.customer_name_code'
+            ),
+        ));
+
+        $this->set('active_menu', 'report_bon_biru');
+        $this->set(compact(
+            'values', 'module_title', 'data_action',
+            'customers'
+        ));
+
+        if($data_action == 'pdf'){
+            $this->layout = 'pdf';
+        }else if($data_action == 'excel'){
+            $this->layout = 'ajax';
+        } else {
+            $this->MkCommon->_layout_file(array(
+                'freeze',
+                'select',
+            ));
+        }
+    }
+
+    public function report_recap_bon_biru( $data_action = false ) {
+        $allow_branch_id = Configure::read('__Site.config_allow_branch_id');
+        $dateFrom = date('Y-m-01');
+        $dateTo = date('Y-m-t');
+
+        $options = array(
+            'conditions' => array(
+                'Ttuj.branch_id' => $allow_branch_id,
+            ),
+            'order'=> array(
+                'Ttuj.id' => 'DESC',
+            ),
+            'group' => array(
+                'Ttuj.id'
+            ),
+        );
+
+        $params = $this->MkCommon->_callRefineParams($this->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+        $options =  $this->Ttuj->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'Ttuj', $options );
+
+        if( !empty($data_action) ){
+            $values = $this->Ttuj->getData('all', $options, true, array(
+                'status' => 'commit',
+            ));
+        } else {
+            $this->paginate = $this->Ttuj->getData('paginate', array_merge($options, array(
+                'limit' => Configure::read('__Site.config_pagination'),
+            )), true, array(
+                'status' => 'commit',
+            ));
+            $values = $this->paginate('Ttuj');
+        }
+
+        if( !empty($values) ) {
+            foreach ($values as $key => $value) {
+                $id = $this->MkCommon->filterEmptyField($value, 'Ttuj', 'id');
+
+                $value = $this->Ttuj->getBonBiru($value, $id);
+                $value = $this->Ttuj->Revenue->RevenueDetail->getToCity($value, $id);
+                $value = $this->Ttuj->getMergeList($value, array(
+                    'contain' => array(
+                        'DriverPengganti' => array(
+                            'uses' => 'Driver',
+                            'primaryKey' => 'id',
+                            'foreignKey' => 'driver_pengganti_id',
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
+                        'Driver' => array(
+                            'elements' => array(
+                                'branch' => false,
+                            ),
+                        ),
+                    ),
+                ));
+
+                $values[$key] = $value;
+            }
+        }
+
+        $this->RjTtuj->_callBeforeViewReportRecapBonBiru($params);
+        $this->MkCommon->_callBeforeViewReport($data_action, array(
+            'layout_file' => array(
+                'select',
+                'freeze',
+            ),
+        ));
+        
+        $module_title = __('Laporan Rekap Penerimaan Bon Biru');
+
+        if( !empty($dateFrom) && !empty($dateTo) ) {
+            $period_text = sprintf(' Periode %s', $this->MkCommon->getCombineDate($dateFrom, $dateTo));
+        } else {
+            $period_text = '';
+        }
+
+        $this->set(array(
+            'values' => $values,
+            'data_action' => $data_action,
+            'module_title' => $module_title,
+            'sub_module_title' => $period_text,
         ));
     }
 }

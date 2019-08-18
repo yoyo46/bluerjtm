@@ -960,8 +960,8 @@ class AjaxController extends AppController {
         $elementRevenue = false;
         $conditionsDetail = $conditions;
         $conditionsDetail['RevenueDetail.invoice_id'] = NULL;
-        $conditionsDetail['RevenueDetail.tarif_angkutan_type'] = $tarif_type;
         $conditionsDetail['RevenueDetail.is_charge'] = 1;
+        $conditionsDetail = Common::_callRevDetailConditions($tarif_type, $conditionsDetail);
 
         if( !empty($head_office) ) {
         	$elementRevenue = array(

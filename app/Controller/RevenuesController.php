@@ -457,7 +457,7 @@ class RevenuesController extends AppController {
                 'date' => array(
                     'Ttuj' => array(
                         'ttuj_date',
-                        'tgl_bon_biru',
+                        // 'tgl_bon_biru',
                     ),
                 )
             ));
@@ -1127,7 +1127,7 @@ class RevenuesController extends AppController {
             }
 
             $this->request->data['Ttuj']['ttuj_date'] = !empty($data['Ttuj']['ttuj_date'])?date('d/m/Y', strtotime($data['Ttuj']['ttuj_date'])):false;
-            $this->request->data['Ttuj']['tgl_bon_biru'] = !empty($data['Ttuj']['tgl_bon_biru'])?date('d/m/Y', strtotime($data['Ttuj']['tgl_bon_biru'])):false;
+            // $this->request->data['Ttuj']['tgl_bon_biru'] = !empty($data['Ttuj']['tgl_bon_biru'])?date('d/m/Y', strtotime($data['Ttuj']['tgl_bon_biru'])):false;
 
             if( !empty($data['TtujPerlengkapan']['qty']) ) {
                 $tempPerlengkapan = array();
@@ -1194,11 +1194,11 @@ class RevenuesController extends AppController {
                 } else {
                     $this->request->data['Ttuj']['ttuj_date'] = '';
                 }
-                if( !empty($this->request->data['Ttuj']['tgl_bon_biru']) && $this->request->data['Ttuj']['tgl_bon_biru'] != '0000-00-00' ) {
-                    $this->request->data['Ttuj']['tgl_bon_biru'] = date('d/m/Y', strtotime($this->request->data['Ttuj']['tgl_bon_biru']));
-                } else {
-                    $this->request->data['Ttuj']['tgl_bon_biru'] = '';
-                }
+                // if( !empty($this->request->data['Ttuj']['tgl_bon_biru']) && $this->request->data['Ttuj']['tgl_bon_biru'] != '0000-00-00' ) {
+                //     $this->request->data['Ttuj']['tgl_bon_biru'] = date('d/m/Y', strtotime($this->request->data['Ttuj']['tgl_bon_biru']));
+                // } else {
+                //     $this->request->data['Ttuj']['tgl_bon_biru'] = '';
+                // }
             }
 
             if( !empty($this->request->data['Ttuj']['from_city_id']) ) {
@@ -4214,7 +4214,6 @@ class RevenuesController extends AppController {
                             'conditions' => array(
                                 'Revenue.customer_id' => $customer_id,
                                 'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
-                                'RevenueDetail.tarif_angkutan_type' => $tarif_type,
                                 'RevenueDetail.invoice_id' => NULL,
                                 'Revenue.status' => 1,
                                 'RevenueDetail.status' => 1,
@@ -4225,6 +4224,7 @@ class RevenuesController extends AppController {
                                 'RevenueDetail.id' => 'ASC',
                             )
                         );
+                        $options['conditions'] = Common::_callRevDetailConditions($tarif_type, $options['conditions']);
 
                         if( $action == 'tarif_name' ) {
                             $options['contain'][] = 'TarifAngkutan';
@@ -4334,7 +4334,7 @@ class RevenuesController extends AppController {
                 }else{
                     $data['Invoice']['due_invoice'] = $customer['Customer']['term_of_payment'];
                     $this->Invoice->set($data);
-
+                    
                     if($this->Invoice->save()){
                         $invoice_id = $this->Invoice->id;
                         $document_no = !empty($data['Invoice']['no_invoice'])?$data['Invoice']['no_invoice']:false;
@@ -5602,8 +5602,9 @@ class RevenuesController extends AppController {
                                     'branch' => false,
                                 ));
                                 $is_manual = Common::hashEmptyField($localRev, 'Revenue.is_manual');
+                                $import_code = Common::hashEmptyField($localRev, 'Revenue.import_code');
 
-                                if( !empty($is_manual) ) {
+                                if( !empty($is_manual) && !empty($import_code) ) {
                                     $total = $this->MkCommon->filterEmptyField($localRev, 'Revenue', 'total', 0);
                                     $truck_id = $this->MkCommon->filterEmptyField($localRev, 'Revenue', 'truck_id');
                                     $cogs_id = $this->MkCommon->filterEmptyField($localRev, 'Revenue', 'cogs_id');
@@ -8222,6 +8223,7 @@ class RevenuesController extends AppController {
                                             'nopol' => $no_polisi,
                                             'is_manual' => true,
                                             'auto_journal' => true,
+                                            'import_code' => String::uuid(),
                                         );
                                         $revenueDetail = array(
                                             'group_motor_id' => $group_motor_id,
@@ -10350,6 +10352,32 @@ class RevenuesController extends AppController {
 
             $employe_position_id = Common::hashEmptyField($invoice, 'Employe.employe_position_id');
             $invoice = $this->User->Employe->EmployePosition->getMerge($invoice, $employe_position_id);
+
+            if( !empty($invoice['InvoiceDetail']) ) {
+                $last_key = false;
+
+                foreach ($invoice['InvoiceDetail'] as $key => &$detail) {
+                    $tarif_angkutan_type = Common::hashEmptyField($detail, 'RevenueDetail.tarif_angkutan_type');
+                    $total_price_unit = Common::hashEmptyField($detail, 'RevenueDetail.total_price_unit', 0);
+
+                    switch ($tarif_angkutan_type) {
+                        case 'multi_drop':
+                        case 'overnight_charges':
+                            if( is_numeric($last_key) && !empty($invoice['InvoiceDetail'][$last_key]) ) {
+                                unset($invoice['InvoiceDetail'][$key]);
+
+                                $last_value = !empty($invoice['InvoiceDetail'][$last_key][$tarif_angkutan_type])?$invoice['InvoiceDetail'][$last_key][$tarif_angkutan_type]:0;
+
+                                $invoice['InvoiceDetail'][$last_key][$tarif_angkutan_type] = $last_value + $total_price_unit;
+                            }
+                            break;
+                        
+                        default:
+                            $last_key = $key;
+                            break;
+                    }
+                }
+            }
 
             $this->set(compact(
                 'invoice', 'revenue_detail', 'action',

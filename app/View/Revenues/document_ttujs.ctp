@@ -8,7 +8,7 @@
             ),
             'nottuj' => array(
                 'name' => __('No. Ttuj'),
-                'class' => 'text-center',
+                'class' => 'text-left',
                 'field_model' => array(
                     'name' => 'Ttuj.no_ttuj',
                     'class' => 'ajaxModal',
@@ -17,7 +17,7 @@
             ),
             'driver' => array(
                 'name' => __('Supir'),
-                'class' => 'text-center',
+                'class' => 'text-left',
                 'field_model' => array(
                     'name' => 'Ttuj.driver_name',
                     'class' => 'ajaxModal',
@@ -79,7 +79,7 @@
             ),
             'note' => array(
                 'name' => __('Keterangan'),
-                'class' => 'text-center',
+                'class' => 'text-left',
                 'field_model' => array(
                     'name' => 'Ttuj.note',
                     'class' => 'ajaxModal',

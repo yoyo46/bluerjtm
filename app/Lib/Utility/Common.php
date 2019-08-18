@@ -888,4 +888,20 @@ class Common {
 
         return $driver;
     }
+
+    public static function _callRevDetailConditions ( $type, $result ) {
+    	if( !empty($type) ) {
+            switch ($type) {
+                case 'angkut':
+                    $result['RevenueDetail.tarif_angkutan_type NOT'] = array( 'kuli', 'asuransi' );
+                    break;
+                
+                default:
+                    $result['RevenueDetail.tarif_angkutan_type'] = $type;
+                    break;
+            }
+        }
+
+        return $result;
+    }
 }

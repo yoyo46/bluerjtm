@@ -1621,6 +1621,7 @@ class MkCommonComponent extends Component {
     function processFilter ( $data ) {
         $date = $this->filterEmptyField($data, 'Search', 'date');
         $daterange = $this->filterEmptyField($data, 'Search', 'daterange');
+        $datebonbiru = $this->filterEmptyField($data, 'Search', 'datebonbiru');
         $datettuj = $this->filterEmptyField($data, 'Search', 'datettuj');
         $journalcoa = $this->filterEmptyField($data, 'Search', 'journalcoa');
         $product_code = $this->filterEmptyField($data, 'Search', 'product_code');
@@ -1644,6 +1645,7 @@ class MkCommonComponent extends Component {
                 'journalcoa',
                 'product_code',
                 'nodocs',
+                'datebonbiru',
             ),
         ), $data);
         $dataSearch = $this->filterEmptyField($data, 'Search');
@@ -1693,6 +1695,9 @@ class MkCommonComponent extends Component {
         }
         if( !empty($daterange) ) {
             $params['daterange'] = rawurlencode(urlencode($daterange));
+        }
+        if( !empty($datebonbiru) ) {
+            $params['datebonbiru'] = rawurlencode(urlencode($datebonbiru));
         }
         if( !empty($monthFrom) && !empty($yearFrom) ) {
             $params['monthFrom'] = urlencode($monthFrom);
@@ -1804,6 +1809,7 @@ class MkCommonComponent extends Component {
         $date = $this->filterEmptyField($result, 'named', 'date');
         $datettuj = $this->filterEmptyField($result, 'named', 'datettuj');
         $daterange = $this->filterEmptyField($result, 'named', 'daterange');
+        $datebonbiru = $this->filterEmptyField($result, 'named', 'datebonbiru');
         $dateritase = $this->filterEmptyField($result, 'named', 'dateritase');
         $journalcoa = $this->filterEmptyField($result, 'named', 'journalcoa');
         $product_code = $this->filterEmptyField($result, 'named', 'product_code');
@@ -1819,6 +1825,7 @@ class MkCommonComponent extends Component {
             'journalcoa',
             'product_code',
             'nodocs',
+            'datebonbiru',
         ), $result['named']);
 
         if( !empty($dataString) ) {
@@ -1903,6 +1910,9 @@ class MkCommonComponent extends Component {
 
         if( !empty($daterange) ) {
             $result = $this->_callDateRangeFormat($result, $daterange, 'daterange', 'DateFromRange', 'DateToRange');
+        }
+        if( !empty($datebonbiru) ) {
+            $result = $this->_callDateRangeFormat($result, $datebonbiru, 'datebonbiru', 'DateBonBiruFrom', 'DateBonBiruTo');
         }
         if( !empty($paramMonthFrom) && !empty($paramYearFrom) ) {
             $monthFrom = sprintf('%s-%s', $paramYearFrom, $paramMonthFrom);

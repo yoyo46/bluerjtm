@@ -566,6 +566,8 @@
                         ),
                         'ttujs' => array(
                             'report_recap_sj',
+                            'report_bon_biru',
+                            'report_recap_bon_biru',
                         ),
                     );
 
@@ -577,6 +579,8 @@
                             'uang_kuli_muat', 'uang_kuli_bongkar',
                             'surat_jalan', 'report_surat_jalan',
                             'report_recap_sj', 'bon_biru',
+                            'report_bon_biru',
+                            'report_recap_bon_biru',
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $ttujMenu) ) {
@@ -700,6 +704,26 @@
                                 'data-wrapper' => 'li',
                                 'data-icon' => 'angle-double-right',
                                 'data-slug' => 'report_recap_sj',
+                                'data-active' => $active_menu,
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-angle-double-right"></i> Laporan Bon Biru', array(
+                                'controller' => 'ttujs',
+                                'action' => 'report_bon_biru',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'report_bon_biru' )?'active':'',
+                            ));
+
+                            echo $this->Common->link(__('Laporan Rekap Penerimaan Bon Biru') , array(
+                                'controller' => 'ttujs',
+                                'action' => 'report_recap_bon_biru',
+                                'admin' => false,
+                            ), array(
+                                'data-wrapper' => 'li',
+                                'data-icon' => 'angle-double-right',
+                                'data-slug' => 'report_recap_bon_biru',
                                 'data-active' => $active_menu,
                             ));
                     ?>

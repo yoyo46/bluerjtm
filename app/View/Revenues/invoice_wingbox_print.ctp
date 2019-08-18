@@ -134,7 +134,7 @@
                     ),
                     'lain_lain_cost' => array(
                         'name' => __('Lain-Lain Cost'),
-                        'style' => 'background-color: #ccc; border: 1px solid #ddd;',
+                        'style' => 'background-color: #ccc; border: 1px solid #ddd;text-align:center;',
                         'child' => array(
                             'extra_charges' => array(
                                 'name' => $this->Html->tag('div', __('Over Tonase<br>( Kg )'), array(

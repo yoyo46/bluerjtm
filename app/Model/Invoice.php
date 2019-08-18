@@ -402,9 +402,9 @@ class Invoice extends AppModel {
             );
             $conditionsDetail = array_merge($conditions, array(
                 'RevenueDetail.invoice_id' => NULL,
-                'RevenueDetail.tarif_angkutan_type' => $tarif_type,
                 'RevenueDetail.is_charge' => 1,
             ));
+            $conditionsDetail = Common::_callRevDetailConditions($tarif_type, $conditionsDetail);
 
             if( !empty($head_office) ) {
                 $elementRevenue = array(
@@ -546,7 +546,6 @@ class Invoice extends AppModel {
                             'conditions' => array(
                                 'Revenue.customer_id' => $customer_id,
                                 'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
-                                'RevenueDetail.tarif_angkutan_type' => $tarif_type,
                                 'RevenueDetail.invoice_id' => NULL,
                                 'Revenue.status' => 1,
                                 'RevenueDetail.status' => 1,
@@ -558,6 +557,7 @@ class Invoice extends AppModel {
                                 'RevenueDetail.id' => 'ASC',
                             )
                         );
+                        $options['conditions'] = Common::_callRevDetailConditions($tarif_type, $options['conditions']);
 
                         if( $action == 'tarif_name' ) {
                             $options['contain'][] = 'TarifAngkutan';
@@ -698,13 +698,12 @@ class Invoice extends AppModel {
                                 ));
                             }
 
-                            $revenueDetails = $this->InvoiceDetail->RevenueDetail->getData('list', array(
+                            $options = array(
                                 'conditions' => array(
                                     'Revenue.status' => 1,
                                     'RevenueDetail.status' => 1,
                                     'Revenue.customer_id' => $customer_id,
                                     'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
-                                    'RevenueDetail.tarif_angkutan_type' => $tarif_type,
                                     'RevenueDetail.invoice_id' => NULL,
                                     'Revenue.import_code' => $import_code,
                                 ),
@@ -715,7 +714,9 @@ class Invoice extends AppModel {
                                     'RevenueDetail.id', 'Revenue.id'
                                 ),
                                 'order' => false,
-                            ), $elementRevenue);
+                            );
+                            $options['conditions'] = Common::_callRevDetailConditions($tarif_type, $options['conditions']);
+                            $revenueDetails = $this->InvoiceDetail->RevenueDetail->getData('list', $options, $elementRevenue);
 
                             if(!empty($revenueDetails)){
                                 foreach ($revenueDetails as $revenue_detail_id => $revenue_id) {

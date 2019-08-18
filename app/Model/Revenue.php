@@ -481,13 +481,12 @@ class Revenue extends AppModel {
                 }
             }
         } else {
-            $revenueDetails = $this->RevenueDetail->getData('list', array(
+            $options = array(
                 'conditions' => array(
                     'Revenue.status' => 1,
                     'RevenueDetail.status' => 1,
                     'Revenue.customer_id' => $customer_id,
                     'Revenue.transaction_status' => array( 'posting', 'half_invoiced' ),
-                    'RevenueDetail.tarif_angkutan_type' => $tarif_type,
                     'RevenueDetail.invoice_id' => NULL,
                 ),
                 'contain' => array(
@@ -501,7 +500,9 @@ class Revenue extends AppModel {
                     'Revenue.id' => 'ASC',
                     'RevenueDetail.id' => 'ASC',
                 ),
-            ), $elementRevenue);
+            );
+            $options['conditions'] = Common::_callRevDetailConditions($tarif_type, $options['conditions']);
+            $revenueDetails = $this->RevenueDetail->getData('list', $options, $elementRevenue);
 
             if(!empty($revenueDetails)){
                 foreach ($revenueDetails as $revenue_detail_id => $revenue_id) {

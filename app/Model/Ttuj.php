@@ -745,6 +745,8 @@ class Ttuj extends AppModel {
         $dateToRange = !empty($data['named']['DateToRange'])?$data['named']['DateToRange']:false;
         $dateRitaseFrom = !empty($data['named']['DateRitaseFrom'])?$data['named']['DateRitaseFrom']:false;
         $dateRitaseTo = !empty($data['named']['DateRitaseTo'])?$data['named']['DateRitaseTo']:false;
+        $dateBonBiruFrom = !empty($data['named']['DateBonBiruFrom'])?$data['named']['DateBonBiruFrom']:false;
+        $dateBonBiruTo = !empty($data['named']['DateBonBiruTo'])?$data['named']['DateBonBiruTo']:false;
 
         $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
         $type = !empty($data['named']['type'])?$data['named']['type']:1;
@@ -814,6 +816,36 @@ class Ttuj extends AppModel {
             $default_options['contain'][] = 'SuratJalanDetail';
         }
 
+        if( !empty($dateBonBiruFrom) || !empty($dateBonBiruTo) || $status == 'bon_biru_receipt_unpaid' ) {
+            $this->unBindModel(array(
+                'hasMany' => array(
+                    'BonBiruDetail'
+                )
+            ));
+
+            $this->bindModel(array(
+                'hasOne' => array(
+                    'BonBiruDetail' => array(
+                        'className' => 'BonBiruDetail',
+                        'conditions' => array(
+                            'BonBiruDetail.status' => 1,
+                        ),
+                    ),
+                    'BonBiru' => array(
+                        'className' => 'BonBiru',
+                        'foreignKey' => false,
+                        'conditions' => array(
+                            'BonBiru.id = BonBiruDetail.bon_biru_id',
+                            'BonBiru.status' => 1,
+                            'BonBiru.is_canceled' => 0,
+                        ),
+                    ),
+                )
+            ), false);
+            $default_options['contain'][] = 'BonBiru';
+            $default_options['contain'][] = 'BonBiruDetail';
+        }
+
         if( !empty($dateFrom) || !empty($dateTo) ) {
             if( !empty($dateFrom) ) {
                 $default_options['conditions']['DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') >='] = $dateFrom;
@@ -871,6 +903,18 @@ class Ttuj extends AppModel {
                     'DATE_FORMAT(Ttuj.ttuj_date, \'%Y-%m-%d\') <=' => $dateRitaseTo,
                 ),
             );
+        }
+        if( !empty($dateBonBiruFrom) || !empty($dateBonBiruTo) ) {
+            if( !empty($dateBonBiruFrom) ) {
+                $default_options['conditions']['DATE_FORMAT(BonBiru.tgl_bon_biru, \'%Y-%m-%d\') >='] = $dateBonBiruFrom;
+            }
+
+            if( !empty($dateBonBiruTo) ) {
+                $default_options['conditions']['DATE_FORMAT(BonBiru.tgl_bon_biru, \'%Y-%m-%d\') <='] = $dateBonBiruTo;
+            }
+
+            $default_options['contain'][] = 'BonBiru';
+            $default_options['conditions']['BonBiru.id <>'] = NULL;
         }
 
         if(!empty($nopol)){
@@ -1062,6 +1106,73 @@ class Ttuj extends AppModel {
                     break;
                 case 'sj_receipt_paid':
                     $default_options['conditions']['Ttuj.status_sj'] = array( 'none', 'half' );
+                    $revenueConditions = !empty($default_options['conditions'])?$default_options['conditions']:false;
+                    $revenueConditions['Revenue.transaction_status'] = 'invoiced';
+                    $revenues = $this->Revenue->getData('list', array(
+                        'conditions' => $revenueConditions,
+                        'contain' => array(
+                            'Ttuj'
+                        ),
+                        'fields' => array(
+                            'Revenue.id', 'Revenue.ttuj_id'
+                        ),
+                    ), true, array(
+                        'status' => 'all',
+                    ));
+
+                    $default_options['conditions']['Ttuj.id'] = $revenues;
+                    break;
+                case 'bon_biru_pending':
+                    $default_options['conditions']['Ttuj.status_bon_biru'] = array( 'none', 'half' );
+                    break;
+                case 'bon_biru_receipt':
+                    $default_options['conditions']['Ttuj.status_bon_biru'] = 'full';
+                    break;
+                case 'bon_biru_receipt_unpaid':
+                    $this->Revenue->bindModel(array(
+                        'hasOne' => array(
+                            'BonBiruDetail' => array(
+                                'className' => 'BonBiruDetail',
+                                'foreignKey' => false,
+                                'conditions' => array(
+                                    'BonBiruDetail.ttuj_id = Revenue.ttuj_id',
+                                    'BonBiruDetail.status' => 1,
+                                ),
+                            ),
+                            'BonBiru' => array(
+                                'className' => 'BonBiru',
+                                'foreignKey' => false,
+                                'conditions' => array(
+                                    'BonBiru.id = BonBiruDetail.surat_jalan_id',
+                                    'BonBiru.status' => 1,
+                                    'BonBiru.is_canceled' => 0,
+                                ),
+                            ),
+                        )
+                    ), false);
+
+                    $default_options['conditions']['Ttuj.status_bon_biru'] = array( 'full', 'half' );
+                    $revenueConditions = !empty($default_options['conditions'])?$default_options['conditions']:false;
+                    $revenueConditions['Revenue.transaction_status <>'] = 'invoiced';
+                    $revenues = $this->Revenue->getData('list', array(
+                        'conditions' => $revenueConditions,
+                        'contain' => array(
+                            'Ttuj',
+                            'BonBiru',
+                            'BonBiruDetail',
+                        ),
+                        'fields' => array(
+                            'Revenue.id', 'Revenue.ttuj_id'
+                        ),
+                    ), true, array(
+                        'status' => 'all',
+                        'branch' => false,
+                    ));
+
+                    $default_options['conditions']['Ttuj.id'] = $revenues;
+                    break;
+                case 'bon_biru_receipt_paid':
+                    $default_options['conditions']['Ttuj.status_bon_biru'] = array( 'none', 'half' );
                     $revenueConditions = !empty($default_options['conditions'])?$default_options['conditions']:false;
                     $revenueConditions['Revenue.transaction_status'] = 'invoiced';
                     $revenues = $this->Revenue->getData('list', array(
@@ -1421,6 +1532,34 @@ class Ttuj extends AppModel {
         $value['TtujPayment']['paid'] = $paid;
 
         return $value;
+    }
+
+    function getBonBiru($data, $ttuj_id, $bon_biru_id = false){
+        $data_merge = $this->BonBiruDetail->find('first', array(
+            'conditions' => array(
+                'BonBiruDetail.status' => 1,
+                'BonBiru.status' => 1,
+                'BonBiru.is_canceled' => 0,
+                'BonBiruDetail.ttuj_id' => $ttuj_id,
+                'BonBiruDetail.bon_biru_id <>' => $bon_biru_id,
+            ),
+            'order' => array(
+                'BonBiru.tgl_bon_biru' => 'DESC',
+                'BonBiru.id' => 'DESC',
+            ),
+            'contain' => array(
+                'BonBiru',
+            ),
+            'group' => array(
+                'BonBiru.id',
+            ),
+        ));
+
+        if(!empty($data_merge['BonBiru'])){
+            $data['BonBiru']['tgl_bon_biru'] = $data_merge['BonBiru']['tgl_bon_biru'];
+        }
+
+        return $data;
     }
 }
 ?>

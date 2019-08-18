@@ -146,14 +146,14 @@ class BonBiru extends AppModel {
             
             switch ($status) {
                 case 'pending':
-                    $default_options['conditions']['Ttuj.status_sj'] = 'none';
+                    $default_options['conditions']['Ttuj.status_bon_biru'] = 'none';
                     break;
                 case 'half_receipt':
-                    $default_options['conditions']['Ttuj.status_sj'] = 'half';
+                    $default_options['conditions']['Ttuj.status_bon_biru'] = 'half';
                     $default_options['conditions']['BonBiru.id <>'] = NULL;
                     break;
                 case 'receipt':
-                    $default_options['conditions']['Ttuj.status_sj'] = 'full';
+                    $default_options['conditions']['Ttuj.status_bon_biru'] = 'full';
                     $default_options['conditions']['BonBiru.id <>'] = NULL;
                     break;
             }

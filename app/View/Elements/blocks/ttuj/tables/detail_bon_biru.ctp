@@ -10,24 +10,16 @@
 	        	<thead>
 	        		<tr>
 	        			<?php 
-			                    echo $this->Html->tag('th', __('No. Ttuj'), array(
-			                        'class' => 'text-center',
-			                    ));
-			                    echo $this->Html->tag('th', __('Supir'), array(
-			                        'class' => 'text-center',
-			                    ));
+			                    echo $this->Html->tag('th', __('No. Ttuj'));
+			                    echo $this->Html->tag('th', __('Supir'));
 			                    echo $this->Html->tag('th', __('NoPol'), array(
 			                        'class' => 'text-center',
 			                    ));
 			                    echo $this->Html->tag('th', __('Tgl Ttuj'), array(
 			                        'class' => 'text-center',
 			                    ));
-			                    echo $this->Html->tag('th', __('Tujuan'), array(
-			                        'class' => 'text-center',
-			                    ));
-			                    echo $this->Html->tag('th', __('Keterangan'), array(
-			                        'class' => 'text-center',
-			                    ));
+			                    echo $this->Html->tag('th', __('Tujuan'));
+			                    echo $this->Html->tag('th', __('Keterangan'));
             					
                 				if( empty($disabled_edit) ) {
 				                    echo $this->Html->tag('th', __('Action'), array(
@@ -59,14 +51,15 @@
 
 					                $checkbox = isset($checkbox)?$checkbox:true;
 					                $alias = sprintf('child-%s', $id);
-
-			                        $contentInput = $this->Form->hidden('BonBiruDetail.ttuj_id.',array(
-			                            'value'=> $id,
-			                        ));
 				    ?>
 				    <tr class="child child-<?php echo $alias; ?>">
 				    	<?php 
-				    			echo $this->Html->tag('td', $no_ttuj);
+				    			echo $this->Html->tag('td', 
+				    				$no_ttuj.
+				    				$this->Form->hidden('BonBiruDetail.ttuj_id.',array(
+			                            'value'=> $id,
+			                        ))
+				    			);
 				    			echo $this->Html->tag('td', $driver);
 				    			echo $this->Html->tag('td', $nopol, array(
 				    				'class' => 'text-center',
@@ -74,11 +67,8 @@
 				    			echo $this->Html->tag('td', $ttuj_date, array(
 				    				'class' => 'text-center',
 			    				));
-				    			echo $this->Html->tag('td', $tujuan, array(
-				    				'class' => 'text-center',
-			    				));
+				    			echo $this->Html->tag('td', $tujuan);
 				    			echo $this->Html->tag('td', $note);
-		                        echo $this->Html->tag('td', $contentInput);
                 				
                 				if( empty($disabled_edit) ) {
 					                echo $this->Html->tag('td', $this->Html->link($this->Common->icon('fa fa-times'), '#', array(

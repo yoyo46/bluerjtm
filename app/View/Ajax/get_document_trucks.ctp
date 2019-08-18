@@ -146,8 +146,8 @@
 
                     echo $this->Html->tag('th', __('NoPol'));
                     echo $this->Html->tag('th', __('Jenis Surat'));
-                    echo $this->Html->tag('th', __('Tgl Berakhir'));
                     echo $this->Html->tag('th', __('Tgl Perpanjang'));
+                    echo $this->Html->tag('th', __('Tgl Berakhir'));
                     echo $this->Html->tag('th', __('Biaya'));
                     echo $this->Html->tag('th', __('Denda'));
                     echo $this->Html->tag('th', __('Biaya lain2'));
@@ -218,8 +218,8 @@
                     <td class="hide on-show"><?php echo $noref;?></td>
                     <td><?php echo $nopol;?></td>
                     <td><?php echo $type;?></td>
-                    <td class="text-center"><?php echo $to_date;?></td>
                     <td class="text-center"><?php echo $document_date;?></td>
+                    <td class="text-center"><?php echo $to_date;?></td>
                     <td class="text-right hide on-show"><?php echo $customPriceEstimate;?></td>
                     <td class="text-right"><?php echo $customPrice;?></td>
                     <td class="text-right"><?php echo $customDenda;?></td>

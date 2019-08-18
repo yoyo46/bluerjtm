@@ -8,7 +8,6 @@
             ),
             'nottuj' => array(
                 'name' => __('No. Ttuj'),
-                'class' => 'text-center',
                 'field_model' => array(
                     'name' => 'Ttuj.no_ttuj',
                     'class' => 'ajaxModal',
@@ -17,7 +16,6 @@
             ),
             'driver' => array(
                 'name' => __('Supir'),
-                'class' => 'text-center',
                 'field_model' => array(
                     'name' => 'Ttuj.driver_name',
                     'class' => 'ajaxModal',
@@ -71,7 +69,6 @@
             ),
             'note' => array(
                 'name' => __('Keterangan'),
-                'class' => 'text-center',
                 'field_model' => array(
                     'name' => 'Ttuj.note',
                     'class' => 'ajaxModal',
@@ -159,7 +156,7 @@
                             'class' => 'text-center on-remove',
                         ));
                         echo $this->Html->tag('td', __('%s - %s', $from_city_name, $to_city_name), array(
-                            'class' => 'text-center hide on-show',
+                            'class' => 'hide on-show',
                         ));
                         echo $this->Html->tag('td', $note, array(
                             'class' => 'hide on-show',
