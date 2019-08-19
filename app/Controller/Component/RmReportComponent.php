@@ -5531,7 +5531,7 @@ class RmReportComponent extends Component {
 							$month = Common::formatDate($MonthFromTmp, 'Y_m');
 							$balance = Common::hashEmptyField($summaryBalances, __('%s-%s', $coa_id, $MonthFromTmp), 0);
 							$budget = Common::hashEmptyField($summaryBudgets, __('%s-%s', $coa_id, $MonthFromTmp), 0);
-							$selisih = $budget-$balance;
+							$selisih = $balance-$budget;
 							$tmpBudget = intval($budget);
 
 							if( !empty($tmpBudget) ) {
@@ -5632,7 +5632,7 @@ class RmReportComponent extends Component {
 
 						$total_budget = Common::hashEmptyField($grandtotal, 'budget');
 						$total_balance = Common::hashEmptyField($grandtotal, 'balance');
-						$total_selisih = $total_budget-$total_balance;
+						$total_selisih = $total_balance-$total_budget;
 						$tmpTotalSelisih = intval($total_budget);
 
 						if( !empty($tmpTotalSelisih) ) {
@@ -5865,7 +5865,7 @@ class RmReportComponent extends Component {
 			$month = Common::formatDate($MonthFromTmp, 'Y_m');
 			$balance = Common::hashEmptyField($this->total_budgets, __('total.balance.%s', $month_name), 0);
 			$budget = Common::hashEmptyField($this->total_budgets, __('total.budget.%s', $month_name), 0);
-			$selisih = $budget-$balance;
+			$selisih = $balance-$budget;
 			$tmpBudget = intval($budget);
 
 			if( !empty($tmpBudget) ) {
@@ -5955,7 +5955,7 @@ class RmReportComponent extends Component {
 
 		$total_budget = Common::hashEmptyField($grandtotal, 'budget');
 		$total_balance = Common::hashEmptyField($grandtotal, 'balance');
-		$total_selisih = $total_budget-$total_balance;
+		$total_selisih = $total_balance-$total_budget;
 		$tmpTotalBudget = $total_budget;
 
 		if( !empty($tmpTotalBudget) ) {
