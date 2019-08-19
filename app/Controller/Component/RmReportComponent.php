@@ -5009,7 +5009,7 @@ class RmReportComponent extends Component {
             $gross_profit = $revenue - $out;
 
             if( !empty($revenue) ) {
-                $er = $out / $revenue;
+                $er = ($out / $revenue) * 100;
             }
 
 			$revenue = Common::getFormatPrice($revenue);
@@ -6202,7 +6202,7 @@ class RmReportComponent extends Component {
 	            $gross_profit = $revenue - $out;
 
 	            if( !empty($revenue) ) {
-	                $er = $out / $revenue;
+	                $er = ($out / $revenue) * 100;
 	            }
 
 		        $revenue_total += $revenue;
@@ -6364,7 +6364,7 @@ class RmReportComponent extends Component {
 	            $gross_profit = $revenue - $out;
 
 	            if( !empty($revenue) ) {
-	                $er = $out / $revenue;
+	                $er = ($out / $revenue) * 100;
 	            }
 
 				$key++;
@@ -6436,7 +6436,7 @@ class RmReportComponent extends Component {
 	            $gross_profit = $revenue_total - $out;
 
 	            if( !empty($revenue_total) ) {
-	                $er = $out / $revenue_total;
+	                $er = ($out / $revenue_total) * 100;
 	            }
 
 				$result[$key] = array(

@@ -17,7 +17,7 @@
                 $er = 0;
 
                 if( !empty($balance_rev) ) {
-                    $er = $out / $balance_rev;
+                    $er = ($out / $balance_rev) * 100;
                 }
             
                 if( !empty($children) ) {
@@ -103,7 +103,7 @@
                 $er = 0;
 
                 if( !empty($balance_rev) ) {
-                    $er = $out / $balance_rev;
+                    $er = ($out / $balance_rev) * 100;
                 }
 
                 $tmpTr = $this->Html->tag('td', $this->Html->tag('strong', __('Total')), array(

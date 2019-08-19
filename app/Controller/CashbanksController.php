@@ -2770,7 +2770,7 @@ class CashbanksController extends AppController {
             $er = 0;
 
             if( !empty($out) ) {
-                $er = $out / $revenue;
+                $er = ($out / $revenue) * 100;
             }
 
             $result['revenue'] = $revenue;
