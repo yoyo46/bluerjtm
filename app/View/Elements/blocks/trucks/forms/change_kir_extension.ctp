@@ -6,7 +6,6 @@
 					'class'=>'form-control',
 					'type' => 'text',
 					'required' => false,
-					'readonly' => true,
 				));
 		?>
 	</div>
