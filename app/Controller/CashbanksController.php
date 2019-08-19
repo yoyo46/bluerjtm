@@ -2767,11 +2767,7 @@ class CashbanksController extends AppController {
             $expense = Common::hashEmptyField($summaryExp, 'Journal.total_credit', 0);
             $maintenance = Common::hashEmptyField($summaryMaintain, 'Journal.total_credit', 0);
             $out = $expense + $maintenance;
-            $er = 0;
-
-            if( !empty($out) ) {
-                $er = ($out / $revenue) * 100;
-            }
+            $er = Common::_callER($out, $revenue);
 
             $result['revenue'] = $revenue;
             $result['expense'] = $expense;

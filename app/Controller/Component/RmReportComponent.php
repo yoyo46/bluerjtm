@@ -5005,12 +5005,8 @@ class RmReportComponent extends Component {
             $expense = Common::hashEmptyField($summaryExp, 'Journal.total_credit', 0);
             $maintenance = Common::hashEmptyField($summaryMaintain, 'Journal.total_credit', 0);
             $out = $expense + $maintenance;
-            $er = 0;
             $gross_profit = $revenue - $out;
-
-            if( !empty($revenue) ) {
-                $er = ($out / $revenue) * 100;
-            }
+            $er = Common::_callER($out, $revenue);
 
 			$revenue = Common::getFormatPrice($revenue);
 			$expense = Common::getFormatPrice($expense);
@@ -6198,12 +6194,8 @@ class RmReportComponent extends Component {
 	            $maintenance = Common::hashEmptyField($summaryMaintain, 'Journal.total_debit', 0);
 	            $other = Common::hashEmptyField($summaryMaintain, 'Journal.total_debit', 0);
 	            $out = $expense + $maintenance + $other;
-	            $er = 0;
 	            $gross_profit = $revenue - $out;
-
-	            if( !empty($revenue) ) {
-	                $er = ($out / $revenue) * 100;
-	            }
+            	$er = Common::_callER($out, $revenue);
 
 		        $revenue_total += $revenue;
 		        $expense_total += $expense;
@@ -6360,12 +6352,8 @@ class RmReportComponent extends Component {
 	            $maintenance = Common::hashEmptyField($summaryMaintain, 'Journal.total_debit', 0);
 	            $other = Common::hashEmptyField($summaryMaintain, 'Journal.total_debit', 0);
 	            $out = $expense + $maintenance + $other;
-	            $er = 0;
 	            $gross_profit = $revenue - $out;
-
-	            if( !empty($revenue) ) {
-	                $er = ($out / $revenue) * 100;
-	            }
+            	$er = Common::_callER($out, $revenue);
 
 				$key++;
 
@@ -6432,12 +6420,8 @@ class RmReportComponent extends Component {
 				$key++;
 
 	            $out = $expense_total + $maintenance_total + $other_total;
-	            $er = 0;
 	            $gross_profit = $revenue_total - $out;
-
-	            if( !empty($revenue_total) ) {
-	                $er = ($out / $revenue_total) * 100;
-	            }
+            	$er = Common::_callER($out, $revenue_total);
 
 				$result[$key] = array(
 					__('No. ID') => array(

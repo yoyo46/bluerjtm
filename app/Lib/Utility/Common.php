@@ -904,4 +904,18 @@ class Common {
 
         return $result;
     }
+
+    public static function _callER ( $out, $revenue ) {
+    	$er = 0;
+
+    	if( !empty($revenue) ) {
+            $er = ($out / $revenue) * 100;
+
+            if( $out > $revenue ) {
+                $er = $er*(-1);
+            }
+        }
+
+        return $er;
+    }
 }

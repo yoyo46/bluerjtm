@@ -14,11 +14,7 @@
 
                 $out = $balance_exp + $balance_maintain + $balance_other;
                 $gross_profit = $balance_rev + $out;
-                $er = 0;
-
-                if( !empty($balance_rev) ) {
-                    $er = ($out / $balance_rev) * 100;
-                }
+                $er = Common::_callER($out, $balance_rev);
             
                 if( !empty($children) ) {
                     $colspan = '6';
@@ -100,11 +96,7 @@
 
                 $out = $balance_exp + $balance_maintain + $balance_other;
                 $gross_profit = $balance_rev + $out;
-                $er = 0;
-
-                if( !empty($balance_rev) ) {
-                    $er = ($out / $balance_rev) * 100;
-                }
+                $er = Common::_callER($out, $balance_rev);
 
                 $tmpTr = $this->Html->tag('td', $this->Html->tag('strong', __('Total')), array(
                     'style' => 'font-weight: bold;padding-left: 0;font-style: italic;',

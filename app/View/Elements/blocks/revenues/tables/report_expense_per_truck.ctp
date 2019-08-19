@@ -14,12 +14,7 @@
 
                 $total_expense = $biaya_uang_jalan + $total_cashbank + $total_document;
                 $total_gross_profit = $total_revenue - $total_expense;
-
-                if( !empty($total_revenue) ) {
-                    $er = ($total_expense/$total_revenue) * 100;
-                } else {
-                    $er = '';
-                }
+                $er = Common::_callER($total_expense, $total_revenue);
 
                 $customTotalRevenue = $this->Common->getFormatPrice($total_revenue, false, 2);
                 $customBiayaUangJalan = $this->Common->getFormatPrice($biaya_uang_jalan, false, 2);
