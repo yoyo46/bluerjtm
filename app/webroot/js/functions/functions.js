@@ -1214,7 +1214,7 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge,
         group_motor_id = 0;
     }
     
-    var url = '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+ from_city_id +'/0/?total_muatan='+total_muatan+'/';
+    var url = '/ajax/getInfoRevenueDetail/'+ttuj_id+'/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+ from_city_id +'/0/total_muatan:'+total_muatan+'/';
     
     if( data_type == 'manual' ) {
         customer_id = $('#customer-revenue-manual').val();
@@ -1222,7 +1222,7 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge,
         from_city_id = $.checkUndefined($('#from-city-revenue-id').val(), 0);
         to_city_id = $.checkUndefined($('#to-city-revenue-id').val(), 0);
 
-        url = '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+from_city_id+'/'+truck_id+'/manual/?total_muatan='+total_muatan+'/';
+        url = '/ajax/getInfoRevenueDetail/0/'+customer_id+'/'+city_id+'/'+group_motor_id+'/'+is_charge+'/'+to_city_id+'/'+qty+'/'+from_city_id+'/'+truck_id+'/manual/total_muatan:'+total_muatan+'/';
     }
 
     $.ajax({
@@ -3030,7 +3030,7 @@ var get_document_cashbank = function(){
                                     obj: $('.cashbanks-info-table > tbody .child:last-child .input_number'),
                                 });
                                 ajaxModal($('.cashbanks-info-table > tbody .child .ajaxModal'));
-                                sisa_amount($('.cashbanks-info-table > tbody .child .sisa-amount'));
+                                sisa_amount($('.cashbanks-info-table > tbody .child .sisa-amount,.cashbanks-info-table > tbody .child .no-claim,.cashbanks-info-table > tbody .child .stood,.cashbanks-info-table > tbody .child .lainnya,.cashbanks-info-table > tbody .child .titipan,.cashbanks-info-table > tbody .child .claim,.cashbanks-info-table > tbody .child .laka,.cashbanks-info-table > tbody .child .debt'));
                                 delete_custom_field();
                             }
                         } else {
@@ -3154,16 +3154,16 @@ var calcTotalTransfer = function ( parent ) {
     // laka = convert_number(parent.find('.laka').val());
     debt = convert_number(parent.find('.debt').val());
 
-    if( parent.find('.debt_percent').length > 0 ) {
-        debt_percent = convert_number(parent.find('.debt_percent').val());
+    // if( parent.find('.debt_percent').length > 0 ) {
+    //     debt_percent = convert_number(parent.find('.debt_percent').val());
 
-        if( debt_percent != 0 ) {
-            var totalPlus = biaya + no_claim + stood;
-            debt = totalPlus * (debt_percent/100);
+    //     if( debt_percent != 0 ) {
+    //         var totalPlus = biaya + no_claim + stood;
+    //         debt = totalPlus * (debt_percent/100);
 
-            parent.find('.debt').val( formatNumber( debt ) );
-        }
-    }
+    //         parent.find('.debt').val( formatNumber( debt ) );
+    //     }
+    // }
 
     // var totalBiaya = biaya + no_claim + stood + lainnya - titipan - claim - laka - debt;
     var totalBiaya = biaya + no_claim + stood + lainnya - titipan - claim - debt;
