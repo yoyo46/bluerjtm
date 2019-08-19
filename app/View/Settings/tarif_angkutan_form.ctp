@@ -200,6 +200,12 @@
 								'wrap' => 'div', 
 								'class' => 'error-message',
 							));
+                			echo $this->Form->input('tarif_extra_per_unit',array(
+								'label'=> __('Per Unit ?'), 
+								'required' => false,
+								'type' => 'checkbox',
+								'value' => 1,
+							));
 		        	?>
 				</div>
 		    </div>

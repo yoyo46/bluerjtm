@@ -176,9 +176,10 @@ class TarifAngkutan extends AppModel {
             foreach ($results as $key => $result) {
                 $tarifCapacity = !empty($result['TarifAngkutan']['capacity'])?$result['TarifAngkutan']['capacity']:false;
                 $tarifGroupMotor = !empty($result['TarifAngkutan']['group_motor_id'])?$result['TarifAngkutan']['group_motor_id']:false;
+                $tarif = Common::hashEmptyField($result, 'TarifAngkutan.tarif', 0);
                 $min_capacity = Common::hashEmptyField($result, 'TarifAngkutan.min_capacity', 0);
                 $tarif_extra = Common::hashEmptyField($result, 'TarifAngkutan.tarif_extra', 0);
-                $tarif = Common::hashEmptyField($result, 'TarifAngkutan.tarif', 0);
+                $tarif_extra_per_unit = Common::hashEmptyField($result, 'TarifAngkutan.tarif_extra_per_unit');
 
                 $flagTarifCapacity = false;
                 $flagTarifGroupMotor = false;
@@ -195,6 +196,11 @@ class TarifAngkutan extends AppModel {
                 if( $tarifGroupMotor == $group_motor_id || empty($tarifGroupMotor) ) {
                     if( !empty($total_muatan) && !empty($min_capacity) ) {
                         if( $total_muatan > $min_capacity ) {
+                            if( !empty($tarif_extra_per_unit) ) {
+                                $sisa_muatan = $total_muatan - $min_capacity;
+                                $tarif_extra = $tarif_extra * $sisa_muatan;
+                            }
+
                             $tarif = $tarif + $tarif_extra;
                         }
                     }
@@ -240,14 +246,20 @@ class TarifAngkutan extends AppModel {
             ));
 
             if( !empty($result) ) {
-                $min_capacity = Common::hashEmptyField($result, 'TarifAngkutan.min_capacity', 0);
-                $tarif_extra = Common::hashEmptyField($result, 'TarifAngkutan.tarif_extra', 0);
                 $tarif = Common::hashEmptyField($result, 'TarifAngkutan.tarif', 0);
                 $tarifGroupMotor = Common::hashEmptyField($result, 'TarifAngkutan.group_motor_id');
+                $min_capacity = Common::hashEmptyField($result, 'TarifAngkutan.min_capacity', 0);
+                $tarif_extra = Common::hashEmptyField($result, 'TarifAngkutan.tarif_extra', 0);
+                $tarif_extra_per_unit = Common::hashEmptyField($result, 'TarifAngkutan.tarif_extra_per_unit');
 
                 if( empty($tarifGroupMotor) ) {
                     if( !empty($total_muatan) && !empty($min_capacity) ) {
                         if( $total_muatan > $min_capacity ) {
+                            if( !empty($tarif_extra_per_unit) ) {
+                                $sisa_muatan = $total_muatan - $min_capacity;
+                                $tarif_extra = $tarif_extra * $sisa_muatan;
+                            }
+
                             $tarif = $tarif + $tarif_extra;
                         }
                     }
@@ -262,14 +274,20 @@ class TarifAngkutan extends AppModel {
             } else if( !empty($results[0]) ) {
                 $result = $results[0];
                 
-                $min_capacity = Common::hashEmptyField($result, 'TarifAngkutan.min_capacity', 0);
-                $tarif_extra = Common::hashEmptyField($result, 'TarifAngkutan.tarif_extra', 0);
                 $tarif = Common::hashEmptyField($result, 'TarifAngkutan.tarif', 0);
                 $tarifGroupMotor = Common::hashEmptyField($result, 'TarifAngkutan.group_motor_id');
+                $min_capacity = Common::hashEmptyField($result, 'TarifAngkutan.min_capacity', 0);
+                $tarif_extra = Common::hashEmptyField($result, 'TarifAngkutan.tarif_extra', 0);
+                $tarif_extra_per_unit = Common::hashEmptyField($result, 'TarifAngkutan.tarif_extra_per_unit');
 
                 if( empty($tarifGroupMotor) ) {
                     if( !empty($total_muatan) && !empty($min_capacity) ) {
                         if( $total_muatan > $min_capacity ) {
+                            if( !empty($tarif_extra_per_unit) ) {
+                                $sisa_muatan = $total_muatan - $min_capacity;
+                                $tarif_extra = $tarif_extra * $sisa_muatan;
+                            }
+                            
                             $tarif = $tarif + $tarif_extra;
                         }
                     }
