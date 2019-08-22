@@ -6599,7 +6599,7 @@ class RmReportComponent extends Component {
                 $classifications4 = Common::hashEmptyField($groupClassifications, $group_classification_4_id, '');
 
 				$result[$key] = array(
-					__('ID/No. Ref') => array(
+					__('ID') => array(
 						'text' => Common::hashEmptyField($value, 'UangJalan.id'),
                 		'excel' => array(
                 			'align' => 'center',
@@ -6852,7 +6852,7 @@ class RmReportComponent extends Component {
 						'text' => !empty($titipan)?Common::hashEmptyField($value, 'UangJalan.potongan_tabungan_type'):'',
 					),
 					__('Titipan') => array(
-						'text' => !empty($view)?Common::hashEmptyFieldgetFormatPrice($titipan, 0, ''):$titipan,
+						'text' => !empty($view)?Common::getFormatPrice($titipan, 0, ''):$titipan,
 	            		'excel' => array(
 	            			'align' => 'right',
 	            			'type' => 'number',

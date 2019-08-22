@@ -4543,7 +4543,7 @@ class SettingsController extends AppController {
                                     }
 
                                     $this->UangJalan->create();
-                                    
+
                                     if( $saveGroupMotor && $saveCommissionGroupMotor && $saveAsdpGroupMotor && $saveUangKawalGroupMotor && $saveUangKeamananGroupMotor && $this->UangJalan->save($data) ){
                                         $id = $this->UangJalan->id;
                                         
