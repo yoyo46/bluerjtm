@@ -113,7 +113,8 @@
 					echo $this->Html->tag('td', '', array(
 						'style' => 'text-align: center;padding: 10px;border: 1px solid #ddd;',
 					));
-					echo $this->Html->tag('td', $customPrice, array(
+					// echo $this->Html->tag('td', $customPrice, array(
+					echo $this->Html->tag('td', '', array(
 						'style' => 'padding: 10px;text-align:right;border: 1px solid #ddd;',
 					));
 					echo $this->Html->tag('td', $totalPriceFormat, array(

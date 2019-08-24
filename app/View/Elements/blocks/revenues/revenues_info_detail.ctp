@@ -81,6 +81,10 @@
                                 $jenis_unit = $this->Common->filterEmptyField($detail, 'RevenueDetail', 'payment_type', 'per_unit');
                                 $tarif_angkutan_type = $this->Common->filterEmptyField($detail, 'RevenueDetail', 'tarif_angkutan_type', 'angkut');
                                 $price = 0;
+                                
+                                $tarif_extra = Common::hashEmptyField($detail, 'RevenueDetail.tarif_extra', 0);
+                                $tarif_extra_min_capacity = Common::hashEmptyField($detail, 'RevenueDetail.tarif_extra_min_capacity', 0);
+                                $tarif_extra_per_unit = Common::hashEmptyField($detail, 'RevenueDetail.tarif_extra_per_unit', 0);
 
                                 if( !empty($is_charge) ) {
                                     $checkedCharge = true;
@@ -89,6 +93,18 @@
                                         $price = $total_price_unit;
                                     } else {
                                         $price = $price_unit * $qty;
+                                    }
+
+
+                                    if( $tarif_extra_min_capacity != 0 ) {
+                                        if( $qty > $tarif_extra_min_capacity ) {
+                                            if( $tarif_extra_per_unit != 0 ) {
+                                                $sisa_muatan = $qty - $tarif_extra_min_capacity;
+                                                $tarif_extra = $tarif_extra * $sisa_muatan;
+                                            }
+
+                                            $price = $price + $tarif_extra;
+                                        }
                                     }
                                 } else {
                                     $checkedCharge = false;
@@ -134,6 +150,22 @@
                                     'required' => false,
                                     'class' => 'tarif_angkutan_type',
                                     'value' => $tarif_angkutan_type,
+                                ));
+
+                                echo $this->Form->hidden('RevenueDetail.tarif_extra.', array(
+                                    'required' => false,
+                                    'class' => 'tarif_extra',
+                                    'value' => $tarif_extra,
+                                ));
+                                echo $this->Form->hidden('RevenueDetail.tarif_extra_min_capacity.', array(
+                                    'required' => false,
+                                    'class' => 'tarif_extra_min_capacity',
+                                    'value' => $tarif_extra_min_capacity,
+                                ));
+                                echo $this->Form->hidden('RevenueDetail.tarif_extra_per_unit.', array(
+                                    'required' => false,
+                                    'class' => 'tarif_extra_per_unit',
+                                    'value' => $tarif_extra_per_unit,
                                 ));
                         ?>
                     </td>

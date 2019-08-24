@@ -5,6 +5,9 @@
         $jenis_unit = $this->Common->filterEmptyField($tarif, 'jenis_unit', false, 'per_unit');
         $price = $this->Common->filterEmptyField($tarif, 'tarif', false, 0);
         $tarif_angkutan_id = $this->Common->filterEmptyField($tarif, 'tarif_angkutan_id', false, 0);
+        $tarif_extra = Common::hashEmptyField($tarif, 'tarif_extra', 0);
+        $tarif_extra_min_capacity = Common::hashEmptyField($tarif, 'tarif_extra_min_capacity', 0);
+        $tarif_extra_per_unit = Common::hashEmptyField($tarif, 'tarif_extra_per_unit', 0);
 
         if( !empty($is_charge) ) {
             if( $jenis_unit == 'per_truck' ) {
@@ -30,6 +33,21 @@
             'id' => 'tarif_angkutan_id',
             'required' => false,
             'value' => $tarif_angkutan_id,
+        ));
+        echo $this->Form->hidden('RevenueDetail.tarif_extra.', array(
+            'id' => 'tarif_extra',
+            'required' => false,
+            'value' => $tarif_extra,
+        ));
+        echo $this->Form->hidden('RevenueDetail.tarif_extra_min_capacity.', array(
+            'id' => 'tarif_extra_min_capacity',
+            'required' => false,
+            'value' => $tarif_extra_min_capacity,
+        ));
+        echo $this->Form->hidden('RevenueDetail.tarif_extra_per_unit.', array(
+            'id' => 'tarif_extra_per_unit',
+            'required' => false,
+            'value' => $tarif_extra_per_unit,
         ));
 
         if( empty($tarif) ){

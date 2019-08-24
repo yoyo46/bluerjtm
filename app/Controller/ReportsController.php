@@ -14,8 +14,8 @@ class ReportsController extends AppController {
 		parent::beforeFilter();
 		$this->Auth->allow(array());
 		
-		$this->limit = 200;
-		$this->limit_paging = 200;
+		$this->limit = 500;
+		$this->limit_paging = 500;
 	}
 
 	function generate_excel ( $type = null ) {

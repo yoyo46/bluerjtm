@@ -193,18 +193,18 @@ class TarifAngkutan extends AppModel {
                     $flagTarifGroupMotor = true;
                 }
 
-                if( $tarifGroupMotor == $group_motor_id || empty($tarifGroupMotor) ) {
-                    if( !empty($total_muatan) && !empty($min_capacity) ) {
-                        if( $total_muatan > $min_capacity ) {
-                            if( !empty($tarif_extra_per_unit) ) {
-                                $sisa_muatan = $total_muatan - $min_capacity;
-                                $tarif_extra = $tarif_extra * $sisa_muatan;
-                            }
+                // if( $tarifGroupMotor == $group_motor_id || empty($tarifGroupMotor) ) {
+                //     if( !empty($total_muatan) && !empty($min_capacity) ) {
+                //         if( $total_muatan > $min_capacity ) {
+                //             if( !empty($tarif_extra_per_unit) ) {
+                //                 $sisa_muatan = $total_muatan - $min_capacity;
+                //                 $tarif_extra = $tarif_extra * $sisa_muatan;
+                //             }
 
-                            $tarif = $tarif + $tarif_extra;
-                        }
-                    }
-                }
+                //             $tarif = $tarif + $tarif_extra;
+                //         }
+                //     }
+                // }
 
                 if( $flagTarifCapacity && $flagTarifGroupMotor ) {
                     return array(
@@ -212,6 +212,9 @@ class TarifAngkutan extends AppModel {
                         'tarif' => $tarif,
                         'tarif_angkutan_id' => $result['TarifAngkutan']['id'],
                         'tarif_angkutan_type' => $result['TarifAngkutan']['type'],
+                        'tarif_extra' => $tarif_extra,
+                        'tarif_extra_min_capacity' => $min_capacity,
+                        'tarif_extra_per_unit' => $tarif_extra_per_unit,
                     );
                 } else if( ($flagTarifGroupMotor && empty($tarifCapacity)) || ($flagTarifCapacity && empty($tarifGroupMotor)) ) {
                     $tmpResult = array(
@@ -219,6 +222,9 @@ class TarifAngkutan extends AppModel {
                         'tarif' => $tarif,
                         'tarif_angkutan_id' => $result['TarifAngkutan']['id'],
                         'tarif_angkutan_type' => $result['TarifAngkutan']['type'],
+                        'tarif_extra' => $tarif_extra,
+                        'tarif_extra_min_capacity' => $min_capacity,
+                        'tarif_extra_per_unit' => $tarif_extra_per_unit,
                     );
                 }
             }
@@ -252,24 +258,27 @@ class TarifAngkutan extends AppModel {
                 $tarif_extra = Common::hashEmptyField($result, 'TarifAngkutan.tarif_extra', 0);
                 $tarif_extra_per_unit = Common::hashEmptyField($result, 'TarifAngkutan.tarif_extra_per_unit');
 
-                if( empty($tarifGroupMotor) ) {
-                    if( !empty($total_muatan) && !empty($min_capacity) ) {
-                        if( $total_muatan > $min_capacity ) {
-                            if( !empty($tarif_extra_per_unit) ) {
-                                $sisa_muatan = $total_muatan - $min_capacity;
-                                $tarif_extra = $tarif_extra * $sisa_muatan;
-                            }
+                // if( empty($tarifGroupMotor) ) {
+                //     if( !empty($total_muatan) && !empty($min_capacity) ) {
+                //         if( $total_muatan > $min_capacity ) {
+                //             if( !empty($tarif_extra_per_unit) ) {
+                //                 $sisa_muatan = $total_muatan - $min_capacity;
+                //                 $tarif_extra = $tarif_extra * $sisa_muatan;
+                //             }
 
-                            $tarif = $tarif + $tarif_extra;
-                        }
-                    }
-                }
+                //             $tarif = $tarif + $tarif_extra;
+                //         }
+                //     }
+                // }
 
                 return array(
                     'jenis_unit' => $result['TarifAngkutan']['jenis_unit'],
                     'tarif' => $tarif,
                     'tarif_angkutan_id' => $result['TarifAngkutan']['id'],
                     'tarif_angkutan_type' => $result['TarifAngkutan']['type'],
+                    'tarif_extra' => $tarif_extra,
+                    'tarif_extra_min_capacity' => $min_capacity,
+                    'tarif_extra_per_unit' => $tarif_extra_per_unit,
                 );
             } else if( !empty($results[0]) ) {
                 $result = $results[0];
@@ -280,24 +289,27 @@ class TarifAngkutan extends AppModel {
                 $tarif_extra = Common::hashEmptyField($result, 'TarifAngkutan.tarif_extra', 0);
                 $tarif_extra_per_unit = Common::hashEmptyField($result, 'TarifAngkutan.tarif_extra_per_unit');
 
-                if( empty($tarifGroupMotor) ) {
-                    if( !empty($total_muatan) && !empty($min_capacity) ) {
-                        if( $total_muatan > $min_capacity ) {
-                            if( !empty($tarif_extra_per_unit) ) {
-                                $sisa_muatan = $total_muatan - $min_capacity;
-                                $tarif_extra = $tarif_extra * $sisa_muatan;
-                            }
+                // if( empty($tarifGroupMotor) ) {
+                //     if( !empty($total_muatan) && !empty($min_capacity) ) {
+                //         if( $total_muatan > $min_capacity ) {
+                //             if( !empty($tarif_extra_per_unit) ) {
+                //                 $sisa_muatan = $total_muatan - $min_capacity;
+                //                 $tarif_extra = $tarif_extra * $sisa_muatan;
+                //             }
                             
-                            $tarif = $tarif + $tarif_extra;
-                        }
-                    }
-                }
+                //             $tarif = $tarif + $tarif_extra;
+                //         }
+                //     }
+                // }
 
                return array(
                     'jenis_unit' => !empty($results[0]['TarifAngkutan']['jenis_unit'])?$results[0]['TarifAngkutan']['jenis_unit']:'per_truck',
                     'tarif' => $tarif,
                     'tarif_angkutan_id' => !empty($results[0]['TarifAngkutan']['id'])?$results[0]['TarifAngkutan']['id']:false,
                     'tarif_angkutan_type' => !empty($results[0]['TarifAngkutan']['type'])?$results[0]['TarifAngkutan']['type']:'angkut',
+                    'tarif_extra' => $tarif_extra,
+                    'tarif_extra_min_capacity' => $min_capacity,
+                    'tarif_extra_per_unit' => $tarif_extra_per_unit,
                 );
             }
         }else{

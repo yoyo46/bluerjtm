@@ -860,6 +860,9 @@ var add_custom_field = function( obj ){
                             <select name="data[RevenueDetail][city_id][]" class="form-control city-revenue-change chosen-select" id="RevenueDetailCityId">'+optionCity+'</select> \
                             <input type="hidden" name="data[RevenueDetail][tarif_angkutan_id][]" class="tarif_angkutan_id" id="RevenueDetailTarifAngkutanId"> \
                             <input type="hidden" name="data[RevenueDetail][tarif_angkutan_type][]" class="tarif_angkutan_type" id="RevenueDetailTarifAngkutanType"> \
+                            <input type="hidden" name="data[RevenueDetail][tarif_extra][]" class="tarif_extra" id="RevenueDetailTarifExtra"> \
+                            <input type="hidden" name="data[RevenueDetail][tarif_extra_min_capacity][]" class="tarif_extra_min_capacity" id="RevenueDetailTarifExtraMinCapacity"> \
+                            <input type="hidden" name="data[RevenueDetail][tarif_extra_per_unit][]" class="tarif_extra_per_unit" id="RevenueDetailTarifExtraPerUnit"> \
                         </td> \
                         <td class="no-do-data" align="center"> \
                             <input name="data[RevenueDetail][no_do][]" class="form-control" type="text" id="RevenueDetailNoDo"> \
@@ -1237,6 +1240,9 @@ var changeDetailRevenue = function ( parent, city_id, group_motor_id, is_charge,
             parent.find('td.qty-tipe-motor-data .jenis_unit').val(jenis_unit_angkutan);
             parent.find('td.additional-charge-data').html($(response).filter('#additional-charge-data').html());
             parent.find('td.total-price-revenue').html($(response).filter('#total-price-revenue').html());
+            parent.find('td.city-data .tarif_extra').val($(response).filter('#tarif_extra').val());
+            parent.find('td.city-data .tarif_extra_min_capacity').val($(response).filter('#tarif_extra_min_capacity').val());
+            parent.find('td.city-data .tarif_extra_per_unit').val($(response).filter('#tarif_extra_per_unit').val());
 
             revenue_detail();
             grandTotalRevenue();
@@ -1290,6 +1296,12 @@ function grandTotalRevenue(){
     var total = 0;
     var ppn = 0;
     var revenue_ppn = $('.ppn-persen').val();
+
+    var tarif_extra = $.convertNumber($('.tarif_extra').val());
+    var tarif_extra_min_capacity = $.convertNumber($('.tarif_extra_min_capacity').val(), 'float');
+    var tarif_extra_per_unit = $.convertNumber($('.tarif_extra_per_unit').val());
+
+
     var formatAdditionalCharge = 0;
     var totalQty = 0;
 
@@ -1328,6 +1340,17 @@ function grandTotalRevenue(){
         }
 
         if( is_additional_charge[i].checked == true ) {
+            if( tarif_extra_min_capacity != 0 ) {
+                if( qtyUnit > tarif_extra_min_capacity ) {
+                    if( tarif_extra_per_unit != 0 ) {
+                        var sisa_muatan = qtyUnit - tarif_extra_min_capacity;
+                        tarif_extra = tarif_extra * sisa_muatan;
+                    }
+
+                    totalPrice = totalPrice + tarif_extra;
+                }
+            }
+
             total += totalPrice;
 
             // if( jenis_unit[i].value != 'per_truck'){

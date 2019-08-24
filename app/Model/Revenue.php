@@ -642,6 +642,10 @@ class Revenue extends AppModel {
                 $is_charge = isset($data['RevenueDetail']['is_charge'][$keyDetail])?$data['RevenueDetail']['is_charge'][$keyDetail]:false;
                 $tarif_angkutan_type = isset($data['RevenueDetail']['tarif_angkutan_type'][$keyDetail])?$data['RevenueDetail']['tarif_angkutan_type'][$keyDetail]:false;
                 $total_price_unit = isset($data['RevenueDetail']['total_price_unit'][$keyDetail])?$this->convertPriceToString($data['RevenueDetail']['total_price_unit'][$keyDetail], 0):0;
+                
+                $tarif_extra = isset($data['RevenueDetail']['tarif_extra'][$keyDetail])?$this->convertPriceToString($data['RevenueDetail']['tarif_extra'][$keyDetail], 0):0;
+                $tarif_extra_min_capacity = isset($data['RevenueDetail']['tarif_extra_min_capacity'][$keyDetail])?$this->convertPriceToString($data['RevenueDetail']['tarif_extra_min_capacity'][$keyDetail], 0):0;
+                $tarif_extra_per_unit = isset($data['RevenueDetail']['tarif_extra_per_unit'][$keyDetail])?$this->convertPriceToString($data['RevenueDetail']['tarif_extra_per_unit'][$keyDetail], 0):0;
 
                 $dataRevenue['RevenueDetail'][] = array(
                     'RevenueDetail' => array(
@@ -656,6 +660,9 @@ class Revenue extends AppModel {
                         'is_charge' => $is_charge,
                         'price_unit' => isset($data['RevenueDetail']['price_unit'][$keyDetail])?$this->convertPriceToString($data['RevenueDetail']['price_unit'][$keyDetail], 0):0,
                         'total_price_unit' => $total_price_unit,
+                        'tarif_extra' => $tarif_extra,
+                        'tarif_extra_min_capacity' => $tarif_extra_min_capacity,
+                        'tarif_extra_per_unit' => $tarif_extra_per_unit,
                     ),
                 );
                 $total_revenue += $total_price_unit;

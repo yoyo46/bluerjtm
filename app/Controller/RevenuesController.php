@@ -266,12 +266,18 @@ class RevenuesController extends AppController {
                     $jenis_unit = 'per_truck';
                     $tarif_angkutan_id = 0;
                     $tarif_angkutan_type = 'angkut';
+                    $tarif_extra = 0;
+                    $tarif_extra_min_capacity = 0;
+                    $tarif_extra_per_unit = 0;
 
                     if( !empty($tarif['tarif']) ) {
                         $priceUnit = $tarif['tarif'];
                         $jenis_unit = $tarif['jenis_unit'];
                         $tarif_angkutan_id = $tarif['tarif_angkutan_id'];
                         $tarif_angkutan_type = $tarif['tarif_angkutan_type'];
+                        $tarif_extra = $tarif['tarif_extra'];
+                        $tarif_extra_min_capacity = $tarif['tarif_extra_min_capacity'];
+                        $tarif_extra_per_unit = $tarif['tarif_extra_per_unit'];
                     } else {
                         $priceUnit = 0;
                         $jenis_unit = false;
@@ -293,6 +299,17 @@ class RevenuesController extends AppController {
                         $total_price_unit = $qtyMuatan * $priceUnit;
                     }
 
+                    if( !empty($total_price_unit) && $tarif_extra_min_capacity != 0 ) {
+                        if( $qtyMuatan > $tarif_extra_min_capacity ) {
+                            if( $tarif_extra_per_unit != 0 ) {
+                                $sisa_muatan = $qtyMuatan - $tarif_extra_min_capacity;
+                                $tarif_extra = $tarif_extra * $sisa_muatan;
+                            }
+
+                            $total_price_unit = $total_price_unit + $tarif_extra;
+                        }
+                    }
+
                     $totalTarif += $total_price_unit;
 
                     $dataRevenue['RevenueDetail'][] = array(
@@ -307,6 +324,9 @@ class RevenuesController extends AppController {
                             'tarif_angkutan_type' => $tarif_angkutan_type,
                             'from_ttuj' => 1,
                             'total_price_unit' => $total_price_unit,
+                            'tarif_extra' => $tarif_extra,
+                            'tarif_extra_min_capacity' => $tarif_extra_min_capacity,
+                            'tarif_extra_per_unit' => $tarif_extra_per_unit,
                         ),
                     );
                 }
