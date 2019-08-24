@@ -31,7 +31,7 @@
 	    				$tgljam_tiba = Common::hashEmptyField($value, 'Revenue.Ttuj.tgljam_tiba', NULL, array(
 	    					'date' => 'd-M',
 	    				));
-	    				$totalExtra = Common::hashEmptyField($value, 'Revenue.Ttuj.uang_jalan_extra', 0);
+	    				// $totalExtra = Common::hashEmptyField($value, 'Revenue.Ttuj.uang_jalan_extra', 0);
 
 		                $is_charge = Common::hashEmptyField($value, 'RevenueDetail.is_charge');
 		                $total_price_unit = Common::hashEmptyField($value, 'RevenueDetail.total_price_unit');
@@ -44,11 +44,35 @@
 
 	    				$sj = Common::hashEmptyField($value, 'RevenueDetail.no_sj');
 	    				$no_do = Common::hashEmptyField($value, 'RevenueDetail.no_do', '-');
-	    				$price_unit = Common::hashEmptyField($value, 'RevenueDetail.price_unit', 0);
+	    				// $price_unit = Common::hashEmptyField($value, 'RevenueDetail.price_unit', 0);
 	    				$totalUnit = Common::hashEmptyField($value, 'RevenueDetail.qty_unit', 0);
 	    				$multi_drop = Common::hashEmptyField($value, 'multi_drop', 0);
 	    				$overnight_charges = Common::hashEmptyField($value, 'overnight_charges', 0);
+
+	    				$tarif_extra = Common::hashEmptyField($value, 'RevenueDetail.tarif_extra', 0);
+	    				$tarif_extra_min_capacity = Common::hashEmptyField($value, 'RevenueDetail.tarif_extra_min_capacity', 0);
+	    				$tarif_extra_per_unit = Common::hashEmptyField($value, 'RevenueDetail.tarif_extra_per_unit', 0);
+	    				
+	    				$tarifExtra = 0;
+	    				$qtyExtra = 0;
+
+	    				if( $tarif_extra_min_capacity != 0 ) {
+				            if( $totalUnit > $tarif_extra_min_capacity ) {
+			                    $sisa_muatan = $totalUnit - $tarif_extra_min_capacity;
+
+				                if( $tarif_extra_per_unit != 0 ) {
+				                    $tarif_extra = $tarif_extra * $sisa_muatan;
+				                }
+
+				                $tarifExtra = $tarif_extra;
+	    						$qtyExtra = $sisa_muatan;
+				            }
+				        }
+
+		                $price_unit = $total_price_unit - $tarifExtra;
 						$totalPriceFormat = '';
+						$priceUnitFormat = '';
+						$priceExtraFormat = '';
 
         				if( !empty($sj) ) {
 	        				$no_sj = substr($sj, 0, 28);
@@ -60,19 +84,21 @@
 
 	    				if( !empty($is_charge) ) {
 							$totalPriceFormat = $this->Common->getFormatPrice($total_price_unit);
-							$customPrice = $this->Common->getFormatPrice($price_unit);
+							$priceUnitFormat = $this->Common->getFormatPrice($price_unit);
+							$priceExtraFormat = $this->Common->getFormatPrice($tarifExtra);
+							// $customPrice = $this->Common->getFormatPrice($price_unit);
 						} else {
 							$total_price_unit = 0;
-							$customPrice = '';
+							// $customPrice = '';
 						}
 
 						$totalUnit = $this->Common->getFormatPrice($totalUnit);
-						$customTotalExtra = $this->Common->getFormatPrice($totalExtra);
+						// $customTotalExtra = $this->Common->getFormatPrice($totalExtra);
 						$custom_multi_drop = $this->Common->getFormatPrice($multi_drop);
 						$custom_overnight_charges = $this->Common->getFormatPrice($overnight_charges);
 
 						$totalBiaya += $total_price_unit;
-						$totalBiayaExtra += $totalExtra;
+						$totalBiayaExtra += $tarifExtra;
 						$totalMultiDrop += $multi_drop;
 						$totalOverNight += $overnight_charges;
 		?>
@@ -109,15 +135,15 @@
 					echo $this->Html->tag('td', $nopol, array(
 						'style' => 'padding: 10px;border: 1px solid #ddd;',
 					));
-					// echo $this->Html->tag('td', $totalUnit, array(
-					echo $this->Html->tag('td', '', array(
+					echo $this->Html->tag('td', $totalUnit, array(
+					// echo $this->Html->tag('td', '', array(
 						'style' => 'text-align: center;padding: 10px;border: 1px solid #ddd;',
 					));
 					// echo $this->Html->tag('td', $customPrice, array(
 					echo $this->Html->tag('td', '', array(
 						'style' => 'padding: 10px;text-align:right;border: 1px solid #ddd;',
 					));
-					echo $this->Html->tag('td', $totalPriceFormat, array(
+					echo $this->Html->tag('td', $priceUnitFormat, array(
 						'style' => 'padding: 10px;text-align:right;border: 1px solid #ddd;',
 					));
 					echo $this->Html->tag('td', $custom_multi_drop, array(
@@ -126,10 +152,10 @@
 					echo $this->Html->tag('td', $custom_overnight_charges, array(
 						'style' => 'padding: 10px;border: 1px solid #ddd;',
 					));
-					echo $this->Html->tag('td', $totalUnit, array(
+					echo $this->Html->tag('td', $qtyExtra, array(
 						'style' => 'padding: 10px;border: 1px solid #ddd;text-align:center;',
 					));
-					echo $this->Html->tag('td', $customTotalExtra, array(
+					echo $this->Html->tag('td', $priceExtraFormat, array(
 						'style' => 'padding: 10px;text-align:right;border: 1px solid #ddd;',
 					));
 					echo $this->Html->tag('td', $no_invoice, array(
