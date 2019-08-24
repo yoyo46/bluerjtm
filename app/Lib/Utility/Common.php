@@ -919,7 +919,7 @@ class Common {
         return $er;
     }
 
-    public static function _callTarifExtra ( $qty, $tarif_extra, $tarif_extra_min_capacity, $tarif_extra_per_unit ) {
+    public static function _callTarifExtra ( $price, $qty, $tarif_extra, $tarif_extra_min_capacity, $tarif_extra_per_unit ) {
     	if( $tarif_extra_min_capacity != 0 ) {
             if( $qty > $tarif_extra_min_capacity ) {
                 if( $tarif_extra_per_unit != 0 ) {
@@ -930,5 +930,7 @@ class Common {
                 $price = $price + $tarif_extra;
             }
         }
+
+        return $price;
     }
 }

@@ -1976,6 +1976,7 @@ var ajaxModal = function ( obj, prettyPhoto ) {
         var parent = vthis.attr('data-parent');
         var custom_backdrop_modal = vthis.attr('backdrop-modal');
         var data_change = vthis.attr('data-change');
+        var data_form = $.checkUndefined(vthis.attr('data-form'), false);
         var data = false;
         
         $('#myModal .modal-body').html('');
@@ -1988,6 +1989,10 @@ var ajaxModal = function ( obj, prettyPhoto ) {
             var parents = vthis.parents('form');
             data = parents.serialize();
             url = parents.attr('action');
+        }
+
+        if( data_form != false ) {
+            data = $(data_form).serialize(); 
         }
 
         if( url == '#myModal' ) {

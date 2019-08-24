@@ -32,6 +32,7 @@
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
     		'autocomplete'=> 'off', 
+    		'id' => 'form-ttuj-payment',
 		));
 ?>
 <div class="box box-primary">
@@ -155,6 +156,37 @@
             ?>
         </div>
     	<?php 
+				switch ($action_type) {					
+					default:
+		?>
+		<div class="form-group">
+	        <div class="checkbox aset-handling">
+                <label>
+                    <?php 
+						echo $this->Form->checkbox('is_hitung_titipan',array(
+							'label'=> false, 
+							'required' => false,
+						)).__('Otomatis Potong Titipan?');
+					?>
+                </label>
+            </div>
+        </div>
+		<div class="form-group">
+	        <div class="checkbox aset-handling">
+                <label>
+                    <?php 
+						echo $this->Form->checkbox('is_hitung_hutang',array(
+							'label'=> false, 
+							'required' => false,
+						)).__('Otomatis Potong Hutang?');
+					?>
+                </label>
+            </div>
+        </div>
+		<?php
+						break;
+				}
+
     			$attrBrowse = array(
                     'class' => 'ajaxModal visible-xs browse-docs',
                     'escape' => false,
@@ -167,6 +199,7 @@
                         'payment_id' => $id,
                     )),
                     'title' => sprintf(__('Detail %s'), $titleBrowse),
+                    'data-form' => '#form-ttuj-payment',
                 );
 				$attrBrowse['class'] = 'btn bg-maroon ajaxModal';
                 echo $this->Html->tag('div', $this->Html->link('<i class="fa fa-plus-square"></i> '.$titleBrowse, 'javascript:', $attrBrowse), array(

@@ -1,4 +1,11 @@
 <?php 
+        $data = $this->request->data;
+        $is_hitung_titipan = Common::hashEmptyField($data, 'TtujPayment.is_hitung_titipan');
+        $is_hitung_titipan = Common::hashEmptyField($data, 'Search.is_hitung_titipan', $is_hitung_titipan);
+
+        $is_hitung_hutang = Common::hashEmptyField($data, 'TtujPayment.is_hitung_hutang');
+        $is_hitung_hutang = Common::hashEmptyField($data, 'Search.is_hitung_hutang', $is_hitung_hutang);
+
         $id = $this->Common->filterEmptyField($ttuj, 'Ttuj', 'id');
         $no_ttuj = $this->Common->filterEmptyField($ttuj, 'Ttuj', 'no_ttuj');
         $ttuj_date = $this->Common->filterEmptyField($ttuj, 'Ttuj', 'ttuj_date');
@@ -55,7 +62,7 @@
             }
 
             // if( $data_type == 'commission' ) {
-                if( !empty($potongan_tabungan) ) {
+                if( !empty($is_hitung_titipan) && !empty($potongan_tabungan) ) {
                     if( $potongan_tabungan_type == 'nominal' ) {
                         $titipan = $potongan_tabungan;
                     } else {
@@ -70,7 +77,7 @@
                 //         $potongan_laka = $laka_total;
                 //     }
                 // }
-                if( !empty($debt_percent) && !empty($debt_total) ) {
+                if( !empty($is_hitung_hutang) && !empty($debt_percent) && !empty($debt_total) ) {
                     $potongan_debt = $total_biaya * ($debt_percent/100);
 
                     if( $potongan_debt > $debt_total ) {

@@ -97,7 +97,7 @@
 						$custom_multi_drop = $this->Common->getFormatPrice($multi_drop);
 						$custom_overnight_charges = $this->Common->getFormatPrice($overnight_charges);
 
-						$totalBiaya += $total_price_unit;
+						$totalBiaya += $price_unit;
 						$totalBiayaExtra += $tarifExtra;
 						$totalMultiDrop += $multi_drop;
 						$totalOverNight += $overnight_charges;
@@ -270,7 +270,7 @@
 						'colspan' => 8,
 						'style' => 'padding: 0;',
 					));
-					$colom .= $this->Html->tag('td', $this->Html->tag('div', Common::getFormatPrice($totalBiaya+$totalMultiDrop+$totalOverNight), array(
+					$colom .= $this->Html->tag('td', $this->Html->tag('div', Common::getFormatPrice($totalBiaya+$totalMultiDrop+$totalOverNight+$totalBiayaExtra), array(
 						'style' => 'border: 1px solid #000;padding: 10px;',
 					)), array(
 						'style' => 'padding: 0;text-align:right;',
