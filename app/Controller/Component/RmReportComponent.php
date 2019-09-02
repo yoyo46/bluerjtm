@@ -168,6 +168,13 @@ class RmReportComponent extends Component {
 					),
 				));
 
+                $account_name = Common::hashEmptyField($value, 'Driver.account_name', '-');
+                $account_number = Common::hashEmptyField($value, 'Driver.account_number', '-');
+                $bank_name = Common::hashEmptyField($value, 'Driver.bank_name', '-');
+
+                $total_laka = Common::hashEmptyField($value, 'Driver.total_laka', 0);
+                $total_laka_paid = Common::hashEmptyField($value, 'Driver.total_laka_paid', 0);
+
                 if( !empty($is_resign) ) {
                     $lblStatus = __('Resign - %s', $date_resign);
                 } else if( empty($status) ) {
@@ -309,6 +316,39 @@ class RmReportComponent extends Component {
                 			'align' => 'center',
             			),
 					),
+					__('Atas Nama') => array(
+						'text' =>$account_name,
+                		'field_model' => 'Driver.account_name',
+					),
+					__('No. Rekening') => array(
+						'text' =>$account_number,
+                		'field_model' => 'Driver.account_number',
+					),
+					__('Nama Bank') => array(
+						'text' =>$bank_name,
+                		'field_model' => 'Driver.bank_name',
+					),
+		            'Biaya LAKA' => array(
+						'text' =>$total_laka,
+                		'excel' => array(
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+		            ),
+		            'LAKA Dibayar' => array(
+						'text' =>$total_laka_paid,
+                		'excel' => array(
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+		            ),
+		            'LAKA Belum Dibayar' => array(
+						'text' =>$total_laka - $total_laka_paid,
+                		'excel' => array(
+                			'align' => 'right',
+                			'type' => 'number',
+            			),
+		            ),
 					__('Status') => array(
 						'text' => $lblStatus,
 						// 'width' => 15,
