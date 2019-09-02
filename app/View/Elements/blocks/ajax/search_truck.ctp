@@ -44,8 +44,41 @@
                 </div>
             </div>
         </div>
+        <div class="form-group action">
+            <?php
+                    echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
+                        'div' => false, 
+                        'class'=> 'btn btn-success btn-sm ajaxModal',
+                        'data-action' => $data_action,
+                        'data-parent' => true,
+                        'title' => $title,
+                    ));
+                    echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
+                        'controller' => 'ajax',
+                        'action' => 'getTrucks',
+                        $action_type,
+                        $action_id,
+                    ), array(
+                        'escape' => false, 
+                        'class'=> 'btn btn-default btn-sm ajaxModal',
+                        'data-action' => $data_action,
+                        'title' => $title,
+                    ));
+            ?>
+        </div>
     </div>
     <div class="col-sm-6">
+        <div class="form-group">
+            <?php 
+                    echo $this->Form->input('driver_no_id',array(
+                        'type' => 'text',
+                        'label'=> __('ID Supir'),
+                        'class'=>'form-control',
+                        'required' => false,
+                        'placeholder' => __('ID Supir')
+                    ));
+            ?>
+        </div>
         <div class="form-group">
             <?php 
                     echo $this->Form->input('driver',array(
@@ -57,28 +90,6 @@
             ?>
         </div>
     </div>
-</div>
-<div class="form-group action">
-    <?php
-            echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
-                'div' => false, 
-                'class'=> 'btn btn-success btn-sm ajaxModal',
-                'data-action' => $data_action,
-                'data-parent' => true,
-                'title' => $title,
-            ));
-            echo $this->Html->link('<i class="fa fa-refresh"></i> '.__('Reset'), array(
-                'controller' => 'ajax',
-                'action' => 'getTrucks',
-                $action_type,
-                $action_id,
-            ), array(
-                'escape' => false, 
-                'class'=> 'btn btn-default btn-sm ajaxModal',
-                'data-action' => $data_action,
-                'title' => $title,
-            ));
-    ?>
 </div>
 <?php 
         echo $this->Form->end();

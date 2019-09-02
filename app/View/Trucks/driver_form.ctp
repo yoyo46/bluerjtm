@@ -305,7 +305,7 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('kontak_darurat_name',array(
-								'label'=> __('Nama Lengkap *'), 
+								'label'=> __('Nama Lengkap'), 
 								'class'=>'form-control',
 								'required' => false,
 								'placeholder' => __('Nama Lengkap')
@@ -315,7 +315,7 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('kontak_darurat_no_hp',array(
-								'label'=> __('No. Hp *'), 
+								'label'=> __('No. Hp'), 
 								'class'=>'form-control',
 								'required' => false,
 								'placeholder' => __('No. Hp'),
@@ -337,7 +337,7 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('driver_relation_id',array(
-								'label'=> __('Hubungan *'), 
+								'label'=> __('Hubungan'), 
 								'class'=>'form-control',
 								'required' => false,
 								'empty' => __('Pilih Hubungan --'),

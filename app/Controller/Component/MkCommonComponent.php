@@ -485,6 +485,7 @@ class MkCommonComponent extends Component {
             $source = $Zipped["tmp_name"];
             $type = $Zipped["type"];
             $name = explode(".", $filename);
+            $ext = end($name);
             $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
 
             if(!empty($accepted_types)) {
@@ -496,7 +497,7 @@ class MkCommonComponent extends Component {
                 }
             }
 
-            $continue = strtolower($name[1]) == 'xls' ? true : false;
+            $continue = strtolower($ext) == 'xls' ? true : false;
 
             if(!$continue) {
                 $this->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
@@ -2383,9 +2384,9 @@ class MkCommonComponent extends Component {
         }
     }
 
-    function _callGetDriver ( $value ) {
-        $driver = $this->filterEmptyField($value, 'Driver', 'driver_name');
-        $driver = $this->filterEmptyField($value, 'DriverPengganti', 'driver_name', $driver);
+    function _callGetDriver ( $value, $field = 'driver_name' ) {
+        $driver = $this->filterEmptyField($value, 'Driver', $field);
+        $driver = $this->filterEmptyField($value, 'DriverPengganti', $field, $driver);
 
         return $driver;
     }

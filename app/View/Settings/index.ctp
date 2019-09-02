@@ -474,7 +474,7 @@
 	<div class="col-sm-6">
 		<div class="box box-primary">
 		    <div class="box-header">
-		        <h3 class="box-title"><?php echo __('Surat-Surat Truk'); ?></h3>
+		        <h3 class="box-title"><?php echo __('Informasi Truk & Supir'); ?></h3>
 		    </div>
 		    <div class="box-body">
 		    	<div class="row">
@@ -499,6 +499,22 @@
 						</div>
 		    		</div>
 		    	</div>
+		    	<?php
+						echo $this->Form->input('SettingGeneral.driver_prefix',array(
+							'type' => 'text',
+							'label'=> __('ID Prefix Supir'), 
+							'div' => 'form-group',
+							'class'=>'form-control',
+							'required' => false,
+						));
+						echo $this->Form->input('SettingGeneral.driver_code_digit',array(
+							'type' => 'text',
+							'label'=> __('Panjang Kode Supir'), 
+							'div' => 'form-group',
+							'class'=>'form-control',
+							'required' => false,
+						));
+		    	?>
 		    </div>
 		</div>
 	</div>

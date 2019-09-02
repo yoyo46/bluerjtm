@@ -121,6 +121,12 @@ class TrucksController extends AppController {
                 $this->request->data['Truck']['category'] = $data;
                 $contain[] = 'TruckCategory';
             }
+            if(!empty($refine['no_id'])){
+                $data = urldecode($refine['no_id']);
+                $conditions['Driver.no_id LIKE'] = '%'.$data.'%';
+                $this->request->data['Driver']['no_id'] = $data;
+                $contain[] = 'Driver';
+            }
         }
 
         $this->paginate = $this->Truck->getData('paginate', array(
@@ -495,7 +501,7 @@ class TrucksController extends AppController {
         $drivers = $this->Truck->Driver->getData('list', array(
             'conditions' => $driverConditions,
             'fields' => array(
-                'Driver.id', 'Driver.driver_name'
+                'Driver.id', 'Driver.driver_code'
             ),
             'contain' => array(
                 'Truck'
@@ -908,6 +914,7 @@ class TrucksController extends AppController {
     function doDriver($id = false, $data_local = false){
         if(!empty($this->request->data)){
             $data = $this->request->data;
+            $branch_id = Common::hashEmptyField($data, 'Driver.branch_id');
 
             $data['Driver']['phone'] = (!empty($data['Driver']['phone'])) ? Sanitize::paranoid($data['Driver']['phone']) : '';
             $data['Driver']['phone_2'] = (!empty($data['Driver']['phone_2'])) ? Sanitize::paranoid($data['Driver']['phone_2']) : '';
@@ -947,7 +954,8 @@ class TrucksController extends AppController {
             }else{
                 $this->loadModel('Driver');
 
-                $data['Driver']['no_id'] = $this->Driver->generateNoId();
+                $driver_codes = $this->MkCommon->_callSettingGeneral('SettingGeneral', array('driver_prefix', 'driver_code_digit'), false);
+                $data['Driver']['no_id'] = $this->Driver->generateNoId($branch_id, $driver_codes);
                 $this->Driver->create();
                 $msg = 'menambah';
             }
@@ -4339,6 +4347,7 @@ class TrucksController extends AppController {
                     $source = $Zipped["tmp_name"];
                     $type = $Zipped["type"];
                     $name = explode(".", $filename);
+                    $ext = end($name);
                     $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
 
                     if(!empty($accepted_types)) {
@@ -4350,10 +4359,10 @@ class TrucksController extends AppController {
                         }
                     }
 
-                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+                    $continue = strtolower($ext) == 'xls' ? true : false;
 
                     if(!$continue) {
-                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file Zip.'), 'error');
+                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file XLS.'), 'error');
                         $this->redirect(array('action'=>'add_import'));
                     } else {
                         $path = APP.'webroot'.DS.'files'.DS.date('Y').DS.date('m').DS;
@@ -4979,7 +4988,7 @@ class TrucksController extends AppController {
                 'Truck.id' => NULL,
             ),
             'fields' => array(
-                'Driver.id', 'Driver.driver_name'
+                'Driver.id', 'Driver.driver_code'
             ),
             'contain' => array(
                 'Truck'
@@ -5177,6 +5186,7 @@ class TrucksController extends AppController {
                     $source = $Zipped["tmp_name"];
                     $type = $Zipped["type"];
                     $name = explode(".", $filename);
+                    $ext = end($name);
                     $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
 
                     if(!empty($accepted_types)) {
@@ -5188,10 +5198,10 @@ class TrucksController extends AppController {
                         }
                     }
 
-                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+                    $continue = strtolower($ext) == 'xls' ? true : false;
 
                     if(!$continue) {
-                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file Zip.'), 'error');
+                        $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file XLS.'), 'error');
                         $this->redirect($urlRedirect);
                     } else {
                         $path = APP.'webroot'.DS.'files'.DS.date('Y').DS.date('m').DS;
@@ -5277,6 +5287,7 @@ class TrucksController extends AppController {
                                     ));
 
                                     $branch_id = $this->MkCommon->filterEmptyField($branch, 'Branch', 'id');
+                                    $id_supir = !empty($id_supir)?$id_supir:false;
                                     $nama_lengkap = !empty($nama_lengkap)?$nama_lengkap:false;
                                     $nama_panggilan = !empty($nama_panggilan)?$nama_panggilan:false;
                                     $no_ktp = !empty($no_ktp)?$no_ktp:false;
@@ -5295,12 +5306,28 @@ class TrucksController extends AppController {
                                     $no_telp_kontak_darurat = !empty($no_telp_kontak_darurat)?$no_telp_kontak_darurat:false;
                                     $driver_relation_id = $this->MkCommon->filterEmptyField($driverRelation, 'DriverRelation', 'id');
                                     $tgl_penerimaan = !empty($tgl_penerimaan)?$this->MkCommon->checkdate($tgl_penerimaan):false;
+                                    $bank = !empty($bank)?trim($bank):false;
+                                    $no_rekening = !empty($no_rekening)?trim($no_rekening):false;
+                                    $atas_nama_rekening = !empty($atas_nama_rekening)?trim($atas_nama_rekening):false;
+                                    $nopol = !empty($nopol)?trim($nopol):false;
+
+                                    $truck = $this->Truck->getMerge(array(), $nopol, 'Truck.nopol');
+
+                                    if( !empty($id_supir) ) {
+                                        $driver = $this->Driver->getMerge(array(), $id_supir, 'Driver', 'Driver.no_id');
+                                        $driver_id = Common::hashEmptyField($driver, 'Driver.id');
+                                    } else {
+                                        $driver_id = false;
+                                    }
 
                                     $requestData['ROW'.($x-1)] = array(
                                         'Driver' => array(
+                                            'id' => $driver_id,
                                             'branch_id' => $branch_id,
+                                            'truck_id' => Common::hashEmptyField($truck, 'Truck.id'),
                                             'jenis_sim_id' => $jenis_sim_id,
                                             'driver_relation_id' => $driver_relation_id,
+                                            'no_id' => $id_supir,
                                             'name' => $nama_lengkap,
                                             'alias' => $nama_panggilan,
                                             'address' => $alamat_rumah,
@@ -5317,6 +5344,10 @@ class TrucksController extends AppController {
                                             'no_sim' => $no_sim,
                                             'identity_number' => $no_ktp,
                                             'expired_date_sim' => $tgl_berakhir_sim,
+                                            'bank' => $bank,
+                                            'no_rekening' => $no_rekening,
+                                            'atas_nama_rekening' => $atas_nama_rekening,
+                                            'is_import' => true,
                                         ),
                                     );
                                 }
@@ -5327,14 +5358,30 @@ class TrucksController extends AppController {
                                 $successfull_row = 0;
                                 $failed_row = 0;
                                 $error_message = '';
+                                $driver_codes = $this->MkCommon->_callSettingGeneral('SettingGeneral', array('driver_prefix', 'driver_code_digit'), false);
+                                
+                                $this->Driver->validator()->remove('identity_number');
 
                                 foreach($requestData as $request){
                                     $data = $request;
-                                    $data['Driver']['no_id'] = $this->Driver->generateNoId();
-
-                                    $this->Driver->create();
                                     
-                                    if( $this->Driver->save($data) ){
+                                    if( empty($data['Driver']['no_id']) ) {
+                                        $branch_id = Common::hashEmptyField($data, 'Driver.branch_id');
+                                        $data['Driver']['no_id'] = $this->Driver->generateNoId($branch_id, $driver_codes);
+                                    }
+
+                                    // $this->Driver->create();
+                                    
+                                    if( $this->Driver->saveAll($data) ){
+                                        if( !empty($data['Driver']['truck_id']) ) {
+                                            $this->Truck->saveAll(array(
+                                                'Truck' => array(
+                                                    'id' => $data['Driver']['truck_id'],
+                                                    'driver_id' => $this->Driver->id,
+                                                ),
+                                            ));
+                                        }
+
                                         $this->Log->logActivity( __('Sukses upload Supir by Import Excel'), $this->user_data, $this->RequestHandler, $this->params );
                                         $successfull_row++;
                                     } else {

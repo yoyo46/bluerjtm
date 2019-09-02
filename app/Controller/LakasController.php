@@ -433,7 +433,7 @@ class LakasController extends AppController {
                 ),
             ),
             'fields' => array(
-                'Driver.id', 'Driver.driver_name'
+                'Driver.id', 'Driver.driver_code'
             ),
             'contain' => array(
                 'Truck'

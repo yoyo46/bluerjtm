@@ -1757,6 +1757,7 @@ class ProductsController extends AppController {
                     $source = $Zipped["tmp_name"];
                     $type = $Zipped["type"];
                     $name = explode(".", $filename);
+                    $ext = end($name);
                     $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
 
                     if(!empty($accepted_types)) {
@@ -1768,7 +1769,7 @@ class ProductsController extends AppController {
                         }
                     }
 
-                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+                    $continue = strtolower($ext) == 'xls' ? true : false;
 
                     if(!$continue) {
                         $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
@@ -1967,6 +1968,7 @@ class ProductsController extends AppController {
                     $source = $Zipped["tmp_name"];
                     $type = $Zipped["type"];
                     $name = explode(".", $filename);
+                    $ext = end($name);
                     $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
 
                     if(!empty($accepted_types)) {
@@ -1978,7 +1980,7 @@ class ProductsController extends AppController {
                         }
                     }
 
-                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+                    $continue = strtolower($ext) == 'xls' ? true : false;
 
                     if(!$continue) {
                         $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
@@ -2222,6 +2224,7 @@ class ProductsController extends AppController {
                     $source = $Zipped["tmp_name"];
                     $type = $Zipped["type"];
                     $name = explode(".", $filename);
+                    $ext = end($name);
                     $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
 
                     if(!empty($accepted_types)) {
@@ -2233,7 +2236,7 @@ class ProductsController extends AppController {
                         }
                     }
 
-                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+                    $continue = strtolower($ext) == 'xls' ? true : false;
 
                     if(!$continue) {
                         $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
@@ -2754,6 +2757,7 @@ class ProductsController extends AppController {
                     $source = $Zipped["tmp_name"];
                     $type = $Zipped["type"];
                     $name = explode(".", $filename);
+                    $ext = end($name);
                     $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
 
                     if(!empty($accepted_types)) {
@@ -2765,7 +2769,7 @@ class ProductsController extends AppController {
                         }
                     }
 
-                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+                    $continue = strtolower($ext) == 'xls' ? true : false;
 
                     if(!$continue) {
                         $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');

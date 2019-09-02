@@ -30,6 +30,11 @@
                 'field_model' => false,
                 'display' => true,
             ),
+            'no_id' => array(
+                'name' => __('ID Supir'),
+                'field_model' => 'Driver.no_id',
+                'display' => true,
+            ),
             'supir' => array(
                 'name' => __('Supir'),
                 'field_model' => 'Driver.driver_name',
@@ -147,6 +152,7 @@
                                 $brand = $this->Common->filterEmptyField($value, 'TruckBrand', 'name', '-');
                                 $category = $this->Common->filterEmptyField($value, 'TruckCategory', 'name', '-');
                                 $company = $this->Common->filterEmptyField($value, 'Company', 'name', '-');
+                                $driver_id = $this->Common->filterEmptyField($value, 'Driver', 'no_id', '-');
                                 $driver_name = $this->Common->filterEmptyField($value, 'Driver', 'driver_name', '-');
                                 $laka_id = $this->Common->filterEmptyField($value, 'Laka', 'id');
                                 $ttuj_id = $this->Common->filterEmptyField($value, 'Ttuj', 'id');
@@ -158,6 +164,7 @@
                     <td><?php echo $category;?></td>
                     <td><?php echo $capacity;?></td>
                     <td><?php echo $company;?></td>
+                    <td><?php echo $driver_id;?></td>
                     <td><?php echo $driver_name;?></td>
                     <td>
                         <?php 

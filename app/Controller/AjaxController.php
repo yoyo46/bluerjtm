@@ -1191,7 +1191,7 @@ class AjaxController extends AppController {
 
         $this->set(compact(
         	'drivers', 'data_action', 'title',
-        	'data_change', 'id'
+        	'data_change', 'id', 'action_type'
     	));
 	}
 
@@ -1201,6 +1201,7 @@ class AjaxController extends AppController {
 
         $action_id = $this->MkCommon->filterEmptyField($this->params, 'named', 'action_id', $action_id);
         $action_type = $this->MkCommon->filterEmptyField($this->params, 'named', 'action_type', $action_type);
+        $curr_branch_id = Configure::read('__Site.config_branch_id');
 
 		$title = __('Data Truk');
 		$data_action = 'browse-form';
@@ -1257,6 +1258,11 @@ class AjaxController extends AppController {
 	        
     		$plantCityId = Configure::read('__Site.Branch.Plant.id');
 			$options['conditions'] = $this->Truck->getListTruck( $ttuj_truck_id, true, false, $plantCityId, $options['conditions'], $ttujs );
+
+	        // if( in_array($curr_branch_id, array( 2,4,14 )) ) {
+	        //     $options['conditions']['Driver.no_id NOT LIKE'] = 'JKT%';
+	        //     $options['contain'][] = 'Driver';
+	        // }
 	        
             $element = array(
         		'branch' => false,
@@ -1702,7 +1708,7 @@ class AjaxController extends AppController {
 		), true, array(
             'plant' => true,
         ));
-		$driver_name = $this->MkCommon->filterEmptyField($driver, 'Driver', 'name');
+		$driver_name = $this->MkCommon->filterEmptyField($driver, 'Driver', 'driver_code');
 		$no_sim = $this->MkCommon->filterEmptyField($driver, 'Driver', 'no_sim');
 		$ttujs = $this->Ttuj->getData('list', array(
             'conditions' => array(

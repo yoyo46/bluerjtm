@@ -46,6 +46,10 @@ class ViewStaff extends AppModel {
                 'field' => 'ViewStaff.full_name',
                 'type' => 'like',
             ),
+            'no_id' => array(
+                'field' => 'ViewStaff.no_id',
+                'type' => 'like',
+            ),
             'type' => array(
                 'field' => 'ViewStaff.type',
             ),

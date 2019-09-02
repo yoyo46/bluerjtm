@@ -69,6 +69,7 @@
                     <thead>
                         <tr>
                             <?php 
+                                    echo $this->Html->tag('th', __('ID Karyawan'));
                                     echo $this->Html->tag('th', __('Karyawan'));
                                     echo $this->Html->tag('th', __('Kategori'));
                                     echo $this->Html->tag('th', __('Ket.'));
@@ -84,6 +85,7 @@
                                     $grand_total = 0;
 
                                     foreach ($value['DebtDetail'] as $key => $value) {
+                                        $no_id = Common::hashEmptyField($value, 'ViewStaff.no_id', '-');
                                         $name = Common::hashEmptyField($value, 'ViewStaff.full_name', '-');
                                         $type = Common::hashEmptyField($value, 'ViewStaff.type', '-');
                                         $note = Common::hashEmptyField($value, 'DebtDetail.note');
@@ -94,6 +96,7 @@
                         ?>
                         <tr>
                             <?php
+                                    echo $this->Html->tag('td', $no_id);
                                     echo $this->Html->tag('td', $name);
                                     echo $this->Html->tag('td', $type);
                                     echo $this->Html->tag('td', $note);
@@ -107,7 +110,7 @@
                                 }
                         ?>
                         <tr>
-                            <td align="right" colspan="3" style="font-weight: bold;">Total</td>
+                            <td align="right" colspan="4" style="font-weight: bold;">Total</td>
                             <td align="right" style="font-weight: bold;">
                                 <?php
                                         $customGrandTotal = $this->Common->getFormatPrice($grand_total, false, 2);

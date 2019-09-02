@@ -155,10 +155,6 @@
                     ));
             ?>
         </div>
-    	<?php 
-				switch ($action_type) {					
-					default:
-		?>
 		<div class="form-group">
 	        <div class="checkbox aset-handling">
                 <label>
@@ -184,9 +180,6 @@
             </div>
         </div>
 		<?php
-						break;
-				}
-
     			$attrBrowse = array(
                     'class' => 'ajaxModal visible-xs browse-docs',
                     'escape' => false,

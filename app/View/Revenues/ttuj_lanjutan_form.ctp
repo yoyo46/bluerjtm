@@ -252,7 +252,7 @@
 				        </div>
 				        <div class="form-group">
 				        	<?php 
-									echo $this->Form->input('DriverPengganti.name',array(
+									echo $this->Form->input('DriverPengganti.driver_code',array(
 										'label'=> __('Supir Pengganti'), 
 										'class'=>'form-control',
 										'required' => false,

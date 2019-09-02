@@ -6,7 +6,7 @@
 		}
 
 		if( !empty($result['Driver']['name']) ) {
-			echo $this->Html->tag('div', $result['Driver']['name'], array(
+			echo $this->Html->tag('div', $result['Driver']['driver_code'], array(
 				'id' => 'driver_name',
 			));
 		}

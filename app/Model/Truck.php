@@ -635,6 +635,7 @@ class Truck extends AppModel {
         $nopol = !empty($data['named']['nopol'])?urldecode($data['named']['nopol']):false;
         $type = !empty($data['named']['type'])?urldecode($data['named']['type']):1;
         $driver = !empty($data['named']['driver'])?urldecode($data['named']['driver']):false;
+        $driver_no_id = !empty($data['named']['driver_no_id'])?urldecode($data['named']['driver_no_id']):false;
         $customerid = !empty($data['named']['customerid'])?urldecode($data['named']['customerid']):false;
         $year = !empty($data['named']['year'])?urldecode($data['named']['year']):false;
         $sort = !empty($data['named']['sort'])?urldecode($data['named']['sort']):false;
@@ -677,6 +678,10 @@ class Truck extends AppModel {
         }
         if(!empty($driver)){
             $default_options['conditions']['Driver.name LIKE '] = '%'.$driver.'%';
+            $default_options['contain'][] = 'Driver';
+        }
+        if(!empty($driver_no_id)){
+            $default_options['conditions']['Driver.no_id LIKE '] = '%'.$driver_no_id.'%';
             $default_options['contain'][] = 'Driver';
         }
         if(!empty($customerid)){

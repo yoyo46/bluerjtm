@@ -150,6 +150,7 @@ class AppController extends Controller {
 				'revenues' => array(
 					'search', 'ttuj_edit', 'info_truk',
 					'surat_jalan_outstanding', 'detail_ttuj_payment',
+					'bypass_search',
 				),
 				'cashbanks' => array(
 					'search'
@@ -182,6 +183,12 @@ class AppController extends Controller {
 				),
 				'lakas' => array(
 					'search',
+				),
+				'debt' => array(
+					'bypass_search', 'search',
+				),
+				'titipan' => array(
+					'bypass_search', 'search',
 				),
 			);
 			Configure::write('__Site.allowed_module', $_allowedModule);

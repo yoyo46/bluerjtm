@@ -61,6 +61,19 @@
 	<div class="col-sm-6">
 		<div class="box box-warning">
 		    <div class="box-header">
+		        <h3 class="box-title"><?php echo __('Info Supir');?></h3>
+		    </div>
+		    <div class="box-body">
+    			<?php 
+		    			echo $this->Common->buildForm('driver_prefix', __('ID Prefix Supir'));
+		    			echo $this->Common->buildForm('driver_code_digit', __('Panjang Kode Supir'));
+		    	?>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="box box-warning">
+		    <div class="box-header">
 		        <h3 class="box-title"><?php echo __('Info Kontak');?></h3>
 		    </div>
 		    <div class="box-body">

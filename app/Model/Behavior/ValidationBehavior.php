@@ -47,4 +47,41 @@ class ValidationBehavior extends ModelBehavior {
             return true;
         }
     }
+
+    public function checkImport (Model $model, $data, $fieldName) {
+        $value = Common::hashEmptyField($data, $fieldName);
+        $is_import = Common::hashEmptyField($model->data, $model->alias.'.is_import');
+
+        if( !empty($value) ) {
+        	return true;
+        } else {
+        	if( !empty($is_import) ) {
+        		return true;
+        	} else {
+        		return false;
+        	}
+        }
+    }
+
+    // public function checkUniqueImport (Model $model, $data, $fieldName) {
+    //     $value = Common::hashEmptyField($data, $fieldName);
+    //     $is_import = Common::hashEmptyField($model->data, $model->alias.'.is_import');
+    //     $flag = false;
+
+    //     if( !empty($value) ) {
+    //     	$flag = true;
+    //     } else {
+    //     	if( !empty($is_import) ) {
+    //     		$flag = true;
+    //     	}
+    //     }
+
+    //     // if( !empty($flag) && empty($is_import) ) {
+    //     if( !empty($flag) ) {
+    //     	$exist = $model->getUnique(array(), $value, $fieldName);
+    //     	debug($exist);die();
+    //     }
+
+    //     return $flag;
+    // }
 }

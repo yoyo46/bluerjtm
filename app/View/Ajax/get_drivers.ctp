@@ -60,13 +60,14 @@
                         $branch = $this->Common->filterEmptyField($value, 'City', 'name');
                         $no_id = $this->Common->filterEmptyField($value, 'Driver', 'no_id');
                         $name = $this->Common->filterEmptyField($value, 'Driver', 'name');
-                        $driver_name = $this->Common->filterEmptyField($value, 'Driver', 'driver_name');
+                        // $driver_name = $this->Common->filterEmptyField($value, 'Driver', 'driver_name');
+                        $driver_code = $this->Common->filterEmptyField($value, 'Driver', 'driver_code');
                         $alias = $this->Common->filterEmptyField($value, 'Driver', 'alias');
                         $identity_number = $this->Common->filterEmptyField($value, 'Driver', 'identity_number');
                         $address = $this->Common->filterEmptyField($value, 'Driver', 'address');
                         $phone = $this->Common->filterEmptyField($value, 'Driver', 'phone');
         ?>
-        <tr data-value="<?php echo $id;?>" data-text="<?php echo $driver_name;?>" data-change="#<?php echo $data_change;?>">
+        <tr data-value="<?php echo $id;?>" data-text="<?php echo $driver_code;?>" data-change="#<?php echo $data_change;?>">
             <td><?php echo $branch;?></td>
             <td><?php echo $no_id;?></td>
             <td><?php echo $name;?></td>

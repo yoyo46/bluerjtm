@@ -7,6 +7,7 @@
             <th>ID</th>
             <th>Cabang</th>
             <th>Nopol</th>
+            <th>ID Supir</th>
             <th>Supir</th>
             <th>Merek</th>
             <th>Jenis</th>
@@ -36,7 +37,8 @@
             <td><?php echo $id;?></td>
             <td><?php echo $branch;?></td>
             <td><?php echo $nopol;?></td>
-            <td><?php echo !empty($value['Driver']['driver_name'])?$value['Driver']['driver_name']:'-';?></td>
+            <td><?php echo !empty($value['Driver']['no_id'])?$value['Driver']['no_id']:'-';?></td>
+            <td><?php echo !empty($value['Driver']['name'])?$value['Driver']['name']:'-';?></td>
             <td><?php echo !empty($value['TruckBrand']['name'])?$value['TruckBrand']['name']:'-';?></td>
             <td><?php echo !empty($value['TruckCategory']['name'])?$value['TruckCategory']['name']:'-';?></td>
             <td><?php echo $capacity;?></td>

@@ -31,8 +31,8 @@ class UangJalan extends AppModel {
             ),
         ),
         'distance' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
+            'checkImport' => array(
+                'rule' => array('checkImport', 'distance'),
                 'message' => 'Jarak tempuh harap diisi'
             ),
             'numeric' => array(
@@ -51,8 +51,8 @@ class UangJalan extends AppModel {
             // ),
         ),
         'arrive_lead_time' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
+            'checkImport' => array(
+                'rule' => array('checkImport', 'arrive_lead_time'),
                 'message' => 'Lead time sampai tujuan harap diisi'
             ),
             'numeric' => array(
@@ -61,8 +61,8 @@ class UangJalan extends AppModel {
             ),
         ),
         'back_lead_time' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
+            'checkImport' => array(
+                'rule' => array('checkImport', 'back_lead_time'),
                 'message' => 'Lead time pulang ke pool harap diisi'
             ),
             'numeric' => array(

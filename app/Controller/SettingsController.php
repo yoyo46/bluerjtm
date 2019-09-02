@@ -4196,6 +4196,7 @@ class SettingsController extends AppController {
                     $source = $Zipped["tmp_name"];
                     $type = $Zipped["type"];
                     $name = explode(".", $filename);
+                    $ext = end($name);
                     $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
 
                     if(!empty($accepted_types)) {
@@ -4207,7 +4208,7 @@ class SettingsController extends AppController {
                         }
                     }
 
-                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+                    $continue = strtolower($ext) == 'xls' ? true : false;
 
                     if(!$continue) {
                         $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
@@ -4364,10 +4365,10 @@ class SettingsController extends AppController {
                                             'group_classification_4_id' => $group_classification_4_id,
                                             'from_city_id' => !empty($from_city_id)?$from_city_id:false,
                                             'to_city_id' => !empty($to_city_id)?$to_city_id:'',
-                                            'distance' => !empty($jarak_tempuh)?$jarak_tempuh:false,
+                                            'distance' => !empty($jarak_tempuh)?$jarak_tempuh:0,
                                             'capacity' => !empty($kapasitas)?$kapasitas:false,
-                                            'arrive_lead_time' => !empty($lead_time_sampai_tujuan)?$lead_time_sampai_tujuan:false,
-                                            'back_lead_time' => !empty($lead_time_ke_pool)?$lead_time_ke_pool:false,
+                                            'arrive_lead_time' => !empty($lead_time_sampai_tujuan)?$lead_time_sampai_tujuan:0,
+                                            'back_lead_time' => !empty($lead_time_ke_pool)?$lead_time_ke_pool:0,
                                             'uang_jalan_1' => !empty($uang_jalan_pertama)?$this->MkCommon->convertPriceToString($uang_jalan_pertama):false, // Borongan
                                             'uang_jalan_2' => !empty($uang_jalan_kedua)?$this->MkCommon->convertPriceToString($uang_jalan_kedua):0,
                                             'uang_jalan_per_unit' => !empty($uang_jalan_per_unit)?$uang_jalan_per_unit:0,
@@ -4388,6 +4389,7 @@ class SettingsController extends AppController {
                                             'branch_id' => $branch_id,
                                             'potongan_tabungan_type' => $tipe_titipan,
                                             'potongan_tabungan' => $titipan,
+                                            'is_import' => true,
                                         ),
                                     );
                                     
@@ -4977,6 +4979,7 @@ class SettingsController extends AppController {
                     $source = $Zipped["tmp_name"];
                     $type = $Zipped["type"];
                     $name = explode(".", $filename);
+                    $ext = end($name);
                     $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
 
                     if(!empty($accepted_types)) {
@@ -4988,7 +4991,7 @@ class SettingsController extends AppController {
                         }
                     }
 
-                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+                    $continue = strtolower($ext) == 'xls' ? true : false;
 
                     if(!$continue) {
                         $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
@@ -5680,6 +5683,7 @@ class SettingsController extends AppController {
                     $source = $Zipped["tmp_name"];
                     $type = $Zipped["type"];
                     $name = explode(".", $filename);
+                    $ext = end($name);
                     $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
 
                     if(!empty($accepted_types)) {
@@ -5691,7 +5695,7 @@ class SettingsController extends AppController {
                         }
                     }
 
-                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+                    $continue = strtolower($ext) == 'xls' ? true : false;
 
                     if(!$continue) {
                         $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
@@ -5887,6 +5891,7 @@ class SettingsController extends AppController {
                     $source = $Zipped["tmp_name"];
                     $type = $Zipped["type"];
                     $name = explode(".", $filename);
+                    $ext = end($name);
                     $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
 
                     if(!empty($accepted_types)) {
@@ -5898,7 +5903,7 @@ class SettingsController extends AppController {
                         }
                     }
 
-                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+                    $continue = strtolower($ext) == 'xls' ? true : false;
 
                     if(!$continue) {
                         $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');
@@ -6069,6 +6074,7 @@ class SettingsController extends AppController {
                     $source = $Zipped["tmp_name"];
                     $type = $Zipped["type"];
                     $name = explode(".", $filename);
+                    $ext = end($name);
                     $accepted_types = array('application/vnd.ms-excel', 'application/ms-excel');
 
                     if(!empty($accepted_types)) {
@@ -6080,7 +6086,7 @@ class SettingsController extends AppController {
                         }
                     }
 
-                    $continue = strtolower($name[1]) == 'xls' ? true : false;
+                    $continue = strtolower($ext) == 'xls' ? true : false;
 
                     if(!$continue) {
                         $this->MkCommon->setCustomFlash(__('Maaf, silahkan upload file dalam bentuk Excel.'), 'error');

@@ -30,38 +30,38 @@ class Driver extends AppModel {
             ),
         ),
         'address' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
+            'checkImport' => array(
+                'rule' => array('checkImport', 'address'),
                 'message' => 'Alamat Rumah harap diisi'
             ),
         ),
         'city' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
+            'checkImport' => array(
+                'rule' => array('checkImport', 'city'),
                 'message' => 'Alamat Kota harap diisi'
             ),
         ),
         'provinsi' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
+            'checkImport' => array(
+                'rule' => array('checkImport', 'provinsi'),
                 'message' => 'Alamat Provinsi harap diisi'
             ),
         ),
         'no_hp' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
+            'checkImport' => array(
+                'rule' => array('checkImport', 'no_hp'),
                 'message' => 'No. HP harap diisi'
             ),
         ),
         'kontak_darurat_name' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
+            'checkImport' => array(
+                'rule' => array('checkImport', 'kontak_darurat_name'),
                 'message' => 'Nama lengkap harap diisi'
             ),
         ),
         'kontak_darurat_no_hp' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
+            'checkImport' => array(
+                'rule' => array('checkImport', 'kontak_darurat_no_hp'),
                 'message' => 'No. HP harap diisi'
             ),
         ),
@@ -122,6 +122,7 @@ class Driver extends AppModel {
 
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
+        $this->virtualFields['driver_code'] = sprintf('CASE WHEN %s.no_id = \'\' THEN %s.name ELSE CONCAT(\'[\', %s.no_id, \'] \', %s.name) END', $this->alias, $this->alias, $this->alias, $this->alias);
         $this->virtualFields['driver_name'] = sprintf('CASE WHEN %s.alias = \'\' THEN %s.name ELSE CONCAT(%s.name, \' ( \', %s.alias, \' )\') END', $this->alias, $this->alias, $this->alias, $this->alias);
     }
 
@@ -147,7 +148,29 @@ class Driver extends AppModel {
 
             return $flag;
         } else {
-            return false;
+            return true;
+        }
+    }
+
+    function kontakDaruratCheck () {
+        $data = $this->data;
+
+        $kontak_darurat_name = Common::hashEmptyField($data, 'Driver.kontak_darurat_name');
+        $kontak_darurat_no_hp = Common::hashEmptyField($data, 'Driver.kontak_darurat_no_hp');
+
+        if( !empty($kontak_darurat_name) || !empty($kontak_darurat_no_hp) ) {
+            $flag = true;
+
+            if( empty($kontak_darurat_name) ) {
+                $flag = false;
+            }
+            if( empty($kontak_darurat_no_hp) ) {
+                $flag = false;
+            }
+
+            return $flag;
+        } else {
+            return true;
         }
     }
 
@@ -238,11 +261,11 @@ class Driver extends AppModel {
         return $result;
     }
 
-    function getMerge($data, $id, $modelName = 'Driver'){
+    function getMerge($data, $id, $modelName = 'Driver', $field = 'Driver.id'){
         if(empty($data[$modelName])){
             $data_merge = $this->getData('first', array(
                 'conditions' => array(
-                    'Driver.id' => $id,
+                    $field => $id,
                 )
             ), array(
                 'branch' => false,
@@ -279,11 +302,22 @@ class Driver extends AppModel {
         return $data;
     }
 
-    function generateNoId(){
+    function generateNoId( $branch_id, $data_defaults ){
         $default_id = 1;
-        $format_id = sprintf('SP-%s-%s-', date('Y'), date('m'));
+        $branch = $this->Branch->getMerge(array(), $branch_id);
+
+        $default_driver_prefix = Common::hashEmptyField($data_defaults, 'SettingGeneral.driver_prefix', 'JKT');
+        $default_driver_code_digit = Common::hashEmptyField($data_defaults, 'SettingGeneral.driver_code_digit', 4);
+
+        $driver_prefix = Common::hashEmptyField($branch, 'Branch.driver_prefix', $default_driver_prefix);
+        $driver_code_digit = Common::hashEmptyField($branch, 'Branch.driver_code_digit', $default_driver_code_digit);
+
+        $format_id = sprintf('%s-', $driver_prefix);
 
         $last_data = $this->getData('first', array(
+            'conditions' => array(
+                'Driver.no_id LIKE' => $driver_prefix.'-%',
+            ),
             'order' => array(
                 'Driver.no_id' => 'DESC'
             ),
@@ -299,7 +333,7 @@ class Driver extends AppModel {
             $last_arr = count($str_arr)-1;
             $default_id = intval($str_arr[$last_arr]+1);
         }
-        $id = str_pad($default_id, 4,'0',STR_PAD_LEFT);
+        $id = str_pad($default_id, $driver_code_digit,'0',STR_PAD_LEFT);
         $format_id .= $id;
         
         return $format_id;
@@ -341,7 +375,7 @@ class Driver extends AppModel {
             $drivers = $this->getData('list', array(
                 'conditions' => $conditions,
                 'fields' => array(
-                    'Driver.id', 'Driver.driver_name'
+                    'Driver.id', 'Driver.driver_code'
                 ),
             ), array(
                 'branch' => false,

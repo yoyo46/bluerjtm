@@ -5799,7 +5799,7 @@ class RmReportComponent extends Component {
         ));
         $data = $this->controller->Coa->_callGenerateParent($parents, $tmp);
 
-        $this->controller->User->Journal->virtualFields['balancing'] = 'CASE WHEN Coa.type = \'debit\' THEN SUM(Journal.debit) - SUM(Journal.credit) ELSE SUM(Journal.credit) - SUM(Journal.debit) END';
+        $this->controller->User->Journal->virtualFields['balancing'] = 'SUM(Journal.debit) - SUM(Journal.credit)';
         $this->controller->User->Journal->virtualFields['date_month'] = 'DATE_FORMAT(Journal.date, \'%Y-%m\')';
         $this->controller->User->Journal->virtualFields['index'] = 'CONCAT(Journal.coa_id, \'-\', DATE_FORMAT(Journal.date, \'%Y-%m\'))';
         $summaryBalances = $this->controller->User->Journal->getData('list', array(

@@ -513,7 +513,7 @@ class Ttuj extends AppModel {
                 ),
             ),
         ));
-        $data['Ttuj']['driver_name'] = $this->filterEmptyField($data, 'Driver', 'driver_name');
+        $data['Ttuj']['driver_name'] = $this->filterEmptyField($data, 'Driver', 'driver_code');
 
         return $data;
     }

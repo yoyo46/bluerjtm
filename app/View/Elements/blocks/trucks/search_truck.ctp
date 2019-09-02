@@ -59,6 +59,16 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Truck.category',array(
+                                'label'=> __('Jenis Truk'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Jenis Truk')
+                            ));
+                    ?>
+                </div>
                 <div class="form-group action">
                     <?php
                             echo $this->Form->button('<i class="fa fa-search"></i> '.__('Submit'), array(
@@ -78,21 +88,22 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('Driver.name',array(
-                                'label'=> __('Nama Supir'),
+                            echo $this->Form->input('Driver.no_id',array(
+                                'type' => 'text',
+                                'label'=> __('ID Supir'),
                                 'class'=>'form-control',
                                 'required' => false,
-                                'placeholder' => __('Nama Supir')
+                                'placeholder' => __('ID Supir')
                             ));
                     ?>
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('Truck.category',array(
-                                'label'=> __('Jenis Truk'),
+                            echo $this->Form->input('Driver.name',array(
+                                'label'=> __('Nama Supir'),
                                 'class'=>'form-control',
                                 'required' => false,
-                                'placeholder' => __('Jenis Truk')
+                                'placeholder' => __('Nama Supir')
                             ));
                     ?>
                 </div>

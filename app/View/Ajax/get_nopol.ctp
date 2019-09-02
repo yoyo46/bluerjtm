@@ -4,12 +4,13 @@
 				'id' => 'truck_capacity',
 			));
 
-			$driver_name = !empty($result['Driver']['name'])?$result['Driver']['name']:'';
+			// $driver_name = !empty($result['Driver']['name'])?$result['Driver']['name']:'';
+			$driver_name = Common::hashEmptyField($result, 'Driver.driver_code');
 			$driver_id = !empty($result['Driver']['id'])?$result['Driver']['id']:'';
 
-			if( !empty($result['Driver']['alias']) ) {
-				$driver_name = sprintf('%s ( %s )', $driver_name, $result['Driver']['alias']);
-			}
+			// if( !empty($result['Driver']['alias']) ) {
+			// 	$driver_name = sprintf('%s ( %s )', $driver_name, $result['Driver']['alias']);
+			// }
 
 			echo $this->Html->tag('div', $driver_name, array(
 				'id' => 'driver_name',
