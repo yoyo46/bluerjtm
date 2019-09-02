@@ -24,6 +24,7 @@
                     ));
                     echo $this->Html->tag('th', $input_all);
 
+                    echo $this->Html->tag('th', __('ID Karyawan'));
                     echo $this->Html->tag('th', __('Karyawan'));
                     echo $this->Html->tag('th', __('Kategori'));
                     echo $this->Html->tag('th', __('Ket.'));
@@ -47,7 +48,9 @@
                         $total -= $last_paid;
                         
                         $employe_id = Common::hashEmptyField($value, 'ViewStaff.id');
-                        $employe_name = Common::hashEmptyField($value, 'ViewStaff.full_name');
+                        $no_id = Common::hashEmptyField($value, 'ViewStaff.no_id', '-');
+                        $name_code = Common::hashEmptyField($value, 'ViewStaff.name_code', '-');
+                        $employe_name = Common::hashEmptyField($value, 'ViewStaff.full_name', '-');
                         $type = Common::hashEmptyField($value, 'ViewStaff.type');
                         
                         $document_date = $this->Common->formatDate($document_date, 'd M Y');
@@ -76,7 +79,9 @@
                             printf('<tr class="child child-%s">', $alias);
                         }
                 ?>
-                    <td><?php echo $employe_name;?></td>
+                    <td class="on-remove"><?php echo $no_id;?></td>
+                    <td class="hide on-show"><?php echo $name_code;?></td>
+                    <td class="on-remove"><?php echo $employe_name;?></td>
                     <td><?php echo $type;?></td>
                     <td><?php echo $note;?></td>
                     <td class="text-center"><?php echo $document_date;?></td>
@@ -115,7 +120,7 @@
                 }else{
                     echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                         'class' => 'alert alert-warning text-center',
-                        'colspan' => '12'
+                        'colspan' => '13'
                     )));
                 }
         ?>

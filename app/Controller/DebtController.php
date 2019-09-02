@@ -268,7 +268,7 @@ class DebtController extends AppController {
                 $type = Common::hashEmptyField($value, 'type');
                 $value = $this->Debt->DebtDetail->ViewStaff->getMerge($value, $karyawan_id, $type);
 
-                $karyawan_name = Common::hashEmptyField($value, 'ViewStaff.full_name');
+                $karyawan_name = Common::hashEmptyField($value, 'ViewStaff.name_code');
 
                 if(!empty($karyawan_name)){
                     $data['DebtDetail'][$key]['karyawan_name'] = $karyawan_name;

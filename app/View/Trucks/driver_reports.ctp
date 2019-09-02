@@ -102,6 +102,21 @@
                 'field_model' => 'Driver.join_date',
                 'display' => false,
             ),
+            'account_name' => array(
+                'name' => __('Atas Nama'),
+                'field_model' => 'Driver.account_name',
+                'display' => false,
+            ),
+            'account_number' => array(
+                'name' => __('No. Rekening'),
+                'field_model' => 'Driver.account_number',
+                'display' => false,
+            ),
+            'bank_name' => array(
+                'name' => __('Nama Bank'),
+                'field_model' => 'Driver.bank_name',
+                'display' => false,
+            ),
             'total_laka' => array(
                 'name' => __('Biaya LAKA'),
                 'field_model' => 'Driver.total_laka',

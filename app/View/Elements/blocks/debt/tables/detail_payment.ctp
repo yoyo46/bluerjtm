@@ -41,7 +41,7 @@
 									$id = Common::hashEmptyField($value, 'DebtDetail.id');
 									$debt_id = Common::hashEmptyField($value, 'Debt.id');
 					                $employe_id = Common::hashEmptyField($value, 'ViewStaff.id');
-					                $employe_name = Common::hashEmptyField($value, 'ViewStaff.full_name');
+					                $employe_name = Common::hashEmptyField($value, 'ViewStaff.name_code');
                     				$type = Common::hashEmptyField($value, 'ViewStaff.type');
                         			$document_date = Common::hashEmptyField($value, 'Debt.transaction_date');
                         			$note = Common::hashEmptyField($value, 'DebtDetail.note');

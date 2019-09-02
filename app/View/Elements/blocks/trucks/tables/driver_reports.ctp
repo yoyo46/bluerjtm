@@ -23,6 +23,10 @@
                 $date_resign = $this->Common->filterEmptyField($value, 'Driver', 'date_resign');
                 $status = $this->Common->filterEmptyField($value, 'Driver', 'status');
 
+                $account_name = $this->Common->filterEmptyField($value, 'Driver', 'account_name', '-');
+                $account_number = $this->Common->filterEmptyField($value, 'Driver', 'account_number', '-');
+                $bank_name = $this->Common->filterEmptyField($value, 'Driver', 'bank_name', '-');
+
                 $relation = $this->Common->filterEmptyField($value, 'DriverRelation', 'name');
                 $sim = $this->Common->filterEmptyField($value, 'JenisSim', 'name');
                 $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol');
@@ -124,6 +128,18 @@
                 ));
                 $content .= $this->Common->_getDataColumn($customJoinDate, 'Driver', 'join_date', array(
                     'class' => 'join_date',
+                    'style' => 'display: none',
+                ));
+                $content .= $this->Common->_getDataColumn($account_name, 'Driver', 'account_name', array(
+                    'class' => 'account_name',
+                    'style' => 'display: none',
+                ));
+                $content .= $this->Common->_getDataColumn($account_number, 'Driver', 'account_number', array(
+                    'class' => 'account_number',
+                    'style' => 'display: none',
+                ));
+                $content .= $this->Common->_getDataColumn($bank_name, 'Driver', 'bank_name', array(
+                    'class' => 'bank_name',
                     'style' => 'display: none',
                 ));
                 $content .= $this->Common->_getDataColumn($this->Html->link(Common::getFormatPrice($total_laka), array(
