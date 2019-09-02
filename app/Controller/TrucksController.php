@@ -850,6 +850,33 @@ class TrucksController extends AppController {
                 $options['conditions']['Driver.no_id LIKE '] = '%'.$value.'%';
             }
 
+            if(!empty($refine['nopol'])){
+                $data = urldecode($refine['nopol']);
+                $typeTruck = !empty($refine['type'])?$refine['type']:1;
+
+                if( $typeTruck == 2 ) {
+                    $conditionsNopol = array(
+                        'Truck.id' => $data,
+                    );
+                } else {
+                    $conditionsNopol = array(
+                        'Truck.nopol LIKE' => '%'.$data.'%',
+                    );
+                }
+
+                $truckSearch = $this->Truck->getData('list', array(
+                    'conditions' => $conditionsNopol,
+                    'fields' => array(
+                        'Truck.id', 'Truck.driver_id',
+                    ),
+                ), true, array(
+                    'branch' => false,
+                ));
+                $options['conditions']['Driver.id'] = $truckSearch;
+                $this->request->data['Driver']['nopol'] = $data;
+                $this->request->data['Driver']['type'] = $typeTruck;
+            }
+
             // Custom Otorisasi
             $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Driver', $options );
 
@@ -867,11 +894,18 @@ class TrucksController extends AppController {
             'branch' => false,
         ));
         $truck_drivers = $this->paginate('Driver');
-        $truck_drivers = $this->Driver->getMergeList($truck_drivers, array(
-            'contain' => array(
-                'Branch',
-            ),
-        ));
+
+        if( !empty($truck_drivers) ) {
+            foreach ($truck_drivers as $key => &$driver) {
+                $id = Common::hashEmptyField($driver, 'Driver.id');
+                $driver = $this->Truck->getByDriver( $driver, $id );
+                $driver = $this->Driver->getMergeList($driver, array(
+                    'contain' => array(
+                        'Branch',
+                    ),
+                ));
+            }
+        }
 
         $this->set('active_menu', 'drivers');
         $this->set('sub_module_title', __('Supir Truk'));

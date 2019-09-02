@@ -32,21 +32,33 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            // Custom Otorisasi
-                            echo $this->Common->getCheckboxBranch();
+                            echo $this->Form->label('type', __('Truk'));
                     ?>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php 
-                            echo $this->Form->input('name',array(
-                                'label'=> __('Nama Supir'),
-                                'class'=>'form-control',
-                                'required' => false,
-                                'placeholder' => __('Nama Supir')
-                            ));
-                    ?>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <?php 
+                                    echo $this->Form->input('type',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                        'empty' => false,
+                                        'options' => array(
+                                            '1' => __('Nopol'),
+                                            '2' => __('ID Truk'),
+                                        ),
+                                    ));
+                            ?>
+                        </div>
+                        <div class="col-sm-8">
+                            <?php 
+                                    echo $this->Form->input('nopol',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                    ));
+                            ?>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group action">
                     <?php
@@ -61,6 +73,24 @@
                                 'escape' => false, 
                                 'class'=> 'btn btn-default btn-sm',
                             ));
+                    ?>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('name',array(
+                                'label'=> __('Nama Supir'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('Nama Supir')
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            // Custom Otorisasi
+                            echo $this->Common->getCheckboxBranch();
                     ?>
                 </div>
             </div>

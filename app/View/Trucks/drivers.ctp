@@ -26,6 +26,10 @@
                 'field_model' => 'Driver.alias',
                 'display' => true,
             ),
+            'nopol' => array(
+                'name' => __('Nopol'),
+                'display' => true,
+            ),
             'identity_number' => array(
                 'name' => __('No. Identitas'),
                 'field_model' => 'Driver.identity_number',
@@ -118,6 +122,7 @@
                             $is_resign = $this->Common->filterEmptyField($value, 'Driver', 'is_resign');
                             $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
                             $branch_id = $this->Common->filterEmptyField($value, 'Driver', 'branch_id');
+                            $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol', '-');
                             $activate = array(
                                 'controller' => 'trucks',
                                 'action' => 'driver_toggle',
@@ -129,6 +134,7 @@
                 <td><?php echo $no_id;?></td>
                 <td><?php echo $name;?></td>
                 <td><?php echo $alias;?></td>
+                <td><?php echo $nopol;?></td>
                 <td><?php echo $identity_number;?></td>
                 <td><?php echo $address;?></td>
                 <td><?php echo $phone;?></td>
@@ -182,7 +188,7 @@
                     } else {
                          echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '10'
+                            'colspan' => '11'
                         )));
                     }
             ?>
