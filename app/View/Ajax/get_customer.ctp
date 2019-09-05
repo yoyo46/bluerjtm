@@ -41,7 +41,7 @@
                             '.$truck_form.'
                         <closetd>
                         <opentd class="action-search">
-                            <input name="data[CashBankDetail][total][]" class="form-control input_price_coma input_number sisa-amount text-right" type="text" id="CashBankDetailTotal" value="'.$total.'">
+                            <input name="data[CashBankDetail][total][]" class="form-control input_price_coma sisa-amount text-right" type="text" id="CashBankDetailTotal" value="'.$total.'">
                         <closetd>
                         <opentd class="action-search">
                             <a href="javascript:" class="delete-custom-field btn btn-danger btn-xs" action_type="cashbank_first"><i class="fa fa-times"></i> Hapus</a>

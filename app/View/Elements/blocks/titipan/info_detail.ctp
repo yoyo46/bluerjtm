@@ -42,7 +42,7 @@
                     'class' => 'action-search'
                 ));
                 echo $this->Html->tag('td', $this->Common->_callInputForm('TitipanDetail.total.', array(
-                    'class' => 'form-control input_price_coma input_number sisa-amount text-right',
+                    'class' => 'form-control input_price_coma sisa-amount text-right',
                     'value' => $total,
                     'fieldError' => __('TitipanDetail.%s.total', $key),
                 )), array(
