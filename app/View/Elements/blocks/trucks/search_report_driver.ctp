@@ -89,7 +89,7 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('account_number',array(
+                            echo $this->Form->input('driver_account_number',array(
                                 'label'=> __('No. Rekening'),
                                 'class'=>'form-control',
                                 'required' => false,

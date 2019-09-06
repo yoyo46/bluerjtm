@@ -5556,10 +5556,10 @@ class TrucksController extends AppController {
 
                 $this->request->data['Search']['no_truck'] = $value;
             }
-            if(!empty($refine['account_number'])){
-                $value = urldecode($refine['account_number']);
+            if(!empty($refine['driver_account_number'])){
+                $value = urldecode($refine['driver_account_number']);
                 $options['conditions']['Driver.account_number LIKE'] = '%'.$value.'%';
-                $this->request->data['Search']['account_number'] = $value;
+                $this->request->data['Search']['driver_account_number'] = $value;
             }
 
             // Custom Otorisasi
