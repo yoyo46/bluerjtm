@@ -88,6 +88,9 @@
 				'required' => false,
 				'type' => 'textarea',
 			));
+			echo $this->Html->tag('small', __('Khusus invoice per tarif & nama tarif, label [jml-unit] akan terisi otomatis dengan jml muatan sesuai dengan pengelompokan revenue.'), array(
+				'style' => 'font-size:13px;',
+			));
 	?>
 </div>
 <?php 

@@ -107,7 +107,7 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
-                    echo $this->Form->input('driver',array(
+                    echo $this->Form->input('driver_code',array(
                         'label'=> __('Nama Supir'),
                         'class'=>'form-control',
                         'required' => false,
@@ -258,9 +258,9 @@
                     echo $this->Html->tag('th', __('Total'), array(
                         'class' => 'text-center',
                     ));
-                    echo $this->Html->tag('th', __('Sisa'), array(
-                        'class' => 'text-center',
-                    ));
+                    // echo $this->Html->tag('th', __('Sisa'), array(
+                    //     'class' => 'text-center',
+                    // ));
             ?>
         </tr>
         <?php

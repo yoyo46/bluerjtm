@@ -14,7 +14,7 @@
         $data_type = $this->Common->filterEmptyField($ttuj, 'Ttuj', 'data_type', $data_type);
 
         $customer_name_code = $this->Common->filterEmptyField($ttuj, 'Customer', 'code');
-        $driver = $this->Common->_callGetDriver($ttuj);
+        $driver = $this->Common->_callGetDriverCode($ttuj);
 
         $checkbox = isset($checkbox)?$checkbox:true;
 		$alias = sprintf('child-%s-%s', $id, $data_type);
@@ -74,7 +74,8 @@
                             echo $this->Html->tag('p', __('%s: %s %s', $this->Html->tag('strong', __('No')), $no_ttuj, $this->Html->link($this->Common->icon('question-circle'), 'javascript:void(0);', array(
                                 'escape' => false,
                                 'class' => 'popover-hover-top-click',
-                                'data-content' => $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Tgl')), date('d M Y', strtotime($ttuj_date)))).
+                                'data-content' => 
+                                // $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Tgl')), date('d M Y', strtotime($ttuj_date)))).
                                 $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Tgl Masuk Bon Biru')), $tgl_bon_biru)).
                                 $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Customer')), $customer_name_code)).
                                 $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Dari')), $from_city_name)).
@@ -83,12 +84,12 @@
                                 $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Jenis')), $this->Common->_callLabelBiayaTtuj($data_type))).
                                 $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Total')), $this->Common->getBiayaTtuj( $ttuj, $data_type, true, false ))),
                                 'data-original-title' => $this->Html->tag('strong', __('Info TTUJ')).' <span class=\'pull-right\'><a href=\'javascript:\'><i class=\'popover-close\'>Tutup</i></a></span>',
+                                'allow' => true,
                             ))));
-                            // echo $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Tgl')), date('d M Y', strtotime($ttuj_date))));
+                            echo $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Tgl')), date('d M Y', strtotime($ttuj_date))));
                             
                             // echo $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Customer')), $customer_name_code));
-                            // echo $this->Html->tag('p', __('%s: %s - %s', $this->Html->tag('strong', __('Tujuan')), $from_city_name, $to_city_name));
-                            echo $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Ket.')), $note));
+                            echo $this->Html->tag('p', __('%s: %s - %s', $this->Html->tag('strong', __('Tujuan')), $from_city_name, $to_city_name));
                     ?>
                 </div>
                 <div class="col-sm-6">
@@ -96,6 +97,7 @@
                     <?php
                             echo $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Supir')), $driver));
                             echo $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('NoPol')), $nopol));
+                            echo $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Ket.')), $note));
 
                             // if( !empty($capacity) ) {
                             //     echo $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Kap')), $capacity));
@@ -251,10 +253,10 @@
                     echo $this->Common->_callInputForm('TtujPayment.debt.',array(
                         'class'=>'form-control input_price_min debt text-right',
                         'value' => $debt,
-                        // 'fieldError' => array(
-                        //     'TtujPaymentDetail.debt.'.$idx,
-                        //     'TtujPaymentDetail.debt_paid.'.$idx,
-                        // ),
+                        'fieldError' => array(
+                            'TtujPaymentDetail.'.$idx.'.debt',
+                            'TtujPaymentDetail.'.$idx.'.debt_paid',
+                        ),
                     ));
                     echo $this->Form->hidden('TtujPayment.debt_percent.', array(
                         'class'=>'debt_percent',

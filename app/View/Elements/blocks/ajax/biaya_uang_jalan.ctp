@@ -26,7 +26,7 @@
         $data_type = $this->Common->filterEmptyField($ttuj, 'Ttuj', 'data_type', $data_type);
 
         $customer_name_code = $this->Common->filterEmptyField($ttuj, 'Customer', 'code');
-        $driver = $this->Common->_callGetDriver($ttuj);
+        $driver = $this->Common->_callGetDriverCode($ttuj);
 
         $checkbox = isset($checkbox)?$checkbox:true;
 		$alias = sprintf('child-%s-%s', $id, $data_type);
@@ -111,11 +111,10 @@
                                 $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Total')), $this->Common->getBiayaTtuj( $ttuj, $data_type, true, false ))),
                                 'data-original-title' => $this->Html->tag('strong', __('Info TTUJ')).' <span class=\'pull-right\'><a href=\'javascript:\'><i class=\'popover-close\'>Tutup</i></a></span>',
                             ))));
-                            // echo $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Tgl')), date('d M Y', strtotime($ttuj_date))));
+                            echo $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Tgl')), date('d M Y', strtotime($ttuj_date))));
                             
                             // echo $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Customer')), $customer_name_code));
-                            // echo $this->Html->tag('p', __('%s: %s - %s', $this->Html->tag('strong', __('Tujuan')), $from_city_name, $to_city_name));
-                            echo $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Ket.')), $note));
+                            echo $this->Html->tag('p', __('%s: %s - %s', $this->Html->tag('strong', __('Tujuan')), $from_city_name, $to_city_name));
                     ?>
                 </div>
                 <div class="col-sm-6">
@@ -123,6 +122,7 @@
                     <?php
                             echo $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Supir')), $driver));
                             echo $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('NoPol')), $nopol));
+                            echo $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Ket.')), $note));
 
                             // if( !empty($capacity) ) {
                             //     echo $this->Html->tag('p', __('%s: %s', $this->Html->tag('strong', __('Kap')), $capacity));
@@ -168,7 +168,7 @@
     			echo Common::getFormatPrice($total_biaya);
 		?>
 	</td>
-    <td class="text-right">
+    <td class="text-right on-show hide">
     	<?php
                 if( !empty($document_info) ) {
                     $amountPayment = $this->Common->getFormatPrice($amountPayment);

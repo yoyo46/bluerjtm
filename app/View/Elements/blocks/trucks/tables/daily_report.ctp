@@ -13,7 +13,9 @@
                 $nopol = $this->Common->filterEmptyField($value, 'Ttuj', 'nopol');
                 $capacity = $this->Common->filterEmptyField($value, 'Truck', 'capacity');
 
-                $driver = $this->Common->_callGetDriver($value);
+                $driver = $this->Common->_callGetDataDriver($value);
+                $driver_name = Common::hashEmptyField($driver, 'driver_name');
+                $no_id = Common::hashEmptyField($driver, 'no_id');
 
                 $from_city = $this->Common->filterEmptyField($value, 'Ttuj', 'from_city_name');
                 $to_city = $this->Common->filterEmptyField($value, 'Ttuj', 'to_city_name');
@@ -43,7 +45,10 @@
                     'class' => 'capacity',
                     'style' => 'text-align: center;',
                 ));
-                $content .= $this->Common->_getDataColumn($driver, 'Driver', 'driver_name', array(
+                $content .= $this->Common->_getDataColumn($no_id, 'Driver', 'driver_no_id', array(
+                    'class' => 'driver_no_id',
+                ));
+                $content .= $this->Common->_getDataColumn($driver_name, 'Driver', 'driver_name', array(
                     'class' => 'driver',
                 ));
                 $content .= $this->Common->_getDataColumn($from_city, 'Ttuj', 'from_city_name', array(
@@ -77,6 +82,7 @@
             }
 
             $content = $this->Html->tag('td', '&nbsp;');
+            $content .= $this->Html->tag('td', '&nbsp;');
             $content .= $this->Html->tag('td', '&nbsp;');
             $content .= $this->Html->tag('td', '&nbsp;');
             $content .= $this->Html->tag('td', '&nbsp;');

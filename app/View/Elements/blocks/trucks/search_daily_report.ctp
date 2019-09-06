@@ -19,7 +19,7 @@
                 ));
         ?>
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
                             echo $this->Form->label('date', __('Tanggal'));
@@ -72,7 +72,7 @@
                     ?>
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
                             echo $this->Form->label('type', __('Truk'));
@@ -121,6 +121,12 @@
                             ));
                     ?>
                 </div>
+                <?php 
+                        // Custom Otorisasi
+                        echo $this->Common->getCheckboxBranch();
+                ?>
+            </div>
+            <div class="col-sm-4">
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('customer_group_id',array(
@@ -133,10 +139,25 @@
                             ));
                     ?>
                 </div>
-                <?php 
-                        // Custom Otorisasi
-                        echo $this->Common->getCheckboxBranch();
-                ?>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Driver.no_id',array(
+                                'type' => 'text',
+                                'label'=> __('ID Supir'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('Driver.name',array(
+                                'label'=> __('Nama Supir'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
             </div>
         </div>
         <?php 

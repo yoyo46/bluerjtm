@@ -942,6 +942,10 @@ class AjaxController extends AppController {
 		$this->loadModel('Bank');
 		$this->loadModel('Customer');
 
+		$data = $this->request->data;
+		$action_inv = Common::hashEmptyField($data, 'Invoice.action_inv');
+
+
         $head_office = Configure::read('__Site.config_branch_head_office');
 		$conditions = array(
 			'Revenue.customer_id' => $customer_id,
@@ -1060,7 +1064,12 @@ class AjaxController extends AppController {
             }
 
             $ket = strtolower($ket);
-			$this->request->data['Invoice']['note'] = __('%s%sSebanyak %s unit%sPeriode : %s', ucwords($ket), PHP_EOL, $total_qty_unit, PHP_EOL, Common::getCombineDate($period_from, $period_to, 'long', 's/d'));
+
+            if( in_array($action_inv, array( 'tarif', 'tarif_name' )) ) {
+				$this->request->data['Invoice']['note'] = __('%s%sSebanyak [jml-unit] unit%sPeriode : %s', ucwords($ket), PHP_EOL, PHP_EOL, Common::getCombineDate($period_from, $period_to, 'long', 's/d'));
+            } else {
+				$this->request->data['Invoice']['note'] = __('%s%sSebanyak %s unit%sPeriode : %s', ucwords($ket), PHP_EOL, $total_qty_unit, PHP_EOL, Common::getCombineDate($period_from, $period_to, 'long', 's/d'));
+			}
 		}
 
 		$this->set(compact(

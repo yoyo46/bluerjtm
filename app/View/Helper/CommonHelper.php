@@ -2988,9 +2988,24 @@ class CommonHelper extends AppHelper {
         return $driver;
     }
 
+    function _callGetDriverCode ( $value ) {
+        $driver = $this->filterEmptyField($value, 'Driver', 'driver_code');
+        $driver = $this->filterEmptyField($value, 'DriverPengganti', 'driver_code', $driver);
+
+        return $driver;
+    }
+
     function _callGetDataDriver ( $value ) {
-        $driver = Common::hashEmptyField($value, 'Driver');
-        $driver = Common::hashEmptyField($value, 'DriverPengganti', $driver);
+        // $driver = Common::hashEmptyField($value, 'Driver');
+        // $driver = Common::hashEmptyField($value, 'DriverPengganti', $driver);
+
+        if( !empty($value['DriverPengganti']['id']) ) {
+            $driver = $value['DriverPengganti'];
+        } else if( !empty($value['Driver']['id']) ) {
+            $driver = $value['Driver'];
+        } else {
+            $driver = false;
+        }
 
         return $driver;
     }

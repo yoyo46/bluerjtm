@@ -755,6 +755,7 @@ class Ttuj extends AppModel {
         $customer = !empty($data['named']['customer'])?$data['named']['customer']:false;
         $customerid = !empty($data['named']['customerid'])?$data['named']['customerid']:false;
         $driver = !empty($data['named']['driver'])?$data['named']['driver']:false;
+        $driver_code = !empty($data['named']['driver_code'])?$data['named']['driver_code']:false;
         $fromcity = !empty($data['named']['fromcity'])?$data['named']['fromcity']:false;
         $tocity = !empty($data['named']['tocity'])?$data['named']['tocity']:false;
         $note = !empty($data['named']['note'])?$data['named']['note']:false;
@@ -946,6 +947,11 @@ class Ttuj extends AppModel {
         }
         if(!empty($driver)){
             $default_options['conditions']['Ttuj.driver_name LIKE'] = '%'.$driver.'%';
+        }
+        if(!empty($driver_code)){
+            $default_options['conditions'][] = 'CASE WHEN Ttuj.driver_pengganti_id IS NULL OR Ttuj.driver_pengganti_id = 0 THEN CONCAT(\'[\', Driver.no_id, \'] \', Driver.name) ELSE CONCAT(\'[\', DriverPengganti.no_id, \'] \', DriverPengganti.name) END LIKE \'%'.$driver_code.'%\'';
+            $default_options['contain'][] = 'Driver';
+            $default_options['contain'][] = 'DriverPengganti';
         }
         if(!empty($customer)){
             $customers = $this->Customer->getData('list', array(

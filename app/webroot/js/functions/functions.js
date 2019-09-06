@@ -3217,20 +3217,20 @@ var sisa_amount = function ( obj ) {
 
         if( objTotal.length > 0 && self.hasClass('sisa-amount') ) {
             if( sisa > total ) {
-                alert(totalAlert);
+                // alert(totalAlert);
                 self.val(formatNumber( total, 0 ));
                 allow = false;
             }
         }
 
         if( allow == true && sisa == 0 && self.hasClass('sisa-amount') ) {
-            alert(emptyAlert);
+            // alert(emptyAlert);
         }
 
         calcTotalTransfer(parent);
         calcTotalBiaya();
         
-        self.val(formatNumber( sisa, 0 ));
+        // self.val(formatNumber( sisa, 0 ));
     });
 }
 
@@ -4152,9 +4152,16 @@ $(function() {
             url += invoiceType+'/';
         }
 
+        if( $('#inv-form').length > 0 ) {
+            var formData = $('#inv-form').serialize(); 
+        } else {
+            var formData = false; 
+        }
+
         $.ajax({
             url: url,
             type: 'POST',
+            data: formData,
             success: function(response, status) {
                 var message = $(response).filter('#message').val();
                 var error = $(response).filter('#status').val();

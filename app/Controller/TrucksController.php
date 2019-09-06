@@ -4785,6 +4785,22 @@ class TrucksController extends AppController {
                 $options['contain'][] = 'CustomerType';
                 $this->request->data['Truck']['customer_group_id'] = $customer_group_id;
             }
+            if(!empty($refine['name'])){
+                $data = urldecode($refine['name']);
+                $options['conditions']['CASE WHEN Ttuj.driver_pengganti_id IS NULL OR Ttuj.driver_pengganti_id = 0 THEN CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END ELSE CASE WHEN DriverPengganti.alias = \'\' THEN DriverPengganti.name ELSE CONCAT(DriverPengganti.name, \' ( \', DriverPengganti.alias, \' )\') END END LIKE'] = '%'.$data.'%';
+                $options['contain'][] = 'Driver';
+                $options['contain'][] = 'DriverPengganti';
+                $options['group'][] = 'Ttuj.id';
+                $this->request->data['Driver']['name'] = $data;
+            }
+            if(!empty($refine['no_id'])){
+                $data = urldecode($refine['no_id']);
+                $options['conditions'][] = 'CASE WHEN Ttuj.driver_pengganti_id IS NULL OR Ttuj.driver_pengganti_id = 0 THEN Driver.no_id ELSE DriverPengganti.no_id END LIKE \'%'.$data.'%\' ';
+                $options['contain'][] = 'Driver';
+                $options['contain'][] = 'DriverPengganti';
+                $options['group'][] = 'Ttuj.id';
+                $this->request->data['Driver']['no_id'] = $data;
+            }
 
             // Custom Otorisasi
             $options = $this->MkCommon->getConditionGroupBranch( $refine, 'Ttuj', $options );

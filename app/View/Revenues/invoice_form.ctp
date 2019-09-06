@@ -10,6 +10,7 @@
 			'role' => 'form',
 			'inputDefaults' => array('div' => false),
     		'autocomplete'=> 'off', 
+    		'id' => 'inv-form',
 		));
 
 		echo $this->Form->hidden('transaction_status', array(
@@ -58,7 +59,7 @@
 							'class'=>'form-control custom-find-invoice',
 							'required' => false,
 							'empty' => __('Pilih Customer'),
-							'options' => $customers
+							'options' => $customers,
 						));
 				?>
 	        </div>
@@ -122,6 +123,9 @@
 		    			'rel' => $action,
 		    			'class' => 'btn btn-primary',
 		    			'id' => 'preview-invoice'
+		    		));
+		    		echo $this->Form->hidden('action_inv', array(
+		    			'value' => $action,
 		    		));
 			?>
 		</div>

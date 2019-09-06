@@ -4188,6 +4188,7 @@ class RevenuesController extends AppController {
             $customer_id = $this->MkCommon->filterEmptyField($data, 'Invoice', 'customer_id');
             $invoice_date = $this->MkCommon->filterEmptyField($data, 'Invoice', 'invoice_date');
             $cogs_id = $this->MkCommon->filterEmptyField($data, 'Invoice', 'cogs_id');
+            $note = $this->MkCommon->filterEmptyField($data, 'Invoice', 'note');
 
             if($id && $data_local){
                 $this->Invoice->id = $id;
@@ -4264,11 +4265,21 @@ class RevenuesController extends AppController {
                         $errorMsg = array();
 
                         if(!empty($revenue_detail)){
+                            $tmp_total_qty = array();
+
                             foreach ($revenue_detail as $key => $value) {
+                                $qty_unit = $this->MkCommon->filterEmptyField($value, 'RevenueDetail', 'qty_unit', 0);
+
                                 if( $action == 'tarif_name' ) {
                                     $grouping = $this->MkCommon->filterEmptyField($value, 'TarifAngkutan', 'name_tarif');
                                 } else {
                                     $grouping = $this->MkCommon->filterEmptyField($value, 'RevenueDetail', 'price_unit');
+                                }
+
+                                if( !empty($tmp_total_qty[$grouping]) ) {
+                                    $tmp_total_qty[$grouping] += $qty_unit;
+                                } else {
+                                    $tmp_total_qty[$grouping] = $qty_unit;
                                 }
 
                                 $result[$grouping][] = $value;
@@ -4282,7 +4293,7 @@ class RevenuesController extends AppController {
                                 $data['Invoice']['no_invoice'] = $invoice_number;
                                 $data['Invoice']['type_invoice'] = $action;
                                 $data['Invoice']['due_invoice'] = $customer['Customer']['term_of_payment'];
-                                
+
                                 $this->Invoice->create();
                                 $this->Invoice->set($data);
 
@@ -4307,6 +4318,16 @@ class RevenuesController extends AppController {
                                     $data['Invoice']['no_invoice'] = $invoice_number;
                                     $data['Invoice']['type_invoice'] = $action;
                                     $data['Invoice']['due_invoice'] = $customer['Customer']['term_of_payment'];
+
+                                    if( !empty($tmp_total_qty[$key]) ) {
+                                        $grandtotal_qty = $tmp_total_qty[$key];
+                                    } else {
+                                        $grandtotal_qty = 0;
+                                    }
+
+                                    $tmp_note = str_replace('[jml-unit]', $grandtotal_qty, $note);
+                                    $data['Invoice']['note'] = $tmp_note;
+                                
                                     $this->Invoice->set($data);
 
                                     if($this->Invoice->save()){
@@ -7399,6 +7420,7 @@ class RevenuesController extends AppController {
             $grandtotal_debt = 0;
             $driver_debt = array();
             $dataDebtPaymetDetail = array();
+            $tmpDataDetail = array();
 
             if( !empty($ttuj_payment_id) && $transaction_status == 'posting' ) {
                 $dataTitipan = array(
@@ -7521,6 +7543,7 @@ class RevenuesController extends AppController {
                     }
                 }
 
+                $tmpDataDetail[] = $dataTtujPaymentDetail;
                 $this->Ttuj->TtujPaymentDetail->create();
                 $this->Ttuj->TtujPaymentDetail->set($dataTtujPaymentDetail);
 
@@ -7550,9 +7573,17 @@ class RevenuesController extends AppController {
                         }
                     }
                 } else {
-                    if( !$this->Ttuj->TtujPaymentDetail->validates() ) {
-                        $flagTtujPaymentDetail = false;
-                    }
+                    // if( !$this->Ttuj->TtujPaymentDetail->validates() ) {
+                    //     $flagTtujPaymentDetail = false;
+                    // }
+                }
+            }
+
+            if( empty($ttuj_payment_id) ) {
+                if(!$this->Ttuj->TtujPaymentDetail->saveAll($tmpDataDetail, array(
+                    'validate' => 'only',
+                ))) {
+                    $flagTtujPaymentDetail = false;
                 }
             }
 
@@ -7782,9 +7813,9 @@ class RevenuesController extends AppController {
                 }
             }else{
                 $msgError = array();
-
                 if( !empty($this->Ttuj->TtujPaymentDetail->validationErrors) ) {
                     $errorPaymentDetails = $this->Ttuj->TtujPaymentDetail->validationErrors;
+                    $errorPaymentDetails = reset($errorPaymentDetails);
 
                     foreach ($errorPaymentDetails as $key => $errorPaymentDetail) {
                         if( !empty($errorPaymentDetail) ) {

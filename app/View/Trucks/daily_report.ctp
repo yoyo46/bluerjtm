@@ -30,6 +30,11 @@
                 'align' => 'center',
                 'data-options' => 'field:\'capacity\',width:80',
             ),
+            'driver_no_id' => array(
+                'name' => __('ID Supir'),
+                'style' => 'text-align: center',
+                'data-options' => 'field:\'driver_no_id\',width:100',
+            ),
             'driver' => array(
                 'name' => __('Supir'),
                 'style' => 'text-align: center',
