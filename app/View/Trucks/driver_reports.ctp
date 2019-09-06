@@ -6,9 +6,9 @@
                 'field_model' => 'Branch.name',
                 'display' => true,
             ),
-            'nomor_id' => array(
-                'name' => __('No. ID'),
-                'field_model' => 'Driver.id',
+            'no_id' => array(
+                'name' => __('ID Supir'),
+                'field_model' => 'Driver.no_id',
                 'display' => true,
             ),
             'nopol' => array(
@@ -136,6 +136,16 @@
         );
         $showHideColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'show-hide' );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table', $data_action );
+        echo $this->Form->create('Search', array(
+            'url'=> $this->Html->url( array(
+                'controller' => 'trucks',
+                'action' => 'search',
+                'driver_reports'
+            )), 
+            'role' => 'form',
+            'inputDefaults' => array('div' => false),
+            'class' => 'form-search',
+        ));
 
         if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){
             $tdStyle = '';
@@ -213,4 +223,6 @@
             'tableBody' => $this->element('blocks/trucks/tables/driver_reports'),
         ));
     }
+    
+    echo $this->Form->end();
 ?>

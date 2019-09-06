@@ -28,21 +28,23 @@ class RjTruckComponent extends Component {
 				if( !empty($refine['Truck']['description']) ) {
 					$refine_conditions['Truck']['description'] = $refine['Truck']['description'];
 				}
-				if( !empty($refine['Driver']['no_id']) ) {
-					$refine_conditions['Driver']['no_id'] = $refine['Driver']['no_id'];
+				if( !empty($refine['Driver']) ) {
+					foreach ($refine['Driver'] as $field => $driver_val) {
+						$refine_conditions['Driver'][$field] = $driver_val;
+					}
 				}
-				if( !empty($refine['Driver']['name']) ) {
-					$refine_conditions['Driver']['name'] = $refine['Driver']['name'];
-				}
-				if( !empty($refine['Driver']['no_truck']) ) {
-					$refine_conditions['Driver']['no_truck'] = $refine['Driver']['no_truck'];
-				}
-				if( !empty($refine['Driver']['nopol']) ) {
-					$refine_conditions['Driver']['nopol'] = $refine['Driver']['nopol'];
-				}
-				if( !empty($refine['Driver']['type']) ) {
-					$refine_conditions['Driver']['type'] = $refine['Driver']['type'];
-				}
+				// if( !empty($refine['Driver']['name']) ) {
+				// 	$refine_conditions['Driver']['name'] = $refine['Driver']['name'];
+				// }
+				// if( !empty($refine['Driver']['no_truck']) ) {
+				// 	$refine_conditions['Driver']['no_truck'] = $refine['Driver']['no_truck'];
+				// }
+				// if( !empty($refine['Driver']['nopol']) ) {
+				// 	$refine_conditions['Driver']['nopol'] = $refine['Driver']['nopol'];
+				// }
+				// if( !empty($refine['Driver']['type']) ) {
+				// 	$refine_conditions['Driver']['type'] = $refine['Driver']['type'];
+				// }
 				if( !empty($refine['TruckBrand']['name']) ) {
 					$refine_conditions['TruckBrand']['name'] = $refine['TruckBrand']['name'];
 				}

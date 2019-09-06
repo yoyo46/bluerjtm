@@ -39,10 +39,16 @@
                 'name' => __('Alamat'),
                 'field_model' => 'Driver.Address',
                 'display' => true,
+                'width' => '15%',
             ),
             'phone' => array(
                 'name' => __('Telepon'),
                 'field_model' => 'Driver.phone',
+                'display' => true,
+            ),
+            'account_number' => array(
+                'name' => __('No. Rekening'),
+                'field_model' => 'Driver.account_number',
                 'display' => true,
             ),
             'created' => array(
@@ -122,6 +128,7 @@
                             $is_resign = $this->Common->filterEmptyField($value, 'Driver', 'is_resign');
                             $branch = $this->Common->filterEmptyField($value, 'Branch', 'code');
                             $branch_id = $this->Common->filterEmptyField($value, 'Driver', 'branch_id');
+                            $account_number = $this->Common->filterEmptyField($value, 'Driver', 'account_number', '-');
                             $nopol = $this->Common->filterEmptyField($value, 'Truck', 'nopol', '-');
                             $activate = array(
                                 'controller' => 'trucks',
@@ -138,6 +145,7 @@
                 <td><?php echo $identity_number;?></td>
                 <td><?php echo $address;?></td>
                 <td><?php echo $phone;?></td>
+                <td><?php echo $account_number;?></td>
                 <td><?php echo $this->Time->niceShort($created);?></td>
                 <td class="text-center">
                     <?php 
@@ -188,7 +196,7 @@
                     } else {
                          echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '11'
+                            'colspan' => '12'
                         )));
                     }
             ?>

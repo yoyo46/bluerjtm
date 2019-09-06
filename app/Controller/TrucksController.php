@@ -850,6 +850,12 @@ class TrucksController extends AppController {
                 $options['conditions']['Driver.no_id LIKE '] = '%'.$value.'%';
             }
 
+            if(!empty($refine['account_number'])){
+                $value = urldecode($refine['account_number']);
+                $this->request->data['Driver']['account_number'] = $value;
+                $options['conditions']['Driver.account_number LIKE '] = '%'.$value.'%';
+            }
+
             if(!empty($refine['nopol'])){
                 $data = urldecode($refine['nopol']);
                 $typeTruck = !empty($refine['type'])?$refine['type']:1;
@@ -984,12 +990,19 @@ class TrucksController extends AppController {
                 $this->Driver->id = $id;
                 $msg = 'merubah';
                 $data['Driver']['id'] = $id;
-                $data['Driver']['no_id'] = $this->MkCommon->filterEmptyField($data_local, 'Driver', 'no_id');
+
+                if( empty($data['Driver']['no_id']) ) {
+                    $data['Driver']['no_id'] = $this->MkCommon->filterEmptyField($data_local, 'Driver', 'no_id');
+                }
             }else{
                 $this->loadModel('Driver');
 
                 $driver_codes = $this->MkCommon->_callSettingGeneral('SettingGeneral', array('driver_prefix', 'driver_code_digit'), false);
-                $data['Driver']['no_id'] = $this->Driver->generateNoId($branch_id, $driver_codes);
+
+                if( empty($data['Driver']['no_id']) ) {
+                    $data['Driver']['no_id'] = $this->Driver->generateNoId($branch_id, $driver_codes);
+                }
+
                 $this->Driver->create();
                 $msg = 'menambah';
             }
@@ -5494,6 +5507,10 @@ class TrucksController extends AppController {
         if(!empty($this->params['named'])){
             $refine = $this->params['named'];
 
+            foreach ($refine as $field => $val) {
+                $this->request->data['Driver'][$field] = $val;
+            }
+
             if(!empty($refine['nopol'])){
                 $data = urldecode($refine['nopol']);
                 $typeTruck = !empty($refine['type'])?$refine['type']:1;
@@ -5538,6 +5555,11 @@ class TrucksController extends AppController {
                 $options['contain'][] = 'Truck';
 
                 $this->request->data['Search']['no_truck'] = $value;
+            }
+            if(!empty($refine['account_number'])){
+                $value = urldecode($refine['account_number']);
+                $options['conditions']['Driver.account_number LIKE'] = '%'.$value.'%';
+                $this->request->data['Search']['account_number'] = $value;
             }
 
             // Custom Otorisasi

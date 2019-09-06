@@ -6,18 +6,6 @@
         </div>
     </div>
     <div class="box-body">
-        <?php 
-                echo $this->Form->create('Search', array(
-                    'url'=> $this->Html->url( array(
-                        'controller' => 'trucks',
-                        'action' => 'search',
-                        'driver_reports'
-                    )), 
-                    'role' => 'form',
-                    'inputDefaults' => array('div' => false),
-                    'class' => 'form-search',
-                ));
-        ?>
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
@@ -52,7 +40,7 @@
                 </div>
                 <div class="form-group">
                     <?php 
-                            echo $this->Form->input('no_id',array(
+                            echo $this->Form->input('driver_id',array(
                                 'type' => 'text',
                                 'label'=> __('No. ID'),
                                 'class'=>'form-control',
@@ -99,6 +87,15 @@
                             ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('account_number',array(
+                                'label'=> __('No. Rekening'),
+                                'class'=>'form-control',
+                                'required' => false,
+                            ));
+                    ?>
+                </div>
                 <?php 
                         // Custom Otorisasi
                         echo $this->Common->getCheckboxBranch();
@@ -109,7 +106,6 @@
                 echo $this->Form->hidden('title',array(
                     'value'=> __('Laporan Supir'),
                 ));
-                echo $this->Form->end();
         ?>
     </div>
 </div>

@@ -40,7 +40,7 @@
 		        	<?php 
 							echo $this->Form->input('photo',array(
 								'type' => 'file',
-								'label'=> __('Foto Supir *'), 
+								'label'=> __('Foto Supir'), 
 								'class'=>'form-control',
 								'required' => false,
 								'placeholder' => __('Foto Supir')
@@ -48,7 +48,7 @@
 					?>
 		        </div>
 		        <?php 
-		        		if( !empty($id) ) {
+		        		// if( !empty($id) ) {
 		        ?>
 		        <div class="form-group">
 		        	<?php 
@@ -57,13 +57,16 @@
 								'label'=> __('No. ID *'), 
 								'class'=>'form-control',
 								'required' => false,
-								'disabled' => true,
 								'placeholder' => __('No. ID'),
+							));
+							echo $this->Html->tag('small', __('Kosongkan utk mendapatkan No. ID otomatis'), array(
+								'style' => 'font-size:13px;',
 							));
 					?>
 		        </div>
 		        <?php 
-		        		}
+		        		// }
+
 						echo $this->Html->tag('div', $this->Form->input('branch_id',array(
 							'label'=> __('Cabang *'), 
 							'class' => 'form-control chosen-select',
@@ -226,7 +229,7 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('jenis_sim_id',array(
-								'label'=> __('Jenis SIM *'), 
+								'label'=> __('Jenis SIM'), 
 								'class'=>'form-control',
 								'required' => false,
 								'empty' => __('Pilih Jenis SIM --'),

@@ -312,11 +312,11 @@ class Driver extends AppModel {
         $driver_prefix = Common::hashEmptyField($branch, 'Branch.driver_prefix', $default_driver_prefix);
         $driver_code_digit = Common::hashEmptyField($branch, 'Branch.driver_code_digit', $default_driver_code_digit);
 
-        $format_id = sprintf('%s-', $driver_prefix);
+        $format_id = sprintf('%s', $driver_prefix);
 
         $last_data = $this->getData('first', array(
             'conditions' => array(
-                'Driver.no_id LIKE' => $driver_prefix.'-%',
+                'Driver.no_id LIKE' => $driver_prefix.'%',
             ),
             'order' => array(
                 'Driver.no_id' => 'DESC'
@@ -329,9 +329,8 @@ class Driver extends AppModel {
         ));
 
         if(!empty($last_data['Driver']['no_id'])){
-            $str_arr = explode('-', $last_data['Driver']['no_id']);
-            $last_arr = count($str_arr)-1;
-            $default_id = intval($str_arr[$last_arr]+1);
+            $str_arr = str_replace($driver_prefix, '', $last_data['Driver']['no_id']);
+            $default_id = intval($str_arr+1);
         }
         $id = str_pad($default_id, $driver_code_digit,'0',STR_PAD_LEFT);
         $format_id .= $id;
@@ -415,6 +414,7 @@ class Driver extends AppModel {
         $type = !empty($data['named']['type'])?$data['named']['type']:1;
         $no_truck = !empty($data['named']['no_truck'])?$data['named']['no_truck']:false;
         $no_id = !empty($data['named']['no_id'])?$data['named']['no_id']:false;
+        $driver_id = !empty($data['named']['driver_id'])?$data['named']['driver_id']:false;
         $sort = !empty($data['named']['sort'])?$data['named']['sort']:false;
         $direction = !empty($data['named']['direction'])?$data['named']['direction']:false;
 
@@ -445,6 +445,9 @@ class Driver extends AppModel {
         }
         if(!empty($no_id)){
             $default_options['conditions']['Driver.no_id LIKE'] = '%'.$no_id.'%';
+        }
+        if(!empty($driver_id)){
+            $default_options['conditions']['Driver.no_id LIKE'] = '%'.$driver_id.'%';
         }
 
         if( !empty($sort) ) {

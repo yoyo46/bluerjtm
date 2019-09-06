@@ -967,6 +967,7 @@ class CommonHelper extends AppHelper {
     }
 
     function _allowShowColumn ( $modelName, $fieldName ) {
+
         $_allowShow = isset($this->request->data[$modelName][$fieldName])?$this->request->data[$modelName][$fieldName]:true;
         $result = true;
 
@@ -1025,12 +1026,13 @@ class CommonHelper extends AppHelper {
                 $rel = !empty($dataColumn['rel'])?$dataColumn['rel']:false;
                 $content = false;
                 $addClass = '';
+                $_allowShow = !empty($this->request->data[$modelName][$fieldName])?true:false;
 
                 if( !empty($_style) ) {
                     $style .= $_style;
                 }
 
-                if( !empty($display) ) {
+                if( !empty($display) || !empty($_allowShow) ) {
                     $checked = true;
                 } else {
                     $checked = false;
@@ -1124,8 +1126,9 @@ class CommonHelper extends AppHelper {
         if( !empty($allowShow) ) {
             $default_style .= $style;
             $options['style'] = $default_style;
+            $_allowShow = !empty($this->request->data[$modelName][$fieldName])?true:false;
 
-            if( empty($options['style']) ) {
+            if( empty($options['style']) || !empty($_allowShow) ) {
                 unset($options['style']);
             }
 

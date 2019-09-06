@@ -89,6 +89,16 @@
                 </div>
                 <div class="form-group">
                     <?php 
+                            echo $this->Form->input('account_number',array(
+                                'label'=> __('No. Rekening'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('No. Rekening')
+                            ));
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php 
                             // Custom Otorisasi
                             echo $this->Common->getCheckboxBranch();
                     ?>
