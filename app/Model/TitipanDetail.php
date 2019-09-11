@@ -49,6 +49,9 @@ class TitipanDetail extends AppModel {
     }
 
     public function _callRefineParams( $data = '', $default_options = false ) {
+        $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
+        $truck_type = !empty($data['named']['truck_type'])?$data['named']['truck_type']:false;
+
         $default_options = $this->defaultOptionParams($data, $default_options, array(
             'DateFrom' => array(
                 'field' => 'Titipan.transaction_date >=',
@@ -57,7 +60,7 @@ class TitipanDetail extends AppModel {
                 'field' => 'Titipan.transaction_date <=',
             ),
             'name' => array(
-                'field' => 'Driver.driver_name',
+                'field' => 'CASE WHEN Driver.alias = \'\' THEN Driver.name ELSE CONCAT(Driver.name, \' ( \', Driver.alias, \' )\') END',
                 'type' => 'like',
                 'contain' => array(
                     'Driver',
@@ -67,13 +70,42 @@ class TitipanDetail extends AppModel {
                 'field' => 'TitipanDetail.type',
             ),
             'phone' => array(
-                'field' => 'Driver.phone',
+                'field' => '(CASE WHEN Driver.no_hp = \'\' OR Driver.no_hp IS NOT NULL THEN Driver.no_hp ELSE Driver.phone END)',
+                'type' => 'like',
+                'contain' => array(
+                    'Driver',
+                ),
+            ),
+            'staff_id' => array(
+                'field' => 'CONCAT(\'#\', Driver.no_id)',
                 'type' => 'like',
                 'contain' => array(
                     'Driver',
                 ),
             ),
         ));
+
+        if(!empty($nopol)){
+            if( $truck_type == 2 ) {
+                $conditionsNopol = array(
+                    'Truck.id' => $nopol,
+                );
+            } else {
+                $conditionsNopol = array(
+                    'Truck.nopol LIKE' => '%'.$nopol.'%',
+                );
+            }
+
+            $truckSearch = $this->Driver->Truck->getData('list', array(
+                'conditions' => $conditionsNopol,
+                'fields' => array(
+                    'Truck.id', 'Truck.driver_id',
+                ),
+            ), true, array(
+                'branch' => false,
+            ));
+            $default_options['conditions']['TitipanDetail.driver_id'] = $truckSearch;
+        }
         
         return $default_options;
     }

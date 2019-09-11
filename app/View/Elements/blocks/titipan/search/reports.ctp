@@ -16,11 +16,44 @@
         <div class="row">
             <div class="col-sm-6">
                 <?php 
+                        echo $this->Common->buildInputForm('staff_id', __('ID Karyawan'), array(
+                            'type' => 'text',
+                        ));
                         echo $this->Common->buildInputForm('name', __('Nama'));
                         echo $this->Common->buildInputForm('phone', __('No. Telp'));
                 ?>
             </div>
             <div class="col-sm-6">
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->label('truck_type', __('Truk'));
+                    ?>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <?php 
+                                    echo $this->Form->input('truck_type',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                        'empty' => false,
+                                        'options' => array(
+                                            '1' => __('Nopol'),
+                                            '2' => __('ID Truk'),
+                                        ),
+                                    ));
+                            ?>
+                        </div>
+                        <div class="col-sm-8">
+                            <?php 
+                                    echo $this->Form->input('nopol',array(
+                                        'label'=> false,
+                                        'class'=>'form-control',
+                                        'required' => false,
+                                    ));
+                            ?>
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <?php 
                             echo $this->Common->getCheckboxBranch();
