@@ -1526,6 +1526,7 @@ class CashbanksController extends AppController {
                     'conditions' => $conditions,
                     'group' => array(
                         // 'Journal.coa_id',
+                        'Journal.title',
                         'Journal.document_id',
                         'Journal.type',
                     ),

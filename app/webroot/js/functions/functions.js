@@ -2440,13 +2440,23 @@ var input_price_min = function ( obj ) {
     }
 
     if( obj.length > 0 ) {
-        obj.priceFormat({
-            allowNegative: true,
-            doneFunc: function(obj, val) {
-                currencyVal = val;
-                currencyVal = currencyVal.replace(/,/gi, "")
-                obj.next(".input_hidden").val(currencyVal);
+        obj.off('blur').blur(function(){
+            var self = $(this);
+            var dec = $.checkUndefined(self.attr('data-decimal'), 0);
+            var func = $.checkUndefined(self.attr('data-function'), false);
+            var func_type = $.checkUndefined(self.attr('data-function-type'), false);
+
+            self.val( $.convertDecimal(self, dec) );
+
+            if( func != false ) {
+                eval(func + '(\''+func_type+'\');');
             }
+        });
+
+        jQuery.each( obj, function( i, val ) {
+            var self = $(this);
+            var dec = $.checkUndefined(self.attr('data-decimal'), 0);
+            self.val( $.convertDecimal(self, dec) );
         });
     }
 }
@@ -3140,6 +3150,12 @@ var calcTotalBiaya = function () {
     var coma = $.checkUndefined($('#total-biaya').attr('data-cent'), 0);
     var totalBiaya = 0;
     var grandtotal = 0;
+    var totalNoClaim = 0;
+    var totalStood = 0;
+    var totalLainnya = 0;
+    var totalTitipan = 0;
+    var totalClaim = 0;
+    var totalHutang = 0;
 
     for (i = 0; i < biayaLen; i++) {
         biaya = convert_number(biayaObj[i].value, 'float');
@@ -3163,11 +3179,24 @@ var calcTotalBiaya = function () {
         }
 
         totalBiaya += biaya;
+        totalNoClaim += no_claim;
+        totalStood += stood;
+        totalLainnya += lainnya;
+        totalTitipan += titipan;
+        totalClaim += claim;
+        totalHutang += debt;
         // grandtotal += biaya + no_claim + stood + lainnya - titipan - claim - laka - debt;
         grandtotal += biaya + no_claim + stood + lainnya - titipan - claim - debt;
     };
 
     $('#total-biaya').html(formatNumber( totalBiaya, coma ));
+    $('#total-no-claim').html(formatNumber( totalNoClaim, coma ));
+    $('#total-stood').html(formatNumber( totalStood, coma ));
+    $('#total-lain-lain').html(formatNumber( totalLainnya, coma ));
+    $('#total-titipan').html(formatNumber( totalTitipan, coma ));
+    $('#total-claim').html(formatNumber( totalClaim, coma ));
+    $('#total-hutang').html(formatNumber( totalHutang, coma ));
+
     $('#grandtotal-biaya').html(formatNumber( grandtotal, coma ));
     // $('#total-biaya').html(formatNumber( totalBiaya, 0 ));
 }

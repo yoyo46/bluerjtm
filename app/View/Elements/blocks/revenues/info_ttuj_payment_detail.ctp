@@ -1,6 +1,12 @@
 <tbody id="checkbox-info-table">
 	<?php
 			$biaya_total = 0;
+			$total_no_claim = 0;
+			$total_stood = 0;
+			$total_lain_lain = 0;
+			$total_titipan = 0;
+			$total_claim = 0;
+			$total_hutang = 0;
 			$grandTotal = 0;
 			$data = $this->request->data;
 
@@ -17,6 +23,12 @@
 					$debt = !empty($data['TtujPayment']['debt'][$key])?$data['TtujPayment']['debt'][$key]:0;
 					
 					$biaya_total += $amount_payment;
+					$total_no_claim += $no_claim;
+					$total_stood += $stood;
+					$total_lain_lain += $lainnya;
+					$total_titipan += $titipan;
+					$total_claim += $claim;
+					$total_hutang += $debt;
 					$grandTotal += $amount_payment + $no_claim + $stood + $lainnya - $titipan - $claim - $debt;
 
 					echo $this->element('blocks/ajax/pembayaran_uang_jalan', array(
@@ -38,9 +50,31 @@
 				'class' => 'text-right',
 				'id' => 'total-biaya',
 			));
-			echo $this->Html->tag('td', '', array(
-				'colspan' => 7,
+			echo $this->Html->tag('td', Common::getFormatPrice($total_no_claim), array(
+				'class' => 'text-right',
+				'id' => 'total-no-claim',
 			));
+			echo $this->Html->tag('td', Common::getFormatPrice($total_stood), array(
+				'class' => 'text-right',
+				'id' => 'total-stood',
+			));
+			echo $this->Html->tag('td', Common::getFormatPrice($total_lain_lain), array(
+				'class' => 'text-right',
+				'id' => 'total-lain-lain',
+			));
+			echo $this->Html->tag('td', Common::getFormatPrice($total_titipan), array(
+				'class' => 'text-right',
+				'id' => 'total-titipan',
+			));
+			echo $this->Html->tag('td', Common::getFormatPrice($total_claim), array(
+				'class' => 'text-right',
+				'id' => 'total-claim',
+			));
+			echo $this->Html->tag('td', Common::getFormatPrice($total_hutang), array(
+				'class' => 'text-right',
+				'id' => 'total-hutang',
+			));
+			echo $this->Html->tag('td', '');
 			echo $this->Html->tag('td', Common::getFormatPrice($grandTotal), array(
 				'class' => 'text-right',
 				'id' => 'grandtotal-biaya',
