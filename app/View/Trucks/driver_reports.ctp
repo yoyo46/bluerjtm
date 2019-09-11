@@ -144,7 +144,7 @@
             )), 
             'role' => 'form',
             'inputDefaults' => array('div' => false),
-            'class' => 'form-search',
+            'id' => 'form-search',
         ));
 
         if( empty($data_action) || ( !empty($data_action) && $data_action == 'excel' ) ){

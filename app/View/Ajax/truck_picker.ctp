@@ -25,7 +25,7 @@
                 'class' => 'text-center',
             ),
             'nilai_buku' => array(
-                'name' => __('Pemilik'),
+                'name' => __('Alokasi Truk'),
             ),
             // 'action' => array(
             //     'name' => __('Action'),

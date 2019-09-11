@@ -5538,10 +5538,10 @@ class TrucksController extends AppController {
                 $this->request->data['Search']['type'] = $typeTruck;
             }
 
-            if(!empty($refine['no_id'])){
-                $value = urldecode($refine['no_id']);
+            if(!empty($refine['driver_id'])){
+                $value = urldecode($refine['driver_id']);
                 $options['conditions']['Driver.no_id LIKE'] = '%'.$value.'%';
-                $this->request->data['Search']['no_id'] = $value;
+                $this->request->data['Search']['driver_id'] = $value;
             }
             if(!empty($refine['name'])){
                 $value = urldecode($refine['name']);

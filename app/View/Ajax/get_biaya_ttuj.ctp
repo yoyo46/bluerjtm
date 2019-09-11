@@ -3,8 +3,12 @@
         $named = Common::hashEmptyField($params, 'named');
 
         $data = $this->request->data;
-        $is_hitung_titipan = Common::hashEmptyField($data, 'TtujPayment.is_hitung_titipan');
-        $is_hitung_hutang = Common::hashEmptyField($data, 'TtujPayment.is_hitung_hutang');
+
+        $is_hitung_titipan = Common::hashEmptyField($data, 'Search.is_hitung_titipan');
+        $is_hitung_titipan = Common::hashEmptyField($data, 'TtujPayment.is_hitung_titipan', $is_hitung_titipan);
+
+        $is_hitung_hutang = Common::hashEmptyField($data, 'Search.is_hitung_hutang');
+        $is_hitung_hutang = Common::hashEmptyField($data, 'TtujPayment.is_hitung_hutang', $is_hitung_hutang);
 
         echo $this->Form->create('Search', array(
             'url'=> $this->Html->url(array(

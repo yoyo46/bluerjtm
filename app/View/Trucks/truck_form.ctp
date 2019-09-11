@@ -100,8 +100,8 @@
 		        </div>
 		        <div class="form-group">
 		        	<?php 
-		    				echo $this->Common->buildForm('company_id', __('Pemilik Truk *'), array(
-								'empty' => __('Pilih Pemilik Truk'),
+		    				echo $this->Common->buildForm('company_id', __('Alokasi Truk *'), array(
+								'empty' => __('Pilih Alokasi Truk'),
 	    					));
 					?>
 		        </div>

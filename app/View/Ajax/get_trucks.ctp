@@ -12,7 +12,7 @@
             <th>Merek</th>
             <th>Jenis</th>
             <th>Kapasitas</th>
-            <th>Pemilik</th>
+            <th>Alokasi Truk</th>
         </tr>
         <?php
                 if(!empty($trucks)){

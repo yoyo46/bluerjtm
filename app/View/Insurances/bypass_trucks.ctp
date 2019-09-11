@@ -26,7 +26,7 @@
                 'class' => 'text-center',
             ),
             'company' => array(
-                'name' => __('Pemilik'),
+                'name' => __('Alokasi Truk'),
             ),
         );
         $fieldColumn = $this->Common->_generateShowHideColumn( $dataColumns, 'field-table' );

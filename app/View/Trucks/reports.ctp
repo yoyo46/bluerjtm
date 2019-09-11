@@ -18,7 +18,7 @@
                 'display' => true,
             ),
             'company' => array(
-                'name' => __('Pemilik'),
+                'name' => __('Alokasi Truk'),
                 'field_model' => 'Truck.company',
                 'sorting' => false,
                 'display' => true,

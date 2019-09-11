@@ -26,7 +26,7 @@
                 'display' => true,
             ),
             'pemilik' => array(
-                'name' => __('Pemilik'),
+                'name' => __('Alokasi Truk'),
                 'field_model' => false,
                 'display' => true,
             ),

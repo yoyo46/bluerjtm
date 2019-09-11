@@ -45,7 +45,7 @@
                     <dd><?php echo $truck['Truck']['no_rangka'];?></dd>
                     <dt><?php echo __('No Mesin')?></dt>
                     <dd><?php echo $truck['Truck']['no_machine'];?></dd>
-                    <dt><?php echo __('Pemilik Truk')?></dt>
+                    <dt><?php echo __('Alokasi Truk')?></dt>
                     <dd><?php echo $truck['Company']['name'];?></dd>
                     <dt><?php echo __('Supir Truk')?></dt>
                     <dd><?php echo !empty($truck['Driver']['driver_name'])?ucwords($truck['Driver']['driver_name']):'-';?></dd>

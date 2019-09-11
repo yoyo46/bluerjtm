@@ -96,10 +96,10 @@
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('Truck.company_id',array(
-                                'label'=> __('Pemilik Truk'),
+                                'label'=> __('Alokasi Truk'),
                                 'class'=>'form-control',
                                 'required' => false,
-                                'empty' => __('Pilih Pemilik Truk')
+                                'empty' => __('Pilih Alokasi Truk')
                             ));
                     ?>
                 </div>

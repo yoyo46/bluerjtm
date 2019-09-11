@@ -240,7 +240,7 @@
 		        <div class="form-group">
 		        	<?php 
 							echo $this->Form->input('no_sim',array(
-								'label'=> __('No. SIM *'), 
+								'label'=> __('No. SIM'), 
 								'class'=>'form-control',
 								'required' => false,
 								'placeholder' => __('No. SIM')
