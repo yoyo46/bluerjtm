@@ -84,4 +84,23 @@ class ValidationBehavior extends ModelBehavior {
 
     //     return $flag;
     // }
+
+    function checkUnique (Model $model, $current, $field) {
+        $id = $model->id;
+        $id = Common::hashEmptyField($model->data, $model->alias.'.id', $id);
+
+        $val = !empty($model->data[$model->alias][$field])?$model->data[$model->alias][$field]:false;
+        $value = $model->getData('count', array(
+            'conditions' => array(
+                $model->alias.'.'.$field => $val,
+                $model->alias.'.id NOT' => $id,
+            ),
+        ));
+        
+        if( !empty($value) ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

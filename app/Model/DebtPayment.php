@@ -2,12 +2,16 @@
 class DebtPayment extends AppModel {
 	var $name = 'DebtPayment';
 	var $validate = array(
-        // 'nodoc' => array(
-        //     'notempty' => array(
-        //         'rule' => array('notempty'),
-        //         'message' => 'No. Dokumen harap diisi'
-        //     ),
-        // ),
+        'nodoc' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'No. Dokumen harap diisi'
+            ),
+            'checkUnique' => array(
+                'rule' => array('checkUnique', 'nodoc'),
+                'message' => 'No. Dok sudah terdaftar, silahkan masukan No. Dok lain',
+            ),
+        ),
         'coa_id' => array(
             'notempty' => array(
                 'rule' => array('notempty'),
@@ -78,7 +82,7 @@ class DebtPayment extends AppModel {
         $id = Common::hashEmptyField($this->data, 'DebtPayment.id', $id);
 
         if( empty($id) ) {
-            $this->data = Hash::insert($this->data, 'DebtPayment.nodoc', $this->generateNoDoc());
+            // $this->data = Hash::insert($this->data, 'DebtPayment.nodoc', $this->generateNoDoc());
         }
     }
 

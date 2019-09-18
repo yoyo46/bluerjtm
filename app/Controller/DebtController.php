@@ -570,14 +570,14 @@ class DebtController extends AppController {
                 )
             ));
             $this->MkCommon->_callAllowClosing($data, 'DebtPayment', 'date_payment');
-            $nodoc = Common::hashEmptyField($data, 'DebtPayment.nodoc');
+            // $nodoc = Common::hashEmptyField($data, 'DebtPayment.nodoc');
 
             $data['DebtPayment']['branch_id'] = Configure::read('__Site.config_branch_id');
             $data = Common::_callCheckCostCenter($data, 'DebtPayment');
 
-            if( empty($nodoc) ) {
-                $data['DebtPayment']['nodoc'] = $this->Debt->generateNoDoc();
-            }
+            // if( empty($nodoc) ) {
+            //     $data['DebtPayment']['nodoc'] = $this->Debt->generateNoDoc();
+            // }
 
             $dataAmount = Common::hashEmptyField($data, 'DebtPaymentDetail.amount');
             $flagPaymentDetail = $this->doDebtPaymentDetail($dataAmount, $data, $id);

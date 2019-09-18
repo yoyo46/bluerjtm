@@ -11,7 +11,7 @@
         <?php 
                 echo $this->Form->create('Search', array(
                     'url'=> $this->Html->url( array(
-                        'controller' => 'ttujs',
+                        'controller' => $this->params['controller'],
                         'action' => 'search',
                         $this->action,
                     )), 
