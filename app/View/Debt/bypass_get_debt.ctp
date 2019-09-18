@@ -24,6 +24,7 @@
                     ));
                     echo $this->Html->tag('th', $input_all);
 
+                    echo $this->Html->tag('th', __('No. Doc'));
                     echo $this->Html->tag('th', __('ID Karyawan'));
                     echo $this->Html->tag('th', __('Karyawan'));
                     echo $this->Html->tag('th', __('Kategori'));
@@ -40,6 +41,7 @@
                 if(!empty($values)){
                     foreach ($values as $key => $value) {
                         $id = Common::hashEmptyField($value, 'DebtDetail.id');
+                        $nodoc = Common::hashEmptyField($value, 'Debt.nodoc');
                         $debt_id = Common::hashEmptyField($value, 'Debt.id');
                         $document_date = Common::hashEmptyField($value, 'Debt.transaction_date');
                         $note = Common::hashEmptyField($value, 'DebtDetail.note', '-');
@@ -79,6 +81,7 @@
                             printf('<tr class="child child-%s">', $alias);
                         }
                 ?>
+                    <td><?php echo $nodoc;?></td>
                     <td class="on-remove"><?php echo $no_id;?></td>
                     <td class="hide on-show"><?php echo $name_code;?></td>
                     <td class="on-remove"><?php echo $employe_name;?></td>
@@ -120,7 +123,7 @@
                 }else{
                     echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                         'class' => 'alert alert-warning text-center',
-                        'colspan' => '13'
+                        'colspan' => '8'
                     )));
                 }
         ?>

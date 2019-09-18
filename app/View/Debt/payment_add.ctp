@@ -32,6 +32,15 @@
 					echo $this->Html->tag('div', $contentForm, array(
 						'class' => 'form-group',
 					));
+
+
+                    $nodoc = Common::hashEmptyField($value, 'DebtPayment.nodoc');
+                    $contentForm = $this->Html->tag('label', __('No. Doc'));
+                    $contentForm .= $this->Html->tag('div', $nodoc);
+
+                    echo $this->Html->tag('div', $contentForm, array(
+                        'class' => 'form-group',
+                    ));
     			}
     	?>
         <!-- <div class="form-group">

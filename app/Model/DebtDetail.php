@@ -100,6 +100,10 @@ class DebtDetail extends AppModel {
                     'ViewStaff',
                 ),
             ),
+            'nodoc' => array(
+                'field' => 'Debt.nodoc',
+                'type' => 'like',
+            ),
         ));
         
         return $default_options;

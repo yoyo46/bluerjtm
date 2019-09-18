@@ -25,6 +25,28 @@
                     ));
             ?>
         </div>
+        <div class="form-group">
+            <?php 
+                    echo $this->Form->input('nodoc',array(
+                        'label'=> __('No. Doc'),
+                        'class'=>'form-control',
+                        'required' => false,
+                        'autocomplete'=> 'off', 
+                    ));
+            ?>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="form-group">
+            <?php 
+                    echo $this->Form->input('name',array(
+                        'label'=> __('Nama Karyawan'),
+                        'class'=>'form-control',
+                        'required' => false,
+                        'placeholder' => __('Nama Karyawan'),
+                    ));
+            ?>
+        </div>
         <div class="form-group action">
             <?php
                     echo $this->Form->button('<i class="fa fa-search"></i> '.__('Cari'), array(
@@ -39,18 +61,6 @@
                         'class'=> 'btn btn-default btn-sm ajaxModal',
                         'data-action' => $data_action,
                         'title' => $title,
-                    ));
-            ?>
-        </div>
-    </div>
-    <div class="col-sm-6">
-        <div class="form-group">
-            <?php 
-                    echo $this->Form->input('name',array(
-                        'label'=> __('Nama Karyawan'),
-                        'class'=>'form-control',
-                        'required' => false,
-                        'placeholder' => __('Nama Karyawan'),
                     ));
             ?>
         </div>

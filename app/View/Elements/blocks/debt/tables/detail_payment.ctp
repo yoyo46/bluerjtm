@@ -8,6 +8,7 @@
 	        	<thead>
 	        		<tr>
 	        			<?php 
+			                    echo $this->Html->tag('th', __('No. Doc'));
 			                    echo $this->Html->tag('th', __('Karyawan'));
 			                    echo $this->Html->tag('th', __('Kategori'));
 			                    echo $this->Html->tag('th', __('Ket.'));
@@ -39,6 +40,7 @@
 
 								foreach ($data['DebtDetail'] as $key => $value) {
 									$id = Common::hashEmptyField($value, 'DebtDetail.id');
+									$nodoc = Common::hashEmptyField($value, 'Debt.nodoc');
 									$debt_id = Common::hashEmptyField($value, 'Debt.id');
 					                $employe_id = Common::hashEmptyField($value, 'ViewStaff.id');
 					                $employe_name = Common::hashEmptyField($value, 'ViewStaff.name_code');
@@ -57,6 +59,7 @@
 					                $grandTotal += $amount;
 				    ?>
 				    <tr class="child child-<?php echo $alias; ?>">
+				        <td><?php echo $nodoc;?></td>
 				        <td><?php echo $employe_name;?></td>
 				        <td><?php echo $type;?></td>
 				        <td><?php echo $note;?></td>
@@ -100,7 +103,7 @@
 				<tr>
 					<?php 
 							echo $this->Html->tag('td', __('Total'), array(
-								'colspan' => 5,
+								'colspan' => 6,
 								'class' => 'bold text-right',
 							));
 							echo $this->Html->tag('td', $this->Number->format($grandTotal, Configure::read('__Site.config_currency_code'), array('places' => 0)), array(
