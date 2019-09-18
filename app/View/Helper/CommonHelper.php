@@ -2640,6 +2640,7 @@ class CommonHelper extends AppHelper {
         $edit_url = $this->filterEmptyField($options, 'Edit', 'url', '#');
 
         $void = $this->filterEmptyField($options, 'Void', 'label');
+        $void_title = $this->filterEmptyField($options, 'Void', 'title');
         $void_url = $this->filterEmptyField($options, 'Void', 'url', '#');
 
         if( !empty($detail) ) {
@@ -2659,6 +2660,7 @@ class CommonHelper extends AppHelper {
                 $actionDoc .= $this->Html->link($void, $void_url, array(
                     'class' => 'btn btn-danger btn-xs ajaxModal',
                     'data-action' => 'cancel_invoice',
+                    'title' => $void_title,
                 ));
             }
         }

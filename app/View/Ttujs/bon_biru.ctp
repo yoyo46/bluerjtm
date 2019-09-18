@@ -79,6 +79,7 @@
                                         'action' => 'bon_biru_delete',
                                         $id,
                                     ),
+                                    'title' => __('Void Bon Biru'),
                                 ),
                             ));
             ?>
