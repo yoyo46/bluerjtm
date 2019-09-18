@@ -594,27 +594,27 @@
 				</div>
 			</div>
         </div>
-        <div class="form-group">
+        <!-- <div class="form-group">
 			<div class="row">
 				<div class="col-sm-4">
 			    	<?php 
-							echo $this->Form->label('CoaSettingDetail.PotonganClaim.coa_id', __('Potongan Claim'));
+							// echo $this->Form->label('CoaSettingDetail.PotonganClaim.coa_id', __('Potongan Claim'));
 					?>
 				</div>
 				<div class="col-sm-4">
 		        	<?php 
-							echo $this->Form->input('CoaSettingDetail.PotonganClaim.coa_id',array(
-								'label'=> false, 
-								'class'=>'form-control chosen-select',
-								'required' => false,
-								'empty' => __('Pilih COA'),
-								'options' => $coas,
-							));
-							echo $this->Form->hidden('CoaSettingDetail.PotonganClaim.id');
+							// echo $this->Form->input('CoaSettingDetail.PotonganClaim.coa_id',array(
+							// 	'label'=> false, 
+							// 	'class'=>'form-control chosen-select',
+							// 	'required' => false,
+							// 	'empty' => __('Pilih COA'),
+							// 	'options' => $coas,
+							// ));
+							// echo $this->Form->hidden('CoaSettingDetail.PotonganClaim.id');
 					?>
 				</div>
 			</div>
-        </div>
+        </div> -->
     </div>
 </div>
 <div class="box">

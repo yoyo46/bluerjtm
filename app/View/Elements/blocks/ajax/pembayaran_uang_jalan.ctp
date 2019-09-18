@@ -30,11 +30,8 @@
         $titipan = !empty($ttujPayment['titipan'][$idx])?$ttujPayment['titipan'][$idx]:0;
         $claim = !empty($ttujPayment['claim'][$idx])?$ttujPayment['claim'][$idx]:0;
         $unit_claim = !empty($ttujPayment['unit_claim'][$idx])?$ttujPayment['unit_claim'][$idx]:0;
-        // $laka = !empty($ttujPayment['laka'][$idx])?$ttujPayment['laka'][$idx]:0;
         $debt = !empty($ttujPayment['debt'][$idx])?$ttujPayment['debt'][$idx]:0;
-        // $potongan_laka = !empty($ttujPayment['potongan_laka'][$idx])?$ttujPayment['potongan_laka'][$idx]:0;
         $potongan_debt = !empty($ttujPayment['potongan_debt'][$idx])?$ttujPayment['potongan_debt'][$idx]:0;
-        // $laka_note = !empty($ttujPayment['laka_note'][$idx])?$ttujPayment['laka_note'][$idx]:NULL;
         $debt_note = !empty($ttujPayment['debt_note'][$idx])?$ttujPayment['debt_note'][$idx]:NULL;
 
         $total = $amountPayment + $no_claim + $stood + $lainnya - $titipan - $claim - $debt;
@@ -122,6 +119,7 @@
                         'label'=> false,
                         'class'=>'form-control input_price_min sisa-amount text-right',
                         'required' => false,
+                        'div' => false,
                         'value' => $amountPayment,
                     ));
                     echo $this->Form->hidden('TtujPayment.ttuj_id.',array(
@@ -130,9 +128,6 @@
                     echo $this->Form->hidden('TtujPayment.data_type.',array(
                         'value'=> $data_type,
                     ));
-                    // echo $this->Form->hidden('TtujPayment.potongan_laka.', array(
-                    //     'value' => $potongan_laka,
-                    // ));
                     echo $this->Form->hidden('TtujPayment.potongan_debt.', array(
                         'value' => $potongan_debt,
                     ));
@@ -149,6 +144,7 @@
                         'label'=> false,
                         'class'=>'form-control input_price_min no-claim text-right',
                         'required' => false,
+                        'div' => false,
                         'value' => $no_claim,
                     ));
                 }
@@ -164,6 +160,7 @@
                         'label'=> false,
                         'class'=>'form-control input_price_min stood text-right',
                         'required' => false,
+                        'div' => false,
                         'value' => $stood,
                     ));
                 }
@@ -179,6 +176,7 @@
                         'label'=> false,
                         'class'=>'form-control input_price_min lainnya text-right',
                         'required' => false,
+                        'div' => false,
                         'value' => $lainnya,
                     ));
                 }
@@ -194,6 +192,7 @@
                         'label'=> false,
                         'class'=>'form-control input_price_min titipan text-right',
                         'required' => false,
+                        'div' => false,
                         'value' => $titipan,
                     ));
                 }
@@ -209,41 +208,12 @@
                         'label'=> false,
                         'class'=>'form-control input_price_min claim text-right',
                         'required' => false,
+                        'div' => false,
                         'value' => $claim,
                     ));
                 }
         ?>
     </td>
-    <!-- <td class="text-right">
-        <?php
-                // if( !empty($document_info) ) {
-                //     $unit_claim = $this->Common->getFormatPrice($unit_claim);
-                //     echo $unit_claim;
-                // } else {
-                //     echo $this->Form->input('TtujPayment.unit_claim.',array(
-                //         'label'=> false,
-                //         'class'=>'form-control input_price_min unit_claim text-right',
-                //         'required' => false,
-                //         'value' => $unit_claim,
-                //     ));
-                // }
-        ?>
-    </td> -->
-   <!--  <td class="text-right">
-        <?php
-                // if( !empty($document_info) ) {
-                //     $laka = $this->Common->getFormatPrice($laka);
-                //     echo $laka;
-                // } else {
-                //     echo $this->Form->input('TtujPayment.laka.',array(
-                //         'label'=> false,
-                //         'class'=>'form-control input_price_min laka text-right',
-                //         'required' => false,
-                //         'value' => $laka,
-                //     ));
-                // }
-        ?>
-    </td> -->
      <td class="text-right">
         <?php
                 if( !empty($document_info) ) {
@@ -253,6 +223,8 @@
                     echo $this->Common->_callInputForm('TtujPayment.debt.',array(
                         'class'=>'form-control input_price_min debt text-right',
                         'value' => $debt,
+                        'div' => false,
+                        'frameClass' => false,
                         'fieldError' => array(
                             'TtujPaymentDetail.'.$idx.'.debt',
                             'TtujPaymentDetail.'.$idx.'.debt_paid',
@@ -265,20 +237,6 @@
                 }
         ?>
     </td>
-    <!-- <td class="text-right">
-        <?php
-                // if( !empty($document_info) ) {
-                //     echo $laka_note;
-                // } else {
-                //     echo $this->Form->input('TtujPayment.laka_note.',array(
-                //         'label'=> false,
-                //         'class'=>'form-control',
-                //         'required' => false,
-                //         'value' => $laka_note,
-                //     ));
-                // }
-        ?>
-    </td> -->
     <td class="text-right">
         <?php
                 if( !empty($document_info) ) {
@@ -289,6 +247,7 @@
                         'class'=>'form-control',
                         'required' => false,
                         'value' => $debt_note,
+                        'div' => false,
                     ));
                 }
         ?>

@@ -7734,16 +7734,28 @@ class RevenuesController extends AppController {
                             $total_claim += $claim;
                         }
 
+                        $date_formated = Common::formatDate($date_payment, 'd.m.y');
+
                         $this->User->Journal->setJournal($grandtotal_amount, array(
                             'credit' => $coa_id,
                             'debit' => $debit_id,
                         ), $coaOptions);
+
+                        $total_titipan = $total_titipan + $total_claim;
+                        if( !empty($total_titipan) ) {
+                            $this->User->Journal->setJournal($total_titipan, array(
+                                'debit' => $coa_id,
+                            ), array_merge($coaOptions, array(
+                                'title' => __('Titipan Supir %s No. %s', Common::formatDate($date_payment, 'd.m.y'), $document_no),
+                            )));
+                            $this->User->Journal->_callCoaSetTotal($total_titipan, 'Titipan', 'credit', $coaOptions);
+                        }
                         
                         if( !empty($totalNoClaim) ) {
                             $this->User->Journal->setJournal($totalNoClaim, array(
                                 'credit' => $coa_id,
                             ), array_merge($coaOptions, array(
-                                'title' => __('Pembayaran No Clain No. %s', $document_no),
+                                'title' => __('Pembayaran No Claim %s No. %s', $date_formated, $document_no),
                             )));
                             $this->User->Journal->_callCoaSetTotal($totalNoClaim, 'NoClaim', 'debit', $coaOptions);
                         }
@@ -7752,7 +7764,7 @@ class RevenuesController extends AppController {
                             $this->User->Journal->setJournal($totalStood, array(
                                 'credit' => $coa_id,
                             ), array_merge($coaOptions, array(
-                                'title' => __('Pembayaran Stood No. %s', $document_no),
+                                'title' => __('Pembayaran Stood %s No. %s', $date_formated, $document_no),
                             )));
                             $this->User->Journal->_callCoaSetTotal($totalStood, 'Stood', 'debit', $coaOptions);
                         }
@@ -7760,23 +7772,16 @@ class RevenuesController extends AppController {
                             $this->User->Journal->setJournal($totalLainnya, array(
                                 'credit' => $coa_id,
                             ), array_merge($coaOptions, array(
-                                'title' => __('Pembayaran Lainnya No. %s', $document_no),
+                                'title' => __('Pembayaran Uang Tol %s No. %s', $date_formated, $document_no),
                             )));
                             $this->User->Journal->_callCoaSetTotal($totalLainnya, 'Other', 'debit', $coaOptions);
                         }
-
-                        if( !empty($total_titipan) ) {
-                            $this->User->Journal->setJournal($total_titipan, array(
-                                'debit' => $coa_id,
-                            ), $coaOptions);
-                            $this->User->Journal->_callCoaSetTotal($total_titipan, 'Titipan', 'credit', $coaOptions);
-                        }
-                        if( !empty($total_claim) ) {
-                            $this->User->Journal->setJournal($total_claim, array(
-                                'debit' => $coa_id,
-                            ), $coaOptions);
-                            $this->User->Journal->_callCoaSetTotal($total_claim, 'PotonganClaim', 'credit', $coaOptions);
-                        }
+                        // if( !empty($total_claim) ) {
+                        //     $this->User->Journal->setJournal($total_claim, array(
+                        //         'debit' => $coa_id,
+                        //     ), $coaOptions);
+                        //     $this->User->Journal->_callCoaSetTotal($total_claim, 'PotonganClaim', 'credit', $coaOptions);
+                        // }
                     }
                 }
             }
