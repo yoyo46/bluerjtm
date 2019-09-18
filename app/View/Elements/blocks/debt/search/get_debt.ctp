@@ -39,6 +39,17 @@
     <div class="col-sm-6">
         <div class="form-group">
             <?php 
+                    echo $this->Form->input('staff_id',array(
+                        'type' => 'text',
+                        'label'=> __('ID Supir'),
+                        'class'=>'form-control',
+                        'required' => false,
+                        'placeholder' => __('ID Supir'),
+                    ));
+            ?>
+        </div>
+        <div class="form-group">
+            <?php 
                     echo $this->Form->input('name',array(
                         'label'=> __('Nama Karyawan'),
                         'class'=>'form-control',

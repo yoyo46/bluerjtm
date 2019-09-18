@@ -59,6 +59,16 @@
                         ));
                     ?>
                 </div>
+                <div class="form-group">
+                    <?php 
+                            echo $this->Form->input('staff_name',array(
+                                'label'=> __('ID/Nama Karyawan'),
+                                'class'=>'form-control',
+                                'required' => false,
+                                'placeholder' => __('ID/Nama Karyawan')
+                            ));
+                    ?>
+                </div>
             </div>
         </div>
         <div class="row">

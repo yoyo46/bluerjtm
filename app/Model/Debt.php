@@ -125,7 +125,7 @@ class Debt extends AppModel {
         if( !empty($staff_name) ) {
             $staffs = $this->DebtDetail->ViewStaff->getData('list', array(
                 'conditions' => array(
-                    'ViewStaff.full_name LIKE' => '%'.$staff_name.'%',
+                    'ViewStaff.name_code LIKE' => '%'.$staff_name.'%',
                 ),
                 'fields' => array(
                     'ViewStaff.id',

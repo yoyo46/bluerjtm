@@ -482,6 +482,9 @@ class DebtController extends AppController {
             'order' => array(
                 'DebtPayment.id' => 'DESC',
             ),
+            'group' => array(
+                'DebtPayment.id',
+            ),
         );
 
         $this->set('active_menu', 'debt_payments');
@@ -498,6 +501,22 @@ class DebtController extends AppController {
 
         $this->paginate = $this->DebtPayment->getData('paginate', $options);
         $values = $this->paginate('DebtPayment');
+
+        $values = $this->DebtPayment->getMergeList($values, array(
+            'contain' => array(
+                'DebtPaymentDetail' => array(
+                    'type' => 'all',
+                    'contain' => array(
+                        'DebtDetail' => array(
+                            'contain' => array(
+                                'ViewStaff',
+                            ),
+                        ),
+                    ),
+                    'forceMerge' => true,
+                ),
+            ),
+        ));
 
         $this->set(compact(
             'values'

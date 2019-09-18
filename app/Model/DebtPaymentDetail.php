@@ -44,6 +44,9 @@ class DebtPaymentDetail extends AppModel {
         'TtujPaymentDetail' => array(
             'foreignKey' => 'ttuj_payment_detail_id',
         ),
+        'ViewStaff' => array(
+            'foreignKey' => 'employe_id',
+        ),
 	);
 
     function getTotalPayment( $document_id = NULL, $payment_id = NULL, $employe_id = NULL ){

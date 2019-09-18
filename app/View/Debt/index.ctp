@@ -89,7 +89,7 @@
                             $statusDebt = $this->Common->_callTransactionStatus($value, 'Debt', 'transaction_status');
                             $customGrandTotal = $this->Common->getFormatPrice($grand_total, 0, 2);
                             
-                            $staff_names = Set::extract('/DebtDetail/ViewStaff/full_name', $value);
+                            $staff_names = Set::extract('/DebtDetail/ViewStaff/name_code', $value);
                             $staff_name = !empty($staff_names)?implode(', ', $staff_names):'-';
 
                             $content = $this->Html->tag('td', $noref);

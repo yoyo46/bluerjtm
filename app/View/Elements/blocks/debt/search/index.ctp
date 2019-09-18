@@ -50,10 +50,10 @@
                 <div class="form-group">
                     <?php 
                             echo $this->Form->input('staff_name',array(
-                                'label'=> __('Nama Karyawan'),
+                                'label'=> __('ID/Nama Karyawan'),
                                 'class'=>'form-control',
                                 'required' => false,
-                                'placeholder' => __('Nama Karyawan')
+                                'placeholder' => __('ID/Nama Karyawan')
                             ));
                     ?>
                 </div>

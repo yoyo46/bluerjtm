@@ -33,6 +33,7 @@
                         )), array(
                             'class' => 'text-center'
                         ));
+                        echo $this->Html->tag('th', __('Karyawan'));
 
                         echo $this->Html->tag('th', $this->Paginator->sort('DebtPayment.total_payment', __('Total Dibayar'), array(
                             'escape' => false,
@@ -62,6 +63,9 @@
                             $periode = Common::hashEmptyField($value, 'DebtPayment.date_payment', false, array(
                                 'date' => 'Y-m',
                             ));
+                            
+                            $staff_names = Set::extract('/DebtPaymentDetail/DebtDetail/ViewStaff/name_code', $value);
+                            $staff_name = !empty($staff_names)?implode(', ', $staff_names):'-';
 
                             $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                             $total_payment = $this->Common->getFormatPrice($total_payment);
@@ -74,6 +78,7 @@
                         echo $this->Html->tag('td', $date_payment, array(
                             'class' => 'text-center'
                         ));
+                        echo $this->Html->tag('td', $staff_name);
                         echo $this->Html->tag('td', $total_payment, array(
                             'class' => 'text-right'
                         ));
@@ -143,7 +148,7 @@
                     } else {
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '8'
+                            'colspan' => '9'
                         )));
                     }
             ?>

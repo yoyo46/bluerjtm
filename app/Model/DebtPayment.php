@@ -120,6 +120,7 @@ class DebtPayment extends AppModel {
         $noref = !empty($data['named']['noref'])?$data['named']['noref']:false;
         $name = !empty($data['named']['name'])?$data['named']['name']:false;
         $note = !empty($data['named']['note'])?$data['named']['note']:false;
+        $staff_name = !empty($data['named']['staff_name'])?urldecode($data['named']['staff_name']):false;
 
         $status = !empty($data['named']['status'])?$data['named']['status']:false;
 
@@ -140,6 +141,36 @@ class DebtPayment extends AppModel {
         }
         if(!empty($note)){
             $default_options['conditions']['DebtPayment.description LIKE'] = '%'.$note.'%';
+        }
+
+        if( !empty($staff_name) ) {
+            $staffs = $this->DebtPaymentDetail->ViewStaff->getData('list', array(
+                'conditions' => array(
+                    'ViewStaff.name_code LIKE' => '%'.$staff_name.'%',
+                ),
+                'fields' => array(
+                    'ViewStaff.id',
+                    'ViewStaff.id',
+                ),
+            ));
+
+            $default_options['conditions']['DebtPaymentDetail.employe_id'] = $staffs;
+            $default_options['contain'][] = 'DebtPaymentDetail';
+
+            $this->unBindModel(array(
+                'hasMany' => array(
+                    'DebtPaymentDetail'
+                )
+            ));
+
+            $this->bindModel(array(
+                'hasOne' => array(
+                    'DebtPaymentDetail' => array(
+                        'className' => 'DebtPaymentDetail',
+                        'foreignKey' => 'debt_payment_id',
+                    ),
+                )
+            ), false);
         }
 
         return $default_options;
