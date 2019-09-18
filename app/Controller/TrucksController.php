@@ -5407,9 +5407,9 @@ class TrucksController extends AppController {
                                             'no_sim' => $no_sim,
                                             'identity_number' => $no_ktp,
                                             'expired_date_sim' => $tgl_berakhir_sim,
-                                            'bank' => $bank,
-                                            'no_rekening' => $no_rekening,
-                                            'atas_nama_rekening' => $atas_nama_rekening,
+                                            'bank_name' => $bank,
+                                            'account_number' => $no_rekening,
+                                            'account_name' => $atas_nama_rekening,
                                             'is_import' => true,
                                         ),
                                     );

@@ -340,12 +340,12 @@ class TtujPayment extends AppModel {
         }
         if(!empty($driver_value)){
             if( $driver_type == 2 ) {
-                $default_options['conditions']['IFNULL(Ttuj.driver_pengganti_id, Ttuj.driver_id)'] = $driver_value;
+                $default_options['conditions']['Driver.no_id LIKE'] = '%'.$driver_value.'%';
+                $default_options['contain'][] = 'Driver';
             } else {
                 $default_options['conditions']['Ttuj.driver_name LIKE'] = '%'.$driver_value.'%';
+                $default_options['contain'][] = 'Ttuj';
             }
-
-            $default_options['contain'][] = 'Ttuj';
         }
         if( !empty($paid_type) ) {
             switch ($paid_type) {

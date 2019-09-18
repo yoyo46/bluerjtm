@@ -8713,7 +8713,7 @@ class RmReportComponent extends Component {
 					));
 
 	        		// $this->controller->TtujPaymentDetail->virtualFields['total'] = 'SUM(TtujPaymentDetail.amount + TtujPaymentDetail.no_claim + TtujPaymentDetail.stood + TtujPaymentDetail.lainnya - TtujPaymentDetail.titipan - TtujPaymentDetail.claim - TtujPaymentDetail.laka)';
-	        		$this->controller->TtujPaymentDetail->virtualFields['total'] = 'SUM(TtujPaymentDetail.amount + TtujPaymentDetail.no_claim + TtujPaymentDetail.stood + TtujPaymentDetail.lainnya) - (TtujPaymentDetail.titipan + TtujPaymentDetail.claim + TtujPaymentDetail.debt)';
+	        		$this->controller->TtujPaymentDetail->virtualFields['total'] = 'SUM( (TtujPaymentDetail.amount + TtujPaymentDetail.no_claim + TtujPaymentDetail.stood + TtujPaymentDetail.lainnya) - (TtujPaymentDetail.titipan + TtujPaymentDetail.claim + TtujPaymentDetail.debt) )';
 	        		$this->controller->TtujPaymentDetail->virtualFields['cnt'] = 'COUNT(DISTINCT TtujPaymentDetail.driver_id)';
 					$value = $this->controller->TtujPaymentDetail->find('first', $options);
 
@@ -9896,6 +9896,12 @@ class RmReportComponent extends Component {
 		                'align' => 'left',
 		                'mainalign' => 'left',
 					),
+					__('ID Supir') => array(
+						'text' => Common::hashEmptyField($driver, 'no_id', '-'),
+		                'data-options' => 'field:\'driver_id\',width:80',
+		                'align' => 'center',
+		                'mainalign' => 'center',
+					),
 					__('Supir') => array(
 						'text' => $driver_name,
 		                'data-options' => 'field:\'driver\',width:120',
@@ -9941,12 +9947,6 @@ class RmReportComponent extends Component {
 		                'data-options' => 'field:\'tgl_masuk\',width:100',
 		                'align' => 'left',
 		                'mainalign' => 'left',
-					),
-					__('ID Supir') => array(
-						'text' => Common::hashEmptyField($driver, 'id', '-'),
-		                'data-options' => 'field:\'driver_id\',width:80',
-		                'align' => 'center',
-		                'mainalign' => 'center',
 					),
 					__('Atas Nama') => array(
 						'text' => Common::hashEmptyField($value, 'TtujPaymentDetail.account_name', '-'),
@@ -10100,6 +10100,9 @@ class RmReportComponent extends Component {
 					__('Tujuan') => array(
 		                'style' => 'text-align: left;',
 					),
+					__('ID Supir') => array(
+		                'data-options' => 'field:\'driver_id\',width:80',
+					),
 					__('Supir') => array(
 		                'data-options' => 'field:\'driver\',width:120',
 					),
@@ -10122,9 +10125,6 @@ class RmReportComponent extends Component {
 					),
 					__('TGL. Masuk TTUJ Biru') => array(
 		                'data-options' => 'field:\'tgl_masuk\',width:100',
-					),
-					__('ID Supir') => array(
-		                'data-options' => 'field:\'driver_id\',width:80',
 					),
 					__('Atas Nama') => array(
 		                'data-options' => 'field:\'account_name\',width:120',
@@ -10343,6 +10343,9 @@ class RmReportComponent extends Component {
 						__('Tujuan') => array(
 			                'style' => 'text-align: left;',
 						),
+						__('ID Supir') => array(
+			                'data-options' => 'field:\'driver_id\',width:80',
+						),
 						__('Supir') => array(
 			                'data-options' => 'field:\'driver\',width:120',
 						),
@@ -10368,9 +10371,6 @@ class RmReportComponent extends Component {
 						),
 						__('TGL. Masuk TTUJ Biru') => array(
 			                'data-options' => 'field:\'tgl_masuk\',width:100',
-						),
-						__('ID Supir') => array(
-			                'data-options' => 'field:\'driver_id\',width:80',
 						),
 						__('Atas Nama') => array(
 			                'data-options' => 'field:\'account_name\',width:120',
