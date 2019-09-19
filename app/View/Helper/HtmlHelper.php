@@ -1375,4 +1375,14 @@ class HtmlHelper extends AppHelper {
 		return $configs;
 	}
 
+
+    function link_label ( $label, $url, $options = null, $alert = null ) {
+        $link = $this->link($label, $url, $options, $alert);
+
+        if( empty($link) ) {
+            return $label;
+        } else {
+            return $link;
+        }
+    }
 }

@@ -92,7 +92,7 @@
                                 $ttuj_payment_id = Common::hashEmptyField($value, 'TtujPayment.id');
                                 $ttuj_payment_id = str_pad($ttuj_payment_id, 6, '0', STR_PAD_LEFT);
 
-                                $tmp_ttuj_payment_nodoc = $this->Html->link($ttuj_payment_nodoc, array(
+                                $tmp_ttuj_payment_nodoc = $this->Html->link_label($ttuj_payment_nodoc, array(
                                     'controller' => 'revenues',
                                     'action' => 'ttuj_payments',
                                     'uang_jalan_commission',

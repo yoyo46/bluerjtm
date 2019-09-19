@@ -61,7 +61,7 @@
     <?php
             echo $this->Html->tag('td', $no);
             echo $this->Html->tag('td', $customDate);
-            echo $this->Html->tag('td', $this->Html->link($transaction_id, $url, array(
+            echo $this->Html->tag('td', $this->Html->link_label($transaction_id, $url, array(
                 'target' => '_blank',
             )));
             echo $this->Html->tag('td', $document_no);

@@ -9,6 +9,7 @@
                     $id = $value['driver_id'];
                     $rel_id = $id;
 
+                    $no_id = Common::hashEmptyField($value, 'driver_no_id');
                     $name = Common::hashEmptyField($value, 'driver_name');
                     $total = Common::hashEmptyField($value, 'total');
                     $note = Common::hashEmptyField($value, 'note');
@@ -25,6 +26,11 @@
                     }
     ?>
     <tr class="child child-child-<?php echo $id;?>">
+        <td>
+            <?php
+                    echo $no_id;
+            ?>
+        </td>
         <td>
         	<?php
             		echo $name;
@@ -62,7 +68,7 @@
     <tr>
         <?php 
                 echo $this->Html->tag('td', __('Total'), array(
-                    'colspan' => 2,
+                    'colspan' => 3,
                     'class' => 'bold text-right',
                 ));
                 echo $this->Html->tag('td', $this->Common->getFormatPrice($grandTotal, 0, 2), array(

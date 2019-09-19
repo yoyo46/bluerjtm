@@ -10538,7 +10538,7 @@ class RmReportComponent extends Component {
 
 				$result[$key] = array(
 					__('ID Karyawan') => array(
-						'text' => !empty($view)?$this->Html->link(__('#%s', $no_id), $staffUrl, array(
+						'text' => !empty($view)?$this->Html->link_label(__('#%s', $no_id), $staffUrl, array(
 							'target' => '_blank',
 						)):__('#%s', $no_id),
                 		'field_model' => 'ViewStaff.no_id',
@@ -10546,7 +10546,7 @@ class RmReportComponent extends Component {
 		                'align' => 'left',
 					),
 					__('Nama Karyawan') => array(
-						'text' => !empty($view)?$this->Html->link($name, array(
+						'text' => !empty($view)?$this->Html->link_label($name, array(
 							'controller' => 'debt',
 							'action' => 'debt_card',
 							'id' => $id,
@@ -11166,7 +11166,7 @@ class RmReportComponent extends Component {
 
 				$result[$key] = array(
 					__('ID Karyawan') => array(
-						'text' => !empty($view)?$this->Html->link(__('#%s', $no_id), array(
+						'text' => !empty($view)?$this->Html->link_label(__('#%s', $no_id), array(
 							'controller' => 'trucks',
 							'action' => 'driver_edit',
 							$id,
@@ -11178,7 +11178,7 @@ class RmReportComponent extends Component {
 		                'align' => 'left',
 					),
 					__('Nama Supir') => array(
-						'text' => !empty($view)?$this->Html->link($name, array(
+						'text' => !empty($view)?$this->Html->link_label($name, array(
 							'controller' => 'titipan',
 							'action' => 'kartu_titipan',
 							'id' => $id,

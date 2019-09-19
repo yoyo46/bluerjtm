@@ -88,6 +88,9 @@
 	        	<thead>
 	        		<tr>
                     	<?php 
+	                    		echo $this->Html->tag('th', __('ID Supir'), array(
+	                    			'width' => '20%'
+	                    		));
 	                    		echo $this->Html->tag('th', __('Supir'), array(
 	                    			'width' => '30%'
 	                    		));

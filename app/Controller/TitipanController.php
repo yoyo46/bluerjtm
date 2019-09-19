@@ -245,9 +245,11 @@ class TitipanController extends AppController {
                 $value = $this->Titipan->TitipanDetail->Driver->getMerge($value, $driver_id);
 
                 $driver_name = Common::hashEmptyField($value, 'Driver.driver_name');
+                $driver_no_id = Common::hashEmptyField($value, 'Driver.no_id');
 
                 if(!empty($driver_name)){
                     $data['TitipanDetail'][$key]['driver_name'] = $driver_name;
+                    $data['TitipanDetail'][$key]['driver_no_id'] = $driver_no_id;
                 }
             }
 

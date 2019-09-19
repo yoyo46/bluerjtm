@@ -12,7 +12,20 @@
         ));
 ?>
 <div class="row">
-    <div class="col-sm-12">
+    <div class="col-sm-6">
+        <div class="form-group">
+            <?php 
+                    echo $this->Form->input('no_id',array(
+                        'type' => 'text',
+                        'label'=> __('ID Supir'),
+                        'class'=>'form-control',
+                        'required' => false,
+                        'placeholder' => __('ID Supir'),
+                    ));
+            ?>
+        </div>
+    </div>
+    <div class="col-sm-6">
         <div class="form-group">
             <?php 
                     echo $this->Form->input('name',array(
@@ -59,6 +72,7 @@
                         )), array(
                             'width' => '5%',
                         ));
+                        echo $this->Html->tag('th', __('ID Supir'));
                         echo $this->Html->tag('th', __('Nama'));
                         echo $this->Html->tag('th', __('No. Telp'));
                 ?>
@@ -69,6 +83,7 @@
                     if(!empty($values)){
                         foreach ($values as $key => $value) {
                             $id = !empty($value['Driver']['id'])?$value['Driver']['id']:false;
+                            $no_id = !empty($value['Driver']['no_id'])?$value['Driver']['no_id']:'-';
                             $driver_name = !empty($value['Driver']['driver_name'])?$value['Driver']['driver_name']:false;
                             $phone = !empty($value['Driver']['phone'])?$value['Driver']['phone']:false;
                             $no_hp = !empty($value['Driver']['no_hp'])?$value['Driver']['no_hp']:$phone;
@@ -82,6 +97,11 @@
                             'class' => 'checkbox-action',
                         ));
                 ?>
+                <td>
+                    <?php
+                            echo $no_id;
+                    ?>
+                </td>
                 <td>
                     <?php
                             echo $driver_name;
@@ -129,7 +149,7 @@
                     }else{
                         echo $this->Html->tag('tr', $this->Html->tag('td', __('Data belum tersedia.'), array(
                             'class' => 'alert alert-warning text-center',
-                            'colspan' => '3'
+                            'colspan' => '4'
                         )));
                     }
             ?>

@@ -42,7 +42,7 @@
     <?php
             echo $this->Html->tag('td', $no);
             echo $this->Html->tag('td', $customDate);
-            echo $this->Html->tag('td', $this->Html->link($noref, array(
+            echo $this->Html->tag('td', $this->Html->link_label($noref, array(
                 'action' => 'detail',
                 $transaction_id,
             ), array(
