@@ -7366,6 +7366,7 @@ class RevenuesController extends AppController {
         $document_no = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'nodoc');
         $coa_id = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'coa_id');
         $cogs_id = $this->MkCommon->filterEmptyField($data, 'TtujPayment', 'cogs_id');
+        $date_formated = Common::formatDate($date_payment, 'd.m.y');
         
         $totalPayment = 0;
         $totalTitipan = 0;
@@ -7426,7 +7427,7 @@ class RevenuesController extends AppController {
             if( !empty($ttuj_payment_id) && $transaction_status == 'posting' ) {
                 $dataTitipan = array(
                     'Titipan' => array(
-                        'coa_id' => $coa_id,
+                        'debt_coa_id' => $coa_id,
                         'ttuj_payment_id' => $ttuj_payment_id,
                         'transaction_date' => $date_payment,
                         'transaction_status' => 'posting',
@@ -7622,7 +7623,7 @@ class RevenuesController extends AppController {
                     $debt_coa_id = !empty($coaDebt['CoaSettingDetail']['coa_id'])?$coaDebt['CoaSettingDetail']['coa_id']:false;
 
                     if( !empty($debt_coa_id) ) {
-                        $titleJournal = sprintf(__('Pembayaran Hutang Karyawan'));
+                        $titleJournal = __('Pembayaran Hutang Karyawan %s No. %s', $date_formated, $document_no);
                         $titleJournal = Common::hashEmptyField($data, 'DebtPayment.description', $titleJournal);
 
                         $this->User->Journal->deleteJournal($debt_payment_id, array(
@@ -7733,8 +7734,6 @@ class RevenuesController extends AppController {
                             $total_titipan += $titipan;
                             $total_claim += $claim;
                         }
-
-                        $date_formated = Common::formatDate($date_payment, 'd.m.y');
 
                         $this->User->Journal->setJournal($grandtotal_amount, array(
                             'credit' => $coa_id,
