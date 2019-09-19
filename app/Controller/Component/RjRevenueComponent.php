@@ -922,7 +922,7 @@ class RjRevenueComponent extends Component {
     	$data = Common::hashEmptyField($options, 'data');
     	$debt_paid = Common::hashEmptyField($options, 'debt');
     	$ttuj_payment_id = Common::hashEmptyField($options, 'ttuj_payment_id');
-    	$ttuj_payment_detail_id = Common::hashEmptyField($options, 'ttuj_payment_detail_id');
+    	// $ttuj_payment_detail_id = Common::hashEmptyField($options, 'ttuj_payment_detail_id');
     	$debtPaymet = Common::hashEmptyField($options, 'debtPaymet');
     	
     	$dataDebtPaymet = Common::hashEmptyField($debtPaymet, 'data');
@@ -960,7 +960,7 @@ class RjRevenueComponent extends Component {
 		    			'debt_detail_id' => $debt_detail_id,
 		    			'employe_id' => $driver_id,
 		    			'ttuj_payment_id' => $ttuj_payment_id,
-		    			'ttuj_payment_detail_id' => $ttuj_payment_detail_id,
+		    			// 'ttuj_payment_detail_id' => $ttuj_payment_detail_id,
 		    			'type' => 'Supir',
 		    			'amount' => $debt_paid,
 		    		),
@@ -992,7 +992,7 @@ class RjRevenueComponent extends Component {
 	                'debt' => $debt_paid,
 	                'data' => $data,
 	                'debtPaymet' => $debtPaymet,
-                    'ttuj_payment_detail_id' => $ttuj_payment_detail_id,
+                    // 'ttuj_payment_detail_id' => $ttuj_payment_detail_id,
                     'ttuj_payment_id' => $ttuj_payment_id,
 	            ));
 
@@ -1001,7 +1001,7 @@ class RjRevenueComponent extends Component {
 		                'debt' => $debt_paid_remain,
 		                'data' => $data,
 	                    'debtPaymet' => $debtPaymet,
-	                    'ttuj_payment_detail_id' => $ttuj_payment_detail_id,
+	                    // 'ttuj_payment_detail_id' => $ttuj_payment_detail_id,
 	                    'ttuj_payment_id' => $ttuj_payment_id,
 		            ));
 	        	}

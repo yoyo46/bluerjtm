@@ -112,10 +112,10 @@
         <div class="form-group">
             <?php 
                     echo $this->Form->input('driver_code',array(
-                        'label'=> __('Nama Supir'),
+                        'label'=> __('ID/Nama Supir'),
                         'class'=>'form-control',
                         'required' => false,
-                        'placeholder' => __('Nama Supir')
+                        'placeholder' => __('ID/Nama Supir')
                     ));
             ?>
         </div>

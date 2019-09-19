@@ -7423,6 +7423,7 @@ class RevenuesController extends AppController {
             $driver_debt = array();
             $dataDebtPaymetDetail = array();
             $tmpDataDetail = array();
+            $tmpDebtList = array();
 
             if( !empty($ttuj_payment_id) && $transaction_status == 'posting' ) {
                 $dataTitipan = array(
@@ -7565,13 +7566,18 @@ class RevenuesController extends AppController {
                             );
 
                             if( !empty($debt) ) {
-                                $dataDebtPaymetDetail = $this->RjRevenue->_callBiayaDebt($driver_id, array(
-                                    'debt' => $debt,
-                                    'data' => $data,
-                                    'debtPaymet' => $dataDebtPaymetDetail,
-                                    'ttuj_payment_detail_id' => $ttuj_payment_detail_id,
-                                    'ttuj_payment_id' => $ttuj_payment_id,
-                                ));
+                                if( !empty($tmpDebtList[$driver_id]) ) {
+                                    $tmpDebtList[$driver_id] += $debt;
+                                } else {
+                                    $tmpDebtList[$driver_id] = $debt;
+                                }
+                                // $dataDebtPaymetDetail = $this->RjRevenue->_callBiayaDebt($driver_id, array(
+                                //     'debt' => $debt,
+                                //     'data' => $data,
+                                //     'debtPaymet' => $dataDebtPaymetDetail,
+                                //     'ttuj_payment_detail_id' => $ttuj_payment_detail_id,
+                                //     'ttuj_payment_id' => $ttuj_payment_id,
+                                // ));
                             }
                         }
                     }
@@ -7587,6 +7593,18 @@ class RevenuesController extends AppController {
                     'validate' => 'only',
                 ))) {
                     $flagTtujPaymentDetail = false;
+                }
+            } else {
+                if( !empty($tmpDebtList) ) {
+                    foreach ($tmpDebtList as $driver_id => $debt) {
+                        $dataDebtPaymetDetail = $this->RjRevenue->_callBiayaDebt($driver_id, array(
+                            'debt' => $debt,
+                            'data' => $data,
+                            'debtPaymet' => $dataDebtPaymetDetail,
+                            // 'ttuj_payment_detail_id' => $ttuj_payment_detail_id,
+                            'ttuj_payment_id' => $ttuj_payment_id,
+                        ));
+                    }
                 }
             }
 
