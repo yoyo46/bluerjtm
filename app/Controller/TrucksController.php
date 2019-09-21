@@ -6411,4 +6411,27 @@ class TrucksController extends AppController {
 
         $this->render('/Elements/blocks/trucks/forms/change_kir_extension');
     }
+
+    public function report_mutations() {
+        $dateFrom = date('Y-m-d', strtotime('-1 Month'));
+        $dateTo = date('Y-m-d');
+
+        $params = $this->MkCommon->_callRefineParams($this->params->params, array(
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ));
+
+        $dataReport = $this->RmReport->_callDataReport_mutations($params, 30, 0, true);
+        $values = Common::hashEmptyField($dataReport, 'data');
+
+        $this->RmReport->_callBeforeView($params, __('Laporan Mutasi Truk'));
+        $this->MkCommon->_layout_file(array(
+            'select',
+            'freeze',
+        ));
+        $this->set(array(
+            'values' => $values,
+            'active_menu' => 'report_mutations',
+        ));
+    }
 }

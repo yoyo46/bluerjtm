@@ -8408,12 +8408,12 @@ class RevenuesController extends AppController {
                                                 $successfull_row++;
                                             } else {
                                                 $msgSave = $this->MkCommon->_callMsgValidationErrors($this->Revenue->InvoiceDetail->Invoice->validationErrors, 'string');
-                                                $error_message .= sprintf(__('Gagal pada baris ke %s : %s'), $row_submitted+1, $msgSave) . '<br>';
+                                                $error_message .= sprintf(__('Gagal pada baris ke %s : %s'), $row_submitted+2, $msgSave) . '<br>';
                                                 $failed_row++;
                                             }
                                         } else {
                                             $msgSave = $this->MkCommon->_callMsgValidationErrors($this->Revenue->validationErrors, 'string');
-                                            $error_message .= sprintf(__('Gagal pada baris ke %s : %s'), $row_submitted+1, $msgSave) . '<br>';
+                                            $error_message .= sprintf(__('Gagal pada baris ke %s : %s'), $row_submitted+2, $msgSave) . '<br>';
                                             $failed_row++;
                                         }
 

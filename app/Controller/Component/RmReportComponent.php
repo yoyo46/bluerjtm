@@ -11302,6 +11302,180 @@ class RmReportComponent extends Component {
 		);
 	}
 
+	function _callDataReport_mutations ( $params, $limit = 30, $offset = 0, $view = false ) {
+		$this->controller->loadModel('TruckMutation');
+
+        $params_named = Common::hashEmptyField($params, 'named', array(), array(
+        	'strict' => true,
+    	));
+		$params['named'] = array_merge($params_named, $this->MkCommon->processFilter($params));
+		$params = $this->MkCommon->_callRefineParams($params);
+
+		$options = array(
+        	'offset' => $offset,
+        	'limit' => $limit,
+        );
+		$options = $this->controller->TruckMutation->_callRefineParams($params, $options);
+        $options = $this->MkCommon->getConditionGroupBranch( $params, 'TruckMutation', $options );
+
+		$options = $this->controller->TruckMutation->getData('paginate', $options, true, array(
+            'status' => 'all',
+        ));
+		$this->controller->paginate = $options;
+		$data = $this->controller->paginate('TruckMutation');
+		$result = array();
+
+        App::import('Helper', 'Html');
+        $this->Html = new HtmlHelper(new View(null));
+		$grandtotal = 0;
+
+		if( !empty($data) ) {
+			foreach ($data as $key => $value) {
+                $value = $this->controller->TruckMutation->getMergeList($value, array(
+					'contain' => array(
+						'TruckMutationCustomer' => array(
+							'type' => 'list',
+							'fields' => array(
+								'TruckMutationCustomer.id',
+								'TruckMutationCustomer.customer_name',
+							),
+						),
+						'TruckMutationOldCustomer' => array(
+							'type' => 'list',
+							'fields' => array(
+								'TruckMutationOldCustomer.id',
+								'TruckMutationOldCustomer.customer_name',
+							),
+						),
+					),
+				));
+
+                $id = Common::hashEmptyField($value, 'TruckMutation.id');
+                $no_doc = Common::hashEmptyField($value, 'TruckMutation.no_doc');
+                $mutation_date = Common::hashEmptyField($value, 'TruckMutation.mutation_date');
+                $description = Common::hashEmptyField($value, 'TruckMutation.description', '-');
+                $status = Common::hashEmptyField($value, 'TruckMutation.status');
+
+                if( !empty($status) ) {
+                	$transaction_status = 'active';
+                } else {
+                	$transaction_status = 'void';
+                }
+                
+                $value = Hash::insert($value, 'TruckMutation.transaction_status', $transaction_status);
+                $transaction_status = $this->MkCommon->_callTransactionStatus($value, 'TruckMutation', 'transaction_status');
+
+                $driver_name = Common::hashEmptyField($value, 'TruckMutation.driver_name');
+                $change_driver_name = Common::hashEmptyField($value, 'TruckMutation.change_driver_name');
+                $change_driver_name = (!empty($view) && !empty($change_driver_name))?$this->Html->tag('strong', $change_driver_name):$change_driver_name;
+                
+                $branch_name = Common::hashEmptyField($value, 'TruckMutation.branch_name');
+                $change_branch_name = Common::hashEmptyField($value, 'TruckMutation.change_branch_name');
+                $change_branch_name = (!empty($view) && !empty($change_branch_name))?$this->Html->tag('strong', $change_branch_name):$change_branch_name;
+                
+                $facility = Common::hashEmptyField($value, 'TruckMutation.facility');
+                $change_facility = Common::hashEmptyField($value, 'TruckMutation.change_facility');
+                $change_facility = (!empty($view) && !empty($change_facility))?$this->Html->tag('strong', $change_facility):$change_facility;
+                
+                $category = Common::hashEmptyField($value, 'TruckMutation.category');
+                $change_category = Common::hashEmptyField($value, 'TruckMutation.change_category');
+                $change_category = (!empty($view) && !empty($change_category))?$this->Html->tag('strong', $change_category):$change_category;
+                
+                $nopol = Common::hashEmptyField($value, 'TruckMutation.nopol');
+                $change_nopol = Common::hashEmptyField($value, 'TruckMutation.change_nopol');
+                $change_nopol = (!empty($view) && !empty($change_nopol))?$this->Html->tag('strong', $change_nopol):$change_nopol;
+                
+                $capacity = Common::hashEmptyField($value, 'TruckMutation.capacity');
+                $change_capacity = Common::hashEmptyField($value, 'TruckMutation.change_capacity');
+                $change_capacity = (!empty($view) && !empty($change_capacity))?$this->Html->tag('strong', $change_capacity):$change_capacity;
+
+                $customer = Common::hashEmptyField($value, 'TruckMutationOldCustomer', array());
+                $change_customer = Common::hashEmptyField($value, 'TruckMutationCustomer', array());
+
+                if( !empty($change_customer) ) {
+                	if( !empty($view) ) {
+		                $customer = implode('<br>', $customer).'<br>';
+		                $change_customer = '<br>'.$this->Html->tag('strong', implode('<br>', $change_customer));
+                	} else {
+		                $customer = implode(', ', $customer);
+		                $change_customer = implode(', ', $change_customer);
+                	}
+	            }
+
+				$result[$key] = array(
+					__('No. Doc') => array(
+						'text' => !empty($view)?$this->Html->link_label($no_doc, array(
+							'controller' => 'trucks',
+							'action' => 'mutation_detail',
+							$id,
+						), array(
+							'target' => '_blank',
+						)):$no_doc,
+                		'field_model' => 'TruckMutation.no_doc',
+		                'data-options' => 'field:\'no_doc\',width:150',
+		                'align' => 'left',
+					),
+					__('Tgl Mutasi') => array(
+						'text' => !empty($view)?Common::formatDate($mutation_date, 'd M Y'):$mutation_date,
+                		'field_model' => 'TruckMutation.mutation_date',
+		                'data-options' => 'field:\'mutation_date\',width:120',
+		                'align' => 'left',
+					),
+					__('Keterangan') => array(
+						'text' => $description,
+		                'data-options' => 'field:\'description\',width:150',
+					),
+					__('No. Pol') => array(
+						'text' => !empty($change_nopol)?__('%s => %s', $nopol, $change_nopol):$nopol,
+		                'data-options' => 'field:\'nopol\',width:200',
+		                'align' => 'left',
+                		'fix_column' => true,
+					),
+					__('Cabang') => array(
+						'text' => !empty($change_branch_name)?__('%s => %s', $branch_name, $change_branch_name):'-',
+		                'data-options' => 'field:\'branch\',width:300',
+		                'align' => 'left',
+					),
+					__('Jenis Truk') => array(
+						'text' => !empty($change_category)?__('%s => %s', $category, $change_category):'-',
+		                'data-options' => 'field:\'category\',width:300',
+		                'align' => 'left',
+					),
+					__('Fasilitas Truk') => array(
+						'text' => !empty($change_facility)?__('%s => %s', $facility, $change_facility):'-',
+		                'data-options' => 'field:\'facility\',width:300',
+		                'align' => 'left',
+					),
+					__('Supir') => array(
+						'text' => !empty($change_driver_name)?__('%s => %s', $driver_name, $change_driver_name):'-',
+		                'data-options' => 'field:\'driver_name\',width:300',
+		                'align' => 'left',
+					),
+					__('Kapasitas') => array(
+						'text' => !empty($change_capacity)?__('%s => %s', $capacity, $change_capacity):'-',
+		                'data-options' => 'field:\'capacity\',width:120',
+		                'align' => 'left',
+					),
+					__('Alokasi') => array(
+						'text' => !empty($change_customer)?__('%s => %s', $customer, $change_customer):'-',
+		                'data-options' => 'field:\'customer\',width:300',
+		                'align' => 'left',
+					),
+					__('Status') => array(
+						'text' => $transaction_status,
+		                'data-options' => 'field:\'transaction_status\',width:100',
+		                'align' => 'center',
+					),
+				);
+			}
+		}
+
+		return array(
+			'data' => $result,
+			'model' => 'TruckMutation',
+		);
+	}
+
 	function _callProcess( $modelName, $id, $value, $data ) {
 		$dataSave = false;
 		$file = false;

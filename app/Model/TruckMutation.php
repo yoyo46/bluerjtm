@@ -362,5 +362,54 @@ class TruckMutation extends AppModel {
 
         return $result;
     }
+
+    public function _callRefineParams( $data = '', $default_options = false ) {
+        $nopol = !empty($data['named']['nopol'])?$data['named']['nopol']:false;
+        $type = !empty($data['named']['type'])?$data['named']['type']:1;
+        $status = !empty($data['named']['status'])?$data['named']['status']:1;
+
+        $default_options = $this->defaultOptionParams($data, $default_options, array(
+            'DateFrom' => array(
+                'field' => $this->alias.'.mutation_date >=',
+            ),
+            'DateTo' => array(
+                'field' => $this->alias.'.mutation_date <=',
+            ),
+            'no_doc' => array(
+                'field' => $this->alias.'.no_doc',
+                'type' => 'like',
+            ),
+            'description' => array(
+                'field' => $this->alias.'.description',
+                'type' => 'like',
+            ),
+        ));
+
+        if(!empty($nopol)){
+            if( $type == 2 ) {
+                $default_options['conditions']['TruckMutation.truck_id'] = $nopol;
+            } else {
+                $default_options['conditions'][]['OR'] = array(
+                    'TruckMutation.nopol LIKE' => '%'.$nopol.'%',
+                    'TruckMutation.change_nopol LIKE' => '%'.$nopol.'%',
+                );
+            }
+        }
+
+        if(!empty($status)){
+            $status = urldecode($status);
+            
+            switch ($status) {
+                case 'active':
+                    $default_options['conditions']['TruckMutation.status'] = 1;
+                    break;
+                case 'non-active':
+                    $default_options['conditions']['TruckMutation.status'] = 0;
+                    break;
+            }
+        }
+        
+        return $default_options;
+    }
 }
 ?>

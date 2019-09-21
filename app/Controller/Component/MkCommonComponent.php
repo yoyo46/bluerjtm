@@ -2506,6 +2506,11 @@ class MkCommonComponent extends Component {
                 $status_text = __('Open');
                 $status_class = 'label label-default';
                 break;
+
+            case 'active':
+                $status_text = __('Aktif');
+                $status_class = 'label label-success';
+                break;
             
             default:
                 $status_text = __('Belum Dibayar');

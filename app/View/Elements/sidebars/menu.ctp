@@ -221,7 +221,7 @@
                             'capacity_report', 'point_perday_report',
                             'point_perplant_report', 'licenses_report',
                             'daily_report', 'mutations', 'driver_reports',
-                            'leadtime_report', 'profit_loss',
+                            'leadtime_report', 'profit_loss', 'report_mutations',
                         ),
                         'revenues' => array(
                             'ritase_report', 'achievement_report',
@@ -242,7 +242,7 @@
                             'daily_report', 'mutations', 'driver_reports',
                             'ttuj_report', 'leadtime_report',
                             'report_expense_per_truck', 'achievement_rit_report',
-                            'profit_loss_truck'
+                            'profit_loss_truck', 'report_mutations'
                         );
 
                         if( !empty($active_menu) && in_array($active_menu, $truckMenu) ) {
@@ -454,6 +454,15 @@
                                 'escape' => false
                             )), array(
                                 'class' => ( !empty($active_menu) && $active_menu == 'profit_loss_truck' )?'active':'',
+                            ));
+
+                            echo $this->Html->tag('li', $this->Html->link(__('%s Laporan Mutasi Truk', $this->Common->icon('angle-double-right')), array(
+                                'controller' => 'trucks',
+                                'action' => 'report_mutations',
+                            ), array(
+                                'escape' => false
+                            )), array(
+                                'class' => ( !empty($active_menu) && $active_menu == 'report_mutations' )?'active':'',
                             ));
                     ?>
                 </ul>
