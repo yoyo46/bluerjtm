@@ -223,5 +223,23 @@ class Debt extends AppModel {
 
         return $value;
     }
+
+    function beforeSave( $options = array() ) {
+        $id = $this->id;
+        $id = Common::hashEmptyField($this->data, 'Debt.id', $id);
+        $nodoc = Common::hashEmptyField($this->data, 'Debt.nodoc');
+        $import = Common::hashEmptyField($this->data, 'Debt.import');
+        $note = Common::hashEmptyField($this->data, 'Debt.note');
+
+        if( empty($id) && empty($nodoc) ) {
+            $nodoc = $this->generateNoDoc();
+            $this->data = Hash::insert($this->data, 'Debt.nodoc', $nodoc);
+            $this->data = Hash::insert($this->data, 'Debt.user_id', Configure::read('__Site.config_user_id'));
+
+            if( !empty($import) && empty($note) ) {
+                $this->data = Hash::insert($this->data, 'Debt.note', __('Import Saldo Hutang Karyawan %s No. %s', date('d.m.y'), $nodoc));
+            }
+        }
+    }
 }
 ?>

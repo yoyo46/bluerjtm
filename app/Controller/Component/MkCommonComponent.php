@@ -1383,8 +1383,20 @@ class MkCommonComponent extends Component {
         if( !empty($validationErrors) ) {
             foreach ($validationErrors as $key => $validationError) {
                 if( !empty($validationError) ) {
-                    foreach ($validationError as $key => $error) {
-                        $textError[] = $error;
+                    foreach ($validationError as $key => $errors) {
+                        if( is_array($errors) ) {
+                            foreach ($errors as $key => $list_error) {
+                                if( is_array($list_error) ) {
+                                    foreach ($list_error as $key => $error) {
+                                        $textError[] = $error;
+                                    }
+                                } else {
+                                    $textError[] = $list_error;
+                                }
+                            }
+                        } else {
+                            $textError[] = $errors;
+                        }
                     }
                 }
             }

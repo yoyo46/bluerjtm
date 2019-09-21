@@ -1221,4 +1221,178 @@ class DebtController extends AppController {
             ));
         }
     }
+
+    public function import( $download = false ) {
+        if(!empty($download)){
+            $link_url = FULL_BASE_URL . '/files/debt.xls';
+            $this->redirect($link_url);
+            exit;
+        } else {
+            App::import('Vendor', 'excelreader'.DS.'excel_reader2');
+
+            $this->set('module_title', __('Import Saldo Hutang'));
+            $this->set('sub_module_title', __('Import Excel'));
+
+            if(!empty($this->request->data)) { 
+                $targetdir = $this->MkCommon->_import_excel( $this->request->data );
+
+                if( !empty($targetdir) ) {
+                    $xls_files = glob( $targetdir );
+
+                    if(empty($xls_files)) {
+                        $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
+                        $this->redirect(array(
+                            'action'=>'import'
+                        ));
+                    } else {
+                        $uploadedXls = $this->MkCommon->addToFiles('xls', $xls_files[0]);
+                        $uploaded_file = $uploadedXls['xls'];
+                        $file = explode(".", $uploaded_file['name']);
+                        $extension = array_pop($file);
+                        
+                        if($extension == 'xls') {
+                            $dataimport = new Spreadsheet_Excel_Reader();
+                            $dataimport->setUTFEncoder('iconv');
+                            $dataimport->setOutputEncoding('UTF-8');
+                            $dataimport->read($uploaded_file['tmp_name']);
+                            
+                            if(!empty($dataimport)) {
+                                $this->loadModel('Debt');
+
+                                $data = $dataimport;
+                                $row_submitted = 0;
+                                $successfull_row = 0;
+                                $failed_row = 0;
+                                $error_message = '';
+                                $dataHeader = array(
+                                    'import' => true,
+                                    'transaction_status' => 'posting',
+                                );
+                                // $dataSave = $dataHeader;
+                                $grandtotal = 0;
+
+                                for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
+                                    $datavar = array();
+                                    $flag = true;
+                                    $i = 1;
+                                    $tarifNotFound = false;
+
+                                    while ($flag) {
+                                        if( !empty($data->sheets[0]["cells"][1][$i]) ) {
+                                            $variable = $this->MkCommon->toSlug($data->sheets[0]["cells"][1][$i], '_');
+                                            $thedata = !empty($data->sheets[0]["cells"][$x][$i])?$data->sheets[0]["cells"][$x][$i]:NULL;
+                                            $$variable = $thedata;
+                                            $datavar[] = $thedata;
+                                        } else {
+                                            $flag = false;
+                                        }
+                                        $i++;
+                                    }
+
+                                    if(array_filter($datavar)) {
+                                        $cabang = !empty($cabang)?$cabang:false;
+                                        $id_supir = !empty($id_supir)?$id_supir:false;
+                                        $keterangan = !empty($keterangan)?$keterangan:false;
+
+                                        $tanggal = !empty($tanggal)?$tanggal:false;
+                                        $tanggal = Common::formatDate($tanggal, 'Y-m-d');
+
+                                        $per_tgl = !empty($per_tgl)?$per_tgl:false;
+                                        $per_tgl = Common::formatDate($per_tgl, 'Y-m-d');
+
+                                        $saldo_hutang = !empty($saldo_hutang)?Common::_callPriceConverter($saldo_hutang):0;
+                                        $saldo_hutang = str_replace(array('*'), array(''), $saldo_hutang);
+                                        $saldo_hutang = trim($saldo_hutang);
+
+
+                                        $branch = $this->GroupBranch->Branch->getData('first', array(
+                                            'conditions' => array(
+                                                'Branch.code' => $cabang,
+                                            ),
+                                        ), array(
+                                            'include_city' => false,
+                                        ));
+                                        $driver = $this->GroupBranch->Branch->Driver->getData('first', array(
+                                            'conditions' => array(
+                                                'Driver.no_id' => $id_supir,
+                                            ),
+                                        ), array(
+                                            'branch' => false,
+                                        ));
+
+                                        $branch_id = Common::hashEmptyField($branch, 'Branch.id');
+                                        $driver_id = Common::hashEmptyField($driver, 'Driver.id');
+                                        $slug = __('%s-%s', $branch_id, $tanggal);
+
+                                        $dataDetail = array(
+                                            'employe_id' => $driver_id,
+                                            'type' => 'Supir',
+                                            'note' => $keterangan,
+                                            'total' => $saldo_hutang,
+                                            'per_tgl' => $per_tgl,
+                                        );
+                                        $dataCheck = array(
+                                            'Debt' => $dataHeader,
+                                            'DebtDetail' => array(
+                                                $dataDetail,
+                                            ),
+                                        );
+
+                                        $dataSave[$slug]['DebtDetail'][] = $dataDetail;
+
+                                        if( empty($dataSave[$slug]['Debt']) ) {
+                                            $dataSave[$slug]['Debt'] = $dataHeader;
+                                            $dataSave[$slug]['Debt']['transaction_date'] = $tanggal;
+                                            $dataSave[$slug]['Debt']['branch_id'] = $branch_id;
+                                        }
+
+                                        if( !empty($dataSave[$slug]['Debt']['total']) ) {
+                                            $dataSave[$slug]['Debt']['total'] += $saldo_hutang;
+                                        } else {
+                                            $dataSave[$slug]['Debt']['total'] = $saldo_hutang;
+                                        }
+
+                                        $grandtotal += $saldo_hutang;
+                                        $resultSave = $this->Debt->saveAll($dataCheck, array(
+                                            'validate' => 'only',
+                                        ));
+
+                                        if( !empty($resultSave) ) {
+                                            $successfull_row++;
+                                        } else {
+                                            $msgSave = $this->MkCommon->_callMsgValidationErrors($this->Debt->validationErrors, 'string');
+                                            $error_message .= sprintf(__('Gagal pada baris ke %s : %s'), $row_submitted+2, $msgSave) . '<br>';
+                                            $failed_row++;
+                                        }
+
+                                        $row_submitted++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if(!empty($error_message)) {
+                        $this->MkCommon->setCustomFlash(__($error_message), 'error');
+                    } else if( !empty($successfull_row) ) {
+                        if( !empty($dataSave) ) {
+                            $dataSave = array_values($dataSave);
+                            $this->Debt->saveAll($dataSave, array(
+                                'deep' => true,
+                            ));
+                        }
+
+                        $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, $row_submitted);
+                        $this->MkCommon->setCustomFlash(__($message_import1), 'success');
+                    }
+                    $this->redirect(array('action'=>'import'));
+                } else {
+                    $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
+                    $this->redirect(array(
+                        'action'=>'import'
+                    ));
+                }
+            }
+        }
+    }
 }

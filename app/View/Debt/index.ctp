@@ -50,10 +50,23 @@
             echo $this->element('blocks/common/box_header', array(
                 'title' => $sub_module_title,
                 '_label_multiple' => __('Tambah'),
-                '_add' => array(
-                    'controller' => 'debt',
-                    'action' => 'add',
-                    'admin' => false,
+                '_add_multiple' => array(
+                    array(
+                        'label' => __('Tambah'),
+                        'url' => array(
+                            'controller' => 'debt',
+                            'action' => 'add',
+                            'admin' => false,
+                        ),
+                    ),
+                    array(
+                        'label' => __('Import Saldo Hutang'),
+                        'url' => array(
+                            'controller' => 'debt',
+                            'action' => 'import',
+                            'admin' => false,
+                        ),
+                    ),
                 ),
             ));
     ?>
