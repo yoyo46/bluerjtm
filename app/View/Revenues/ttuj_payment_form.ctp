@@ -213,6 +213,12 @@
 				'class'=> 'btn btn-default',
 			));
 			$this->Common->_getButtonPostingUnposting( $invoice, 'TtujPayment', array( 'Commit', 'Draft' ) );
+    		echo $this->Html->link(__('Preview'), array(
+				'action' => 'ttuj_payments', 
+				$action_type,
+			), array(
+				'class'=> 'btn btn-default',
+			));
 	?>
 </div>
 <?php

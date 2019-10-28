@@ -33,7 +33,7 @@
         $addClass = !empty($isAjax)?'hide':'';
 
         $ttujPayment = $this->Common->filterEmptyField($this->request->data, 'TtujPayment');
-        $sisaAmount = $this->Common->getBiayaTtuj( $ttuj, $data_type );
+        $sisaAmount = $this->Common->getBiayaTtuj( $ttuj, $data_type, false );
         $amountPayment = !empty($ttujPayment['amount_payment'][$idx])?$ttujPayment['amount_payment'][$idx]:$sisaAmount;
         $total_biaya = $this->Common->getBiayaTtuj( $ttuj, $data_type, false, false );
         $titipan = 0;
@@ -66,7 +66,7 @@
                     if( $potongan_tabungan_type == 'nominal' ) {
                         $titipan = $potongan_tabungan;
                     } else {
-                        $titipan = $total_biaya * ($potongan_tabungan/100);
+                        $titipan = $sisaAmount * ($potongan_tabungan/100);
                     }
                 }
                 
@@ -78,7 +78,7 @@
                 //     }
                 // }
                 if( !empty($is_hitung_hutang) && !empty($debt_percent) && !empty($debt_total) ) {
-                    $potongan_debt = $total_biaya * ($debt_percent/100);
+                    $potongan_debt = $sisaAmount * ($debt_percent/100);
 
                     if( $potongan_debt > $debt_total ) {
                         $potongan_debt = $debt_total;
@@ -280,7 +280,7 @@
     </td>
     <td class="text-right total-trans hide on-show">
         <?php
-                echo Common::getFormatPrice($total_biaya-$titipan-$potongan_debt);
+                echo Common::getFormatPrice($sisaAmount-$titipan-$potongan_debt);
         ?>
     </td>
     <?php 

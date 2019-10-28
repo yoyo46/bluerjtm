@@ -372,6 +372,8 @@ class Journal extends AppModel {
                 'Journal.document_id',
                 'Journal.type',
             ),
+            'order' => false,
+            'contain' => false,
         );
 
         $journals = $this->User->Journal->getData('all', $options, true, array(

@@ -7558,12 +7558,14 @@ class RevenuesController extends AppController {
                         $ttuj_payment_detail_id = $this->Ttuj->TtujPaymentDetail->id;
 
                         if( $transaction_status == 'posting' ) {
-                            $dataTitipan['TitipanDetail'][] = array(
-                                'ttuj_payment_detail_id' => $ttuj_payment_detail_id,
-                                'driver_id' => $driver_id,
-                                'total' => $titipan,
-                                'note' => __('Titipan UangJalan/Komisi TTUJ #%s', $no_ttuj),
-                            );
+                            if( !empty($titipan) ) {
+                                $dataTitipan['TitipanDetail'][] = array(
+                                    'ttuj_payment_detail_id' => $ttuj_payment_detail_id,
+                                    'driver_id' => $driver_id,
+                                    'total' => $titipan,
+                                    'note' => __('Titipan UangJalan/Komisi TTUJ #%s', $no_ttuj),
+                                );
+                            }
 
                             if( !empty($debt) ) {
                                 if( !empty($tmpDebtList[$driver_id]) ) {
@@ -7608,7 +7610,7 @@ class RevenuesController extends AppController {
                 }
             }
 
-            if( !empty($dataTitipan) ) {
+            if( !empty($grandtotal_titipan) ) {
                 $dataTitipan['Titipan']['grandtotal'] = $grandtotal_titipan;
 
                 $this->Ttuj->TtujPaymentDetail->TtujPayment->Titipan->saveAll($dataTitipan);
@@ -8152,64 +8154,144 @@ class RevenuesController extends AppController {
         $this->render('/Elements/blocks/common/form_delete');
     }
 
-    public function import( $download = false ) {
-        if(!empty($download)){
-            $link_url = FULL_BASE_URL . '/files/revenues.xls';
-            $this->redirect($link_url);
-            exit;
+    public function import_progress ( $id = false ) {
+        $this->loadModel('Import');
+
+        $value = $this->Import->getData('first', array(
+            'conditions' => array(
+                'Import.id' => $id,
+                'Import.status' => true,
+                'Import.on_progress' => 0,
+            ),
+        ));
+        $document_status = Common::hashEmptyField($value, 'Import.document_status');
+        $fetched_data = Common::hashEmptyField($value, 'Import.fetched_data', 0);
+        $total_data = Common::hashEmptyField($value, 'Import.total_data', 0);
+
+        if(empty($value)){
+            $msg = __('Failed / Waiting to be processed...<br>');
+            echo $msg;
+            die();
+        } else if( $document_status == 'completed' ) {
+            $successfull_row = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $total_data, $total_data);
         } else {
+            $import_id = Common::hashEmptyField($value, 'Import.id');
+            $this->Import->updateAll(array(
+                'Import.on_progress' => 1,
+            ), array(
+                'Import.id' => $import_id,
+            ));
+
             App::import('Vendor', 'excelreader'.DS.'excel_reader2');
+            $targetdir = Common::hashEmptyField($value, 'Import.filename');
+            $uniqcode = Common::hashEmptyField($value, 'Import.session_id');
 
-            $this->set('module_title', 'Revenue');
-            $this->set('active_menu', 'revenues');
-            $this->set('sub_module_title', __('Import Excel Tanpa TTUJ'));
+            if( !empty($targetdir) ) {
+                $xls_files = glob( $targetdir );
 
-            if(!empty($this->request->data)) { 
-                $targetdir = $this->MkCommon->_import_excel( $this->request->data );
-
-                if( !empty($targetdir) ) {
-                    $xls_files = glob( $targetdir );
-
-                    if(empty($xls_files)) {
-                        $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
-                        $this->redirect(array(
-                            'action'=>'import'
-                        ));
-                    } else {
-                        $uploadedXls = $this->MkCommon->addToFiles('xls', $xls_files[0]);
-                        $uploaded_file = $uploadedXls['xls'];
-                        $file = explode(".", $uploaded_file['name']);
-                        $extension = array_pop($file);
+                if(empty($xls_files)) {
+                    $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
+                    $this->redirect(array(
+                        'action'=>'import'
+                    ));
+                } else {
+                    $uploadedXls = $this->MkCommon->addToFiles('xls', $xls_files[0]);
+                    $uploaded_file = $uploadedXls['xls'];
+                    $file = explode(".", $uploaded_file['name']);
+                    $extension = array_pop($file);
+                    
+                    if($extension == 'xls') {
+                        $dataimport = new Spreadsheet_Excel_Reader();
+                        $dataimport->setUTFEncoder('iconv');
+                        $dataimport->setOutputEncoding('UTF-8');
+                        $dataimport->read($uploaded_file['tmp_name']);
                         
-                        if($extension == 'xls') {
-                            $dataimport = new Spreadsheet_Excel_Reader();
-                            $dataimport->setUTFEncoder('iconv');
-                            $dataimport->setOutputEncoding('UTF-8');
-                            $dataimport->read($uploaded_file['tmp_name']);
-                            
-                            if(!empty($dataimport)) {
-                                $this->loadModel('Revenue');
+                        if(!empty($dataimport)) {
+                            $this->loadModel('Revenue');
 
-                                $data = $dataimport;
-                                $row_submitted = 0;
-                                $successfull_row = 0;
-                                $failed_row = 0;
-                                $error_message = '';
-                                $dataSave = array();
-                                $dataInv = array();
-                                $dataTotal = array();
-                                $uniqcode = String::uuid();
+                            $data = $dataimport;
+                            $successfull_row = 0;
+                            $failed_row = 0;
+                            $error_message = '';
+                            $dataSave = array();
+                            $dataInv = array();
+                            $dataTotal = array();
+                            $dataTotalInv = array();
+                            $limit_import = 100;
+                            $start = 2;
+                            $row_submitted = 2;
 
-                                for ($x=2;$x<=count($data->sheets[0]["cells"]); $x++) {
+                            if( $fetched_data >= $total_data ) {
+                                $document_status = 'completed';
+                                $this->Import->updateAll(array(
+                                    'Import.document_status' => "'".$document_status."'",
+                                ), array(
+                                    'Import.id' => $import_id,
+                                ));
+
+                                $invoices = $this->Revenue->InvoiceDetail->Invoice->find('all', array(
+                                    'conditions' => array(
+                                        'Invoice.session_id' => $uniqcode,
+                                    ),
+                                ));
+
+                                if( !empty($invoices) ) {
+                                    foreach ($invoices as $inv) {
+                                        $inv = $this->Revenue->InvoiceDetail->Invoice->getMergeList($inv, array(
+                                            'contain' => array(
+                                                'CustomerNoType',
+                                            ),
+                                        ));
+                                        $customer_name_code = Hash::get($inv, 'CustomerNoType.customer_name_code');
+                                        $invoice_id = Hash::get($inv, 'Invoice.id');
+                                        $invoice_number = Hash::get($inv, 'Invoice.no_invoice');
+                                        $invoice_date = Common::hashEmptyField($inv, 'Invoice.invoice_date');
+                                        $total = Common::hashEmptyField($inv, 'Invoice.total');
+
+                                        $titleJournalInv = sprintf(__('Invoice customer: %s, No: %s'), $customer_name_code, $invoice_number);
+                                        $journalData = array(
+                                            'date' => $invoice_date,
+                                            'document_id' => $invoice_id,
+                                            'title' => $titleJournalInv,
+                                            'document_no' => $invoice_number,
+                                            'type' => 'invoice',
+                                        );
+
+                                        $this->Revenue->InvoiceDetail->Invoice->Bank->Coa->Journal->setJournal($total, array(
+                                            'credit' => 'invoice_coa_credit_id',
+                                            'debit' => 'invoice_coa_debit_id',
+                                        ), $journalData);
+                                        $this->Revenue->InvoiceDetail->Invoice->Bank->Coa->Journal->setJournal($total, array(
+                                            'credit' => 'invoice_coa_2_credit_id',
+                                            'debit' => 'invoice_coa_2_debit_id',
+                                        ), $journalData);
+                                    }
+                                }
+
+                                $this->Revenue->updateAll(array(
+                                    'Revenue.status' => 1,
+                                ), array(
+                                    'Revenue.session_id' => $uniqcode,
+                                ));
+
+                                $this->Revenue->InvoiceDetail->Invoice->updateAll(array(
+                                    'Invoice.status' => 1,
+                                    'Invoice.is_canceled' => 0,
+                                ), array(
+                                    'Invoice.session_id' => $uniqcode,
+                                ));
+                            } else {
+                                for ($x=$start;$x<=$limit_import; $x++) {
                                     $datavar = array();
                                     $flag = true;
                                     $i = 1;
                                     $tarifNotFound = false;
+                                    $tmp_x = $x + $fetched_data;
 
                                     while ($flag) {
                                         if( !empty($data->sheets[0]["cells"][1][$i]) ) {
                                             $variable = $this->MkCommon->toSlug($data->sheets[0]["cells"][1][$i], '_');
-                                            $thedata = !empty($data->sheets[0]["cells"][$x][$i])?$data->sheets[0]["cells"][$x][$i]:NULL;
+                                            $thedata = !empty($data->sheets[0]["cells"][$tmp_x][$i])?$data->sheets[0]["cells"][$tmp_x][$i]:NULL;
                                             $$variable = $thedata;
                                             $datavar[] = $thedata;
                                         } else {
@@ -8261,6 +8343,7 @@ class RevenuesController extends AppController {
                                             'conditions' => array(
                                                 'Branch.code' => $cabang,
                                             ),
+                                            'order' => false,
                                         ));
 
                                         $customer = $this->Revenue->CustomerNoType->find('first', array(
@@ -8282,17 +8365,20 @@ class RevenuesController extends AppController {
                                                 'City.name' => $dari,
                                                 'City.status' => 1,
                                             ),
+                                            'order' => false,
                                         ));
                                         $toCity = $this->GroupBranch->Branch->City->getData('first', array(
                                             'conditions' => array(
                                                 'City.name' => $tujuan,
                                                 'City.status' => 1,
                                             ),
+                                            'order' => false,
                                         ));
                                         $groupMotor = $this->Revenue->RevenueDetail->GroupMotor->getData('first', array(
                                             'conditions' => array(
                                                 'GroupMotor.name' => $grup_motor,
                                             ),
+                                            'order' => false,
                                         ));
                                         $company = $this->Revenue->InvoiceDetail->Invoice->Company->find('first', array(
                                             'conditions' => array(
@@ -8317,11 +8403,30 @@ class RevenuesController extends AppController {
 
                                         $tanggal_revenue = ($tanggal_revenue=='1970-01-01')?Common::formatDate($tgl_sj, 'Y-m-d'):$tanggal_revenue;
                                         $tgl_kwitansi = ($tgl_kwitansi=='1970-01-01')?Common::formatDate($tgl_kwitansi, 'Y-m-d'):$tgl_kwitansi;
+                                        $slug = __('%s-%s-%s-%s', $tanggal_revenue, $customer_id, $truck_id, $branch_id);
 
-                                        $no_doc = $this->Revenue->generateNoDoc();
+                                        if( empty($revenue_id[$slug]) ) {
+                                            $checkExisting = $this->Revenue->getData('first', array(
+                                                'conditions' => array(
+                                                    'Revenue.session_id' => $uniqcode,
+                                                    'Revenue.branch_id' => $branch_id,
+                                                    'Revenue.date_revenue' => $tanggal_revenue,
+                                                    'Revenue.truck_id' => $truck_id,
+                                                    'Revenue.customer_id' => $customer_id,
+                                                ),
+                                            ), true, array(
+                                                'status' => 'all',
+                                                'branch' => false,
+                                            ));
+                                            $revenue_id[$slug] = Hash::get($checkExisting, 'Revenue.id');
+                                            $revenue_last_amount[$slug] = Hash::get($checkExisting, 'Revenue.total', 0);
+                                        } else if( !empty($revenue_id[$slug]) ) {
+                                            $revenue_last_amount[$slug] = 0;
+                                        }
 
                                         $dataRevenue = array();
                                         $revenueHeader = array(
+                                            'id' => !empty($revenue_id[$slug])?$revenue_id[$slug]:null,
                                             'branch_id' => $branch_id,
                                             'transaction_status' => 'posting',
                                             'date_revenue' => $tanggal_revenue,
@@ -8333,7 +8438,10 @@ class RevenuesController extends AppController {
                                             'nopol' => $no_polisi,
                                             'is_manual' => true,
                                             'auto_journal' => true,
-                                            'import_code' => String::uuid(),
+                                            'import_code' => $uniqcode,
+                                            'import_status' => 'progress',
+                                            'session_id' => $uniqcode,
+                                            'status' => 0,
                                         );
                                         $revenueDetail = array(
                                             'group_motor_id' => $group_motor_id,
@@ -8354,12 +8462,10 @@ class RevenuesController extends AppController {
                                             ),
                                         );
 
-                                        $slug = __('%s-%s-%s-%s', $tanggal_revenue, $customer_id, $truck_id, $branch_id);
-
                                         if( !empty($dataTotal[$slug]) ) {
                                             $dataTotal[$slug] += $amount;
                                         } else {
-                                            $dataTotal[$slug] = $amount;
+                                            $dataTotal[$slug] = $amount + $revenue_last_amount[$slug];
                                         }
 
                                         $dataSave[$slug]['Revenue'] = $revenueHeader;
@@ -8376,13 +8482,40 @@ class RevenuesController extends AppController {
                                             $slug_inv = Common::toSlug(__('%s-%s-%s', $customer_id, $no_kwitansi, $jenis_kwitansi));
                                             $term_of_payment = Common::hashEmptyField($customer, 'CustomerNoType.term_of_payment');
 
-                                            if( empty($dataInv[$slug_inv]) ) {
-                                                $uniqcode = String::uuid();
+                                            if( empty($invoice_id[$slug_inv]) ) {
+                                                $checkExistingInv = $this->Revenue->InvoiceDetail->Invoice->getData('first', array(
+                                                    'conditions' => array(
+                                                        'Invoice.customer_id' => $customer_id,
+                                                        'Invoice.no_invoice' => $no_kwitansi,
+                                                        'Invoice.type_invoice' => $jenis_kwitansi,
+                                                        'Invoice.session_id' => $uniqcode,
+                                                    ),
+                                                ), true, array(
+                                                    'status' => 'all',
+                                                    'branch' => false,
+                                                ));
+                                                $invoice_id[$slug_inv] = Hash::get($checkExistingInv, 'Invoice.id');
+                                                $invoice_last_total[$slug_inv] = Hash::get($checkExistingInv, 'Invoice.total', 0);
+                                            } else if( !empty($invoice_id[$slug_inv]) ) {
+                                                $invoice_last_total[$slug_inv] = 0;
                                             }
 
-                                            $dataSave[$slug]['Revenue']['import_code'] = $uniqcode;
+                                            if( empty($dataInv[$slug_inv]) ) {
+                                                $tmp_uniqcode = String::uuid();
+                                            } else {
+                                                $tmp_uniqcode = $uniqcode;
+                                            }
+
+                                            if( !empty($dataTotalInv[$slug_inv]) ) {
+                                                $dataTotalInv[$slug_inv] += $amount;
+                                            } else {
+                                                $dataTotalInv[$slug_inv] = $amount + $invoice_last_total[$slug_inv];
+                                            }
+
+                                            $dataSave[$slug]['Revenue']['import_code'] = $tmp_uniqcode;
 
                                             $dataInv[$slug_inv]['Invoice'] = array(
+                                                'id' => !empty($invoice_id[$slug_inv])?$invoice_id[$slug_inv]:null,
                                                 'no_invoice' => $no_kwitansi,
                                                 'branch_id' => $branch_id,
                                                 'customer_id' => $customer_id,
@@ -8393,11 +8526,12 @@ class RevenuesController extends AppController {
                                                 'invoice_date' => $tgl_kwitansi,
                                                 'due_invoice' => $term_of_payment,
                                                 'term_of_payment' => $term_of_payment,
-                                                'import_code' => $uniqcode,
-                                                'jenis_kwitansi' => $jenis_kwitansi,
-                                                'total' => $jenis_kwitansi,
+                                                'import_code' => $tmp_uniqcode,
+                                                'total' => $dataTotalInv[$slug_inv],
                                                 'type_invoice' => $jenis_kwitansi,
-                                                
+                                                'session_id' => $uniqcode,
+                                                'status' => 0,
+                                                'is_canceled' => 1,
                                             );
 
                                             $resultSave = $this->Revenue->InvoiceDetail->Invoice->saveAll($dataInv[$slug_inv], array(
@@ -8408,12 +8542,12 @@ class RevenuesController extends AppController {
                                                 $successfull_row++;
                                             } else {
                                                 $msgSave = $this->MkCommon->_callMsgValidationErrors($this->Revenue->InvoiceDetail->Invoice->validationErrors, 'string');
-                                                $error_message .= sprintf(__('Gagal pada baris ke %s : %s'), $row_submitted+2, $msgSave) . '<br>';
+                                                $error_message .= sprintf(__('Gagal pada baris ke %s : %s'), $row_submitted + $fetched_data, $msgSave) . '<br>';
                                                 $failed_row++;
                                             }
                                         } else {
                                             $msgSave = $this->MkCommon->_callMsgValidationErrors($this->Revenue->validationErrors, 'string');
-                                            $error_message .= sprintf(__('Gagal pada baris ke %s : %s'), $row_submitted+2, $msgSave) . '<br>';
+                                            $error_message .= sprintf(__('Gagal pada baris ke %s : %s'), $row_submitted + $fetched_data, $msgSave) . '<br>';
                                             $failed_row++;
                                         }
 
@@ -8423,27 +8557,139 @@ class RevenuesController extends AppController {
                             }
                         }
                     }
+                }
 
-                    // debug($dataInv);die();
+                // debug($dataSave);
+                // debug($dataInv);die();
 
-                    if(!empty($error_message)) {
-                        $this->MkCommon->setCustomFlash(__($error_message), 'error');
-                    } else if( !empty($successfull_row) ) {
-                        if( !empty($dataSave) ) {
-                            $dataSave = array_values($dataSave);
-                            $flag = $this->Revenue->saveAll($dataSave, array(
-                                'deep' => true,
+                if( empty($error_message) && !empty($successfull_row) ) {
+                    if( !empty($dataSave) ) {
+                        $dataSave = array_values($dataSave);
+                        $flag = $this->Revenue->saveAll($dataSave, array(
+                            'deep' => true,
+                        ));
+
+                        if( !empty($flag) ) {
+                            $dataInv = array_values($dataInv);
+                            $this->Revenue->InvoiceDetail->Invoice->getProsesInvoiceImport($dataInv);
+
+                            if( $fetched_data == 1 ) {
+                                $fetched_data = $successfull_row;
+                            } else {
+                                $fetched_data += $successfull_row;
+                            }
+
+                            $this->Import->updateAll(array(
+                                'Import.fetched_data' => $fetched_data,
+                            ), array(
+                                'Import.id' => $import_id,
                             ));
 
-                            if( !empty($flag) ) {
-                                $dataInv = array_values($dataInv);
-                                $this->Revenue->InvoiceDetail->Invoice->getProsesInvoice($dataInv);
+                            if( $successfull_row > $total_data ) {
+                                $successfull_row = $total_data;
+                            }
+
+                            $successfull_row = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, $total_data);
+                        } else {
+                            $error_message = __('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.');
+                        }
+                    }
+                }
+            } else {
+                $error_message = __('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.');
+            }
+
+            $this->Import->updateAll(array(
+                'Import.on_progress' => 0,
+            ), array(
+                'Import.id' => $import_id,
+            ));
+        }
+
+        if( empty($successfull_row) && empty($error_message) ) {
+            $msg = __('Waiting to be processed...<br>');
+            echo $msg;
+            die();
+        }
+
+        $this->set(compact(
+            'error_message', 'successfull_row', 'limit_import',
+            'value', 'document_status'
+        ));
+
+        if( empty($error_message) ) {
+            $this->render('/Elements/blocks/common/generate_import');
+        }
+    }
+
+    public function import( $download = false ) {
+        if(!empty($download)){
+            $link_url = FULL_BASE_URL . '/files/revenues.xls';
+            $this->redirect($link_url);
+            exit;
+        } else {
+            $this->loadModel('Import');
+            App::import('Vendor', 'excelreader'.DS.'excel_reader2');
+
+            $this->set('module_title', 'Revenue');
+            $this->set('active_menu', 'revenues');
+            $this->set('sub_module_title', __('Import Excel Tanpa TTUJ'));
+
+            if(!empty($this->request->data)) { 
+                $targetdir = $this->MkCommon->_import_excel( $this->request->data );
+
+                if( !empty($targetdir) ) {
+                    $xls_files = glob( $targetdir );
+
+                    if(empty($xls_files)) {
+                        $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
+                        $this->redirect(array(
+                            'action'=>'import'
+                        ));
+                    } else {
+                        $uploadedXls = $this->MkCommon->addToFiles('xls', $xls_files[0]);
+                        $uploaded_file = $uploadedXls['xls'];
+                        $file = explode(".", $uploaded_file['name']);
+                        $extension = array_pop($file);
+                        
+                        if($extension == 'xls') {
+                            $dataimport = new Spreadsheet_Excel_Reader();
+                            $dataimport->setUTFEncoder('iconv');
+                            $dataimport->setOutputEncoding('UTF-8');
+                            $dataimport->read($uploaded_file['tmp_name']);
+                            
+                            if(!empty($dataimport)) {
+
+                                $data = $dataimport;
+                                $successfull_row = true;
+                                $failed_row = 0;
+                                $dataSave = array();
+                                $dataInv = array();
+                                $dataTotal = array();
+                                $dataTotalInv = array();
+                                $uniqcode = String::uuid();
+                                $data_cnt = count($data->sheets[0]["cells"]) - 1;
                             }
                         }
-
-                        $message_import1 = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, $row_submitted);
-                        $this->MkCommon->setCustomFlash(__($message_import1), 'success');
                     }
+
+                    if( !empty($successfull_row) ) {
+                        $flag = $this->Import->saveAll(array(
+                          'user_id' => $this->user_id,
+                          'session_id' => $uniqcode,
+                          'filename' => $targetdir,
+                          'total_data' => $data_cnt,
+                        ));
+
+                        if( !empty($flag) ) {
+                            $this->MkCommon->setCustomFlash(__('Berhasil melakukan import excel. Mohon menunggu hingga proses upload data selesai.'), 'success');
+                        } else {
+                            $this->MkCommon->setCustomFlash(__('Gagal melakukan proses import. Silahkan coba kembali.'), 'error');
+                        }
+                    } else {
+                        $this->MkCommon->setCustomFlash(__('Tidak terdapat file excel atau berekstensi .xls pada file zip Anda. Silahkan periksa kembali.'), 'error');
+                    }
+
                     $this->redirect(array('action'=>'import'));
                 } else {
                     $this->MkCommon->setCustomFlash(__('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.'), 'error');
@@ -8451,7 +8697,48 @@ class RevenuesController extends AppController {
                         'action'=>'import'
                     ));
                 }
+            } else {
+                $value = $this->Import->getData('first', array(
+                    'conditions' => array(
+                        'Import.user_id' => $this->user_id,
+                        'Import.document_status' => 'pending',
+                        'Import.status' => true,
+                    ),
+                    'order' => array(
+                        'Import.id' => 'ASC',
+                    ),
+                ));
+                $this->set('value', $value);
             }
+        }
+    }
+
+    function import_cancel( $id = null ){
+        $this->loadModel('Import');
+
+        $value = $this->Import->getData('first', array(
+            'conditions' => array(
+                'Import.id' => $id,
+                'Import.document_status' => 'pending',
+                'Import.status' => true,
+            ),
+        ));
+
+        if(!empty($value)){
+            $flag = $this->Import->updateAll(array(
+                'Import.document_status' => "'canceled'",
+                'Import.status' => 0,
+            ), array(
+                'Import.id' => $id,
+            ));
+
+            if( !empty($flag) ) {
+                $this->MkCommon->redirectReferer(__('Import data berhasil dibatalkan'), 'success');
+            } else {
+                $this->MkCommon->redirectReferer(__('Gagal membatalkan import data. silahkan coba kembali'), 'error');
+            }
+        } else {
+            $this->MkCommon->redirectReferer(__('Data tidak ditemukan'), 'error');
         }
     }
 

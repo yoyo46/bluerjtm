@@ -37,6 +37,8 @@
 				)), array(
 					'class' => 'form-group'
 				));
+
+				echo $this->element('blocks/common/generate_import');
 		?>
 		<div class="box-footer text-center action">
 			<?php

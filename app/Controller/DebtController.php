@@ -1318,6 +1318,7 @@ class DebtController extends AppController {
                                             ),
                                         ), array(
                                             'branch' => false,
+                                            'status' => 'all',
                                         ));
 
                                         $branch_id = Common::hashEmptyField($branch, 'Branch.id');

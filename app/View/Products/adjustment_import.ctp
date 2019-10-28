@@ -16,7 +16,7 @@
         <h3 class="box-title">
         	<?php
         			printf(__('Upload By Excel ( %s )'), $this->Html->link($this->Html->tag('small', __('Download Template')), array(
-						'action' => 'import',
+						'action' => 'adjustment_import',
 						'download'
 					), array(
 						'class' => 'download-template',
