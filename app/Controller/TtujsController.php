@@ -456,6 +456,8 @@ class TtujsController extends AppController {
                         ), array(
                             'BonBiruDetail.bon_biru_id' => $id,
                         ));
+                        
+                        $this->Ttuj->BonBiruDetail->BonBiru->recoverTtuj($dataDetail);
 
                         $noref = str_pad($id, 6, '0', STR_PAD_LEFT);
                         $msg = array(

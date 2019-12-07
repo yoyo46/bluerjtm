@@ -9763,7 +9763,7 @@ class RmReportComponent extends Component {
             $totalTitipan = 0;
             $totalClaim = 0;
             $totalUnitClaim = 0;
-            $totalLaka = 0;
+            $totalDebt = 0;
             $grandTotalTrans = 0;
 
 			foreach ($data as $key => $value) {
@@ -9799,6 +9799,9 @@ class RmReportComponent extends Component {
                         ),
                     ),
                 ));
+                $value = $this->controller->TtujPaymentDetail->Ttuj->getBonBiru($value, $ttuj_id);
+                $tglBonBiru = Common::hashEmptyField($value, 'BonBiru.tgl_bon_biru');
+
 
                 $detail_id = Common::hashEmptyField($value, 'TtujPaymentDetail.id');
                 $date_payment = Common::hashEmptyField($value, 'TtujPayment.date_payment');
@@ -9829,8 +9832,7 @@ class RmReportComponent extends Component {
                 $titipan = Common::hashEmptyField($value, 'TtujPaymentDetail.titipan', 0);
                 $claim = Common::hashEmptyField($value, 'TtujPaymentDetail.claim', 0);
                 $unit_claim = Common::hashEmptyField($value, 'TtujPaymentDetail.unit_claim', 0);
-                $laka = Common::hashEmptyField($value, 'TtujPaymentDetail.laka', 0);
-                $laka_note = Common::hashEmptyField($value, 'TtujPaymentDetail.laka_note', '-');
+                $debt = Common::hashEmptyField($value, 'TtujPaymentDetail.debt', 0);
 
                 $grandtotal += $total;
                 $totalPaid += $paid;
@@ -9840,9 +9842,9 @@ class RmReportComponent extends Component {
                 $totalTitipan += $titipan;
                 $totalClaim += $claim;
                 $totalUnitClaim += $unit_claim;
-                $totalLaka += $laka;
+                $totalDebt += $debt;
 
-                $total_trans = $paid + $no_claim + $stood + $lainnya - $titipan - $claim - $laka;
+                $total_trans = $paid + $no_claim + $stood + $lainnya - $titipan - $claim - $debt;
                 $grandTotalTrans += $total_trans;
 
                 $customType = $this->Common->_callLabelBiayaTtuj($type);
@@ -9943,7 +9945,7 @@ class RmReportComponent extends Component {
 		                'mainalign' => 'center',
 					),
 					__('TGL. Masuk TTUJ Biru') => array(
-						'text' => date('d M Y'),
+						'text' => $this->Common->formatDate($tglBonBiru, 'd M Y'),
 		                'data-options' => 'field:\'tgl_masuk\',width:100',
 		                'align' => 'left',
 		                'mainalign' => 'left',
@@ -9972,7 +9974,7 @@ class RmReportComponent extends Component {
 		                'align' => 'left',
 		                'mainalign' => 'left',
 					),
-					__('Total Dibayar') => array(
+					__('Biaya Dibayar') => array(
 						'text' => !empty($view)?Common::getFormatPrice($paid):$paid,
 		                'data-options' => 'field:\'paid\',width:100',
 		                'align' => 'right',
@@ -10042,9 +10044,9 @@ class RmReportComponent extends Component {
 		        			'type' => 'number',
 		    			),
 					),
-					__('Potongan LAKA') => array(
-						'text' => !empty($view)?Common::getFormatPrice($laka):$laka,
-		                'data-options' => 'field:\'laka\',width:100',
+					__('Pembayaran Hutang') => array(
+						'text' => !empty($view)?Common::getFormatPrice($debt):$debt,
+		                'data-options' => 'field:\'debt\',width:100',
 		                'align' => 'right',
 		                'mainalign' => 'center',
 		        		'excel' => array(
@@ -10052,9 +10054,9 @@ class RmReportComponent extends Component {
 		        			'type' => 'number',
 		    			),
 					),
-					__('Ket LAKA') => array(
-						'text' => $laka_note,
-		                'data-options' => 'field:\'laka_note\',width:100',
+					__('Ket Hutang') => array(
+						'text' => '',
+		                'data-options' => 'field:\'debt_note\',width:100',
 		                'align' => 'left',
 		                'mainalign' => 'left',
 					),
@@ -10166,12 +10168,12 @@ class RmReportComponent extends Component {
 						'text' => $this->Html->tag('strong', $totalUnitClaim),
 		                'style' => 'text-align: center;',
 					),
-					__('Potongan LAKA') => array(
-						'text' => $this->Html->tag('strong', $this->Common->getFormatPrice($totalLaka)),
+					__('Potongan Hutang') => array(
+						'text' => $this->Html->tag('strong', $this->Common->getFormatPrice($totalDebt)),
 		                'style' => 'text-align: right;',
 					),
-					__('Ket LAKA') => array(
-		                'data-options' => 'field:\'laka_note\',width:100',
+					__('Ket Hutang') => array(
+		                'data-options' => 'field:\'debt_note\',width:100',
 					),
 					__('Total Transfer') => array(
 						'text' => $this->Html->tag('strong', $this->Common->getFormatPrice($grandTotalTrans)),
@@ -10202,7 +10204,7 @@ class RmReportComponent extends Component {
 	        		$this->controller->TtujPaymentDetail->virtualFields['total_titipan'] = 'SUM(IFNULL(TtujPaymentDetail.titipan, 0))';
 	        		$this->controller->TtujPaymentDetail->virtualFields['total_claim'] = 'SUM(IFNULL(TtujPaymentDetail.claim, 0))';
 	        		$this->controller->TtujPaymentDetail->virtualFields['total_unit_claim'] = 'SUM(IFNULL(TtujPaymentDetail.unit_claim, 0))';
-	        		$this->controller->TtujPaymentDetail->virtualFields['total_laka'] = 'SUM(IFNULL(TtujPaymentDetail.laka, 0))';
+	        		$this->controller->TtujPaymentDetail->virtualFields['total_debt'] = 'SUM(IFNULL(TtujPaymentDetail.debt, 0))';
 
 	        		$options['fields'] = array(
 	        			'TtujPaymentDetail.id',
@@ -10213,7 +10215,7 @@ class RmReportComponent extends Component {
 	        			'TtujPaymentDetail.total_titipan',
 	        			'TtujPaymentDetail.total_claim',
 	        			'TtujPaymentDetail.total_unit_claim',
-	        			'TtujPaymentDetail.total_laka',
+	        			'TtujPaymentDetail.total_debt',
 	        		);
 					$value = $this->controller->TtujPaymentDetail->find('first', $options);
 					unset($this->controller->TtujPaymentDetail->virtualFields['total_paid']);
@@ -10223,7 +10225,7 @@ class RmReportComponent extends Component {
 	        		unset($this->controller->TtujPaymentDetail->virtualFields['total_titipan']);
 	        		unset($this->controller->TtujPaymentDetail->virtualFields['total_claim']);
 	        		unset($this->controller->TtujPaymentDetail->virtualFields['total_unit_claim']);
-	        		unset($this->controller->TtujPaymentDetail->virtualFields['total_laka']);
+	        		unset($this->controller->TtujPaymentDetail->virtualFields['total_debt']);
 
 					$paid = Common::hashEmptyField($value, 'TtujPaymentDetail.total_paid', 0);
 	                $no_claim = Common::hashEmptyField($value, 'TtujPaymentDetail.total_no_claim', 0);
@@ -10231,9 +10233,9 @@ class RmReportComponent extends Component {
 	                $lainnya = Common::hashEmptyField($value, 'TtujPaymentDetail.total_lainnya', 0);
 	                $titipan = Common::hashEmptyField($value, 'TtujPaymentDetail.total_titipan', 0);
 	                $claim = Common::hashEmptyField($value, 'TtujPaymentDetail.total_claim', 0);
-	                $laka = Common::hashEmptyField($value, 'TtujPaymentDetail.total_laka', 0);
+	                $debt = Common::hashEmptyField($value, 'TtujPaymentDetail.total_debt', 0);
 	                $unit_claim = Common::hashEmptyField($value, 'TtujPaymentDetail.total_unit_claim', 0);
-                	$total_trans = $paid + $no_claim + $stood + $lainnya - $titipan - $claim - $laka;
+                	$total_trans = $paid + $no_claim + $stood + $lainnya - $titipan - $claim - $debt;
 
                 	// Total TTUJ
 					// $options['contain'][] = 'Ttuj';
@@ -10433,15 +10435,15 @@ class RmReportComponent extends Component {
 	                			'type' => 'number',
 	            			),
 						),
-						__('Potongan LAKA') => array(
-							'text' => $laka,
+						__('Potongan Hutang') => array(
+							'text' => $debt,
 	                		'excel' => array(
 	                			'align' => 'right',
 	                			'type' => 'number',
 	            			),
 						),
-						__('Ket LAKA') => array(
-			                'data-options' => 'field:\'laka_note\',width:100',
+						__('Ket Hutang') => array(
+			                'data-options' => 'field:\'debt_note\',width:100',
 						),
 						__('Total Transfer') => array(
 							'text' => $total_trans,

@@ -161,5 +161,17 @@ class BonBiru extends AppModel {
 
         return $default_options;
     }
+
+    function recoverTtuj ( $details = false ) {
+        if( !empty($details) ) {
+            foreach ($details as $key => $value) {
+                $ttuj_id = $this->filterEmptyField($value, 'BonBiruDetail', 'ttuj_id');
+                    
+                $this->BonBiruDetail->Ttuj->set('status_bon_biru', 'none');
+                $this->BonBiruDetail->Ttuj->id = $ttuj_id;
+                $this->BonBiruDetail->Ttuj->save();
+            }
+        }
+    }
 }
 ?>

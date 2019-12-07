@@ -38,6 +38,7 @@
 
 	    				$city = Common::hashEmptyField($value, 'RevenueDetail.City.name');
 	    				$truck_category = Common::hashEmptyField($value, 'Revenue.Truck.TruckCategory.name');
+	    				$capacity = Common::hashEmptyField($value, 'Revenue.Truck.capacity');
 	    				
 	    				$nopol = Common::hashEmptyField($value, 'Revenue.Ttuj.nopol', '-');
 	    				$nopol = Common::hashEmptyField($value, 'Revenue.nopol', $nopol);
@@ -129,11 +130,11 @@
 					echo $this->Html->tag('td', $no_sj, array(
 						'style' => 'padding: 10px;border: 1px solid #ddd;',
 					));
-					echo $this->Html->tag('td', $truck_category, array(
-						'style' => 'padding: 10px;border: 1px solid #ddd;',
-					));
 					echo $this->Html->tag('td', $nopol, array(
 						'style' => 'padding: 10px;border: 1px solid #ddd;',
+					));
+					echo $this->Html->tag('td', $capacity, array(
+						'style' => 'padding: 10px;border: 1px solid #ddd;text-align:center;',
 					));
 					echo $this->Html->tag('td', $totalUnit, array(
 					// echo $this->Html->tag('td', '', array(

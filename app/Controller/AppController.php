@@ -150,7 +150,7 @@ class AppController extends Controller {
 				'revenues' => array(
 					'search', 'ttuj_edit', 'info_truk',
 					'surat_jalan_outstanding', 'detail_ttuj_payment',
-					'bypass_search',
+					'bypass_search', 'import_progress', 'import_cancel',
 				),
 				'cashbanks' => array(
 					'search'

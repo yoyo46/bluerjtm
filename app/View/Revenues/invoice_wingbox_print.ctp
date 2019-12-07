@@ -76,15 +76,15 @@
                 'name' => __('Armada'),
                 'style' => 'text-align:center;background-color: #ccc; border: 1px solid #ddd;',
                 'child' => array(
-                    'truck_type' => array(
-                        'name' => $this->Html->tag('div', __('Type Truck'), array(
+                    'nopol' => array(
+                        'name' => $this->Html->tag('div', __('No. Pol'), array(
                             'style' => 'width: 100px;',
                         )),
                         'style' => 'text-align:center;background-color: #ccc; border: 1px solid #ddd;',
                         'rowspan' => 2,
                     ),
-                    'nopol' => array(
-                        'name' => $this->Html->tag('div', __('No. Pol'), array(
+                    'truck_type' => array(
+                        'name' => $this->Html->tag('div', __('Kapasitas'), array(
                             'style' => 'width: 100px;',
                         )),
                         'style' => 'text-align:center;background-color: #ccc; border: 1px solid #ddd;',
@@ -178,12 +178,29 @@
                 // 'style' => 'background-color: #ccc; border: 1px solid #ddd; color: #333; font-weight: bold; padding: 0 10px;',
             ));
 
+            $contentHeader = $this->Html->div('sub-title', 
+                $this->element('blocks/common/tables/sub_header', array(
+                    'labelName' => $this->Html->tag('strong', __('Nama Vendor')),
+                    'value' => $company,
+                )).
+                $this->element('blocks/common/tables/sub_header', array(
+                    'labelName' => $this->Html->tag('strong', __('Nama Customer')),
+                    'value' => $customer,
+                )).
+                $this->element('blocks/common/tables/sub_header', array(
+                    'labelName' => $this->Html->tag('strong', __('Alamat')),
+                    'value' => $customer_address,
+                )).'<p>&nbsp;</p>', array(
+                    'style' => 'margin-bottom: 20px;',
+            ));
+
             echo $this->element(sprintf('blocks/common/tables/export_%s', $action_print), array(
                 'tableContent' => $this->element($element, array(
 	            	'fieldColumn' => $fieldColumn,
 	        	)),
                 'filename' => $sub_module_title,
-                'sub_module_title' => false,
+                'contentHeader' => $contentHeader,
+                // 'sub_module_title' => false,
                 'print_by' => false,
             ));
         } else {
@@ -213,21 +230,21 @@
 			));
 	?>
     <div class="sub-title" style="margin-bottom: 20px;">
-    <?php 
-            echo $this->element('blocks/common/tables/sub_header', array(
-                'labelName' => $this->Html->tag('strong', __('Nama Vendor')),
-                'value' => $company,
-            ));
-            echo $this->element('blocks/common/tables/sub_header', array(
-                'labelName' => $this->Html->tag('strong', __('Nama Customer')),
-                'value' => $customer,
-            ));
-            echo $this->element('blocks/common/tables/sub_header', array(
-                'labelName' => $this->Html->tag('strong', __('Alamat')),
-                'value' => $customer_address,
-            ));
-    ?>
-</div>
+        <?php 
+                echo $this->element('blocks/common/tables/sub_header', array(
+                    'labelName' => $this->Html->tag('strong', __('Nama Vendor')),
+                    'value' => $company,
+                ));
+                echo $this->element('blocks/common/tables/sub_header', array(
+                    'labelName' => $this->Html->tag('strong', __('Nama Customer')),
+                    'value' => $customer,
+                ));
+                echo $this->element('blocks/common/tables/sub_header', array(
+                    'labelName' => $this->Html->tag('strong', __('Alamat')),
+                    'value' => $customer_address,
+                ));
+        ?>
+    </div>
 	<div class="clear"></div>
 </div>
 <?php

@@ -353,17 +353,19 @@ class Journal extends AppModel {
     }
 
     function _callCashFlow ( $data, $value, $options = array() ) {
-        $conditions = $this->filterEmptyField($options, 'conditions');
+        $conditions = $this->filterEmptyField($options, 'conditions', false, array());
         $cashflow = $this->filterEmptyField($options, 'cashflow');
         $total_field = $this->filterEmptyField($options, 'total_field');
 
         $document_id = $this->filterEmptyField($value, 'Journal', 'document_id');
         $journal_type = $this->filterEmptyField($value, 'Journal', 'type');
+        $curr_coa_id = $this->filterEmptyField($value, 'Journal', 'coa_id');
 
         $this->User->Journal->virtualFields['total_debit'] = 'SUM(Journal.debit)';
         $this->User->Journal->virtualFields['total_credit'] = 'SUM(Journal.credit)';
         $options = array(
             'conditions' => array_merge($conditions, array(
+                'Journal.coa_id <>' => $curr_coa_id,
                 'Journal.document_id' => $document_id,
                 'Journal.type' => $journal_type,
             )),
@@ -379,22 +381,39 @@ class Journal extends AppModel {
         $journals = $this->User->Journal->getData('all', $options, true, array(
             'status' => 'without-void',
         ));
+        // debug($journals);die();
 
         if( !empty($journals) ) {
             foreach ($journals as $key => $journal) {
+                $tmp_cashflow = $cashflow;
                 $total = $this->filterEmptyField($journal, 'Journal', $total_field, false, 0);
-                $grandtotal = $this->filterEmptyField($data, 'Grandtotal', $cashflow, 0);
+
+                if( empty($total) ) {
+                    switch ($total_field) {
+                        case 'total_debit':
+                            $total = $this->filterEmptyField($journal, 'Journal', 'total_credit', false, 0);
+                            $tmp_cashflow = 'in';
+                            break;
+                        
+                        default:
+                            $total = $this->filterEmptyField($journal, 'Journal', 'total_debit', false, 0);
+                            $tmp_cashflow = 'out';
+                            break;
+                    }
+                }
+
+                $grandtotal = $this->filterEmptyField($data, 'Grandtotal', $tmp_cashflow, 0);
                 $journal_coa_id = $this->filterEmptyField($journal, 'Journal', 'coa_id');
                 
                 $journal = $this->Coa->getMerge($journal, $journal_coa_id);
                 $coa_name = $this->filterEmptyField($journal, 'Coa', 'coa_name');
 
-                $totalCashflow = $this->filterEmptyField($data, 'CashFlow', $cashflow);
+                $totalCashflow = $this->filterEmptyField($data, 'CashFlow', $tmp_cashflow);
                 $total_cashflow = $this->filterEmptyField($totalCashflow, $journal_coa_id, false, 0);
                 
-                $data['CashFlow'][$cashflow][$journal_coa_id] = $total_cashflow + $total;
-                $data['Grandtotal'][$cashflow] = $grandtotal + $total;
-                $data['Coas'][$cashflow][$journal_coa_id] = $coa_name;
+                $data['CashFlow'][$tmp_cashflow][$journal_coa_id] = $total_cashflow + $total;
+                $data['Grandtotal'][$tmp_cashflow] = $grandtotal + $total;
+                $data['Coas'][$tmp_cashflow][$journal_coa_id] = $coa_name;
             }
         }
 

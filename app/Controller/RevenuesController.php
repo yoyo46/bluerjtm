@@ -8217,7 +8217,7 @@ class RevenuesController extends AppController {
                             $dataInv = array();
                             $dataTotal = array();
                             $dataTotalInv = array();
-                            $limit_import = 100;
+                            $limit_import = 50;
                             $start = 2;
                             $row_submitted = 2;
 
@@ -8592,6 +8592,7 @@ class RevenuesController extends AppController {
                             $successfull_row = sprintf(__('Import Berhasil: (%s baris), dari total (%s baris)'), $successfull_row, $total_data);
                         } else {
                             $error_message = __('Maaf, terjadi kesalahan. Silahkan coba lagi, atau hubungi Admin kami.');
+                            $document_status = 'failed';
                         }
                     }
                 }
@@ -8600,6 +8601,7 @@ class RevenuesController extends AppController {
             }
 
             $this->Import->updateAll(array(
+                'Import.document_status' => "'".$document_status."'",
                 'Import.on_progress' => 0,
             ), array(
                 'Import.id' => $import_id,
@@ -8682,6 +8684,15 @@ class RevenuesController extends AppController {
                         ));
 
                         if( !empty($flag) ) {
+                            $id = $this->Import->id;
+
+                            $this->Import->updateAll(array(
+                              'status' => 0,
+                            ), array(
+                              'user_id' => $this->user_id,
+                              'id <>' => $id,
+                            ));
+
                             $this->MkCommon->setCustomFlash(__('Berhasil melakukan import excel. Mohon menunggu hingga proses upload data selesai.'), 'success');
                         } else {
                             $this->MkCommon->setCustomFlash(__('Gagal melakukan proses import. Silahkan coba kembali.'), 'error');

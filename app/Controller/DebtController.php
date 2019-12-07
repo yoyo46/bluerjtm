@@ -17,7 +17,10 @@ class DebtController extends AppController {
     }
 
     public function search ( $action, $addParam = false ) {
+        $data = $this->request->data;
         $params = Common::_search($this, $action, $addParam);
+        $params = $this->MkCommon->getRefineGroupBranch($params, $data);
+            
         $this->redirect($params);
     }
 

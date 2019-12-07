@@ -3201,15 +3201,24 @@ var calcTotalBiaya = function () {
     // $('#total-biaya').html(formatNumber( totalBiaya, 0 ));
 }
 
-var calcTotalTransfer = function ( parent ) {
+var calcTotalTransfer = function ( parent, self ) {
     biaya = convert_number(parent.find('.sisa-amount').val());
     no_claim = convert_number(parent.find('.no-claim').val());
     stood = convert_number(parent.find('.stood').val());
     lainnya = convert_number(parent.find('.lainnya').val());
     titipan = convert_number(parent.find('.titipan').val());
     claim = convert_number(parent.find('.claim').val());
+    debt_percent = convert_number(parent.find('.debt_percent').val());
     // laka = convert_number(parent.find('.laka').val());
-    debt = convert_number(parent.find('.debt').val());
+
+    if( (self.hasClass('sisa-amount') || self.hasClass('no-claim') || self.hasClass('stood')) && debt_percent != 0 ) {
+        total_debt = (biaya + no_claim + stood) * ( debt_percent / 100 );
+
+        debt = total_debt;
+        parent.find('.debt').val( formatNumber( total_debt ) );
+    } else {
+        debt = convert_number(parent.find('.debt').val());
+    }
 
     // if( parent.find('.debt_percent').length > 0 ) {
     //     debt_percent = convert_number(parent.find('.debt_percent').val());
@@ -3256,7 +3265,7 @@ var sisa_amount = function ( obj ) {
             // alert(emptyAlert);
         }
 
-        calcTotalTransfer(parent);
+        calcTotalTransfer(parent, self);
         calcTotalBiaya();
         
         // self.val(formatNumber( sisa, 0 ));
